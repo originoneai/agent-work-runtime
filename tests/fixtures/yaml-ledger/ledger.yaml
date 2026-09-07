@@ -1,0 +1,34 @@
+goals:
+  G1:
+    title: Preserve the delivery contract
+    status: active
+    success_criteria: [Working source intake]
+milestones:
+  M1:
+    title: Read project facts
+    status: in_progress
+    acceptance: [No source rewriting]
+work_items:
+  - id: W1
+    title: Parse the ledger
+    status: completed
+    owner: fixture-author
+    required_for_v1: true
+    goal: G1
+    milestone: M1
+    acceptance: [Keep every criterion, Keep source provenance]
+    evidence:
+      - reports/source-intake.json
+  - id: W2
+    title: Compile the context
+    status: waiting_for_customer
+    milestone: M1
+    dependencies:
+      - id: W1
+        required: true
+      - id: EXTERNAL-1
+        required: false
+    next_action: Resolve the external state before claiming
+    evidence:
+      - locator: reports/context.json
+        summary: Reference supplied by the source; no validation implied

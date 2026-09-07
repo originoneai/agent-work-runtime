@@ -156,6 +156,10 @@ pub struct Plan {
     pub status: String,
     pub scope: Vec<String>,
     pub summary: String,
+    #[serde(default)]
+    pub kind: Option<String>,
+    #[serde(default)]
+    pub acceptance: Vec<String>,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
@@ -174,6 +178,8 @@ pub struct WorkItem {
     pub meta: ProjectionMeta,
     pub title: String,
     pub kind: Option<String>,
+    #[serde(default)]
+    pub owner: Option<String>,
     pub required: bool,
     pub raw_status: String,
     pub status: WorkStatus,

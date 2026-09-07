@@ -25,3 +25,4 @@ rusqlite = { version = "0.40.2", features = ["bundled"] }
 toml = "1.1.5"
 sha2 = "0.10.9"
 url = "2.5.8"
+serde_yaml_ng = "0.10.0"
