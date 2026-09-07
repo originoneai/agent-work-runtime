@@ -1,0 +1,51 @@
+{
+  "kind": "implementation",
+  "repository": "https://github.com/originoneai/agent-work-runtime",
+  "source_commit": "854d87476fbc5094fad5d75e721744f5356f66f2",
+  "checked_at": "2026-09-08T03:11:56+08:00",
+  "remote_receipt": {
+    "commit": "854d87476fbc5094fad5d75e721744f5356f66f2",
+    "url": "https://github.com/originoneai/agent-work-runtime/commit/854d87476fbc5094fad5d75e721744f5356f66f2",
+    "verified_at": "2026-09-08T03:14:43+08:00"
+  },
+  "checks": [
+    {
+      "name": "work_cli_behavior",
+      "passed": true,
+      "result": "cargo test --locked -p awr-cli --test work_cli: 2/2; compact single-work results, source refresh after edits, dependency diagnostics, invalid input, and unavailable source with explicit JSON and nonzero exit."
+    },
+    {
+      "name": "workspace_build",
+      "passed": true,
+      "result": "cargo build --locked --workspace completed."
+    },
+    {
+      "name": "project_self_use",
+      "passed": true,
+      "result": "status, ready --limit 3 and work show AWR-P2-004 used on this repository. JSON at revision 39 contained 2 acceptance criteria and 17 dependency keys, with no full ledger or event history; 8038 bytes. Text status identified the current work and next action."
+    }
+  ],
+  "artifacts": [
+    "crates/awr-cli/src/query.rs",
+    "crates/awr-cli/tests/work_cli.rs",
+    "README.md",
+    "ledger/evidence/AWR-P2-004/checks.json"
+  ],
+  "work_items": {
+    "AWR-P2-004": {
+      "acceptance": [
+        {
+          "criterion": "status、ready、work show 输出短摘要及明确下一步、阻塞和 revision。",
+          "passed": true
+        },
+        {
+          "criterion": "查询单个任务无需把全量 Ledger 或历史读入 Agent 上下文。",
+          "passed": true
+        }
+      ]
+    }
+  },
+  "limitations": [
+    "Task queries refresh the derived projection cache. Context budget enforcement, runtime sessions and work mutation remain scheduled; these commands do not claim or change source work status. Full regression and real-client acceptance remain scheduled."
+  ]
+}
