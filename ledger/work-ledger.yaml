@@ -1,8 +1,8 @@
 schema_version: 1
 contract_id: awr-v1
 contract_version: 1.0.0
-ledger_revision: 23
-updated_at: '2026-09-08T01:48:16+08:00'
+ledger_revision: 26
+updated_at: '2026-09-08T02:01:39+08:00'
 project:
   name: Agent Work Runtime
   external_key: agent-work-runtime
@@ -11,8 +11,8 @@ project:
   release_status: not_released
 current:
   milestone: M1
-  work_item: AWR-P1-005
-  next_action: 实现 Markdown 决策目录发现、ADR 状态与正文投影，检测文件新增、修改和删除。
+  work_item: AWR-P1-006
+  next_action: 统一增量索引；绑定解析配置，失效删除来源，保留未变化实体版本，并验证从来源重建投影。
   open_loops:
   - 功能实现优先；集中测试、优化和打磨在功能开发后执行。
   - 上下文功能可用后接入本项目自身台账，边使用边改进。
@@ -381,7 +381,7 @@ work_items:
   priority: P0
   kind: feature
   required_for_v1: true
-  status: in_progress
+  status: completed
   owner: codex-primary
   depends_on:
   - AWR-P1-004
@@ -399,18 +399,19 @@ work_items:
   verification:
     minimum: 证明本条验收行为；功能阶段运行必要的定向检查，系统测试在 M9 集中执行。
     evidence_directory: ledger/evidence/AWR-P1-005
-    evidence_level: none
-  evidence: []
+    evidence_level: locally_verified
+  evidence:
+  - ledger/deliveries/AWR-P1-005.json
   blocker: null
-  next_action: 实现 Markdown 决策目录发现、ADR 状态与正文投影，检测文件新增、修改和删除。
+  next_action: 已交付；继续依赖就绪的功能任务。
 - id: AWR-P1-006
   title: 增量重索引与投影重建
   milestone: M1
   priority: P0
   kind: feature
   required_for_v1: true
-  status: planned
-  owner: null
+  status: in_progress
+  owner: codex-primary
   depends_on:
   - AWR-P1-003
   - AWR-P1-004
@@ -423,6 +424,11 @@ work_items:
   - 36
   deliverables:
   - crates/awr-source/
+  - crates/awr-core/
+  - crates/awr-store/
+  - README.md
+  - adapters/markdown-heading/README.md
+  - adapters/markdown-directory/README.md
   acceptance:
   - 只更新变化的投影，删除的来源实体与关系有明确失效语义。
   - 删除数据库后能重建 Source 投影；明确 Runtime Event/Checkpoint 不会由 Source 凭空恢复。
@@ -432,7 +438,7 @@ work_items:
     evidence_level: none
   evidence: []
   blocker: null
-  next_action: 按交付物实现并验证：增量重索引与投影重建
+  next_action: 统一增量索引；绑定解析配置，失效删除来源，保留未变化实体版本，并验证从来源重建投影。
 - id: AWR-P1-007
   title: 项目初始化与 Source CLI
   milestone: M1
