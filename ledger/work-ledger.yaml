@@ -1,8 +1,8 @@
 schema_version: 1
 contract_id: awr-v1
 contract_version: 1.0.0
-ledger_revision: 45
-updated_at: '2026-09-08T03:40:26+08:00'
+ledger_revision: 47
+updated_at: '2026-09-08T03:52:13+08:00'
 project:
   name: Agent Work Runtime
   external_key: agent-work-runtime
@@ -11,8 +11,8 @@ project:
   release_status: not_released
 current:
   milestone: M3
-  work_item: AWR-P3-002
-  next_action: 提供按任务、Session、分支过滤及游标分页的事件读取，保持事件追加不可改写。
+  work_item: AWR-P3-003
+  next_action: 持久化 Checkpoint、Session 最新检查点指针，以及带来源事件和校验值的外部 Artifact。
   open_loops:
   - 功能实现优先；集中测试、优化和打磨在功能开发后执行。
   - 本项目已用 Source、Status、Ready、Work 和 Search CLI 管理实际开发读取；继续接入 Session、Claim 和 Context。
@@ -653,7 +653,7 @@ work_items:
   priority: P0
   kind: feature
   required_for_v1: true
-  status: in_progress
+  status: completed
   owner: codex-primary
   depends_on:
   - AWR-P3-001
@@ -672,18 +672,19 @@ work_items:
   verification:
     minimum: 证明本条验收行为；功能阶段运行必要的定向检查，系统测试在 M9 集中执行。
     evidence_directory: ledger/evidence/AWR-P3-002
-    evidence_level: none
-  evidence: []
+    evidence_level: locally_verified
+  evidence:
+  - ledger/deliveries/AWR-P3-002.json
   blocker: null
-  next_action: 提供按任务、Session、分支过滤及游标分页的事件读取，保持事件追加不可改写。
+  next_action: 已交付；继续依赖就绪的功能任务。
 - id: AWR-P3-003
   title: Checkpoint 与 Artifact 引用
   milestone: M3
   priority: P0
   kind: feature
   required_for_v1: true
-  status: planned
-  owner: null
+  status: in_progress
+  owner: codex-primary
   depends_on:
   - AWR-P3-002
   source_sections:
@@ -692,6 +693,9 @@ work_items:
   - 23
   deliverables:
   - crates/awr-runtime/
+  - crates/awr-store/
+  - crates/awr-core/
+  - Cargo.lock
   acceptance:
   - Checkpoint 记录版本、context hash、摘要、下一步、open loops 和变化实体。
   - 大产物在外部文件保存，数据库只存 locator/hash/size/MIME 与来源事件。
@@ -701,7 +705,7 @@ work_items:
     evidence_level: none
   evidence: []
   blocker: null
-  next_action: 按交付物实现并验证：Checkpoint 与 Artifact 引用
+  next_action: 持久化 Checkpoint、Session 最新检查点指针，以及带来源事件和校验值的外部 Artifact。
 - id: AWR-P3-004
   title: Session 生命周期、历史与 Handoff
   milestone: M3
