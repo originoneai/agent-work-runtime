@@ -23,7 +23,7 @@ pub enum SourceCommand {
     },
 }
 
-fn runtime_dir(root: &Path, create: bool) -> Result<PathBuf> {
+pub(crate) fn runtime_dir(root: &Path, create: bool) -> Result<PathBuf> {
     let root = root.canonicalize()?;
     let path = root.join(".awr");
     if create && !path.exists() {

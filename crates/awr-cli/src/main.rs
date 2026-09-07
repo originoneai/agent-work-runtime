@@ -1,6 +1,7 @@
 use awr_core::{Error, Result};
 use clap::{CommandFactory, Parser, Subcommand};
 use std::path::PathBuf;
+mod query;
 mod source;
 
 #[derive(Debug, Parser)]
@@ -32,6 +33,18 @@ enum Command {
         #[command(subcommand)]
         command: source::SourceCommand,
     },
+    /// Refresh source projections and summarize current project work.
+    Status,
+    /// List dependency-ready work with explicit reasons for excluded work.
+    Ready {
+        #[arg(long, default_value_t = 10)]
+        limit: usize,
+    },
+    /// Read one work item without expanding the full ledger or event history.
+    Work {
+        #[command(subcommand)]
+        command: query::WorkCommand,
+    },
     /// Inspect an existing AWR database without creating or repairing it.
     Doctor {
         #[arg(long)]
@@ -47,6 +60,9 @@ fn run(cli: &Cli) -> Result<()> {
             source::initialize(&cli.project, manifest.as_deref(), *accept, cli.json)
         }
         Some(Command::Source { command }) => source::run(&cli.project, command, cli.json),
+        Some(Command::Status) => query::status(&cli.project, cli.json),
+        Some(Command::Ready { limit }) => query::ready(&cli.project, *limit, cli.json),
+        Some(Command::Work { command }) => query::work(&cli.project, command, cli.json),
         Some(Command::Doctor { database }) => {
             let path = database
                 .clone()

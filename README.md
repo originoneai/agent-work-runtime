@@ -8,7 +8,7 @@ AWR indexes project goals, plans, rules and task ledgers, tracks work across ses
 
 ## Project status
 
-The Rust workspace, SQLite domain store, source adapters, incremental projection pipeline and source CLI are implemented. This repository uses AWR to index its own ledger, goals, plan, rules and decisions. **AWR is in development and has not been released.** See the [generated work index](ledger/README.md) for current progress and supported milestones.
+The Rust workspace, SQLite domain store, source adapters, incremental projection pipeline, dependency readiness, decision/evidence operations and source/work query CLI are implemented. This repository uses AWR to index its own ledger, goals, plan, rules and decisions. **AWR is in development and has not been released.** See the [generated work index](ledger/README.md) for current progress and supported milestones.
 
 The V1 plan contains **59 delivery work items**, **8 complete business acceptance scenarios**, and **10 benchmark targets**. Three repository preparation items are counted separately. A passing planning check validates the plan's structure; it does not prove runtime behavior.
 
@@ -77,7 +77,18 @@ Initialization previews the mapping before acceptance. An existing matching `.aw
 target/debug/awr --json doctor --database path/to/awr.db
 ```
 
-The storage library creates and reopens versioned AWR databases with WAL, foreign keys and migration metadata. Other work/session/context commands remain explicitly unsupported until their ledger items are delivered.
+Read current work without opening the full ledger:
+
+```sh
+target/debug/awr status
+target/debug/awr ready --limit 5
+target/debug/awr work show AWR-P2-004
+target/debug/awr --json work show AWR-P2-004
+```
+
+These commands refresh source projections before querying; they update the rebuildable cache and leave authoritative files intact. Failed refreshes are reported and exit nonzero. Single-work JSON includes acceptance criteria, dependency diagnostics, source provenance and related decision/evidence summaries. Evidence currency is unknown unless `--source-sha <full-sha>` supplies a comparison; an event such as `test_passed` never promotes evidence or source-ledger status.
+
+The storage library creates and reopens versioned AWR databases with WAL, foreign keys and migration metadata. Work mutation, session and context commands remain explicitly unsupported until their ledger items are delivered.
 
 The source library also resolves configured local files and immutable Git blobs. It has been used to read this project's own goal, plan, rules and work ledger:
 
@@ -96,7 +107,7 @@ Unchanged sources are skipped. Content and parser-configuration changes trigger 
 
 Running the indexer against a new database rebuilds source projections. Runtime events, sessions and checkpoints require the original database or its backup; they cannot be reconstructed from a work ledger. Source indexing creates new indexing events, not copies of previous work history.
 
-Task queries, runtime workflows and context compilation follow in their ledger items. The current project's unannotated rules are retained with unresolved scope/severity until an explicit mapping is supplied for runtime use.
+Runtime workflows and context compilation follow in their ledger items. The current project's unannotated rules are retained with unresolved scope/severity until an explicit mapping is supplied for runtime use.
 
 Python 3.11+ is sufficient for this repository's planning tools. Rust is pinned in rust-toolchain.toml and dependency resolution is committed in Cargo.lock.
 

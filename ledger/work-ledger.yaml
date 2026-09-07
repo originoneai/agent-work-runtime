@@ -578,6 +578,7 @@ work_items:
   - 40
   deliverables:
   - crates/awr-cli/
+  - README.md
   acceptance:
   - status、ready、work show 输出短摘要及明确下一步、阻塞和 revision。
   - 查询单个任务无需把全量 Ledger 或历史读入 Agent 上下文。
