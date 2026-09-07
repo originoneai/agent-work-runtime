@@ -39,6 +39,7 @@ impl ParseContext<'_> {
                 pointer,
                 start_line: lines.map(|p| p.0),
                 end_line: lines.map(|p| p.1),
+                section_fingerprint: None,
             },
         })
     }

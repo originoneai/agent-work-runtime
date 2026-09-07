@@ -1,0 +1,45 @@
+{
+  "work_item": "AWR-P1-004",
+  "checked_at": "2026-09-07T17:48:11.250Z",
+  "checks": [
+    {
+      "name": "build_and_focused_markdown_checks",
+      "passed": true,
+      "result": "cargo build --locked --workspace/--examples and cargo test --locked -p awr-source --test markdown passed (3 focused tests)."
+    },
+    {
+      "name": "section_provenance",
+      "passed": true,
+      "result": "ATX/Setext headings, inline titles, repeated anchors, UTF-8/CRLF and exact one-based ranges/fingerprints verified; code/quoted headings did not split source sections. Explicit duplicate anchors failed."
+    },
+    {
+      "name": "rule_metadata_and_readonly",
+      "passed": true,
+      "result": "Explicit hard/soft and project/path scope parsed; missing and unsupported values remained unresolved with warnings. Source defaults and heading overrides verified; both adapters rejected mutation planning."
+    },
+    {
+      "name": "project_self_intake",
+      "passed": true,
+      "result": "Indexed actual GOALS, PLAN and RULES: 4 goal sections, 5 plan sections and 6 rule sections. All source and section fingerprints independently matched the original files. The 6 unannotated rule sections retained explicit unresolved metadata; no foreign-key violations."
+    }
+  ],
+  "artifacts": [
+    "crates/awr-source/src/markdown.rs",
+    "crates/awr-source/examples/index_source.rs",
+    "crates/awr-source/tests/markdown.rs",
+    "tests/fixtures/markdown/project.toml",
+    "tests/fixtures/markdown/goals.md",
+    "tests/fixtures/markdown/rules.md",
+    "adapters/markdown-heading/README.md",
+    "adapters/markdown-rules/README.md"
+  ],
+  "observed": {
+    "project_goal_sections": 4,
+    "project_plan_sections": 5,
+    "project_rule_sections": 6,
+    "focused_checks": 3
+  },
+  "limitations": [
+    "Source parsing and local projection only; rule selection/context completeness and real-client acceptance remain pending. Source-wide configuration changes in an existing database will be tracked by the incremental indexer. Current unannotated project rule metadata remains unresolved until explicit mapping for runtime use."
+  ]
+}

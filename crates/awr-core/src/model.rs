@@ -103,6 +103,8 @@ pub struct SourceRef {
     pub pointer: Option<String>,
     pub start_line: Option<usize>,
     pub end_line: Option<usize>,
+    #[serde(default)]
+    pub section_fingerprint: Option<String>,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
@@ -146,6 +148,8 @@ pub struct Goal {
     pub status: String,
     pub priority: Option<String>,
     pub success_criteria: Vec<String>,
+    #[serde(default)]
+    pub summary: String,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]

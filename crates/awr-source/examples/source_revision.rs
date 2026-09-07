@@ -23,6 +23,7 @@ fn batch(store: &Store, source: &Source, snapshot: &SourceSnapshot) -> Result<Pr
             status: "active".into(),
             priority: None,
             success_criteria: vec!["Source and projection agree".into()],
+            summary: String::new(),
         }],
         ..Default::default()
     })

@@ -1,0 +1,19 @@
+[project]
+name = "Markdown fixture"
+external_key = "markdown-fixture"
+
+[[sources]]
+domain = "goal"
+role = "primary"
+path = "tests/fixtures/markdown/goals.md"
+adapter = "markdown-heading-v1"
+[sources.options]
+key_prefix = "fixture-goals"
+
+[[sources]]
+domain = "rules"
+role = "primary"
+path = "tests/fixtures/markdown/rules.md"
+adapter = "markdown-rules-v1"
+[sources.options]
+key_prefix = "fixture-rules"

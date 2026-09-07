@@ -178,6 +178,7 @@ impl SourceAdapter for YamlLedgerAdapter {
                 title,
                 status: string(&value["status"], &pointer)?.unwrap_or_else(|| "unknown".into()),
                 priority: string(&value["priority"], &pointer)?,
+                summary: string(&value["summary"], &pointer)?.unwrap_or_default(),
                 success_criteria: strings(
                     alias(value, "success_criteria", "acceptance")?,
                     &pointer,
