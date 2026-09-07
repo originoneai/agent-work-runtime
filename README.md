@@ -195,6 +195,14 @@ Delta includes every changed source after the baseline, including project-wide m
 
 Process history includes this work and project-global events on the selected branch. High/critical events after the baseline return at most 12 bounded summaries by default, with critical events first and then newest revision/time/ID. Per-source entity summaries retain 24 changed identities by default; all omitted counts are explicit. Normal and older process events are folded into counts by type/importance. Full payloads remain available via `Store::event` and paginated `EventQuery`, using the returned event IDs and baseline/current revisions; context CLI integration follows in its ledger item. No event payload, artifact body or source fact body enters this delta. The snapshot API itself does not rescan files or certify execution-context completeness.
 
+The budget library preserves required chunks whole. It tries optional chunks by ascending priority, descending recency, then section/key; an oversized candidate is skipped so a later smaller candidate can still fit. Final rendering uses fixed section/key order. Each trial counts the entire rendered string with the pinned `o200k_base` ordinary-text tokenizer, including headings, IDs, source versions/fingerprints and the omission footer. The count is exact for that tokenizer; transport JSON, tool framing and the surrounding conversation are excluded. Other tokenizers may differ, with no cross-tokenizer error bound claimed. This is a counting algorithm, not a measured compression/performance benchmark.
+
+If the required text plus metadata exceeds the supplied budget, the result is `BUDGET_EXCEEDED` with the required count; it does not truncate acceptance, rules, status, blocker or next action. The SHA256 binds the canonical project/work revisions, branch, source versions, request, budget policy, selected entity IDs/revisions, selected/omitted chunk references and rendered content. Input ordering of source/chunk sets is normalized, and conflicting versions are rejected. The hard-subset preview below exercises this budgeter; full L1 assembly will additionally supply dependencies, goals, decisions and completeness information:
+
+```sh
+cargo run --locked -p awr-context --example budget_project -- . <work-key> <budget> [agent-id]
+```
+
 Python 3.11+ is sufficient for this repository's planning tools. Rust is pinned in rust-toolchain.toml and dependency resolution is committed in Cargo.lock.
 
 ```sh

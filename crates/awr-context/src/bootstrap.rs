@@ -455,9 +455,7 @@ pub fn bootstrap(
         execution_context_complete: false,
     };
     let rendered_context = render(&context);
-    let token_estimate = tiktoken_rs::o200k_base_singleton()
-        .encode_ordinary(&rendered_context)
-        .len();
+    let token_estimate = crate::token_count(&rendered_context);
     if token_estimate > request.token_budget {
         return Err(Error::BudgetExceeded {
             required: token_estimate,

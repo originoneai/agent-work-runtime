@@ -148,6 +148,35 @@ fn hard_context_preserves_exact_acceptance_state_rules_and_provenance() {
         hard_context(&f.store, f.project.id, "W", Some(Id::new()), &scope()),
         Err(Error::Unsupported(_))
     ));
+    let identity = awr_context::ContextIdentity {
+        project_id: project.id,
+        project_key: project.external_key,
+        project_revision: project.project_revision,
+        work_item_id: hard.work.meta.id,
+        work_item_key: "W".into(),
+        work_item_revision: hard.work.meta.revision,
+        branch_id: None,
+        source_versions: hard.source_revisions.clone(),
+    };
+    let chunks = awr_context::hard_chunks(&hard).unwrap();
+    assert!(matches!(
+        awr_context::budget_context(&identity, &serde_json::json!({}), &chunks, &[], 1000),
+        Err(Error::BudgetExceeded { .. })
+    ));
+    let pack = awr_context::budget_context(&identity, &serde_json::json!({}), &chunks, &[], 30000)
+        .unwrap();
+    for text in hard
+        .work
+        .acceptance
+        .iter()
+        .chain([&hard.work.next_action, hard.work.blocker.as_ref().unwrap()])
+        .chain(hard.rules.iter().map(|r| &r.text))
+    {
+        assert!(pack.rendered_context.contains(text));
+    }
+    assert!(pack.rendered_context.contains("CRITERION_TAIL"));
+    assert_eq!(pack.selected_entities.len(), 6);
+    assert!(pack.selected_chunks.iter().all(|c| c.required));
 }
 
 #[test]
