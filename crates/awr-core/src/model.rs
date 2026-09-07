@@ -4,7 +4,7 @@ use std::path::PathBuf;
 pub type Id = ulid::Ulid;
 pub type Revision = u64;
 
-#[derive(Debug, Clone, Copy, Serialize, Deserialize, PartialEq, Eq)]
+#[derive(Debug, Clone, Copy, Serialize, Deserialize, PartialEq, Eq, PartialOrd, Ord)]
 #[serde(rename_all = "snake_case")]
 pub enum EntityKind {
     Goal,

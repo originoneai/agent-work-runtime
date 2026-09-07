@@ -22,3 +22,6 @@ thiserror = "2"
 ulid = { version = "1", features = ["serde"] }
 clap = { version = "4.6.6", features = ["derive"] }
 rusqlite = { version = "0.40.2", features = ["bundled"] }
+toml = "1.1.5"
+sha2 = "0.10.9"
+url = "2.5.8"

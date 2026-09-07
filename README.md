@@ -68,6 +68,14 @@ target/debug/awr --json doctor --database path/to/awr.db
 
 The storage library can create and reopen versioned AWR databases with WAL, foreign keys and migration metadata. Before project initialization lands, developers can exercise it with `cargo run -p awr-store --example open_store -- path/to/awr.db` (the parent directory must exist). Other work commands remain explicitly unsupported until their ledger items are delivered.
 
+The source library also resolves configured local files and immutable Git blobs. It has been used to read this project's own goal, plan, rules and work ledger:
+
+```sh
+cargo run --locked -p awr-source --example read_source -- . examples/source-manifest/project.toml 0
+```
+
+This entry point reports source metadata and fingerprints. Domain parsing, indexing and work context compilation are delivered by subsequent ledger items.
+
 Python 3.11+ is sufficient for this repository's planning tools. Rust is pinned in rust-toolchain.toml and dependency resolution is committed in Cargo.lock.
 
 ```sh

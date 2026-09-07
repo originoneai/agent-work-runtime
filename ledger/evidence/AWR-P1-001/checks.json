@@ -1,0 +1,81 @@
+{
+  "work_item": "AWR-P1-001",
+  "checked_at": "2026-09-08T01:08:03+08:00",
+  "checks": [
+    {
+      "name": "workspace and source reader build",
+      "passed": true,
+      "result": "Manifest types, file/Git readers and all six SourceAdapter method contracts compile."
+    },
+    {
+      "name": "current project sources",
+      "passed": true,
+      "result": "Read this project goal, plan, rules and actual work ledger through the configured manifest; byte hashes match original files."
+    },
+    {
+      "name": "immutable Git source",
+      "passed": true,
+      "result": "HEAD resolves to an immutable commit and blob bytes match git show; fingerprint binds resolved locator and content."
+    },
+    {
+      "name": "manifest ambiguity",
+      "passed": true,
+      "result": "A source with both path and locator is rejected with InvalidInput."
+    }
+  ],
+  "artifacts": [
+    "crates/awr-source/src/manifest.rs",
+    "crates/awr-source/src/locator.rs",
+    "crates/awr-source/src/adapter.rs",
+    "crates/awr-source/examples/read_source.rs",
+    "examples/source-manifest/project.toml",
+    "docs/decisions/ADR-0003-source-locators.md"
+  ],
+  "observed": {
+    "local_sources": [
+      {
+        "domain": "goal",
+        "role": "primary",
+        "adapter": "markdown-heading-v1",
+        "fingerprint": "sha256:3bcadd89aedfcbe0f4a0c3f0fb13ad16ad25ac8b3232a83804eded9c1026510c",
+        "bytes": 1821
+      },
+      {
+        "domain": "plan",
+        "role": "primary",
+        "adapter": "markdown-heading-v1",
+        "fingerprint": "sha256:0b6b0f59c4d8f28d4f775dcb84e522631af21d2caaed64c680e465d3e03d3c92",
+        "bytes": 3339
+      },
+      {
+        "domain": "rules",
+        "role": "primary",
+        "adapter": "markdown-rules-v1",
+        "fingerprint": "sha256:d23d5aea186e148a353ae029ec056b882b415d550ea48020e105a2e18ce8c264",
+        "bytes": 3547
+      },
+      {
+        "domain": "ledger",
+        "role": "primary",
+        "adapter": "yaml-ledger-v1",
+        "fingerprint": "sha256:8f075b844a0ba170e74821d729d9ef516d80bb51366af94c24002e254f4dac2c",
+        "bytes": 57024
+      }
+    ],
+    "git_source": {
+      "adapter": "markdown-heading-v1",
+      "bytes": 1821,
+      "domain": "goal",
+      "fingerprint": "sha256:0198855ceed2b20a6444127ed5a31e4e2dbf2a33b06d9a2eccf4f22cce9e1ff4",
+      "lines": 26,
+      "locator": "git://c4aa742b92a7018334179408da536ed6e9a6c2f5:docs/GOALS.md",
+      "project": "Git example",
+      "role": "supporting",
+      "source_count": 1
+    }
+  },
+  "limitations": [
+    "This item delivers manifest, locator reads and adapter interfaces; YAML/Markdown domain parsing and indexing are subsequent work.",
+    "No full regression, product E4 or released capability is claimed."
+  ]
+}

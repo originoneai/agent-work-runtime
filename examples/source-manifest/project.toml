@@ -1,0 +1,34 @@
+[project]
+name = "Agent Work Runtime"
+external_key = "agent-work-runtime"
+authority_mode = "source_first"
+
+[[sources]]
+domain = "goal"
+role = "primary"
+path = "docs/GOALS.md"
+adapter = "markdown-heading-v1"
+
+[[sources]]
+domain = "plan"
+role = "primary"
+path = "docs/PLAN.md"
+adapter = "markdown-heading-v1"
+
+[[sources]]
+domain = "rules"
+role = "primary"
+path = "docs/RULES.md"
+adapter = "markdown-rules-v1"
+
+[[sources]]
+domain = "ledger"
+role = "primary"
+path = "ledger/work-ledger.yaml"
+adapter = "yaml-ledger-v1"
+
+[[sources]]
+domain = "decisions"
+role = "supporting"
+path = "docs/decisions"
+adapter = "markdown-directory-v1"
