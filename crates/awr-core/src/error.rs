@@ -46,11 +46,11 @@ pub enum Error {
 }
 
 #[derive(Debug, Serialize)]
-pub struct ErrorReport<'a> {
+pub struct ErrorReport {
     pub code: &'static str,
     pub message: String,
     #[serde(skip_serializing_if = "Option::is_none")]
-    pub details: Option<&'a serde_json::Value>,
+    pub details: Option<serde_json::Value>,
 }
 
 impl Error {
@@ -77,11 +77,19 @@ impl Error {
             Self::Json(_) => "Json",
         }
     }
-    pub fn report(&self) -> ErrorReport<'_> {
+    pub fn report(&self) -> ErrorReport {
         ErrorReport {
             code: self.code(),
             message: self.to_string(),
-            details: None,
+            details: match self {
+                Self::RevisionConflict { expected, actual } => {
+                    Some(serde_json::json!({"expected": expected, "actual": actual}))
+                }
+                Self::BudgetExceeded { required, budget } => {
+                    Some(serde_json::json!({"required": required, "budget": budget}))
+                }
+                _ => None,
+            },
         }
     }
 }

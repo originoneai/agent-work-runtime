@@ -261,6 +261,31 @@ pub struct Event {
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct EventDraft {
+    pub work_item_id: Option<Id>,
+    pub session_id: Option<Id>,
+    pub branch_id: Option<Id>,
+    pub event_type: String,
+    pub importance: String,
+    pub summary: String,
+    pub payload: serde_json::Value,
+}
+
+impl EventDraft {
+    pub fn new(event_type: impl Into<String>, summary: impl Into<String>) -> Self {
+        Self {
+            work_item_id: None,
+            session_id: None,
+            branch_id: None,
+            event_type: event_type.into(),
+            importance: "normal".into(),
+            summary: summary.into(),
+            payload: serde_json::json!({}),
+        }
+    }
+}
+
+#[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct Session {
     pub id: Id,
     pub project_id: Id,
