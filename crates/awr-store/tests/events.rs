@@ -51,6 +51,16 @@ fn scoped_append_and_cursor_queries_preserve_work_and_immutable_history() {
         .start_session(f.project.id, revision, session())
         .unwrap();
     let start = event.project_revision;
+    let mut forged = EventDraft::new("session.handoff_received", "Fabricated handoff");
+    forged.session_id = Some(session.session.id);
+    assert!(matches!(
+        f.store.append_event(f.project.id, start, forged),
+        Err(Error::InvalidInput(_))
+    ));
+    assert_eq!(
+        f.store.project(f.project.id).unwrap().project_revision,
+        start
+    );
     let mut revision = start;
     let mut ids = Vec::new();
     for kind in ["test.started", "test.failed", "test.passed"] {

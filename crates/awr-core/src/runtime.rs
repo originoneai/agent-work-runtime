@@ -1,4 +1,4 @@
-use crate::{Claim, Id, Session};
+use crate::{Checkpoint, Claim, Id, Session};
 use serde::{Deserialize, Serialize};
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
@@ -39,6 +39,15 @@ pub struct SessionDraft {
 pub struct SessionStarted {
     pub session: Session,
     pub claim: Option<Claim>,
+}
+
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct Handoff {
+    pub from_session: Session,
+    pub to_session: Option<Session>,
+    pub checkpoint: Checkpoint,
+    pub closed_claim_ids: Vec<Id>,
+    pub transferred_claim: Option<Claim>,
 }
 
 #[derive(Debug, Clone, Copy, Serialize, Deserialize, PartialEq, Eq)]

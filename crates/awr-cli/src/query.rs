@@ -7,6 +7,14 @@ use std::{collections::BTreeMap, path::Path};
 
 #[derive(Debug, Subcommand)]
 pub enum WorkCommand {
+    /// Acquire a runtime claim for the selected session; never rewrites source ownership.
+    Claim(crate::session::ClaimArgs),
+    /// Release an explicit claim held by the selected session.
+    Release(crate::session::ReleaseArgs),
+    /// Read bounded event summaries for one work item, including retained history.
+    History(crate::session::HistoryArgs),
+    /// Close a session and hand off its latest checkpoint, optionally transferring its claim.
+    Handoff(crate::session::HandoffArgs),
     /// Show source state, readiness, acceptance and related decision/evidence summaries.
     Show {
         id: String,
@@ -245,6 +253,10 @@ pub fn ready(root: &Path, limit: usize, json_output: bool) -> Result<()> {
 
 pub fn work(root: &Path, command: &WorkCommand, json_output: bool) -> Result<()> {
     match command {
+        WorkCommand::Claim(_)
+        | WorkCommand::Release(_)
+        | WorkCommand::History(_)
+        | WorkCommand::Handoff(_) => crate::session::work(root, command, json_output),
         WorkCommand::Show { id, source_sha } => {
             if source_sha.as_ref().is_some_and(|s| !is_source_sha(s)) {
                 return Err(Error::InvalidInput(

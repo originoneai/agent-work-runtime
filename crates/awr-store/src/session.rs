@@ -68,7 +68,7 @@ fn claim_at(conn: &Connection, project: Id, id: Id) -> Result<Claim> {
     .map_err(db_error)?
     .ok_or_else(|| Error::NotFound(format!("claim {id}")))
 }
-fn require_active(session: &Session) -> Result<()> {
+pub(crate) fn require_active(session: &Session) -> Result<()> {
     if session.status != "active" {
         return Err(Error::InvalidTransition(format!(
             "session {} is {}",
@@ -86,7 +86,7 @@ pub(crate) fn require_branch(conn: &Connection, project: Id, branch: Option<Id>)
     }
     Ok(())
 }
-fn expires_at(at: i64, ttl: Option<u64>) -> Result<Option<i64>> {
+pub(crate) fn expires_at(at: i64, ttl: Option<u64>) -> Result<Option<i64>> {
     ttl.map(|ttl| {
         if ttl == 0 {
             return Err(Error::InvalidInput("claim TTL must be positive".into()));
@@ -185,6 +185,46 @@ fn acquire(
 }
 
 impl Store {
+    /// Filter before limiting, so a large session history cannot hide ambiguity.
+    pub fn select_active_session(
+        &self,
+        project: Id,
+        explicit: Option<Id>,
+        work: Option<Id>,
+        agent: Option<&str>,
+        branch: Option<Id>,
+    ) -> Result<Session> {
+        self.project(project)?;
+        let sessions = self.conn.prepare(&format!("SELECT {SESSION_COLUMNS} FROM sessions WHERE project_id=?1 AND status='active' AND (?2 IS NULL OR id=?2) AND (?3 IS NULL OR work_item_id=?3) AND (?4 IS NULL OR agent_id=?4) AND (?2 IS NOT NULL OR branch_id IS ?5) ORDER BY id LIMIT 2")).map_err(db_error)?
+            .query_map(params![project.to_string(),explicit.map(|id|id.to_string()),work.map(|id|id.to_string()),agent,branch.map(|id|id.to_string())],session_row).map_err(db_error)?.collect::<rusqlite::Result<Vec<_>>>().map_err(db_error)?;
+        match sessions.len() {
+            0 => Err(Error::NotFound(
+                "active session matching the supplied identity".into(),
+            )),
+            1 => Ok(sessions.into_iter().next().unwrap()),
+            _ => Err(Error::InvalidInput(format!(
+                "multiple active sessions match; specify --session: {}",
+                sessions
+                    .iter()
+                    .map(|s| s.id.to_string())
+                    .collect::<Vec<_>>()
+                    .join(", ")
+            ))),
+        }
+    }
+
+    /// Resolve retained identity even when a work item was removed from its source.
+    pub fn work_identity(&self, project: Id, key: &str) -> Result<Id> {
+        self.conn
+            .query_row(
+                "SELECT id FROM work_items WHERE project_id=?1 AND external_key=?2",
+                params![project.to_string(), key],
+                |r| id_at(r, 0),
+            )
+            .optional()
+            .map_err(db_error)?
+            .ok_or_else(|| Error::NotFound(format!("work item {key}")))
+    }
     pub fn session(&self, project: Id, id: Id) -> Result<Session> {
         session_at(&self.conn, project, id)
     }

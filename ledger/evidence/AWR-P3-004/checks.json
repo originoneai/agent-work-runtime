@@ -1,0 +1,50 @@
+{
+  "work_item": "AWR-P3-004",
+  "checked_at": "2026-09-08T04:30:57+08:00",
+  "checks": [
+    {
+      "name": "session_cli",
+      "passed": true,
+      "result": "cargo test --locked -p awr-cli --test session_cli: 3/3. Start/claim/release/checkpoint/end/handoff/history, ambiguous selection, CAS rollback, inherited open loops, source-unavailable cleanup, two events at one revision paginated without loss."
+    },
+    {
+      "name": "session_event_checkpoint_contracts",
+      "passed": true,
+      "result": "awr-store sessions 5/5, events 3/3, checkpoints 2/2. Branch-bound handoff, expired claim not revived, reserved handoff event rejection, atomic lifecycle and immutable history."
+    },
+    {
+      "name": "workspace_build",
+      "passed": true,
+      "result": "cargo build --locked --workspace and git diff --check passed."
+    },
+    {
+      "name": "actual_project_cli_use",
+      "passed": true,
+      "result": "Saved actual development checkpoint 01M1YS190S8B4TPR8BATJ6T530 in session 01M1YS1901YQHGY8X6F37BH6QH, handed off unassigned work and released claim. Three scoped events reload; source work status remained in_progress; database doctor ok at revision 76."
+    }
+  ],
+  "observed": {
+    "session_id": "01M1YS1901YQHGY8X6F37BH6QH",
+    "checkpoint_id": "01M1YS190S8B4TPR8BATJ6T530",
+    "closed_claim_id": "01M1YS1909XCH371TV1CB1S8CD",
+    "project_revision": 76,
+    "history_event_types": [
+      "session.started",
+      "checkpoint.created",
+      "work.handoff"
+    ],
+    "source_work_status": "in_progress",
+    "doctor_ok": true
+  },
+  "artifacts": [
+    "crates/awr-cli/src/session.rs",
+    "crates/awr-cli/tests/session_cli.rs",
+    "crates/awr-store/src/handoff.rs",
+    "crates/awr-store/tests/sessions.rs",
+    "crates/awr-store/tests/events.rs",
+    "README.md"
+  ],
+  "limitations": [
+    "Feature-local checks and real project CLI use only, not formal E4 acceptance or release. Checkpoints contain caller-supplied hashes; inherited checkpoints are explicitly separate from fresh compiled context. Context compilation and resume remain scheduled in M4."
+  ]
+}

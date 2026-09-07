@@ -4,7 +4,16 @@ use crate::{
     db_error,
 };
 use awr_core::{Error, Event, EventDraft, Id, Result, Revision, now_millis};
-use rusqlite::{OptionalExtension, Transaction, TransactionBehavior, params};
+use rusqlite::{Connection, OptionalExtension, Transaction, TransactionBehavior, params};
+
+pub(crate) fn insert_event(conn: &Connection, event: &Event) -> Result<()> {
+    conn.execute("INSERT INTO events(id,project_id,work_item_id,session_id,branch_id,event_type,importance,summary,payload_json,project_revision,created_at)
+        VALUES(?1,?2,?3,?4,?5,?6,?7,?8,?9,?10,?11)",
+        params![event.id.to_string(),event.project_id.to_string(),event.work_item_id.map(|id|id.to_string()),
+            event.session_id.map(|id|id.to_string()),event.branch_id.map(|id|id.to_string()),event.event_type,
+            event.importance,event.summary,serde_json::to_string(&event.payload)?,sqlite_revision(event.project_revision)?,event.created_at]).map_err(db_error)?;
+    Ok(())
+}
 
 pub(crate) fn sqlite_revision(revision: Revision) -> Result<i64> {
     revision
@@ -103,11 +112,7 @@ impl Store {
             project_revision: next,
             created_at: now_millis()?,
         };
-        tx.execute("INSERT INTO events(id,project_id,work_item_id,session_id,branch_id,event_type,importance,summary,payload_json,project_revision,created_at)
-            VALUES(?1,?2,?3,?4,?5,?6,?7,?8,?9,?10,?11)",
-            params![event.id.to_string(),project_id.to_string(),event.work_item_id.map(|id|id.to_string()),
-                event.session_id.map(|id|id.to_string()),event.branch_id.map(|id|id.to_string()),event.event_type,
-                event.importance,event.summary,serde_json::to_string(&event.payload)?,next_sql,event.created_at]).map_err(db_error)?;
+        insert_event(&tx, &event)?;
         tx.commit().map_err(db_error)?;
         Ok((result, event))
     }
@@ -119,7 +124,25 @@ impl Store {
         draft: EventDraft,
     ) -> Result<Event> {
         self.runtime_transaction_with_event(project_id, expected_revision, draft, |tx, _, event| {
-            crate::events::bind_event(tx, project_id, event, true)
+            crate::events::bind_event(tx, project_id, event, true)?;
+            if matches!(
+                event.event_type.as_str(),
+                "session.started"
+                    | "session.ended"
+                    | "session.handoff_received"
+                    | "work.claimed"
+                    | "work.handoff"
+                    | "claim.released"
+                    | "claim.expired"
+                    | "checkpoint.created"
+                    | "artifact.recorded"
+                    | "evidence.recorded"
+            ) {
+                return Err(Error::InvalidInput(
+                    "runtime event type is reserved; use the corresponding domain operation".into(),
+                ));
+            }
+            Ok(())
         })
         .map(|(_, event)| event)
     }

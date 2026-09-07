@@ -12,6 +12,15 @@ pub struct Runtime<'a> {
     project: Id,
 }
 impl<'a> Runtime<'a> {
+    pub fn handoff(
+        &mut self,
+        expected: Revision,
+        from: Id,
+        to: Option<Id>,
+        ttl_ms: Option<u64>,
+    ) -> Result<(awr_core::Handoff, Event)> {
+        self.store.handoff(self.project, expected, from, to, ttl_ms)
+    }
     pub fn checkpoint(
         &mut self,
         expected: Revision,

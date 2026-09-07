@@ -293,3 +293,101 @@ fn claims_are_isolated_by_work_branch_and_session_provenance_is_preserved() {
         "released"
     );
 }
+
+#[test]
+fn handoff_rejects_other_branches_and_never_revives_expired_claims() {
+    let mut f = Fixture::new();
+    f.commit(ProjectionBatch {
+        work_items: vec![work(&f, "ready")],
+        ..Default::default()
+    });
+    let revision = f.store.project(f.project.id).unwrap().project_revision;
+    let (sender, event) = f
+        .store
+        .start_session(f.project.id, revision, draft("sender", true, Some(1)))
+        .unwrap();
+    let (receiver, event) = f
+        .store
+        .start_session(
+            f.project.id,
+            event.project_revision,
+            draft("receiver", false, None),
+        )
+        .unwrap();
+    let branch = Id::new();
+    let db = rusqlite::Connection::open(f.root.join("state.db")).unwrap();
+    db.execute("INSERT INTO branches(id,project_id,name,fork_project_revision,status,revision) VALUES(?1,?2,'other',0,'active',1)",rusqlite::params![branch.to_string(),f.project.id.to_string()]).unwrap();
+    let mut request = draft("branch-agent", false, None);
+    request.branch_id = Some(branch);
+    let (other, event) = f
+        .store
+        .start_session(f.project.id, event.project_revision, request)
+        .unwrap();
+    assert!(matches!(
+        f.store
+            .select_active_session(f.project.id, None, None, None, None),
+        Err(Error::InvalidInput(_))
+    ));
+    assert_eq!(
+        f.store
+            .select_active_session(f.project.id, None, None, None, Some(branch))
+            .unwrap()
+            .id,
+        other.session.id
+    );
+    let (_, event) = f
+        .store
+        .create_checkpoint(
+            f.project.id,
+            event.project_revision,
+            sender.session.id,
+            CheckpointDraft {
+                context_hash: "a".repeat(64),
+                digest: "Handoff preparation".into(),
+                next_action: "Continue work".into(),
+                open_loops: vec!["unresolved input".into()],
+                changed_entities: vec![],
+            },
+        )
+        .unwrap();
+    assert!(matches!(
+        f.store.handoff(
+            f.project.id,
+            event.project_revision,
+            sender.session.id,
+            Some(other.session.id),
+            None
+        ),
+        Err(Error::InvalidInput(_))
+    ));
+    assert_eq!(
+        f.store.project(f.project.id).unwrap().project_revision,
+        event.project_revision
+    );
+    std::thread::sleep(std::time::Duration::from_millis(10));
+    let (handoff, _) = f
+        .store
+        .handoff(
+            f.project.id,
+            event.project_revision,
+            sender.session.id,
+            Some(receiver.session.id),
+            Some(60_000),
+        )
+        .unwrap();
+    assert!(handoff.transferred_claim.is_none());
+    assert_eq!(
+        f.store
+            .claim(f.project.id, sender.claim.unwrap().id)
+            .unwrap()
+            .status,
+        "expired"
+    );
+    assert!(
+        f.store
+            .session_claims(f.project.id, receiver.session.id)
+            .unwrap()
+            .is_empty()
+    );
+    assert!(f.store.doctor().unwrap().ok);
+}

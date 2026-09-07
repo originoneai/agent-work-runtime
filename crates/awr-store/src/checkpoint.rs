@@ -8,6 +8,18 @@ use crate::{
 use awr_core::*;
 use rusqlite::{OptionalExtension, params};
 
+pub(crate) fn checkpoint_at(
+    conn: &rusqlite::Connection,
+    project: Id,
+    id: Id,
+) -> Result<Checkpoint> {
+    conn.query_row("SELECT c.id,c.session_id,c.project_revision,c.context_hash,c.digest,c.next_action,c.open_loops_json,c.changed_entities_json,c.revision,c.created_at
+            FROM checkpoints c JOIN sessions s ON s.id=c.session_id WHERE s.project_id=?1 AND c.id=?2",params![project.to_string(),id.to_string()],|r| {
+                let strings=|column|->rusqlite::Result<Vec<String>> {serde_json::from_str(&r.get::<_,String>(column)?).map_err(|e|rusqlite::Error::FromSqlConversionFailure(column,rusqlite::types::Type::Text,Box::new(e)))};
+                Ok(Checkpoint {id:id_at(r,0)?,session_id:id_at(r,1)?,project_revision:revision_at(r,2)?,context_hash:r.get(3)?,digest:r.get(4)?,next_action:r.get(5)?,open_loops:strings(6)?,changed_entities:strings(7)?,revision:revision_at(r,8)?,created_at:r.get(9)?})
+            }).optional().map_err(db_error)?.ok_or_else(||Error::NotFound(format!("checkpoint {id}")))
+}
+
 impl Store {
     pub fn create_checkpoint(
         &mut self,
@@ -41,11 +53,7 @@ impl Store {
         })
     }
     pub fn checkpoint(&self, project: Id, id: Id) -> Result<Checkpoint> {
-        self.conn.query_row("SELECT c.id,c.session_id,c.project_revision,c.context_hash,c.digest,c.next_action,c.open_loops_json,c.changed_entities_json,c.revision,c.created_at
-            FROM checkpoints c JOIN sessions s ON s.id=c.session_id WHERE s.project_id=?1 AND c.id=?2",params![project.to_string(),id.to_string()],|r| {
-                let strings=|column|->rusqlite::Result<Vec<String>> {serde_json::from_str(&r.get::<_,String>(column)?).map_err(|e|rusqlite::Error::FromSqlConversionFailure(column,rusqlite::types::Type::Text,Box::new(e)))};
-                Ok(Checkpoint {id:id_at(r,0)?,session_id:id_at(r,1)?,project_revision:revision_at(r,2)?,context_hash:r.get(3)?,digest:r.get(4)?,next_action:r.get(5)?,open_loops:strings(6)?,changed_entities:strings(7)?,revision:revision_at(r,8)?,created_at:r.get(9)?})
-            }).optional().map_err(db_error)?.ok_or_else(||Error::NotFound(format!("checkpoint {id}")))
+        checkpoint_at(&self.conn, project, id)
     }
     pub fn latest_checkpoint(&self, project: Id, session: Id) -> Result<Option<Checkpoint>> {
         let current = self.session(project, session)?;

@@ -3,6 +3,7 @@ mod catalog;
 mod checkpoint;
 mod events;
 mod evidence;
+mod handoff;
 mod projection;
 mod query;
 mod search;

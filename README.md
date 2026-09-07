@@ -8,7 +8,7 @@ AWR indexes project goals, plans, rules and task ledgers, tracks work across ses
 
 ## Project status
 
-The Rust workspace, SQLite domain store, source adapters, incremental projection pipeline, dependency readiness, decision/evidence operations and source/work/search CLI are implemented. This repository uses AWR to index its own ledger, goals, plan, rules and decisions. **AWR is in development and has not been released.** See the [generated work index](ledger/README.md) for current progress and supported milestones.
+The Rust workspace, SQLite domain store, source adapters, incremental projection pipeline, dependency readiness, decision/evidence operations and source/work/search/session CLI are implemented. This repository uses AWR to index its own project sources and retain actual development sessions and checkpoints. **AWR is in development and has not been released.** See the [generated work index](ledger/README.md) for current progress and supported milestones.
 
 The V1 plan contains **59 delivery work items**, **8 complete business acceptance scenarios**, and **10 benchmark targets**. Three repository preparation items are counted separately. A passing planning check validates the plan's structure; it does not prove runtime behavior.
 
@@ -30,7 +30,6 @@ The following task/context workflow is planned:
 ```sh
 awr context bootstrap
 awr context compile --work <work-id> --budget 4000
-awr session checkpoint
 awr session resume
 ```
 
@@ -92,7 +91,27 @@ These commands refresh source projections before querying; they update the rebui
 
 Search combines exact type/status/work filters with SQLite FTS5 and returns external IDs, bounded summaries, provenance and BM25 rank (lower is more relevant). Chinese character pairs support short Chinese task-name queries without embeddings. The revision-bound search cache uses an allowlist of titles and summary fields; goal/plan bodies, decision rationale, event payloads, artifacts and logs are excluded. Summary inputs retain one bounded line, omit code/control text and redact recognized credential markers. This is an initial indexing policy; the broader security review remains scheduled.
 
-The storage library creates and reopens versioned AWR databases with WAL, foreign keys and migration metadata. Work mutation, session and context commands remain explicitly unsupported until their ledger items are delivered.
+Run sessions and retain unfinished work:
+
+```sh
+awr --json status
+awr session start --work <work-key> --agent <agent-id> --provider <provider> --model <model> --claim --ttl-ms 3600000 --expected-revision <revision>
+awr session checkpoint --session <session-id> --context-hash <sha256-of-context> --digest "Progress so far" --next-action "Next step" --open-loop "Unfinished review" --expected-revision <revision>
+awr session show <session-id>
+awr session list --active
+awr work history <work-key> --limit 20
+awr work handoff <work-key> --session <session-id> --expected-revision <revision>
+```
+
+Each successful mutation returns its new project revision. Use that revision for the next mutation; a concurrent source/runtime change rejects stale writes. Start, claim and checkpoint refresh project sources before checking the supplied revision. A session can start without `--claim`; `work claim <work-key> --session <id> --expected-revision <revision>` acquires it later. Runtime claims never rewrite source-ledger ownership or work status.
+
+`session end --session <id> --outcome ended|interrupted|incomplete --expected-revision <revision>` closes a session and releases its claims. `work release <work-key> --session <id> --claim <claim-id> --expected-revision <revision>` releases just one claim. Omitting `--session` selects only one active matching session on the current branch; `--agent` and `--work` can narrow the selection. Multiple candidates produce an error with their IDs.
+
+Handoff requires a latest checkpoint. Without `--to-session`, it closes the sender as incomplete and releases its claim for later pickup. With `--to-session <id>`, the receiver must be active on the same work and branch; the live claim transfers atomically with both history receipts. An expired claim is never revived. `session show` exposes the inherited checkpoint separately, including next action and open loops. Context compilation and refreshed resume remain scheduled; a caller-supplied checkpoint hash does not certify context completeness.
+
+Session inspection, history, handoff, release and end work from the runtime database even when source files are unavailable; JSON reports `source_refresh_performed: false`. History returns bounded summaries and references, with `--session`, `--event-type`, `--after-revision` and `--all-branches` filters. For pagination, pass the returned JSON `next_cursor` to `--cursor`; it retains multiple events at the same revision.
+
+The storage library creates and reopens versioned AWR databases with WAL, foreign keys and migration metadata. Source work mutation and context commands remain scheduled.
 
 The source library also resolves configured local files and immutable Git blobs. It has been used to read this project's own goal, plan, rules and work ledger:
 
@@ -111,7 +130,7 @@ Unchanged sources are skipped. Content and parser-configuration changes trigger 
 
 Running the indexer against a new database rebuilds source projections. Runtime events, sessions and checkpoints require the original database or its backup; they cannot be reconstructed from a work ledger. Source indexing creates new indexing events, not copies of previous work history.
 
-Runtime workflows and context compilation follow in their ledger items. The current project's unannotated rules are retained with unresolved scope/severity until an explicit mapping is supplied for runtime use.
+Context compilation follows in its ledger items. The current project's unannotated rules are retained with unresolved scope/severity until an explicit mapping is supplied for context use.
 
 Python 3.11+ is sufficient for this repository's planning tools. Rust is pinned in rust-toolchain.toml and dependency resolution is committed in Cargo.lock.
 
