@@ -1,5 +1,6 @@
 //! SQLite persistence. Callers use domain operations, never an exposed SQL handle.
 mod catalog;
+mod checkpoint;
 mod events;
 mod evidence;
 mod projection;

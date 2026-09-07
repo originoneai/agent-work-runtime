@@ -110,6 +110,7 @@ dependencies = [
  "awr-core",
  "awr-source",
  "awr-store",
+ "sha2",
 ]
 
 [[package]]

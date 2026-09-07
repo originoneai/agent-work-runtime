@@ -2,6 +2,8 @@
 //! Callers refresh source projections before acquisition. Cleanup remains possible with stale sources.
 use awr_core::{Claim, Event, Id, Revision, Session, SessionDraft, SessionOutcome, SessionStarted};
 pub use awr_core::{Error, Result};
+mod artifact;
+pub use artifact::ArtifactFile;
 use awr_store::Store;
 pub use awr_store::{BranchFilter, EventCursor, EventPage, EventQuery};
 
@@ -10,6 +12,15 @@ pub struct Runtime<'a> {
     project: Id,
 }
 impl<'a> Runtime<'a> {
+    pub fn checkpoint(
+        &mut self,
+        expected: Revision,
+        session: Id,
+        draft: awr_core::CheckpointDraft,
+    ) -> Result<(awr_core::Checkpoint, Event)> {
+        self.store
+            .create_checkpoint(self.project, expected, session, draft)
+    }
     pub fn append_event(
         &mut self,
         expected: Revision,

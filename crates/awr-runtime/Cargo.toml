@@ -11,3 +11,4 @@ awr-core.workspace = true
 awr-store.workspace = true
 awr-source.workspace = true
 awr-context.workspace = true
+sha2.workspace = true

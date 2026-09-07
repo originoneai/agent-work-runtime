@@ -2,6 +2,29 @@ use crate::{Claim, Id, Session};
 use serde::{Deserialize, Serialize};
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct CheckpointDraft {
+    pub context_hash: String,
+    pub digest: String,
+    pub next_action: String,
+    pub open_loops: Vec<String>,
+    pub changed_entities: Vec<String>,
+}
+
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct ArtifactDraft {
+    pub artifact_type: String,
+    pub locator: String,
+    pub sha256: String,
+    pub size: u64,
+    pub mime: String,
+    pub source_event_id: Id,
+}
+
+pub fn is_sha256_hash(value: &str) -> bool {
+    value.len() == 64 && value.bytes().all(|c| c.is_ascii_hexdigit())
+}
+
+#[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct SessionDraft {
     pub work_item_key: Option<String>,
     pub agent_id: String,
