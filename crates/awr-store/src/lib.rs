@@ -1,5 +1,6 @@
 //! SQLite persistence. Callers use domain operations, never an exposed SQL handle.
 mod catalog;
+mod projection;
 mod transaction;
 use awr_core::{Error, Result, now_millis};
 pub use catalog::SourceRegistration;

@@ -1,22 +1,10 @@
 use crate::{Locator, Manifest, SourceSnapshot, SourceSpec};
+pub use awr_core::ProjectionBatch;
 use awr_core::{
-    Decision, Edge, EntityKind, Error, Evidence, Goal, Id, MutationProposal, Plan, ProjectionMeta,
-    Result, Rule, Source, SourceRef, WorkItem,
+    EntityKind, Error, Id, MutationProposal, ProjectionMeta, Result, Source, SourceRef,
 };
 use awr_store::Store;
 use std::{collections::BTreeMap, path::Path};
-
-#[derive(Debug, Default)]
-pub struct ProjectionBatch {
-    pub goals: Vec<Goal>,
-    pub plans: Vec<Plan>,
-    pub rules: Vec<Rule>,
-    pub work_items: Vec<WorkItem>,
-    pub edges: Vec<Edge>,
-    pub decisions: Vec<Decision>,
-    pub evidence: Vec<Evidence>,
-    pub warnings: Vec<String>,
-}
 
 pub struct ParseContext<'a> {
     pub source: &'a Source,
@@ -75,7 +63,10 @@ pub trait SourceAdapter {
         source: &Source,
         snapshot: &SourceSnapshot,
         batch: ProjectionBatch,
-    ) -> Result<()>;
+    ) -> Result<()> {
+        store.commit_source_projection(source, &snapshot.fingerprint, batch)?;
+        Ok(())
+    }
     fn plan_mutation(
         &self,
         _source: &Source,

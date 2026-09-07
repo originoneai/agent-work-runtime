@@ -1,0 +1,46 @@
+{
+  "work_item": "AWR-P1-002",
+  "checked_at": "2026-09-07T17:29:14.764Z",
+  "checks": [
+    {
+      "name": "workspace_build",
+      "passed": true,
+      "result": "cargo build --locked --workspace and --examples passed with Rust 1.93.1."
+    },
+    {
+      "name": "fingerprint_and_section_change",
+      "passed": true,
+      "result": "Editing a different section changed the file fingerprint while preserving the unchanged section fingerprint; changed sections differed."
+    },
+    {
+      "name": "source_revision_and_idempotence",
+      "passed": true,
+      "result": "Four successful projections produced source revision 4 and four source.projected events; an unchanged fresh snapshot added neither revision nor event. Entity identity survived reindexing."
+    },
+    {
+      "name": "failure_and_recovery",
+      "passed": true,
+      "result": "Invalid provenance rolled back the projection and kept revision/fingerprint and old facts stale. Missing file reported unavailable. Reading restored bytes remained stale until successful projection."
+    },
+    {
+      "name": "conflict_and_database_integrity",
+      "passed": true,
+      "result": "Stale source writer and direct promotion to fresh were rejected. Doctor reported integrity ok and zero foreign-key violations."
+    }
+  ],
+  "artifacts": [
+    "crates/awr-source/examples/source_revision.rs",
+    "crates/awr-source/src/freshness.rs",
+    "crates/awr-source/src/locator.rs",
+    "crates/awr-store/src/projection.rs"
+  ],
+  "observed": {
+    "source_revision": 4,
+    "source_projected_events": 4,
+    "total_events": 8,
+    "schema_version": 2
+  },
+  "limitations": [
+    "Feature-local lifecycle verification only. YAML/Markdown parsing, incremental orchestration, context generation and real-client business acceptance are later ledger items."
+  ]
+}

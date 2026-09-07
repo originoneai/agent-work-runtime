@@ -26,6 +26,24 @@ impl SourceSnapshot {
         std::str::from_utf8(&self.bytes)
             .map_err(|e| Error::InvalidInput(format!("source must be UTF-8: {e}")))
     }
+
+    /// One-based inclusive line range; preserve the original newline bytes.
+    pub fn section_text(&self, start: usize, end: usize) -> Result<&str> {
+        let text = self.text()?;
+        let lines: Vec<_> = text.split_inclusive('\n').collect();
+        if start == 0 || end < start || end > lines.len() {
+            return Err(Error::InvalidInput(
+                "section line range is outside the source".into(),
+            ));
+        }
+        let offset: usize = lines[..start - 1].iter().map(|s| s.len()).sum();
+        let size: usize = lines[start - 1..end].iter().map(|s| s.len()).sum();
+        Ok(&text[offset..offset + size])
+    }
+
+    pub fn section_fingerprint(&self, start: usize, end: usize) -> Result<String> {
+        Ok(fingerprint(self.section_text(start, end)?.as_bytes()))
+    }
 }
 
 pub fn read_capped(path: &Path, cap: u64) -> Result<Vec<u8>> {

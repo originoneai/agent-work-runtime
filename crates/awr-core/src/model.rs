@@ -245,6 +245,19 @@ pub struct Evidence {
     pub verified_at: Option<i64>,
 }
 
+/// Parsed source facts only. Runtime state is never reconstructed by an adapter.
+#[derive(Debug, Clone, Default, Serialize, Deserialize)]
+pub struct ProjectionBatch {
+    pub goals: Vec<Goal>,
+    pub plans: Vec<Plan>,
+    pub rules: Vec<Rule>,
+    pub work_items: Vec<WorkItem>,
+    pub edges: Vec<Edge>,
+    pub decisions: Vec<Decision>,
+    pub evidence: Vec<Evidence>,
+    pub warnings: Vec<String>,
+}
+
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct Event {
     pub id: Id,
