@@ -4,6 +4,7 @@ mod evidence;
 mod projection;
 mod query;
 mod search;
+mod session;
 mod transaction;
 mod work;
 use awr_core::{Error, Result, now_millis};

@@ -6,13 +6,13 @@ use crate::{
 use awr_core::{Error, Event, EventDraft, Id, Result, Revision, now_millis};
 use rusqlite::{OptionalExtension, Transaction, TransactionBehavior, params};
 
-fn sqlite_revision(revision: Revision) -> Result<i64> {
+pub(crate) fn sqlite_revision(revision: Revision) -> Result<i64> {
     revision
         .try_into()
         .map_err(|_| Error::InvalidInput("revision exceeds SQLite integer range".into()))
 }
 
-fn optional_id(row: &rusqlite::Row<'_>, column: usize) -> rusqlite::Result<Option<Id>> {
+pub(crate) fn optional_id(row: &rusqlite::Row<'_>, column: usize) -> rusqlite::Result<Option<Id>> {
     let value: Option<String> = row.get(column)?;
     value.map(|s| s.parse()).transpose().map_err(|e| {
         rusqlite::Error::FromSqlConversionFailure(column, rusqlite::types::Type::Text, Box::new(e))
@@ -28,6 +28,22 @@ impl Store {
         expected_revision: Revision,
         draft: EventDraft,
         apply: impl FnOnce(&Transaction<'_>, Revision) -> Result<T>,
+    ) -> Result<(T, Event)> {
+        self.runtime_transaction_with_event(
+            project_id,
+            expected_revision,
+            draft,
+            |tx, revision, _| apply(tx, revision),
+        )
+    }
+
+    /// Populate event details from the changes made in this transaction, never a preceding read.
+    pub(crate) fn runtime_transaction_with_event<T>(
+        &mut self,
+        project_id: Id,
+        expected_revision: Revision,
+        mut draft: EventDraft,
+        apply: impl FnOnce(&Transaction<'_>, Revision, &mut EventDraft) -> Result<T>,
     ) -> Result<(T, Event)> {
         if draft.event_type.trim().is_empty()
             || !draft.payload.is_object()
@@ -61,7 +77,7 @@ impl Store {
             .checked_add(1)
             .ok_or_else(|| Error::InvalidInput("revision overflow".into()))?;
         let next_sql = sqlite_revision(next)?;
-        let result = apply(&tx, next)?;
+        let result = apply(&tx, next, &mut draft)?;
         let updated = tx
             .execute(
                 "UPDATE projects SET project_revision=?1 WHERE id=?2 AND project_revision=?3",

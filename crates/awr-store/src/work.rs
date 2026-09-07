@@ -151,7 +151,7 @@ fn check_context(conn: &Connection, project: Id, branch: Option<Id>, at: i64) ->
     Ok(revision)
 }
 
-fn readiness(
+pub(crate) fn readiness(
     conn: &Connection,
     project: Id,
     key: &str,

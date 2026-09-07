@@ -2,10 +2,12 @@
 mod error;
 mod model;
 mod query;
+mod runtime;
 
 pub use error::{Error, Result};
 pub use model::*;
 pub use query::*;
+pub use runtime::*;
 pub const VERSION: &str = env!("CARGO_PKG_VERSION");
 
 pub fn now_millis() -> Result<i64> {

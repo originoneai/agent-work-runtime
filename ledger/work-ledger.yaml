@@ -634,6 +634,8 @@ work_items:
   - 25
   deliverables:
   - crates/awr-runtime/
+  - crates/awr-store/
+  - crates/awr-core/
   acceptance:
   - Session 绑定任务、Agent/provider/model、分支与开始版本。
   - Claim 区分 source owner 与执行者；支持获取、释放、TTL 和明确冲突。
