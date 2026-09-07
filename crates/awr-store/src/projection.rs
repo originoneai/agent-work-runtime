@@ -20,7 +20,7 @@ const KINDS: [EntityKind; 6] = [
     EntityKind::Evidence,
 ];
 
-fn table(kind: EntityKind) -> &'static str {
+pub(crate) fn table(kind: EntityKind) -> &'static str {
     match kind {
         EntityKind::Goal => "goals",
         EntityKind::Plan => "plans",

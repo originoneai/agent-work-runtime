@@ -491,6 +491,8 @@ work_items:
   deliverables:
   - crates/awr-core/
   - crates/awr-store/
+  - Cargo.toml
+  - Cargo.lock
   acceptance:
   - 按外部 ID 查询目标、计划、规则及来源版本。
   - Rule 保存 severity 与 project/path/tag/work_item/agent scope，未知适用性不默默省略。

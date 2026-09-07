@@ -1,9 +1,11 @@
 //! Domain contracts shared by storage, source adapters, runtime and interfaces.
 mod error;
 mod model;
+mod query;
 
 pub use error::{Error, Result};
 pub use model::*;
+pub use query::*;
 pub const VERSION: &str = env!("CARGO_PKG_VERSION");
 
 pub fn now_millis() -> Result<i64> {

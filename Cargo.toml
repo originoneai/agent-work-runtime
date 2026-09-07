@@ -27,3 +27,4 @@ sha2 = "0.10.9"
 url = "2.5.8"
 serde_yaml_ng = "0.10.0"
 pulldown-cmark = { version = "0.13.4", default-features = false }
+globset = "0.4.20"

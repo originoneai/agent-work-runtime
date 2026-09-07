@@ -1,0 +1,40 @@
+{
+  "work_item": "AWR-P2-001",
+  "checked_at": "2026-09-08T02:55:34+08:00",
+  "checks": [
+    {
+      "name": "typed_projection_queries",
+      "passed": true,
+      "result": "cargo test -p awr-store --test projection_queries: 2/2; external IDs, project isolation, source revision/fingerprint, all five scopes, missing metadata/context, unavailable source and retired source."
+    },
+    {
+      "name": "workspace_build",
+      "passed": true,
+      "result": "cargo build --locked --workspace and --examples completed."
+    },
+    {
+      "name": "project_self_use",
+      "passed": true,
+      "result": "query_project on this project at revision 25: 4 goals, 16 plans, 6 rules; every external ID round-tripped; all 6 unresolved rules retained."
+    }
+  ],
+  "artifacts": [
+    "crates/awr-core/src/query.rs",
+    "crates/awr-store/src/query.rs",
+    "crates/awr-store/tests/projection_queries.rs",
+    "crates/awr-store/examples/query_project.rs"
+  ],
+  "limitations": [
+    "Freshness reflects the last source scan/index. Full regression, runtime claim execution and real-client acceptance remain scheduled."
+  ],
+  "observed": {
+    "project_revision": 25,
+    "goals": 4,
+    "plans": 16,
+    "rules": 6,
+    "rules_unknown": 6
+  },
+  "references": [
+    "https://docs.rs/globset/0.4.20/globset/"
+  ]
+}
