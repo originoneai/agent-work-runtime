@@ -1,8 +1,8 @@
 schema_version: 1
 contract_id: awr-v1
 contract_version: 1.0.0
-ledger_revision: 55
-updated_at: '2026-09-08T04:44:52+08:00'
+ledger_revision: 58
+updated_at: '2026-09-08T05:02:12+08:00'
 project:
   name: Agent Work Runtime
   external_key: agent-work-runtime
@@ -11,8 +11,8 @@ project:
   release_status: not_released
 current:
   milestone: M4
-  work_item: AWR-P4-001
-  next_action: 实现 L0 Bootstrap：恢复工作、阶段、规则与检查点，保留来源版本并显式报告缺项和超预算。
+  work_item: AWR-P4-003
+  next_action: 实现共享规则选择和 Hard Context，保留原始规则、验收、状态、版本与来源；补齐项目规则的显式元数据。
   open_loops:
   - 功能实现优先；集中测试、优化和打磨在功能开发后执行。
   - 本项目已用 Source、Status、Ready、Work 和 Search CLI 管理实际开发读取；继续接入 Session、Claim 和 Context。
@@ -776,7 +776,7 @@ work_items:
   priority: P0
   kind: feature
   required_for_v1: true
-  status: in_progress
+  status: completed
   owner: codex-primary
   depends_on:
   - AWR-P3-003
@@ -798,10 +798,11 @@ work_items:
   verification:
     minimum: 证明本条验收行为；功能阶段运行必要的定向检查，系统测试在 M9 集中执行。
     evidence_directory: ledger/evidence/AWR-P4-001
-    evidence_level: none
-  evidence: []
+    evidence_level: locally_verified
+  evidence:
+  - ledger/deliveries/AWR-P4-001.json
   blocker: null
-  next_action: 实现 L0 Bootstrap：恢复工作、阶段、规则与检查点，保留来源版本并显式报告缺项和超预算。
+  next_action: 已交付；继续依赖就绪的功能任务。
 - id: AWR-P4-002
   title: L1 Work Context 编译与确定性渲染
   milestone: M4
@@ -845,8 +846,8 @@ work_items:
   priority: P0
   kind: feature
   required_for_v1: true
-  status: ready
-  owner: null
+  status: in_progress
+  owner: codex-primary
   depends_on:
   - AWR-P2-001
   - AWR-P3-001
@@ -858,6 +859,8 @@ work_items:
   - 55
   deliverables:
   - crates/awr-context/
+  - docs/RULES.md
+  - README.md
   acceptance:
   - 结合项目、路径、标签、工作、Agent 选择适用规则并保留来源。
   - 适用 Hard Rule、验收、ID、状态、版本、指纹、blocker、next action 不被摘要改写或预算删除。
@@ -867,7 +870,7 @@ work_items:
     evidence_level: none
   evidence: []
   blocker: null
-  next_action: 按交付物实现并验证：Rule Applicability 与 Hard Context
+  next_action: 实现共享规则选择和 Hard Context，保留原始规则、验收、状态、版本与来源；补齐项目规则的显式元数据。
 - id: AWR-P4-004
   title: 任务依赖与相关决策/证据选择
   milestone: M4

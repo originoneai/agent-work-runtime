@@ -1,0 +1,54 @@
+{
+  "kind": "implementation",
+  "repository": "https://github.com/originoneai/agent-work-runtime",
+  "source_commit": "c214f825a85463df4fa3621e84632149014ebf1e",
+  "checked_at": "2026-09-08T04:59:32+08:00",
+  "remote_receipt": {
+    "commit": "c214f825a85463df4fa3621e84632149014ebf1e",
+    "url": "https://github.com/originoneai/agent-work-runtime/commit/c214f825a85463df4fa3621e84632149014ebf1e",
+    "verified_at": "2026-09-08T05:01:30+08:00"
+  },
+  "checks": [
+    {
+      "name": "bootstrap_cli",
+      "passed": true,
+      "result": "cargo test --locked -p awr-cli --test bootstrap_cli: 3/3. Same state/request gives identical pack; current work/phase/status/next/blocker/source fingerprints refresh; known hard rule text is exact; normal fixture including checkpoint fits 1000 tokens; oversized hard context fails without a body; old checkpoint/open loops recover across closed sessions; ambiguity, unknown metadata and unavailable sources remain explicit."
+    },
+    {
+      "name": "workspace_build",
+      "passed": true,
+      "result": "cargo build --locked --workspace, git diff --check and planning checker passed."
+    },
+    {
+      "name": "actual_project_bootstrap",
+      "passed": true,
+      "result": "Actual session 01M1YTKY3XXGDN0RC6C1R2FVGX produced an L0 payload of 893 o200k_base tokens with six unresolved rule metadata gaps. A checkpoint was saved using the compiler context hash, then recovered by session 01M1YTKZ69CQEAMQQY32GDK4QT as previous_closed_session. The resumed required payload was 1034 tokens: default budget 1000 explicitly returned BudgetExceeded; an explicit larger budget returned both open loops and the six gaps. Both sessions closed; doctor ok at revision 98."
+    }
+  ],
+  "artifacts": [
+    "crates/awr-context/src/bootstrap.rs",
+    "crates/awr-cli/src/context.rs",
+    "crates/awr-cli/tests/bootstrap_cli.rs",
+    "crates/awr-store/src/checkpoint.rs",
+    "README.md",
+    "Cargo.lock",
+    "ledger/evidence/AWR-P4-001/checks.json"
+  ],
+  "work_items": {
+    "AWR-P4-001": {
+      "acceptance": [
+        {
+          "criterion": "恢复当前任务、阶段、状态、下一步、blocker、关键规则、checkpoint 与版本。",
+          "passed": true
+        },
+        {
+          "criterion": "目标 <=1000 tokens；必需上下文超预算时显式 BudgetExceeded，不静默丢弃。",
+          "passed": true
+        }
+      ]
+    }
+  },
+  "limitations": [
+    "L0 orientation only; execution_context_complete is false. L1 acceptance/dependencies/decisions/delta/evidence completeness remains scheduled. The project unannotated rules remain explicit gaps, not certified hard context. The fixed o200k_base count applies to rendered_context, excluding the JSON envelope, surrounding conversation and other model tokenizers. The project resumed payload exceeded the default target and was correctly rejected; no benchmark metric or real-client acceptance is marked complete."
+  ]
+}
