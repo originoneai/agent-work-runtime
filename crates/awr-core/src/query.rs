@@ -50,6 +50,129 @@ pub struct ReadyReport {
     pub evaluated_at: i64,
 }
 
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct RelatedDecision {
+    pub decision: Projected<crate::Decision>,
+    pub relevance: Applicability,
+    pub reasons: Vec<String>,
+}
+
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct EvidenceDraft {
+    pub external_key: String,
+    pub work_item_key: Option<String>,
+    pub evidence_type: String,
+    pub level: crate::EvidenceLevel,
+    pub summary: String,
+    pub locator: String,
+    pub sha256: Option<String>,
+    pub source_sha: Option<String>,
+    pub command: Option<String>,
+    pub scope: Vec<String>,
+    pub branch_id: Option<crate::Id>,
+    pub verified_at: Option<i64>,
+}
+
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct EvidenceRecord {
+    pub item: crate::Evidence,
+    pub source: Option<Source>,
+    pub project_revision: Revision,
+}
+
+/// Relative to an explicitly requested source SHA and branch. This is not independent verification.
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize)]
+#[serde(rename_all = "snake_case")]
+pub enum EvidenceCurrency {
+    Current,
+    Historical,
+    Unknown,
+}
+
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct EvidenceAssessment {
+    pub evidence: EvidenceRecord,
+    pub currency: EvidenceCurrency,
+    pub missing_bindings: Vec<String>,
+    pub reasons: Vec<String>,
+}
+
+pub fn is_source_sha(value: &str) -> bool {
+    matches!(value.len(), 40 | 64) && value.bytes().all(|c| c.is_ascii_hexdigit())
+}
+
+impl EvidenceRecord {
+    pub fn assess(self, source_sha: Option<&str>, branch: Option<crate::Id>) -> EvidenceAssessment {
+        let mut reasons = Vec::new();
+        let mut missing = Vec::new();
+        if self.item.scope.is_empty() {
+            missing.push("scope".into());
+        }
+        if self.item.locator.trim().is_empty() {
+            missing.push("report".into());
+        }
+        if !self
+            .item
+            .sha256
+            .as_ref()
+            .is_some_and(|s| s.len() == 64 && s.bytes().all(|c| c.is_ascii_hexdigit()))
+        {
+            missing.push("sha256".into());
+        }
+        if !self
+            .item
+            .source_sha
+            .as_ref()
+            .is_some_and(|s| is_source_sha(s))
+        {
+            missing.push("source_sha".into());
+        }
+        if !self
+            .item
+            .command
+            .as_ref()
+            .is_some_and(|s| !s.trim().is_empty())
+        {
+            missing.push("command".into());
+        }
+        if self.item.verified_at.is_none() {
+            missing.push("verified_at".into());
+        }
+        let currency = if self.item.branch_id != branch {
+            reasons.push("evidence belongs to a different branch".into());
+            EvidenceCurrency::Historical
+        } else if let (Some(recorded), Some(requested)) = (&self.item.source_sha, source_sha) {
+            if !is_source_sha(recorded) || !is_source_sha(requested) {
+                reasons.push("source SHA is not a full hash".into());
+                EvidenceCurrency::Unknown
+            } else if !recorded.eq_ignore_ascii_case(requested) {
+                reasons.push("evidence was recorded for a different source SHA".into());
+                EvidenceCurrency::Historical
+            } else if self
+                .source
+                .as_ref()
+                .is_some_and(|s| s.freshness != Freshness::Fresh)
+            {
+                reasons.push("evidence source is not fresh".into());
+                EvidenceCurrency::Unknown
+            } else {
+                EvidenceCurrency::Current
+            }
+        } else {
+            reasons.push(
+                "both recorded and requested source SHA are needed to determine currency".into(),
+            );
+            EvidenceCurrency::Unknown
+        };
+        EvidenceAssessment {
+            evidence: self,
+            currency,
+            missing_bindings: missing,
+            reasons,
+        }
+    }
+}
+
 /// None means context was not supplied; Some([]) means a known empty set.
 #[derive(Debug, Clone, Default, Serialize, Deserialize)]
 pub struct RuleContext {
