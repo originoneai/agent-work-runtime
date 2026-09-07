@@ -1,0 +1,52 @@
+{
+  "work_item": "AWR-P0-002",
+  "checked_at": "2026-09-08T00:44:52+08:00",
+  "checks": [
+    {
+      "name": "cargo build --locked --workspace and storage example",
+      "passed": true,
+      "result": "Workspace and developer storage entry point compile."
+    },
+    {
+      "name": "create/reopen/WAL",
+      "passed": true,
+      "result": "Two process opens preserve migration rows; WAL, foreign_keys=true and busy_timeout=5000 confirmed."
+    },
+    {
+      "name": "read-only doctor",
+      "passed": true,
+      "result": "Integrity ok, zero FK violations, metadata preserved and database SHA-256 unchanged."
+    },
+    {
+      "name": "missing/unrelated database",
+      "passed": true,
+      "result": "Missing path returns NotFound without creation; unrelated non-empty SQLite database rejected without file changes."
+    }
+  ],
+  "artifacts": [
+    "crates/awr-store/src/lib.rs",
+    "crates/awr-store/migrations/001_catalog.sql",
+    "crates/awr-store/examples/open_store.rs",
+    "crates/awr-cli/src/main.rs"
+  ],
+  "observed": {
+    "ok": true,
+    "application_id": 1096241713,
+    "schema_version": 1,
+    "sqlite_version": "3.53.2",
+    "journal_mode": "wal",
+    "foreign_keys": true,
+    "busy_timeout_ms": 5000,
+    "migrations": [
+      {
+        "version": 1,
+        "name": "catalog",
+        "applied_at": 1788799492420
+      }
+    ],
+    "integrity": [
+      "ok"
+    ],
+    "foreign_key_violations": 0
+  }
+}

@@ -60,7 +60,13 @@ target/debug/awr --help
 target/debug/awr --version
 ```
 
-At this milestone the CLI exposes help and version. Other work commands remain explicitly unsupported until their ledger items are delivered.
+The CLI currently exposes help, version and read-only database diagnostics:
+
+```sh
+target/debug/awr --json doctor --database path/to/awr.db
+```
+
+The storage library can create and reopen versioned AWR databases with WAL, foreign keys and migration metadata. Before project initialization lands, developers can exercise it with `cargo run -p awr-store --example open_store -- path/to/awr.db` (the parent directory must exist). Other work commands remain explicitly unsupported until their ledger items are delivered.
 
 Python 3.11+ is sufficient for this repository's planning tools. Rust is pinned in rust-toolchain.toml and dependency resolution is committed in Cargo.lock.
 

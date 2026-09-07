@@ -19,12 +19,41 @@ struct Cli {
 
 #[derive(Debug, Subcommand)]
 enum Command {
+    /// Inspect an existing AWR database without creating or repairing it.
+    Doctor {
+        #[arg(long)]
+        database: Option<PathBuf>,
+    },
     #[command(external_subcommand)]
     Unsupported(Vec<String>),
 }
 
 fn run(cli: &Cli) -> Result<()> {
     match &cli.command {
+        Some(Command::Doctor { database }) => {
+            let path = database
+                .clone()
+                .unwrap_or_else(|| cli.project.join(".awr/state.db"));
+            let report = awr_store::Store::inspect(&path)?;
+            if cli.json {
+                println!("{}", serde_json::to_string_pretty(&report)?);
+            } else {
+                println!(
+                    "SQLite: {}\nSchema: {}\nJournal: {}\nIntegrity: {}\nForeign-key violations: {}",
+                    report.sqlite_version,
+                    report.schema_version,
+                    report.journal_mode,
+                    report.integrity.join(", "),
+                    report.foreign_key_violations
+                );
+            }
+            if !report.ok {
+                return Err(Error::Storage(
+                    "doctor reported integrity or schema problems".into(),
+                ));
+            }
+            Ok(())
+        }
         None => {
             Cli::command().print_help()?;
             println!();
