@@ -12,7 +12,7 @@ project:
 current:
   milestone: M4
   work_item: AWR-P4-005
-  next_action: 实现检查点基线、来源变化追踪及重要事件折叠，并在本项目读取验证。
+  next_action: 增量读取与来源变化记录已实现；在本项目复核检查点后的台账变化并固化交付证据。
   open_loops:
   - 功能实现优先；集中测试、优化和打磨在功能开发后执行。
   - 本项目已用 Source、Status、Ready、Work 和 Search CLI 管理实际开发读取；继续接入 Session、Claim 和 Context。
@@ -933,7 +933,7 @@ work_items:
     evidence_level: none
   evidence: []
   blocker: null
-  next_action: 实现检查点基线、来源变化追踪及重要事件折叠，并在本项目读取验证。
+  next_action: 增量读取与来源变化记录已实现；在本项目复核检查点后的台账变化并固化交付证据。
 - id: AWR-P4-006
   title: Token Budget、稳定排序与 Context Hash
   milestone: M4

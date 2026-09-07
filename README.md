@@ -185,6 +185,16 @@ The context library also assembles an indivisible hard-fact subset with exact wo
 
 Related-context selection retains the complete required dependency closure, including unresolved work, missing keys and cycles. Completed dependency facts from stale sources remain unresolved. Applicable accepted decisions retain their exact statements and scope metadata; uncertain associations remain explicit references, while rationale and unrelated history stay out of the default selection. Evidence contributes bounded summaries, report references, source/branch comparisons and binding/verification gaps without opening report bodies. A missing report association is a known evidence gap, not proof that a task is complete. The three existing architectural ADRs now explicitly apply project-wide; their IDs, titles, statuses, statements and rationale are unchanged.
 
+Recent Delta accepts an explicit checkpoint or project revision. Automatic selection uses the selected session's own/inherited checkpoint, then a closed session's checkpoint on the same work and branch; without one it reports a session-start or project-start baseline. A checkpoint from another work or branch is rejected. The developer entry point refreshes sources before reading:
+
+```sh
+cargo run --locked -p awr-context --example delta_project -- . <work-key> [checkpoint-id-or-revision]
+```
+
+Delta includes every changed source after the baseline, including project-wide mapping changes and retired sources. New source events record before/after source states and entity/edge additions, revisions and removals in the same database transaction. Fingerprint-only refreshes retain unchanged entity revisions. Older events remain immutable and explicitly report unavailable entity history; the reader does not infer historical changes from today's facts. Source event names are reserved for source operations.
+
+Process history includes this work and project-global events on the selected branch. High/critical events after the baseline return at most 12 bounded summaries by default, with critical events first and then newest revision/time/ID. Per-source entity summaries retain 24 changed identities by default; all omitted counts are explicit. Normal and older process events are folded into counts by type/importance. Full payloads remain available via `Store::event` and paginated `EventQuery`, using the returned event IDs and baseline/current revisions; context CLI integration follows in its ledger item. No event payload, artifact body or source fact body enters this delta. The snapshot API itself does not rescan files or certify execution-context completeness.
+
 Python 3.11+ is sufficient for this repository's planning tools. Rust is pinned in rust-toolchain.toml and dependency resolution is committed in Cargo.lock.
 
 ```sh

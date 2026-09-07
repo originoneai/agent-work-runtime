@@ -1,6 +1,7 @@
 //! SQLite persistence. Callers use domain operations, never an exposed SQL handle.
 mod catalog;
 mod checkpoint;
+mod delta;
 mod events;
 mod evidence;
 mod handoff;
@@ -8,14 +9,19 @@ mod projection;
 mod query;
 mod search;
 mod session;
+mod source_changes;
 mod transaction;
 mod work;
 use awr_core::{Error, Result, now_millis};
 pub use catalog::SourceRegistration;
+pub use delta::{
+    DeltaEvents, EntityDelta, EventReference, HistoryCount, ImportantEvent, SourceDelta,
+};
 pub use events::{BranchFilter, EventCursor, EventPage, EventQuery};
 use rusqlite::{Connection, OpenFlags, TransactionBehavior};
 pub use search::{SearchHit, SearchQuery, SearchReport};
 use serde::Serialize;
+pub use source_changes::{ProjectionChange, SourceState};
 use std::{path::Path, time::Duration};
 
 const APPLICATION_ID: i64 = 0x41575231;

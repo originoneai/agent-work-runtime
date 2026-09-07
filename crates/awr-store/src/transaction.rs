@@ -125,19 +125,21 @@ impl Store {
     ) -> Result<Event> {
         self.runtime_transaction_with_event(project_id, expected_revision, draft, |tx, _, event| {
             crate::events::bind_event(tx, project_id, event, true)?;
-            if matches!(
-                event.event_type.as_str(),
-                "session.started"
-                    | "session.ended"
-                    | "session.handoff_received"
-                    | "work.claimed"
-                    | "work.handoff"
-                    | "claim.released"
-                    | "claim.expired"
-                    | "checkpoint.created"
-                    | "artifact.recorded"
-                    | "evidence.recorded"
-            ) {
+            if event.event_type.starts_with("source.")
+                || matches!(
+                    event.event_type.as_str(),
+                    "session.started"
+                        | "session.ended"
+                        | "session.handoff_received"
+                        | "work.claimed"
+                        | "work.handoff"
+                        | "claim.released"
+                        | "claim.expired"
+                        | "checkpoint.created"
+                        | "artifact.recorded"
+                        | "evidence.recorded"
+                )
+            {
                 return Err(Error::InvalidInput(
                     "runtime event type is reserved; use the corresponding domain operation".into(),
                 ));

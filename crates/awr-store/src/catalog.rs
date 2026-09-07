@@ -1,5 +1,9 @@
+use crate::source_changes::{self, SourceState};
 use crate::{Store, db_error};
-use awr_core::{AuthorityMode, Error, Freshness, Id, Project, Result, Revision, Source};
+use awr_core::{
+    AuthorityMode, Error, Event, EventDraft, Freshness, Id, Project, Result, Revision, Source,
+    now_millis,
+};
 use rusqlite::{Connection, OptionalExtension, Row, TransactionBehavior, params};
 use serde::de::DeserializeOwned;
 use std::path::Path;
@@ -193,6 +197,7 @@ impl Store {
             .map_err(db_error)?;
         let existing=tx.query_row(&format!("SELECT {SOURCE_COLUMNS} FROM sources WHERE project_id=?1 AND domain=?2 AND locator=?3"),
             params![project_id.to_string(),definition.domain,definition.locator],source_row).optional().map_err(db_error)?;
+        let mut change = None;
         let source = if let Some(mut source) = existing {
             let active: bool = tx
                 .query_row(
@@ -206,9 +211,14 @@ impl Store {
                 || source.adapter != definition.adapter
                 || !active
             {
+                let before = SourceState::from_source(&source, active);
                 tx.execute("UPDATE sources SET role=?1,format=?2,adapter=?3,active=1,revision=revision+1,freshness='stale' WHERE id=?4",
                     params![definition.role,definition.format,definition.adapter,source.id.to_string()]).map_err(db_error)?;
-                bump_revision(&tx, project_id)?;
+                change = Some((
+                    Some(before),
+                    "source.registered",
+                    bump_revision(&tx, project_id)?,
+                ));
                 source.role = definition.role.into();
                 source.format = definition.format.into();
                 source.adapter = definition.adapter.into();
@@ -232,9 +242,34 @@ impl Store {
             };
             tx.execute("INSERT INTO sources(id,project_id,domain,role,locator,format,adapter,freshness) VALUES(?1,?2,?3,?4,?5,?6,?7,'stale')",
                 params![source.id.to_string(),project_id.to_string(),definition.domain,definition.role,definition.locator,definition.format,definition.adapter]).map_err(db_error)?;
-            bump_revision(&tx, project_id)?;
+            change = Some((None, "source.registered", bump_revision(&tx, project_id)?));
             source
         };
+        if let Some((before, kind, revision)) = change {
+            let mut draft = EventDraft::new(kind, "Source authority registration changed");
+            source_changes::annotate(
+                &mut draft,
+                before,
+                SourceState::from_source(&source, true),
+                vec![],
+            )?;
+            crate::transaction::insert_event(
+                &tx,
+                &Event {
+                    id: Id::new(),
+                    project_id,
+                    work_item_id: None,
+                    session_id: None,
+                    branch_id: None,
+                    event_type: draft.event_type,
+                    importance: draft.importance,
+                    summary: draft.summary,
+                    payload: draft.payload,
+                    project_revision: revision,
+                    created_at: now_millis()?,
+                },
+            )?;
+        }
         tx.commit().map_err(db_error)?;
         Ok(source)
     }

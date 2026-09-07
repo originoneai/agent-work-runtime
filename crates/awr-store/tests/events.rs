@@ -159,6 +159,68 @@ fn scoped_append_and_cursor_queries_preserve_work_and_immutable_history() {
 }
 
 #[test]
+fn legacy_source_events_keep_unknown_history_and_new_source_receipts_cannot_be_forged() {
+    let mut f = Fixture::new();
+    let work = work(&f, "W");
+    let wid = work.meta.id;
+    f.commit(ProjectionBatch {
+        work_items: vec![work],
+        ..Default::default()
+    });
+    let baseline = f.store.project(f.project.id).unwrap().project_revision;
+    // Simulate opening an event log written by the version before source change receipts.
+    let id = Id::new();
+    let db = rusqlite::Connection::open(f.root.join("state.db")).unwrap();
+    db.execute("INSERT INTO events(id,project_id,event_type,importance,summary,payload_json,project_revision,created_at)
+        VALUES(?1,?2,'source.projected','normal','Legacy source projection',?3,?4,1)",
+        rusqlite::params![id.to_string(), f.project.id.to_string(), serde_json::json!({"source_id":f.source.id,"fingerprint":"historical-value"}).to_string(), (baseline+1) as i64]).unwrap();
+    db.execute(
+        "UPDATE projects SET project_revision=project_revision+1 WHERE id=?1",
+        [f.project.id.to_string()],
+    )
+    .unwrap();
+    let delta = f
+        .store
+        .delta_events(f.project.id, baseline + 1, wid, None, baseline, 2, 2)
+        .unwrap();
+    assert_eq!(delta.source_changes[0].legacy_events, 1);
+    assert!(!delta.source_changes[0].before_known);
+    assert!(delta.source_changes[0].before.is_none());
+    assert!(delta.source_changes[0].after.is_none());
+    assert!(delta.source_changes[0].changed_entities.is_empty());
+    assert_eq!(delta.source_changes[0].last_event.id, id);
+    assert_eq!(
+        f.store.event(f.project.id, id).unwrap().payload["fingerprint"],
+        "historical-value"
+    );
+    for kind in [
+        "source.projected",
+        "source.retired",
+        "source.registered",
+        "source.configured",
+        "source.freshness_changed",
+    ] {
+        let mut forged = EventDraft::new(kind, "Fabricated source change");
+        forged.payload = serde_json::json!({"source_id":f.source.id});
+        assert!(matches!(
+            f.store.append_event(f.project.id, baseline + 1, forged),
+            Err(Error::InvalidInput(_))
+        ));
+    }
+    assert_eq!(
+        f.store.project(f.project.id).unwrap().project_revision,
+        baseline + 1
+    );
+    let all = f
+        .store
+        .delta_events(f.project.id, baseline + 1, wid, None, 0, 2, 2)
+        .unwrap();
+    assert!(!all.source_changes[0].before.is_some());
+    assert!(all.source_changes[0].before_known); // The initial registration is known to have no predecessor.
+    assert!(all.source_changes[0].event_count >= 3);
+}
+
+#[test]
 fn event_scope_conflicts_and_ended_sessions_cannot_append() {
     let mut f = Fixture::new();
     let other = work(&f, "OTHER");

@@ -1,0 +1,75 @@
+{
+  "work_item": "AWR-P4-005",
+  "checked_at": "2026-09-08T06:07:13+08:00",
+  "checks": [
+    {
+      "name": "recent_delta",
+      "passed": true,
+      "result": "cargo test --locked -p awr-context --test recent_delta: 2/2. Checkpoint/session/revision baselines, cross-work and future-baseline rejection, exact source/edge additions/updates/removals, fingerprint-only updates, bounded critical/high summaries, irrelevant-work exclusion, folded old/normal history, immutable payload drill-down, retirement and explicit omitted counts."
+    },
+    {
+      "name": "source_event_regression",
+      "passed": true,
+      "result": "awr-store events 4/4 and projection_queries 2/2; awr-source indexer 3/3 and directory 3/3. Legacy event history remains unknown; source names are reserved; source identity, removals, unchanged content and mapping changes retain existing semantics."
+    },
+    {
+      "name": "workspace_build",
+      "passed": true,
+      "result": "cargo build --locked --workspace and --workspace --examples completed. git diff --check passed."
+    },
+    {
+      "name": "actual_project_delta",
+      "passed": true,
+      "result": "Actual project checkpoint at revision 131, refreshed delta at 134: one ledger source, two source events, precisely AWR-P4-005 updated from entity revision 4 to 5 with stable ID. Six older source events since revision 124 remain explicit legacy gaps. Session ended and doctor passed."
+    }
+  ],
+  "observed": {
+    "baseline_checkpoint": "01M1YYFX1Q7AN9Y74Z3ZZQR81X",
+    "baseline_revision": 131,
+    "project_revision": 134,
+    "source_count": 1,
+    "source_events": 2,
+    "changed_entities": [
+      {
+        "kind": "work_items",
+        "id": "01M1YJBR6D6K3KY48PEPNAP0X1",
+        "external_key": "AWR-P4-005",
+        "latest_action": "updated",
+        "before_revision": 4,
+        "after_revision": 5,
+        "occurrences": 1,
+        "first_event": {
+          "id": "01M1YYH11JQEM39N8F02NW49ZH",
+          "project_revision": 134,
+          "created_at": 1788818785330
+        },
+        "last_event": {
+          "id": "01M1YYH11JQEM39N8F02NW49ZH",
+          "project_revision": 134,
+          "created_at": 1788818785330
+        }
+      }
+    ],
+    "legacy_events_since_124": 6,
+    "legacy_gaps": [
+      "source 01M1YJBR60M3XP7YCYGK0A4VGC: 6 legacy events lack historical entity changes"
+    ],
+    "session_id": "01M1YXZPTNHH2A338FVTX98FY3",
+    "final_checkpoint_id": "01M1YYJG1CY4JXQMZ4MQ3X4YEV",
+    "final_project_revision": 136,
+    "doctor_ok": true
+  },
+  "artifacts": [
+    "crates/awr-context/src/delta.rs",
+    "crates/awr-context/tests/recent_delta.rs",
+    "crates/awr-context/examples/delta_project.rs",
+    "crates/awr-store/src/delta.rs",
+    "crates/awr-store/src/source_changes.rs",
+    "crates/awr-store/src/projection.rs",
+    "crates/awr-store/src/catalog.rs",
+    "crates/awr-store/tests/events.rs"
+  ],
+  "limitations": [
+    "Source-refreshed developer entry point and snapshot library; full L1 budgeting/admission, CLI integration and branch overlays remain scheduled. Legacy events are not rewritten. Default summary limits expose omitted counts and preserve original event lookup. System regression, benchmarks and real-client E4 acceptance remain uncompleted."
+  ]
+}

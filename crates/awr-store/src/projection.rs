@@ -2,6 +2,7 @@ use crate::{
     Store,
     catalog::{SOURCE_COLUMNS, id_at, revision_at, source_row},
     db_error,
+    source_changes::{self, SourceState, projection_versions},
 };
 use awr_core::{
     EntityKind, Error, EventDraft, Freshness, Id, ProjectionBatch, Result, Source, SourceRef,
@@ -145,9 +146,13 @@ impl Store {
         let mut event =
             EventDraft::new("source.configured", "Source parsing configuration changed");
         event.payload = json!({"source_id":expected.id});
-        let (source, _) =
-            self.runtime_transaction(expected.project_id, revision, event, |tx, _| {
+        let (source, _) = self.runtime_transaction_with_event(
+            expected.project_id,
+            revision,
+            event,
+            |tx, _, event| {
                 let mut source = checked_source(tx, expected)?;
+                let before = SourceState::from_source(&source, true);
                 tx.execute(
                     "UPDATE sources SET config_json=?1,freshness='stale' WHERE id=?2",
                     params![serde_json::to_string(&config)?, source.id.to_string()],
@@ -155,8 +160,15 @@ impl Store {
                 .map_err(db_error)?;
                 source.config = config;
                 source.freshness = Freshness::Stale;
+                source_changes::annotate(
+                    event,
+                    Some(before),
+                    SourceState::from_source(&source, true),
+                    vec![],
+                )?;
                 Ok(source)
-            })?;
+            },
+        )?;
         Ok(source)
     }
 
@@ -168,13 +180,18 @@ impl Store {
             "Source removed from the active authority mapping",
         );
         event.payload = json!({"source_id":expected.id});
-        self.runtime_transaction(expected.project_id,revision,event,|tx,_| {
-            checked_source(tx,expected)?;
+        self.runtime_transaction_with_event(expected.project_id,revision,event,|tx,_,event| {
+            let mut source = checked_source(tx,expected)?;
+            let before = SourceState::from_source(&source, true);
+            let versions = projection_versions(tx, &source)?;
             for name in KINDS.into_iter().map(table).chain(["edges"]) {
                 tx.execute(&format!("UPDATE {name} SET active=0 WHERE project_id=?1 AND source_id=?2 AND active=1"),
                     params![expected.project_id.to_string(),expected.id.to_string()]).map_err(db_error)?;
             }
             tx.execute("UPDATE sources SET active=0,freshness='stale',revision=revision+1 WHERE id=?1",[expected.id.to_string()]).map_err(db_error)?;
+            source.revision += 1;
+            source.freshness = Freshness::Stale;
+            source_changes::annotate(event, Some(before), SourceState::from_source(&source, false), source_changes::changes(&versions, &BTreeMap::new()))?;
             Ok(())
         })?;
         Ok(())
@@ -210,9 +227,13 @@ impl Store {
             "Source requires a successful projection",
         );
         event.payload = json!({"source_id":expected.id,"freshness":freshness});
-        let (source, _) =
-            self.runtime_transaction(expected.project_id, revision, event, |tx, _| {
+        let (source, _) = self.runtime_transaction_with_event(
+            expected.project_id,
+            revision,
+            event,
+            |tx, _, event| {
                 let mut source = checked_source(tx, expected)?;
+                let before = SourceState::from_source(&source, true);
                 tx.execute(
                     "UPDATE sources SET freshness=?1 WHERE id=?2",
                     params![
@@ -222,8 +243,15 @@ impl Store {
                 )
                 .map_err(db_error)?;
                 source.freshness = freshness;
+                source_changes::annotate(
+                    event,
+                    Some(before),
+                    SourceState::from_source(&source, true),
+                    vec![],
+                )?;
                 Ok(source)
-            })?;
+            },
+        )?;
         Ok(source)
     }
 
@@ -291,8 +319,10 @@ impl Store {
         let mut event = EventDraft::new("source.projected", "Source projection committed");
         event.payload = json!({"source_id":expected.id,"source_revision":expected.revision+1,
             "fingerprint":fingerprint,"warnings":payload["warnings"]});
-        let (source,_)=self.runtime_transaction(expected.project_id,revision,event,|tx,_| {
+        let (source,_)=self.runtime_transaction_with_event(expected.project_id,revision,event,|tx,_,event| {
             let mut source=checked_source(tx,expected)?;
+            let before = SourceState::from_source(&source, true);
+            let previous = projection_versions(tx, &source)?;
             for kind in KINDS {
                 let rows=payload[table(kind)].as_array().ok_or_else(||Error::InvalidInput("missing projection batch".into()))?;
                 let mut keys=BTreeSet::new();
@@ -311,6 +341,8 @@ impl Store {
             source.revision+=1;
             source.fingerprint=fingerprint.into();
             source.freshness=Freshness::Fresh;
+            let next = projection_versions(tx, &source)?;
+            source_changes::annotate(event, Some(before), SourceState::from_source(&source, true), source_changes::changes(&previous, &next))?;
             Ok(source)
         })?;
         Ok(source)
