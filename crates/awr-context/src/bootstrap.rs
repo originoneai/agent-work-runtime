@@ -1,3 +1,4 @@
+use crate::{RuleScopeInput, SourceVersion, select_rules};
 use awr_core::*;
 use awr_source::{Manifest, index_project};
 use awr_store::Store;
@@ -34,14 +35,6 @@ pub struct BootstrapWork {
     pub blocker: Option<String>,
     pub revision: Revision,
     pub source_ref: SourceRef,
-}
-#[derive(Debug, Clone, Serialize)]
-pub struct SourceVersion {
-    pub id: Id,
-    pub revision: Revision,
-    pub fingerprint: String,
-    pub freshness: Freshness,
-    pub locator: String,
 }
 #[derive(Debug, Clone, Serialize)]
 pub struct BootstrapGap {
@@ -358,39 +351,31 @@ pub fn bootstrap(
             "no rules source is configured or available",
         );
     }
-    // Empty path/tag metadata is unknown here; absence is not proof that scoped hard rules do not apply.
-    let rule_context = RuleContext {
-        project_key: Some(project.external_key.clone()),
-        work_item_key: selected.as_ref().map(|w| w.item.meta.external_key.clone()),
-        paths: selected
-            .as_ref()
-            .filter(|w| !w.item.paths.is_empty())
-            .map(|w| w.item.paths.clone()),
-        tags: selected
-            .as_ref()
-            .filter(|w| !w.item.tags.is_empty())
-            .map(|w| w.item.tags.clone()),
-        agent_id: request
-            .agent_id
-            .clone()
-            .or_else(|| session.as_ref().map(|s| s.agent_id.clone())),
-    };
+    let selection = select_rules(
+        store,
+        &project,
+        selected.as_ref(),
+        &RuleScopeInput {
+            agent_id: request
+                .agent_id
+                .clone()
+                .or_else(|| session.as_ref().map(|s| s.agent_id.clone())),
+            ..Default::default()
+        },
+    )?;
     let mut critical_rules = Vec::new();
-    for matched in store.rules_for(project.id, &rule_context)? {
-        if matched.applicability == Applicability::Unknown {
-            used_sources.insert(matched.rule.source.id);
-            gap(
-                &mut gaps,
-                "rule_applicability_unknown",
-                reference(&matched.rule.item.meta),
-                matched.reasons.join("; "),
-            );
-        } else if matched.applicability == Applicability::Applicable
-            && matched.rule.item.severity == Some(Severity::Hard)
-        {
-            used_sources.insert(matched.rule.source.id);
-            critical_rules.push(matched.rule.item);
-        }
+    for matched in selection.unknown {
+        used_sources.insert(matched.rule.source.id);
+        gap(
+            &mut gaps,
+            "rule_applicability_unknown",
+            reference(&matched.rule.item.meta),
+            matched.reasons.join("; "),
+        );
+    }
+    for rule in selection.hard {
+        used_sources.insert(rule.source.id);
+        critical_rules.push(rule.item);
     }
     for source in sources.iter().filter(|s| s.domain == "rules") {
         used_sources.insert(source.id);

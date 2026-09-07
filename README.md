@@ -179,7 +179,9 @@ Unchanged sources are skipped. Content and parser-configuration changes trigger 
 
 Running the indexer against a new database rebuilds source projections. Runtime events, sessions and checkpoints require the original database or its backup; they cannot be reconstructed from a work ledger. Source indexing creates new indexing events, not copies of previous work history.
 
-L1 compilation follows in its ledger items. The current project's unannotated rules produce explicit scope/severity gaps in L0 until an explicit mapping is supplied for context use.
+L1 compilation follows in its ledger items. This project's rule headings now explicitly declare project scope: five substantive sections are hard rules, and the document heading is informational. Their text is unchanged. Including all applicable hard sections can exceed the default L0 budget; use an explicit larger budget to inspect the complete payload. This is not a passed 1,000-token benchmark.
+
+The context library also assembles an indivisible hard-fact subset with exact work IDs, raw/normalized status, acceptance, blocker, next action, rule text and source revisions/fingerprints. Rule selection covers project, concrete paths, tags, work and agent; it keeps unresolved applicability separate from exclusions and retains work-source tags. Directory/glob path scopes remain unknown unless the caller supplies concrete paths. Hard-context completeness concerns this subset only; dependency/evidence admission and branch overlays remain separate work items.
 
 Python 3.11+ is sufficient for this repository's planning tools. Rust is pinned in rust-toolchain.toml and dependency resolution is committed in Cargo.lock.
 
