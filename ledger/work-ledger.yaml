@@ -1,8 +1,8 @@
 schema_version: 1
 contract_id: awr-v1
 contract_version: 1.0.0
-ledger_revision: 1
-updated_at: '2026-09-08T00:24:55+08:00'
+ledger_revision: 2
+updated_at: '2026-09-08T00:29:57+08:00'
 project:
   name: Agent Work Runtime
   external_key: agent-work-runtime
@@ -10,15 +10,16 @@ project:
   authority_mode: source_first
   release_status: not_released
 current:
-  milestone: M0
-  work_item: AWR-BOOT-001
-  next_action: 固化仓库、原始方案、范围合同和台账，校验后提交并推送；之后从 AWR-P0-001 开始功能开发。
+  milestone: M1
+  work_item: AWR-P0-001
+  next_action: 认领 AWR-P0-001，固定 Rust 工具链，建立 Cargo Workspace、核心类型和 awr --help/--version 入口。
   open_loops:
-  - V1 功能尚未开始实现。
-  - 真实验收项目和独立复核者在 M9 前确定。
+  - V1 功能尚未开始实现，当前处于开工就绪状态。
+  - 首次真实 YAML 台账 schema 在 P1 接入时确定。
+  - 真实验收项目、独立复核者和跨平台环境在 M9 前落实。
 milestones:
 - id: M0
-  status: in_progress
+  status: completed
 - id: M1
   status: planned
 - id: M2
@@ -46,7 +47,7 @@ work_items:
   priority: P0
   kind: preparation
   required_for_v1: false
-  status: in_progress
+  status: completed
   owner: codex-primary
   depends_on: []
   source_sections:
@@ -66,18 +67,19 @@ work_items:
   verification:
     minimum: 证明本条验收行为；功能阶段运行必要的定向检查，系统测试在 M9 集中执行。
     evidence_directory: ledger/evidence/AWR-BOOT-001
-    evidence_level: none
-  evidence: []
+    evidence_level: locally_verified
+  evidence:
+  - ledger/deliveries/2026-09-08-preparation.json
   blocker: null
-  next_action: 按交付物实现并验证：公开仓库、Apache 2.0 与原始方案基线
+  next_action: 筹备交付已核实；按依赖进入下一项。
 - id: AWR-BOOT-002
   title: V1 范围合同、完整台账与章节覆盖
   milestone: M0
   priority: P0
   kind: preparation
   required_for_v1: false
-  status: planned
-  owner: null
+  status: completed
+  owner: codex-primary
   depends_on:
   - AWR-BOOT-001
   source_sections:
@@ -102,18 +104,19 @@ work_items:
   verification:
     minimum: 证明本条验收行为；功能阶段运行必要的定向检查，系统测试在 M9 集中执行。
     evidence_directory: ledger/evidence/AWR-BOOT-002
-    evidence_level: none
-  evidence: []
+    evidence_level: locally_verified
+  evidence:
+  - ledger/deliveries/2026-09-08-preparation.json
   blocker: null
-  next_action: 按交付物实现并验证：V1 范围合同、完整台账与章节覆盖
+  next_action: 筹备交付已核实；按依赖进入下一项。
 - id: AWR-BOOT-003
   title: 开工入口、台账校验与交接
   milestone: M0
   priority: P0
   kind: preparation
   required_for_v1: false
-  status: planned
-  owner: null
+  status: completed
+  owner: codex-primary
   depends_on:
   - AWR-BOOT-002
   source_sections:
@@ -133,17 +136,18 @@ work_items:
   verification:
     minimum: 证明本条验收行为；功能阶段运行必要的定向检查，系统测试在 M9 集中执行。
     evidence_directory: ledger/evidence/AWR-BOOT-003
-    evidence_level: none
-  evidence: []
+    evidence_level: locally_verified
+  evidence:
+  - ledger/deliveries/2026-09-08-preparation.json
   blocker: null
-  next_action: 按交付物实现并验证：开工入口、台账校验与交接
+  next_action: 筹备交付已核实；按依赖进入下一项。
 - id: AWR-P0-001
   title: Cargo Workspace、CLI 入口与核心类型
   milestone: M1
   priority: P0
   kind: feature
   required_for_v1: true
-  status: planned
+  status: ready
   owner: null
   depends_on:
   - AWR-BOOT-003

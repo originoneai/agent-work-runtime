@@ -1,0 +1,107 @@
+{
+  "kind": "preparation",
+  "repository": "https://github.com/originoneai/agent-work-runtime",
+  "source_commit": "5182d80625cd3c8c24642376625302a93907aeb8",
+  "checked_at": "2026-09-07T16:29:12Z",
+  "remote_receipt": {
+    "commit": "5182d80625cd3c8c24642376625302a93907aeb8",
+    "url": "https://github.com/originoneai/agent-work-runtime/commit/5182d80625cd3c8c24642376625302a93907aeb8",
+    "verified_at": "2026-09-07T16:29:12Z",
+    "methods": [
+      "git ls-remote origin refs/heads/main",
+      "GitHub REST commits/main"
+    ]
+  },
+  "repository_metadata": {
+    "default_branch": "main",
+    "full_name": "originoneai/agent-work-runtime",
+    "html_url": "https://github.com/originoneai/agent-work-runtime",
+    "license": "Apache-2.0",
+    "visibility": "public"
+  },
+  "checks": [
+    {
+      "name": "public_repository_and_license",
+      "passed": true,
+      "result": "GitHub REST confirms originoneai/agent-work-runtime is public, main is default, and license is Apache-2.0."
+    },
+    {
+      "name": "planning_contract",
+      "passed": true,
+      "result": "check_ledger.py passed with 59 V1 tasks, 3 preparation items, 58 design sections, 8 business scenarios, 10 metrics, and V1 completion 0/59."
+    },
+    {
+      "name": "negative_validation",
+      "passed": true,
+      "result": "9 deliberately invalid planning cases were rejected; detailed results are in the preparation check report."
+    },
+    {
+      "name": "design_and_links",
+      "passed": true,
+      "result": "Original design SHA-256 unchanged; all 30 recommended work IDs retained; 30 local document links resolved."
+    },
+    {
+      "name": "staged_diff",
+      "passed": true,
+      "result": "git diff --cached --check passed before the baseline commit; 17 explicit preparation paths were staged."
+    },
+    {
+      "name": "remote_landing",
+      "passed": true,
+      "result": "Local HEAD, Git transport main ref and GitHub REST main commit all equal 5182d80625cd3c8c24642376625302a93907aeb8."
+    }
+  ],
+  "artifacts": [
+    "LICENSE",
+    "README.md",
+    "contracts/awr-v1.json",
+    "ledger/work-ledger.yaml",
+    "ledger/README.md",
+    "AGENTS.md",
+    "docs/KICKOFF.md",
+    "scripts/check_ledger.py",
+    "ledger/evidence/preparation/2026-09-08-checks.json"
+  ],
+  "work_items": {
+    "AWR-BOOT-001": {
+      "acceptance": [
+        {
+          "criterion": "originoneai/agent-work-runtime 为 Public，默认分支 main，许可证识别为 Apache-2.0。",
+          "passed": true
+        },
+        {
+          "criterion": "原始方案原样入库，SHA-256 与导入基线一致。",
+          "passed": true
+        }
+      ]
+    },
+    "AWR-BOOT-002": {
+      "acceptance": [
+        {
+          "criterion": "合同固定 V1 任务、业务场景目标数及完成门槛，台账唯一保存状态。",
+          "passed": true
+        },
+        {
+          "criterion": "原方案 0–57 节全部有映射，依赖图无环，功能任务优先于安全和系统测试。",
+          "passed": true
+        }
+      ]
+    },
+    "AWR-BOOT-003": {
+      "acceptance": [
+        {
+          "criterion": "新会话可定位第一项可执行任务、实现边界、检查方式和交接位置。",
+          "passed": true
+        },
+        {
+          "criterion": "台账校验通过；提交与推送证据可核对，未实现功能保持未完成。",
+          "passed": true
+        }
+      ]
+    }
+  },
+  "limitations": [
+    "This delivery is repository and planning preparation only.",
+    "No AWR Rust runtime, product E2E, real business scenario or release has been completed."
+  ]
+}
