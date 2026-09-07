@@ -1,7 +1,7 @@
 schema_version: 1
 contract_id: awr-v1
 contract_version: 1.0.0
-ledger_revision: 29
+ledger_revision: 30
 updated_at: '2026-09-08T02:16:26+08:00'
 project:
   name: Agent Work Runtime
@@ -460,6 +460,9 @@ work_items:
   - examples/basic/
   - README.md
   - .awr/project.toml
+  - crates/awr-source/
+  - crates/awr-store/
+  - Cargo.lock
   acceptance:
   - awr init 发现候选来源并显式确认 authority mapping；已有配置不被覆盖。
   - source list/scan/reindex 可用，运行态数据库和产物默认不入 Git。

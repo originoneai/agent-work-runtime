@@ -1,6 +1,7 @@
 use awr_core::{Error, Result};
 use clap::{CommandFactory, Parser, Subcommand};
 use std::path::PathBuf;
+mod source;
 
 #[derive(Debug, Parser)]
 #[command(
@@ -19,6 +20,18 @@ struct Cli {
 
 #[derive(Debug, Subcommand)]
 enum Command {
+    /// Preview source authority mapping; --accept initializes using the reviewed mapping.
+    Init {
+        #[arg(long)]
+        manifest: Option<PathBuf>,
+        #[arg(long)]
+        accept: bool,
+    },
+    /// List, scan or index authoritative project sources.
+    Source {
+        #[command(subcommand)]
+        command: source::SourceCommand,
+    },
     /// Inspect an existing AWR database without creating or repairing it.
     Doctor {
         #[arg(long)]
@@ -30,6 +43,10 @@ enum Command {
 
 fn run(cli: &Cli) -> Result<()> {
     match &cli.command {
+        Some(Command::Init { manifest, accept }) => {
+            source::initialize(&cli.project, manifest.as_deref(), *accept, cli.json)
+        }
+        Some(Command::Source { command }) => source::run(&cli.project, command, cli.json),
         Some(Command::Doctor { database }) => {
             let path = database
                 .clone()

@@ -35,6 +35,7 @@ pub struct IndexReport {
     pub indexed: usize,
     pub unchanged: usize,
     pub retired: usize,
+    pub pending: usize,
     pub sources: Vec<IndexedSource>,
     pub issues: Vec<IndexIssue>,
 }
@@ -91,6 +92,20 @@ pub fn index_project(
     manifest: &Manifest,
     force: bool,
 ) -> Result<IndexReport> {
+    process_project(store, root, manifest, Some(force))
+}
+
+/// Refresh source registry and availability without parsing or promoting pending facts to fresh.
+pub fn scan_project(store: &mut Store, root: &Path, manifest: &Manifest) -> Result<IndexReport> {
+    process_project(store, root, manifest, None)
+}
+
+fn process_project(
+    store: &mut Store,
+    root: &Path,
+    manifest: &Manifest,
+    mode: Option<bool>,
+) -> Result<IndexReport> {
     manifest.validate()?;
     let project = store.register_project(
         root,
@@ -109,6 +124,7 @@ pub fn index_project(
         indexed: 0,
         unchanged: 0,
         retired: 0,
+        pending: 0,
         sources: vec![],
         issues: vec![],
     };
@@ -182,21 +198,26 @@ pub fn index_project(
                 &key,
                 &locator,
                 &identity,
-                force,
+                mode,
             );
             match outcome {
                 Ok((source, indexed, warnings)) => {
                     seen.insert(source.id);
-                    if indexed {
-                        report.indexed += 1;
-                    } else {
-                        report.unchanged += 1;
-                    }
-                    report.source(
-                        source,
-                        if indexed { "indexed" } else { "unchanged" },
-                        warnings,
-                    );
+                    let action = match indexed {
+                        Some(true) => {
+                            report.indexed += 1;
+                            "indexed"
+                        }
+                        Some(false) => {
+                            report.unchanged += 1;
+                            "unchanged"
+                        }
+                        None => {
+                            report.pending += 1;
+                            "pending"
+                        }
+                    };
+                    report.source(source, action, warnings);
                 }
                 Err(error) => {
                     report.issue(&key, Some(&identity), &error);
@@ -246,8 +267,8 @@ fn index_one(
     key: &str,
     locator: &Locator,
     identity: &str,
-    force: bool,
-) -> Result<(Source, bool, Vec<String>)> {
+    mode: Option<bool>,
+) -> Result<(Source, Option<bool>, Vec<String>)> {
     let project = store.project_by_root(root)?;
     let source = store.register_source(
         project.id,
@@ -275,9 +296,13 @@ fn index_one(
         .snapshot
         .ok_or_else(|| Error::SourceUnavailable("source returned no snapshot".into()))?;
     let mut source = observed.source;
-    if !force && !observed.changed && source.freshness == Freshness::Fresh {
+    if mode != Some(true) && !observed.changed && source.freshness == Freshness::Fresh {
         let warnings = store.source_warnings(&source)?;
-        return Ok((source, false, warnings));
+        return Ok((source, Some(false), warnings));
+    }
+    if mode.is_none() {
+        let warnings = store.source_warnings(&source)?;
+        return Ok((source, None, warnings));
     }
     source = store.mark_source_freshness(&source, Freshness::Stale)?;
     let context = ParseContext {
@@ -294,5 +319,5 @@ fn index_one(
         ));
     }
     adapter.project(store, &source, &snapshot, batch)?;
-    Ok((store.source(project.id, source.id)?, true, warnings))
+    Ok((store.source(project.id, source.id)?, Some(true), warnings))
 }

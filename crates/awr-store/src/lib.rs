@@ -43,6 +43,30 @@ pub(crate) fn db_error(error: rusqlite::Error) -> Error {
 }
 
 impl Store {
+    /// Open the current schema for queries without creating or upgrading database state.
+    pub fn open_readonly(path: &Path) -> Result<Self> {
+        if !path.is_file() {
+            return Err(Error::NotFound(format!("AWR database: {}", path.display())));
+        }
+        let conn = Connection::open_with_flags(path, OpenFlags::SQLITE_OPEN_READ_ONLY)
+            .map_err(db_error)?;
+        Self::configure(&conn)?;
+        let owner: i64 = conn
+            .pragma_query_value(None, "application_id", |r| r.get(0))
+            .map_err(db_error)?;
+        let version: i64 = conn
+            .pragma_query_value(None, "user_version", |r| r.get(0))
+            .map_err(db_error)?;
+        if owner != APPLICATION_ID || version != SCHEMA_VERSION {
+            return Err(Error::Storage(
+                "read queries require a current AWR database; use doctor to inspect it".into(),
+            ));
+        }
+        let store = Self { conn };
+        store.verify_catalog()?;
+        Ok(store)
+    }
+
     /// Create or reopen an AWR database. Refuse unrelated databases.
     pub fn open(path: &Path) -> Result<Self> {
         let mut conn = Connection::open(path).map_err(db_error)?;

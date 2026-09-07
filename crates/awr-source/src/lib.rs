@@ -12,7 +12,9 @@ pub use adapter::{ParseContext, ProjectionBatch, SourceAdapter};
 pub use awr_core::{Error, Result};
 pub use directory::{DirectoryDelta, DirectoryInventory, MarkdownDirectoryAdapter};
 pub use freshness::{SourceObservation, observe_source};
-pub use indexer::{IndexIssue, IndexReport, IndexedSource, index_project, source_adapter};
+pub use indexer::{
+    IndexIssue, IndexReport, IndexedSource, index_project, scan_project, source_adapter,
+};
 pub use locator::{Locator, SourceSnapshot, fingerprint, read_capped};
 pub use manifest::{Manifest, ProjectConfig, SourceSpec};
 pub use markdown::{

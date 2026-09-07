@@ -57,9 +57,11 @@ name = "awr-cli"
 version = "0.1.0-dev"
 dependencies = [
  "awr-core",
+ "awr-source",
  "awr-store",
  "clap",
  "serde_json",
+ "toml",
 ]
 
 [[package]]

@@ -1,0 +1,13 @@
+work_items:
+  - id: EXAMPLE-001
+    title: Exercise source intake
+    status: ready
+    goal: goal#demo
+    required: true
+    priority: P0
+    acceptance:
+      - List the configured project sources.
+      - Repeat indexing and confirm unchanged sources are skipped.
+    depends_on: []
+    next_action: Initialize using the reviewed project.toml mapping.
+    evidence: []
