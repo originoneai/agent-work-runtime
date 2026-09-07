@@ -1,12 +1,15 @@
 //! SQLite persistence. Callers use domain operations, never an exposed SQL handle.
+mod catalog;
 use awr_core::{Error, Result, now_millis};
+pub use catalog::SourceRegistration;
 use rusqlite::{Connection, OpenFlags, TransactionBehavior};
 use serde::Serialize;
 use std::{path::Path, time::Duration};
 
 const APPLICATION_ID: i64 = 0x41575231;
-const SCHEMA_VERSION: i64 = 1;
+const SCHEMA_VERSION: i64 = 2;
 const CATALOG_SQL: &str = include_str!("../migrations/001_catalog.sql");
+const DOMAIN_SQL: &str = include_str!("../migrations/002_domain.sql");
 
 pub struct Store {
     pub(crate) conn: Connection,
@@ -84,7 +87,7 @@ impl Store {
                 )));
             }
         }
-        if current == 0 {
+        if current < SCHEMA_VERSION {
             let tx = conn
                 .transaction_with_behavior(TransactionBehavior::Immediate)
                 .map_err(db_error)?;
@@ -100,9 +103,17 @@ impl Store {
                 .map_err(db_error)?;
                 tx.pragma_update(None, "application_id", APPLICATION_ID)
                     .map_err(db_error)?;
-                tx.pragma_update(None, "user_version", SCHEMA_VERSION)
-                    .map_err(db_error)?;
             }
+            if version < 2 {
+                tx.execute_batch(DOMAIN_SQL).map_err(db_error)?;
+                tx.execute(
+                    "INSERT INTO schema_migrations(version,name,applied_at) VALUES(2,'domain',?1)",
+                    [now_millis()?],
+                )
+                .map_err(db_error)?;
+            }
+            tx.pragma_update(None, "user_version", SCHEMA_VERSION)
+                .map_err(db_error)?;
             tx.commit().map_err(db_error)?;
         }
         let store = Self { conn };

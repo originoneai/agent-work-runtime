@@ -6,6 +6,17 @@ pub type Revision = u64;
 
 #[derive(Debug, Clone, Copy, Serialize, Deserialize, PartialEq, Eq)]
 #[serde(rename_all = "snake_case")]
+pub enum EntityKind {
+    Goal,
+    Plan,
+    Rule,
+    WorkItem,
+    Decision,
+    Evidence,
+}
+
+#[derive(Debug, Clone, Copy, Serialize, Deserialize, PartialEq, Eq)]
+#[serde(rename_all = "snake_case")]
 pub enum AuthorityMode {
     SourceFirst,
 }
@@ -182,8 +193,10 @@ pub struct WorkItem {
 pub struct Edge {
     pub id: Id,
     pub project_id: Id,
+    pub from_kind: EntityKind,
     pub from_key: String,
     pub relation: String,
+    pub to_kind: EntityKind,
     pub to_key: String,
     pub required: bool,
     pub revision: Revision,
