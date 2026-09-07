@@ -1,0 +1,67 @@
+{
+  "kind": "implementation",
+  "repository": "https://github.com/originoneai/agent-work-runtime",
+  "source_commit": "2ce6d66ac6f5e54faabade43080bfc240e522aff",
+  "checked_at": "2026-09-08T07:50:16+08:00",
+  "remote_receipt": {
+    "commit": "2ce6d66ac6f5e54faabade43080bfc240e522aff",
+    "url": "https://github.com/originoneai/agent-work-runtime/commit/2ce6d66ac6f5e54faabade43080bfc240e522aff",
+    "verified_at": "2026-09-08T07:50:59+08:00"
+  },
+  "checks": [
+    {
+      "name": "compact_checkpoint_cli",
+      "passed": true,
+      "result": "awr-cli session_cli 5/5: exact-session process references, observed source/runtime artifact changes, caller-reported references kept separate, no raw bodies or another session history, stable persisted deltas and previous-checkpoint baselines, metadata/body size guards, interrupted-attempt visibility and stale-attempt rejection; existing handoff and cleanup behavior retained."
+    },
+    {
+      "name": "atomic_checkpoint_save",
+      "passed": true,
+      "result": "awr-store checkpoint_save 2/2: injected completion-event insertion failure rolls back checkpoint row, latest pointer and revision, while the durable attempt survives reopening. Retrying an unchanged attempt completes once; legacy checkpoint delta remains explicitly absent; invalid drafts and forged receipt types do not mutate state."
+    },
+    {
+      "name": "related_contract_regression",
+      "passed": true,
+      "result": "awr-store checkpoints 2/2 and events 4/4; awr-cli bootstrap_cli 3/3, context_compile_cli 4/4 and drill_cli 3/3; awr-runtime artifacts 2/2 passed."
+    },
+    {
+      "name": "workspace_build",
+      "passed": true,
+      "result": "cargo check --locked --workspace, cargo build --locked --workspace and --workspace --examples, cargo fmt --all --check and git diff --check passed. No database schema migration."
+    },
+    {
+      "name": "actual_project_checkpoint_save",
+      "passed": true,
+      "result": "Used the actual development session and real ledger progress update. A complete L1 pack at revision 183 (4997 tokens) supplied the saved context hash. The checkpoint captured one session event, two source observations and the real AWR-P5-001 entity revision 4 -> 5; two caller-reported code references stayed separate. Start/completion receipts, saved delta and latest checkpoint agree. The save committed at revision 185, session ended at 186, unfinished attempts were zero, source bytes were unchanged by checkpoint saving and doctor passed. Final bounded reader output matched the immutable completion receipt."
+    }
+  ],
+  "artifacts": [
+    "crates/awr-store/src/checkpoint_save.rs",
+    "crates/awr-store/src/checkpoint.rs",
+    "crates/awr-store/tests/checkpoint_save.rs",
+    "crates/awr-runtime/src/lib.rs",
+    "crates/awr-core/src/error.rs",
+    "crates/awr-cli/src/session.rs",
+    "crates/awr-cli/src/drill.rs",
+    "crates/awr-cli/tests/session_cli.rs",
+    "README.md",
+    "ledger/evidence/AWR-P5-001/checks.json"
+  ],
+  "work_items": {
+    "AWR-P5-001": {
+      "acceptance": [
+        {
+          "criterion": "checkpoint 保存真实 Session delta、digest、next action、open loops 和 context hash。",
+          "passed": true
+        },
+        {
+          "criterion": "保存中断可辨认；未完成 checkpoint 不作为成功恢复点。",
+          "passed": true
+        }
+      ]
+    }
+  },
+  "limitations": [
+    "Feature-local checks and one real project self-use observation, not E4 acceptance, system benchmarking or release. Context hash and digest remain caller supplied and explicitly labeled; saving validates hash syntax rather than independently certifying context completeness. Source changes are project observations, not authorship claims. Incomplete attempts remain visible for later reconciliation. Legacy store checkpoints remain readable without fabricated deltas. Refreshed resume and broader recovery work remain scheduled."
+  ]
+}

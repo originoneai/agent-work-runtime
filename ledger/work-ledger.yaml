@@ -1,8 +1,8 @@
 schema_version: 1
 contract_id: awr-v1
 contract_version: 1.0.0
-ledger_revision: 75
-updated_at: '2026-09-08T07:44:36+08:00'
+ledger_revision: 76
+updated_at: '2026-09-08T07:50:59+08:00'
 project:
   name: Agent Work Runtime
   external_key: agent-work-runtime
@@ -11,8 +11,8 @@ project:
   release_status: not_released
 current:
   milestone: M5
-  work_item: AWR-P5-001
-  next_action: 检查点保存协议已实现；记录本项目实际 Session delta，固化交付证据后继续 Compact Resume。
+  work_item: AWR-P5-002
+  next_action: 按交付物实现并验证：Compact / Session Resume
   open_loops:
   - 功能实现优先；集中测试、优化和打磨在功能开发后执行。
   - 本项目已用 Source、Status、Ready、Work 和 Search CLI 管理实际开发读取；继续接入 Session、Claim 和 Context。
@@ -1036,7 +1036,7 @@ work_items:
   priority: P0
   kind: feature
   required_for_v1: true
-  status: in_progress
+  status: completed
   owner: codex-primary
   depends_on:
   - AWR-P4-008
@@ -1057,17 +1057,18 @@ work_items:
   verification:
     minimum: 证明本条验收行为；功能阶段运行必要的定向检查，系统测试在 M9 集中执行。
     evidence_directory: ledger/evidence/AWR-P5-001
-    evidence_level: none
-  evidence: []
+    evidence_level: locally_verified
+  evidence:
+  - ledger/deliveries/AWR-P5-001.json
   blocker: null
-  next_action: 检查点保存协议已实现；记录本项目实际 Session delta，固化交付证据后继续 Compact Resume。
+  next_action: 已交付；继续依赖就绪的功能任务。
 - id: AWR-P5-002
   title: Compact / Session Resume
   milestone: M5
   priority: P0
   kind: feature
   required_for_v1: true
-  status: planned
+  status: ready
   owner: null
   depends_on:
   - AWR-P5-001
