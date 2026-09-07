@@ -1,0 +1,60 @@
+{
+  "kind": "implementation",
+  "repository": "https://github.com/originoneai/agent-work-runtime",
+  "source_commit": "a2acd01f4806d77278125766674ff36852057e06",
+  "checked_at": "2026-09-08T06:53:29+08:00",
+  "remote_receipt": {
+    "commit": "a2acd01f4806d77278125766674ff36852057e06",
+    "url": "https://github.com/originoneai/agent-work-runtime/commit/a2acd01f4806d77278125766674ff36852057e06",
+    "verified_at": "2026-09-08T06:53:48+08:00"
+  },
+  "checks": [
+    {
+      "name": "l1_compile_cli",
+      "passed": true,
+      "result": "cargo test --locked -p awr-cli --test context_compile_cli: 4/4. Full fact assembly, dependency blockers, exact rules/acceptance/decisions, checkpoint open loops, source updates and critical events, deterministic JSON/plain rendering and hash, no raw payload/rationale/unrelated work body, incomplete/stale/missing work, hard overflow, session ambiguity, explicit path scope and whole optional-goal omission."
+    },
+    {
+      "name": "composed_component_regression",
+      "passed": true,
+      "result": "awr-context related_work 2/2, completeness 3/3, budget 5/5, hard_context 3/3. Staged dependency/decision/evidence reads preserve existing selection and gap behavior. Required rule scope/severity and long exact acceptance survive budgeting."
+    },
+    {
+      "name": "workspace_build",
+      "passed": true,
+      "result": "cargo build --locked --workspace and --workspace --examples passed; git diff --check passed."
+    },
+    {
+      "name": "actual_project_l1",
+      "passed": true,
+      "result": "Before declaring the primary goal mapping active, four unknown goal statuses correctly produced ContextIncomplete. Goal IDs, keys, titles, summary bodies, success criteria and document fingerprints remain unchanged after explicit source configuration. At revision 163, the actual current work compiled repeatedly to identical text/hash, 4982 tokens with 3589 required tokens; five hard rules, two acceptance conditions, three accepted decisions and all seven source fingerprints were preserved. Twenty-two optional chunks were explicitly omitted. Session checkpoint/end and doctor completed."
+    }
+  ],
+  "artifacts": [
+    "crates/awr-context/src/compile.rs",
+    "crates/awr-context/src/related.rs",
+    "crates/awr-context/src/budget.rs",
+    "crates/awr-context/src/completeness.rs",
+    "crates/awr-cli/src/context.rs",
+    "crates/awr-cli/tests/context_compile_cli.rs",
+    ".awr/project.toml",
+    "ledger/evidence/AWR-P4-002/checks.json"
+  ],
+  "work_items": {
+    "AWR-P4-002": {
+      "acceptance": [
+        {
+          "criterion": "完成 freshness→任务→依赖→规则→决策→delta→证据→预算的确定性流程。",
+          "passed": true
+        },
+        {
+          "criterion": "同状态和请求产生稳定文本/JSON；核心路径无需 LLM，输出是最小充分上下文。",
+          "passed": true
+        }
+      ]
+    }
+  },
+  "limitations": [
+    "The token budget covers rendered text, excluding the diagnostic JSON envelope and model/tool transport. Goal prose and other optional fields may be omitted with explicit references; source facts and runtime claims are not promoted by compilation. Branch overlays, dedicated L2/L3 context integration, resume, system benchmarks and real-client E4 acceptance remain scheduled. This single project observation is not a formal token/compression benchmark or release gate."
+  ]
+}

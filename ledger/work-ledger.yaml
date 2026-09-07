@@ -1,8 +1,8 @@
 schema_version: 1
 contract_id: awr-v1
 contract_version: 1.0.0
-ledger_revision: 69
-updated_at: '2026-09-08T06:31:04+08:00'
+ledger_revision: 71
+updated_at: '2026-09-08T06:57:34+08:00'
 project:
   name: Agent Work Runtime
   external_key: agent-work-runtime
@@ -11,8 +11,8 @@ project:
   release_status: not_released
 current:
   milestone: M4
-  work_item: AWR-P4-002
-  next_action: 总装来源刷新、任务选择、硬事实、依赖/决策/Delta/证据、预算与完整性，并提供 context compile 命令。
+  work_item: AWR-P4-008
+  next_action: 接通 Delta、来源和事件历史及 Goal/Plan/Rule 的限量查询，使上下文省略引用可定位。
   open_loops:
   - 功能实现优先；集中测试、优化和打磨在功能开发后执行。
   - 本项目已用 Source、Status、Ready、Work 和 Search CLI 管理实际开发读取；继续接入 Session、Claim 和 Context。
@@ -809,7 +809,7 @@ work_items:
   priority: P0
   kind: feature
   required_for_v1: true
-  status: in_progress
+  status: completed
   owner: codex-primary
   depends_on:
   - AWR-P4-003
@@ -838,10 +838,11 @@ work_items:
   verification:
     minimum: 证明本条验收行为；功能阶段运行必要的定向检查，系统测试在 M9 集中执行。
     evidence_directory: ledger/evidence/AWR-P4-002
-    evidence_level: none
-  evidence: []
+    evidence_level: locally_verified
+  evidence:
+  - ledger/deliveries/AWR-P4-002.json
   blocker: null
-  next_action: 总装来源刷新、任务选择、硬事实、依赖/决策/Delta/证据、预算与完整性，并提供 context compile 命令。
+  next_action: 已交付；继续依赖就绪的功能任务。
 - id: AWR-P4-003
   title: Rule Applicability 与 Hard Context
   milestone: M4
@@ -1003,8 +1004,8 @@ work_items:
   priority: P0
   kind: feature
   required_for_v1: true
-  status: planned
-  owner: null
+  status: in_progress
+  owner: codex-primary
   depends_on:
   - AWR-P4-001
   - AWR-P4-002
@@ -1015,6 +1016,9 @@ work_items:
   - 40
   deliverables:
   - crates/awr-cli/
+  - crates/awr-context/
+  - crates/awr-store/
+  - README.md
   acceptance:
   - context bootstrap/compile/delta 与历史、来源、证据、产物引用相互可定位。
   - omitted_refs 可追溯，完整日志和无关历史默认不进入 Context。
@@ -1024,7 +1028,7 @@ work_items:
     evidence_level: none
   evidence: []
   blocker: null
-  next_action: 按交付物实现并验证：L2/L3 Drill-down 与上下文命令整合
+  next_action: 接通 Delta、来源和事件历史及 Goal/Plan/Rule 的限量查询，使上下文省略引用可定位。
 - id: AWR-P5-001
   title: Session Checkpoint 与 Compact 前保存
   milestone: M5
