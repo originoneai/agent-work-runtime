@@ -83,7 +83,7 @@ fn summary(text: &str) -> String {
     }
 }
 
-/// Select related facts from one refreshed project revision. No report body or decision rationale is read.
+/// Select related facts from one refreshed project revision without opening raw bodies.
 pub fn related_work(
     store: &Store,
     project: Id,
@@ -92,170 +92,214 @@ pub fn related_work(
     source_sha: Option<&str>,
     paths: Option<&[String]>,
 ) -> Result<RelatedWorkContext> {
-    let project = store.project(project)?;
-    if branch != project.current_branch_id {
-        return Err(Error::Unsupported("related context currently requires the selected project branch; branch overlays are scheduled".into()));
-    }
-    let work = store.work_item(project.id, work_key)?;
-    let graph = store.dependency_closure(project.id, work_key, true)?;
-    let mut ids = BTreeSet::from([work.source.id]);
-    let mut unresolved_dependencies = Vec::new();
-    let mut resolved_dependencies = Vec::new();
-    for dependency in graph.dependencies {
-        ids.insert(dependency.source.id);
-        let item = dependency.item;
-        let fact = DependencyFact {
-            meta: item.meta,
-            title: item.title,
-            status: item.status,
-            raw_status: item.raw_status,
-            next_action: item.next_action,
-            blocker: item.blocker,
-            freshness: dependency.source.freshness,
-        };
-        if fact.status == WorkStatus::Completed && fact.freshness == Freshness::Fresh {
-            resolved_dependencies.push(fact);
-        } else {
-            unresolved_dependencies.push(fact);
+    let mut selection = RelatedSelection::dependencies(store, project, work_key, branch)?;
+    selection.decisions(store, paths)?;
+    selection.evidence(store, source_sha)?;
+    selection.finish(store)
+}
+
+/// Internal staged selection lets L1 place rule and delta resolution between these read phases.
+pub(crate) struct RelatedSelection {
+    context: RelatedWorkContext,
+    ids: BTreeSet<Id>,
+}
+impl RelatedSelection {
+    pub(crate) fn dependencies(
+        store: &Store,
+        project: Id,
+        work_key: &str,
+        branch: Option<Id>,
+    ) -> Result<Self> {
+        let project = store.project(project)?;
+        if branch != project.current_branch_id {
+            return Err(Error::Unsupported("related context currently requires the selected project branch; branch overlays are scheduled".into()));
         }
-    }
-    let required_edges = graph
-        .edges
-        .into_iter()
-        .map(|edge| {
-            ids.insert(edge.source.id);
-            edge.item
+        let work = store.work_item(project.id, work_key)?;
+        let graph = store.dependency_closure(project.id, work_key, true)?;
+        let mut ids = BTreeSet::from([work.source.id]);
+        let mut unresolved_dependencies = Vec::new();
+        let mut resolved_dependencies = Vec::new();
+        for dependency in graph.dependencies {
+            ids.insert(dependency.source.id);
+            let item = dependency.item;
+            let fact = DependencyFact {
+                meta: item.meta,
+                title: item.title,
+                status: item.status,
+                raw_status: item.raw_status,
+                next_action: item.next_action,
+                blocker: item.blocker,
+                freshness: dependency.source.freshness,
+            };
+            if fact.status == WorkStatus::Completed && fact.freshness == Freshness::Fresh {
+                resolved_dependencies.push(fact);
+            } else {
+                unresolved_dependencies.push(fact);
+            }
+        }
+        let required_edges = graph
+            .edges
+            .into_iter()
+            .map(|edge| {
+                ids.insert(edge.source.id);
+                edge.item
+            })
+            .collect();
+        Ok(Self {
+            context: RelatedWorkContext {
+                project_id: project.id,
+                project_revision: project.project_revision,
+                work_item_id: work.item.meta.id,
+                work_item_key: work_key.into(),
+                branch_id: branch,
+                requested_source_sha: None,
+                unresolved_dependencies,
+                resolved_dependencies,
+                required_edges,
+                missing_dependencies: graph.missing_keys,
+                dependency_cycles: graph.cycle_keys,
+                accepted_decisions: vec![],
+                uncertain_decisions: vec![],
+                evidence: vec![],
+                evidence_gaps: vec![],
+                source_revisions: vec![],
+                source_issues: vec![],
+            },
+            ids,
         })
-        .collect();
-    let mut accepted_decisions = Vec::new();
-    let mut uncertain_decisions = Vec::new();
-    for related in store.decisions_for_work_with_paths(project.id, work_key, paths)? {
-        ids.insert(related.decision.source.id);
-        let item = related.decision.item;
-        if related.relevance == Applicability::Applicable {
-            if item.decision.trim().is_empty() {
+    }
+    pub(crate) fn decisions(&mut self, store: &Store, paths: Option<&[String]>) -> Result<()> {
+        let work_key = self.context.work_item_key.as_str();
+        let mut accepted_decisions = Vec::new();
+        let mut uncertain_decisions = Vec::new();
+        for related in
+            store.decisions_for_work_with_paths(self.context.project_id, work_key, paths)?
+        {
+            self.ids.insert(related.decision.source.id);
+            let item = related.decision.item;
+            if related.relevance == Applicability::Applicable {
+                if item.decision.trim().is_empty() {
+                    uncertain_decisions.push(DecisionGap {
+                        meta: item.meta,
+                        reasons: vec!["accepted decision statement is empty".into()],
+                    });
+                } else {
+                    accepted_decisions.push(DecisionFact {
+                        meta: item.meta,
+                        title: item.title,
+                        status: item.status,
+                        raw_status: item.raw_status,
+                        statement: item.decision,
+                        affected_keys: item.affected_keys,
+                        paths: item.paths,
+                    });
+                }
+            } else {
                 uncertain_decisions.push(DecisionGap {
                     meta: item.meta,
-                    reasons: vec!["accepted decision statement is empty".into()],
-                });
-            } else {
-                accepted_decisions.push(DecisionFact {
-                    meta: item.meta,
-                    title: item.title,
-                    status: item.status,
-                    raw_status: item.raw_status,
-                    statement: item.decision,
-                    affected_keys: item.affected_keys,
-                    paths: item.paths,
+                    reasons: related.reasons,
                 });
             }
-        } else {
-            uncertain_decisions.push(DecisionGap {
-                meta: item.meta,
-                reasons: related.reasons,
-            });
         }
+        self.context.accepted_decisions = accepted_decisions;
+        self.context.uncertain_decisions = uncertain_decisions;
+        Ok(())
     }
-    let assessments = store.evidence_for_work(project.id, work_key, source_sha, branch)?;
-    let mut evidence = Vec::new();
-    let mut evidence_gaps = Vec::new();
-    if assessments.is_empty() {
-        evidence_gaps.push(EvidenceGap {
-            code: "no_evidence",
-            reference: work_key.into(),
-            reason: "no evidence is associated with this work".into(),
-        });
-    }
-    for assessment in assessments {
-        if let Some(source) = &assessment.evidence.source {
-            ids.insert(source.id);
-        }
-        let item = assessment.evidence.item;
-        if !assessment.missing_bindings.is_empty() {
+    pub(crate) fn evidence(&mut self, store: &Store, source_sha: Option<&str>) -> Result<()> {
+        let work_key = self.context.work_item_key.as_str();
+        let branch = self.context.branch_id;
+        let assessments =
+            store.evidence_for_work(self.context.project_id, work_key, source_sha, branch)?;
+        let mut evidence = Vec::new();
+        let mut evidence_gaps = Vec::new();
+        if assessments.is_empty() {
             evidence_gaps.push(EvidenceGap {
-                code: "missing_evidence_bindings",
-                reference: item.external_key.clone(),
-                reason: assessment.missing_bindings.join(", "),
+                code: "no_evidence",
+                reference: work_key.into(),
+                reason: "no evidence is associated with this work".into(),
             });
         }
-        if assessment.currency != EvidenceCurrency::Current {
-            evidence_gaps.push(EvidenceGap {
-                code: if assessment.currency == EvidenceCurrency::Historical {
-                    "historical_evidence"
-                } else {
-                    "evidence_currency_unknown"
-                },
-                reference: item.external_key.clone(),
-                reason: assessment.reasons.join("; "),
+        for assessment in assessments {
+            if let Some(source) = &assessment.evidence.source {
+                self.ids.insert(source.id);
+            }
+            let item = assessment.evidence.item;
+            if !assessment.missing_bindings.is_empty() {
+                evidence_gaps.push(EvidenceGap {
+                    code: "missing_evidence_bindings",
+                    reference: item.external_key.clone(),
+                    reason: assessment.missing_bindings.join(", "),
+                });
+            }
+            if assessment.currency != EvidenceCurrency::Current {
+                evidence_gaps.push(EvidenceGap {
+                    code: if assessment.currency == EvidenceCurrency::Historical {
+                        "historical_evidence"
+                    } else {
+                        "evidence_currency_unknown"
+                    },
+                    reference: item.external_key.clone(),
+                    reason: assessment.reasons.join("; "),
+                });
+            }
+            if !matches!(
+                item.level,
+                EvidenceLevel::LocallyVerified
+                    | EvidenceLevel::RealEnvironmentValidated
+                    | EvidenceLevel::ReleaseCandidate
+                    | EvidenceLevel::Released
+            ) {
+                evidence_gaps.push(EvidenceGap {
+                    code: "evidence_level_unverified",
+                    reference: item.external_key.clone(),
+                    reason: "evidence level does not claim completed verification".into(),
+                });
+            }
+            evidence.push(EvidenceSummary {
+                id: item.id,
+                external_key: item.external_key,
+                evidence_type: item.evidence_type,
+                level: item.level,
+                summary: summary(&item.summary),
+                locator: item.locator,
+                sha256: item.sha256,
+                source_sha: item.source_sha,
+                scope: item.scope,
+                branch_id: item.branch_id,
+                source_ref: item.source_ref,
+                revision: item.revision,
+                verified_at: item.verified_at,
+                currency: assessment.currency,
+                missing_bindings: assessment.missing_bindings,
+                reasons: assessment.reasons,
             });
         }
-        if !matches!(
-            item.level,
-            EvidenceLevel::LocallyVerified
-                | EvidenceLevel::RealEnvironmentValidated
-                | EvidenceLevel::ReleaseCandidate
-                | EvidenceLevel::Released
-        ) {
-            evidence_gaps.push(EvidenceGap {
-                code: "evidence_level_unverified",
-                reference: item.external_key.clone(),
-                reason: "evidence level does not claim completed verification".into(),
-            });
-        }
-        evidence.push(EvidenceSummary {
-            id: item.id,
-            external_key: item.external_key,
-            evidence_type: item.evidence_type,
-            level: item.level,
-            summary: summary(&item.summary),
-            locator: item.locator,
-            sha256: item.sha256,
-            source_sha: item.source_sha,
-            scope: item.scope,
-            branch_id: item.branch_id,
-            source_ref: item.source_ref,
-            revision: item.revision,
-            verified_at: item.verified_at,
-            currency: assessment.currency,
-            missing_bindings: assessment.missing_bindings,
-            reasons: assessment.reasons,
-        });
+        self.context.evidence = evidence;
+        self.context.evidence_gaps = evidence_gaps;
+        self.context.requested_source_sha = source_sha.map(str::to_owned);
+        Ok(())
     }
-    let source_revisions = store
-        .sources(project.id)?
-        .into_iter()
-        .filter(|s| ids.contains(&s.id))
-        .map(SourceVersion::from)
-        .collect::<Vec<_>>();
-    let source_issues = source_revisions
-        .iter()
-        .filter(|s| s.freshness != Freshness::Fresh)
-        .map(|s| format!("source {} is {:?}", s.id, s.freshness))
-        .collect();
-    let actual = store.project(project.id)?.project_revision;
-    if actual != project.project_revision {
-        return Err(Error::RevisionConflict {
-            expected: project.project_revision,
-            actual,
-        });
+    pub(crate) fn finish(mut self, store: &Store) -> Result<RelatedWorkContext> {
+        let source_revisions = store
+            .sources(self.context.project_id)?
+            .into_iter()
+            .filter(|s| self.ids.contains(&s.id))
+            .map(SourceVersion::from)
+            .collect::<Vec<_>>();
+        let source_issues = source_revisions
+            .iter()
+            .filter(|s| s.freshness != Freshness::Fresh)
+            .map(|s| format!("source {} is {:?}", s.id, s.freshness))
+            .collect();
+        let actual = store.project(self.context.project_id)?.project_revision;
+        if actual != self.context.project_revision {
+            return Err(Error::RevisionConflict {
+                expected: self.context.project_revision,
+                actual,
+            });
+        }
+        self.context.source_revisions = source_revisions;
+        self.context.source_issues = source_issues;
+        Ok(self.context)
     }
-    Ok(RelatedWorkContext {
-        project_id: project.id,
-        project_revision: project.project_revision,
-        work_item_id: work.item.meta.id,
-        work_item_key: work_key.into(),
-        branch_id: branch,
-        requested_source_sha: source_sha.map(str::to_owned),
-        unresolved_dependencies,
-        resolved_dependencies,
-        required_edges,
-        missing_dependencies: graph.missing_keys,
-        dependency_cycles: graph.cycle_keys,
-        accepted_decisions,
-        uncertain_decisions,
-        evidence,
-        evidence_gaps,
-        source_revisions,
-        source_issues,
-    })
 }

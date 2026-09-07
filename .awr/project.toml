@@ -11,6 +11,7 @@ path = "docs/GOALS.md"
 adapter = "markdown-heading-v1"
 
 [sources.options]
+status = "active"
 
 [[sources]]
 domain = "plan"

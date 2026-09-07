@@ -2,6 +2,7 @@
 pub use awr_core::{Error, Result};
 mod bootstrap;
 mod budget;
+mod compile;
 mod completeness;
 mod delta;
 mod hard;
@@ -11,6 +12,7 @@ pub use budget::{
     BUDGET_POLICY, BudgetedContext, ContextChunk, ContextIdentity, ContextSection, RankedChunk,
     SelectedEntity, TOKEN_COUNT_SCOPE, TOKENIZER, budget_context, hard_chunks, token_count,
 };
+pub use compile::{ContextOmission, ContextRequest, WorkContextReport, compile_context};
 pub use completeness::{
     CompletenessIssue, CompletenessRequest, ContextCompleteness, check_completeness,
     inspect_completeness,

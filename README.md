@@ -25,12 +25,13 @@ Project files remain authoritative for project facts. SQLite holds their project
 
 Local-first Rust binary, SQLite/WAL/FTS5, CLI and eight focused MCP tools. Feature development comes first, followed by agent integration, security hardening, system validation and release preparation.
 
-L1 compilation and refreshed resume are planned:
+L1 work-context compilation is available:
 
 ```sh
-awr context compile --work <work-id> --budget 4000
-awr session resume
+awr context compile --work <work-key> --budget 5000
 ```
+
+Refreshed session resume remains scheduled.
 
 Bootstrap targets at most 1,000 tokens; work context targets at most 5,000 tokens, with 100% recall of required hard facts. Over-budget hard context must be reported explicitly.
 
@@ -46,7 +47,7 @@ Bootstrap refreshes sources and restores project, phase, work state, next action
 
 Unknown rule metadata, unavailable sources and missing work facts produce `CONTEXT INCOMPLETE` with references and a nonzero exit. If the complete selected payload cannot fit, `BudgetExceeded` reports the required count without emitting a silently truncated context. L0 restores orientation; it does not certify acceptance, dependencies or evidence for execution. Those checks belong to L1.
 
-The initial budget counts `rendered_context` with the fixed [`o200k_base` ordinary-text tokenizer](https://docs.rs/tiktoken-rs/0.12.0/tiktoken_rs/struct.CoreBPE.html), treating special-token-looking strings as ordinary source text. The same state and request yield the same text and SHA256 context hash. JSON includes a diagnostic envelope outside that payload budget; surrounding conversation and other model tokenizers are not included. Clients should feed `rendered_context` as L0 content and account for their own transport/model overhead. The broader budget and completeness contracts continue in their M4 items.
+The budget counts `rendered_context` with the fixed [`o200k_base` ordinary-text tokenizer](https://docs.rs/tiktoken-rs/0.12.0/tiktoken_rs/struct.CoreBPE.html), treating special-token-looking strings as ordinary source text. The same state and request yield the same text and SHA256 context hash. JSON includes a diagnostic envelope outside that payload budget; surrounding conversation and other model tokenizers are not included. Clients should feed `rendered_context` as context content and account for their own transport/model overhead. L1 combines this budget contract with required-fact completeness.
 
 ## Design and implementation
 
@@ -120,11 +121,11 @@ Each successful mutation returns its new project revision. Use that revision for
 
 `session end --session <id> --outcome ended|interrupted|incomplete --expected-revision <revision>` closes a session and releases its claims. `work release <work-key> --session <id> --claim <claim-id> --expected-revision <revision>` releases just one claim. Omitting `--session` selects only one active matching session on the current branch; `--agent` and `--work` can narrow the selection. Multiple candidates produce an error with their IDs.
 
-Handoff requires a latest checkpoint. Without `--to-session`, it closes the sender as incomplete and releases its claim for later pickup. With `--to-session <id>`, the receiver must be active on the same work and branch; the live claim transfers atomically with both history receipts. An expired claim is never revived. `session show` exposes the inherited checkpoint separately, including next action and open loops. Context compilation and refreshed resume remain scheduled; a caller-supplied checkpoint hash does not certify context completeness.
+Handoff requires a latest checkpoint. Without `--to-session`, it closes the sender as incomplete and releases its claim for later pickup. With `--to-session <id>`, the receiver must be active on the same work and branch; the live claim transfers atomically with both history receipts. An expired claim is never revived. `session show` exposes the inherited checkpoint separately, including next action and open loops. Refreshed resume remains scheduled; a caller-supplied checkpoint hash does not certify context completeness.
 
 Session inspection, history, handoff, release and end work from the runtime database even when source files are unavailable; JSON reports `source_refresh_performed: false`. History returns bounded summaries and references, with `--session`, `--event-type`, `--after-revision` and `--all-branches` filters. For pagination, pass the returned JSON `next_cursor` to `--cursor`; it retains multiple events at the same revision.
 
-The storage library creates and reopens versioned AWR databases with WAL, foreign keys and migration metadata. Source work mutation and L1/delta/resume context commands remain scheduled.
+The storage library creates and reopens versioned AWR databases with WAL, foreign keys and migration metadata. Source work mutation and dedicated delta/resume commands remain scheduled.
 
 Inspect evidence, decisions and artifacts by external key or internal ID:
 
@@ -179,7 +180,7 @@ Unchanged sources are skipped. Content and parser-configuration changes trigger 
 
 Running the indexer against a new database rebuilds source projections. Runtime events, sessions and checkpoints require the original database or its backup; they cannot be reconstructed from a work ledger. Source indexing creates new indexing events, not copies of previous work history.
 
-L1 compilation follows in its ledger items. This project's rule headings now explicitly declare project scope: five substantive sections are hard rules, and the document heading is informational. Their text is unchanged. Including all applicable hard sections can exceed the default L0 budget; use an explicit larger budget to inspect the complete payload. This is not a passed 1,000-token benchmark.
+This project's rule headings explicitly declare project scope: five substantive sections are hard rules, and the document heading is informational. Their text is unchanged. Including all applicable hard sections can exceed the default L0 budget; use an explicit larger budget to inspect the complete payload. This is not a passed 1,000-token benchmark.
 
 The context library also assembles an indivisible hard-fact subset with exact work IDs, raw/normalized status, acceptance, blocker, next action, rule text and source revisions/fingerprints. Rule selection covers project, concrete paths, tags, work and agent; it keeps unresolved applicability separate from exclusions and retains work-source tags. Directory/glob path scopes remain unknown unless the caller supplies concrete paths. Hard-context completeness concerns this subset only; dependency/evidence admission and branch overlays remain separate work items.
 
@@ -197,7 +198,7 @@ Process history includes this work and project-global events on the selected bra
 
 The budget library preserves required chunks whole. It tries optional chunks by ascending priority, descending recency, then section/key; an oversized candidate is skipped so a later smaller candidate can still fit. Final rendering uses fixed section/key order. Each trial counts the entire rendered string with the pinned `o200k_base` ordinary-text tokenizer, including headings, IDs, source versions/fingerprints and the omission footer. The count is exact for that tokenizer; transport JSON, tool framing and the surrounding conversation are excluded. Other tokenizers may differ, with no cross-tokenizer error bound claimed. This is a counting algorithm, not a measured compression/performance benchmark.
 
-If the required text plus metadata exceeds the supplied budget, the result is `BUDGET_EXCEEDED` with the required count; it does not truncate acceptance, rules, status, blocker or next action. The SHA256 binds the canonical project/work revisions, branch, source versions, request, budget policy, selected entity IDs/revisions, selected/omitted chunk references and rendered content. Input ordering of source/chunk sets is normalized, and conflicting versions are rejected. The hard-subset preview below exercises this budgeter; full L1 assembly will additionally supply dependencies, goals, decisions and completeness information:
+If the required text plus metadata exceeds the supplied budget, the result is `BudgetExceeded` with the required count; it does not truncate acceptance, rules, status, blocker or next action. The SHA256 binds the canonical project/work revisions, branch, source versions, request, budget policy, selected entity IDs/revisions, selected/omitted chunk references and rendered content. Input ordering of source/chunk sets is normalized, and conflicting versions are rejected. The hard-subset preview below exercises this budgeter; L1 assembly additionally supplies dependencies, goals, decisions and completeness information:
 
 ```sh
 cargo run --locked -p awr-context --example budget_project -- . <work-key> <budget> [agent-id]
@@ -211,7 +212,26 @@ Completeness assessment refreshes the configured sources, including newly config
 cargo run --locked -p awr-context --example completeness_project -- . <work-key> [agent-id] [source-sha]
 ```
 
-The example prints the machine-readable report and exits nonzero on incomplete context. Full L1 rendering and context CLI integration follow in their ledger items.
+The example prints the machine-readable report and exits nonzero on incomplete context. Goal selection is assessed separately by the L1 compiler and appears as `goal_context_complete`; the standalone assessor leaves that field unset.
+
+Compile the full current work context:
+
+```sh
+awr context compile
+awr context compile --work <work-key> --session <session-id> --budget 5000
+awr --json context compile --work <work-key> --agent <agent-id> --path src/main.rs --tag rust
+awr context compile --work <work-key> --goal <goal-key> --source-sha <full-source-sha>
+awr context compile --work <work-key> --checkpoint <checkpoint-id>
+awr context compile --work <work-key> --after-revision <project-revision>
+```
+
+Task selection uses explicit work/session, one matching active session, then one source work marked claimed/in_progress. Ambiguous candidates fail before producing a pack; an explicitly missing task returns incomplete diagnostics with `work_context: null` and no invented work identity/hash. Paths, tags and goals may be repeated. A requested session must match the agent, work and current branch. `--checkpoint` and `--after-revision` are alternatives. `--intent` labels the request and participates in hashing; it does not grant mutation permissions.
+
+The compiler refreshes sources, resolves work, selects required dependencies, evaluates rules, selects accepted decisions, reads checkpoint delta, selects evidence, assesses completeness and applies the deterministic budget. Goal context defaults to nonterminal sections from primary project goal sources, labeled as project-level goals; `--goal` selects explicit keys. Unknown/missing goal status remains incomplete. This project's primary goal mapping now explicitly declares its ongoing goals active; goal IDs, titles, bodies and document fingerprints are unchanged.
+
+Required output retains exact task state/acceptance, applicable hard rules with severity/scope, unresolved required dependencies, accepted decision statements, checkpoint next action/open loops, source-change summaries and all completeness/evidence gaps. Selected critical event summaries are required. Goal/work prose, resolved dependencies, high event details, soft/info rules, evidence summaries and ordinary history compete as whole optional chunks. Original event/rationale/report/artifact bodies are not expanded.
+
+Plain output is the selected rendered text. JSON puts that same text and its hash/token metadata in `work_context`, with `completeness` alongside it. `work_context.omitted_chunks` lists budget omissions; `omitted_refs` records limits applied during earlier selection. An incomplete result retains available facts and exits nonzero. Hard overflow returns an error before any pack is emitted. The payload budget applies to the rendered text, and this functional behavior is not a passed system benchmark or release gate.
 
 Python 3.11+ is sufficient for this repository's planning tools. Rust is pinned in rust-toolchain.toml and dependency resolution is committed in Cargo.lock.
 

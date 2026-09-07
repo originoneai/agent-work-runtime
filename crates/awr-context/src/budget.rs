@@ -146,7 +146,11 @@ pub fn hard_chunks(hard: &HardContext) -> Result<Vec<ContextChunk>> {
         chunks.push(ContextChunk {
             key: rule.meta.external_key.clone(),
             section: ContextSection::Rules,
-            text: rule.text.clone(),
+            text: format!(
+                "Severity: hard\nScope: {}\n{}",
+                serde_json::to_string(&rule.scope)?,
+                rule.text
+            ),
             entities: vec![SelectedEntity {
                 kind: "rule".into(),
                 id: rule.meta.id,

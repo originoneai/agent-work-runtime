@@ -39,6 +39,8 @@ pub struct ContextCompleteness {
     /// The required closure has known, fresh facts; pending but fully described work is allowed.
     pub dependencies_complete: bool,
     pub decision_context_complete: bool,
+    /// Filled by the L1 compiler; the standalone required-fact assessor does not select goals.
+    pub goal_context_complete: Option<bool>,
     pub unresolved_required_dependencies: Vec<String>,
     pub evidence_gaps: Vec<EvidenceGap>,
     pub source_versions: Vec<SourceVersion>,
@@ -377,6 +379,7 @@ pub(crate) fn assess_completeness(facts: CompletenessFacts<'_>) -> Result<Contex
         rules_complete,
         dependencies_complete,
         decision_context_complete,
+        goal_context_complete: None,
         unresolved_required_dependencies,
         evidence_gaps,
         source_versions,
