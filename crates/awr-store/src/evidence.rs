@@ -15,7 +15,7 @@ fn evidence_rows(conn: &Connection, project: Id, key: Option<&str>) -> Result<Ve
         .join(",");
     conn.prepare(&format!("SELECT {columns},e.payload_json,p.project_revision FROM evidence e
         LEFT JOIN sources s ON s.id=e.source_id AND s.project_id=e.project_id JOIN projects p ON p.id=e.project_id
-        WHERE e.project_id=?1 AND e.active=1 AND (e.source_id IS NULL OR s.active=1) AND (?2 IS NULL OR e.external_key=?2)
+        WHERE e.project_id=?1 AND e.active=1 AND (e.source_id IS NULL OR s.active=1) AND (?2 IS NULL OR e.external_key=?2 OR e.id=?2)
         ORDER BY e.external_key")).map_err(db_error)?.query_map(params![project.to_string(),key],|r| {
             let item=serde_json::from_str(&r.get::<_,String>(11)?).map_err(|e|rusqlite::Error::FromSqlConversionFailure(11,rusqlite::types::Type::Text,Box::new(e)))?;
             let source=if r.get::<_,Option<String>>(0)?.is_some() {Some(source_row(r)?)} else {None};
@@ -25,7 +25,14 @@ fn evidence_rows(conn: &Connection, project: Id, key: Option<&str>) -> Result<Ve
 
 impl Store {
     pub fn decision(&self, project: Id, key: &str) -> Result<Projected<Decision>> {
-        projection(&self.conn, project, EntityKind::Decision, key)
+        let keys=self.conn.prepare("SELECT d.external_key FROM decisions d JOIN sources s ON s.id=d.source_id AND s.project_id=d.project_id WHERE d.project_id=?1 AND d.active=1 AND s.active=1 AND (d.external_key=?2 OR d.id=?2) LIMIT 2").map_err(db_error)?.query_map(params![project.to_string(),key],|r|r.get::<_,String>(0)).map_err(db_error)?.collect::<rusqlite::Result<Vec<_>>>().map_err(db_error)?;
+        match keys.as_slice() {
+            [resolved] => projection(&self.conn, project, EntityKind::Decision, resolved),
+            [] => Err(Error::NotFound(format!("decision {key}"))),
+            _ => Err(Error::InvalidInput(
+                "decision ID conflicts with another external key".into(),
+            )),
+        }
     }
     pub fn decisions(&self, project: Id) -> Result<Vec<Projected<Decision>>> {
         self.project(project)?;
@@ -89,10 +96,14 @@ impl Store {
     }
 
     pub fn evidence(&self, project: Id, key: &str) -> Result<EvidenceRecord> {
-        evidence_rows(&self.conn, project, Some(key))?
-            .into_iter()
-            .next()
-            .ok_or_else(|| Error::NotFound(format!("evidence {key}")))
+        let mut records = evidence_rows(&self.conn, project, Some(key))?;
+        match records.len() {
+            0 => Err(Error::NotFound(format!("evidence {key}"))),
+            1 => Ok(records.pop().unwrap()),
+            _ => Err(Error::InvalidInput(
+                "evidence ID conflicts with another external key".into(),
+            )),
+        }
     }
     pub fn evidence_records(&self, project: Id) -> Result<Vec<EvidenceRecord>> {
         self.project(project)?;

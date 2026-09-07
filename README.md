@@ -113,6 +113,42 @@ Session inspection, history, handoff, release and end work from the runtime data
 
 The storage library creates and reopens versioned AWR databases with WAL, foreign keys and migration metadata. Source work mutation and context commands remain scheduled.
 
+Inspect evidence, decisions and artifacts by external key or internal ID:
+
+```sh
+awr evidence add --input evidence.json --expected-revision <revision>
+awr evidence show <evidence-id-or-key> --source-sha <full-source-sha>
+awr evidence show <evidence-id-or-key> --content --max-bytes 262144
+awr decision show <decision-id-or-key>
+awr decision show <decision-id-or-key> --full --max-bytes 262144
+awr artifact add report.json --type report --mime application/json --source-event <event-id> --expected-revision <revision>
+awr artifact show <artifact-id>
+awr artifact cat <artifact-id> --max-bytes 262144
+```
+
+`evidence.json` is a structured record, for example:
+
+```json
+{
+  "external_key": "REPORT-1",
+  "work_item_key": "WORK-1",
+  "evidence_type": "report",
+  "level": "implemented",
+  "summary": "Implementation report; verification pending",
+  "locator": "reports/implementation.json",
+  "sha256": null,
+  "source_sha": null,
+  "command": null,
+  "scope": ["WORK-1"],
+  "branch_id": null,
+  "verified_at": null
+}
+```
+
+For verified evidence levels, the store requires a report SHA256, full source SHA, command, scope and verification timestamp (Unix milliseconds). These are supplied bindings: `evidence add` does not run the command or promote work status. JSON reports that distinction and `evidence show` reports missing bindings and currency relative to an explicit source SHA and branch.
+
+Default reads return summaries and references. `--content`, `--full` and `artifact cat` explicitly request bodies, defaulting to 64 KiB with a maximum of 16 MiB per read. Oversized or changed content returns an error before emitting a body. Artifact reads always verify recorded size and SHA256; evidence report reads verify SHA256 when present and report whether it was available. Local paths must resolve inside the project or configured authorized roots. Remote report locators remain references. Plain artifact cat emits exact bytes; JSON body output requires UTF-8. Artifact metadata remains readable without opening its body or refreshing sources.
+
 The source library also resolves configured local files and immutable Git blobs. It has been used to read this project's own goal, plan, rules and work ledger:
 
 ```sh

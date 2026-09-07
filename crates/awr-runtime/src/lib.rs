@@ -3,6 +3,7 @@
 use awr_core::{Claim, Event, Id, Revision, Session, SessionDraft, SessionOutcome, SessionStarted};
 pub use awr_core::{Error, Result};
 mod artifact;
+mod read;
 pub use artifact::ArtifactFile;
 use awr_store::Store;
 pub use awr_store::{BranchFilter, EventCursor, EventPage, EventQuery};
@@ -12,6 +13,13 @@ pub struct Runtime<'a> {
     project: Id,
 }
 impl<'a> Runtime<'a> {
+    pub fn record_evidence(
+        &mut self,
+        expected: Revision,
+        draft: awr_core::EvidenceDraft,
+    ) -> Result<(awr_core::Evidence, Event)> {
+        self.store.record_evidence(self.project, expected, draft)
+    }
     pub fn handoff(
         &mut self,
         expected: Revision,
