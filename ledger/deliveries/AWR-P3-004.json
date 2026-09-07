@@ -1,0 +1,59 @@
+{
+  "kind": "implementation",
+  "repository": "https://github.com/originoneai/agent-work-runtime",
+  "source_commit": "2eb841ab4fb2a8c93be91ade5fe829e34c9be02c",
+  "checked_at": "2026-09-08T04:30:57+08:00",
+  "remote_receipt": {
+    "commit": "2eb841ab4fb2a8c93be91ade5fe829e34c9be02c",
+    "url": "https://github.com/originoneai/agent-work-runtime/commit/2eb841ab4fb2a8c93be91ade5fe829e34c9be02c",
+    "verified_at": "2026-09-08T04:31:46+08:00"
+  },
+  "checks": [
+    {
+      "name": "session_cli",
+      "passed": true,
+      "result": "cargo test --locked -p awr-cli --test session_cli: 3/3. Start/claim/release/checkpoint/end/handoff/history, ambiguous selection, CAS rollback, inherited open loops, source-unavailable cleanup, two events at one revision paginated without loss."
+    },
+    {
+      "name": "session_event_checkpoint_contracts",
+      "passed": true,
+      "result": "awr-store sessions 5/5, events 3/3, checkpoints 2/2. Branch-bound handoff, expired claim not revived, reserved handoff event rejection, atomic lifecycle and immutable history."
+    },
+    {
+      "name": "workspace_build",
+      "passed": true,
+      "result": "cargo build --locked --workspace and git diff --check passed."
+    },
+    {
+      "name": "actual_project_cli_use",
+      "passed": true,
+      "result": "Saved actual development checkpoint 01M1YS190S8B4TPR8BATJ6T530 in session 01M1YS1901YQHGY8X6F37BH6QH, handed off unassigned work and released claim. Three scoped events reload; source work status remained in_progress; database doctor ok at revision 76."
+    }
+  ],
+  "artifacts": [
+    "crates/awr-cli/src/session.rs",
+    "crates/awr-cli/tests/session_cli.rs",
+    "crates/awr-store/src/handoff.rs",
+    "crates/awr-store/tests/sessions.rs",
+    "crates/awr-store/tests/events.rs",
+    "README.md",
+    "ledger/evidence/AWR-P3-004/checks.json"
+  ],
+  "work_items": {
+    "AWR-P3-004": {
+      "acceptance": [
+        {
+          "criterion": "session start/end、work history/handoff 可追踪会话接续与未闭环工作。",
+          "passed": true
+        },
+        {
+          "criterion": "结束会话释放或明确移交 claim；多会话候选歧义不自动猜选。",
+          "passed": true
+        }
+      ]
+    }
+  },
+  "limitations": [
+    "Feature-local checks and real project CLI use only, not formal E4 acceptance or release. Checkpoints contain caller-supplied hashes; inherited checkpoints are explicitly separate from fresh compiled context. Context compilation and resume remain scheduled in M4."
+  ]
+}
