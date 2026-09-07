@@ -1,8 +1,8 @@
 schema_version: 1
 contract_id: awr-v1
 contract_version: 1.0.0
-ledger_revision: 33
-updated_at: '2026-09-08T02:45:01+08:00'
+ledger_revision: 35
+updated_at: '2026-09-08T02:56:46+08:00'
 project:
   name: Agent Work Runtime
   external_key: agent-work-runtime
@@ -11,8 +11,8 @@ project:
   release_status: not_released
 current:
   milestone: M2
-  work_item: AWR-P2-001
-  next_action: 提供目标、计划和规则的外部 ID 查询，返回来源版本与未解析适用性。
+  work_item: AWR-P2-002
+  next_action: 实现递归依赖闭包和带诊断的 Ready 判断，保留来源、blocker 与运行态 claim。
   open_loops:
   - 功能实现优先；集中测试、优化和打磨在功能开发后执行。
   - 本项目已启用 Source CLI；工作查询和上下文可用后继续接入实际开发。
@@ -480,7 +480,7 @@ work_items:
   priority: P0
   kind: feature
   required_for_v1: true
-  status: in_progress
+  status: completed
   owner: codex-primary
   depends_on:
   - AWR-P1-006
@@ -499,18 +499,19 @@ work_items:
   verification:
     minimum: 证明本条验收行为；功能阶段运行必要的定向检查，系统测试在 M9 集中执行。
     evidence_directory: ledger/evidence/AWR-P2-001
-    evidence_level: none
-  evidence: []
+    evidence_level: locally_verified
+  evidence:
+  - ledger/deliveries/AWR-P2-001.json
   blocker: null
-  next_action: 提供目标、计划和规则的外部 ID 查询，返回来源版本与未解析适用性。
+  next_action: 已交付；继续依赖就绪的功能任务。
 - id: AWR-P2-002
   title: WorkItem、Edge、依赖闭包与 Ready
   milestone: M2
   priority: P0
   kind: feature
   required_for_v1: true
-  status: planned
-  owner: null
+  status: in_progress
+  owner: codex-primary
   depends_on:
   - AWR-P2-001
   - AWR-P0-004
@@ -530,14 +531,14 @@ work_items:
     evidence_level: none
   evidence: []
   blocker: null
-  next_action: 按交付物实现并验证：WorkItem、Edge、依赖闭包与 Ready
+  next_action: 实现递归依赖闭包和带诊断的 Ready 判断，保留来源、blocker 与运行态 claim。
 - id: AWR-P2-003
   title: Decision / Evidence 与证据等级
   milestone: M2
   priority: P0
   kind: feature
   required_for_v1: true
-  status: planned
+  status: ready
   owner: null
   depends_on:
   - AWR-P2-001
