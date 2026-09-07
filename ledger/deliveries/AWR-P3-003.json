@@ -1,0 +1,59 @@
+{
+  "kind": "implementation",
+  "repository": "https://github.com/originoneai/agent-work-runtime",
+  "source_commit": "d24e41a60a5a9e5f8efb92a378348a474f5c59db",
+  "checked_at": "2026-09-08T04:05:04+08:00",
+  "remote_receipt": {
+    "commit": "d24e41a60a5a9e5f8efb92a378348a474f5c59db",
+    "url": "https://github.com/originoneai/agent-work-runtime/commit/d24e41a60a5a9e5f8efb92a378348a474f5c59db",
+    "verified_at": "2026-09-08T04:05:31+08:00"
+  },
+  "checks": [
+    {
+      "name": "checkpoint_persistence",
+      "passed": true,
+      "result": "cargo test --locked -p awr-store --test checkpoints: 2/2; atomic checkpoint/latest-session pointer, persisted hash/digest/next/open loops/changed entities, historical checkpoint retention, CAS and ended-session rejection, source-event-bound artifact metadata."
+    },
+    {
+      "name": "artifact_file_storage",
+      "passed": true,
+      "result": "cargo test --locked -p awr-runtime --test artifacts: 2/2; 1 MiB immutable file copy, SHA256 and size verification, original file changes do not change the artifact, byte limits and cleanup after failed metadata registration."
+    },
+    {
+      "name": "workspace_build",
+      "passed": true,
+      "result": "cargo build --locked --workspace and --examples completed."
+    },
+    {
+      "name": "project_checkpoint_use",
+      "passed": true,
+      "result": "Current AWR-P3-003 caller state was checkpointed as 01M1YQG1JS8277D870YTZ65JFB and stored as artifact 01M1YQG1JYQ042JP4H5TS990BY (1263 bytes). Independent Python SHA256 matched artifact and checkpoint context_hash. Latest next action reloaded correctly; session ended, no active claims, SQLite integrity ok at project revision 67."
+    }
+  ],
+  "artifacts": [
+    "crates/awr-core/src/runtime.rs",
+    "crates/awr-store/src/checkpoint.rs",
+    "crates/awr-store/tests/checkpoints.rs",
+    "crates/awr-runtime/src/artifact.rs",
+    "crates/awr-runtime/tests/artifacts.rs",
+    "crates/awr-runtime/examples/checkpoint_project.rs",
+    "ledger/evidence/AWR-P3-003/checks.json"
+  ],
+  "work_items": {
+    "AWR-P3-003": {
+      "acceptance": [
+        {
+          "criterion": "Checkpoint 记录版本、context hash、摘要、下一步、open loops 和变化实体。",
+          "passed": true
+        },
+        {
+          "criterion": "大产物在外部文件保存，数据库只存 locator/hash/size/MIME 与来源事件。",
+          "passed": true
+        }
+      ]
+    }
+  },
+  "limitations": [
+    "The checkpoint stores the caller-provided context hash; full ContextCompiler completeness and compact recovery remain scheduled. Large artifact bodies are managed files, while the store records metadata and origin event references. Full regression and real-client acceptance remain scheduled."
+  ]
+}
