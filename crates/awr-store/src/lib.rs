@@ -1,5 +1,6 @@
 //! SQLite persistence. Callers use domain operations, never an exposed SQL handle.
 mod catalog;
+mod events;
 mod evidence;
 mod projection;
 mod query;
@@ -9,6 +10,7 @@ mod transaction;
 mod work;
 use awr_core::{Error, Result, now_millis};
 pub use catalog::SourceRegistration;
+pub use events::{BranchFilter, EventCursor, EventPage, EventQuery};
 use rusqlite::{Connection, OpenFlags, TransactionBehavior};
 pub use search::{SearchHit, SearchQuery, SearchReport};
 use serde::Serialize;

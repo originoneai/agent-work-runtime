@@ -1,0 +1,30 @@
+{
+  "work_item": "AWR-P3-002",
+  "checked_at": "2026-09-08T03:49:05+08:00",
+  "checks": [
+    {
+      "name": "scoped_event_store",
+      "passed": true,
+      "result": "cargo test --locked -p awr-store --test events: 3/3; task/session/branch/type/importance filters, stable cursor pagination, session-scope inheritance and mismatch rejection, timestamps, unchanged work summary, and rejected UPDATE/DELETE of event history."
+    },
+    {
+      "name": "session_regression",
+      "passed": true,
+      "result": "All 4 session/claim lifecycle checks passed after transactional event binding was added."
+    },
+    {
+      "name": "build_and_project_use",
+      "passed": true,
+      "result": "Workspace and events_project example built. Runtime queried the actual AWR-P3-001 session.started and session.ended events at revisions 52 and 53 without loading the project event history."
+    }
+  ],
+  "artifacts": [
+    "crates/awr-store/src/events.rs",
+    "crates/awr-store/src/transaction.rs",
+    "crates/awr-store/tests/events.rs",
+    "crates/awr-runtime/examples/events_project.rs"
+  ],
+  "limitations": [
+    "Event payloads remain explicit runtime records and do not alter source work summaries or promote evidence. Full regression and real-client acceptance remain scheduled."
+  ]
+}

@@ -78,6 +78,7 @@ impl Store {
             .ok_or_else(|| Error::InvalidInput("revision overflow".into()))?;
         let next_sql = sqlite_revision(next)?;
         let result = apply(&tx, next, &mut draft)?;
+        crate::events::bind_event(&tx, project_id, &mut draft, false)?;
         let updated = tx
             .execute(
                 "UPDATE projects SET project_revision=?1 WHERE id=?2 AND project_revision=?3",
@@ -117,8 +118,10 @@ impl Store {
         expected_revision: Revision,
         draft: EventDraft,
     ) -> Result<Event> {
-        self.runtime_transaction(project_id, expected_revision, draft, |_, _| Ok(()))
-            .map(|(_, event)| event)
+        self.runtime_transaction_with_event(project_id, expected_revision, draft, |tx, _, event| {
+            crate::events::bind_event(tx, project_id, event, true)
+        })
+        .map(|(_, event)| event)
     }
 
     pub fn events_since(

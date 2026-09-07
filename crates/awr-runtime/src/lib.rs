@@ -3,12 +3,23 @@
 use awr_core::{Claim, Event, Id, Revision, Session, SessionDraft, SessionOutcome, SessionStarted};
 pub use awr_core::{Error, Result};
 use awr_store::Store;
+pub use awr_store::{BranchFilter, EventCursor, EventPage, EventQuery};
 
 pub struct Runtime<'a> {
     store: &'a mut Store,
     project: Id,
 }
 impl<'a> Runtime<'a> {
+    pub fn append_event(
+        &mut self,
+        expected: Revision,
+        draft: awr_core::EventDraft,
+    ) -> Result<Event> {
+        self.store.append_event(self.project, expected, draft)
+    }
+    pub fn events(&self, query: &EventQuery) -> Result<EventPage> {
+        self.store.query_events(self.project, query)
+    }
     pub fn attach(store: &'a mut Store, project: Id) -> Result<Self> {
         store.project(project)?;
         Ok(Self { store, project })
