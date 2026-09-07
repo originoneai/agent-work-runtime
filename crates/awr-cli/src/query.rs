@@ -57,7 +57,7 @@ impl QueryProject {
         }
     }
     // Other processes may advance runtime state during a multi-query view. Never label a mixed view coherent.
-    fn check_revision(&self) -> Result<()> {
+    pub(crate) fn check_revision(&self) -> Result<()> {
         let actual = self.store.project(self.project.id)?.project_revision;
         if actual == self.project.project_revision {
             Ok(())

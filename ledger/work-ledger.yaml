@@ -15,7 +15,7 @@ current:
   next_action: 实现结构化过滤和 SQLite FTS5 摘要检索，输出来源与 rank，并支持中文任务名称检索。
   open_loops:
   - 功能实现优先；集中测试、优化和打磨在功能开发后执行。
-  - 本项目已启用 Source CLI；工作查询和上下文可用后继续接入实际开发。
+  - 本项目已用 Source、Status、Ready、Work 和 Search CLI 管理实际开发读取；继续接入 Session、Claim 和 Context。
 milestones:
 - id: M0
   status: completed
@@ -606,6 +606,7 @@ work_items:
   deliverables:
   - crates/awr-store/
   - crates/awr-cli/
+  - README.md
   acceptance:
   - 结构化过滤和 FTS5 返回 ID、类型、摘要、来源与 rank。
   - 索引不包含完整日志、二进制及未脱敏正文；无 embedding 必选依赖。

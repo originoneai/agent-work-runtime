@@ -92,3 +92,19 @@ fn unavailable_source_is_reported_without_silent_cached_success() {
         );
     }
 }
+
+#[test]
+fn search_cli_combines_text_and_structured_filters() {
+    let f = Fixture::new();
+    let result = f.ok(&[
+        "search", "Build", "--type", "work", "--status", "ready", "--work", "W-1",
+    ]);
+    assert_eq!(result["hits"].as_array().unwrap().len(), 1);
+    assert_eq!(result["hits"][0]["external_key"], "W-1");
+    assert!(result["hits"][0]["rank"].as_f64().unwrap() < 0.0);
+    assert!(result["hits"][0]["source_ref"].is_object());
+    let no_match = f.ok(&["search", "Build", "--status", "completed"]);
+    assert!(no_match["hits"].as_array().unwrap().is_empty());
+    assert!(!f.run(&["search", "Build", "--limit", "0"]).status.success());
+    assert_eq!(f.ok(&["doctor"])["schema_version"], 3);
+}

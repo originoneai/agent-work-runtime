@@ -8,7 +8,7 @@ AWR indexes project goals, plans, rules and task ledgers, tracks work across ses
 
 ## Project status
 
-The Rust workspace, SQLite domain store, source adapters, incremental projection pipeline, dependency readiness, decision/evidence operations and source/work query CLI are implemented. This repository uses AWR to index its own ledger, goals, plan, rules and decisions. **AWR is in development and has not been released.** See the [generated work index](ledger/README.md) for current progress and supported milestones.
+The Rust workspace, SQLite domain store, source adapters, incremental projection pipeline, dependency readiness, decision/evidence operations and source/work/search CLI are implemented. This repository uses AWR to index its own ledger, goals, plan, rules and decisions. **AWR is in development and has not been released.** See the [generated work index](ledger/README.md) for current progress and supported milestones.
 
 The V1 plan contains **59 delivery work items**, **8 complete business acceptance scenarios**, and **10 benchmark targets**. Three repository preparation items are counted separately. A passing planning check validates the plan's structure; it does not prove runtime behavior.
 
@@ -84,9 +84,13 @@ target/debug/awr status
 target/debug/awr ready --limit 5
 target/debug/awr work show AWR-P2-004
 target/debug/awr --json work show AWR-P2-004
+target/debug/awr search "依赖" --type work --limit 5
+target/debug/awr search --type event --work AWR-P2-004 --status failed
 ```
 
 These commands refresh source projections before querying; they update the rebuildable cache and leave authoritative files intact. Failed refreshes are reported and exit nonzero. Single-work JSON includes acceptance criteria, dependency diagnostics, source provenance and related decision/evidence summaries. Evidence currency is unknown unless `--source-sha <full-sha>` supplies a comparison; an event such as `test_passed` never promotes evidence or source-ledger status.
+
+Search combines exact type/status/work filters with SQLite FTS5 and returns external IDs, bounded summaries, provenance and BM25 rank (lower is more relevant). Chinese character pairs support short Chinese task-name queries without embeddings. The revision-bound search cache uses an allowlist of titles and summary fields; goal/plan bodies, decision rationale, event payloads, artifacts and logs are excluded. Summary inputs retain one bounded line, omit code/control text and redact recognized credential markers. This is an initial indexing policy; the broader security review remains scheduled.
 
 The storage library creates and reopens versioned AWR databases with WAL, foreign keys and migration metadata. Work mutation, session and context commands remain explicitly unsupported until their ledger items are delivered.
 

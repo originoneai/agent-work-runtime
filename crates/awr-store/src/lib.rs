@@ -3,18 +3,21 @@ mod catalog;
 mod evidence;
 mod projection;
 mod query;
+mod search;
 mod transaction;
 mod work;
 use awr_core::{Error, Result, now_millis};
 pub use catalog::SourceRegistration;
 use rusqlite::{Connection, OpenFlags, TransactionBehavior};
+pub use search::{SearchHit, SearchQuery, SearchReport};
 use serde::Serialize;
 use std::{path::Path, time::Duration};
 
 const APPLICATION_ID: i64 = 0x41575231;
-const SCHEMA_VERSION: i64 = 2;
+const SCHEMA_VERSION: i64 = 3;
 const CATALOG_SQL: &str = include_str!("../migrations/001_catalog.sql");
 const DOMAIN_SQL: &str = include_str!("../migrations/002_domain.sql");
+const SEARCH_SQL: &str = include_str!("../migrations/003_search.sql");
 
 pub struct Store {
     pub(crate) conn: Connection,
@@ -137,6 +140,14 @@ impl Store {
                 tx.execute_batch(DOMAIN_SQL).map_err(db_error)?;
                 tx.execute(
                     "INSERT INTO schema_migrations(version,name,applied_at) VALUES(2,'domain',?1)",
+                    [now_millis()?],
+                )
+                .map_err(db_error)?;
+            }
+            if version < 3 {
+                tx.execute_batch(SEARCH_SQL).map_err(db_error)?;
+                tx.execute(
+                    "INSERT INTO schema_migrations(version,name,applied_at) VALUES(3,'search',?1)",
                     [now_millis()?],
                 )
                 .map_err(db_error)?;

@@ -2,6 +2,7 @@ use awr_core::{Error, Result};
 use clap::{CommandFactory, Parser, Subcommand};
 use std::path::PathBuf;
 mod query;
+mod search;
 mod source;
 
 #[derive(Debug, Parser)]
@@ -45,6 +46,8 @@ enum Command {
         #[command(subcommand)]
         command: query::WorkCommand,
     },
+    /// Search bounded summaries, optionally filtering by entity type, status or work item.
+    Search(search::SearchArgs),
     /// Inspect an existing AWR database without creating or repairing it.
     Doctor {
         #[arg(long)]
@@ -63,6 +66,7 @@ fn run(cli: &Cli) -> Result<()> {
         Some(Command::Status) => query::status(&cli.project, cli.json),
         Some(Command::Ready { limit }) => query::ready(&cli.project, *limit, cli.json),
         Some(Command::Work { command }) => query::work(&cli.project, command, cli.json),
+        Some(Command::Search(args)) => search::run(&cli.project, args, cli.json),
         Some(Command::Doctor { database }) => {
             let path = database
                 .clone()
