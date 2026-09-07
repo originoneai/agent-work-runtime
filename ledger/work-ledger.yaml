@@ -1,8 +1,8 @@
 schema_version: 1
 contract_id: awr-v1
 contract_version: 1.0.0
-ledger_revision: 30
-updated_at: '2026-09-08T02:16:26+08:00'
+ledger_revision: 33
+updated_at: '2026-09-08T02:45:01+08:00'
 project:
   name: Agent Work Runtime
   external_key: agent-work-runtime
@@ -10,19 +10,19 @@ project:
   authority_mode: source_first
   release_status: not_released
 current:
-  milestone: M1
-  work_item: AWR-P1-007
-  next_action: 实现显式来源映射初始化与 source list/scan/reindex，并在本项目初始化使用。
+  milestone: M2
+  work_item: AWR-P2-001
+  next_action: 提供目标、计划和规则的外部 ID 查询，返回来源版本与未解析适用性。
   open_loops:
   - 功能实现优先；集中测试、优化和打磨在功能开发后执行。
-  - 上下文功能可用后接入本项目自身台账，边使用边改进。
+  - 本项目已启用 Source CLI；工作查询和上下文可用后继续接入实际开发。
 milestones:
 - id: M0
   status: completed
 - id: M1
-  status: in_progress
+  status: completed
 - id: M2
-  status: planned
+  status: in_progress
 - id: M3
   status: planned
 - id: M4
@@ -446,7 +446,7 @@ work_items:
   priority: P0
   kind: feature
   required_for_v1: true
-  status: in_progress
+  status: completed
   owner: codex-primary
   depends_on:
   - AWR-P1-006
@@ -469,18 +469,19 @@ work_items:
   verification:
     minimum: 证明本条验收行为；功能阶段运行必要的定向检查，系统测试在 M9 集中执行。
     evidence_directory: ledger/evidence/AWR-P1-007
-    evidence_level: none
-  evidence: []
+    evidence_level: locally_verified
+  evidence:
+  - ledger/deliveries/AWR-P1-007.json
   blocker: null
-  next_action: 实现显式来源映射初始化与 source list/scan/reindex，并在本项目初始化使用。
+  next_action: 已交付；继续依赖就绪的功能任务。
 - id: AWR-P2-001
   title: Goal / Plan / Rule 投影查询
   milestone: M2
   priority: P0
   kind: feature
   required_for_v1: true
-  status: ready
-  owner: null
+  status: in_progress
+  owner: codex-primary
   depends_on:
   - AWR-P1-006
   source_sections:
@@ -499,7 +500,7 @@ work_items:
     evidence_level: none
   evidence: []
   blocker: null
-  next_action: 按交付物实现并验证：Goal / Plan / Rule 投影查询
+  next_action: 提供目标、计划和规则的外部 ID 查询，返回来源版本与未解析适用性。
 - id: AWR-P2-002
   title: WorkItem、Edge、依赖闭包与 Ready
   milestone: M2
