@@ -3,6 +3,7 @@ mod catalog;
 mod projection;
 mod query;
 mod transaction;
+mod work;
 use awr_core::{Error, Result, now_millis};
 pub use catalog::SourceRegistration;
 use rusqlite::{Connection, OpenFlags, TransactionBehavior};

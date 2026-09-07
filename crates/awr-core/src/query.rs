@@ -11,6 +11,45 @@ pub struct Projected<T> {
     pub project_revision: Revision,
 }
 
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct DependencyGraph {
+    pub work_item_key: String,
+    pub required_only: bool,
+    pub dependencies: Vec<Projected<crate::WorkItem>>,
+    pub edges: Vec<Projected<crate::Edge>>,
+    pub missing_keys: Vec<String>,
+    pub cycle_keys: Vec<String>,
+    pub project_revision: Revision,
+}
+
+#[derive(Debug, Clone, PartialEq, Eq, PartialOrd, Ord, Serialize, Deserialize)]
+pub struct ReadinessDiagnostic {
+    pub code: String,
+    pub work_item_key: String,
+    pub detail: String,
+}
+
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct WorkReadiness {
+    pub work: Projected<crate::WorkItem>,
+    pub ready: bool,
+    pub dependencies: DependencyGraph,
+    pub active_claims: Vec<crate::Claim>,
+    pub diagnostics: Vec<ReadinessDiagnostic>,
+    pub branch_id: Option<crate::Id>,
+    pub evaluated_at: i64,
+}
+
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct ReadyReport {
+    pub ready: Vec<WorkReadiness>,
+    /// All nonterminal items that cannot currently be selected, with explicit reasons.
+    pub blocked: Vec<WorkReadiness>,
+    pub project_revision: Revision,
+    pub branch_id: Option<crate::Id>,
+    pub evaluated_at: i64,
+}
+
 /// None means context was not supplied; Some([]) means a known empty set.
 #[derive(Debug, Clone, Default, Serialize, Deserialize)]
 pub struct RuleContext {
