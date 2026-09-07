@@ -63,12 +63,19 @@ pub(crate) fn source_row(row: &Row<'_>) -> rusqlite::Result<Source> {
         revision: revision_at(row, 7)?,
         fingerprint: row.get(8)?,
         freshness: enum_at(row, 9)?,
+        config: serde_json::from_str(&row.get::<_, String>(10)?).map_err(|error| {
+            rusqlite::Error::FromSqlConversionFailure(
+                10,
+                rusqlite::types::Type::Text,
+                Box::new(error),
+            )
+        })?,
     })
 }
 
 const PROJECT_COLUMNS: &str = "id,external_key,name,root,current_branch_id,project_revision";
 pub(crate) const SOURCE_COLUMNS: &str =
-    "id,project_id,domain,role,locator,format,adapter,revision,fingerprint,freshness";
+    "id,project_id,domain,role,locator,format,adapter,revision,fingerprint,freshness,config_json";
 
 pub(crate) fn bump_revision(conn: &Connection, project: Id) -> Result<Revision> {
     conn.query_row("UPDATE projects SET project_revision=project_revision+1 WHERE id=?1 RETURNING project_revision",
@@ -221,6 +228,7 @@ impl Store {
                 revision: 0,
                 fingerprint: String::new(),
                 freshness: Freshness::Stale,
+                config: serde_json::json!({}),
             };
             tx.execute("INSERT INTO sources(id,project_id,domain,role,locator,format,adapter,freshness) VALUES(?1,?2,?3,?4,?5,?6,?7,'stale')",
                 params![source.id.to_string(),project_id.to_string(),definition.domain,definition.role,definition.locator,definition.format,definition.adapter]).map_err(db_error)?;

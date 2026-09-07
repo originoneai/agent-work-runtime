@@ -138,6 +138,8 @@ pub struct Source {
     pub revision: Revision,
     pub fingerprint: String,
     pub freshness: Freshness,
+    #[serde(default)]
+    pub config: serde_json::Value,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]

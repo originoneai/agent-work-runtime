@@ -28,6 +28,7 @@ pub fn observe_source(
                 let current = store.source(source.project_id, source.id)?;
                 if current.revision != source.revision
                     || current.fingerprint != snapshot.fingerprint
+                    || current.config != source.config
                 {
                     return Err(awr_core::Error::SourceConflict(
                         "source changed during observation".into(),

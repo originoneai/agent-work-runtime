@@ -24,6 +24,7 @@ fn source() -> Source {
         revision: 0,
         fingerprint: String::new(),
         freshness: Freshness::Stale,
+        config: serde_json::json!({}),
     }
 }
 

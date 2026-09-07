@@ -101,7 +101,13 @@ fn checked_source(conn: &Connection, expected: &Source) -> Result<Source> {
         .optional()
         .map_err(db_error)?
         .ok_or_else(|| Error::NotFound(format!("source {}", expected.id)))?;
-    if current.revision != expected.revision || current.fingerprint != expected.fingerprint {
+    if current.revision != expected.revision
+        || current.fingerprint != expected.fingerprint
+        || current.config != expected.config
+        || current.adapter != expected.adapter
+        || current.role != expected.role
+        || current.format != expected.format
+    {
         return Err(Error::SourceConflict(format!(
             "source {} changed during indexing",
             expected.id
@@ -125,6 +131,64 @@ fn validate_ref(value: &Value, source: &Source, fingerprint: &str) -> Result<()>
 }
 
 impl Store {
+    pub fn configure_source(&mut self, expected: &Source, config: Value) -> Result<Source> {
+        if !config.is_object() {
+            return Err(Error::InvalidInput(
+                "source configuration must be an object".into(),
+            ));
+        }
+        let current = checked_source(&self.conn, expected)?;
+        if current.config == config {
+            return Ok(current);
+        }
+        let revision = self.project(expected.project_id)?.project_revision;
+        let mut event =
+            EventDraft::new("source.configured", "Source parsing configuration changed");
+        event.payload = json!({"source_id":expected.id});
+        let (source, _) =
+            self.runtime_transaction(expected.project_id, revision, event, |tx, _| {
+                let mut source = checked_source(tx, expected)?;
+                tx.execute(
+                    "UPDATE sources SET config_json=?1,freshness='stale' WHERE id=?2",
+                    params![serde_json::to_string(&config)?, source.id.to_string()],
+                )
+                .map_err(db_error)?;
+                source.config = config;
+                source.freshness = Freshness::Stale;
+                Ok(source)
+            })?;
+        Ok(source)
+    }
+
+    /// Removal invalidates projections, retaining rows and runtime references for history.
+    pub fn retire_source(&mut self, expected: &Source) -> Result<()> {
+        let revision = self.project(expected.project_id)?.project_revision;
+        let mut event = EventDraft::new(
+            "source.retired",
+            "Source removed from the active authority mapping",
+        );
+        event.payload = json!({"source_id":expected.id});
+        self.runtime_transaction(expected.project_id,revision,event,|tx,_| {
+            checked_source(tx,expected)?;
+            for name in KINDS.into_iter().map(table).chain(["edges"]) {
+                tx.execute(&format!("UPDATE {name} SET active=0 WHERE project_id=?1 AND source_id=?2 AND active=1"),
+                    params![expected.project_id.to_string(),expected.id.to_string()]).map_err(db_error)?;
+            }
+            tx.execute("UPDATE sources SET active=0,freshness='stale',revision=revision+1 WHERE id=?1",[expected.id.to_string()]).map_err(db_error)?;
+            Ok(())
+        })?;
+        Ok(())
+    }
+
+    pub fn source_warnings(&self, source: &Source) -> Result<Vec<String>> {
+        let value:Option<String>=self.conn.query_row("SELECT json_extract(payload_json,'$.warnings') FROM events WHERE project_id=?1
+            AND event_type='source.projected' AND json_extract(payload_json,'$.source_id')=?2 ORDER BY project_revision DESC LIMIT 1",
+            params![source.project_id.to_string(),source.id.to_string()],|r|r.get(0)).optional().map_err(db_error)?;
+        value
+            .map(|value| Ok(serde_json::from_str(&value)?))
+            .unwrap_or(Ok(vec![]))
+    }
+
     /// Stale/unavailable observations never replace the last successfully projected fingerprint.
     pub fn mark_source_freshness(
         &mut self,
@@ -229,10 +293,6 @@ impl Store {
             "fingerprint":fingerprint,"warnings":payload["warnings"]});
         let (source,_)=self.runtime_transaction(expected.project_id,revision,event,|tx,_| {
             let mut source=checked_source(tx,expected)?;
-            for name in KINDS.into_iter().map(table).chain(["edges"]) {
-                tx.execute(&format!("UPDATE {name} SET active=0 WHERE project_id=?1 AND source_id=?2"),
-                    params![source.project_id.to_string(),source.id.to_string()]).map_err(db_error)?;
-            }
             for kind in KINDS {
                 let rows=payload[table(kind)].as_array().ok_or_else(||Error::InvalidInput("missing projection batch".into()))?;
                 let mut keys=BTreeSet::new();
@@ -242,6 +302,8 @@ impl Store {
                     if !keys.insert(key) { return Err(Error::SourceConflict(format!("duplicate {} key {key}",table(kind)))); }
                     upsert_projection(tx,kind,&source,fingerprint,row.clone())?;
                 }
+                tx.execute(&format!("UPDATE {} SET active=0 WHERE project_id=?1 AND source_id=?2 AND active=1 AND external_key NOT IN (SELECT value FROM json_each(?3))",table(kind)),
+                    params![source.project_id.to_string(),source.id.to_string(),serde_json::to_string(&keys)?]).map_err(db_error)?;
             }
             upsert_edges(tx,&source,fingerprint,&payload["edges"])?;
             tx.execute("UPDATE sources SET revision=revision+1,fingerprint=?1,freshness='fresh' WHERE id=?2",
@@ -272,7 +334,7 @@ fn upsert_projection(
     let existing = conn
         .query_row(
             &format!(
-                "SELECT id,source_id,revision FROM {name} WHERE project_id=?1 AND external_key=?2"
+                "SELECT id,source_id,revision,payload_json,active FROM {name} WHERE project_id=?1 AND external_key=?2"
             ),
             params![
                 source.project_id.to_string(),
@@ -283,12 +345,14 @@ fn upsert_projection(
                     id_at(r, 0)?,
                     r.get::<_, Option<String>>(1)?,
                     revision_at(r, 2)?,
+                    r.get::<_,String>(3)?,
+                    r.get::<_,bool>(4)?,
                 ))
             },
         )
         .optional()
         .map_err(db_error)?;
-    value["revision"] = if let Some((id, owner, revision)) = existing {
+    value["revision"] = if let Some((id, owner, revision, previous, active)) = existing {
         if owner.as_deref() != Some(&source.id.to_string()) || value["id"] != json!(id) {
             return Err(Error::SourceConflict(format!(
                 "{name} {} already has a different source or identity",
@@ -298,7 +362,20 @@ fn upsert_projection(
         if revision >= i64::MAX as u64 {
             return Err(Error::InvalidInput("entity revision overflow".into()));
         }
-        json!(revision + 1)
+        let mut old: Value = serde_json::from_str(&previous)?;
+        let mut new = value.clone();
+        for payload in [&mut old, &mut new] {
+            let fields = payload
+                .as_object_mut()
+                .ok_or_else(|| Error::Storage("invalid projection payload".into()))?;
+            fields.remove("source_ref");
+            fields.remove("revision");
+        }
+        json!(if active && old == new {
+            revision
+        } else {
+            revision + 1
+        })
     } else {
         json!(1)
     };
@@ -377,6 +454,7 @@ fn upsert_projection(
 
 fn upsert_edges(conn: &Connection, source: &Source, fingerprint: &str, rows: &Value) -> Result<()> {
     let mut keys = BTreeSet::new();
+    let mut retained = vec![];
     for row in rows
         .as_array()
         .ok_or_else(|| Error::InvalidInput("missing edges".into()))?
@@ -397,12 +475,16 @@ fn upsert_edges(conn: &Connection, source: &Source, fingerprint: &str, rows: &Va
         if !keys.insert(key) {
             return Err(Error::SourceConflict("duplicate source edge".into()));
         }
-        conn.execute("INSERT INTO edges(id,project_id,from_kind,from_key,relation,to_kind,to_key,required,source_id,source_ref_json,source_revision,revision,active)
+        let id:String=conn.query_row("INSERT INTO edges(id,project_id,from_kind,from_key,relation,to_kind,to_key,required,source_id,source_ref_json,source_revision,revision,active)
             VALUES(json_extract(?1,'$.id'),?2,json_extract(?1,'$.from_kind'),json_extract(?1,'$.from_key'),json_extract(?1,'$.relation'),
                 json_extract(?1,'$.to_kind'),json_extract(?1,'$.to_key'),json_extract(?1,'$.required'),?3,json_extract(?1,'$.source_ref'),?4,1,1)
             ON CONFLICT(project_id,source_id,from_kind,from_key,relation,to_kind,to_key) DO UPDATE SET
-                required=excluded.required,source_ref_json=excluded.source_ref_json,source_revision=excluded.source_revision,revision=edges.revision+1,active=1",
-            params![serde_json::to_string(row)?,source.project_id.to_string(),source.id.to_string(),(source.revision+1) as i64]).map_err(db_error)?;
+                required=excluded.required,source_ref_json=excluded.source_ref_json,source_revision=excluded.source_revision,
+                revision=CASE WHEN edges.active=1 AND edges.required=excluded.required THEN edges.revision ELSE edges.revision+1 END,active=1 RETURNING id",
+            params![serde_json::to_string(row)?,source.project_id.to_string(),source.id.to_string(),(source.revision+1) as i64],|row|row.get(0)).map_err(db_error)?;
+        retained.push(id);
     }
+    conn.execute("UPDATE edges SET active=0 WHERE project_id=?1 AND source_id=?2 AND active=1 AND id NOT IN (SELECT value FROM json_each(?3))",
+        params![source.project_id.to_string(),source.id.to_string(),serde_json::to_string(&retained)?]).map_err(db_error)?;
     Ok(())
 }

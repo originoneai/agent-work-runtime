@@ -60,6 +60,7 @@ fn parse(text: &str) -> awr_core::Result<awr_core::ProjectionBatch> {
         revision: 0,
         fingerprint: String::new(),
         freshness: Freshness::Stale,
+        config: serde_json::json!({}),
     };
     let snapshot = SourceSnapshot {
         locator: source.locator.clone(),

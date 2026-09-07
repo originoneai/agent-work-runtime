@@ -8,4 +8,4 @@ Keys default to `<registered source locator>#<anchor>`; `sources.options.key_pre
 
 Source options can specify `status` and `priority`; matching heading attributes override the defaults. The source remains read-only and mutation planning returns `MutationUnsupported`.
 
-The developer `index_source` example accepts a root, manifest path, source index, and output database. It supports content reindexing; tracking manifest option changes in an existing database belongs to the incremental indexing item. Use a fresh scratch database for configuration experiments until that orchestration is delivered.
+Use the unified `reindex` developer example for managed project indexing. It binds parsing options to each source and reindexes configuration changes even when file bytes remain unchanged. The lower-level `index_source` example accepts a root, manifest path, source index and output database for isolated adapter demonstrations.

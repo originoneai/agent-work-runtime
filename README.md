@@ -8,7 +8,7 @@ AWR indexes project goals, plans, rules and task ledgers, tracks work across ses
 
 ## Project status
 
-Implementation has started with the Rust workspace, shared domain types and CLI entry point. **AWR is in development and has not been released.** See the [generated work index](ledger/README.md) for current progress and supported milestones.
+The Rust workspace, SQLite domain store, source adapters and incremental projection pipeline are implemented. The pipeline already reads this repository's own ledger, goals, plan, rules and decisions. **AWR is in development and has not been released.** See the [generated work index](ledger/README.md) for current progress and supported milestones.
 
 The V1 plan contains **59 delivery work items**, **8 complete business acceptance scenarios**, and **10 benchmark targets**. Three repository preparation items are counted separately. A passing planning check validates the plan's structure; it does not prove runtime behavior.
 
@@ -74,7 +74,18 @@ The source library also resolves configured local files and immutable Git blobs.
 cargo run --locked -p awr-source --example read_source -- . examples/source-manifest/project.toml 0
 ```
 
-This entry point reports source metadata and fingerprints. Domain parsing, indexing and work context compilation are delivered by subsequent ledger items.
+This entry point reports source metadata and fingerprints. The unified developer indexer projects YAML work items, milestones, dependencies and evidence references; Markdown goal/plan/rule sections; and ADR decisions:
+
+```sh
+mkdir -p .local
+cargo run --locked -p awr-source --example reindex -- . examples/source-manifest/project.toml .local/awr.db
+```
+
+Unchanged sources are skipped. Content and parser-configuration changes trigger indexing; unchanged entity content retains its revision while source provenance is refreshed. Sources removed from a successfully scanned directory or the manifest become inactive, preserving historical references. Unavailable sources remain visibly stale/unavailable. Unknown rule metadata and raw statuses are reported explicitly.
+
+Running the indexer against a new database rebuilds source projections. Runtime events, sessions and checkpoints require the original database or its backup; they cannot be reconstructed from a work ledger. Source indexing creates new indexing events, not copies of previous work history.
+
+Project initialization and user-facing source commands, task queries, runtime workflows and context compilation follow in their ledger items. The current project's unannotated rules are retained with unresolved scope/severity until an explicit mapping is supplied for runtime use.
 
 Python 3.11+ is sufficient for this repository's planning tools. Rust is pinned in rust-toolchain.toml and dependency resolution is committed in Cargo.lock.
 
