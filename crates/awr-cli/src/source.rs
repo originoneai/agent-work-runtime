@@ -12,6 +12,14 @@ use std::{
 
 #[derive(Debug, Subcommand)]
 pub enum SourceCommand {
+    /// Read one registered source by ID, unambiguous domain or exact locator.
+    Show(crate::drill::SourceRead),
+    /// Read source lifecycle/change summaries, including retired source IDs.
+    History {
+        reference: String,
+        #[command(flatten)]
+        window: crate::drill::HistoryWindow,
+    },
     /// Read registered sources and their last observed freshness without changing the database.
     List,
     /// Refresh source availability and report pending changes without parsing new facts.
@@ -268,10 +276,20 @@ fn discover(root: &Path) -> Result<(Option<Manifest>, Vec<Value>, Vec<String>)> 
 }
 
 pub fn run(root: &Path, command: &SourceCommand, json_output: bool) -> Result<()> {
+    match command {
+        SourceCommand::Show(request) => {
+            return crate::drill::source_show(root, request, json_output);
+        }
+        SourceCommand::History { reference, window } => {
+            return crate::drill::source_history(root, reference, window, json_output);
+        }
+        _ => (),
+    }
     let root = root.canonicalize()?;
     let manifest = Manifest::load(&root)?;
     let runtime = runtime_dir(&root, false)?;
     match command {
+        SourceCommand::Show(_) | SourceCommand::History { .. } => unreachable!(),
         SourceCommand::List => {
             let store = Store::open_readonly(&runtime.join("state.db"))?;
             let project = store.project_by_root(&root)?;

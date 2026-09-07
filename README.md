@@ -125,7 +125,7 @@ Handoff requires a latest checkpoint. Without `--to-session`, it closes the send
 
 Session inspection, history, handoff, release and end work from the runtime database even when source files are unavailable; JSON reports `source_refresh_performed: false`. History returns bounded summaries and references, with `--session`, `--event-type`, `--after-revision` and `--all-branches` filters. For pagination, pass the returned JSON `next_cursor` to `--cursor`; it retains multiple events at the same revision.
 
-The storage library creates and reopens versioned AWR databases with WAL, foreign keys and migration metadata. Source work mutation and dedicated delta/resume commands remain scheduled.
+The storage library creates and reopens versioned AWR databases with WAL, foreign keys and migration metadata. Source work mutation and refreshed resume remain scheduled.
 
 Inspect evidence, decisions and artifacts by external key or internal ID:
 
@@ -186,15 +186,17 @@ The context library also assembles an indivisible hard-fact subset with exact wo
 
 Related-context selection retains the complete required dependency closure, including unresolved work, missing keys and cycles. Completed dependency facts from stale sources remain unresolved. Applicable accepted decisions retain their exact statements and scope metadata; uncertain associations remain explicit references, while rationale and unrelated history stay out of the default selection. Evidence contributes bounded summaries, report references, source/branch comparisons and binding/verification gaps without opening report bodies. A missing report association is a known evidence gap, not proof that a task is complete. The three existing architectural ADRs now explicitly apply project-wide; their IDs, titles, statuses, statements and rationale are unchanged.
 
-Recent Delta accepts an explicit checkpoint or project revision. Automatic selection uses the selected session's own/inherited checkpoint, then a closed session's checkpoint on the same work and branch; without one it reports a session-start or project-start baseline. A checkpoint from another work or branch is rejected. The developer entry point refreshes sources before reading:
+Recent Delta accepts an explicit checkpoint or project revision. Automatic selection uses the selected session's own/inherited checkpoint, then a closed session's checkpoint on the same work and branch; without one it reports a session-start or project-start baseline. A checkpoint from another work or branch is rejected. The CLI refreshes sources and shares L1 work/session selection:
 
 ```sh
-cargo run --locked -p awr-context --example delta_project -- . <work-key> [checkpoint-id-or-revision]
+awr --json context delta --work <work-key>
+awr --json context delta --session <session-id> --checkpoint <checkpoint-id>
+awr --json context delta --work <work-key> --after-revision <revision> --event-limit 12 --entity-limit 24
 ```
 
 Delta includes every changed source after the baseline, including project-wide mapping changes and retired sources. New source events record before/after source states and entity/edge additions, revisions and removals in the same database transaction. Fingerprint-only refreshes retain unchanged entity revisions. Older events remain immutable and explicitly report unavailable entity history; the reader does not infer historical changes from today's facts. Source event names are reserved for source operations.
 
-Process history includes this work and project-global events on the selected branch. High/critical events after the baseline return at most 12 bounded summaries by default, with critical events first and then newest revision/time/ID. Per-source entity summaries retain 24 changed identities by default; all omitted counts are explicit. Normal and older process events are folded into counts by type/importance. Full payloads remain available via `Store::event` and paginated `EventQuery`, using the returned event IDs and baseline/current revisions; context CLI integration follows in its ledger item. No event payload, artifact body or source fact body enters this delta. The snapshot API itself does not rescan files or certify execution-context completeness.
+Process history includes this work and project-global events on the selected branch. High/critical events after the baseline return at most 12 bounded summaries by default, with critical events first and then newest revision/time/ID. Per-source entity summaries retain 24 changed identities by default; all omitted counts are explicit. Normal and older process events are folded into counts by type/importance. Full payloads are available through `event show --full` and paginated history, using the returned IDs and baseline/current revisions. No event payload, artifact body or source fact body enters this delta. Source refresh failures remain structured in `source_issues` and exit nonzero; historical gaps remain labeled in `delta.gaps`. Neither the CLI nor the snapshot library API certifies execution-context completeness.
 
 The budget library preserves required chunks whole. It tries optional chunks by ascending priority, descending recency, then section/key; an oversized candidate is skipped so a later smaller candidate can still fit. Final rendering uses fixed section/key order. Each trial counts the entire rendered string with the pinned `o200k_base` ordinary-text tokenizer, including headings, IDs, source versions/fingerprints and the omission footer. The count is exact for that tokenizer; transport JSON, tool framing and the surrounding conversation are excluded. Other tokenizers may differ, with no cross-tokenizer error bound claimed. This is a counting algorithm, not a measured compression/performance benchmark.
 
@@ -232,6 +234,32 @@ The compiler refreshes sources, resolves work, selects required dependencies, ev
 Required output retains exact task state/acceptance, applicable hard rules with severity/scope, unresolved required dependencies, accepted decision statements, checkpoint next action/open loops, source-change summaries and all completeness/evidence gaps. Selected critical event summaries are required. Goal/work prose, resolved dependencies, high event details, soft/info rules, evidence summaries and ordinary history compete as whole optional chunks. Original event/rationale/report/artifact bodies are not expanded.
 
 Plain output is the selected rendered text. JSON puts that same text and its hash/token metadata in `work_context`, with `completeness` alongside it. `work_context.omitted_chunks` lists budget omissions; `omitted_refs` records limits applied during earlier selection. An incomplete result retains available facts and exits nonzero. Hard overflow returns an error before any pack is emitted. The payload budget applies to the rendered text, and this functional behavior is not a passed system benchmark or release gate.
+
+Follow a reference without expanding the whole project:
+
+```sh
+awr --json object show goal <id-or-key>
+awr --json object show goal <id-or-key> --full --entity-revision <revision> --max-bytes 262144
+awr object show rule <id-or-key> --full
+awr object show plan <id-or-key> --full
+awr object show work <id-or-key> --full
+awr object show checkpoint <checkpoint-id> --full
+awr --json source show <source-id-or-domain>
+awr --json source show <source-id> --content --source-revision <revision> --fingerprint <fingerprint> --max-bytes 262144
+awr --json source show <source-id> --content --start-line 10 --end-line 20
+awr --json source history <source-id> --after-revision <baseline> --through-revision <context-revision> --limit 20
+awr --json event history --work <work-key> --session <session-id> --through-revision <context-revision>
+awr --json event show <event-id>
+awr --json event show <event-id> --full --max-bytes 262144
+```
+
+`omitted_chunks[].entities` carries object kinds, IDs and entity revisions, including optional checkpoint digests. Use `object show` for goal/plan/rule/work/checkpoint, `decision show` for decisions, `evidence show` for evidence, and `event show` for events. A `delta:<kind>` reference describes a historical entity change: use the source ID in its chunk key with source history and the context's revision window to retrieve immutable change receipts, including deleted identities. `source_entity_changes` omissions use the same source-history path. Important-event omissions and folded history can be paged with event history; omit the work/session filters to include project-global events, and use `--main` or `--branch <id>` for an exact branch. `--importance` and `--event-type` narrow the result. No history body enters context automatically.
+
+Object queries refresh sources by default; `--cached` explicitly reads the last recorded projection. `--entity-revision` rejects a changed object instead of substituting it for the requested version. Checkpoints and events are immutable records and need no source refresh. Default object/event reads expose metadata and bounded summaries; full bodies require `--full`. Event full-read limits apply to payload bytes; projected-object limits apply to serialized object bytes.
+
+Source metadata/history reads do not refresh projections and remain available for retired sources by exact ID, even without the manifest. A domain or locator must identify one active source. `source show --content` checks the current manifest's authorized roots, reads within the byte cap, and verifies the indexed fingerprint before emitting content. Optional source revision/fingerprint guards bind an earlier reference; changed bytes require reindexing and obtaining a new reference. A line-range read still caps and verifies the whole source first. Historical file bodies are not reconstructed from source events.
+
+History returns summaries with `next_cursor`; repeat the same scope and `--through-revision` with `--cursor '<returned-json>'` for another page. The inclusive upper bound can pin history to a context revision while new work continues. Source history includes only source lifecycle/change events for that source, and all reads reject invalid revision windows. Evidence/report/artifact references keep their dedicated bounded, hash-checked read commands above.
 
 Python 3.11+ is sufficient for this repository's planning tools. Rust is pinned in rust-toolchain.toml and dependency resolution is committed in Cargo.lock.
 

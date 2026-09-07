@@ -2,6 +2,7 @@ use awr_core::{Error, Result};
 use clap::{CommandFactory, Parser, Subcommand};
 use std::path::PathBuf;
 mod context;
+mod drill;
 mod query;
 mod records;
 mod search;
@@ -74,6 +75,16 @@ enum Command {
         #[command(subcommand)]
         command: context::ContextCommand,
     },
+    /// Read one referenced goal, plan, rule, work item or checkpoint.
+    Object {
+        #[command(subcommand)]
+        command: drill::ObjectCommand,
+    },
+    /// Inspect immutable events and bounded historical summaries.
+    Event {
+        #[command(subcommand)]
+        command: drill::EventCommand,
+    },
     /// Search bounded summaries, optionally filtering by entity type, status or work item.
     Search(search::SearchArgs),
     /// Inspect an existing AWR database without creating or repairing it.
@@ -99,6 +110,8 @@ fn run(cli: &Cli) -> Result<()> {
         Some(Command::Decision { command }) => records::decision(&cli.project, command, cli.json),
         Some(Command::Artifact { command }) => records::artifact(&cli.project, command, cli.json),
         Some(Command::Context { command }) => context::run(&cli.project, command, cli.json),
+        Some(Command::Object { command }) => drill::object(&cli.project, command, cli.json),
+        Some(Command::Event { command }) => drill::event(&cli.project, command, cli.json),
         Some(Command::Search(args)) => search::run(&cli.project, args, cli.json),
         Some(Command::Doctor { database }) => {
             let path = database

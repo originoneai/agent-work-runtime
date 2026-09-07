@@ -68,12 +68,16 @@ impl WorkContextReport {
             .unwrap_or("")
     }
 }
-struct Selection {
-    work: Option<Projected<WorkItem>>,
-    session: Option<Session>,
-    basis: &'static str,
+pub(crate) struct Selection {
+    pub work: Option<Projected<WorkItem>>,
+    pub session: Option<Session>,
+    pub basis: &'static str,
 }
-fn select_work(store: &Store, project: &Project, request: &ContextRequest) -> Result<Selection> {
+pub(crate) fn select_work(
+    store: &Store,
+    project: &Project,
+    request: &ContextRequest,
+) -> Result<Selection> {
     let mut work = match request.work_item_key.as_deref() {
         Some(key) => match store.work_item(project.id, key) {
             Ok(w) => Some(w),
@@ -597,7 +601,11 @@ pub fn compile_context(
                 "checkpoint-digest",
                 ContextSection::Delta,
                 cp.digest,
-                vec![],
+                vec![SelectedEntity {
+                    kind: "checkpoint".into(),
+                    id: cp.id,
+                    revision: cp.revision,
+                }],
             ),
         ));
     }

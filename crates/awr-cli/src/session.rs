@@ -198,9 +198,10 @@ impl RuntimeProject {
     }
 }
 
-fn event_brief(event: &Event) -> Value {
+pub(crate) fn event_brief(event: &Event) -> Value {
     json!({"id":event.id,"type":event.event_type,"summary":short(&event.summary),"importance":event.importance,"session_id":event.session_id,"branch_id":event.branch_id,"project_revision":event.project_revision,"created_at":event.created_at,
-        "checkpoint_id":event.payload.get("checkpoint_id"),"artifact_id":event.payload.get("artifact_id")})
+        "work_item_id":event.work_item_id,"source_id":event.payload.get("source_id").and_then(|v|v.as_str()).and_then(|s|s.parse::<Id>().ok()),
+        "checkpoint_id":event.payload.get("checkpoint_id").and_then(|v|v.as_str()).and_then(|s|s.parse::<Id>().ok()),"artifact_id":event.payload.get("artifact_id").and_then(|v|v.as_str()).and_then(|s|s.parse::<Id>().ok())})
 }
 fn print(value: &Value, text: &str, json_output: bool) -> Result<()> {
     if json_output {

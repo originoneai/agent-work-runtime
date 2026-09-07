@@ -88,6 +88,7 @@ pub struct ChunkSelection {
 pub struct OmittedChunk {
     pub key: String,
     pub section: ContextSection,
+    pub entities: Vec<SelectedEntity>,
     pub reason: &'static str,
 }
 #[derive(Debug, Clone, Serialize)]
@@ -362,6 +363,7 @@ pub fn budget_context(
             omitted_chunks.push(OmittedChunk {
                 key: candidate.chunk.key.clone(),
                 section: candidate.chunk.section,
+                entities: candidate.chunk.entities.clone(),
                 reason: "insufficient_budget_for_whole_chunk",
             });
         }

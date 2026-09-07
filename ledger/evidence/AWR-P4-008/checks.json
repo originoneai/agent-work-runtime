@@ -1,0 +1,76 @@
+{
+  "work_item": "AWR-P4-008",
+  "checked_at": "2026-09-08T07:28:12+08:00",
+  "checks": [
+    {
+      "name": "drill_down_cli",
+      "passed": true,
+      "result": "cargo test --locked -p awr-cli --test drill_cli: 3/3. Omitted goal references retrieve exact full objects by ID/revision; bounded metadata and bodies; stale object/source guards; exact fingerprint-verified source bytes and line ranges; cached reads; checkpoint-to-delta-to-source-history-to-event chain; revision-bound cursor paging; retired sources and history survive manifest removal; source refresh errors stay explicit."
+    },
+    {
+      "name": "integrated_command_regression",
+      "passed": true,
+      "result": "awr-cli context_compile_cli 4/4, records_cli 3/3, session_cli 3/3; awr-store events 4/4 and projection_queries 2/2; awr-context budget 5/5 and recent_delta 2/2. Existing context hashes, hard facts, history, reports and artifacts retain their behavior."
+    },
+    {
+      "name": "workspace_build",
+      "passed": true,
+      "result": "cargo build --locked --workspace and --workspace --examples, cargo fmt --all --check, git diff --check passed."
+    },
+    {
+      "name": "actual_project_drill_down",
+      "passed": true,
+      "result": "At project revision 172, compiled the actual current work twice with identical output/hash (4984 tokens, 13 omitted chunks), retrieved an omitted dependency by ID/revision, verified all 59325 source bytes, paged six immutable source receipts from revision 165 through 172 and read their full payloads. Resolved a selected decision and existing evidence; read and verified the existing 498-byte artifact. Saved and read the session checkpoint, ended the session at revision 174, and doctor passed."
+    }
+  ],
+  "observed": {
+    "project_revision": 172,
+    "tokens": 4984,
+    "context_hash": "6911074db7f761c15901d01150f82498145e2c4e9df2967daf229b2d6b692d3d",
+    "complete": true,
+    "stable_repeated_output": true,
+    "omitted_chunks": 13,
+    "retrieved_omitted_object": {
+      "kind": "work_item",
+      "id": "01M1YJBR6D54K8NN5911KQ7DR8",
+      "revision": 1
+    },
+    "source_fingerprint_verified": "sha256:5d2c0b79360a6dc57bc2eefcf2137e7f8165935ccced81e3d93e932dc3e21d7c",
+    "source_content_bytes": 59325,
+    "delta_after_revision": 165,
+    "delta_through_revision": 172,
+    "source_history_receipts": [
+      {
+        "source_id": "01M1YJBR60M3XP7YCYGK0A4VGC",
+        "history_events": 6,
+        "first_event": "01M1Z17SWM5TAE9K3ABNH585MJ",
+        "last_event": "01M1Z1WNZVZV7PPFKJ7RY3D3GV"
+      }
+    ],
+    "decision_id": "01M1YJBR7MCCQ2YB6P7CGGZAB0",
+    "evidence_id": "01M1YSM0YCEZ5MB8SENGD8KBT8",
+    "artifact_id": "01M1YSM0XG2JKWDH6WZAMRS55K",
+    "artifact_bytes": 498,
+    "artifact_sha256": "18499cdb2763e7021453b035a531f00b7d6124d9220af344ec927af2b318769e",
+    "session_id": "01M1Z1WP0FAWRB5AZHJMR1HJ4M",
+    "checkpoint_id": "01M1Z34YCP2TR1T6ZBZV0JFW6G",
+    "final_project_revision": 174,
+    "doctor_ok": true
+  },
+  "artifacts": [
+    "crates/awr-cli/src/drill.rs",
+    "crates/awr-cli/src/context.rs",
+    "crates/awr-cli/src/source.rs",
+    "crates/awr-cli/tests/drill_cli.rs",
+    "crates/awr-context/src/budget.rs",
+    "crates/awr-context/src/compile.rs",
+    "crates/awr-context/src/delta.rs",
+    "crates/awr-store/src/events.rs",
+    "crates/awr-store/src/query.rs",
+    "crates/awr-store/src/catalog.rs",
+    "README.md"
+  ],
+  "limitations": [
+    "Feature-local checks and one real project self-use observation; no system benchmark, independent real-client E4 acceptance or release claim. Source detail verifies the indexed body and does not reconstruct removed historical file content. Event history excludes payloads from output but the store still materializes bounded pages of event records. Broader performance/security work, refreshed resume and branch overlays remain scheduled."
+  ]
+}

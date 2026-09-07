@@ -37,7 +37,9 @@ pub struct EventQuery {
     pub branch: BranchFilter,
     pub event_type: Option<String>,
     pub importance: Option<String>,
+    pub source_id: Option<Id>,
     pub after_revision: Revision,
+    pub through_revision: Option<Revision>,
     pub cursor: Option<EventCursor>,
     pub limit: usize,
 }
@@ -49,7 +51,9 @@ impl Default for EventQuery {
             branch: BranchFilter::Any,
             event_type: None,
             importance: None,
+            source_id: None,
             after_revision: 0,
+            through_revision: None,
             cursor: None,
             limit: 100,
         }
@@ -142,6 +146,23 @@ pub(crate) fn bind_event(
 }
 
 impl Store {
+    pub fn event_payload_bytes(&self, project: Id, id: Id) -> Result<u64> {
+        self.conn.query_row("SELECT length(CAST(payload_json AS BLOB)) FROM events WHERE project_id=?1 AND id=?2",params![project.to_string(),id.to_string()],|r|r.get::<_,i64>(0)).optional().map_err(db_error)?
+            .map(|n|n as u64).ok_or_else(|| Error::NotFound(format!("event {id}")))
+    }
+    /// No arbitrary event payload/body is loaded by a metadata read.
+    pub fn event_metadata(&self, project: Id, id: Id) -> Result<serde_json::Value> {
+        self.conn.query_row("SELECT id,project_id,work_item_id,session_id,branch_id,event_type,importance,substr(summary,1,240),project_revision,created_at,
+            CASE WHEN json_type(payload_json,'$.source_id')='text' THEN json_extract(payload_json,'$.source_id') END,
+            CASE WHEN json_type(payload_json,'$.checkpoint_id')='text' THEN json_extract(payload_json,'$.checkpoint_id') END,
+            CASE WHEN json_type(payload_json,'$.artifact_id')='text' THEN json_extract(payload_json,'$.artifact_id') END,length(summary)>240
+            FROM events WHERE project_id=?1 AND id=?2",params![project.to_string(),id.to_string()],|r| {
+                let mut summary=r.get::<_,String>(7)?;if r.get::<_,bool>(13)?{summary.push('…');}
+                Ok(serde_json::json!({"id":id_at(r,0)?,"project_id":id_at(r,1)?,"work_item_id":optional_id(r,2)?,"session_id":optional_id(r,3)?,"branch_id":optional_id(r,4)?,
+                    "type":r.get::<_,String>(5)?,"importance":r.get::<_,String>(6)?,"summary":summary,"project_revision":revision_at(r,8)?,"created_at":r.get::<_,i64>(9)?,
+                    "source_id":r.get::<_,Option<String>>(10)?,"checkpoint_id":r.get::<_,Option<String>>(11)?,"artifact_id":r.get::<_,Option<String>>(12)?}))
+            }).optional().map_err(db_error)?.ok_or_else(|| Error::NotFound(format!("event {id}")))
+    }
     pub fn event(&self, project: Id, id: Id) -> Result<Event> {
         self.conn.query_row("SELECT id,project_id,work_item_id,session_id,branch_id,event_type,importance,summary,payload_json,project_revision,created_at FROM events WHERE project_id=?1 AND id=?2",params![project.to_string(),id.to_string()],event_row).optional().map_err(db_error)?.ok_or_else(||Error::NotFound(format!("event {id}")))
     }
@@ -177,6 +198,21 @@ impl Store {
             .optional()
             .map_err(db_error)?
             .ok_or_else(|| Error::NotFound(format!("project {project}")))?;
+        if query.through_revision.is_some_and(|through| {
+            through > revision
+                || through < query.after_revision
+                || query
+                    .cursor
+                    .as_ref()
+                    .is_some_and(|c| c.project_revision > through)
+        }) {
+            return Err(Error::InvalidInput(
+                "event revision range is outside the current project/cursor bounds".into(),
+            ));
+        }
+        if let Some(id) = query.source_id {
+            has_id(&tx, "sources", project, id)?;
+        }
         if let Some(id) = query.work_item_id {
             has_id(&tx, "work_items", project, id)?;
         }
@@ -208,8 +244,10 @@ impl Store {
             FROM events WHERE project_id=?1 AND (?2 IS NULL OR work_item_id=?2) AND (?3 IS NULL OR session_id=?3)
               AND (?4 OR branch_id IS ?5) AND (?6 IS NULL OR event_type=?6) AND (?7 IS NULL OR importance=?7)
               AND project_revision>?8 AND (?9 IS NULL OR (project_revision,created_at,id)>(?9,?10,?11))
+              AND (?13 IS NULL OR (event_type LIKE 'source.%' AND json_extract(payload_json,'$.source_id')=?13))
+              AND (?14 IS NULL OR project_revision<=?14)
             ORDER BY project_revision,created_at,id LIMIT ?12").map_err(db_error)?
-            .query_map(params![project.to_string(),query.work_item_id.map(|id|id.to_string()),query.session_id.map(|id|id.to_string()),all_branches,branch.map(|id|id.to_string()),query.event_type,query.importance,sqlite_revision(query.after_revision)?,query.cursor.as_ref().map(|c|sqlite_revision(c.project_revision)).transpose()?,query.cursor.as_ref().map(|c|c.created_at),query.cursor.as_ref().map(|c|c.event_id.to_string()),(query.limit+1) as i64],event_row).map_err(db_error)?.collect::<rusqlite::Result<Vec<_>>>().map_err(db_error)?;
+            .query_map(params![project.to_string(),query.work_item_id.map(|id|id.to_string()),query.session_id.map(|id|id.to_string()),all_branches,branch.map(|id|id.to_string()),query.event_type,query.importance,sqlite_revision(query.after_revision)?,query.cursor.as_ref().map(|c|sqlite_revision(c.project_revision)).transpose()?,query.cursor.as_ref().map(|c|c.created_at),query.cursor.as_ref().map(|c|c.event_id.to_string()),(query.limit+1) as i64,query.source_id.map(|id|id.to_string()),query.through_revision.map(sqlite_revision).transpose()?],event_row).map_err(db_error)?.collect::<rusqlite::Result<Vec<_>>>().map_err(db_error)?;
         let more = events.len() > query.limit;
         events.truncate(query.limit);
         let next_cursor = if more {

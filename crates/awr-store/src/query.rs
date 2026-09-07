@@ -16,6 +16,16 @@ pub(crate) fn projections<T: DeserializeOwned>(
     kind: EntityKind,
     key: Option<&str>,
 ) -> Result<Vec<Projected<T>>> {
+    matching_projections(conn, project, kind, key, false)
+}
+
+fn matching_projections<T: DeserializeOwned>(
+    conn: &Connection,
+    project: Id,
+    kind: EntityKind,
+    key: Option<&str>,
+    match_id: bool,
+) -> Result<Vec<Projected<T>>> {
     let source_columns = SOURCE_COLUMNS
         .split(',')
         .map(|c| format!("s.{c}"))
@@ -26,13 +36,13 @@ pub(crate) fn projections<T: DeserializeOwned>(
         "SELECT {source_columns},e.payload_json,p.project_revision FROM {} e
         JOIN sources s ON e.source_id=s.id AND e.project_id=s.project_id
         JOIN projects p ON e.project_id=p.id
-        WHERE e.project_id=?1 AND e.active=1 AND s.active=1 AND (?2 IS NULL OR e.external_key=?2)
+        WHERE e.project_id=?1 AND e.active=1 AND s.active=1 AND (?2 IS NULL OR e.external_key=?2 OR (?3 AND e.id=?2))
         ORDER BY e.external_key",
         table(kind)
     );
     conn.prepare(&sql)
         .map_err(db_error)?
-        .query_map(params![project.to_string(), key], |row| {
+        .query_map(params![project.to_string(), key, match_id], |row| {
             let item = serde_json::from_str(&row.get::<_, String>(11)?).map_err(|error| {
                 rusqlite::Error::FromSqlConversionFailure(
                     11,
@@ -64,6 +74,30 @@ pub(crate) fn projection<T: DeserializeOwned>(
 }
 
 impl Store {
+    /// Explicit drill-down by external key or ID. A collision is an error, never a guessed match.
+    pub fn object_projection(
+        &self,
+        project: Id,
+        kind: EntityKind,
+        reference: &str,
+    ) -> Result<Projected<serde_json::Value>> {
+        if !matches!(
+            kind,
+            EntityKind::Goal | EntityKind::Plan | EntityKind::Rule | EntityKind::WorkItem
+        ) {
+            return Err(Error::Unsupported(
+                "use the decision/evidence domain reader for these object kinds".into(),
+            ));
+        }
+        let mut rows = matching_projections(&self.conn, project, kind, Some(reference), true)?;
+        if rows.len() > 1 {
+            return Err(Error::InvalidInput(format!(
+                "ambiguous {kind:?} reference {reference}"
+            )));
+        }
+        rows.pop()
+            .ok_or_else(|| Error::NotFound(format!("{kind:?} {reference}")))
+    }
     pub fn goal(&self, project: Id, key: &str) -> Result<Projected<Goal>> {
         projection(&self.conn, project, EntityKind::Goal, key)
     }

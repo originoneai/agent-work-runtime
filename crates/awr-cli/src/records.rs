@@ -78,7 +78,7 @@ fn print(value: &Value, text: &str, json_output: bool) -> Result<()> {
     }
     Ok(())
 }
-fn check_limit(size: u64, limit: u64) -> Result<()> {
+pub(crate) fn check_limit(size: u64, limit: u64) -> Result<()> {
     if limit == 0 || limit > 16 * 1024 * 1024 {
         return Err(Error::InvalidInput(
             "read limit must be 1..16777216 bytes".into(),

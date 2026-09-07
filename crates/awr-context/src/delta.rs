@@ -1,6 +1,78 @@
 use awr_core::{Checkpoint, Error, Freshness, Id, Result, Revision, Session};
 use awr_store::{DeltaEvents, Store};
 use serde::{Deserialize, Serialize};
+use std::path::Path;
+
+#[derive(Debug, Clone, Default, Serialize, Deserialize)]
+pub struct DeltaContextRequest {
+    pub work_item_key: Option<String>,
+    pub agent_id: Option<String>,
+    #[serde(flatten)]
+    pub delta: DeltaRequest,
+}
+
+#[derive(Debug, Clone, Serialize)]
+pub struct DeltaContextReport {
+    pub source_refresh_ok: bool,
+    pub source_issues: Vec<awr_source::IndexIssue>,
+    pub delta: RecentDelta,
+}
+
+/// Refresh authoritative sources and use the same work/session selection as L1 compilation.
+pub fn context_delta(
+    store: &mut Store,
+    root: &Path,
+    request: &DeltaContextRequest,
+) -> Result<DeltaContextReport> {
+    if [&request.work_item_key, &request.agent_id]
+        .into_iter()
+        .flatten()
+        .any(|s| s.trim().is_empty())
+    {
+        return Err(Error::InvalidInput(
+            "work and agent selectors must not be empty".into(),
+        ));
+    }
+    let refresh =
+        awr_source::index_project(store, root, &awr_source::Manifest::load(root)?, false)?;
+    let project = store.project_by_root(&root.canonicalize()?)?;
+    let selected = crate::compile::select_work(
+        store,
+        &project,
+        &crate::ContextRequest {
+            work_item_key: request.work_item_key.clone(),
+            session_id: request.delta.session_id,
+            agent_id: request.agent_id.clone(),
+            ..Default::default()
+        },
+    )?;
+    let work = selected.work.ok_or_else(|| {
+        Error::ContextIncomplete(
+            "no current work item; use event/source history to inspect retained records".into(),
+        )
+    })?;
+    let delta = recent_delta(
+        store,
+        project.id,
+        &work.item.meta.external_key,
+        project.current_branch_id,
+        &DeltaRequest {
+            session_id: selected.session.map(|s| s.id),
+            ..request.delta.clone()
+        },
+    )?;
+    if delta.events.project_revision != refresh.project_revision {
+        return Err(Error::RevisionConflict {
+            expected: refresh.project_revision,
+            actual: delta.events.project_revision,
+        });
+    }
+    Ok(DeltaContextReport {
+        source_refresh_ok: refresh.ok,
+        source_issues: refresh.issues,
+        delta,
+    })
+}
 
 #[derive(Debug, Clone, Default, Serialize, Deserialize)]
 #[serde(tag = "kind", rename_all = "snake_case")]

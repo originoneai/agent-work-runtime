@@ -17,7 +17,10 @@ pub use completeness::{
     CompletenessIssue, CompletenessRequest, ContextCompleteness, check_completeness,
     inspect_completeness,
 };
-pub use delta::{DeltaBaseline, DeltaRequest, RecentDelta, recent_delta};
+pub use delta::{
+    DeltaBaseline, DeltaContextReport, DeltaContextRequest, DeltaRequest, RecentDelta,
+    context_delta, recent_delta,
+};
 pub use hard::{
     HardContext, HardWork, RuleScopeInput, RuleSelection, SourceVersion, hard_context, select_rules,
 };

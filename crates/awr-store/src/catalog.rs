@@ -88,6 +88,20 @@ pub(crate) fn bump_revision(conn: &Connection, project: Id) -> Result<Revision> 
 }
 
 impl Store {
+    /// Retained source identity is available even after removal from the active mapping.
+    pub fn retained_source(&self, project: Id, id: Id) -> Result<(Source, bool)> {
+        self.conn
+            .query_row(
+                &format!(
+                    "SELECT {SOURCE_COLUMNS},active FROM sources WHERE project_id=?1 AND id=?2"
+                ),
+                params![project.to_string(), id.to_string()],
+                |r| Ok((source_row(r)?, r.get(11)?)),
+            )
+            .optional()
+            .map_err(db_error)?
+            .ok_or_else(|| Error::NotFound(format!("source {id}")))
+    }
     pub fn register_project(
         &mut self,
         root: &Path,
