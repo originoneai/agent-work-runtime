@@ -1,8 +1,8 @@
 schema_version: 1
 contract_id: awr-v1
 contract_version: 1.0.0
-ledger_revision: 7
-updated_at: '2026-09-08T00:47:25+08:00'
+ledger_revision: 9
+updated_at: '2026-09-08T00:54:50+08:00'
 project:
   name: Agent Work Runtime
   external_key: agent-work-runtime
@@ -11,8 +11,8 @@ project:
   release_status: not_released
 current:
   milestone: M1
-  work_item: AWR-P0-003
-  next_action: 建立完整领域表、来源引用和运行态表；提供 Project/Source 注册查询并验证版本推进。
+  work_item: AWR-P0-004
+  next_action: 实现 expected_revision 保护下的事务、事件追加、失败回滚与结构化错误。
   open_loops:
   - 功能实现优先；集中测试、优化和打磨在功能开发后执行。
   - 上下文功能可用后接入本项目自身台账，边使用边改进。
@@ -202,7 +202,7 @@ work_items:
   priority: P0
   kind: feature
   required_for_v1: true
-  status: in_progress
+  status: completed
   owner: codex-primary
   depends_on:
   - AWR-P0-002
@@ -220,18 +220,19 @@ work_items:
   verification:
     minimum: 证明本条验收行为；功能阶段运行必要的定向检查，系统测试在 M9 集中执行。
     evidence_directory: ledger/evidence/AWR-P0-003
-    evidence_level: none
-  evidence: []
+    evidence_level: locally_verified
+  evidence:
+  - ledger/deliveries/AWR-P0-003.json
   blocker: null
-  next_action: 建立完整领域表、来源引用和运行态表；提供 Project/Source 注册查询并验证版本推进。
+  next_action: 已交付；继续依赖就绪的功能任务。
 - id: AWR-P0-004
   title: 领域错误与事务变更接口
   milestone: M1
   priority: P0
   kind: feature
   required_for_v1: true
-  status: planned
-  owner: null
+  status: in_progress
+  owner: codex-primary
   depends_on:
   - AWR-P0-003
   source_sections:
@@ -251,14 +252,14 @@ work_items:
     evidence_level: none
   evidence: []
   blocker: null
-  next_action: 按交付物实现并验证：领域错误与事务变更接口
+  next_action: 实现 expected_revision 保护下的事务、事件追加、失败回滚与结构化错误。
 - id: AWR-P1-001
   title: Source Manifest 与 Adapter 接口
   milestone: M1
   priority: P0
   kind: feature
   required_for_v1: true
-  status: planned
+  status: ready
   owner: null
   depends_on:
   - AWR-P0-003
