@@ -1,0 +1,49 @@
+{
+  "work_item": "AWR-P4-007",
+  "checked_at": "2026-09-08T06:28:06+08:00",
+  "checks": [
+    {
+      "name": "completeness",
+      "passed": true,
+      "result": "cargo test --locked -p awr-context --test completeness: 3/3. Current refresh proof and revision matching, known unresolved dependencies, retained evidence gaps without status promotion, unknown/missing hard facts, cycle/missing dependency detection, uncertain accepted decisions, failed new mappings without cache rows, stale/missing work and recovery."
+    },
+    {
+      "name": "workspace_build",
+      "passed": true,
+      "result": "cargo build --locked --workspace and --workspace --examples passed; git diff --check passed."
+    },
+    {
+      "name": "actual_project_completeness",
+      "passed": true,
+      "result": "At project revision 152, the current work returns stable complete required-context metadata across seven refreshed sources with no unresolved required dependencies and explicit no_evidence. Previous work retains evidence currency/level/binding gaps. Session checkpoint/end and doctor completed."
+    }
+  ],
+  "observed": {
+    "project_revision": 152,
+    "complete": true,
+    "source_versions": 7,
+    "evidence_gaps": [
+      "no_evidence"
+    ],
+    "previous_evidence_gaps": [
+      "evidence_currency_unknown",
+      "evidence_level_unverified",
+      "missing_evidence_bindings"
+    ],
+    "unresolved_required_dependencies": [],
+    "stable_repeated_output": true,
+    "session_id": "01M1YZB7H27X3T4FMA0A2B2W6J",
+    "checkpoint_id": "01M1YZRQPB6TWQN3B5Y6H0SPBC",
+    "checkpoint_hash_basis": "SHA256 of completeness report, not a compiled L1 pack",
+    "final_project_revision": 154,
+    "doctor_ok": true
+  },
+  "artifacts": [
+    "crates/awr-context/src/completeness.rs",
+    "crates/awr-context/tests/completeness.rs",
+    "crates/awr-context/examples/completeness_project.rs"
+  ],
+  "limitations": [
+    "Metadata/fact availability and association assessment only. Known pending dependencies and evidence gaps are explicit; acceptance quality, report execution and release readiness are not certified. L1 rendering/budget integration and full context CLI remain scheduled. No full-system regression, benchmarks or real-client E4 acceptance claimed."
+  ]
+}

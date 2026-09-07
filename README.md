@@ -203,6 +203,16 @@ If the required text plus metadata exceeds the supplied budget, the result is `B
 cargo run --locked -p awr-context --example budget_project -- . <work-key> <budget> [agent-id]
 ```
 
+Completeness assessment refreshes the configured sources, including newly configured paths that have no cached Source row. It reports `source_fresh`, `work_item_found`, `work_state_complete`, `acceptance_complete`, `rules_complete`, `dependencies_complete`, `decision_context_complete`, evidence gaps and reasons. Required missing/unknown/stale facts produce `CONTEXT INCOMPLETE`; a missing task returns the same structured report. A snapshot-only call explicitly reports that freshness was not checked and cannot return a current complete verdict. A report from a different project/revision is rejected.
+
+`dependencies_complete` means the required graph and its facts are known, current and free of missing links/cycles. Unfinished dependencies with known status, next action and blocked reason remain listed separately. `rules_complete` covers all possibly applicable hard rules. A new task can have complete context while reporting absent or unverified evidence. These checks assess fact availability and associations; they do not independently evaluate acceptance quality, run report commands, promote task status or certify release readiness.
+
+```sh
+cargo run --locked -p awr-context --example completeness_project -- . <work-key> [agent-id] [source-sha]
+```
+
+The example prints the machine-readable report and exits nonzero on incomplete context. Full L1 rendering and context CLI integration follow in their ledger items.
+
 Python 3.11+ is sufficient for this repository's planning tools. Rust is pinned in rust-toolchain.toml and dependency resolution is committed in Cargo.lock.
 
 ```sh
