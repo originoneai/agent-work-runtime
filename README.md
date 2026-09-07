@@ -8,7 +8,7 @@ AWR indexes project goals, plans, rules and task ledgers, tracks work across ses
 
 ## Project status
 
-This repository contains the original product design, the V1 scope contract, and the implementation ledger. **The Rust runtime has not been implemented or released yet.** See the [generated work index](ledger/README.md) for current progress.
+Implementation has started with the Rust workspace, shared domain types and CLI entry point. **AWR is in development and has not been released.** See the [generated work index](ledger/README.md) for current progress and supported milestones.
 
 The V1 plan contains **59 delivery work items**, **8 complete business acceptance scenarios**, and **10 benchmark targets**. Three repository preparation items are counted separately. A passing planning check validates the plan's structure; it does not prove runtime behavior.
 
@@ -52,7 +52,17 @@ Bootstrap targets at most 1,000 tokens; work context targets at most 5,000 token
 
 ## Validate the planning baseline
 
-Python 3.11+ is sufficient for this repository's planning tools. Rust prerequisites will be pinned in the first implementation item.
+Build the current CLI with Rust 1.93.1:
+
+```sh
+cargo build --locked -p awr-cli
+target/debug/awr --help
+target/debug/awr --version
+```
+
+At this milestone the CLI exposes help and version. Other work commands remain explicitly unsupported until their ledger items are delivered.
+
+Python 3.11+ is sufficient for this repository's planning tools. Rust is pinned in rust-toolchain.toml and dependency resolution is committed in Cargo.lock.
 
 ```sh
 python3 -m venv .venv

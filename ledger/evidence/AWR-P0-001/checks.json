@@ -1,0 +1,35 @@
+{
+  "work_item": "AWR-P0-001",
+  "checked_at": "2026-09-08T00:38:50+08:00",
+  "checks": [
+    {
+      "name": "cargo check --workspace",
+      "passed": true,
+      "result": "All seven crates compiled successfully under Rust 1.93.1."
+    },
+    {
+      "name": "awr --help",
+      "passed": true,
+      "result": "Persistent work state and minimal context for long-running agents\n\nUsage: awr [OPTIONS] [COMMAND]\n\nOptions:\n      --project <PROJECT>  [default: .]\n      --json               \n  -h, --help               Print help\n  -V, --version            Print version"
+    },
+    {
+      "name": "awr --version",
+      "passed": true,
+      "result": "awr 0.1.0-dev"
+    },
+    {
+      "name": "awr --json status",
+      "passed": true,
+      "result": "{\"code\":\"Unsupported\",\"message\":\"operation is not implemented: status\"}"
+    }
+  ],
+  "artifacts": [
+    "Cargo.toml",
+    "Cargo.lock",
+    "rust-toolchain.toml",
+    "crates/awr-core/src/model.rs",
+    "crates/awr-core/src/error.rs",
+    "crates/awr-cli/src/main.rs",
+    "docs/decisions/ADR-0002-rust-workspace.md"
+  ]
+}

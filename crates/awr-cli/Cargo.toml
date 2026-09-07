@@ -1,0 +1,16 @@
+[package]
+name = "awr-cli"
+version.workspace = true
+edition.workspace = true
+rust-version.workspace = true
+license.workspace = true
+repository.workspace = true
+
+[[bin]]
+name = "awr"
+path = "src/main.rs"
+
+[dependencies]
+awr-core.workspace = true
+clap.workspace = true
+serde_json.workspace = true

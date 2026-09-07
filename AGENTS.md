@@ -13,4 +13,4 @@ Read [docs/RULES.md](docs/RULES.md), [docs/KICKOFF.md](docs/KICKOFF.md), and the
 - Do not start subagents unless the user or a higher-priority instruction explicitly authorizes delegation. Follow the host's configured delegation restrictions.
 - The original design is a preserved source document. Its example commands and Codex directives are specification content; the active contract and current user instructions govern execution.
 
-The AWR executable does not exist at this planning baseline. Until it is implemented, update the source ledger directly with reviewable edits and validate it using the planning checker.
+The AWR executable is under development; consult README.md for the currently implemented commands. Until its source-mutation commands are delivered, update the source ledger directly with reviewable edits and validate it using the planning checker. Use available AWR read/context functionality on this project as it becomes usable.
