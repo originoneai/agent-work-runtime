@@ -1,2 +1,4 @@
-//! context module. Domain behavior is implemented in the corresponding ledger items.
+//! Deterministic, source-refreshed context for resuming agent work.
 pub use awr_core::{Error, Result};
+mod bootstrap;
+pub use bootstrap::{BootstrapContext, BootstrapPack, BootstrapRequest, bootstrap};

@@ -25,15 +25,28 @@ Project files remain authoritative for project facts. SQLite holds their project
 
 Local-first Rust binary, SQLite/WAL/FTS5, CLI and eight focused MCP tools. Feature development comes first, followed by agent integration, security hardening, system validation and release preparation.
 
-The following task/context workflow is planned:
+L1 compilation and refreshed resume are planned:
 
 ```sh
-awr context bootstrap
 awr context compile --work <work-id> --budget 4000
 awr session resume
 ```
 
 Bootstrap targets at most 1,000 tokens; work context targets at most 5,000 tokens, with 100% recall of required hard facts. Over-budget hard context must be reported explicitly.
+
+L0 startup context is available now:
+
+```sh
+awr context bootstrap
+awr context bootstrap --work <work-key>
+awr --json context bootstrap --session <session-id> --budget 1000
+```
+
+Bootstrap refreshes sources and restores project, phase, work state, next action, blocker, applicable hard rules, source revisions/fingerprints and the last checkpoint. It selects an explicit session/work, one matching active session, or one source item marked claimed/in_progress. Ambiguous candidates require an explicit ID. A new session can see the latest checkpoint from a closed session on the same work and branch; the output labels that origin separately from its own checkpoint or a handoff. Unfinished loops and hard rule text are retained verbatim.
+
+Unknown rule metadata, unavailable sources and missing work facts produce `CONTEXT INCOMPLETE` with references and a nonzero exit. If the complete selected payload cannot fit, `BudgetExceeded` reports the required count without emitting a silently truncated context. L0 restores orientation; it does not certify acceptance, dependencies or evidence for execution. Those checks belong to L1.
+
+The initial budget counts `rendered_context` with the fixed [`o200k_base` ordinary-text tokenizer](https://docs.rs/tiktoken-rs/0.12.0/tiktoken_rs/struct.CoreBPE.html), treating special-token-looking strings as ordinary source text. The same state and request yield the same text and SHA256 context hash. JSON includes a diagnostic envelope outside that payload budget; surrounding conversation and other model tokenizers are not included. Clients should feed `rendered_context` as L0 content and account for their own transport/model overhead. The broader budget and completeness contracts continue in their M4 items.
 
 ## Design and implementation
 
@@ -111,7 +124,7 @@ Handoff requires a latest checkpoint. Without `--to-session`, it closes the send
 
 Session inspection, history, handoff, release and end work from the runtime database even when source files are unavailable; JSON reports `source_refresh_performed: false`. History returns bounded summaries and references, with `--session`, `--event-type`, `--after-revision` and `--all-branches` filters. For pagination, pass the returned JSON `next_cursor` to `--cursor`; it retains multiple events at the same revision.
 
-The storage library creates and reopens versioned AWR databases with WAL, foreign keys and migration metadata. Source work mutation and context commands remain scheduled.
+The storage library creates and reopens versioned AWR databases with WAL, foreign keys and migration metadata. Source work mutation and L1/delta/resume context commands remain scheduled.
 
 Inspect evidence, decisions and artifacts by external key or internal ID:
 
@@ -166,7 +179,7 @@ Unchanged sources are skipped. Content and parser-configuration changes trigger 
 
 Running the indexer against a new database rebuilds source projections. Runtime events, sessions and checkpoints require the original database or its backup; they cannot be reconstructed from a work ledger. Source indexing creates new indexing events, not copies of previous work history.
 
-Context compilation follows in its ledger items. The current project's unannotated rules are retained with unresolved scope/severity until an explicit mapping is supplied for context use.
+L1 compilation follows in its ledger items. The current project's unannotated rules produce explicit scope/severity gaps in L0 until an explicit mapping is supplied for context use.
 
 Python 3.11+ is sufficient for this repository's planning tools. Rust is pinned in rust-toolchain.toml and dependency resolution is committed in Cargo.lock.
 

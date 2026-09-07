@@ -225,6 +225,19 @@ impl Store {
             .map_err(db_error)?
             .ok_or_else(|| Error::NotFound(format!("work item {key}")))
     }
+    pub fn work_item_by_id(&self, project: Id, id: Id) -> Result<Projected<WorkItem>> {
+        let key: String = self
+            .conn
+            .query_row(
+                "SELECT external_key FROM work_items WHERE project_id=?1 AND id=?2 AND active=1",
+                params![project.to_string(), id.to_string()],
+                |r| r.get(0),
+            )
+            .optional()
+            .map_err(db_error)?
+            .ok_or_else(|| Error::NotFound(format!("active work item {id}")))?;
+        self.work_item(project, &key)
+    }
     pub fn session(&self, project: Id, id: Id) -> Result<Session> {
         session_at(&self.conn, project, id)
     }

@@ -1,6 +1,7 @@
 use awr_core::{Error, Result};
 use clap::{CommandFactory, Parser, Subcommand};
 use std::path::PathBuf;
+mod context;
 mod query;
 mod records;
 mod search;
@@ -68,6 +69,11 @@ enum Command {
         #[command(subcommand)]
         command: records::ArtifactCommand,
     },
+    /// Compile revision-bound context after refreshing project sources.
+    Context {
+        #[command(subcommand)]
+        command: context::ContextCommand,
+    },
     /// Search bounded summaries, optionally filtering by entity type, status or work item.
     Search(search::SearchArgs),
     /// Inspect an existing AWR database without creating or repairing it.
@@ -92,6 +98,7 @@ fn run(cli: &Cli) -> Result<()> {
         Some(Command::Evidence { command }) => records::evidence(&cli.project, command, cli.json),
         Some(Command::Decision { command }) => records::decision(&cli.project, command, cli.json),
         Some(Command::Artifact { command }) => records::artifact(&cli.project, command, cli.json),
+        Some(Command::Context { command }) => context::run(&cli.project, command, cli.json),
         Some(Command::Search(args)) => search::run(&cli.project, args, cli.json),
         Some(Command::Doctor { database }) => {
             let path = database

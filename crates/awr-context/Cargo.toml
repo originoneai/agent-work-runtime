@@ -10,3 +10,7 @@ repository.workspace = true
 awr-core.workspace = true
 awr-store.workspace = true
 awr-source.workspace = true
+serde.workspace = true
+serde_json.workspace = true
+sha2.workspace = true
+tiktoken-rs.workspace = true

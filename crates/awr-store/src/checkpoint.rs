@@ -21,6 +21,16 @@ pub(crate) fn checkpoint_at(
 }
 
 impl Store {
+    /// Latest checkpoint from a closed session for this work and exact branch.
+    pub fn latest_work_checkpoint(
+        &self,
+        project: Id,
+        work: Id,
+        branch: Option<Id>,
+    ) -> Result<Option<Checkpoint>> {
+        let id=self.conn.query_row("SELECT c.id FROM checkpoints c JOIN sessions s ON s.id=c.session_id WHERE s.project_id=?1 AND s.work_item_id=?2 AND s.branch_id IS ?3 AND s.status!='active' ORDER BY c.project_revision DESC,c.created_at DESC,c.id DESC LIMIT 1",params![project.to_string(),work.to_string(),branch.map(|id|id.to_string())],|r|id_at(r,0)).optional().map_err(db_error)?;
+        id.map(|id| self.checkpoint(project, id)).transpose()
+    }
     pub fn create_checkpoint(
         &mut self,
         project: Id,
