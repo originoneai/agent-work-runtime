@@ -126,6 +126,7 @@ impl Store {
         self.runtime_transaction_with_event(project_id, expected_revision, draft, |tx, _, event| {
             crate::events::bind_event(tx, project_id, event, true)?;
             if event.event_type.starts_with("source.")
+                || event.event_type.starts_with("checkpoint.")
                 || matches!(
                     event.event_type.as_str(),
                     "session.started"
@@ -135,7 +136,6 @@ impl Store {
                         | "work.handoff"
                         | "claim.released"
                         | "claim.expired"
-                        | "checkpoint.created"
                         | "artifact.recorded"
                         | "evidence.recorded"
                 )

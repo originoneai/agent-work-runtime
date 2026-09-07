@@ -35,8 +35,15 @@ impl<'a> Runtime<'a> {
         session: Id,
         draft: awr_core::CheckpointDraft,
     ) -> Result<(awr_core::Checkpoint, Event)> {
+        let started = self
+            .store
+            .begin_checkpoint_save(self.project, expected, session, draft)?;
         self.store
-            .create_checkpoint(self.project, expected, session, draft)
+            .finish_checkpoint_save(self.project, started.project_revision, started.id)
+            .map_err(|error| Error::CheckpointIncomplete {
+                attempt_id: started.id,
+                reason: error.to_string(),
+            })
     }
     pub fn append_event(
         &mut self,

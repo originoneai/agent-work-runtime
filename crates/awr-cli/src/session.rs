@@ -58,7 +58,7 @@ pub enum SessionCommand {
     },
     /// Show the session, its checkpoint, inherited handoff and claims.
     Show { id: Id },
-    /// Store a caller-supplied context hash; context compilation is a separate capability.
+    /// Save observed session/source changes with caller-supplied progress and last-used context hash.
     Checkpoint {
         #[command(flatten)]
         selection: Selection,
@@ -73,6 +73,7 @@ pub enum SessionCommand {
         #[arg(long)]
         open_loop: Vec<String>,
         #[arg(long)]
+        /// Additional caller-reported references; kept separate from observed changes.
         changed_entity: Vec<String>,
         #[arg(long)]
         expected_revision: Revision,
@@ -300,12 +301,24 @@ pub fn run(root: &Path, command: &SessionCommand, json_output: bool) -> Result<(
             let checkpoint = db.store.latest_checkpoint(project, *id)?;
             let inherited = db.store.incoming_handoff(project, *id)?;
             let claims = db.store.session_claims(project, *id)?;
+            let saves = db.store.checkpoint_attempts(project, *id, 20)?;
+            let checkpoint_save = checkpoint
+                .as_ref()
+                .map(|c| db.store.checkpoint_save_metadata(project, c.id))
+                .transpose()?;
+            let inherited_save = inherited
+                .as_ref()
+                .map(|c| db.store.checkpoint_save_metadata(project, c.id))
+                .transpose()?;
             db.check_revision()?;
             let mut value = db.metadata(db.project.project_revision);
             value["session"] = json!(session);
             value["checkpoint"] = json!(checkpoint);
             value["inherited_checkpoint"] = json!(inherited);
             value["claims"] = json!(claims);
+            value["checkpoint_saves"] = json!(saves);
+            value["checkpoint_save"] = json!(checkpoint_save);
+            value["inherited_checkpoint_save"] = json!(inherited_save);
             value["context_requires_refresh"] = json!(true);
             let next = checkpoint
                 .as_ref()
@@ -320,7 +333,7 @@ pub fn run(root: &Path, command: &SessionCommand, json_output: bool) -> Result<(
             print(
                 &value,
                 &format!(
-                    "Session: {} ({})\nAgent: {}\nRevision: {}\nNext: {}\nOpen loops: {}\nInherited checkpoint: {}\nRefresh context before continuing work.",
+                    "Session: {} ({})\nAgent: {}\nRevision: {}\nNext: {}\nOpen loops: {}\nInherited checkpoint: {}\nIncomplete checkpoint attempts: {}\nRefresh context before continuing work.",
                     session.id,
                     session.status,
                     session.agent_id,
@@ -330,7 +343,8 @@ pub fn run(root: &Path, command: &SessionCommand, json_output: bool) -> Result<(
                     inherited
                         .as_ref()
                         .map(|c| c.id.to_string())
-                        .unwrap_or_else(|| "none".into())
+                        .unwrap_or_else(|| "none".into()),
+                    saves.incomplete_count,
                 ),
                 json_output,
             )
@@ -361,6 +375,10 @@ pub fn run(root: &Path, command: &SessionCommand, json_output: bool) -> Result<(
             let mut value = db.metadata(event.project_revision);
             value["checkpoint"] = json!(checkpoint);
             value["event"] = event_brief(&event);
+            value["checkpoint_save"] = db.store.checkpoint_save_metadata(project, checkpoint.id)?;
+            value["context_hash_verified"] = json!(false);
+            value["context_hash_basis"] = json!("caller_supplied_last_used_context");
+            value["save_status"] = json!("completed");
             print(
                 &value,
                 &format!(

@@ -1,6 +1,7 @@
 //! SQLite persistence. Callers use domain operations, never an exposed SQL handle.
 mod catalog;
 mod checkpoint;
+mod checkpoint_save;
 mod delta;
 mod events;
 mod evidence;
@@ -14,6 +15,9 @@ mod transaction;
 mod work;
 use awr_core::{Error, Result, now_millis};
 pub use catalog::SourceRegistration;
+pub use checkpoint_save::{
+    CheckpointAttempt, CheckpointAttempts, SessionDeltaSnapshot, SourceObservation,
+};
 pub use delta::{
     DeltaEvents, EntityDelta, EventReference, HistoryCount, ImportantEvent, SourceDelta,
 };

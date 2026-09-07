@@ -135,11 +135,16 @@ pub fn object(root: &Path, command: &ObjectCommand, json_output: bool) -> Result
         max_bytes,
     } = command;
     let db = RuntimeProject::open(root, !cached && *kind != ObjectKind::Checkpoint)?;
+    let mut checkpoint_save = Value::Null;
+    let mut session_delta = Value::Null;
+    let mut checkpoint_id = None;
     let (item, source, revision) = if *kind == ObjectKind::Checkpoint {
         let id = reference
             .parse::<Id>()
             .map_err(|e| Error::InvalidInput(format!("checkpoint ID: {e}")))?;
         let cp = db.store.checkpoint(db.project.id, id)?;
+        checkpoint_id = Some(id);
+        checkpoint_save = db.store.checkpoint_save_metadata(db.project.id, id)?;
         (serde_json::to_value(&cp)?, None, cp.revision)
     } else {
         let kind = match kind {
@@ -163,8 +168,25 @@ pub fn object(root: &Path, command: &ObjectCommand, json_output: bool) -> Result
             });
         }
     }
+    if *full {
+        if let Some(id) = checkpoint_id {
+            check_limit(
+                serde_json::to_vec(&item)?.len() as u64
+                    + checkpoint_save["delta_bytes"].as_u64().unwrap_or(0),
+                *max_bytes,
+            )?;
+            session_delta =
+                serde_json::to_value(db.store.checkpoint_saved_delta(db.project.id, id)?)?;
+        }
+    }
     let output = if *full {
-        check_limit(serde_json::to_vec(&item)?.len() as u64, *max_bytes)?;
+        let size = serde_json::to_vec(&item)?.len()
+            + if session_delta.is_null() {
+                0
+            } else {
+                serde_json::to_vec(&session_delta)?.len()
+            };
+        check_limit(size as u64, *max_bytes)?;
         item
     } else if *kind == ObjectKind::Checkpoint {
         json!({"id":item["id"],"session_id":item["session_id"],"revision":revision,"project_revision":item["project_revision"],
@@ -179,12 +201,19 @@ pub fn object(root: &Path, command: &ObjectCommand, json_output: bool) -> Result
     value["object"] = output;
     value["source"] = serde_json::to_value(source)?;
     value["content_included"] = json!(full);
+    if *kind == ObjectKind::Checkpoint {
+        value["checkpoint_save"] = checkpoint_save;
+        if *full {
+            value["session_delta"] = session_delta;
+        }
+    }
     db.check_revision()?;
-    print(
-        &value,
-        &serde_json::to_string_pretty(&value["object"])?,
-        json_output,
-    )
+    let text = if *kind == ObjectKind::Checkpoint && *full {
+        serde_json::to_string_pretty(&value)?
+    } else {
+        serde_json::to_string_pretty(&value["object"])?
+    };
+    print(&value, &text, json_output)
 }
 
 fn history(

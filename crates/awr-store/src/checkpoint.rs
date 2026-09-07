@@ -20,6 +20,51 @@ pub(crate) fn checkpoint_at(
             }).optional().map_err(db_error)?.ok_or_else(||Error::NotFound(format!("checkpoint {id}")))
 }
 
+pub(crate) fn validate_draft(draft: &CheckpointDraft) -> Result<()> {
+    if !is_sha256_hash(&draft.context_hash)
+        || draft.digest.trim().is_empty()
+        || draft.next_action.trim().is_empty()
+        || draft
+            .open_loops
+            .iter()
+            .chain(&draft.changed_entities)
+            .any(|s| s.trim().is_empty())
+    {
+        return Err(Error::InvalidInput("checkpoint requires a SHA256 context hash, digest, next action and nonblank list entries".into()));
+    }
+    Ok(())
+}
+
+pub(crate) fn write_checkpoint(
+    tx: &rusqlite::Connection,
+    project: Id,
+    session: &Session,
+    base_revision: Revision,
+    draft: CheckpointDraft,
+    event: &mut EventDraft,
+) -> Result<Checkpoint> {
+    let checkpoint = Checkpoint {
+        id: Id::new(),
+        session_id: session.id,
+        project_revision: base_revision,
+        context_hash: draft.context_hash.to_ascii_lowercase(),
+        digest: draft.digest,
+        next_action: draft.next_action,
+        open_loops: draft.open_loops,
+        changed_entities: draft.changed_entities,
+        revision: 1,
+        created_at: now_millis()?,
+    };
+    tx.execute("INSERT INTO checkpoints(id,session_id,project_revision,context_hash,digest,next_action,open_loops_json,changed_entities_json,revision,created_at)
+        VALUES(?1,?2,?3,?4,?5,?6,?7,?8,1,?9)",params![checkpoint.id.to_string(),session.id.to_string(),sqlite_revision(base_revision)?,checkpoint.context_hash,checkpoint.digest,checkpoint.next_action,serde_json::to_string(&checkpoint.open_loops)?,serde_json::to_string(&checkpoint.changed_entities)?,checkpoint.created_at]).map_err(db_error)?;
+    tx.execute("UPDATE sessions SET last_checkpoint_id=?1,revision=revision+1 WHERE project_id=?2 AND id=?3",params![checkpoint.id.to_string(),project.to_string(),session.id.to_string()]).map_err(db_error)?;
+    event.session_id = Some(session.id);
+    event.work_item_id = session.work_item_id;
+    event.branch_id = session.branch_id;
+    event.payload = serde_json::json!({"checkpoint_id":checkpoint.id,"context_hash":checkpoint.context_hash,"checkpoint_project_revision":base_revision,"changed_entities":checkpoint.changed_entities,"next_action":checkpoint.next_action});
+    Ok(checkpoint)
+}
+
 impl Store {
     /// Latest checkpoint from a closed session for this work and exact branch.
     pub fn latest_work_checkpoint(
@@ -38,29 +83,23 @@ impl Store {
         session: Id,
         draft: CheckpointDraft,
     ) -> Result<(Checkpoint, Event)> {
-        if !is_sha256_hash(&draft.context_hash)
-            || draft.digest.trim().is_empty()
-            || draft.next_action.trim().is_empty()
-            || draft
-                .open_loops
-                .iter()
-                .chain(&draft.changed_entities)
-                .any(|s| s.trim().is_empty())
-        {
-            return Err(Error::InvalidInput("checkpoint requires a SHA256 context hash, digest, next action and nonblank list entries".into()));
-        }
-        self.runtime_transaction_with_event(project,expected,EventDraft::new("checkpoint.created","Saved session checkpoint"),|tx,_,event| {
-            let current=session_at(tx,project,session)?;
-            if current.status!="active" {return Err(Error::InvalidTransition(format!("session {session} is {}",current.status)));}
-            require_branch(tx,project,current.branch_id)?;
-            let checkpoint=Checkpoint {id:Id::new(),session_id:session,project_revision:expected,context_hash:draft.context_hash.to_ascii_lowercase(),digest:draft.digest,next_action:draft.next_action,open_loops:draft.open_loops,changed_entities:draft.changed_entities,revision:1,created_at:now_millis()?};
-            tx.execute("INSERT INTO checkpoints(id,session_id,project_revision,context_hash,digest,next_action,open_loops_json,changed_entities_json,revision,created_at)
-                VALUES(?1,?2,?3,?4,?5,?6,?7,?8,1,?9)",params![checkpoint.id.to_string(),session.to_string(),sqlite_revision(expected)?,checkpoint.context_hash,checkpoint.digest,checkpoint.next_action,serde_json::to_string(&checkpoint.open_loops)?,serde_json::to_string(&checkpoint.changed_entities)?,checkpoint.created_at]).map_err(db_error)?;
-            tx.execute("UPDATE sessions SET last_checkpoint_id=?1,revision=revision+1 WHERE project_id=?2 AND id=?3",params![checkpoint.id.to_string(),project.to_string(),session.to_string()]).map_err(db_error)?;
-            event.session_id=Some(session);event.work_item_id=current.work_item_id;event.branch_id=current.branch_id;
-            event.payload=serde_json::json!({"checkpoint_id":checkpoint.id,"context_hash":checkpoint.context_hash,"checkpoint_project_revision":expected,"changed_entities":checkpoint.changed_entities,"next_action":checkpoint.next_action});
-            Ok(checkpoint)
-        })
+        validate_draft(&draft)?;
+        self.runtime_transaction_with_event(
+            project,
+            expected,
+            EventDraft::new("checkpoint.created", "Saved session checkpoint"),
+            |tx, _, event| {
+                let current = session_at(tx, project, session)?;
+                if current.status != "active" {
+                    return Err(Error::InvalidTransition(format!(
+                        "session {session} is {}",
+                        current.status
+                    )));
+                }
+                require_branch(tx, project, current.branch_id)?;
+                write_checkpoint(tx, project, &current, expected, draft, event)
+            },
+        )
     }
     pub fn checkpoint(&self, project: Id, id: Id) -> Result<Checkpoint> {
         checkpoint_at(&self.conn, project, id)

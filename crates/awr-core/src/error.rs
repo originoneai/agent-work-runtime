@@ -27,6 +27,13 @@ pub enum Error {
     MutationUnsupported(String),
     #[error("mutation conflict: {0}")]
     MutationConflict(String),
+    #[error(
+        "checkpoint attempt {attempt_id} did not complete: {reason}; inspect session show before retrying"
+    )]
+    CheckpointIncomplete {
+        attempt_id: crate::Id,
+        reason: String,
+    },
     #[error("context incomplete: {0}")]
     ContextIncomplete(String),
     #[error("context budget exceeded: required {required}, budget {budget}")]
@@ -67,6 +74,7 @@ impl Error {
             Self::EvidenceMissing(_) => "EvidenceMissing",
             Self::MutationUnsupported(_) => "MutationUnsupported",
             Self::MutationConflict(_) => "MutationConflict",
+            Self::CheckpointIncomplete { .. } => "CheckpointIncomplete",
             Self::ContextIncomplete(_) => "ContextIncomplete",
             Self::BudgetExceeded { .. } => "BudgetExceeded",
             Self::InvalidTransition(_) => "InvalidTransition",
@@ -87,6 +95,9 @@ impl Error {
                 }
                 Self::BudgetExceeded { required, budget } => {
                     Some(serde_json::json!({"required": required, "budget": budget}))
+                }
+                Self::CheckpointIncomplete { attempt_id, reason } => {
+                    Some(serde_json::json!({"attempt_id":attempt_id,"reason":reason}))
                 }
                 _ => None,
             },
