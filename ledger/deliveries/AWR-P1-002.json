@@ -1,0 +1,62 @@
+{
+  "kind": "implementation",
+  "repository": "https://github.com/originoneai/agent-work-runtime",
+  "source_commit": "e131e7ce81e1d40226060feb76d7d2384f57e0ba",
+  "checked_at": "2026-09-07T17:29:14.764Z",
+  "remote_receipt": {
+    "commit": "e131e7ce81e1d40226060feb76d7d2384f57e0ba",
+    "url": "https://github.com/originoneai/agent-work-runtime/commit/e131e7ce81e1d40226060feb76d7d2384f57e0ba",
+    "verified_at": "2026-09-08T01:29:20+08:00"
+  },
+  "checks": [
+    {
+      "name": "workspace_build",
+      "passed": true,
+      "result": "cargo build --locked --workspace and --examples passed with Rust 1.93.1."
+    },
+    {
+      "name": "fingerprint_and_section_change",
+      "passed": true,
+      "result": "Editing a different section changed the file fingerprint while preserving the unchanged section fingerprint; changed sections differed."
+    },
+    {
+      "name": "source_revision_and_idempotence",
+      "passed": true,
+      "result": "Four successful projections produced source revision 4 and four source.projected events; an unchanged fresh snapshot added neither revision nor event. Entity identity survived reindexing."
+    },
+    {
+      "name": "failure_and_recovery",
+      "passed": true,
+      "result": "Invalid provenance rolled back the projection and kept revision/fingerprint and old facts stale. Missing file reported unavailable. Reading restored bytes remained stale until successful projection."
+    },
+    {
+      "name": "conflict_and_database_integrity",
+      "passed": true,
+      "result": "Stale source writer and direct promotion to fresh were rejected. Doctor reported integrity ok and zero foreign-key violations."
+    }
+  ],
+  "artifacts": [
+    "crates/awr-source/examples/source_revision.rs",
+    "crates/awr-source/src/freshness.rs",
+    "crates/awr-source/src/locator.rs",
+    "crates/awr-store/src/projection.rs",
+    "ledger/evidence/AWR-P1-002/checks.json"
+  ],
+  "work_items": {
+    "AWR-P1-002": {
+      "acceptance": [
+        {
+          "criterion": "文件或 section 改变可检测；成功重索引后更新来源版本。",
+          "passed": true
+        },
+        {
+          "criterion": "无法读取时报告 stale/unavailable，不把缓存标成 current。",
+          "passed": true
+        }
+      ]
+    }
+  },
+  "limitations": [
+    "Feature-local lifecycle verification only. YAML/Markdown parsing, incremental orchestration, context generation and real-client business acceptance are later ledger items."
+  ]
+}
