@@ -96,6 +96,44 @@ fn decisions_require_acceptance_and_explicit_relevance_or_unknown_scope() {
 }
 
 #[test]
+fn unknown_work_paths_preserve_potential_decisions_and_explicit_scope_can_resolve_them() {
+    let mut f = Fixture::new();
+    let mut task = work(&f, "W");
+    task.paths = vec!["crates/".into()];
+    let decision = Decision {
+        meta: f.meta("path-choice"),
+        title: "Scoped choice".into(),
+        status: DecisionStatus::Accepted,
+        raw_status: "accepted".into(),
+        decision: "Apply this source policy".into(),
+        rationale: "Background".into(),
+        affected_keys: vec![],
+        paths: vec!["crates/core/**".into()],
+    };
+    f.commit(ProjectionBatch {
+        work_items: vec![task],
+        decisions: vec![decision],
+        ..Default::default()
+    });
+    let unknown = f.store.decisions_for_work(f.project.id, "W").unwrap();
+    assert_eq!(unknown.len(), 1);
+    assert_eq!(unknown[0].relevance, Applicability::Unknown);
+    let paths = vec!["crates/core/lib.rs".into()];
+    let selected = f
+        .store
+        .decisions_for_work_with_paths(f.project.id, "W", Some(&paths))
+        .unwrap();
+    assert_eq!(selected.len(), 1);
+    assert_eq!(selected[0].relevance, Applicability::Applicable);
+    assert!(
+        f.store
+            .decisions_for_work_with_paths(f.project.id, "W", Some(&[]))
+            .unwrap()
+            .is_empty()
+    );
+}
+
+#[test]
 fn evidence_is_explicit_version_bound_and_append_only_by_key() {
     let mut f = Fixture::new();
     f.commit(ProjectionBatch {

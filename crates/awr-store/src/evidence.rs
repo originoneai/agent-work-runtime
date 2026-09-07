@@ -41,8 +41,21 @@ impl Store {
 
     /// Only accepted decisions participate. Unscoped/invalid matches remain explicit unknowns.
     pub fn decisions_for_work(&self, project: Id, key: &str) -> Result<Vec<RelatedDecision>> {
+        self.decisions_for_work_with_paths(project, key, None)
+    }
+
+    /// Explicit concrete execution paths may refine broad/unknown work-source path metadata.
+    pub fn decisions_for_work_with_paths(
+        &self,
+        project: Id,
+        key: &str,
+        paths: Option<&[String]>,
+    ) -> Result<Vec<RelatedDecision>> {
         let tx = self.conn.unchecked_transaction().map_err(db_error)?;
         let work: Projected<WorkItem> = projection(&tx, project, EntityKind::WorkItem, key)?;
+        let known_paths = concrete_scope_paths(
+            paths.or_else(|| (!work.item.paths.is_empty()).then_some(work.item.paths.as_slice())),
+        );
         let decisions: Vec<Projected<Decision>> =
             projections(&tx, project, EntityKind::Decision, None)?;
         let mut result = Vec::new();
@@ -63,11 +76,21 @@ impl Store {
                     .affected_keys
                     .iter()
                     .any(|k| k == key || k == "*");
+            let mut path_unknown = Vec::new();
             for pattern in &decision.item.paths {
-                match match_path_scope(pattern, &work.item.paths) {
-                    Ok(m) => relevant |= m,
-                    Err(error) => reasons.push(error),
+                match known_paths
+                    .as_deref()
+                    .map(|paths| match_path_scope(pattern, paths))
+                {
+                    Some(Ok(m)) => relevant |= m,
+                    Some(Err(error)) => path_unknown.push(error),
+                    None => {
+                        path_unknown.push("work paths are unknown or describe a broad area".into())
+                    }
                 }
+            }
+            if !relevant {
+                reasons.extend(path_unknown);
             }
             if !relevant && decision.item.affected_keys.is_empty() && decision.item.paths.is_empty()
             {

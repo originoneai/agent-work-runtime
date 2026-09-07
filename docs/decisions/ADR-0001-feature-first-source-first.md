@@ -1,3 +1,7 @@
+---
+affected_keys: ["*"]
+---
+
 # ADR-0001：功能优先与 Source-first 开工基线
 
 Status: accepted

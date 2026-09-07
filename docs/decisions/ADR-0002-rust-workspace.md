@@ -1,3 +1,7 @@
+---
+affected_keys: ["*"]
+---
+
 # ADR-0002：Rust 工程与领域接口
 
 Status: accepted

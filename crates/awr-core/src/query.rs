@@ -183,6 +183,25 @@ pub struct RuleContext {
     pub agent_id: Option<String>,
 }
 
+/// Concrete execution paths only. A directory/glob is an area, not proof of which files are touched.
+/// None is unknown; Some([]) is an explicitly known empty scope.
+pub fn concrete_scope_paths(paths: Option<&[String]>) -> Option<Vec<String>> {
+    let paths = paths?;
+    if paths.iter().any(|p| {
+        p.trim().is_empty() || p.ends_with('/') || p.contains(['*', '?', '[', ']', '{', '}'])
+    }) {
+        return None;
+    }
+    Some(
+        paths
+            .iter()
+            .cloned()
+            .collect::<std::collections::BTreeSet<_>>()
+            .into_iter()
+            .collect(),
+    )
+}
+
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize)]
 #[serde(rename_all = "snake_case")]
 pub enum Applicability {

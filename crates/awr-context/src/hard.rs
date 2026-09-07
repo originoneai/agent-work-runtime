@@ -85,12 +85,9 @@ fn scope_context(
     } else {
         (declared_paths, "work_source")
     };
-    let broad = paths.as_ref().is_some_and(|paths| {
-        paths
-            .iter()
-            .any(|p| p.ends_with('/') || p.contains(['*', '?', '[', ']', '{', '}']))
-    });
-    let paths = if broad { None } else { paths.map(sorted) };
+    let concrete = concrete_scope_paths(paths.as_deref());
+    let broad = paths.is_some() && concrete.is_none();
+    let paths = concrete;
     let tags = if work.is_some_and(|w| !w.item.tags.is_empty()) || input.tags.is_some() {
         Some(sorted(
             work.into_iter()

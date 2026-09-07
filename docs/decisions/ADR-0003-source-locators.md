@@ -1,3 +1,7 @@
+---
+affected_keys: ["*"]
+---
+
 # ADR-0003：来源配置与 file/Git 定位
 
 Status: accepted
