@@ -64,7 +64,9 @@ pub fn markdown_sections(snapshot: &SourceSnapshot) -> Result<Vec<MarkdownSectio
     let mut depth = 0usize;
     for (event, range) in Parser::new_ext(
         text,
-        Options::ENABLE_HEADING_ATTRIBUTES | Options::ENABLE_TABLES,
+        Options::ENABLE_HEADING_ATTRIBUTES
+            | Options::ENABLE_TABLES
+            | Options::ENABLE_YAML_STYLE_METADATA_BLOCKS,
     )
     .into_offset_iter()
     {

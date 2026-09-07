@@ -229,6 +229,8 @@ pub struct Decision {
     pub meta: ProjectionMeta,
     pub title: String,
     pub status: DecisionStatus,
+    #[serde(default)]
+    pub raw_status: String,
     pub decision: String,
     pub rationale: String,
     pub affected_keys: Vec<String>,

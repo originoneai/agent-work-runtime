@@ -81,6 +81,28 @@ fn relative(path: &Path) -> Result<()> {
 }
 
 impl Locator {
+    /// Registration identity keeps a Git ref stable while snapshot locators bind immutable commits.
+    pub fn identity(&self) -> Result<String> {
+        match self {
+            Self::File(path) => Url::from_file_path(path)
+                .map(|url| url.to_string())
+                .map_err(|_| Error::InvalidInput("invalid file locator".into())),
+            Self::Git { revision, path } => {
+                relative(path)?;
+                let path =
+                    path.components()
+                        .filter_map(|part| match part {
+                            Component::Normal(value) => Some(value.to_str().ok_or_else(|| {
+                                Error::InvalidInput("Git path must be UTF-8".into())
+                            })),
+                            _ => None,
+                        })
+                        .collect::<Result<Vec<_>>>()?
+                        .join("/");
+                Ok(format!("git://{revision}:{path}"))
+            }
+        }
+    }
     pub fn from_spec(root: &Path, manifest: &Manifest, spec: &SourceSpec) -> Result<Self> {
         if let Some(path) = &spec.path {
             return Self::file(root, manifest, path);
@@ -229,7 +251,7 @@ impl Locator {
         }
     }
 }
-fn git(root: &Path, args: &[&str]) -> Result<Vec<u8>> {
+pub(crate) fn git(root: &Path, args: &[&str]) -> Result<Vec<u8>> {
     let output = Command::new("git")
         .arg("-C")
         .arg(root)
