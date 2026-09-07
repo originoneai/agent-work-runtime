@@ -1,8 +1,8 @@
 schema_version: 1
 contract_id: awr-v1
 contract_version: 1.0.0
-ledger_revision: 52
-updated_at: '2026-09-08T04:32:45+08:00'
+ledger_revision: 55
+updated_at: '2026-09-08T04:44:52+08:00'
 project:
   name: Agent Work Runtime
   external_key: agent-work-runtime
@@ -10,9 +10,9 @@ project:
   authority_mode: source_first
   release_status: not_released
 current:
-  milestone: M3
-  work_item: AWR-P3-005
-  next_action: 接入 evidence add/show、decision show 和 artifact add/show/cat，按显式 ID 与读取上限返回内容。
+  milestone: M4
+  work_item: AWR-P4-001
+  next_action: 实现 L0 Bootstrap：恢复工作、阶段、规则与检查点，保留来源版本并显式报告缺项和超预算。
   open_loops:
   - 功能实现优先；集中测试、优化和打磨在功能开发后执行。
   - 本项目已用 Source、Status、Ready、Work 和 Search CLI 管理实际开发读取；继续接入 Session、Claim 和 Context。
@@ -24,9 +24,9 @@ milestones:
 - id: M2
   status: completed
 - id: M3
-  status: in_progress
+  status: completed
 - id: M4
-  status: planned
+  status: in_progress
 - id: M5
   status: planned
 - id: M6
@@ -745,7 +745,7 @@ work_items:
   priority: P0
   kind: feature
   required_for_v1: true
-  status: in_progress
+  status: completed
   owner: codex-primary
   depends_on:
   - AWR-P3-003
@@ -765,18 +765,19 @@ work_items:
   verification:
     minimum: 证明本条验收行为；功能阶段运行必要的定向检查，系统测试在 M9 集中执行。
     evidence_directory: ledger/evidence/AWR-P3-005
-    evidence_level: none
-  evidence: []
+    evidence_level: locally_verified
+  evidence:
+  - ledger/deliveries/AWR-P3-005.json
   blocker: null
-  next_action: 接入 evidence add/show、decision show 和 artifact add/show/cat，按显式 ID 与读取上限返回内容。
+  next_action: 已交付；继续依赖就绪的功能任务。
 - id: AWR-P4-001
   title: L0 Bootstrap
   milestone: M4
   priority: P0
   kind: feature
   required_for_v1: true
-  status: ready
-  owner: null
+  status: in_progress
+  owner: codex-primary
   depends_on:
   - AWR-P3-003
   - AWR-P2-004
@@ -787,6 +788,10 @@ work_items:
   deliverables:
   - crates/awr-context/
   - crates/awr-cli/
+  - crates/awr-store/
+  - Cargo.toml
+  - Cargo.lock
+  - README.md
   acceptance:
   - 恢复当前任务、阶段、状态、下一步、blocker、关键规则、checkpoint 与版本。
   - 目标 <=1000 tokens；必需上下文超预算时显式 BudgetExceeded，不静默丢弃。
@@ -796,7 +801,7 @@ work_items:
     evidence_level: none
   evidence: []
   blocker: null
-  next_action: 按交付物实现并验证：L0 Bootstrap
+  next_action: 实现 L0 Bootstrap：恢复工作、阶段、规则与检查点，保留来源版本并显式报告缺项和超预算。
 - id: AWR-P4-002
   title: L1 Work Context 编译与确定性渲染
   milestone: M4
