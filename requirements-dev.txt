@@ -1,0 +1,3 @@
+# Planning validation only; the AWR runtime will be Rust.
+# Release metadata: https://pypi.org/project/PyYAML/6.0.3/
+PyYAML==6.0.3

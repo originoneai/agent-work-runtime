@@ -1,0 +1,20 @@
+# Rust build output
+/target/
+
+# Project-local development and verification output
+/.venv/
+/.local/
+__pycache__/
+*.pyc
+.DS_Store
+
+# AWR local runtime state is never a shared source of truth
+.awr/state.db
+.awr/state.db-*
+.awr/artifacts/
+.awr/cache/
+
+# Local credentials; examples must use synthetic values
+.env
+.env.*
+!.env.example

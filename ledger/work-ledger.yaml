@@ -1,0 +1,1956 @@
+schema_version: 1
+contract_id: awr-v1
+contract_version: 1.0.0
+ledger_revision: 1
+updated_at: '2026-09-08T00:24:55+08:00'
+project:
+  name: Agent Work Runtime
+  external_key: agent-work-runtime
+  repository: https://github.com/originoneai/agent-work-runtime
+  authority_mode: source_first
+  release_status: not_released
+current:
+  milestone: M0
+  work_item: AWR-BOOT-001
+  next_action: 固化仓库、原始方案、范围合同和台账，校验后提交并推送；之后从 AWR-P0-001 开始功能开发。
+  open_loops:
+  - V1 功能尚未开始实现。
+  - 真实验收项目和独立复核者在 M9 前确定。
+milestones:
+- id: M0
+  status: in_progress
+- id: M1
+  status: planned
+- id: M2
+  status: planned
+- id: M3
+  status: planned
+- id: M4
+  status: planned
+- id: M5
+  status: planned
+- id: M6
+  status: planned
+- id: M7
+  status: planned
+- id: M8
+  status: planned
+- id: M9
+  status: planned
+- id: M10
+  status: planned
+work_items:
+- id: AWR-BOOT-001
+  title: 公开仓库、Apache 2.0 与原始方案基线
+  milestone: M0
+  priority: P0
+  kind: preparation
+  required_for_v1: false
+  status: in_progress
+  owner: codex-primary
+  depends_on: []
+  source_sections:
+  - 0
+  - 1
+  - 2
+  - 4
+  - 51
+  - 53
+  deliverables:
+  - LICENSE
+  - README.md
+  - docs/design/agent-work-runtime-design.md
+  acceptance:
+  - originoneai/agent-work-runtime 为 Public，默认分支 main，许可证识别为 Apache-2.0。
+  - 原始方案原样入库，SHA-256 与导入基线一致。
+  verification:
+    minimum: 证明本条验收行为；功能阶段运行必要的定向检查，系统测试在 M9 集中执行。
+    evidence_directory: ledger/evidence/AWR-BOOT-001
+    evidence_level: none
+  evidence: []
+  blocker: null
+  next_action: 按交付物实现并验证：公开仓库、Apache 2.0 与原始方案基线
+- id: AWR-BOOT-002
+  title: V1 范围合同、完整台账与章节覆盖
+  milestone: M0
+  priority: P0
+  kind: preparation
+  required_for_v1: false
+  status: planned
+  owner: null
+  depends_on:
+  - AWR-BOOT-001
+  source_sections:
+  - 3
+  - 5
+  - 48
+  - 49
+  - 50
+  - 54
+  - 55
+  - 57
+  deliverables:
+  - contracts/awr-v1.json
+  - ledger/work-ledger.yaml
+  - ledger/README.md
+  - docs/GOALS.md
+  - docs/PLAN.md
+  - docs/RULES.md
+  acceptance:
+  - 合同固定 V1 任务、业务场景目标数及完成门槛，台账唯一保存状态。
+  - 原方案 0–57 节全部有映射，依赖图无环，功能任务优先于安全和系统测试。
+  verification:
+    minimum: 证明本条验收行为；功能阶段运行必要的定向检查，系统测试在 M9 集中执行。
+    evidence_directory: ledger/evidence/AWR-BOOT-002
+    evidence_level: none
+  evidence: []
+  blocker: null
+  next_action: 按交付物实现并验证：V1 范围合同、完整台账与章节覆盖
+- id: AWR-BOOT-003
+  title: 开工入口、台账校验与交接
+  milestone: M0
+  priority: P0
+  kind: preparation
+  required_for_v1: false
+  status: planned
+  owner: null
+  depends_on:
+  - AWR-BOOT-002
+  source_sections:
+  - 28
+  - 30
+  - 31
+  - 44
+  - 45
+  deliverables:
+  - AGENTS.md
+  - docs/KICKOFF.md
+  - scripts/check_ledger.py
+  - CONTRIBUTING.md
+  acceptance:
+  - 新会话可定位第一项可执行任务、实现边界、检查方式和交接位置。
+  - 台账校验通过；提交与推送证据可核对，未实现功能保持未完成。
+  verification:
+    minimum: 证明本条验收行为；功能阶段运行必要的定向检查，系统测试在 M9 集中执行。
+    evidence_directory: ledger/evidence/AWR-BOOT-003
+    evidence_level: none
+  evidence: []
+  blocker: null
+  next_action: 按交付物实现并验证：开工入口、台账校验与交接
+- id: AWR-P0-001
+  title: Cargo Workspace、CLI 入口与核心类型
+  milestone: M1
+  priority: P0
+  kind: feature
+  required_for_v1: true
+  status: planned
+  owner: null
+  depends_on:
+  - AWR-BOOT-003
+  source_sections:
+  - 6
+  - 44
+  - 45
+  deliverables:
+  - Cargo.toml
+  - crates/awr-core/
+  - crates/awr-cli/
+  acceptance:
+  - 建立设计中的 crate 边界，统一版本与 Apache-2.0 元数据。
+  - awr --help/--version 可运行；领域对象使用明确类型，未实现命令不返回假成功。
+  verification:
+    minimum: 证明本条验收行为；功能阶段运行必要的定向检查，系统测试在 M9 集中执行。
+    evidence_directory: ledger/evidence/AWR-P0-001
+    evidence_level: none
+  evidence: []
+  blocker: null
+  next_action: 按交付物实现并验证：Cargo Workspace、CLI 入口与核心类型
+- id: AWR-P0-002
+  title: SQLite Store、Migration、WAL 与基础完整性
+  milestone: M1
+  priority: P0
+  kind: feature
+  required_for_v1: true
+  status: planned
+  owner: null
+  depends_on:
+  - AWR-P0-001
+  source_sections:
+  - 10
+  - 11
+  - 34
+  deliverables:
+  - crates/awr-store/
+  acceptance:
+  - 数据库启用 WAL、foreign_keys、busy_timeout；migration 可重复打开。
+  - 创建后重开可读，基础 integrity 检查可报告真实结果。
+  verification:
+    minimum: 证明本条验收行为；功能阶段运行必要的定向检查，系统测试在 M9 集中执行。
+    evidence_directory: ledger/evidence/AWR-P0-002
+    evidence_level: none
+  evidence: []
+  blocker: null
+  next_action: 按交付物实现并验证：SQLite Store、Migration、WAL 与基础完整性
+- id: AWR-P0-003
+  title: Project / Source 与领域 Schema
+  milestone: M1
+  priority: P0
+  kind: feature
+  required_for_v1: true
+  status: planned
+  owner: null
+  depends_on:
+  - AWR-P0-002
+  source_sections:
+  - 6
+  - 7
+  - 11
+  - 33
+  deliverables:
+  - crates/awr-store/migrations/
+  - crates/awr-core/
+  acceptance:
+  - 主表、ULID、external_key、revision、来源引用和约束覆盖设计对象。
+  - Project revision 单调推进；Source 投影与 DB 权威运行对象可区分。
+  verification:
+    minimum: 证明本条验收行为；功能阶段运行必要的定向检查，系统测试在 M9 集中执行。
+    evidence_directory: ledger/evidence/AWR-P0-003
+    evidence_level: none
+  evidence: []
+  blocker: null
+  next_action: 按交付物实现并验证：Project / Source 与领域 Schema
+- id: AWR-P0-004
+  title: 领域错误与事务变更接口
+  milestone: M1
+  priority: P0
+  kind: feature
+  required_for_v1: true
+  status: planned
+  owner: null
+  depends_on:
+  - AWR-P0-003
+  source_sections:
+  - 14
+  - 33
+  - 46
+  - 47
+  deliverables:
+  - crates/awr-core/
+  - crates/awr-store/
+  acceptance:
+  - 核心失败映射 typed error，调用者能区分缺失、版本冲突和不支持。
+  - 运行态写入在事务内校验 expected_revision、写入事件并推进 revision。
+  verification:
+    minimum: 证明本条验收行为；功能阶段运行必要的定向检查，系统测试在 M9 集中执行。
+    evidence_directory: ledger/evidence/AWR-P0-004
+    evidence_level: none
+  evidence: []
+  blocker: null
+  next_action: 按交付物实现并验证：领域错误与事务变更接口
+- id: AWR-P1-001
+  title: Source Manifest 与 Adapter 接口
+  milestone: M1
+  priority: P0
+  kind: feature
+  required_for_v1: true
+  status: planned
+  owner: null
+  depends_on:
+  - AWR-P0-003
+  source_sections:
+  - 8
+  - 9
+  deliverables:
+  - crates/awr-source/
+  - examples/source-manifest/
+  acceptance:
+  - project.toml 仅保存来源 locator 与解析配置，区分 primary/supporting。
+  - 实现 discover/fingerprint/parse/project/plan_mutation/apply_mutation 的接口边界；V1 支持 file 与 Git 引用。
+  verification:
+    minimum: 证明本条验收行为；功能阶段运行必要的定向检查，系统测试在 M9 集中执行。
+    evidence_directory: ledger/evidence/AWR-P1-001
+    evidence_level: none
+  evidence: []
+  blocker: null
+  next_action: 按交付物实现并验证：Source Manifest 与 Adapter 接口
+- id: AWR-P1-002
+  title: Fingerprint、Freshness 与 Source Revision
+  milestone: M1
+  priority: P0
+  kind: feature
+  required_for_v1: true
+  status: planned
+  owner: null
+  depends_on:
+  - AWR-P1-001
+  source_sections:
+  - 6
+  - 17
+  - 33
+  - 35
+  deliverables:
+  - crates/awr-source/
+  acceptance:
+  - 文件或 section 改变可检测；成功重索引后更新来源版本。
+  - 无法读取时报告 stale/unavailable，不把缓存标成 current。
+  verification:
+    minimum: 证明本条验收行为；功能阶段运行必要的定向检查，系统测试在 M9 集中执行。
+    evidence_directory: ledger/evidence/AWR-P1-002
+    evidence_level: none
+  evidence: []
+  blocker: null
+  next_action: 按交付物实现并验证：Fingerprint、Freshness 与 Source Revision
+- id: AWR-P1-003
+  title: YAML Ledger 只读投影
+  milestone: M1
+  priority: P0
+  kind: feature
+  required_for_v1: true
+  status: planned
+  owner: null
+  depends_on:
+  - AWR-P1-002
+  source_sections:
+  - 9
+  - 35
+  - 36
+  deliverables:
+  - adapters/yaml-ledger/
+  - tests/fixtures/yaml-ledger/
+  acceptance:
+  - 解析 work_items、milestones、goals、acceptance、dependencies 与 evidence 引用。
+  - 保存 raw_status，未知值显式保留；重复索引幂等且不改写原文件。
+  verification:
+    minimum: 证明本条验收行为；功能阶段运行必要的定向检查，系统测试在 M9 集中执行。
+    evidence_directory: ledger/evidence/AWR-P1-003
+    evidence_level: none
+  evidence: []
+  blocker: null
+  next_action: 按交付物实现并验证：YAML Ledger 只读投影
+- id: AWR-P1-004
+  title: Markdown Heading / Rules 适配器
+  milestone: M1
+  priority: P0
+  kind: feature
+  required_for_v1: true
+  status: planned
+  owner: null
+  depends_on:
+  - AWR-P1-002
+  source_sections:
+  - 9
+  - 35
+  deliverables:
+  - adapters/markdown-heading/
+  - adapters/markdown-rules/
+  acceptance:
+  - 提取 heading、section range/fingerprint 与可定位规则来源。
+  - 默认只读，无法确定的 scope/severity 标记为未解析并显式报告。
+  verification:
+    minimum: 证明本条验收行为；功能阶段运行必要的定向检查，系统测试在 M9 集中执行。
+    evidence_directory: ledger/evidence/AWR-P1-004
+    evidence_level: none
+  evidence: []
+  blocker: null
+  next_action: 按交付物实现并验证：Markdown Heading / Rules 适配器
+- id: AWR-P1-005
+  title: Markdown Directory 与 ADR 索引
+  milestone: M1
+  priority: P0
+  kind: feature
+  required_for_v1: true
+  status: planned
+  owner: null
+  depends_on:
+  - AWR-P1-004
+  source_sections:
+  - 6
+  - 9
+  deliverables:
+  - crates/awr-source/
+  - tests/fixtures/decisions/
+  acceptance:
+  - 索引 ADR/RFC 目录并保留 accepted/superseded 等决策状态和来源。
+  - 新增、修改、删除文件可被识别；不相关正文不进入默认上下文。
+  verification:
+    minimum: 证明本条验收行为；功能阶段运行必要的定向检查，系统测试在 M9 集中执行。
+    evidence_directory: ledger/evidence/AWR-P1-005
+    evidence_level: none
+  evidence: []
+  blocker: null
+  next_action: 按交付物实现并验证：Markdown Directory 与 ADR 索引
+- id: AWR-P1-006
+  title: 增量重索引与投影重建
+  milestone: M1
+  priority: P0
+  kind: feature
+  required_for_v1: true
+  status: planned
+  owner: null
+  depends_on:
+  - AWR-P1-003
+  - AWR-P1-004
+  - AWR-P1-005
+  source_sections:
+  - 7
+  - 17
+  - 33
+  - 35
+  - 36
+  deliverables:
+  - crates/awr-source/
+  acceptance:
+  - 只更新变化的投影，删除的来源实体与关系有明确失效语义。
+  - 删除数据库后能重建 Source 投影；明确 Runtime Event/Checkpoint 不会由 Source 凭空恢复。
+  verification:
+    minimum: 证明本条验收行为；功能阶段运行必要的定向检查，系统测试在 M9 集中执行。
+    evidence_directory: ledger/evidence/AWR-P1-006
+    evidence_level: none
+  evidence: []
+  blocker: null
+  next_action: 按交付物实现并验证：增量重索引与投影重建
+- id: AWR-P1-007
+  title: 项目初始化与 Source CLI
+  milestone: M1
+  priority: P0
+  kind: feature
+  required_for_v1: true
+  status: planned
+  owner: null
+  depends_on:
+  - AWR-P1-006
+  source_sections:
+  - 28
+  - 31
+  - 32
+  - 35
+  deliverables:
+  - crates/awr-cli/
+  - examples/basic/
+  acceptance:
+  - awr init 发现候选来源并显式确认 authority mapping；已有配置不被覆盖。
+  - source list/scan/reindex 可用，运行态数据库和产物默认不入 Git。
+  verification:
+    minimum: 证明本条验收行为；功能阶段运行必要的定向检查，系统测试在 M9 集中执行。
+    evidence_directory: ledger/evidence/AWR-P1-007
+    evidence_level: none
+  evidence: []
+  blocker: null
+  next_action: 按交付物实现并验证：项目初始化与 Source CLI
+- id: AWR-P2-001
+  title: Goal / Plan / Rule 投影查询
+  milestone: M2
+  priority: P0
+  kind: feature
+  required_for_v1: true
+  status: planned
+  owner: null
+  depends_on:
+  - AWR-P1-006
+  source_sections:
+  - 5
+  - 6
+  - 11
+  deliverables:
+  - crates/awr-core/
+  - crates/awr-store/
+  acceptance:
+  - 按外部 ID 查询目标、计划、规则及来源版本。
+  - Rule 保存 severity 与 project/path/tag/work_item/agent scope，未知适用性不默默省略。
+  verification:
+    minimum: 证明本条验收行为；功能阶段运行必要的定向检查，系统测试在 M9 集中执行。
+    evidence_directory: ledger/evidence/AWR-P2-001
+    evidence_level: none
+  evidence: []
+  blocker: null
+  next_action: 按交付物实现并验证：Goal / Plan / Rule 投影查询
+- id: AWR-P2-002
+  title: WorkItem、Edge、依赖闭包与 Ready
+  milestone: M2
+  priority: P0
+  kind: feature
+  required_for_v1: true
+  status: planned
+  owner: null
+  depends_on:
+  - AWR-P2-001
+  - AWR-P0-004
+  source_sections:
+  - 6
+  - 13
+  - 47
+  deliverables:
+  - crates/awr-store/
+  - crates/awr-core/
+  acceptance:
+  - 递归 CTE 查询依赖闭包；状态、必需依赖、blocker、claim 联合决定 ready。
+  - 缺依赖、循环与未知状态可诊断；重复关系不改变查询结果。
+  verification:
+    minimum: 证明本条验收行为；功能阶段运行必要的定向检查，系统测试在 M9 集中执行。
+    evidence_directory: ledger/evidence/AWR-P2-002
+    evidence_level: none
+  evidence: []
+  blocker: null
+  next_action: 按交付物实现并验证：WorkItem、Edge、依赖闭包与 Ready
+- id: AWR-P2-003
+  title: Decision / Evidence 与证据等级
+  milestone: M2
+  priority: P0
+  kind: feature
+  required_for_v1: true
+  status: planned
+  owner: null
+  depends_on:
+  - AWR-P2-001
+  source_sections:
+  - 6
+  - 38
+  deliverables:
+  - crates/awr-store/
+  - crates/awr-core/
+  acceptance:
+  - 支持相关 accepted 决策与有作用域、SHA、命令/报告绑定的证据记录。
+  - Event test_passed 不自动提升证据等级；历史和当前证据可区分。
+  verification:
+    minimum: 证明本条验收行为；功能阶段运行必要的定向检查，系统测试在 M9 集中执行。
+    evidence_directory: ledger/evidence/AWR-P2-003
+    evidence_level: none
+  evidence: []
+  blocker: null
+  next_action: 按交付物实现并验证：Decision / Evidence 与证据等级
+- id: AWR-P2-004
+  title: Status / Ready / Work 读取命令
+  milestone: M2
+  priority: P0
+  kind: feature
+  required_for_v1: true
+  status: planned
+  owner: null
+  depends_on:
+  - AWR-P1-007
+  - AWR-P2-002
+  - AWR-P2-003
+  source_sections:
+  - 28
+  - 36
+  - 40
+  deliverables:
+  - crates/awr-cli/
+  acceptance:
+  - status、ready、work show 输出短摘要及明确下一步、阻塞和 revision。
+  - 查询单个任务无需把全量 Ledger 或历史读入 Agent 上下文。
+  verification:
+    minimum: 证明本条验收行为；功能阶段运行必要的定向检查，系统测试在 M9 集中执行。
+    evidence_directory: ledger/evidence/AWR-P2-004
+    evidence_level: none
+  evidence: []
+  blocker: null
+  next_action: 按交付物实现并验证：Status / Ready / Work 读取命令
+- id: AWR-P2-005
+  title: 结构化搜索与 FTS5
+  milestone: M2
+  priority: P0
+  kind: feature
+  required_for_v1: true
+  status: planned
+  owner: null
+  depends_on:
+  - AWR-P2-003
+  source_sections:
+  - 12
+  - 27
+  deliverables:
+  - crates/awr-store/
+  - crates/awr-cli/
+  acceptance:
+  - 结构化过滤和 FTS5 返回 ID、类型、摘要、来源与 rank。
+  - 索引不包含完整日志、二进制及未脱敏正文；无 embedding 必选依赖。
+  verification:
+    minimum: 证明本条验收行为；功能阶段运行必要的定向检查，系统测试在 M9 集中执行。
+    evidence_directory: ledger/evidence/AWR-P2-005
+    evidence_level: none
+  evidence: []
+  blocker: null
+  next_action: 按交付物实现并验证：结构化搜索与 FTS5
+- id: AWR-P3-001
+  title: Session 与运行态 Claim
+  milestone: M3
+  priority: P0
+  kind: feature
+  required_for_v1: true
+  status: planned
+  owner: null
+  depends_on:
+  - AWR-P2-002
+  source_sections:
+  - 6
+  - 11
+  - 25
+  deliverables:
+  - crates/awr-runtime/
+  acceptance:
+  - Session 绑定任务、Agent/provider/model、分支与开始版本。
+  - Claim 区分 source owner 与执行者；支持获取、释放、TTL 和明确冲突。
+  verification:
+    minimum: 证明本条验收行为；功能阶段运行必要的定向检查，系统测试在 M9 集中执行。
+    evidence_directory: ledger/evidence/AWR-P3-001
+    evidence_level: none
+  evidence: []
+  blocker: null
+  next_action: 按交付物实现并验证：Session 与运行态 Claim
+- id: AWR-P3-002
+  title: Append-only Event Store
+  milestone: M3
+  priority: P0
+  kind: feature
+  required_for_v1: true
+  status: planned
+  owner: null
+  depends_on:
+  - AWR-P3-001
+  - AWR-P0-004
+  source_sections:
+  - 6
+  - 11
+  - 37
+  - 38
+  deliverables:
+  - crates/awr-runtime/
+  - crates/awr-store/
+  acceptance:
+  - 按工作、Session、分支追加和过滤事件，记录重要性与时间。
+  - 过程事件与当前 WorkItem 摘要分离，公开领域接口不能改写既有事件正文。
+  verification:
+    minimum: 证明本条验收行为；功能阶段运行必要的定向检查，系统测试在 M9 集中执行。
+    evidence_directory: ledger/evidence/AWR-P3-002
+    evidence_level: none
+  evidence: []
+  blocker: null
+  next_action: 按交付物实现并验证：Append-only Event Store
+- id: AWR-P3-003
+  title: Checkpoint 与 Artifact 引用
+  milestone: M3
+  priority: P0
+  kind: feature
+  required_for_v1: true
+  status: planned
+  owner: null
+  depends_on:
+  - AWR-P3-002
+  source_sections:
+  - 6
+  - 18
+  - 23
+  deliverables:
+  - crates/awr-runtime/
+  acceptance:
+  - Checkpoint 记录版本、context hash、摘要、下一步、open loops 和变化实体。
+  - 大产物在外部文件保存，数据库只存 locator/hash/size/MIME 与来源事件。
+  verification:
+    minimum: 证明本条验收行为；功能阶段运行必要的定向检查，系统测试在 M9 集中执行。
+    evidence_directory: ledger/evidence/AWR-P3-003
+    evidence_level: none
+  evidence: []
+  blocker: null
+  next_action: 按交付物实现并验证：Checkpoint 与 Artifact 引用
+- id: AWR-P3-004
+  title: Session 生命周期、历史与 Handoff
+  milestone: M3
+  priority: P0
+  kind: feature
+  required_for_v1: true
+  status: planned
+  owner: null
+  depends_on:
+  - AWR-P3-003
+  source_sections:
+  - 24
+  - 28
+  - 30
+  deliverables:
+  - crates/awr-runtime/
+  - crates/awr-cli/
+  acceptance:
+  - session start/end、work history/handoff 可追踪会话接续与未闭环工作。
+  - 结束会话释放或明确移交 claim；多会话候选歧义不自动猜选。
+  verification:
+    minimum: 证明本条验收行为；功能阶段运行必要的定向检查，系统测试在 M9 集中执行。
+    evidence_directory: ledger/evidence/AWR-P3-004
+    evidence_level: none
+  evidence: []
+  blocker: null
+  next_action: 按交付物实现并验证：Session 生命周期、历史与 Handoff
+- id: AWR-P3-005
+  title: Evidence / Artifact 按需读取
+  milestone: M3
+  priority: P0
+  kind: feature
+  required_for_v1: true
+  status: planned
+  owner: null
+  depends_on:
+  - AWR-P3-003
+  - AWR-P2-003
+  source_sections:
+  - 18
+  - 28
+  - 38
+  deliverables:
+  - crates/awr-cli/
+  acceptance:
+  - evidence add/show、decision show、artifact cat 支持按 ID 显式读取。
+  - 默认仅显示摘要引用，大文件内容只有显式请求且在读取上限内返回。
+  verification:
+    minimum: 证明本条验收行为；功能阶段运行必要的定向检查，系统测试在 M9 集中执行。
+    evidence_directory: ledger/evidence/AWR-P3-005
+    evidence_level: none
+  evidence: []
+  blocker: null
+  next_action: 按交付物实现并验证：Evidence / Artifact 按需读取
+- id: AWR-P4-001
+  title: L0 Bootstrap
+  milestone: M4
+  priority: P0
+  kind: feature
+  required_for_v1: true
+  status: planned
+  owner: null
+  depends_on:
+  - AWR-P3-003
+  - AWR-P2-004
+  source_sections:
+  - 18
+  - 23
+  - 30
+  deliverables:
+  - crates/awr-context/
+  - crates/awr-cli/
+  acceptance:
+  - 恢复当前任务、阶段、状态、下一步、blocker、关键规则、checkpoint 与版本。
+  - 目标 <=1000 tokens；必需上下文超预算时显式 BudgetExceeded，不静默丢弃。
+  verification:
+    minimum: 证明本条验收行为；功能阶段运行必要的定向检查，系统测试在 M9 集中执行。
+    evidence_directory: ledger/evidence/AWR-P4-001
+    evidence_level: none
+  evidence: []
+  blocker: null
+  next_action: 按交付物实现并验证：L0 Bootstrap
+- id: AWR-P4-002
+  title: L1 Work Context 编译与确定性渲染
+  milestone: M4
+  priority: P0
+  kind: feature
+  required_for_v1: true
+  status: planned
+  owner: null
+  depends_on:
+  - AWR-P4-003
+  - AWR-P4-004
+  - AWR-P4-005
+  - AWR-P4-006
+  - AWR-P4-007
+  source_sections:
+  - 0
+  - 3
+  - 16
+  - 18
+  - 20
+  - 21
+  - 40
+  - 56
+  - 57
+  deliverables:
+  - crates/awr-context/
+  - crates/awr-cli/
+  acceptance:
+  - 完成 freshness→任务→依赖→规则→决策→delta→证据→预算的确定性流程。
+  - 同状态和请求产生稳定文本/JSON；核心路径无需 LLM，输出是最小充分上下文。
+  verification:
+    minimum: 证明本条验收行为；功能阶段运行必要的定向检查，系统测试在 M9 集中执行。
+    evidence_directory: ledger/evidence/AWR-P4-002
+    evidence_level: none
+  evidence: []
+  blocker: null
+  next_action: 按交付物实现并验证：L1 Work Context 编译与确定性渲染
+- id: AWR-P4-003
+  title: Rule Applicability 与 Hard Context
+  milestone: M4
+  priority: P0
+  kind: feature
+  required_for_v1: true
+  status: planned
+  owner: null
+  depends_on:
+  - AWR-P2-001
+  - AWR-P3-001
+  source_sections:
+  - 6
+  - 16
+  - 19
+  - 54
+  - 55
+  deliverables:
+  - crates/awr-context/
+  acceptance:
+  - 结合项目、路径、标签、工作、Agent 选择适用规则并保留来源。
+  - 适用 Hard Rule、验收、ID、状态、版本、指纹、blocker、next action 不被摘要改写或预算删除。
+  verification:
+    minimum: 证明本条验收行为；功能阶段运行必要的定向检查，系统测试在 M9 集中执行。
+    evidence_directory: ledger/evidence/AWR-P4-003
+    evidence_level: none
+  evidence: []
+  blocker: null
+  next_action: 按交付物实现并验证：Rule Applicability 与 Hard Context
+- id: AWR-P4-004
+  title: 任务依赖与相关决策/证据选择
+  milestone: M4
+  priority: P0
+  kind: feature
+  required_for_v1: true
+  status: planned
+  owner: null
+  depends_on:
+  - AWR-P2-002
+  - AWR-P2-003
+  source_sections:
+  - 6
+  - 13
+  - 16
+  deliverables:
+  - crates/awr-context/
+  acceptance:
+  - 保留未解决必需依赖，选择相关且有效的 accepted 决策。
+  - 证据默认取摘要与缺口，明确关联当前源码、任务及验证作用域。
+  verification:
+    minimum: 证明本条验收行为；功能阶段运行必要的定向检查，系统测试在 M9 集中执行。
+    evidence_directory: ledger/evidence/AWR-P4-004
+    evidence_level: none
+  evidence: []
+  blocker: null
+  next_action: 按交付物实现并验证：任务依赖与相关决策/证据选择
+- id: AWR-P4-005
+  title: Recent Delta 与事件折叠
+  milestone: M4
+  priority: P0
+  kind: feature
+  required_for_v1: true
+  status: planned
+  owner: null
+  depends_on:
+  - AWR-P3-003
+  source_sections:
+  - 16
+  - 20
+  - 23
+  - 24
+  - 37
+  deliverables:
+  - crates/awr-context/
+  acceptance:
+  - 基于 checkpoint/revision 选取变化实体及 high/critical 事件。
+  - 历史可 drill-down，当前摘要保持小；来源变化必须出现在 delta。
+  verification:
+    minimum: 证明本条验收行为；功能阶段运行必要的定向检查，系统测试在 M9 集中执行。
+    evidence_directory: ledger/evidence/AWR-P4-005
+    evidence_level: none
+  evidence: []
+  blocker: null
+  next_action: 按交付物实现并验证：Recent Delta 与事件折叠
+- id: AWR-P4-006
+  title: Token Budget、稳定排序与 Context Hash
+  milestone: M4
+  priority: P0
+  kind: feature
+  required_for_v1: true
+  status: planned
+  owner: null
+  depends_on:
+  - AWR-P4-003
+  - AWR-P4-005
+  source_sections:
+  - 19
+  - 20
+  - 21
+  - 22
+  - 42
+  deliverables:
+  - crates/awr-context/
+  acceptance:
+  - 预算估计器有明确算法和误差说明，排序及截取规则确定。
+  - hash 绑定项目/任务/来源版本、分支、选中实体及渲染内容；硬事实超限明确失败。
+  verification:
+    minimum: 证明本条验收行为；功能阶段运行必要的定向检查，系统测试在 M9 集中执行。
+    evidence_directory: ledger/evidence/AWR-P4-006
+    evidence_level: none
+  evidence: []
+  blocker: null
+  next_action: 按交付物实现并验证：Token Budget、稳定排序与 Context Hash
+- id: AWR-P4-007
+  title: Context Completeness 与缺口报告
+  milestone: M4
+  priority: P0
+  kind: feature
+  required_for_v1: true
+  status: planned
+  owner: null
+  depends_on:
+  - AWR-P1-002
+  - AWR-P4-004
+  source_sections:
+  - 16
+  - 17
+  - 39
+  deliverables:
+  - crates/awr-context/
+  acceptance:
+  - 返回来源新鲜度、任务存在、验收/规则/依赖/决策完整性及 evidence_gaps。
+  - 关键缺项输出 CONTEXT INCOMPLETE，不将 stale 或推断当成已验证事实。
+  verification:
+    minimum: 证明本条验收行为；功能阶段运行必要的定向检查，系统测试在 M9 集中执行。
+    evidence_directory: ledger/evidence/AWR-P4-007
+    evidence_level: none
+  evidence: []
+  blocker: null
+  next_action: 按交付物实现并验证：Context Completeness 与缺口报告
+- id: AWR-P4-008
+  title: L2/L3 Drill-down 与上下文命令整合
+  milestone: M4
+  priority: P0
+  kind: feature
+  required_for_v1: true
+  status: planned
+  owner: null
+  depends_on:
+  - AWR-P4-001
+  - AWR-P4-002
+  - AWR-P3-005
+  source_sections:
+  - 18
+  - 28
+  - 40
+  deliverables:
+  - crates/awr-cli/
+  acceptance:
+  - context bootstrap/compile/delta 与历史、来源、证据、产物引用相互可定位。
+  - omitted_refs 可追溯，完整日志和无关历史默认不进入 Context。
+  verification:
+    minimum: 证明本条验收行为；功能阶段运行必要的定向检查，系统测试在 M9 集中执行。
+    evidence_directory: ledger/evidence/AWR-P4-008
+    evidence_level: none
+  evidence: []
+  blocker: null
+  next_action: 按交付物实现并验证：L2/L3 Drill-down 与上下文命令整合
+- id: AWR-P5-001
+  title: Session Checkpoint 与 Compact 前保存
+  milestone: M5
+  priority: P0
+  kind: feature
+  required_for_v1: true
+  status: planned
+  owner: null
+  depends_on:
+  - AWR-P4-008
+  - AWR-P3-004
+  source_sections:
+  - 23
+  - 30
+  - 43
+  deliverables:
+  - crates/awr-runtime/
+  - crates/awr-cli/
+  acceptance:
+  - checkpoint 保存真实 Session delta、digest、next action、open loops 和 context hash。
+  - 保存中断可辨认；未完成 checkpoint 不作为成功恢复点。
+  verification:
+    minimum: 证明本条验收行为；功能阶段运行必要的定向检查，系统测试在 M9 集中执行。
+    evidence_directory: ledger/evidence/AWR-P5-001
+    evidence_level: none
+  evidence: []
+  blocker: null
+  next_action: 按交付物实现并验证：Session Checkpoint 与 Compact 前保存
+- id: AWR-P5-002
+  title: Compact / Session Resume
+  milestone: M5
+  priority: P0
+  kind: feature
+  required_for_v1: true
+  status: planned
+  owner: null
+  depends_on:
+  - AWR-P5-001
+  source_sections:
+  - 23
+  - 24
+  - 43
+  deliverables:
+  - crates/awr-runtime/
+  - crates/awr-context/
+  acceptance:
+  - 新会话复核来源新鲜度和 revision 后恢复工作，并包含中断后的来源变化。
+  - 保留下一步、未闭环事项和硬规则；可切换 Agent/provider/model 接续。
+  verification:
+    minimum: 证明本条验收行为；功能阶段运行必要的定向检查，系统测试在 M9 集中执行。
+    evidence_directory: ledger/evidence/AWR-P5-002
+    evidence_level: none
+  evidence: []
+  blocker: null
+  next_action: 按交付物实现并验证：Compact / Session Resume
+- id: AWR-P5-003
+  title: 中断运行态 Reconciliation 与 Doctor
+  milestone: M5
+  priority: P0
+  kind: feature
+  required_for_v1: true
+  status: planned
+  owner: null
+  depends_on:
+  - AWR-P5-002
+  source_sections:
+  - 34
+  deliverables:
+  - crates/awr-runtime/
+  - crates/awr-cli/
+  acceptance:
+  - doctor 诊断 expired claim、orphan session/artifact、incomplete checkpoint 和失效分支。
+  - 修复行为范围明确，默认诊断结果不冒充已修复。
+  verification:
+    minimum: 证明本条验收行为；功能阶段运行必要的定向检查，系统测试在 M9 集中执行。
+    evidence_directory: ledger/evidence/AWR-P5-003
+    evidence_level: none
+  evidence: []
+  blocker: null
+  next_action: 按交付物实现并验证：中断运行态 Reconciliation 与 Doctor
+- id: AWR-P6-001
+  title: Mutation Proposal 生命周期
+  milestone: M6
+  priority: P0
+  kind: feature
+  required_for_v1: true
+  status: planned
+  owner: null
+  depends_on:
+  - AWR-P5-002
+  - AWR-P0-004
+  source_sections:
+  - 6
+  - 14
+  - 15
+  deliverables:
+  - crates/awr-source/
+  - crates/awr-runtime/
+  acceptance:
+  - 提案绑定 source、目标、base fingerprint、expected revision、意图与 patch。
+  - draft/ready/approved/applied/conflict/rejected/failed 状态及动作可区分；不支持写入时 proposal_required。
+  verification:
+    minimum: 证明本条验收行为；功能阶段运行必要的定向检查，系统测试在 M9 集中执行。
+    evidence_directory: ledger/evidence/AWR-P6-001
+    evidence_level: none
+  evidence: []
+  blocker: null
+  next_action: 按交付物实现并验证：Mutation Proposal 生命周期
+- id: AWR-P6-002
+  title: YAML 指纹绑定安全写回
+  milestone: M6
+  priority: P0
+  kind: feature
+  required_for_v1: true
+  status: planned
+  owner: null
+  depends_on:
+  - AWR-P6-001
+  - AWR-P1-003
+  source_sections:
+  - 9
+  - 15
+  - 33
+  deliverables:
+  - adapters/yaml-ledger/
+  - crates/awr-source/
+  acceptance:
+  - 应用前重新读取比对指纹，仅修改精确目标，冲突不覆盖。
+  - 保存后重索引并验证结果；Markdown 继续默认只读，失败保留原始文件或恢复依据。
+  verification:
+    minimum: 证明本条验收行为；功能阶段运行必要的定向检查，系统测试在 M9 集中执行。
+    evidence_directory: ledger/evidence/AWR-P6-002
+    evidence_level: none
+  evidence: []
+  blocker: null
+  next_action: 按交付物实现并验证：YAML 指纹绑定安全写回
+- id: AWR-P6-003
+  title: 任务领域动作与状态机
+  milestone: M6
+  priority: P0
+  kind: feature
+  required_for_v1: true
+  status: planned
+  owner: null
+  depends_on:
+  - AWR-P6-002
+  - AWR-P3-001
+  source_sections:
+  - 14
+  - 28
+  - 47
+  deliverables:
+  - crates/awr-runtime/
+  - crates/awr-cli/
+  acceptance:
+  - claim/release/progress/block/unblock/cancel/handoff 经领域动作推进，拒绝非法转换。
+  - 区分 Source 状态与 runtime claim；reopen 需要理由、事件与版本。
+  verification:
+    minimum: 证明本条验收行为；功能阶段运行必要的定向检查，系统测试在 M9 集中执行。
+    evidence_directory: ledger/evidence/AWR-P6-003
+    evidence_level: none
+  evidence: []
+  blocker: null
+  next_action: 按交付物实现并验证：任务领域动作与状态机
+- id: AWR-P6-004
+  title: Complete 的依赖、验收与证据门槛
+  milestone: M6
+  priority: P0
+  kind: feature
+  required_for_v1: true
+  status: planned
+  owner: null
+  depends_on:
+  - AWR-P6-003
+  - AWR-P2-003
+  source_sections:
+  - 14
+  - 38
+  - 47
+  deliverables:
+  - crates/awr-runtime/
+  acceptance:
+  - 依次检查 revision、必需依赖、验收、证据、blocker 后才生成并应用提案。
+  - 重索引确认 Source 投影为 completed 后记录完成事件；缺证据不直接改 DB 完成。
+  verification:
+    minimum: 证明本条验收行为；功能阶段运行必要的定向检查，系统测试在 M9 集中执行。
+    evidence_directory: ledger/evidence/AWR-P6-004
+    evidence_level: none
+  evidence: []
+  blocker: null
+  next_action: 按交付物实现并验证：Complete 的依赖、验收与证据门槛
+- id: AWR-P7-001
+  title: Work Branch 与 Git Ref 绑定
+  milestone: M6
+  priority: P0
+  kind: feature
+  required_for_v1: true
+  status: planned
+  owner: null
+  depends_on:
+  - AWR-P5-002
+  source_sections:
+  - 6
+  - 25
+  - 26
+  deliverables:
+  - crates/awr-runtime/
+  - crates/awr-store/
+  acceptance:
+  - create/list/switch 记录父分支、fork revision 与 git ref。
+  - Session/Event/Claim/Context/Evidence 有分支归属，明确共享 Source 与运行态隔离的边界。
+  verification:
+    minimum: 证明本条验收行为；功能阶段运行必要的定向检查，系统测试在 M9 集中执行。
+    evidence_directory: ledger/evidence/AWR-P7-001
+    evidence_level: none
+  evidence: []
+  blocker: null
+  next_action: 按交付物实现并验证：Work Branch 与 Git Ref 绑定
+- id: AWR-P7-002
+  title: Branch Context 与 Delta
+  milestone: M6
+  priority: P0
+  kind: feature
+  required_for_v1: true
+  status: planned
+  owner: null
+  depends_on:
+  - AWR-P7-001
+  - AWR-P4-002
+  source_sections:
+  - 22
+  - 26
+  deliverables:
+  - crates/awr-context/
+  acceptance:
+  - 上下文结合 main 当前有效状态与本分支 fork 后增量。
+  - 其他分支运行事件不会混入；分支及来源版本进入 hash 和完整性字段。
+  verification:
+    minimum: 证明本条验收行为；功能阶段运行必要的定向检查，系统测试在 M9 集中执行。
+    evidence_directory: ledger/evidence/AWR-P7-002
+    evidence_level: none
+  evidence: []
+  blocker: null
+  next_action: 按交付物实现并验证：Branch Context 与 Delta
+- id: AWR-P7-003
+  title: Git 合并后重索引与 Branch Close
+  milestone: M6
+  priority: P0
+  kind: feature
+  required_for_v1: true
+  status: planned
+  owner: null
+  depends_on:
+  - AWR-P7-002
+  - AWR-P6-004
+  source_sections:
+  - 26
+  - 28
+  deliverables:
+  - crates/awr-runtime/
+  - crates/awr-cli/
+  acceptance:
+  - Source/Git 合并后执行重索引、记录合并摘要，再关闭工作分支。
+  - 不实现源码合并引擎；遗留 claim/open loop 的处置明确可追溯。
+  verification:
+    minimum: 证明本条验收行为；功能阶段运行必要的定向检查，系统测试在 M9 集中执行。
+    evidence_directory: ledger/evidence/AWR-P7-003
+    evidence_level: none
+  evidence: []
+  blocker: null
+  next_action: 按交付物实现并验证：Git 合并后重索引与 Branch Close
+- id: AWR-P8-001
+  title: 8 个精简 MCP Tools
+  milestone: M7
+  priority: P1
+  kind: feature
+  required_for_v1: true
+  status: planned
+  owner: null
+  depends_on:
+  - AWR-P6-004
+  - AWR-P7-003
+  - AWR-P2-005
+  source_sections:
+  - 29
+  deliverables:
+  - crates/awr-mcp/
+  acceptance:
+  - 只暴露设计指定的 8 个工具，复用领域服务、错误与上下文输出。
+  - 只读查询不变更状态，变更工具遵循 revision/fingerprint/证据约束。
+  verification:
+    minimum: 证明本条验收行为；功能阶段运行必要的定向检查，系统测试在 M9 集中执行。
+    evidence_directory: ledger/evidence/AWR-P8-001
+    evidence_level: none
+  evidence: []
+  blocker: null
+  next_action: 按交付物实现并验证：8 个精简 MCP Tools
+- id: AWR-P8-002
+  title: Codex 接入协议与使用示例
+  milestone: M7
+  priority: P1
+  kind: feature
+  required_for_v1: true
+  status: planned
+  owner: null
+  depends_on:
+  - AWR-P8-001
+  source_sections:
+  - 30
+  - 48
+  deliverables:
+  - docs/integrations/codex.md
+  - examples/codex/
+  acceptance:
+  - 提供 session start/bootstrap、work compile、checkpoint、resume 的实际客户端使用流程。
+  - 区分已验证接入与文档示例；自动生命周期能力必须以客户端真实支持为准。
+  verification:
+    minimum: 证明本条验收行为；功能阶段运行必要的定向检查，系统测试在 M9 集中执行。
+    evidence_directory: ledger/evidence/AWR-P8-002
+    evidence_level: none
+  evidence: []
+  blocker: null
+  next_action: 按交付物实现并验证：Codex 接入协议与使用示例
+- id: AWR-P8-003
+  title: Kimi / Grok 跨会话使用指南
+  milestone: M7
+  priority: P1
+  kind: feature
+  required_for_v1: true
+  status: planned
+  owner: null
+  depends_on:
+  - AWR-P8-002
+  source_sections:
+  - 2
+  - 6
+  - 48
+  deliverables:
+  - docs/integrations/kimi.md
+  - docs/integrations/grok.md
+  acceptance:
+  - 提供 CLI 接入与接续同一工作的可执行步骤。
+  - 客户端不具备自动 hook 时给出手动 checkpoint 流程，不宣称未验证自动化。
+  verification:
+    minimum: 证明本条验收行为；功能阶段运行必要的定向检查，系统测试在 M9 集中执行。
+    evidence_directory: ledger/evidence/AWR-P8-003
+    evidence_level: none
+  evidence: []
+  blocker: null
+  next_action: 按交付物实现并验证：Kimi / Grok 跨会话使用指南
+- id: AWR-P8-004
+  title: CLI / MCP 输出与错误契约对齐
+  milestone: M7
+  priority: P1
+  kind: feature
+  required_for_v1: true
+  status: planned
+  owner: null
+  depends_on:
+  - AWR-P8-001
+  - AWR-P4-008
+  source_sections:
+  - 28
+  - 29
+  - 40
+  - 46
+  deliverables:
+  - crates/awr-cli/
+  - crates/awr-mcp/
+  - docs/reference/
+  acceptance:
+  - 相同领域动作在 CLI/MCP 返回一致状态、版本、错误码及缺口。
+  - 默认输出简短，JSON 可解析，错误退出码和 unsupported 行为有文档。
+  verification:
+    minimum: 证明本条验收行为；功能阶段运行必要的定向检查，系统测试在 M9 集中执行。
+    evidence_directory: ledger/evidence/AWR-P8-004
+    evidence_level: none
+  evidence: []
+  blocker: null
+  next_action: 按交付物实现并验证：CLI / MCP 输出与错误契约对齐
+- id: AWR-SEC-001
+  title: 路径、符号链接与授权 Root 加固
+  milestone: M8
+  priority: P2
+  kind: security
+  required_for_v1: true
+  status: planned
+  owner: null
+  depends_on:
+  - AWR-P8-004
+  source_sections:
+  - 32
+  - 55
+  deliverables:
+  - crates/awr-source/
+  - tests/security/paths/
+  acceptance:
+  - 系统验证 ../、绝对路径、symlink escape 与显式授权 Root。
+  - 读取与写入均不能越过实际授权边界；拒绝结果可定位到来源。
+  verification:
+    minimum: 证明本条验收行为；功能阶段运行必要的定向检查，系统测试在 M9 集中执行。
+    evidence_directory: ledger/evidence/AWR-SEC-001
+    evidence_level: none
+  evidence: []
+  blocker: null
+  next_action: 按交付物实现并验证：路径、符号链接与授权 Root 加固
+- id: AWR-SEC-002
+  title: 读取上限、Event Schema 与秘密数据防护
+  milestone: M8
+  priority: P2
+  kind: security
+  required_for_v1: true
+  status: planned
+  owner: null
+  depends_on:
+  - AWR-P8-004
+  source_sections:
+  - 12
+  - 32
+  deliverables:
+  - crates/awr-source/
+  - crates/awr-runtime/
+  - tests/security/payloads/
+  acceptance:
+  - Markdown/YAML、事件字段白名单及 payload/artifact 读取上限被执行。
+  - 拒绝或脱敏 API key、token、密码、私有 prompt 和环境变量；日志/FTS/Context 不泄露 fixture 秘密。
+  verification:
+    minimum: 证明本条验收行为；功能阶段运行必要的定向检查，系统测试在 M9 集中执行。
+    evidence_directory: ledger/evidence/AWR-SEC-002
+    evidence_level: none
+  evidence: []
+  blocker: null
+  next_action: 按交付物实现并验证：读取上限、Event Schema 与秘密数据防护
+- id: AWR-SEC-003
+  title: 并发冲突与 Source/DB 写入故障恢复
+  milestone: M8
+  priority: P2
+  kind: security
+  required_for_v1: true
+  status: planned
+  owner: null
+  depends_on:
+  - AWR-P6-004
+  - AWR-P7-003
+  source_sections:
+  - 15
+  - 25
+  - 33
+  - 34
+  deliverables:
+  - crates/awr-source/
+  - crates/awr-runtime/
+  - tests/recovery/mutations/
+  acceptance:
+  - 并发 expected_revision/fingerprint 冲突可重现，不能发生静默丢更新。
+  - 覆盖文件写前、写后、重索引前后的中断，pending proposal 可恢复且不能假报完成。
+  verification:
+    minimum: 证明本条验收行为；功能阶段运行必要的定向检查，系统测试在 M9 集中执行。
+    evidence_directory: ledger/evidence/AWR-SEC-003
+    evidence_level: none
+  evidence: []
+  blocker: null
+  next_action: 按交付物实现并验证：并发冲突与 Source/DB 写入故障恢复
+- id: AWR-SEC-004
+  title: Event 不可变、Claim TTL 与分支隔离加固
+  milestone: M8
+  priority: P2
+  kind: security
+  required_for_v1: true
+  status: planned
+  owner: null
+  depends_on:
+  - AWR-P7-003
+  source_sections:
+  - 11
+  - 25
+  - 26
+  - 33
+  deliverables:
+  - crates/awr-store/
+  - crates/awr-runtime/
+  - tests/concurrency/
+  acceptance:
+  - 验证存储/领域公开路径不能修改既有事件，过期 claim 回收不夺取有效 claim。
+  - 并发 Session 与工作分支保持独立归属，冲突可观测。
+  verification:
+    minimum: 证明本条验收行为；功能阶段运行必要的定向检查，系统测试在 M9 集中执行。
+    evidence_directory: ledger/evidence/AWR-SEC-004
+    evidence_level: none
+  evidence: []
+  blocker: null
+  next_action: 按交付物实现并验证：Event 不可变、Claim TTL 与分支隔离加固
+- id: AWR-SEC-005
+  title: 数据库完整性与 Doctor 故障矩阵
+  milestone: M8
+  priority: P2
+  kind: security
+  required_for_v1: true
+  status: planned
+  owner: null
+  depends_on:
+  - AWR-P5-003
+  - AWR-SEC-003
+  source_sections:
+  - 10
+  - 34
+  deliverables:
+  - crates/awr-store/
+  - crates/awr-cli/
+  - tests/recovery/doctor/
+  acceptance:
+  - 覆盖 schema 不匹配、dangling edge、缺失依赖、孤立产物和无法访问的 Source。
+  - 确认 crash reopen、迁移失败处理及投影重建边界；恢复运行数据不能只依赖原文件。
+  verification:
+    minimum: 证明本条验收行为；功能阶段运行必要的定向检查，系统测试在 M9 集中执行。
+    evidence_directory: ledger/evidence/AWR-SEC-005
+    evidence_level: none
+  evidence: []
+  blocker: null
+  next_action: 按交付物实现并验证：数据库完整性与 Doctor 故障矩阵
+- id: AWR-QA-001
+  title: 集中单元、集成与领域回归
+  milestone: M9
+  priority: P2
+  kind: quality
+  required_for_v1: true
+  status: planned
+  owner: null
+  depends_on:
+  - AWR-SEC-001
+  - AWR-SEC-002
+  - AWR-SEC-004
+  - AWR-SEC-005
+  source_sections:
+  - 48
+  - 50
+  - 55
+  deliverables:
+  - tests/
+  - crates/
+  acceptance:
+  - 覆盖关键正常、边界、异常、恢复路径，缺陷以可复用根因修复并补同类回归。
+  - 完整 regression 报告绑定源码 SHA，不以组件通过声明真实 E4 完成。
+  verification:
+    minimum: 证明本条验收行为；功能阶段运行必要的定向检查，系统测试在 M9 集中执行。
+    evidence_directory: ledger/evidence/AWR-QA-001
+    evidence_level: none
+  evidence: []
+  blocker: null
+  next_action: 按交付物实现并验证：集中单元、集成与领域回归
+- id: AWR-QA-002
+  title: 8 个完整业务场景 Fixture 与覆盖矩阵
+  milestone: M9
+  priority: P2
+  kind: quality
+  required_for_v1: true
+  status: planned
+  owner: null
+  depends_on:
+  - AWR-P8-003
+  - AWR-P8-004
+  source_sections:
+  - 52
+  deliverables:
+  - tests/fixtures/business/
+  - docs/acceptance/
+  acceptance:
+  - 为合同 8 个场景建立独立 fixture、namespace、任务图、执行/复核角色和产物路径。
+  - 每场景包含自然发起、真实执行产物、两轮业务追问、独立复核、交付与回执；输入不泄漏测试 ID/预期答案。
+  verification:
+    minimum: 证明本条验收行为；功能阶段运行必要的定向检查，系统测试在 M9 集中执行。
+    evidence_directory: ledger/evidence/AWR-QA-002
+    evidence_level: none
+  evidence: []
+  blocker: null
+  next_action: 按交付物实现并验证：8 个完整业务场景 Fixture 与覆盖矩阵
+- id: AWR-QA-003
+  title: 实际 Agent 客户端完整业务验收
+  milestone: M9
+  priority: P2
+  kind: quality
+  required_for_v1: true
+  status: planned
+  owner: null
+  depends_on:
+  - AWR-QA-001
+  - AWR-QA-002
+  - AWR-P9-001
+  - AWR-P9-002
+  - AWR-P9-004
+  source_sections:
+  - 43
+  - 52
+  - 55
+  deliverables:
+  - ledger/evidence/business/
+  acceptance:
+  - 8 个场景全部按当前合同从实际用户客户端执行；后端/数据库仅只读取证。
+  - 每个完成场景有独立提交、远端 SHA 和可区分复核者；阻塞/跳过不计完成。
+  verification:
+    minimum: 证明本条验收行为；功能阶段运行必要的定向检查，系统测试在 M9 集中执行。
+    evidence_directory: ledger/evidence/AWR-QA-003
+    evidence_level: none
+  evidence: []
+  blocker: null
+  next_action: 按交付物实现并验证：实际 Agent 客户端完整业务验收
+- id: AWR-QA-004
+  title: macOS / Linux / Windows 运行验证
+  milestone: M9
+  priority: P2
+  kind: quality
+  required_for_v1: true
+  status: planned
+  owner: null
+  depends_on:
+  - AWR-QA-001
+  source_sections:
+  - 44
+  - 50
+  deliverables:
+  - .github/workflows/
+  - tests/platform/
+  acceptance:
+  - 为 V1 声明支持的三个平台执行构建及核心持久化/路径/CLI 功能验证。
+  - 平台、架构、工具链与结果绑定记录；不可用环境保持未验证。
+  verification:
+    minimum: 证明本条验收行为；功能阶段运行必要的定向检查，系统测试在 M9 集中执行。
+    evidence_directory: ledger/evidence/AWR-QA-004
+    evidence_level: none
+  evidence: []
+  blocker: null
+  next_action: 按交付物实现并验证：macOS / Linux / Windows 运行验证
+- id: AWR-P9-001
+  title: 真实大型 Ledger Benchmark
+  milestone: M9
+  priority: P2
+  kind: quality
+  required_for_v1: true
+  status: planned
+  owner: null
+  depends_on:
+  - AWR-QA-001
+  source_sections:
+  - 36
+  - 41
+  - 42
+  - 52
+  deliverables:
+  - tests/long-ledger/
+  - docs/benchmarks/
+  acceptance:
+  - 真实复杂项目至少含 30 当前/100 历史任务、多里程碑/决策、大量证据与数百 KB 台账。
+  - 验证按任务读取、增量索引、历史隔离及投影重建；公开证据须脱敏。
+  verification:
+    minimum: 证明本条验收行为；功能阶段运行必要的定向检查，系统测试在 M9 集中执行。
+    evidence_directory: ledger/evidence/AWR-P9-001
+    evidence_level: none
+  evidence: []
+  blocker: null
+  next_action: 按交付物实现并验证：真实大型 Ledger Benchmark
+- id: AWR-P9-002
+  title: Compact Recovery Benchmark
+  milestone: M9
+  priority: P2
+  kind: quality
+  required_for_v1: true
+  status: planned
+  owner: null
+  depends_on:
+  - AWR-QA-001
+  source_sections:
+  - 23
+  - 24
+  - 43
+  - 52
+  deliverables:
+  - tests/compact-recovery/
+  - docs/benchmarks/
+  acceptance:
+  - 模拟 Session A→事件→源变化→checkpoint→新 Session，检查任务/next action/open loops/硬规则一致。
+  - 来源增量被包含，无关旧历史被排除；异常断点有复现记录。
+  verification:
+    minimum: 证明本条验收行为；功能阶段运行必要的定向检查，系统测试在 M9 集中执行。
+    evidence_directory: ledger/evidence/AWR-P9-002
+    evidence_level: none
+  evidence: []
+  blocker: null
+  next_action: 按交付物实现并验证：Compact Recovery Benchmark
+- id: AWR-P9-004
+  title: Token 与 Hard Fact Recall Benchmark
+  milestone: M9
+  priority: P2
+  kind: quality
+  required_for_v1: true
+  status: planned
+  owner: null
+  depends_on:
+  - AWR-P9-001
+  source_sections:
+  - 19
+  - 39
+  - 42
+  - 52
+  - 57
+  deliverables:
+  - tests/benchmarks/context/
+  - docs/benchmarks/
+  acceptance:
+  - 在冻结 fixture 上验证 Bootstrap <=1000、Work Context <=5000、压缩比 >20x 和必需硬事实召回 100%。
+  - 分别报告估算与实际 tokenizer 测量、预算溢出及缺口；50–100x 作为争取目标。
+  verification:
+    minimum: 证明本条验收行为；功能阶段运行必要的定向检查，系统测试在 M9 集中执行。
+    evidence_directory: ledger/evidence/AWR-P9-004
+    evidence_level: none
+  evidence: []
+  blocker: null
+  next_action: 按交付物实现并验证：Token 与 Hard Fact Recall Benchmark
+- id: AWR-P9-005
+  title: 本地延迟与规模 Benchmark
+  milestone: M9
+  priority: P2
+  kind: quality
+  required_for_v1: true
+  status: planned
+  owner: null
+  depends_on:
+  - AWR-P9-001
+  source_sections:
+  - 41
+  deliverables:
+  - tests/benchmarks/performance/
+  - docs/benchmarks/
+  acceptance:
+  - 固定硬件、数据规模与冷热缓存条件，记录 status/work/ready/compile/search/reindex 耗时。
+  - 对照文档 20/20/50/100/100/500 ms 目标，偏差明确记录且未处理不宣称达标。
+  verification:
+    minimum: 证明本条验收行为；功能阶段运行必要的定向检查，系统测试在 M9 集中执行。
+    evidence_directory: ledger/evidence/AWR-P9-005
+    evidence_level: none
+  evidence: []
+  blocker: null
+  next_action: 按交付物实现并验证：本地延迟与规模 Benchmark
+- id: AWR-P9-003
+  title: 开源文档、Examples 与使用参考
+  milestone: M10
+  priority: P3
+  kind: release
+  required_for_v1: true
+  status: planned
+  owner: null
+  depends_on:
+  - AWR-QA-003
+  - AWR-QA-004
+  - AWR-P9-005
+  source_sections:
+  - 48
+  - 53
+  deliverables:
+  - README.md
+  - docs/
+  - examples/
+  - CONTRIBUTING.md
+  acceptance:
+  - README/示例/命令参考反映实际实现与平台支持，包含初始化到恢复完整流程。
+  - Apache-2.0 归属与依赖声明完整，未交付能力明确标识。
+  verification:
+    minimum: 证明本条验收行为；功能阶段运行必要的定向检查，系统测试在 M9 集中执行。
+    evidence_directory: ledger/evidence/AWR-P9-003
+    evidence_level: none
+  evidence: []
+  blocker: null
+  next_action: 按交付物实现并验证：开源文档、Examples 与使用参考
+- id: AWR-P9-006
+  title: 发布二进制、版本与校验文件
+  milestone: M10
+  priority: P3
+  kind: release
+  required_for_v1: true
+  status: planned
+  owner: null
+  depends_on:
+  - AWR-P9-003
+  source_sections:
+  - 44
+  - 48
+  - 53
+  deliverables:
+  - .github/workflows/
+  - docs/release/
+  acceptance:
+  - 发布产物绑定 tag、源码 SHA、平台/架构、构建信息与 checksum。
+  - 仅打包已验证的平台，安装后可运行 help/version 和核心流程。
+  verification:
+    minimum: 证明本条验收行为；功能阶段运行必要的定向检查，系统测试在 M9 集中执行。
+    evidence_directory: ledger/evidence/AWR-P9-006
+    evidence_level: none
+  evidence: []
+  blocker: null
+  next_action: 按交付物实现并验证：发布二进制、版本与校验文件
+- id: AWR-P9-007
+  title: V1 发布门槛与远端交付回执
+  milestone: M10
+  priority: P3
+  kind: release
+  required_for_v1: true
+  status: planned
+  owner: null
+  depends_on:
+  - AWR-P9-006
+  source_sections:
+  - 3
+  - 50
+  - 52
+  - 54
+  - 57
+  deliverables:
+  - docs/release/
+  - ledger/deliveries/
+  acceptance:
+  - 合同全部必需任务、场景和指标通过，验收者确认发布边界。
+  - 最终发布记录绑定源码/tag/产物/远端回执；未满足条件保持未发布。
+  verification:
+    minimum: 证明本条验收行为；功能阶段运行必要的定向检查，系统测试在 M9 集中执行。
+    evidence_directory: ledger/evidence/AWR-P9-007
+    evidence_level: none
+  evidence: []
+  blocker: null
+  next_action: 按交付物实现并验证：V1 发布门槛与远端交付回执
+scenarios:
+- id: AWR-SC-001
+  status: planned
+  executor: null
+  reviewer: null
+  evidence: []
+  gates:
+    natural_client_initiation: false
+    tool_or_role_execution: false
+    real_artifact: false
+    business_followup_1: false
+    business_followup_2: false
+    independent_review: false
+    final_delivery: false
+    traceable_receipt: false
+    fixture_isolation: false
+    independent_commit_and_remote_sha: false
+  blocker: null
+  delivery: null
+- id: AWR-SC-002
+  status: planned
+  executor: null
+  reviewer: null
+  evidence: []
+  gates:
+    natural_client_initiation: false
+    tool_or_role_execution: false
+    real_artifact: false
+    business_followup_1: false
+    business_followup_2: false
+    independent_review: false
+    final_delivery: false
+    traceable_receipt: false
+    fixture_isolation: false
+    independent_commit_and_remote_sha: false
+  blocker: null
+  delivery: null
+- id: AWR-SC-003
+  status: planned
+  executor: null
+  reviewer: null
+  evidence: []
+  gates:
+    natural_client_initiation: false
+    tool_or_role_execution: false
+    real_artifact: false
+    business_followup_1: false
+    business_followup_2: false
+    independent_review: false
+    final_delivery: false
+    traceable_receipt: false
+    fixture_isolation: false
+    independent_commit_and_remote_sha: false
+  blocker: null
+  delivery: null
+- id: AWR-SC-004
+  status: planned
+  executor: null
+  reviewer: null
+  evidence: []
+  gates:
+    natural_client_initiation: false
+    tool_or_role_execution: false
+    real_artifact: false
+    business_followup_1: false
+    business_followup_2: false
+    independent_review: false
+    final_delivery: false
+    traceable_receipt: false
+    fixture_isolation: false
+    independent_commit_and_remote_sha: false
+  blocker: null
+  delivery: null
+- id: AWR-SC-005
+  status: planned
+  executor: null
+  reviewer: null
+  evidence: []
+  gates:
+    natural_client_initiation: false
+    tool_or_role_execution: false
+    real_artifact: false
+    business_followup_1: false
+    business_followup_2: false
+    independent_review: false
+    final_delivery: false
+    traceable_receipt: false
+    fixture_isolation: false
+    independent_commit_and_remote_sha: false
+  blocker: null
+  delivery: null
+- id: AWR-SC-006
+  status: planned
+  executor: null
+  reviewer: null
+  evidence: []
+  gates:
+    natural_client_initiation: false
+    tool_or_role_execution: false
+    real_artifact: false
+    business_followup_1: false
+    business_followup_2: false
+    independent_review: false
+    final_delivery: false
+    traceable_receipt: false
+    fixture_isolation: false
+    independent_commit_and_remote_sha: false
+  blocker: null
+  delivery: null
+- id: AWR-SC-007
+  status: planned
+  executor: null
+  reviewer: null
+  evidence: []
+  gates:
+    natural_client_initiation: false
+    tool_or_role_execution: false
+    real_artifact: false
+    business_followup_1: false
+    business_followup_2: false
+    independent_review: false
+    final_delivery: false
+    traceable_receipt: false
+    fixture_isolation: false
+    independent_commit_and_remote_sha: false
+  blocker: null
+  delivery: null
+- id: AWR-SC-008
+  status: planned
+  executor: null
+  reviewer: null
+  evidence: []
+  gates:
+    natural_client_initiation: false
+    tool_or_role_execution: false
+    real_artifact: false
+    business_followup_1: false
+    business_followup_2: false
+    independent_review: false
+    final_delivery: false
+    traceable_receipt: false
+    fixture_isolation: false
+    independent_commit_and_remote_sha: false
+  blocker: null
+  delivery: null
+metrics:
+- id: bootstrap_tokens
+  status: planned
+  value: null
+  evidence: []
+- id: work_context_tokens
+  status: planned
+  value: null
+  evidence: []
+- id: context_compression_ratio
+  status: planned
+  value: null
+  evidence: []
+- id: hard_fact_recall
+  status: planned
+  value: null
+  evidence: []
+- id: status_latency
+  status: planned
+  value: null
+  evidence: []
+- id: work_show_latency
+  status: planned
+  value: null
+  evidence: []
+- id: ready_latency
+  status: planned
+  value: null
+  evidence: []
+- id: context_compile_latency
+  status: planned
+  value: null
+  evidence: []
+- id: fts_latency
+  status: planned
+  value: null
+  evidence: []
+- id: incremental_reindex_latency
+  status: planned
+  value: null
+  evidence: []
