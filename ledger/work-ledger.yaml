@@ -1,8 +1,8 @@
 schema_version: 1
 contract_id: awr-v1
 contract_version: 1.0.0
-ledger_revision: 166
-updated_at: '2026-09-09T00:45:28+08:00'
+ledger_revision: 167
+updated_at: '2026-09-09T00:47:40+08:00'
 project:
   name: Agent Work Runtime
   external_key: agent-work-runtime
@@ -11,10 +11,10 @@ project:
   release_status: not_released
 current:
   milestone: M9
-  work_item: AWR-P9-004
-  next_action: 运行冻结的四组 Token/硬事实基准与 compact 恢复回归；根据全部实测值登记指标，保留失败与完整 JSON 开销。
+  work_item: AWR-P9-005
+  next_action: 认领本地延迟基准，固定 release 构建、真实样本、硬件和冷热缓存口径，测量六项操作的 p95。
   open_loops:
-  - P9-004 四组实测全部通过：L0 最大 933、L1 最大 3250、压缩比最低 23.767692、68/68 必需事实；四个指标等待绑定远端完成回执。计数只针对渲染正文，完整 JSON 开销另列。
+  - P9-004 已通过原生 AWR 完成写回；4/10 指标达标。四组正文实测最大 L0 933、L1 3250、最低压缩比 23.767692、68/68 硬事实；完整 JSON 单独报告。
   - P9-001 大型真实台账和 P9-002 恢复已完成；P9-005 延迟与 QA-003 真实客户端业务验收仍待执行。
   - 8 个 E4 场景仍为 0；实际客户端完整业务执行与可区分独立复核尚待实施，不能用模拟 fixture 或开发自用替代。
   - Codex、Kimi、Grok 既有接入材料不证明原生模型调用、真实 MCP tool turn 或自动 hooks 生效；此前 Grok MCP 诊断受项目信任阻塞。
@@ -1849,7 +1849,8 @@ work_items:
   - crates/awr-cli/tests/bootstrap_cli.rs
   depends_on:
   - AWR-P9-001
-  evidence: []
+  evidence:
+  - ledger/deliveries/AWR-P9-004.json
   id: AWR-P9-004
   kind: quality
   milestone: M9
@@ -1863,15 +1864,15 @@ work_items:
   - 42
   - 52
   - 57
-  status: in_progress
+  status: completed
   title: Token 与 Hard Fact Recall Benchmark
   verification:
+    benchmark_report: ledger/evidence/AWR-P9-004/benchmark.json
     evidence_directory: ledger/evidence/AWR-P9-004
     evidence_level: locally_verified
     minimum: 证明本条验收行为；功能阶段运行必要的定向检查，系统测试在 M9 集中执行。
     scope_adjustment: 首轮真实样本 L0 为 1232 tokens、L1 为 3182 tokens，Rust 与 Python o200k_base 一致。将通用 L0 展示精简及对应 CLI 回归纳入本条，保留全部规定的
       L0 事实、原文硬规则和结构化来源绑定；不修改验收预算或分母。
-    benchmark_report: ledger/evidence/AWR-P9-004/benchmark.json
 - id: AWR-P9-005
   title: 本地延迟与规模 Benchmark
   milestone: M9
@@ -2130,21 +2131,25 @@ scenarios:
   delivery: null
 metrics:
 - id: bootstrap_tokens
-  status: planned
-  value: null
-  evidence: []
+  status: passed
+  value: 933
+  evidence:
+  - ledger/deliveries/AWR-P9-004.json
 - id: work_context_tokens
-  status: planned
-  value: null
-  evidence: []
+  status: passed
+  value: 3250
+  evidence:
+  - ledger/deliveries/AWR-P9-004.json
 - id: context_compression_ratio
-  status: planned
-  value: null
-  evidence: []
+  status: passed
+  value: 23.767692307692307
+  evidence:
+  - ledger/deliveries/AWR-P9-004.json
 - id: hard_fact_recall
-  status: planned
-  value: null
-  evidence: []
+  status: passed
+  value: 1.0
+  evidence:
+  - ledger/deliveries/AWR-P9-004.json
 - id: status_latency
   status: planned
   value: null
