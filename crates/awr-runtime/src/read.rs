@@ -7,6 +7,7 @@ impl Runtime<'_> {
     /// Explicit artifact body read. No content is returned until size and digest match its record.
     pub fn read_artifact(&self, id: Id, max_bytes: u64) -> Result<(Artifact, Vec<u8>)> {
         let artifact = self.store.artifact(self.project, id)?;
+        ensure_public_data(&artifact)?;
         let bytes = read_registered_file(
             self.store,
             self.project,
@@ -25,6 +26,7 @@ impl Runtime<'_> {
         max_bytes: u64,
     ) -> Result<(EvidenceRecord, Vec<u8>)> {
         let record = self.store.evidence(self.project, key)?;
+        ensure_public_data(&record)?;
         let bytes = read_registered_file(
             self.store,
             self.project,
@@ -132,5 +134,6 @@ pub(crate) fn read_registered_file(
             ));
         }
     }
+    ensure_public_bytes(&bytes)?;
     Ok(bytes)
 }

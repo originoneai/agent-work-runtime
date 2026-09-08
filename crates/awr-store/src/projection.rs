@@ -133,6 +133,7 @@ fn validate_ref(value: &Value, source: &Source, fingerprint: &str) -> Result<()>
 
 impl Store {
     pub fn configure_source(&mut self, expected: &Source, config: Value) -> Result<Source> {
+        awr_core::ensure_public_value(&config)?;
         if !config.is_object() {
             return Err(Error::InvalidInput(
                 "source configuration must be an object".into(),
@@ -304,6 +305,9 @@ impl Store {
         fingerprint: &str,
         batch: ProjectionBatch,
     ) -> Result<Source> {
+        awr_core::ensure_public_text(fingerprint)?;
+        let payload = serde_json::to_value(batch)?;
+        awr_core::ensure_public_value(&payload)?;
         if fingerprint.is_empty() || expected.revision >= i64::MAX as u64 {
             return Err(Error::InvalidInput(
                 "invalid source fingerprint or revision overflow".into(),
@@ -315,7 +319,6 @@ impl Store {
         }
         self.mark_source_freshness(expected, Freshness::Stale)?;
         let revision = self.project(expected.project_id)?.project_revision;
-        let payload = serde_json::to_value(batch)?;
         let mut event = EventDraft::new("source.projected", "Source projection committed");
         event.payload = json!({"source_id":expected.id,"source_revision":expected.revision+1,
             "fingerprint":fingerprint,"warnings":payload["warnings"]});

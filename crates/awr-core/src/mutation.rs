@@ -31,6 +31,7 @@ impl MutationPatch {
             .map_or("update_fields", |binding| binding.action.mutation_type())
     }
     pub fn validate(&self) -> Result<()> {
+        crate::ensure_public_data(self)?;
         if self.version != 1 || self.intent.trim().is_empty() || self.intent.len() > 4096 {
             return Err(Error::InvalidInput(
                 "proposal requires patch version 1 and an intent of 1..4096 bytes".into(),

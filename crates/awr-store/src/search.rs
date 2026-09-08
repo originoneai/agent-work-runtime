@@ -7,7 +7,7 @@ use awr_core::{Error, Freshness, Id, Result, Revision, SourceRef};
 use rusqlite::{Connection, OptionalExtension, TransactionBehavior, params};
 use serde::{Deserialize, Serialize};
 
-const POLICY_VERSION: i64 = 2;
+const POLICY_VERSION: i64 = 3;
 const KINDS: &[&str] = &[
     "goal",
     "plan",
@@ -65,35 +65,17 @@ pub struct SearchReport {
 // Do not index source bodies or tool payloads. For curated summary fields, only one bounded line
 // is retained; code/log blocks, binary control text and credential-bearing lines are suppressed.
 fn safe_text(text: &str, max: usize) -> String {
+    if awr_core::contains_sensitive_text(text) {
+        return "[redacted]".into();
+    }
     let Some(line) = text.lines().map(str::trim).find(|s| !s.is_empty()) else {
         return String::new();
     };
-    let lower = line.to_ascii_lowercase();
     if line.starts_with("```")
         || line.starts_with("~~~")
         || line.chars().any(|c| c.is_control() && c != '\t')
     {
         return "[omitted]".into();
-    }
-    if [
-        "authorization",
-        "bearer ",
-        "password",
-        "passwd",
-        "api_key",
-        "api-key",
-        "apikey",
-        "access_token",
-        "refresh_token",
-        "secret",
-        "private key",
-        "token=",
-        "token:",
-    ]
-    .iter()
-    .any(|key| lower.contains(key))
-    {
-        return "[redacted]".into();
     }
     line.split_whitespace()
         .collect::<Vec<_>>()
@@ -289,6 +271,12 @@ fn rebuild(conn: &Connection, project: Id, revision: i64) -> Result<()> {
             .collect::<rusqlite::Result<Vec<_>>>()
             .map_err(db_error)?;
         for row in rows {
+            // Summary fields can be withheld individually. Sensitive identity/provenance cannot
+            // be rewritten into a different, apparently actionable entity: omit that document.
+            let metadata = (&row.key, &row.status, &row.work_key, &row.source_ref);
+            if awr_core::ensure_public_data(&metadata).is_err() {
+                continue;
+            }
             let title = safe_text(&row.title, 160);
             let summary = safe_text(
                 if row.summary.is_empty() {
@@ -318,6 +306,7 @@ fn rebuild(conn: &Connection, project: Id, revision: i64) -> Result<()> {
 impl Store {
     /// Refresh a derived index and search it in one transaction; source and runtime facts are untouched.
     pub fn search(&mut self, project: Id, query: &SearchQuery) -> Result<SearchReport> {
+        awr_core::ensure_public_data(query)?;
         if query.limit == 0 || query.limit > 100 {
             return Err(Error::InvalidInput("search limit must be 1..100".into()));
         }
@@ -420,6 +409,7 @@ impl Store {
             .map_err(db_error)?;
         let truncated = hits.len() > query.limit;
         hits.truncate(query.limit);
+        awr_core::ensure_public_data(&hits)?;
         tx.commit().map_err(db_error)?;
         Ok(SearchReport {
             hits,

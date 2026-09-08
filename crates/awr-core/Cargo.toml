@@ -13,3 +13,4 @@ serde_json.workspace = true
 thiserror.workspace = true
 ulid.workspace = true
 globset.workspace = true
+regex.workspace = true

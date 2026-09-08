@@ -80,6 +80,7 @@ impl Runtime<'_> {
         expected: Revision,
         request: ArtifactFile,
     ) -> Result<(Artifact, Event)> {
+        ensure_public_data(&(&request.path, &request.artifact_type, &request.mime))?;
         let project = self.store.project(self.project)?;
         if project.project_revision != expected {
             return Err(Error::RevisionConflict {
@@ -128,33 +129,18 @@ impl Runtime<'_> {
                 "artifact source must be a regular file within the byte limit".into(),
             ));
         }
-        let directory = storage_directory(&root)?;
-        let storage_id = Id::new();
-        let destination = root.join(".awr/artifacts").join(storage_id.to_string());
-        let mut pending = PendingFile::new(directory, storage_id)?;
-        let mut hasher = Sha256::new();
-        let mut size = 0u64;
-        let mut buffer = [0u8; 32 * 1024];
-        loop {
-            let n = source.read(&mut buffer)?;
-            if n == 0 {
-                break;
-            }
-            size = size
-                .checked_add(n as u64)
-                .ok_or_else(|| Error::InvalidInput("artifact size overflow".into()))?;
-            if size > request.max_bytes {
-                return Err(Error::InvalidInput(
-                    "artifact grew beyond the byte limit".into(),
-                ));
-            }
-            pending.output.as_mut().unwrap().write_all(&buffer[..n])?;
-            hasher.update(&buffer[..n]);
+        // Inspect the complete bounded snapshot before creating any managed file. A sliding
+        // chunk window could miss split labels or a value after a long whitespace run.
+        let mut bytes = Vec::with_capacity(before.len() as usize);
+        (&mut source)
+            .take(request.max_bytes + 1)
+            .read_to_end(&mut bytes)?;
+        let size = bytes.len() as u64;
+        if size > request.max_bytes {
+            return Err(Error::InvalidInput(
+                "artifact grew beyond the byte limit".into(),
+            ));
         }
-        pending.output.as_ref().unwrap().sync_all()?;
-        #[cfg(unix)]
-        pending.directory.try_clone()?.into_std_file().sync_all()?;
-        drop(pending.output.take());
         let after = source.metadata()?;
         if size != before.len()
             || after.len() != before.len()
@@ -164,6 +150,17 @@ impl Runtime<'_> {
                 "artifact source changed during copying".into(),
             ));
         }
+        ensure_public_bytes(&bytes)?;
+        let digest = format!("{:x}", Sha256::digest(&bytes));
+        let directory = storage_directory(&root)?;
+        let storage_id = Id::new();
+        let destination = root.join(".awr/artifacts").join(storage_id.to_string());
+        let mut pending = PendingFile::new(directory, storage_id)?;
+        pending.output.as_mut().unwrap().write_all(&bytes)?;
+        pending.output.as_ref().unwrap().sync_all()?;
+        #[cfg(unix)]
+        pending.directory.try_clone()?.into_std_file().sync_all()?;
+        drop(pending.output.take());
         let locator = destination
             .strip_prefix(&root)
             .map_err(|_| Error::RuleViolation("artifact locator escapes project".into()))?
@@ -176,7 +173,7 @@ impl Runtime<'_> {
             ArtifactDraft {
                 artifact_type: request.artifact_type,
                 locator,
-                sha256: format!("{:x}", hasher.finalize()),
+                sha256: digest,
                 size,
                 mime: request.mime,
                 source_event_id: request.source_event_id,

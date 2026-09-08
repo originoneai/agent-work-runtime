@@ -51,12 +51,18 @@ impl Manifest {
         Self::parse(text)
     }
     pub fn parse(text: &str) -> Result<Self> {
-        let manifest: Self = toml::from_str(text)
-            .map_err(|e| Error::InvalidInput(format!("source manifest: {e}")))?;
+        awr_core::ensure_public_text(text)?;
+        let value: toml::Value = toml::from_str(text)
+            .map_err(|_| Error::InvalidInput("invalid source manifest TOML".into()))?;
+        awr_core::ensure_public_data(&value)?;
+        let manifest: Self = value
+            .try_into()
+            .map_err(|_| Error::InvalidInput("source manifest does not match its schema".into()))?;
         manifest.validate()?;
         Ok(manifest)
     }
     pub fn validate(&self) -> Result<()> {
+        awr_core::ensure_public_data(self)?;
         if self.project.name.trim().is_empty() || self.sources.is_empty() {
             return Err(Error::InvalidInput(
                 "manifest needs a project name and at least one source".into(),

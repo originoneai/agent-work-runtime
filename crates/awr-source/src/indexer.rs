@@ -43,10 +43,10 @@ impl IndexReport {
     fn issue(&mut self, mapping: &str, locator: Option<&str>, error: &Error) {
         self.ok = false;
         self.issues.push(IndexIssue {
-            mapping: mapping.into(),
-            locator: locator.map(str::to_owned),
+            mapping: awr_core::safe_diagnostic(mapping),
+            locator: locator.map(awr_core::safe_diagnostic),
             code: error.code().into(),
-            message: error.to_string(),
+            message: error.report().message,
         });
     }
     fn source(&mut self, source: Source, action: &str, warnings: Vec<String>) {

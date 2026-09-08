@@ -32,3 +32,17 @@ python3 tests/security/payloads/verify_artifacts.py --report .local/artifact-bou
 组件合同 1.2.0 补充[产物边界](../../../docs/reference/artifact-boundaries.md)参数，保持原有 32 个条件及已定义的来源/事件参数不变。来源、事件与产物阶段合计最多覆盖 16/32；其余 16 个秘密数据条件仍待完整验证。三个阶段校验器均不单独宣告 SEC-002 完成。
 
 秘密数据检查需要拒绝或隐藏具体敏感值，同时保留普通业务文字的可用性。不能通过删除硬规则、验收或事实后宣称 Context 完整；这一部分由后续同一任务的实现与证据验证。
+
+合同 1.3.0 保持 32 个条件，补充[秘密策略 1](../../../docs/reference/secret-boundaries.md)。执行共用识别器、运行态/来源/旧数据输出以及真实 CLI/MCP 传输检查：
+
+```bash
+python3 tests/security/payloads/verify_secrets.py --report .local/secret-boundary-checks.json
+```
+
+本组覆盖剩余 16 个条件，不能单独代表整个任务完成。验证器核对实际通过的测试数和条件标记，保留失败日志，不从旧阶段自动继承结果。提交前需按当前合同重新执行四组检查。
+
+```bash
+python3 tests/security/payloads/verify_all.py --report .local/payload-boundary-checks.json
+```
+
+完整入口重新构建 CLI/MCP、执行四组检查，核对同一合同摘要及互不重复的全部 32 个条件；它仍将任务完成状态留给台账及远端交付回执。

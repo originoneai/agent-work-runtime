@@ -341,6 +341,7 @@ impl Store {
         expected: Revision,
         draft: MutationDraft,
     ) -> Result<(MutationProposal, Event)> {
+        awr_core::ensure_public_data(&draft)?;
         draft.patch.validate()?;
         if draft.mutation_type != draft.patch.mutation_type() {
             return Err(Error::InvalidInput(

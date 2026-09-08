@@ -110,8 +110,8 @@ impl Error {
     pub fn report(&self) -> ErrorReport {
         ErrorReport {
             code: self.code(),
-            message: self.to_string(),
-            details: match self {
+            message: crate::safe_diagnostic(&self.to_string()),
+            details: (match self {
                 Self::RevisionConflict { expected, actual } => {
                     Some(serde_json::json!({"expected": expected, "actual": actual}))
                 }
@@ -142,7 +142,7 @@ impl Error {
                     serde_json::json!({"proposal_id":proposal_id,"stage":stage,"reason":reason,"source_write_performed":null}),
                 ),
                 _ => None,
-            },
+            }).map(crate::redact_sensitive_value),
         }
     }
 }

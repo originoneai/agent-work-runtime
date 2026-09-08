@@ -149,8 +149,9 @@ impl SourceAdapter for YamlLedgerAdapter {
             ));
         }
         let yaml: serde_yaml_ng::Value = serde_yaml_ng::from_str(snapshot.text()?)
-            .map_err(|e| Error::InvalidInput(format!("YAML ledger: {e}")))?;
+            .map_err(|_| Error::InvalidInput("invalid YAML ledger document".into()))?;
         let document = serde_json::to_value(yaml)?;
+        awr_core::ensure_public_value(&document)?;
         if !document.is_object()
             || !["work_items", "milestones", "goals"]
                 .iter()

@@ -21,6 +21,7 @@ pub(crate) fn checkpoint_at(
 }
 
 pub(crate) fn validate_draft(draft: &CheckpointDraft) -> Result<()> {
+    ensure_public_data(draft)?;
     if !is_sha256_hash(&draft.context_hash)
         || draft.digest.trim().is_empty()
         || draft.next_action.trim().is_empty()
@@ -124,6 +125,7 @@ impl Store {
         expected: Revision,
         draft: ArtifactDraft,
     ) -> Result<(Artifact, Event)> {
+        ensure_public_data(&draft)?;
         if [&draft.artifact_type, &draft.locator, &draft.mime]
             .iter()
             .any(|s| s.trim().is_empty())

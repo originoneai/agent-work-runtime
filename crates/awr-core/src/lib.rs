@@ -8,6 +8,7 @@ mod model;
 mod mutation;
 mod query;
 mod runtime;
+mod secrets;
 mod work_action;
 
 pub use branch::*;
@@ -19,6 +20,7 @@ pub use model::*;
 pub use mutation::*;
 pub use query::*;
 pub use runtime::*;
+pub use secrets::*;
 pub use work_action::*;
 pub const VERSION: &str = env!("CARGO_PKG_VERSION");
 

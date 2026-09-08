@@ -20,5 +20,5 @@ pub(crate) fn check_source_size(bytes: &[u8], cap: u64) -> Result<()> {
             "source exceeds {cap} byte read cap"
         )));
     }
-    Ok(())
+    awr_core::ensure_public_bytes(bytes)
 }

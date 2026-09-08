@@ -25,7 +25,8 @@ pub fn context_delta(
     root: &Path,
     request: &DeltaContextRequest,
 ) -> Result<DeltaContextReport> {
-    context_delta_selected(store, root, request, None)
+    awr_core::ensure_public_data(request)?;
+    crate::public_context(context_delta_selected(store, root, request, None))
 }
 
 /// Read the exact named branch since fork; source refresh is shared and defaults stay unchanged.
@@ -35,10 +36,16 @@ pub fn branch_delta(
     reference: &str,
     request: &DeltaContextRequest,
 ) -> Result<DeltaContextReport> {
+    awr_core::ensure_public_data(&(reference, request))?;
     crate::branch::require_fork_request(&request.delta.baseline)?;
     let mut request = request.clone();
     request.delta.baseline = DeltaBaseline::BranchFork;
-    context_delta_selected(store, root, &request, Some(reference))
+    crate::public_context(context_delta_selected(
+        store,
+        root,
+        &request,
+        Some(reference),
+    ))
 }
 
 fn context_delta_selected(
@@ -185,6 +192,19 @@ pub(crate) fn context_checkpoint(
 
 /// Snapshot API: refresh Source through the caller before requesting execution context.
 pub fn recent_delta(
+    store: &Store,
+    project_id: Id,
+    work_key: &str,
+    branch: Option<Id>,
+    request: &DeltaRequest,
+) -> Result<RecentDelta> {
+    awr_core::ensure_public_data(&(work_key, request))?;
+    crate::public_context(recent_delta_selected(
+        store, project_id, work_key, branch, request,
+    ))
+}
+
+fn recent_delta_selected(
     store: &Store,
     project_id: Id,
     work_key: &str,

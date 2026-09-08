@@ -181,11 +181,23 @@ pub fn select_rules(
             actual,
         });
     }
-    Ok(result)
+    crate::public_context(Ok(result))
 }
 
 /// Assemble indivisible hard facts from a refreshed projection snapshot. Never summarizes or truncates.
 pub fn hard_context(
+    store: &Store,
+    project: Id,
+    work_key: &str,
+    branch: Option<Id>,
+    input: &RuleScopeInput,
+) -> Result<HardContext> {
+    awr_core::ensure_public_text(work_key)?;
+    crate::public_context(hard_context_selected(
+        store, project, work_key, branch, input,
+    ))
+}
+fn hard_context_selected(
     store: &Store,
     project: Id,
     work_key: &str,

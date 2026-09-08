@@ -149,6 +149,18 @@ fn run(cli: &Cli) -> Result<()> {
 
 fn main() -> std::process::ExitCode {
     let args = std::env::args_os().collect::<Vec<_>>();
+    if args
+        .iter()
+        .any(|arg| awr_core::contains_sensitive_text(&arg.to_string_lossy()))
+    {
+        let report =
+            Error::RuleViolation("sensitive command arguments are not accepted".into()).report();
+        eprintln!(
+            "{}",
+            serde_json::to_string(&report).expect("error report serializes")
+        );
+        return std::process::ExitCode::from(1);
+    }
     let cli = match Cli::try_parse_from(&args) {
         Ok(cli) => cli,
         Err(error) => {
@@ -179,7 +191,7 @@ fn main() -> std::process::ExitCode {
                     serde_json::to_string(&error.report()).expect("error report serializes")
                 );
             } else {
-                eprintln!("{}: {}", error.code(), error);
+                eprintln!("{}: {}", error.code(), error.report().message);
             }
             std::process::ExitCode::from(1)
         }

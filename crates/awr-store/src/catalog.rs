@@ -108,6 +108,7 @@ impl Store {
         external_key: &str,
         name: &str,
     ) -> Result<Project> {
+        awr_core::ensure_public_data(&(root, external_key, name))?;
         if external_key.trim().is_empty() || name.trim().is_empty() {
             return Err(Error::InvalidInput(
                 "project name and external key must not be empty".into(),
@@ -196,6 +197,13 @@ impl Store {
         project_id: Id,
         definition: &SourceRegistration<'_>,
     ) -> Result<Source> {
+        awr_core::ensure_public_data(&[
+            definition.domain,
+            definition.role,
+            definition.locator,
+            definition.format,
+            definition.adapter,
+        ])?;
         if !["primary", "supporting"].contains(&definition.role)
             || definition.domain.is_empty()
             || definition.locator.is_empty()

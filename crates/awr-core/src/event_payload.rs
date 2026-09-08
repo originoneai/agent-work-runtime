@@ -319,6 +319,9 @@ pub fn checked_event_payload(
     };
     serde_json::to_writer(&mut output, payload)
         .map_err(|_| Error::InvalidInput(format!("event payload exceeds {cap} byte cap")))?;
+    crate::ensure_public_text(kind)?;
+    crate::ensure_public_text(summary)?;
+    crate::ensure_public_value(payload)?;
     Ok(String::from_utf8(output.bytes).expect("JSON serializer emits UTF-8"))
 }
 

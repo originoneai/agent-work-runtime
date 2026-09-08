@@ -17,6 +17,13 @@ serde_json.workspace = true
 cap-std.workspace = true
 cap-fs-ext.workspace = true
 
+[dev-dependencies]
+rusqlite.workspace = true
+
+[[test]]
+name = "security_secrets"
+path = "../../tests/security/payloads/secrets.rs"
+
 [[test]]
 name = "security_artifact_bounds"
 path = "../../tests/security/payloads/artifacts.rs"

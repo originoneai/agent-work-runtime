@@ -206,6 +206,7 @@ impl Store {
         expected: Revision,
         draft: EvidenceDraft,
     ) -> Result<(Evidence, Event)> {
+        awr_core::ensure_public_data(&draft)?;
         if [
             &draft.external_key,
             &draft.evidence_type,

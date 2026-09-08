@@ -77,11 +77,12 @@ class EventTransports(unittest.TestCase):
     def test_field_validation_and_reference_rejections_are_side_effect_free(self):
         for payload in [
             {"UNTRUSTED_NAME_SENTINEL": "UNTRUSTED_VALUE_SENTINEL"},
-            {"private_prompt": "UNTRUSTED_VALUE_SENTINEL"},
             {"body": {"nested": "data"}}, {"status": 1}, {"source_id": 17},
             {"duration_ms": -1}, {"tags": "tag"}, {"metrics": {"elapsed": "slow"}},
         ]:
             self.reject_both(payload)
+        # Explicit sensitive values are rejected before schema decoding by both transports.
+        self.reject_both({"private_prompt": "UNTRUSTED_VALUE_SENTINEL"}, code="RuleViolation")
         self.reject_both({"source_id": "01ARZ3NDEKTSV4RRFFQ69G5FAV"}, code="NotFound")
         self.reject_both({}, kind="work.completed")
 

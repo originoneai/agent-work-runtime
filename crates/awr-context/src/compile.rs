@@ -310,7 +310,8 @@ pub fn compile_context(
     root: &Path,
     request: &ContextRequest,
 ) -> Result<WorkContextReport> {
-    compile_context_selected(store, root, request, None)
+    awr_core::ensure_public_data(request)?;
+    crate::public_context(compile_context_selected(store, root, request, None))
 }
 
 /// Read a named branch overlay without changing project defaults or any runtime ownership.
@@ -320,13 +321,19 @@ pub fn compile_branch_context(
     reference: &str,
     request: &ContextRequest,
 ) -> Result<WorkContextReport> {
+    awr_core::ensure_public_data(&(reference, request))?;
     if request.branch_id.is_some() {
         return Err(Error::InvalidInput("use only one branch selector".into()));
     }
     crate::branch::require_fork_request(&request.delta_baseline)?;
     let mut request = request.clone();
     request.delta_baseline = DeltaBaseline::BranchFork;
-    compile_context_selected(store, root, &request, Some(reference))
+    crate::public_context(compile_context_selected(
+        store,
+        root,
+        &request,
+        Some(reference),
+    ))
 }
 
 fn compile_context_selected(

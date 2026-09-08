@@ -127,6 +127,7 @@ name = "awr-core"
 version = "0.1.0-dev"
 dependencies = [
  "globset",
+ "regex",
  "serde",
  "serde_json",
  "sha2",
@@ -162,6 +163,7 @@ dependencies = [
  "awr-store",
  "cap-fs-ext",
  "cap-std",
+ "rusqlite",
  "serde",
  "serde_json",
  "sha2",

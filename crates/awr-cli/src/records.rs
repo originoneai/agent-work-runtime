@@ -120,8 +120,10 @@ pub fn evidence(root: &Path, command: &EvidenceCommand, json_output: bool) -> Re
             let mut bytes = Vec::new();
             file.take(1024 * 1024 + 1).read_to_end(&mut bytes)?;
             check_limit(bytes.len() as u64, 1024 * 1024)?;
+            awr_core::ensure_public_bytes(&bytes)?;
             let input: Value = serde_json::from_slice(&bytes)
-                .map_err(|e| Error::InvalidInput(format!("evidence input: {e}")))?;
+                .map_err(|_| Error::InvalidInput("invalid evidence input JSON".into()))?;
+            awr_core::ensure_public_value(&input)?;
             // EvidenceDraft is a domain type, so reject transport-only typos here.
             if let Some(fields) = input.as_object() {
                 let allowed = [
@@ -138,15 +140,14 @@ pub fn evidence(root: &Path, command: &EvidenceCommand, json_output: bool) -> Re
                     "branch_id",
                     "verified_at",
                 ];
-                if let Some(key) = fields.keys().find(|key| !allowed.contains(&key.as_str())) {
-                    return Err(Error::InvalidInput(format!(
-                        "unknown evidence input field: {key}"
-                    )));
+                if fields.keys().any(|key| !allowed.contains(&key.as_str())) {
+                    return Err(Error::InvalidInput("unknown evidence input field".into()));
                 }
             }
             let declared_branch = input.get("branch_id").is_some();
-            let mut draft: EvidenceDraft = serde_json::from_value(input)
-                .map_err(|e| Error::InvalidInput(format!("evidence input: {e}")))?;
+            let mut draft: EvidenceDraft = serde_json::from_value(input).map_err(|_| {
+                Error::InvalidInput("evidence input does not match its schema".into())
+            })?;
             if !declared_branch {
                 draft.branch_id = db.project.current_branch_id;
             }

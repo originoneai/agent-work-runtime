@@ -359,7 +359,13 @@ pub fn run(root: &Path, command: &BranchCommand, json_output: bool) -> Result<()
                     "branch close input exceeds 1 MiB".into(),
                 ));
             }
-            let input: CloseBranchInput = serde_json::from_slice(&bytes)?;
+            awr_core::ensure_public_bytes(&bytes)?;
+            let input: serde_json::Value = serde_json::from_slice(&bytes)
+                .map_err(|_| Error::InvalidInput("invalid branch close input JSON".into()))?;
+            awr_core::ensure_public_value(&input)?;
+            let input: CloseBranchInput = serde_json::from_value(input).map_err(|_| {
+                Error::InvalidInput("branch close input does not match its schema".into())
+            })?;
             let (closed, event) = awr_runtime::close_branch(
                 &mut store,
                 &root,

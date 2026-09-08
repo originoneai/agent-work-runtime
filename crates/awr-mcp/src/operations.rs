@@ -15,7 +15,9 @@ use std::{
 };
 
 fn parse<T: DeserializeOwned>(args: Value) -> Result<T> {
-    serde_json::from_value(args).map_err(|e| Error::InvalidInput(format!("tool arguments: {e}")))
+    awr_core::ensure_public_value(&args)?;
+    serde_json::from_value(args)
+        .map_err(|_| Error::InvalidInput("tool arguments do not match the tool schema".into()))
 }
 fn check_sha(sha: Option<&str>) -> Result<()> {
     if sha.is_some_and(|s| !is_source_sha(s)) {
@@ -84,6 +86,7 @@ pub(crate) fn call(root: &Path, name: &str, args: JsonObject) -> Result<CallTool
         }
         value[key] = item.clone();
     }
+    ensure_public_value(&value)?;
     if incomplete {
         value["ok"] = json!(false);
         value["error"] = json!(

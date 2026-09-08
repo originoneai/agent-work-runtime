@@ -32,3 +32,12 @@ pub use related::{
     DecisionFact, DecisionGap, DependencyFact, EvidenceGap, EvidenceSummary, RelatedWorkContext,
     related_work,
 };
+
+/// Withholding selected facts must never produce a falsely complete context packet.
+fn public_context<T: serde::Serialize>(result: Result<T>) -> Result<T> {
+    let report = result?;
+    awr_core::ensure_public_data(&report).map_err(|_| Error::ContextIncomplete(
+        "selected context contains sensitive content; the packet is withheld until its source is corrected".into()
+    ))?;
+    Ok(report)
+}

@@ -28,6 +28,7 @@ pub struct SourceSnapshot {
 }
 impl SourceSnapshot {
     pub fn text(&self) -> Result<&str> {
+        awr_core::ensure_public_bytes(&self.bytes)?;
         std::str::from_utf8(&self.bytes)
             .map_err(|e| Error::InvalidInput(format!("source must be UTF-8: {e}")))
     }
@@ -88,6 +89,7 @@ fn read_file_capped(file: File, cap: u64) -> Result<Vec<u8>> {
             "source exceeds {cap} byte read cap"
         )));
     }
+    awr_core::ensure_public_bytes(&bytes)?;
     Ok(bytes)
 }
 pub fn fingerprint(bytes: &[u8]) -> String {
@@ -264,6 +266,7 @@ impl Locator {
                 if bytes.len() as u64 > cap {
                     return Err(Error::InvalidInput("Git blob exceeds read cap".into()));
                 }
+                awr_core::ensure_public_bytes(&bytes)?;
                 let locator = format!("git://{commit}:{relative_path}");
                 let mut digest = Sha256::new();
                 digest.update(locator.as_bytes());

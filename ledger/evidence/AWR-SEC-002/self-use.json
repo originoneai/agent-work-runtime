@@ -1,0 +1,44 @@
+{
+  "kind": "developer_self_use",
+  "work_item": "AWR-SEC-002",
+  "checked_at": "2026-09-08T17:51:01+08:00",
+  "transport": "mcp_stdio_and_cli",
+  "session_id": "01M1ZZ5JD41WCQB4NPFSQA8D8D",
+  "claim_id": "01M1ZZ5JDP6RW9NPRY9D6CBG9Z",
+  "observation_event_id": "01M206V30J886Z631SH9JRBAC2",
+  "artifact": {
+    "artifact_type": "verification-report",
+    "id": "01M206V31VQGKW8DH4KA9J71CH",
+    "locator": ".awr/artifacts/01M206V31P7SGCADGJFWFCK29B",
+    "mime": "application/json",
+    "project_id": "01M1YJBR5PW6QXYGABADJVAJPC",
+    "revision": 1,
+    "sha256": "fd42238c21861560eaf0a836d9f14d8e9de6582746a7376f978377e9936b6c71",
+    "size": 217,
+    "source_event_id": "01M206V30J886Z631SH9JRBAC2"
+  },
+  "artifact_event_id": "01M206V31V3A6JYP2WMJBYBRF5",
+  "raw_content_matches": true,
+  "content_hash_verified": true,
+  "metadata_excludes_body": true,
+  "progress_event_id": "01M206V50TY65B0QGGE6DXQF4Z",
+  "project_revision": 556,
+  "exact_source_progress_change": true,
+  "recovery_snapshots_match": true,
+  "source_before_fingerprint": "sha256:9f912cfd76d4e0886e97278334f867b4f999b1444447b8975affde8975233a01",
+  "source_after_fingerprint": "sha256:6daf20822e5b708bc154b8334b8476f051cb6076f79e5ea18740f75f1104b2ec",
+  "context_complete": true,
+  "context_excludes_body": true,
+  "context_tokens": 4962,
+  "context_hash": "a302779ffd3f07b8744abfcfa6067c93c22642d063f47858f8442c459ef989ea",
+  "doctor": {
+    "ok": true,
+    "expected_findings": [
+      "active_session"
+    ]
+  },
+  "e4_completed": 0,
+  "limitations": [
+    "Development self-use with public report data; all negative secret fixtures run in isolated temporary projects. No E4 or release acceptance."
+  ]
+}

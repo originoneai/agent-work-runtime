@@ -136,12 +136,7 @@ fn index_excludes_source_bodies_credentials_code_and_long_tail_text() {
         summary: "SOURCE_BODY_SENTINEL".into(),
     });
     batch.work_items = vec![
-        work(
-            &f,
-            "W-1",
-            "Credential check",
-            "api_key=RAW_CREDENTIAL_SENTINEL",
-        ),
+        work(&f, "W-1", "Credential check", "Review credential handling"),
         work(
             &f,
             "W-2",
@@ -157,6 +152,14 @@ fn index_excludes_source_bodies_credentials_code_and_long_tail_text() {
         ),
     ];
     f.commit(batch);
+    // Current projection writes reject credentials. Seed only this disposable database
+    // to exercise the read policy for records retained from before secret enforcement.
+    let conn = rusqlite::Connection::open(f.root.join("state.db")).unwrap();
+    conn.execute(
+        "UPDATE work_items SET summary=?1 WHERE external_key='W-1'",
+        ["api_key=RAW_CREDENTIAL_SENTINEL"],
+    )
+    .unwrap();
     for text in [
         "SOURCE_BODY_SENTINEL",
         "RAW_CREDENTIAL_SENTINEL",

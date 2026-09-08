@@ -182,6 +182,15 @@ pub fn bootstrap(
     root: &Path,
     request: &BootstrapRequest,
 ) -> Result<BootstrapPack> {
+    awr_core::ensure_public_data(request)?;
+    crate::public_context(bootstrap_selected(store, root, request))
+}
+
+fn bootstrap_selected(
+    store: &mut Store,
+    root: &Path,
+    request: &BootstrapRequest,
+) -> Result<BootstrapPack> {
     if request.token_budget == 0 || request.token_budget > 100_000 {
         return Err(Error::InvalidInput(
             "bootstrap budget must be 1..100000 tokens".into(),
