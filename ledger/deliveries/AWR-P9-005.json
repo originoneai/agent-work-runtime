@@ -1,0 +1,102 @@
+{
+  "kind": "implementation",
+  "repository": "https://github.com/originoneai/agent-work-runtime",
+  "source_commit": "24adda247058a5e2913a43f38c1215d789d7dc9e",
+  "checked_at": "2026-09-09T01:18:51+08:00",
+  "remote_receipt": {
+    "commit": "24adda247058a5e2913a43f38c1215d789d7dc9e",
+    "url": "https://github.com/originoneai/agent-work-runtime/commit/24adda247058a5e2913a43f38c1215d789d7dc9e",
+    "verified_at": "2026-09-09T01:18:51+08:00"
+  },
+  "version": 1,
+  "work_item": "AWR-P9-005",
+  "source_sha": "24adda247058a5e2913a43f38c1215d789d7dc9e",
+  "command": ".venv/bin/python tests/benchmarks/performance/verify.py --awr target/release/awr --prepared .local/large-ledger/prepared-v6 --output .local/performance-benchmark/run-v2",
+  "scope": [
+    "AWR-P9-005"
+  ],
+  "verified_at": 1788887931851,
+  "checks": [
+    {
+      "name": "fixed_source_hardware_and_scale",
+      "passed": true,
+      "result": "Locked optimized release binary and committed inputs are hash-bound. Hardware/OS/toolchains, 150 work items, 38 ready candidates, 249449 ledger bytes and actual object/event counts are recorded.",
+      "criteria": [
+        "固定硬件、数据规模与冷热缓存条件，记录 status/work/ready/compile/search/reindex 耗时。",
+        "六项操作预热后至少 30 次按 p95 <1000 ms 验收；冷进程启动另报，原 20/20/50/100/100/500 ms 保留为后续优化目标。"
+      ]
+    },
+    {
+      "name": "startup_cache_and_sampling",
+      "passed": true,
+      "result": "Every CLI call includes rtk proxy, process startup, freshness, stdout capture and exit. Per operation: separately reported setup and first observed call, three warmups and 30 retained primary samples; p95 uses nearest rank. No OS cache flush or overhead subtraction."
+    },
+    {
+      "name": "six_latency_admission_gates",
+      "passed": true,
+      "result": "Contract 1.0.1 p95 values in ms: status 44.916042, work 56.282834, ready 50.211834, compile 121.225958, FTS 33.817084, incremental reindex 135.13625. All are below the user-adjusted 1000 ms limits; original optimization target results and the original failed run remain public."
+    },
+    {
+      "name": "correctness_and_real_incremental_changes",
+      "passed": true,
+      "result": "All 256 CLI invocations returned the expected facts. Thirty-four distinct next-action changes each advanced exactly the selected revision, preserving all other work identities/revisions. Original and frozen sources plus execution inputs remained unchanged."
+    },
+    {
+      "name": "statistics_and_self_use",
+      "passed": true,
+      "result": "Both nearest-rank/sample-validation unit checks pass. Actual CLI progress/checkpoint and complete 4999-token MCP context were recorded; source ledger unchanged and Doctor reported only the owned active session."
+    }
+  ],
+  "artifacts": [
+    "tests/benchmarks/performance/contract.json",
+    "tests/benchmarks/performance/verify.py",
+    "tests/benchmarks/performance/test_statistics.py",
+    "docs/benchmarks/performance.md",
+    "contracts/awr-v1.json",
+    "AGENTS.md",
+    "ledger/evidence/AWR-P9-005/baseline.json",
+    "ledger/evidence/AWR-P9-005/benchmark.json",
+    "ledger/evidence/AWR-P9-005/self-use.json",
+    "ledger/evidence/AWR-P9-005/checks.json",
+    "ledger/evidence/AWR-P9-005/self-use.json"
+  ],
+  "work_items": {
+    "AWR-P9-005": {
+      "acceptance": [
+        {
+          "criterion": "固定硬件、数据规模与冷热缓存条件，记录 status/work/ready/compile/search/reindex 耗时。",
+          "passed": true
+        },
+        {
+          "criterion": "六项操作预热后至少 30 次按 p95 <1000 ms 验收；冷进程启动另报，原 20/20/50/100/100/500 ms 保留为后续优化目标。",
+          "passed": true
+        }
+      ]
+    }
+  },
+  "artifact_sha256": {
+    "tests/benchmarks/performance/contract.json": "386bb3152a65639e0ba2edda522793d27ae77f20d5181000d2a6105336b56b00",
+    "tests/benchmarks/performance/verify.py": "adabf12fec3f1d47c9bbf272ef817c489c77803abc9180e4bbf25957b8bde07a",
+    "tests/benchmarks/performance/test_statistics.py": "7ff84a3571ef2bfc82c12f68a889aff941a7f6fd4bf544411e610cc54b0d7736",
+    "docs/benchmarks/performance.md": "b7f1dd1c533a1e4a9ce107f813b4c9356ffb20d96da21a11d2c4605e80b5a363",
+    "contracts/awr-v1.json": "3ed22c45aa3fda0964fbcdd089a2d51d9779aee3c21d846f4c1b9d2a863666d9",
+    "AGENTS.md": "aa75693bca81f2d80111fa3fe5c9500b53eaf61a267352dae9a76ee8d1c056b0",
+    "ledger/evidence/AWR-P9-005/baseline.json": "2ee8dd1caa74a51bc9356ca8b9f715310477953f8cc246146751c3ae693497dd",
+    "ledger/evidence/AWR-P9-005/benchmark.json": "ed808aaad1a8611005d09deacb68b479edca7e9b9a95ecd7bdd334f5521973d0",
+    "ledger/evidence/AWR-P9-005/self-use.json": "95858293e1c81b15c42244cd853dd246e3c1b08f5e331de70f906690d061e02b"
+  },
+  "limitations": [
+    "Local release CLI on the admitted historical real-source sample only; no maximum-capacity, cross-platform latency, MCP transport or model/API latency claim.",
+    "File/SQLite pages are warmed by ordinary prior operations; every process is new. First-observed measurement is not physically cold storage.",
+    "No runtime optimization was applied for the revised criterion. Original strict targets remain future optimization work.",
+    "No real-client E4, independent business review, automatic hook activation or release credit."
+  ],
+  "metrics": {
+    "status_latency": 44.916042,
+    "work_show_latency": 56.282834,
+    "ready_latency": 50.211834,
+    "context_compile_latency": 121.225958,
+    "fts_latency": 33.817084,
+    "incremental_reindex_latency": 135.13625
+  }
+}
