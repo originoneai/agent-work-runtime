@@ -1,0 +1,98 @@
+{
+  "kind": "implementation",
+  "repository": "https://github.com/originoneai/agent-work-runtime",
+  "source_commit": "2aeee59b65adbdad9bc1f57d1ea22d435c50d9f0",
+  "checked_at": "2026-09-08T22:50:20+08:00",
+  "remote_receipt": {
+    "commit": "2aeee59b65adbdad9bc1f57d1ea22d435c50d9f0",
+    "url": "https://github.com/originoneai/agent-work-runtime/commit/2aeee59b65adbdad9bc1f57d1ea22d435c50d9f0",
+    "verified_at": "2026-09-08T22:50:20+08:00"
+  },
+  "version": 1,
+  "work_item": "AWR-P9-002",
+  "source_sha": "2aeee59b65adbdad9bc1f57d1ea22d435c50d9f0",
+  "command": ".venv/bin/python tests/compact-recovery/verify.py --awr target/debug/awr --output .local/compact-recovery/run-v3",
+  "scope": [
+    "AWR-P9-002"
+  ],
+  "verified_at": 1788879020657,
+  "checks": [
+    {
+      "name": "four_recovery_sequences",
+      "passed": true,
+      "result": "All four contract cases passed all nine gates: changes before/after checkpoint, missing checkpoint, and temporarily missing rule source. Every command and diagnostic receipt is retained.",
+      "criteria": [
+        "模拟 Session A→事件→源变化→checkpoint→新 Session，检查任务/next action/open loops/硬规则一致。",
+        "来源增量被包含，无关旧历史被排除；异常断点有复现记录。"
+      ]
+    },
+    {
+      "name": "facts_rules_and_history",
+      "passed": true,
+      "result": "Current work and exact acceptance, current and saved next actions, open loops or explicit absence, receiver hard rules, saved/ongoing source delta and unrelated history exclusion were checked. Explicit history still returned the original payload."
+    },
+    {
+      "name": "durable_transition_and_faults",
+      "passed": true,
+      "result": "83 separate CLI calls used four unique project identities. Stale revisions, missing sources and duplicate resumes preserved session/claim/checkpoint records; retries produced exactly one successor. Doctor found no issues after closing each fixture session."
+    },
+    {
+      "name": "execution_and_source_binding",
+      "passed": true,
+      "result": "Frozen contract and fixture, source commit, binary hash and all 83 command receipts verified. The repository and recovery sources remained unchanged. Earlier failed driver checks remain recorded; final execution uses corrected request and rule expectations."
+    },
+    {
+      "name": "actual_project_recovery",
+      "passed": true,
+      "result": "AWR recorded a real development observation, saved a checkpoint, resumed the claimed task in a successor session and retained the next action/open loops. The source ledger remained byte-identical; Doctor reported exactly the intended active session and no other findings."
+    },
+    {
+      "name": "planning_and_scope",
+      "passed": true,
+      "result": "Planning validation passes. This completes the local recovery benchmark only; large real-ledger intake, ten metrics, eight E4 cases and release remain uncompleted."
+    }
+  ],
+  "artifacts": [
+    "tests/compact-recovery/contract.json",
+    "tests/compact-recovery/verify.py",
+    "tests/compact-recovery/fixture/GOALS.md",
+    "tests/compact-recovery/fixture/RULES.md",
+    "tests/compact-recovery/fixture/project.toml",
+    "tests/compact-recovery/fixture/work-ledger.yaml",
+    "docs/benchmarks/compact-recovery.md",
+    "ledger/evidence/AWR-P9-002/recovery-matrix.json",
+    "ledger/evidence/AWR-P9-002/self-use.json",
+    "ledger/evidence/AWR-P9-002/checks.json",
+    "ledger/evidence/AWR-P9-002/self-use.json"
+  ],
+  "work_items": {
+    "AWR-P9-002": {
+      "acceptance": [
+        {
+          "criterion": "模拟 Session A→事件→源变化→checkpoint→新 Session，检查任务/next action/open loops/硬规则一致。",
+          "passed": true
+        },
+        {
+          "criterion": "来源增量被包含，无关旧历史被排除；异常断点有复现记录。",
+          "passed": true
+        }
+      ]
+    }
+  },
+  "artifact_sha256": {
+    "tests/compact-recovery/contract.json": "e0fcf3acedf932ccabebafbdaab45a1acd919b7457e377cfd89b17b3329a5caa",
+    "tests/compact-recovery/verify.py": "8c5ee2f09c321344e8d8b65ff841c9d87604cd6841426f27e753216e23f57297",
+    "tests/compact-recovery/fixture/GOALS.md": "02d81aa121600ed15d6d0c2e6a5e7ed46f7811e12a41b403d5359f43d9269ea8",
+    "tests/compact-recovery/fixture/RULES.md": "03a074d5236048b383003145e5c4ec45462c3fe3616dbb15c1a6c60f4a1faa64",
+    "tests/compact-recovery/fixture/project.toml": "e11114479ee490b58a4d6cdaeb0c0715163821ad5b2254d0f98645d5f2d02971",
+    "tests/compact-recovery/fixture/work-ledger.yaml": "0f634fd6363d57a229af497dd38bf8318284eb2ad674b54e59cc28233b5bf01f",
+    "docs/benchmarks/compact-recovery.md": "3e53b02cafbcd23e964a054ca9968c116b18004007192485ad523b631ee60439",
+    "ledger/evidence/AWR-P9-002/recovery-matrix.json": "42f97977b92d094d1a77ac4ebc53c0fd383d112fff1b9c0eeddafac41061b1e4",
+    "ledger/evidence/AWR-P9-002/self-use.json": "17121bfa9efba68b3aa14b1dba9f9f835bf105beec68c26b4a943b5da68e09fa"
+  },
+  "limitations": [
+    "Bootstrap budget was explicitly 3000; reported estimates on these small fixtures are not the large-ledger 1000-token metric.",
+    "No power-loss durability, large-ledger benchmark, E4 scenario, independent business review or release credit.",
+    "Actual project self-use is a developer runtime flow, not a native model-client tool turn or a separate business reviewer. The intended session remains active until the completion receipt."
+  ]
+}

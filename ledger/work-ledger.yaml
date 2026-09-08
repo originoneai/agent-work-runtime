@@ -1,8 +1,8 @@
 schema_version: 1
 contract_id: awr-v1
 contract_version: 1.0.0
-ledger_revision: 158
-updated_at: '2026-09-08T22:36:07+08:00'
+ledger_revision: 159
+updated_at: '2026-09-08T22:51:49+08:00'
 project:
   name: Agent Work Runtime
   external_key: agent-work-runtime
@@ -11,20 +11,14 @@ project:
   release_status: not_released
 current:
   milestone: M9
-  work_item: AWR-P9-002
-  next_action: 建立冻结的会话恢复样本与独立进程驱动，验证事件和来源变化经过 checkpoint 后在新 Session 中恢复；保留异常断点与原件不变证据。
+  work_item: AWR-P9-001
+  next_action: 等待真实复杂项目台账路径；收到后核实来源与规模，制作有明确映射的冻结副本，再执行按任务读取、增量索引、历史隔离和独立投影重建。
   open_loops:
-  - P9-001 已交付结构准入工具和 4 项解析检查，尚缺合格真实样本：本项目为 8 当前/54 历史任务、65742 bytes，不能补足 30/100 与 200 KiB。已通过 AWR 保存 blocker/checkpoint/end，Doctor
-    为 0 项；继续独立的 P9-002 会话恢复基准。
-  - SEC-001 已完成：26/26 路径条件、46 项写回回归和 10 项 MCP 检查通过；源码 217a0b5 的远端回执已核实。实际完成写回、快照核对、checkpoint/end 后 Doctor 为 0 项；进入
-    SEC-002。均不计 E4 或正式发布。
-  - P0/P1 功能与接入项全部完成；P8-004 已对齐 8 个 MCP Tools 和 CLI 的状态、版本、缺口及写入回执，进入 M8 安全与后续集中质量阶段。
-  - 本项目通过 AWR 实际进行会话、checkpoint/resume、事件追加、MCP 证据登记和完成写回。P8-004 在同一 revision 对照 5 个读取动作，MCP 保持 25 张数据表和源文件不变；54
-    项 CLI、10 项 MCP 与 8 组接口 fixture 定向检查通过，均不计 E4。
-  - 本机版本为 Codex 0.153.4、Kimi Code 0.41.0、Grok Build 1.0.13。Grok 的具名 MCP 诊断因项目未受信任而未启动服务；原生模型调用、真实 MCP tool turn
-    和自动 hooks 均不计作已验证。
-  - 共享示例的 awr work ready 错误已改为 awr ready，并直接执行了三份指南的 CLI 命令；P8-002 原始证据保留，新增独立纠正提交与回执。
-  - L0 的 1000-token 目标仍未通过；8 个 E4 场景、10 个指标、独立复核和发布门槛仍未完成。QA-004 三平台原生验证已通过；examples/basic/README.md 的早期说明留待 P9-003
+  - P9-001 准入工具和解析检查已交付，真实运行基准未执行；需要至少 30 当前、100 历史任务及 200 KiB 的真实来源，不能复制任务或填充文本补数。
+  - P9-002 已完成四种恢复情况、83 次 CLI 调用和 36 项检查；本项目实际会话已接续、完成写回、checkpoint/end，Doctor 为 0 项。后续 P9-004/P9-005 和 QA-003 依赖大型台账基准。
+  - 8 个 E4 场景和 10 个指标仍为 0；实际 Agent 客户端完整业务执行与可区分独立复核尚待实施，不能用模拟 fixture 或开发自用替代。
+  - 本机 Codex、Kimi、Grok 的既有接入材料不证明原生模型调用、真实 MCP tool turn 或自动 hooks 生效；此前 Grok MCP 诊断受项目信任阻塞。
+  - L0 的大型台账 1000-token 目标和实际 tokenizer 尚待 P9-004；小型恢复 fixture 的估算不能计作达标。examples/basic/README.md 的早期功能说明留待 P9-003
     文档收口。
 milestones:
 - id: M0
@@ -1788,7 +1782,8 @@ work_items:
 - acceptance:
   - 真实复杂项目至少含 30 当前/100 历史任务、多里程碑/决策、大量证据与数百 KB 台账。
   - 验证按任务读取、增量索引、历史隔离及投影重建；公开证据须脱敏。
-  blocker: 需要用户指定真实复杂项目台账路径；本项目只有 8 当前、54 历史任务和 65742 bytes，未达到 30/100 与 200 KiB 的基准规模。
+  blocker: 需要用户指定真实复杂项目台账路径。已测量的本项目样本为 8 当前/54 历史任务、65742 bytes，测量指纹见 preparation.json；该冻结测量不符合 30/100 与 200 KiB
+    的最低规模。
   deliverables:
   - tests/long-ledger/
   - docs/benchmarks/
@@ -1823,11 +1818,12 @@ work_items:
   - docs/benchmarks/
   depends_on:
   - AWR-QA-001
-  evidence: []
+  evidence:
+  - ledger/deliveries/AWR-P9-002.json
   id: AWR-P9-002
   kind: quality
   milestone: M9
-  next_action: 建立冻结的会话恢复样本与独立进程驱动，验证事件和来源变化经过 checkpoint 后在新 Session 中恢复；保留异常断点与原件不变证据。
+  next_action: 已完成四种会话恢复基准及本项目实际开发接续；完整原始回执、源码和远端交付绑定见本项证据。
   owner: codex-primary
   priority: P2
   required_for_v1: true
@@ -1836,11 +1832,11 @@ work_items:
   - 24
   - 43
   - 52
-  status: in_progress
+  status: completed
   title: Compact Recovery Benchmark
   verification:
     evidence_directory: ledger/evidence/AWR-P9-002
-    evidence_level: none
+    evidence_level: locally_verified
     minimum: 证明本条验收行为；功能阶段运行必要的定向检查，系统测试在 M9 集中执行。
 - id: AWR-P9-004
   title: Token 与 Hard Fact Recall Benchmark
