@@ -1,0 +1,1123 @@
+{
+  "contract_id": "awr-concentrated-regression",
+  "contract_version": "1.1.0",
+  "contract_sha256": "a90879e97757bf7a46bcff060d3eaf4041830e03c92ad6c2aafdc64a7ef54e2c",
+  "work_item": "AWR-QA-001",
+  "checked_at": "2026-09-08T20:39:56+08:00",
+  "source_commit": "9bfdf8885209810fb172ccfc6753fd1ef2a7f317",
+  "source_tree": "eb50d54cd505211a5f096c81a7fe6a25d401ee95",
+  "clean_source": true,
+  "input_tree_sha256": "619de8fc334edde86bfc69f3fd528b1e54db752177fda3cf2c82956df71c9013",
+  "workspace_inventory": [
+    {
+      "package": "awr-core",
+      "targets": [
+        {
+          "name": "awr_core",
+          "kind": [
+            "lib"
+          ]
+        }
+      ]
+    },
+    {
+      "package": "awr-store",
+      "targets": [
+        {
+          "name": "awr_store",
+          "kind": [
+            "lib"
+          ]
+        },
+        {
+          "name": "catalog",
+          "kind": [
+            "example"
+          ]
+        },
+        {
+          "name": "evidence_project",
+          "kind": [
+            "example"
+          ]
+        },
+        {
+          "name": "open_store",
+          "kind": [
+            "example"
+          ]
+        },
+        {
+          "name": "query_project",
+          "kind": [
+            "example"
+          ]
+        },
+        {
+          "name": "ready_project",
+          "kind": [
+            "example"
+          ]
+        },
+        {
+          "name": "runtime_transaction",
+          "kind": [
+            "example"
+          ]
+        },
+        {
+          "name": "checkpoint_save",
+          "kind": [
+            "test"
+          ]
+        },
+        {
+          "name": "checkpoints",
+          "kind": [
+            "test"
+          ]
+        },
+        {
+          "name": "concurrency_isolation",
+          "kind": [
+            "test"
+          ]
+        },
+        {
+          "name": "events",
+          "kind": [
+            "test"
+          ]
+        },
+        {
+          "name": "evidence",
+          "kind": [
+            "test"
+          ]
+        },
+        {
+          "name": "mutation",
+          "kind": [
+            "test"
+          ]
+        },
+        {
+          "name": "projection_queries",
+          "kind": [
+            "test"
+          ]
+        },
+        {
+          "name": "readiness",
+          "kind": [
+            "test"
+          ]
+        },
+        {
+          "name": "reconcile",
+          "kind": [
+            "test"
+          ]
+        },
+        {
+          "name": "search",
+          "kind": [
+            "test"
+          ]
+        },
+        {
+          "name": "security_events",
+          "kind": [
+            "test"
+          ]
+        },
+        {
+          "name": "sessions",
+          "kind": [
+            "test"
+          ]
+        }
+      ]
+    },
+    {
+      "package": "awr-source",
+      "targets": [
+        {
+          "name": "awr_source",
+          "kind": [
+            "lib"
+          ]
+        },
+        {
+          "name": "index_directory",
+          "kind": [
+            "example"
+          ]
+        },
+        {
+          "name": "index_source",
+          "kind": [
+            "example"
+          ]
+        },
+        {
+          "name": "index_yaml",
+          "kind": [
+            "example"
+          ]
+        },
+        {
+          "name": "read_source",
+          "kind": [
+            "example"
+          ]
+        },
+        {
+          "name": "reindex",
+          "kind": [
+            "example"
+          ]
+        },
+        {
+          "name": "source_revision",
+          "kind": [
+            "example"
+          ]
+        },
+        {
+          "name": "directory",
+          "kind": [
+            "test"
+          ]
+        },
+        {
+          "name": "indexer",
+          "kind": [
+            "test"
+          ]
+        },
+        {
+          "name": "markdown",
+          "kind": [
+            "test"
+          ]
+        },
+        {
+          "name": "security_paths",
+          "kind": [
+            "test"
+          ]
+        },
+        {
+          "name": "security_source_payloads",
+          "kind": [
+            "test"
+          ]
+        },
+        {
+          "name": "yaml_mutation",
+          "kind": [
+            "test"
+          ]
+        }
+      ]
+    },
+    {
+      "package": "awr-context",
+      "targets": [
+        {
+          "name": "awr_context",
+          "kind": [
+            "lib"
+          ]
+        },
+        {
+          "name": "budget_project",
+          "kind": [
+            "example"
+          ]
+        },
+        {
+          "name": "completeness_project",
+          "kind": [
+            "example"
+          ]
+        },
+        {
+          "name": "delta_project",
+          "kind": [
+            "example"
+          ]
+        },
+        {
+          "name": "hard_project",
+          "kind": [
+            "example"
+          ]
+        },
+        {
+          "name": "related_project",
+          "kind": [
+            "example"
+          ]
+        },
+        {
+          "name": "budget",
+          "kind": [
+            "test"
+          ]
+        },
+        {
+          "name": "completeness",
+          "kind": [
+            "test"
+          ]
+        },
+        {
+          "name": "hard_context",
+          "kind": [
+            "test"
+          ]
+        },
+        {
+          "name": "recent_delta",
+          "kind": [
+            "test"
+          ]
+        },
+        {
+          "name": "related_work",
+          "kind": [
+            "test"
+          ]
+        }
+      ]
+    },
+    {
+      "package": "awr-runtime",
+      "targets": [
+        {
+          "name": "awr_runtime",
+          "kind": [
+            "lib"
+          ]
+        },
+        {
+          "name": "checkpoint_project",
+          "kind": [
+            "example"
+          ]
+        },
+        {
+          "name": "events_project",
+          "kind": [
+            "example"
+          ]
+        },
+        {
+          "name": "session_project",
+          "kind": [
+            "example"
+          ]
+        },
+        {
+          "name": "artifacts",
+          "kind": [
+            "test"
+          ]
+        },
+        {
+          "name": "security_artifact_bounds",
+          "kind": [
+            "test"
+          ]
+        },
+        {
+          "name": "security_secrets",
+          "kind": [
+            "test"
+          ]
+        }
+      ]
+    },
+    {
+      "package": "awr-cli",
+      "targets": [
+        {
+          "name": "awr",
+          "kind": [
+            "bin"
+          ]
+        },
+        {
+          "name": "bootstrap_cli",
+          "kind": [
+            "test"
+          ]
+        },
+        {
+          "name": "branch_cli",
+          "kind": [
+            "test"
+          ]
+        },
+        {
+          "name": "branch_close_cli",
+          "kind": [
+            "test"
+          ]
+        },
+        {
+          "name": "context_compile_cli",
+          "kind": [
+            "test"
+          ]
+        },
+        {
+          "name": "doctor_cli",
+          "kind": [
+            "test"
+          ]
+        },
+        {
+          "name": "doctor_recovery",
+          "kind": [
+            "test"
+          ]
+        },
+        {
+          "name": "drill_cli",
+          "kind": [
+            "test"
+          ]
+        },
+        {
+          "name": "output_cli",
+          "kind": [
+            "test"
+          ]
+        },
+        {
+          "name": "proposal_cli",
+          "kind": [
+            "test"
+          ]
+        },
+        {
+          "name": "records_cli",
+          "kind": [
+            "test"
+          ]
+        },
+        {
+          "name": "resume_cli",
+          "kind": [
+            "test"
+          ]
+        },
+        {
+          "name": "security_artifact_bounds",
+          "kind": [
+            "test"
+          ]
+        },
+        {
+          "name": "security_source_bounds",
+          "kind": [
+            "test"
+          ]
+        },
+        {
+          "name": "security_write",
+          "kind": [
+            "test"
+          ]
+        },
+        {
+          "name": "session_cli",
+          "kind": [
+            "test"
+          ]
+        },
+        {
+          "name": "source_cli",
+          "kind": [
+            "test"
+          ]
+        },
+        {
+          "name": "work_action_cli",
+          "kind": [
+            "test"
+          ]
+        },
+        {
+          "name": "work_cli",
+          "kind": [
+            "test"
+          ]
+        },
+        {
+          "name": "work_complete_cli",
+          "kind": [
+            "test"
+          ]
+        }
+      ]
+    },
+    {
+      "package": "awr-mcp",
+      "targets": [
+        {
+          "name": "awr_mcp",
+          "kind": [
+            "lib"
+          ]
+        },
+        {
+          "name": "awr-mcp",
+          "kind": [
+            "bin"
+          ]
+        },
+        {
+          "name": "stdio",
+          "kind": [
+            "test"
+          ]
+        }
+      ]
+    }
+  ],
+  "target_gates": 17,
+  "stages": [
+    {
+      "id": "build",
+      "command": [
+        "rtk",
+        "proxy",
+        "cargo",
+        "build",
+        "--workspace",
+        "--all-targets",
+        "--locked"
+      ],
+      "exit_code": 0,
+      "passed": true,
+      "elapsed_seconds": 15.419,
+      "log": ".local/qa001-regression-v2/build.log",
+      "log_sha256": "42c103f2d767113a29b00afdc8f7f75d5f41790c17c558b001a77c8432365176"
+    },
+    {
+      "id": "ignored_inventory",
+      "command": [
+        "rtk",
+        "proxy",
+        "cargo",
+        "test",
+        "--workspace",
+        "--all-targets",
+        "--locked",
+        "--",
+        "--ignored",
+        "--list"
+      ],
+      "exit_code": 0,
+      "passed": true,
+      "elapsed_seconds": 78.288,
+      "log": ".local/qa001-regression-v2/ignored_inventory.log",
+      "log_sha256": "a69a52f66fd890868377fd93bcea7953e397d2d15cafcabcbfb73e02e436fb7e",
+      "listed_ignored_tests": [
+        "fixture_contender",
+        "fixture_wal_writer",
+        "mutation_apply::recovery_tests::cli_recovery_after_process_death_binds_original_attempt_and_resolves_once",
+        "mutation_apply::recovery_tests::fixture_worker"
+      ]
+    },
+    {
+      "id": "workspace",
+      "command": [
+        "rtk",
+        "proxy",
+        "cargo",
+        "test",
+        "--workspace",
+        "--all-targets",
+        "--no-fail-fast",
+        "--locked"
+      ],
+      "exit_code": 0,
+      "passed": true,
+      "elapsed_seconds": 63.931,
+      "log": ".local/qa001-regression-v2/workspace.log",
+      "log_sha256": "548b5341fe724711fbecc2180da3fc794b7c06097cb969e830fbcf81f1330ae0",
+      "test_functions_passed": 273,
+      "test_functions_failed": 0,
+      "ignored": 4,
+      "target_results": 74
+    },
+    {
+      "id": "doctests",
+      "command": [
+        "rtk",
+        "proxy",
+        "cargo",
+        "test",
+        "--workspace",
+        "--doc",
+        "--no-fail-fast",
+        "--locked"
+      ],
+      "exit_code": 0,
+      "passed": true,
+      "elapsed_seconds": 3.637,
+      "log": ".local/qa001-regression-v2/doctests.log",
+      "log_sha256": "70667f56258820e0767bc85d2a45288f7be2b073046b57ed848699eac98b3de3",
+      "test_functions_passed": 2,
+      "test_functions_failed": 0,
+      "ignored": 0,
+      "target_results": 6
+    },
+    {
+      "id": "paths",
+      "command": [
+        "rtk",
+        "proxy",
+        "/Users/mac/Documents/originone/agent-work-running/.venv/bin/python",
+        "tests/security/paths/verify.py",
+        "--report",
+        "/Users/mac/Documents/originone/agent-work-running/.local/qa001-regression-v2/paths.json"
+      ],
+      "exit_code": 0,
+      "passed": true,
+      "elapsed_seconds": 19.21,
+      "log": ".local/qa001-regression-v2/paths.log",
+      "log_sha256": "fb9bdd01edf8224bf89d99888c6fb2c21ba6f775dc7fbde68c98680cbd8bc866",
+      "receipt_sha256": {
+        ".local/qa001-regression-v2/paths.json": "ac627e7bb3f82be37eb236faeab5943a56df4fcc512d121e1a2eacda960fd822",
+        ".local/qa001-regression-v2/paths-1.log": "5d9643be4cce91bc0c6776b246141c06bfb9c74dc2881a5368af6ce8b51848eb",
+        ".local/qa001-regression-v2/paths-2.log": "4b8ffcaee6fa0abf124c9ac7a0ff2e4ac1b8b426a9c0911c2c16e224a85b6d0b",
+        ".local/qa001-regression-v2/paths-3.log": "6d052632be670a4fdc9d37e86619d06134e337095ae7c137adf2ec9eab94c313"
+      },
+      "contract": "tests/security/paths/contract.json",
+      "contract_version": "1.0.0",
+      "target_conditions": 26,
+      "verified_conditions": [
+        "absolute_inside",
+        "absolute_outside",
+        "authorized_absolute_root",
+        "authorized_external_write",
+        "authorized_file_uri",
+        "authorized_relative_root",
+        "authorized_symlink",
+        "dangling_symlink",
+        "directory_link_child",
+        "discovered_replaced_leaf",
+        "file_uri_inside",
+        "file_uri_outside",
+        "git_parent_traversal",
+        "manifest_escape",
+        "parent_traversal",
+        "prefix_sibling",
+        "recovery_symlink",
+        "relative_inside",
+        "replaced_leaf",
+        "replaced_parent",
+        "runtime_source_write",
+        "source_alias_retarget",
+        "symlink_inside",
+        "symlink_loop",
+        "symlink_outside",
+        "write_parent_replacement"
+      ]
+    },
+    {
+      "id": "payloads",
+      "command": [
+        "rtk",
+        "proxy",
+        "/Users/mac/Documents/originone/agent-work-running/.venv/bin/python",
+        "tests/security/payloads/verify_all.py",
+        "--report",
+        "/Users/mac/Documents/originone/agent-work-running/.local/qa001-regression-v2/payloads.json"
+      ],
+      "exit_code": 0,
+      "passed": true,
+      "elapsed_seconds": 51.557,
+      "log": ".local/qa001-regression-v2/payloads.log",
+      "log_sha256": "30eaca35bf8eb1633ec2d73190cdb5e836e0e3d7675d0d61ceb5031f8d6cc529",
+      "receipt_sha256": {
+        ".local/qa001-regression-v2/payloads.json": "b94c910f81ac08b9889eb63cf6bf8cc94ce446f056bf9ece16eebb8ec4ea5060",
+        ".local/qa001-regression-v2/payloads-sources.json": "6bd1ea22e013f79ad737a69c1f6e0269a3d29a85cd5ce9538ff93b83ad9182fb",
+        ".local/qa001-regression-v2/payloads-sources-1.log": "3c60c141a39cfcbd55fee21904e9f6ae9b5960bcb31a76f54542de7a79ae1e06",
+        ".local/qa001-regression-v2/payloads-sources-2.log": "c7434a45e949424332e3485b76a81f4914f2611fbc6b52309870fdcff2edadf6",
+        ".local/qa001-regression-v2/payloads-events.json": "402f60c9b42bdd461aa5d1cfcbd9fbbc659bdc97027f17755459b033ab658377",
+        ".local/qa001-regression-v2/payloads-events-1.log": "8de0acdc8e936adddce84fdeece2caec9dbcd3cb66f835707149e5a1f643560a",
+        ".local/qa001-regression-v2/payloads-events-2.log": "8185954a8b5faa19af01045aa4cdab7975d3a22468f19936da0a28fab6c52933",
+        ".local/qa001-regression-v2/payloads-artifacts.json": "c3438e834df2092a5c009a54f4a984129d224e74f25aea39e57af137ece42353",
+        ".local/qa001-regression-v2/payloads-artifacts-1.log": "c22861bb7473b88f099a8c9243fb518a968ef17c2d58103247933f5dd1a4ba30",
+        ".local/qa001-regression-v2/payloads-artifacts-2.log": "f0abd95e2838829eb39033e56e3bc5a862084ef38a448fce575cdddad6473b9a",
+        ".local/qa001-regression-v2/payloads-artifacts-3.log": "2bac79b68984f3448998d96eb0e008856a52c1fb3f2a67618a644a1b6d60ca32",
+        ".local/qa001-regression-v2/payloads-secrets.json": "c99e031bc8dee56bcd402045f00a38cc916c614bd177ff52799612a1d95eb216",
+        ".local/qa001-regression-v2/payloads-secrets-1.log": "9500cd1acfbe138c07f348ed53a74aeba7368f0d20c6d7f26c258ecab706567f",
+        ".local/qa001-regression-v2/payloads-secrets-2.log": "82b33d8c019b9af815e12920415cb7575b9c289eee14b59b16a43cdc9d34c8aa",
+        ".local/qa001-regression-v2/payloads-secrets-3.log": "9163167e11d6df750c04a5efc5d4121abf23bab209bcd7a603a36e221f668b32",
+        ".local/qa001-regression-v2/payloads-build.log": "fb3a22aa93bf3418f5d59390dbc3fc7d3a3079b86c3e6d7dfb8a567e99d45a58"
+      },
+      "contract": "tests/security/payloads/contract.json",
+      "contract_version": "1.4.0",
+      "target_conditions": 32,
+      "verified_conditions": [
+        "artifact_import_limit",
+        "artifact_read_limit",
+        "artifact_secret_rejection",
+        "checkpoint_secret_rejection",
+        "context_secret_withholding",
+        "direct_parser_limit",
+        "directory_source_limit",
+        "environment_rejection",
+        "event_atomic_rejection",
+        "event_field_allowlist",
+        "event_field_types",
+        "event_payload_limit",
+        "event_secret_rejection",
+        "event_summary_limit",
+        "evidence_secret_rejection",
+        "fts_secret_redaction",
+        "git_source_limit",
+        "known_token_patterns",
+        "manifest_secret_rejection",
+        "markdown_limit",
+        "ordinary_text_allowed",
+        "private_prompt_rejection",
+        "reader_limit_validation",
+        "source_diagnostic_no_secret",
+        "source_drill_limit",
+        "source_mutation_limit",
+        "source_projection_secret_guard",
+        "source_refresh_limit",
+        "source_secret_rejection",
+        "unicode_secret_labels",
+        "untrusted_field_diagnostic_no_echo",
+        "yaml_limit"
+      ]
+    },
+    {
+      "id": "mutation_recovery",
+      "command": [
+        "rtk",
+        "proxy",
+        "/Users/mac/Documents/originone/agent-work-running/.venv/bin/python",
+        "tests/recovery/mutations/verify.py",
+        "--report",
+        "/Users/mac/Documents/originone/agent-work-running/.local/qa001-regression-v2/mutation_recovery.json"
+      ],
+      "exit_code": 0,
+      "passed": true,
+      "elapsed_seconds": 3.471,
+      "log": ".local/qa001-regression-v2/mutation_recovery.log",
+      "log_sha256": "b1e6a84289e9d1d2672d65d5fb152fbd2b084cd29755b6fa399f9eaf4956ad99",
+      "receipt_sha256": {
+        ".local/qa001-regression-v2/mutation_recovery.json": "b0def2c8d7125c401483979d2c5f6d047a5ff0b245b22d8c21a6f2a793e9eb6a",
+        ".local/qa001-regression-v2/mutation_recovery-engine.log": "93ff683b536f8b3bfbe15b7fe6be05612600af1546298111322bf44927accae7",
+        ".local/qa001-regression-v2/mutation_recovery-build.log": "a5f4c585ee974ca44916ac30a98bbc189e067a7e0a6bc6d2e8d6bc525be724af",
+        ".local/qa001-regression-v2/mutation_recovery-cli.log": "03d834d51f0a9bbe9277e260a15354ca93850584024dccb3ddc66b5fae5a02f0"
+      },
+      "contract": "tests/recovery/mutations/contract.json",
+      "contract_version": "1.0.0",
+      "target_conditions": 20,
+      "verified_conditions": [
+        "crash_after_finalize",
+        "crash_after_journal",
+        "crash_after_projection",
+        "crash_after_rename",
+        "crash_after_sync",
+        "crash_after_temp",
+        "crash_before_journal",
+        "fingerprint_before_apply",
+        "fingerprint_before_replace",
+        "independent_sources_progress",
+        "mapping_change_during_apply",
+        "projection_or_receipt_storage_failure",
+        "recovery_newer_source_preserved",
+        "recovery_once_and_cli_receipts",
+        "recovery_snapshot_corruption",
+        "revision_before_replace",
+        "revision_cas_writers",
+        "same_source_apply_writers",
+        "temporary_io_after_write",
+        "temporary_io_during_recovery"
+      ]
+    },
+    {
+      "id": "concurrency",
+      "command": [
+        "rtk",
+        "proxy",
+        "/Users/mac/Documents/originone/agent-work-running/.venv/bin/python",
+        "tests/concurrency/verify.py",
+        "--report",
+        "/Users/mac/Documents/originone/agent-work-running/.local/qa001-regression-v2/concurrency.json"
+      ],
+      "exit_code": 0,
+      "passed": true,
+      "elapsed_seconds": 43.186,
+      "log": ".local/qa001-regression-v2/concurrency.log",
+      "log_sha256": "1131de38fab83448cdbe0558ab4163bae3f1d9f2e6eec60f2de316470ac43b00",
+      "receipt_sha256": {
+        ".local/qa001-regression-v2/concurrency.json": "96b1f7e54686ec47c44dbb231ddc32c2c6f4278f224617f7ae2bac8e3eb4820d",
+        ".local/qa001-regression-v2/concurrency-event_rows.log": "b5a4798c3004fb506848cfedefbd09aa2ee21528afcbf7e194134a2bf886237e",
+        ".local/qa001-regression-v2/concurrency-public_api.log": "5c6446d6e10240753f245387ee6e703fa6f1d3d7fda8ab716b711d82fce9e655",
+        ".local/qa001-regression-v2/concurrency-domain.log": "6670241b490c235ac29a0bdfd77103094f6c8d1fa5ea04705f7e104ed0d32a84",
+        ".local/qa001-regression-v2/concurrency-related_store.log": "2a534930124b3b0929905ce6c9dcda528d016eb7160040a5956bbec4799009cf",
+        ".local/qa001-regression-v2/concurrency-cli.log": "e5ae7aab1a8e26b1d1b4cbc2b5c9ae7b1042ab07fa5efb2ae941791875df2e1e",
+        ".local/qa001-regression-v2/concurrency-mcp.log": "9dfc8c71bf08485fe0e32d1afc2903a32d8e5400b13a794e16fe83d57fa1776b",
+        ".local/qa001-regression-v2/concurrency-build.log": "a5f4c585ee974ca44916ac30a98bbc189e067a7e0a6bc6d2e8d6bc525be724af",
+        ".local/qa001-regression-v2/concurrency-branch_selectors.log": "bd40e1add089ec6fd1628d81caaa672b1eb06be64764c5521d24c3aa7851847a"
+      },
+      "contract": "tests/concurrency/contract.json",
+      "contract_version": "1.1.0",
+      "target_conditions": 20,
+      "verified_conditions": [
+        "branch_checkpoint_and_evidence_scoping",
+        "branch_cleanup_scope",
+        "branch_closed_mutation_rejection",
+        "branch_handoff_binding",
+        "branch_parallel_sessions_claims",
+        "branch_resume_binding",
+        "branch_session_selection",
+        "branch_switch_retains_ownership",
+        "claim_compare_revision_processes",
+        "claim_event_failure_rollback",
+        "claim_expired_race_processes",
+        "claim_expiry_scope",
+        "claim_protect_unexpired_and_indefinite",
+        "claim_release_owner",
+        "claim_single_owner_processes",
+        "claim_ttl_invalid_rolls_back",
+        "event_branch_query_isolation",
+        "event_opaque_storage_api",
+        "event_reserved_and_bound_provenance",
+        "event_row_immutability"
+      ]
+    },
+    {
+      "id": "database_recovery",
+      "command": [
+        "rtk",
+        "proxy",
+        "/Users/mac/Documents/originone/agent-work-running/.venv/bin/python",
+        "tests/recovery/doctor/verify.py",
+        "--report",
+        "/Users/mac/Documents/originone/agent-work-running/.local/qa001-regression-v2/database_recovery.json"
+      ],
+      "exit_code": 0,
+      "passed": true,
+      "elapsed_seconds": 61.202,
+      "log": ".local/qa001-regression-v2/database_recovery.log",
+      "log_sha256": "ddc2fbefc91af85b32378f0362c7e6f92372ca7bfb1902412145224ad4fd6619",
+      "receipt_sha256": {
+        ".local/qa001-regression-v2/database_recovery.json": "668d3d46a9d0e078d1f1b217d0a5eb0116c80bf5a4470825636c47b6deea3238",
+        ".local/qa001-regression-v2/database_recovery-database.log": "f7a74182dff3da2048d2fc21783ec480d62c5f073c56637d852c17383b848495",
+        ".local/qa001-regression-v2/database_recovery-store.log": "a7f4e6352d6dfd8007ac2ba441cb70e0d16988ad9d4e93a7ddb6ad9d41ca2324",
+        ".local/qa001-regression-v2/database_recovery-cli.log": "06a6e99c8e7648f72cb0904f44e680844e5c12e9a0a3027de0f9e4777e1ee9ef",
+        ".local/qa001-regression-v2/database_recovery-mcp.log": "3eca78514b4e36bc4d0ded261ffc5879fcc6a0d979d5f00f5a62c97670e48ad0",
+        ".local/qa001-regression-v2/database_recovery-build.log": "59639588a6f1826f129cbcd121edc07279dab94786f5fa5bde6b3439b2e845cc",
+        ".local/qa001-regression-v2/database_recovery-check.log": "81579b1efafec0c28564d8fb1504a974d94ca1db0eb08c9b2504a204a8ea849e",
+        ".local/qa001-regression-v2/database_recovery-format.log": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        ".local/qa001-regression-v2/database_recovery-diff.log": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "contract": "tests/recovery/doctor/contract.json",
+      "contract_version": "1.0.0",
+      "target_conditions": 24,
+      "verified_conditions": [
+        "artifact_integrity_and_orphans",
+        "consistent_backup_restores_runtime",
+        "dangling_edge",
+        "database_corruption_detected",
+        "diagnostic_read_limits",
+        "foreign_database_preserved",
+        "incomplete_checkpoint",
+        "inconsistent_runtime_bindings",
+        "invalid_branch_pointer",
+        "migration_catalog_consistency",
+        "migration_invalid_base_rollback",
+        "migration_sql_failure_rollback",
+        "migration_success_preserves_runtime",
+        "missing_database_preserved",
+        "missing_dependency",
+        "missing_manifest_keeps_runtime_diagnostics",
+        "pending_and_failed_mutation",
+        "projection_rebuild_preserves_runtime",
+        "schema_objects_and_guards",
+        "schema_versions_readonly",
+        "source_access_and_fingerprint",
+        "source_only_rebuild_is_not_runtime_restore",
+        "wal_committed_process_death",
+        "wal_uncommitted_process_death"
+      ]
+    },
+    {
+      "id": "cli_mcp_parity",
+      "command": [
+        "rtk",
+        "proxy",
+        "/Users/mac/Documents/originone/agent-work-running/.venv/bin/python",
+        "crates/awr-mcp/tests/cli_parity.py",
+        "--awr",
+        "/Users/mac/Documents/originone/agent-work-running/target/debug/awr",
+        "--mcp",
+        "/Users/mac/Documents/originone/agent-work-running/target/debug/awr-mcp",
+        "--report",
+        "/Users/mac/Documents/originone/agent-work-running/.local/qa001-regression-v2/cli_mcp_parity.json"
+      ],
+      "exit_code": 0,
+      "passed": true,
+      "elapsed_seconds": 11.881,
+      "log": ".local/qa001-regression-v2/cli_mcp_parity.log",
+      "log_sha256": "8392fd7d94c88de41875a3f9020868f858e081c636f9a5f923df14b3db5c1950",
+      "receipt_sha256": {
+        ".local/qa001-regression-v2/cli_mcp_parity.json": "9fd6ba3f70d56d55c0f12630946ed823a4850b11e9ce1962a2cde614960efd3d"
+      },
+      "test_functions_passed": 8,
+      "tools_exercised": [
+        "awr_context_compile",
+        "awr_event_append",
+        "awr_evidence_record",
+        "awr_project_status",
+        "awr_search",
+        "awr_work_get",
+        "awr_work_ready",
+        "awr_work_transition"
+      ]
+    },
+    {
+      "id": "yaml_intake",
+      "command": [
+        "rtk",
+        "proxy",
+        "/Users/mac/Documents/originone/agent-work-running/.venv/bin/python",
+        "tests/fixtures/yaml-ledger/verify.py"
+      ],
+      "exit_code": 0,
+      "passed": true,
+      "elapsed_seconds": 1.744,
+      "log": ".local/qa001-regression-v2/yaml_intake.log",
+      "log_sha256": "7ffa64ea0814a6c1c3955fbd1c7d6006dc553fe985edc7e5aa421bbf87234884",
+      "result": {
+        "ok": true,
+        "project_work_items": 62,
+        "project_milestones": 11,
+        "project_dependencies": 101,
+        "project_evidence_references": 52,
+        "project_source_fingerprint": "sha256:150380b2c6d11cc0db9bd7f45bf91c6ad56b28bb5c7f3b34e206a302ba0ae97a",
+        "idempotent": true,
+        "unknown_status_preserved": true,
+        "source_files_unchanged": true,
+        "changed_source_preserves_identity": true,
+        "malformed_sources_rejected": 3
+      }
+    },
+    {
+      "id": "manual_lifecycle",
+      "command": [
+        "rtk",
+        "proxy",
+        "/Users/mac/Documents/originone/agent-work-running/.venv/bin/python",
+        "examples/codex/lifecycle.py",
+        "--awr",
+        "/Users/mac/Documents/originone/agent-work-running/target/debug/awr",
+        "--output",
+        "/Users/mac/Documents/originone/agent-work-running/.local/qa001-regression-v2/lifecycle"
+      ],
+      "exit_code": 0,
+      "passed": true,
+      "elapsed_seconds": 3.149,
+      "log": ".local/qa001-regression-v2/manual_lifecycle.log",
+      "log_sha256": "902287db58351fe36dac607c47486bd0aa953db3db145723ee168a4400c5e47a",
+      "receipt_sha256": {
+        ".local/qa001-regression-v2/lifecycle/summary.json": "cc31ba59d94d16f479b6b10142befe0e1cbe5204d13763dfc2f6b52de239dbe3",
+        ".local/qa001-regression-v2/lifecycle/01-preview.json": "8d4f95daace43eb048f15f50f4fe64609525cf3501e958649744229c3fd49bd5",
+        ".local/qa001-regression-v2/lifecycle/02-init.json": "ae6f24b299acb8fcb2d9adb1c2bf6397ff38aba638856aff2b623efe9b7d0c07",
+        ".local/qa001-regression-v2/lifecycle/03-status.json": "da1e35b4a4a537006d58c452d43ab7e6e3a54eca37f643307e00f7e5687c6afc",
+        ".local/qa001-regression-v2/lifecycle/04-start.json": "bd9a689a68cd48b7a37d36eb8bb9aa5b7f0cb456b932a091096054f09278921f",
+        ".local/qa001-regression-v2/lifecycle/05-bootstrap.json": "8c12d231fa7b3ad64cbdd99c7d7a2da8055fc3c3eee50f3938837f41d5e1bc1d",
+        ".local/qa001-regression-v2/lifecycle/06-context.json": "afe29dae164ea26baf95813a9c055e06e1009fa3a1d1161c9c123ee822ec6cad",
+        ".local/qa001-regression-v2/lifecycle/07-status.json": "c0574d5b101bd8e5ed87d471526f252c34456a377075f24770baf946ff76ecaa",
+        ".local/qa001-regression-v2/lifecycle/08-checkpoint.json": "69c2b42d06c13e2e8eea8e29bc66dec3ede8a050eaab32daf5d7fd200679a15c",
+        ".local/qa001-regression-v2/lifecycle/09-resume.json": "a683cad3f682b865818edc6ee2bf9a3018a256bd214581bcea706a87fa8d97f5",
+        ".local/qa001-regression-v2/lifecycle/10-recovered-context.json": "d495e1b400cb2003050da76a7b4c9f6492c47ee4aa35c724a822465c52626b8f",
+        ".local/qa001-regression-v2/lifecycle/11-predecessor.json": "9796cc9d4891d969d95bac12fc8a91e2d846995d7c569a5faae4674245cdb8c3",
+        ".local/qa001-regression-v2/lifecycle/12-status.json": "117b5ac5a04d9b200afb680de6a112e48f2135e28a5bb8830fc388b634f18198",
+        ".local/qa001-regression-v2/lifecycle/13-end.json": "0c004423488ed3cacaf2f380c5d3bf9b4a28d36e1f25c2089c952954e871ca08",
+        ".local/qa001-regression-v2/lifecycle/14-successor.json": "44cbc14deae25c3c9f3869ab6f8bf415e72469879dcba6c596af8323d8ad4743",
+        ".local/qa001-regression-v2/lifecycle/15-doctor.json": "70975e95d6cc2182b285e8253d630956a71249ce87d960007d2bda436ef7c1d8"
+      }
+    },
+    {
+      "id": "legacy_doctor",
+      "command": [
+        "rtk",
+        "proxy",
+        "/Users/mac/Documents/originone/agent-work-running/.venv/bin/python",
+        "ledger/evidence/AWR-P5-003/check_dangling_fixture.py"
+      ],
+      "exit_code": 0,
+      "passed": true,
+      "elapsed_seconds": 0.333,
+      "log": ".local/qa001-regression-v2/legacy_doctor.log",
+      "log_sha256": "dfa37bebe8e69d98e76ed9bc4c1630d012dde7c15230c9d64e8cfd4ec907e9e5"
+    },
+    {
+      "id": "example_smoke",
+      "command": [
+        "rtk",
+        "proxy",
+        "/Users/mac/Documents/originone/agent-work-running/.venv/bin/python",
+        "tests/regression/example_smoke.py",
+        "--output",
+        "/Users/mac/Documents/originone/agent-work-running/.local/qa001-regression-v2/examples"
+      ],
+      "exit_code": 0,
+      "passed": true,
+      "elapsed_seconds": 2.535,
+      "log": ".local/qa001-regression-v2/example_smoke.log",
+      "log_sha256": "7daec4774853aa0946449dd3cbda3f3eb0307d4dee01faf9ac353b9e3543968b",
+      "receipt_sha256": {
+        ".local/qa001-regression-v2/examples/summary.json": "811b99fb21c285d80c3aca4b292bf5eb0788ac21ce8da34e5d5c0aaaf1383463",
+        ".local/qa001-regression-v2/examples/open_store.log": "4eef43985b10c8f42a0572face2a9b0a15e039d8c5cd150b58ac01d97dd5efdb",
+        ".local/qa001-regression-v2/examples/catalog.log": "29f0506a73fd5cc1e33a5e1d2fd0645071ad96363b79235da6c97e2a1400d371",
+        ".local/qa001-regression-v2/examples/runtime_transaction.log": "752aaa67f5a5c8bbca5e2ecb9beace1f39bdb8345a07f3102dbb86f3806cfbf0",
+        ".local/qa001-regression-v2/examples/source_revision.log": "8abe427fed3178caabe139e0e0856c64bef0c50d9a708d9697b2ea9293af12e8"
+      },
+      "executed_examples": [
+        "open_store",
+        "catalog",
+        "runtime_transaction",
+        "source_revision"
+      ]
+    },
+    {
+      "id": "format",
+      "command": [
+        "rtk",
+        "proxy",
+        "cargo",
+        "fmt",
+        "--all",
+        "--check"
+      ],
+      "exit_code": 0,
+      "passed": true,
+      "elapsed_seconds": 0.4,
+      "log": ".local/qa001-regression-v2/format.log",
+      "log_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "id": "planning",
+      "command": [
+        "rtk",
+        "proxy",
+        "/Users/mac/Documents/originone/agent-work-running/.venv/bin/python",
+        "scripts/check_ledger.py"
+      ],
+      "exit_code": 0,
+      "passed": true,
+      "elapsed_seconds": 0.128,
+      "log": ".local/qa001-regression-v2/planning.log",
+      "log_sha256": "4dabea82ce637f7eb73850ccb477677de3374610b9a744d35aa4b13ca8d72bf5"
+    },
+    {
+      "id": "diff",
+      "command": [
+        "rtk",
+        "proxy",
+        "git",
+        "diff",
+        "--check"
+      ],
+      "exit_code": 0,
+      "passed": true,
+      "elapsed_seconds": 0.021,
+      "log": ".local/qa001-regression-v2/diff.log",
+      "log_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    }
+  ],
+  "passed": true,
+  "evidence_level": "local_workspace_cli_mcp_and_process_fixtures",
+  "e4_completed": 0,
+  "metrics_completed": 0,
+  "model_calls": 0,
+  "native_client_activated": false,
+  "release_claim": false,
+  "counting": "Workspace and doctest function counts are reported separately. The five specialist contracts have 122 namespaced conditions; their repeated Rust executions are not added to the workspace count. Listing or compiling a target is not executing a test. Private fixture children are not separate completed business scenarios.",
+  "limitations": [
+    "This gate establishes local regression only. Other operating systems, performance metrics, native agent clients, eight E4 business scenarios and release readiness have their own ledger items.",
+    "All Cargo examples are compiled. Four isolated developer entrypoints, YAML intake and the manual lifecycle are executed; other historical examples receive compile coverage and their corresponding current CLI/domain tests."
+  ],
+  "inputs_unchanged": true,
+  "ignored_tests_routed": true,
+  "ignored_tests": [
+    {
+      "name": "fixture_contender",
+      "covered_by": "concurrency",
+      "role": "Parent tests launch the isolated live contender."
+    },
+    {
+      "name": "fixture_wal_writer",
+      "covered_by": "database_recovery",
+      "role": "Parent tests launch and terminate the isolated WAL writer."
+    },
+    {
+      "name": "mutation_apply::recovery_tests::fixture_worker",
+      "covered_by": "mutation_recovery",
+      "role": "Parent tests launch and terminate the isolated mutation worker."
+    },
+    {
+      "name": "mutation_apply::recovery_tests::cli_recovery_after_process_death_binds_original_attempt_and_resolves_once",
+      "covered_by": "mutation_recovery",
+      "role": "The recovery runner builds and supplies AWR_RECOVERY_CLI, then explicitly executes this ignored test."
+    }
+  ],
+  "gates_passed": 17,
+  "specialist_conditions_verified": 122,
+  "binary_sha256": {
+    "awr": "c4a45fd3359745fac38e86d03444bc4ae3a2f146f3e537e793fffb7b155d81f4",
+    "awr-mcp": "7496b7da135edf6cd9278a6ff5f15a090206771516dad3d6c73d354d2ac5eaf3"
+  },
+  "finished_at": "2026-09-08T20:45:56+08:00",
+  "repository": "https://github.com/originoneai/agent-work-runtime",
+  "remote_receipt": {
+    "commit": "9bfdf8885209810fb172ccfc6753fd1ef2a7f317",
+    "url": "https://github.com/originoneai/agent-work-runtime/commit/9bfdf8885209810fb172ccfc6753fd1ef2a7f317",
+    "verified_at": "2026-09-08T20:49:38+08:00",
+    "transports": [
+      "git_ls_remote",
+      "github_api"
+    ]
+  },
+  "execution_platform": "macOS-26.5.2-arm64-arm-64bit",
+  "architecture": "arm64",
+  "toolchain": {
+    "rustc": "rustc 1.93.1 (01f6ddf75 2026-02-11) (Homebrew)",
+    "cargo": "cargo 1.93.1 (Homebrew)",
+    "python": "3.12.11",
+    "pyyaml": "6.0.3"
+  },
+  "input_file_count": 394,
+  "raw_manifest": {
+    "path": ".local/qa001-regression-v2/report.json",
+    "sha256": "def3f6993654a3d9253c1372340f9819935ade0329e869e3b3bfca332bba4bda",
+    "retention": "local_only"
+  },
+  "post_run_developer_use": {
+    "report": "ledger/evidence/AWR-QA-001/self-use.json",
+    "unchanged_tested_input_count": 392,
+    "allowed_source_progress_updates": [
+      "ledger/README.md",
+      "ledger/work-ledger.yaml"
+    ],
+    "all_other_tested_inputs_unchanged": true
+  },
+  "raw_logs_retention": "Local only; every current stage and nested receipt has a hash. No previous run contributes to this pass."
+}

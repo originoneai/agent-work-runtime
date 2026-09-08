@@ -1,0 +1,98 @@
+{
+  "work_item": "AWR-QA-001",
+  "recorded_at": "2026-09-08T20:49:38+08:00",
+  "baseline_source_commit": "799b2fb8a54acfa494d3da7f3bff1d816c18bbb8",
+  "baseline_contract": "1.0.0",
+  "baseline_gates_passed": 15,
+  "baseline_gates_failed": [
+    "manual_lifecycle",
+    "example_smoke"
+  ],
+  "fixed_source_commit": "9bfdf8885209810fb172ccfc6753fd1ef2a7f317",
+  "current_regression_report": "ledger/evidence/AWR-QA-001/regression.json",
+  "defects": [
+    {
+      "id": "basic_prose_false_positive",
+      "trigger": "An unchanged public example describes a basic source-intake ledger.",
+      "observed": "Initialization rejected its ordinary source comment as sensitive content.",
+      "fix": "Recognize Basic candidates through decoded user/password structure. Preserve ordinary prose across source, events, evidence, search and context.",
+      "regression": "awr-core basic_prose_remains_usable; runtime ordinary_security_discussion_stays_writable_searchable_and_context_complete; unchanged examples/codex/lifecycle.py"
+    },
+    {
+      "id": "short_basic_credentials",
+      "trigger": "Synthetic short or unpadded Basic credentials.",
+      "observed": "The previous minimum-length pattern accepted some credential values. The added unit baseline failed.",
+      "fix": "Decode candidates with standard Base64 and its unpadded form; do not impose the old eight-character lower bound.",
+      "regression": "awr-core basic_credentials_are_rejected_without_echo; runtime known_token_patterns"
+    },
+    {
+      "id": "previous_search_policy_cache",
+      "trigger": "Intermediate new credential detection with an existing policy-three derived cache.",
+      "observed": "A cache containing a previously accepted short credential caused search rejection instead of rebuilding; ordinary prose could retain the earlier redaction.",
+      "fix": "Advance the derived index to policy four and rebuild its curated text without rewriting source or authority.",
+      "regression": "runtime policy_three_basic_cache_is_rebuilt_without_rewriting_authority; includes both credential and ordinary-prose fixtures"
+    },
+    {
+      "id": "historical_example_error_contract",
+      "trigger": "The historical transaction example refers to a missing branch.",
+      "observed": "It expected a Storage failure, while the current domain boundary correctly returns NotFound.",
+      "fix": "Assert the domain error and retain revision/event rollback assertions.",
+      "regression": "The actual runtime_transaction executable is a required isolated smoke gate"
+    }
+  ],
+  "baseline_note": "Two core regression tests failed before the detector fix. The cache test failed on an intermediate working tree with the detector fix and previous cache policy. These targeted baselines are not clean-commit full-suite passes.",
+  "receipts": [
+    {
+      "path": ".local/qa001-regression-v1/report.json",
+      "sha256": "100a975b20ecf4c712b878ccded73faf5f5ff02c2f6103cdcf62a0d38fb01a2d",
+      "retention": "local_only"
+    },
+    {
+      "path": ".local/qa001-regression-v1/manual_lifecycle.log",
+      "sha256": "48ac2463a4765e5ffe55adc37ef41439716f89bd56ed270ceb10ba885d751bb4",
+      "retention": "local_only"
+    },
+    {
+      "path": ".local/qa001-regression-v1/lifecycle/02-init.json",
+      "sha256": "0e824757cded6b8b8631684a21b34497dc624094a4e186b1d74799d167198bdd",
+      "retention": "local_only"
+    },
+    {
+      "path": ".local/qa001-regression-v1/examples/runtime_transaction.log",
+      "sha256": "4dc44fd555cf9b1f9018538bd4e7ac1ad0acef7aaca6ecc84d1ba64d866a801d",
+      "retention": "local_only"
+    },
+    {
+      "path": ".local/qa001-basic-baseline-v1.json",
+      "sha256": "f6f0a9a57099c674ab84a02324aed871eb604cf89167142a65b6a0173baadcb4",
+      "retention": "local_only"
+    },
+    {
+      "path": ".local/qa001-basic-baseline-v1.log",
+      "sha256": "298c4d7a58de11352cad7368fd664fe61495f21e6d9003cbbb34b85403c3ec36",
+      "retention": "local_only"
+    },
+    {
+      "path": ".local/qa001-basic-fixed-v1.json",
+      "sha256": "3d96f5a46dae5624abe0f7dc3c4996b985772dd55a27c074a4a9fbc3fb4cfe1e",
+      "retention": "local_only"
+    },
+    {
+      "path": ".local/qa001-cache-baseline-v1.json",
+      "sha256": "5d4296407398e6ec6e71bf933de8ee3cac503d59ee482cf307907a44fe317839",
+      "retention": "local_only"
+    },
+    {
+      "path": ".local/qa001-cache-baseline-v1.log",
+      "sha256": "44508f234f7dd9dedc854c11315613e9c083469ec443d93337625197b81694d0",
+      "retention": "local_only"
+    },
+    {
+      "path": ".local/qa001-secret-runtime-fixed-v1.json",
+      "sha256": "3532c481dc07590c198ccbc50ade4cc566ab354093c016fc2cb376ef9ffd4b4e",
+      "retention": "local_only"
+    }
+  ],
+  "standards_reference": "https://www.rfc-editor.org/rfc/rfc7617#section-2",
+  "e4_completed": 0
+}
