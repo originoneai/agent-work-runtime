@@ -1,0 +1,74 @@
+{
+  "kind": "implementation",
+  "repository": "https://github.com/originoneai/agent-work-runtime",
+  "source_commit": "e9714dedf927df436d5c71c8c98054699174c643",
+  "checked_at": "2026-09-08T10:31:51+08:00",
+  "remote_receipt": {
+    "commit": "e9714dedf927df436d5c71c8c98054699174c643",
+    "url": "https://github.com/originoneai/agent-work-runtime/commit/e9714dedf927df436d5c71c8c98054699174c643",
+    "verified_at": "2026-09-08T10:32:23+08:00"
+  },
+  "checks": [
+    {
+      "name": "work_domain_cli",
+      "passed": true,
+      "result": "cargo test --locked -p awr-cli --test work_action_cli: 10/10 passed. Source progress/block/unblock/cancel/reopen, known state transitions, explicit reopen reason/revision, runtime claim acquisition/release/expiry and session binding, business-owner preservation, actual unindexed dependency drift, blocked dependency handling, domain patch/type forgery rejection, reserved work events, checkpoint handoff and execution by the receiving session. Intermediate approval failure retains a resumable proposal; final cancellation event failure rolls back proposal finalization and claim releases, with exact-once recovery."
+    },
+    {
+      "name": "related_mutation_session_doctor_checks",
+      "passed": true,
+      "result": "cargo test --locked -p awr-cli --test proposal_cli --test session_cli --test doctor_cli: 23/23 passed (14 proposal, 5 session, 4 Doctor). cargo test --locked -p awr-store --test mutation --test reconcile: 13/13 passed. cargo test --locked -p awr-source --test yaml_mutation: 4/4 passed. Together with the new work action checks: 50 distinct passing tests."
+    },
+    {
+      "name": "workspace_build_and_format",
+      "passed": true,
+      "result": "cargo build --locked --workspace --all-targets, cargo fmt --all --check and git diff --check passed. No new dependency or schema migration. The only build warning remains unused shared Store fixture helpers."
+    },
+    {
+      "name": "actual_project_self_use",
+      "passed": true,
+      "result": "Used the real P6-003 development session and its existing live claim to call work progress on this repository ledger. The entire parsed document changed only in the selected summary and next_action; source status stayed in_progress, business owner and runtime claims were unchanged, before/after recovery snapshots matched and the cached projection was fresh. Recorded a verified work.progressed event, saved a complete 4992-token L1 context and checkpoint, ended the session, and observed Doctor ok with no findings (7 sources, 2 artifacts)."
+    },
+    {
+      "name": "bounded_primary_review",
+      "passed": true,
+      "result": "Reviewed typed action binding, source-state checks, exact allowed fields, session/claim gates, dependency-source reads, immutable events and cancellation cleanup. Claims are checked across all branches because source state is shared within the project; source owner is never rewritten. Applied work events resolve the existing mutation journal. Cancellation claim release shares the final verified-event transaction and cannot commit when that event fails."
+    }
+  ],
+  "artifacts": [
+    "crates/awr-core/src/work_action.rs",
+    "crates/awr-core/src/mutation.rs",
+    "crates/awr-store/src/work_action.rs",
+    "crates/awr-store/src/mutation_apply.rs",
+    "crates/awr-store/src/transaction.rs",
+    "crates/awr-runtime/src/work_action.rs",
+    "crates/awr-runtime/src/mutation_apply.rs",
+    "crates/awr-source/src/yaml_mutation.rs",
+    "crates/awr-cli/src/work_action.rs",
+    "crates/awr-cli/src/query.rs",
+    "crates/awr-cli/tests/work_action_cli.rs",
+    "README.md",
+    "adapters/yaml-ledger/README.md",
+    "ledger/evidence/AWR-P6-003/checks.json"
+  ],
+  "work_items": {
+    "AWR-P6-003": {
+      "acceptance": [
+        {
+          "criterion": "claim/release/progress/block/unblock/cancel/handoff 经领域动作推进，拒绝非法转换。",
+          "passed": true
+        },
+        {
+          "criterion": "区分 Source 状态与 runtime claim；reopen 需要理由、事件与版本。",
+          "passed": true
+        }
+      ]
+    }
+  },
+  "limitations": [
+    "Feature-local verification and actual project developer self-use only. Centralized regression/security work, E4 scenarios, platform coverage, benchmarks and release remain scheduled.",
+    "work complete and its dependency/acceptance/evidence gates belong to P6-004. Generic field mutation remains unable to change work status, owner, blocker, verification or evidence membership. Unsupported source writers retain an approved proposal_required.",
+    "An explicit work action authorizes its deterministic proposal lifecycle. Actor/session identifiers are caller-selected provenance, not authentication or independent human-review evidence. Runtime claim/release/handoff preserve source ownership and source state.",
+    "Progress and block require an owned unexpired claim. Unblock/cancel/reopen may operate without one, but reject another session live claim. The existing YAML writer retains its documented external-editor race and recovery boundaries; full concurrent/fault campaigns remain scheduled."
+  ]
+}
