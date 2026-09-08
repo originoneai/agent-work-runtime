@@ -1,8 +1,8 @@
 schema_version: 1
 contract_id: awr-v1
 contract_version: 1.0.0
-ledger_revision: 107
-updated_at: '2026-09-08T13:58:23+08:00'
+ledger_revision: 109
+updated_at: '2026-09-08T14:18:22+08:00'
 project:
   name: Agent Work Runtime
   external_key: agent-work-runtime
@@ -18,6 +18,7 @@ current:
   - 本项目实际完成了 P8-002 的 bootstrap/context/checkpoint/resume，保留下一步、未完事项和 claim 到期时间；通过 MCP 绑定证据并完成台账写回。
   - 本机 Codex 0.153.4 已解析 stdio 配置模板；原生 AWR MCP 连接与自动生命周期未验证。L0 1555 tokens 超过 1000 目标，明确使用更大预算保留硬规则，指标仍待专项测量。
   - 开发自用、示例与配置检查不计 E4；8 个真实业务场景、10 个指标、独立复核和发布门槛仍未完成。
+  - 直接执行 P8-003 指南时发现共享示例把 awr ready 写成 awr work ready；修正三份指南并执行文档命令，保留 P8-002 历史证据与新的纠正记录。此修正不扩张 V1 功能分母。
 milestones:
 - id: M0
   status: completed
@@ -1400,6 +1401,7 @@ work_items:
   - AWR-P8-001
   evidence:
   - ledger/deliveries/AWR-P8-002.json
+  - ledger/deliveries/AWR-P8-002-command-correction.json
   id: AWR-P8-002
   kind: feature
   milestone: M7
@@ -1423,6 +1425,7 @@ work_items:
   deliverables:
   - docs/integrations/kimi.md
   - docs/integrations/grok.md
+  - docs/integrations/codex.md
   depends_on:
   - AWR-P8-002
   evidence: []
