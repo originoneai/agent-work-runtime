@@ -1,8 +1,8 @@
 schema_version: 1
 contract_id: awr-v1
 contract_version: 1.0.0
-ledger_revision: 89
-updated_at: '2026-09-08T09:15:08+08:00'
+ledger_revision: 90
+updated_at: '2026-09-08T09:57:40+08:00'
 project:
   name: Agent Work Runtime
   external_key: agent-work-runtime
@@ -12,11 +12,11 @@ project:
 current:
   milestone: M6
   work_item: AWR-P6-002
-  next_action: 实现 YAML 精确目标写回：写前复核来源指纹，保留失败恢复依据，保存后重索引并验证；只有真实写回成功才能进入 applied。
+  next_action: 已验证 YAML 精确写回和中断恢复；保存交付证据并继续任务领域动作。
   open_loops:
   - 功能实现优先；集中测试、优化和打磨在功能开发后执行。
   - 本项目已实际使用 Source、Status、Ready、Work、Search、Session、Claim、Context、Checkpoint、Resume、Doctor 和 Mutation Proposal；继续用开发会话记录当前工作。
-  - P6-001 已交付。当前提案申请应用返回 proposal_required；P6-002 接通 YAML 精确写回和写后投影验证，P6-003 再接通任务领域动作。来源文件保持权威，applied 只能由真实写回产生。
+  - P6-002 已在本项目实际应用 YAML next_action 提案，待提交并核验远端回执；随后依次实现 P6-003 任务领域动作、P6-004 完成门槛。来源文件保持权威。
 milestones:
 - id: M0
   status: completed
@@ -1158,21 +1158,10 @@ work_items:
   - ledger/deliveries/AWR-P6-001.json
   blocker: null
   next_action: 已交付；继续依赖就绪的功能任务。
-- id: AWR-P6-002
-  title: YAML 指纹绑定安全写回
-  milestone: M6
-  priority: P0
-  kind: feature
-  required_for_v1: true
-  status: in_progress
-  owner: codex-primary
-  depends_on:
-  - AWR-P6-001
-  - AWR-P1-003
-  source_sections:
-  - 9
-  - 15
-  - 33
+- acceptance:
+  - 应用前重新读取比对指纹，仅修改精确目标，冲突不覆盖。
+  - 保存后重索引并验证结果；Markdown 继续默认只读，失败保留原始文件或恢复依据。
+  blocker: null
   deliverables:
   - adapters/yaml-ledger/
   - crates/awr-source/
@@ -1183,16 +1172,28 @@ work_items:
   - Cargo.toml
   - Cargo.lock
   - README.md
-  acceptance:
-  - 应用前重新读取比对指纹，仅修改精确目标，冲突不覆盖。
-  - 保存后重索引并验证结果；Markdown 继续默认只读，失败保留原始文件或恢复依据。
+  - .gitignore
+  depends_on:
+  - AWR-P6-001
+  - AWR-P1-003
+  evidence: []
+  id: AWR-P6-002
+  kind: feature
+  milestone: M6
+  next_action: 已验证 YAML 精确写回和中断恢复；保存交付证据并继续任务领域动作。
+  owner: codex-primary
+  priority: P0
+  required_for_v1: true
+  source_sections:
+  - 9
+  - 15
+  - 33
+  status: in_progress
+  title: YAML 指纹绑定安全写回
   verification:
-    minimum: 证明本条验收行为；功能阶段运行必要的定向检查，系统测试在 M9 集中执行。
     evidence_directory: ledger/evidence/AWR-P6-002
     evidence_level: none
-  evidence: []
-  blocker: null
-  next_action: 实现 YAML 精确目标写回：写前复核来源指纹，保留失败恢复依据，保存后重索引并验证；只有真实写回成功才能进入 applied。
+    minimum: 证明本条验收行为；功能阶段运行必要的定向检查，系统测试在 M9 集中执行。
 - id: AWR-P6-003
   title: 任务领域动作与状态机
   milestone: M6

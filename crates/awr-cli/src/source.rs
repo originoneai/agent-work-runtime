@@ -138,6 +138,7 @@ pub fn initialize(
         ".awr/state.db",
         ".awr/state.db-*",
         ".awr/artifacts/",
+        ".awr/mutations/",
         ".awr/cache/",
     ];
     let missing: Vec<_> = needed

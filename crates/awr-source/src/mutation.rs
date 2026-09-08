@@ -1,4 +1,6 @@
-use crate::{Manifest, MarkdownDirectoryAdapter, SourceSpec, source_adapter};
+use crate::{
+    Locator, Manifest, MarkdownDirectoryAdapter, SourceSnapshot, SourceSpec, source_adapter,
+};
 use awr_core::{Error, Freshness, MutationPatch, Result, Source};
 use serde::Serialize;
 use serde_json::json;
@@ -51,6 +53,33 @@ pub fn verify_mutation_source(
             "proposal source is unavailable; restore and reindex before creating a replacement proposal".into(),
         )),
     }
+    let (_, _, snapshot) = inspect_mutation_source(root, source, patch)?;
+    if snapshot.fingerprint != reference.source_fingerprint {
+        return Err(Error::SourceConflict(
+            "proposal source bytes changed; create a new proposal from current facts".into(),
+        ));
+    }
+    Ok(MutationSourceCheck {
+        locator: snapshot.locator,
+        fingerprint: snapshot.fingerprint,
+        adapter: source.adapter.clone(),
+        checked_at: awr_core::now_millis()?,
+    })
+}
+
+/// Resolve the original mapping but observe bytes independently of cached freshness. Recovery
+/// uses this to recognize the exact pre-write or post-write state of a recorded attempt.
+pub fn inspect_mutation_source(
+    root: &Path,
+    source: &Source,
+    patch: &MutationPatch,
+) -> Result<(Locator, SourceSpec, SourceSnapshot)> {
+    patch.validate()?;
+    if source.id != patch.target.meta.source_ref.source_id || source.config != patch.source_config {
+        return Err(Error::SourceConflict(
+            "mutation source identity/configuration differs from its binding".into(),
+        ));
+    }
     let root = root.canonicalize()?;
     let manifest = Manifest::load(&root)?;
     let mut matches = Vec::new();
@@ -80,7 +109,7 @@ pub fn verify_mutation_source(
                     "proposal source mapping or adapter configuration has changed".into(),
                 ));
             }
-            matches.push(locator);
+            matches.push((locator, spec.clone()));
         }
     }
     if matches.len() != 1 {
@@ -89,15 +118,10 @@ pub fn verify_mutation_source(
             matches.len()
         )));
     }
-    let snapshot = matches[0].read(&root, 16 * 1024 * 1024)?;
-    if snapshot.fingerprint != reference.source_fingerprint || snapshot.locator != reference.locator
-    {
+    let (locator, spec) = matches.pop().unwrap();
+    let snapshot = locator.read(&root, 16 * 1024 * 1024)?;
+    if snapshot.locator != patch.target.meta.source_ref.locator {
         return Err(Error::SourceConflict("proposal source bytes or immutable locator changed; keep the proposal for review and create a new one from current facts".into()));
     }
-    Ok(MutationSourceCheck {
-        locator: snapshot.locator,
-        fingerprint: snapshot.fingerprint,
-        adapter: source.adapter.clone(),
-        checked_at: awr_core::now_millis()?,
-    })
+    Ok((locator, spec, snapshot))
 }

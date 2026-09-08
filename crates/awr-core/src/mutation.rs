@@ -1,6 +1,7 @@
 use crate::{EntityKind, Error, Id, MutationProposal, ProjectionMeta, ProposalStatus, Result};
 use serde::{Deserialize, Serialize};
 use serde_json::Value;
+use sha2::{Digest, Sha256};
 
 /// A single source projection, including its stable identity and exact source pointer.
 #[derive(Debug, Clone, Serialize, Deserialize)]
@@ -152,4 +153,60 @@ impl MutationProposal {
         }
         Ok(patch)
     }
+}
+
+/// Projection identity and facts, excluding the metadata refreshed by a source reindex.
+pub fn mutation_projection_hash(value: &Value) -> Result<String> {
+    let mut facts = value.clone();
+    let fields = facts
+        .as_object_mut()
+        .ok_or_else(|| Error::InvalidInput("mutation target must be an object".into()))?;
+    fields.remove("source_ref");
+    fields.remove("revision");
+    Ok(format!("{:x}", Sha256::digest(serde_json::to_vec(&facts)?)))
+}
+
+#[derive(Debug, Clone, Serialize, Deserialize)]
+#[serde(deny_unknown_fields)]
+pub struct MutationWritePlan {
+    pub id: Id,
+    pub before_fingerprint: String,
+    pub after_fingerprint: String,
+    pub before_size: u64,
+    pub after_size: u64,
+    pub target_after_hash: String,
+}
+impl MutationWritePlan {
+    pub fn recovery_directory(&self) -> String {
+        format!(".awr/mutations/{}", self.id)
+    }
+    pub fn validate(&self) -> Result<()> {
+        if ![&self.before_fingerprint, &self.after_fingerprint]
+            .iter()
+            .all(|fp| {
+                fp.strip_prefix("sha256:")
+                    .is_some_and(crate::is_sha256_hash)
+            })
+            || self.before_fingerprint == self.after_fingerprint
+            || !crate::is_sha256_hash(&self.target_after_hash)
+            || self.before_size == 0
+            || self.after_size == 0
+            || self.before_size > 16 * 1024 * 1024
+            || self.after_size > 16 * 1024 * 1024
+        {
+            return Err(Error::InvalidInput(
+                "invalid mutation write plan fingerprints, target hash or bounded sizes".into(),
+            ));
+        }
+        Ok(())
+    }
+}
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct MutationApplyAttempt {
+    pub event_id: Id,
+    pub proposal_id: Id,
+    pub source_id: Id,
+    pub project_revision: crate::Revision,
+    pub plan: MutationWritePlan,
+    pub resolved_event_id: Option<Id>,
 }

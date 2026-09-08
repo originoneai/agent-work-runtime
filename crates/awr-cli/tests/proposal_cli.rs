@@ -1,4 +1,5 @@
-use awr_core::Id;
+use awr_core::*;
+use awr_store::Store;
 use serde_json::{Value, json};
 use std::{
     fs,
@@ -60,6 +61,80 @@ impl Fixture {
             "--expected-revision",
             &self.revision(),
         ])
+    }
+    fn approved(&self) -> String {
+        let value = self.create();
+        let id = value["proposal"]["id"].as_str().unwrap();
+        self.reviewed("submit", id);
+        self.reviewed("approve", id);
+        id.into()
+    }
+    fn prepared(&self, id: &str) -> awr_source::PreparedYamlMutation {
+        let store = Store::open_existing(&self.0.join(".awr/state.db")).unwrap();
+        let project = store
+            .project_by_root(&self.0.canonicalize().unwrap())
+            .unwrap()
+            .id;
+        let proposal = store.proposal(project, id.parse().unwrap()).unwrap();
+        let source = store.source(project, proposal.source_id).unwrap();
+        awr_source::prepare_yaml_mutation(
+            &self.0,
+            &source,
+            &proposal,
+            store.projection_ids(&source).unwrap(),
+        )
+        .unwrap()
+    }
+    // Reproduce a process interruption at an explicit persisted boundary, without a
+    // production fault switch or a fake successful apply response.
+    fn interrupted(&self, id: &str, phase: &str) -> MutationApplyAttempt {
+        let prepared = self.prepared(id);
+        let recovery = self.0.join(prepared.plan.recovery_directory());
+        fs::create_dir_all(&recovery).unwrap();
+        fs::write(recovery.join("before.yaml"), &prepared.before.bytes).unwrap();
+        fs::write(recovery.join("after.yaml"), &prepared.after.bytes).unwrap();
+        fs::write(
+            recovery.join("plan.json"),
+            serde_json::to_vec(&prepared.plan).unwrap(),
+        )
+        .unwrap();
+        let mut store = Store::open_existing(&self.0.join(".awr/state.db")).unwrap();
+        let project = store
+            .project_by_root(&self.0.canonicalize().unwrap())
+            .unwrap();
+        let attempt = store
+            .begin_proposal_apply(
+                project.id,
+                project.project_revision,
+                id.parse().unwrap(),
+                prepared.plan,
+                "writer",
+                "Simulated interruption boundary",
+            )
+            .unwrap()
+            .0;
+        if phase != "before" {
+            fs::write(&prepared.path, &prepared.after.bytes).unwrap();
+        }
+        if phase == "projected" {
+            let source = store.source(project.id, attempt.source_id).unwrap();
+            let proposal = store.proposal(project.id, attempt.proposal_id).unwrap();
+            let patch = proposal.bound_patch().unwrap();
+            let (_, spec, snapshot) =
+                awr_source::inspect_mutation_source(&self.0, &source, &patch).unwrap();
+            let (batch, _) = awr_source::parse_mutation_projection(
+                &source,
+                &spec,
+                &snapshot,
+                store.projection_ids(&source).unwrap(),
+                &patch.target,
+            )
+            .unwrap();
+            store
+                .commit_source_projection(&source, &snapshot.fingerprint, batch)
+                .unwrap();
+        }
+        attempt
     }
     fn review(&self, action: &str, id: &str) -> Output {
         self.run(&[
@@ -125,36 +200,53 @@ fn lifecycle_preserves_exact_binding_and_never_labels_approval_as_applied() {
     assert_eq!(approved["proposal"]["status"], "approved");
     assert_eq!(approved["proposal"]["patch"], p["patch"]);
     assert_eq!(approved["event"]["payload"]["actor"], "reviewer");
-    let apply = f.review("apply", id);
-    f.error(&apply, "proposal_required");
-    let report: Value = serde_json::from_slice(&apply.stdout).unwrap();
-    assert_eq!(report["code"], "proposal_required");
-    assert_eq!(report["proposal"]["status"], "approved");
-    assert_eq!(report["event"]["event_type"], "proposal.required");
-    assert_eq!(report["source_write_performed"], false);
+    assert_eq!(fs::read_to_string(f.0.join("work.yaml")).unwrap(), WORK);
+    let report = f.reviewed("apply", id);
+    assert_eq!(report["proposal"]["status"], "applied");
+    assert_eq!(report["event"]["event_type"], "proposal.applied");
+    assert_eq!(report["source_write_performed"], true);
+    assert_eq!(report["source_refresh_performed"], true);
+    assert_eq!(report["write_outcome"], "applied");
     assert_eq!(
         report["proposal"]["base_fingerprint"],
         p["base_fingerprint"]
     );
-    assert_eq!(fs::read_to_string(f.0.join("work.yaml")).unwrap(), WORK);
+    let after = fs::read_to_string(f.0.join("work.yaml")).unwrap();
+    assert!(after.ends_with(
+        "\n- id: OTHER\n  title: Separate work\n  status: ready\n  next_action: Wait\n"
+    ));
+    let recovery = f.0.join(report["recovery_directory"].as_str().unwrap());
+    assert_eq!(
+        fs::read_to_string(recovery.join("before.yaml")).unwrap(),
+        WORK
+    );
+    assert_eq!(
+        fs::read_to_string(recovery.join("after.yaml")).unwrap(),
+        after
+    );
     assert_eq!(
         f.ok(&["work", "show", "W"])["work"]["next_action"],
-        "Review the draft"
+        "Read the revised report"
     );
-    assert!(
+    assert_eq!(
         f.ok(&["proposal", "list", "--status", "applied"])["proposals"]
             .as_array()
             .unwrap()
-            .is_empty()
+            .len(),
+        1
     );
     let summary = f.ok(&["proposal", "show", id]);
     assert!(summary["proposal"].get("patch").is_none());
     assert_eq!(
+        summary["apply_attempt"]["resolved_event_id"],
+        report["event"]["id"]
+    );
+    assert_eq!(
         f.ok(&["proposal", "show", id, "--full"])["proposal"]["patch"],
         p["patch"]
     );
-    assert_eq!(f.reviewed("reject", id)["proposal"]["status"], "rejected");
     let rev = f.revision();
+    f.error(&f.review("reject", id), "InvalidTransition");
     f.error(&f.review("approve", id), "InvalidTransition");
     f.error(&f.review("apply", id), "InvalidTransition");
     assert_eq!(f.revision(), rev);
@@ -504,4 +596,406 @@ fn git_proposal_binds_the_resolved_snapshot_and_conflicts_when_the_ref_moves() {
     assert_eq!(report["source_write_performed"], false);
     assert_eq!(report["proposal"]["patch"], proposal["proposal"]["patch"]);
     assert_eq!(fs::read(f.0.join("goal.md")).unwrap(), bytes);
+}
+
+#[test]
+fn recovery_resumes_before_write_after_write_and_after_projection_without_duplicate_writes() {
+    for phase in ["before", "after", "projected"] {
+        let f = Fixture::new();
+        let id = f.approved();
+        let attempt = f.interrupted(&id, phase);
+        let pending = f.review("apply", &id);
+        f.error(&pending, "MutationIncomplete");
+        let report: Value = serde_json::from_slice(&pending.stdout).unwrap();
+        assert_eq!(report["write_outcome"], "pending_recovery");
+        assert_eq!(report["source_write_performed"], Value::Null);
+        assert_eq!(report["apply_attempt"]["event_id"], json!(attempt.event_id));
+        f.error(&f.review("reject", &id), "InvalidTransition");
+        let before = fs::read(f.0.join("work.yaml")).unwrap();
+        let revision = f.revision();
+        let diagnosis = f.run(&["doctor"]);
+        assert!(!diagnosis.status.success());
+        let diagnosis: Value = serde_json::from_slice(&diagnosis.stdout).unwrap();
+        let finding = diagnosis["findings"]
+            .as_array()
+            .unwrap()
+            .iter()
+            .find(|item| item["code"] == "incomplete_mutation")
+            .unwrap();
+        assert!(finding.to_string().contains("proposal recover"));
+        assert!(finding.to_string().contains(&attempt.event_id.to_string()));
+        assert_eq!(f.revision(), revision);
+        assert_eq!(fs::read(f.0.join("work.yaml")).unwrap(), before);
+        f.error(
+            &f.run(&[
+                "proposal",
+                "recover",
+                &id,
+                "--actor",
+                "reviewer",
+                "--reason",
+                "Resume interrupted write",
+                "--expected-revision",
+                "0",
+            ]),
+            "RevisionConflict",
+        );
+        assert_eq!(f.revision(), revision);
+        assert_eq!(fs::read(f.0.join("work.yaml")).unwrap(), before);
+        let result = f.reviewed("recover", &id);
+        assert_eq!(result["proposal"]["status"], "applied");
+        assert_eq!(result["write_outcome"], "recovered");
+        assert_eq!(result["source_write_performed"], phase == "before");
+        assert_eq!(result["source_refresh_performed"], phase != "projected");
+        assert_eq!(
+            result["apply_attempt"]["resolved_event_id"],
+            result["event"]["id"]
+        );
+        assert_eq!(
+            f.ok(&["work", "show", "W"])["work"]["next_action"],
+            "Read the revised report"
+        );
+        assert_eq!(
+            f.ok(&["work", "show", "W"])["work"]["status"],
+            "in_progress"
+        );
+        f.error(&f.review("recover", &id), "InvalidTransition");
+    }
+}
+
+#[test]
+fn recovery_preserves_a_newer_source_and_rejects_damaged_snapshots() {
+    for damaged in [false, true] {
+        let f = Fixture::new();
+        let id = f.approved();
+        let attempt = f.interrupted(&id, "before");
+        let recovery = f.0.join(attempt.plan.recovery_directory());
+        if damaged {
+            fs::write(recovery.join("after.yaml"), b"changed recovery snapshot").unwrap();
+        } else {
+            fs::write(
+                f.0.join("work.yaml"),
+                format!("{WORK}# A newer human edit\n"),
+            )
+            .unwrap();
+        }
+        let before = fs::read(f.0.join("work.yaml")).unwrap();
+        let result = f.review("recover", &id);
+        f.error(&result, "SourceConflict");
+        let report: Value = serde_json::from_slice(&result.stdout).unwrap();
+        assert_eq!(report["proposal"]["status"], "conflict");
+        assert_eq!(report["source_write_performed"], false);
+        assert!(!report["apply_attempt"]["resolved_event_id"].is_null());
+        assert_eq!(fs::read(f.0.join("work.yaml")).unwrap(), before);
+        assert_eq!(
+            fs::read_to_string(recovery.join("before.yaml")).unwrap(),
+            WORK
+        );
+    }
+}
+
+#[test]
+fn application_journal_enforces_source_reservation_revision_and_post_write_proof() {
+    let f = Fixture::new();
+    let first = f.approved();
+    let second = f.approved();
+    let second_plan = f.prepared(&second).plan;
+    let attempt = f.interrupted(&first, "before");
+    let mut store = Store::open_existing(&f.0.join(".awr/state.db")).unwrap();
+    let project = store.project_by_root(&f.0.canonicalize().unwrap()).unwrap();
+    let rev = project.project_revision;
+    assert!(matches!(
+        store.begin_proposal_apply(
+            project.id,
+            rev,
+            second.parse().unwrap(),
+            second_plan.clone(),
+            "writer",
+            "Other proposal"
+        ),
+        Err(Error::MutationConflict(_))
+    ));
+    assert!(matches!(
+        store.finish_proposal_apply(
+            project.id,
+            rev,
+            attempt.proposal_id,
+            attempt.event_id,
+            "writer",
+            "Cannot finalize old bytes"
+        ),
+        Err(Error::SourceConflict(_))
+    ));
+    assert!(matches!(
+        store.finish_proposal_apply(
+            project.id,
+            rev,
+            attempt.proposal_id,
+            Id::new(),
+            "writer",
+            "Wrong attempt"
+        ),
+        Err(Error::InvalidTransition(_))
+    ));
+    assert!(matches!(
+        store.fail_proposal_apply(
+            project.id,
+            0,
+            attempt.proposal_id,
+            attempt.event_id,
+            false,
+            "writer",
+            "Stale cancellation"
+        ),
+        Err(Error::RevisionConflict { .. })
+    ));
+    assert_eq!(store.project(project.id).unwrap().project_revision, rev);
+    store
+        .fail_proposal_apply(
+            project.id,
+            rev,
+            attempt.proposal_id,
+            attempt.event_id,
+            false,
+            "writer",
+            "Stopped before writing",
+        )
+        .unwrap();
+    let rev = store.project(project.id).unwrap().project_revision;
+    let mut reused = second_plan.clone();
+    reused.id = attempt.plan.id;
+    assert!(matches!(
+        store.begin_proposal_apply(
+            project.id,
+            rev,
+            second.parse().unwrap(),
+            reused,
+            "writer",
+            "Reject duplicate write plan"
+        ),
+        Err(Error::InvalidInput(_))
+    ));
+    let mut wrong_base = second_plan.clone();
+    wrong_base.before_fingerprint = wrong_base.after_fingerprint.clone();
+    assert!(
+        store
+            .begin_proposal_apply(
+                project.id,
+                rev,
+                second.parse().unwrap(),
+                wrong_base,
+                "writer",
+                "Wrong baseline"
+            )
+            .is_err()
+    );
+    store
+        .begin_proposal_apply(
+            project.id,
+            rev,
+            second.parse().unwrap(),
+            second_plan,
+            "writer",
+            "Reservation released",
+        )
+        .unwrap();
+    assert_eq!(fs::read_to_string(f.0.join("work.yaml")).unwrap(), WORK);
+}
+
+#[test]
+fn event_failures_do_not_fake_application_and_written_sources_can_be_recovered() {
+    for event_type in [
+        "proposal.apply_started",
+        "source.projected",
+        "proposal.applied",
+    ] {
+        let f = Fixture::new();
+        let id = f.approved();
+        let db = rusqlite::Connection::open(f.0.join(".awr/state.db")).unwrap();
+        db.execute_batch(&format!("CREATE TRIGGER reject_apply_event BEFORE INSERT ON events WHEN NEW.event_type='{event_type}' BEGIN SELECT RAISE(ABORT,'injected application event failure'); END;")).unwrap();
+        let result = f.review("apply", &id);
+        if event_type == "proposal.apply_started" {
+            f.error(&result, "Storage");
+            assert_eq!(fs::read_to_string(f.0.join("work.yaml")).unwrap(), WORK);
+            assert!(f.ok(&["proposal", "show", &id])["apply_attempt"].is_null());
+        } else {
+            f.error(&result, "MutationIncomplete");
+            let report: Value = serde_json::from_slice(&result.stdout).unwrap();
+            assert_eq!(report["proposal"]["status"], "approved");
+            assert_eq!(report["source_write_performed"], true);
+            assert_eq!(report["write_outcome"], "pending_recovery");
+            let recovery = f.0.join(report["recovery_directory"].as_str().unwrap());
+            assert_eq!(
+                fs::read_to_string(recovery.join("before.yaml")).unwrap(),
+                WORK
+            );
+            assert_eq!(
+                fs::read(recovery.join("after.yaml")).unwrap(),
+                fs::read(f.0.join("work.yaml")).unwrap()
+            );
+            assert!(report["apply_attempt"]["resolved_event_id"].is_null());
+        }
+        db.execute_batch("DROP TRIGGER reject_apply_event").unwrap();
+        let recovered = f.reviewed(
+            if event_type == "proposal.apply_started" {
+                "apply"
+            } else {
+                "recover"
+            },
+            &id,
+        );
+        assert_eq!(recovered["proposal"]["status"], "applied");
+        assert_eq!(
+            f.ok(&["work", "show", "W"])["work"]["next_action"],
+            "Read the revised report"
+        );
+    }
+}
+
+#[test]
+fn a_held_writer_lock_or_changed_source_cannot_be_overwritten() {
+    let f = Fixture::new();
+    let id = f.approved();
+    let source = f.ok(&["proposal", "show", &id])["proposal"]["source_id"]
+        .as_str()
+        .unwrap()
+        .to_owned();
+    fs::create_dir_all(f.0.join(".awr/mutations")).unwrap();
+    let lock = fs::OpenOptions::new()
+        .create(true)
+        .truncate(false)
+        .read(true)
+        .write(true)
+        .open(f.0.join(format!(".awr/mutations/{source}.lock")))
+        .unwrap();
+    lock.try_lock().unwrap();
+    let revision = f.revision();
+    f.error(&f.review("apply", &id), "MutationConflict");
+    assert_eq!(f.revision(), revision);
+    assert_eq!(fs::read_to_string(f.0.join("work.yaml")).unwrap(), WORK);
+    drop(lock);
+    fs::write(
+        f.0.join("work.yaml"),
+        format!("{WORK}# Preserve this new note\n"),
+    )
+    .unwrap();
+    let before = fs::read(f.0.join("work.yaml")).unwrap();
+    let result = f.review("apply", &id);
+    f.error(&result, "SourceConflict");
+    let report: Value = serde_json::from_slice(&result.stdout).unwrap();
+    assert_eq!(report["proposal"]["status"], "conflict");
+    assert_eq!(report["source_write_performed"], false);
+    assert!(report["apply_attempt"].is_null());
+    assert_eq!(fs::read(f.0.join("work.yaml")).unwrap(), before);
+}
+
+#[test]
+fn guarded_fields_invalid_values_and_read_only_files_have_explicit_outcomes() {
+    for (patch, code, status) in [
+        (r#"{"status":"completed"}"#, "proposal_required", "approved"),
+        (r#"{"next_action":123}"#, "InvalidInput", "failed"),
+        (r#"{"next_action":"New"}"#, "SourceUnavailable", "failed"),
+    ] {
+        let f = Fixture::new();
+        let value = f.ok(&[
+            "proposal",
+            "create",
+            "--kind",
+            "work",
+            "--target",
+            "W",
+            "--intent",
+            "Review a field change",
+            "--patch",
+            patch,
+            "--expected-revision",
+            &f.revision(),
+        ]);
+        let id = value["proposal"]["id"].as_str().unwrap();
+        f.reviewed("submit", id);
+        f.reviewed("approve", id);
+        let file = f.0.join("work.yaml");
+        let original = fs::metadata(&file).unwrap().permissions();
+        if code == "SourceUnavailable" {
+            let mut permissions = original.clone();
+            permissions.set_readonly(true);
+            fs::set_permissions(&file, permissions).unwrap();
+        }
+        let result = f.review("apply", id);
+        f.error(&result, code);
+        fs::set_permissions(&file, original).unwrap();
+        let report: Value = serde_json::from_slice(&result.stdout).unwrap();
+        assert_eq!(report["proposal"]["status"], status);
+        assert_eq!(report["source_write_performed"], false);
+        assert!(report["apply_attempt"].is_null());
+        assert_eq!(fs::read_to_string(file).unwrap(), WORK);
+    }
+}
+
+#[test]
+fn yaml_goals_plans_and_source_evidence_apply_with_verified_projection_receipts() {
+    let f = Fixture::new();
+    let work=WORK.replace("  acceptance: [Keep source authority]", "  acceptance: [Keep source authority]\n  evidence:\n  - locator: reports/draft.txt\n    summary: Source reference only");
+    fs::write(f.0.join("work.yaml"),format!("{work}goals:\n- id: G\n  title: Goal\n  status: active\nmilestones:\n- id: M1\n  name: Delivery\n  status: active\n")).unwrap();
+    f.ok(&["source", "reindex"]);
+    for (kind, key, patch) in [
+        ("goal", "G", r#"{"summary":"A clear project goal"}"#),
+        ("plan", "M1", r#"{"name":"Report delivery"}"#),
+        (
+            "evidence",
+            "W/evidence/reports/draft.txt",
+            r#"{"summary":"A revised source reference"}"#,
+        ),
+    ] {
+        let created = f.ok(&[
+            "proposal",
+            "create",
+            "--kind",
+            kind,
+            "--target",
+            key,
+            "--intent",
+            "Clarify a source record",
+            "--patch",
+            patch,
+            "--expected-revision",
+            &f.revision(),
+        ]);
+        let id = created["proposal"]["id"].as_str().unwrap();
+        f.reviewed("submit", id);
+        f.reviewed("approve", id);
+        let applied = f.reviewed("apply", id);
+        assert_eq!(applied["proposal"]["status"], "applied");
+        assert_eq!(applied["source_write_performed"], true);
+        assert_eq!(applied["source_refresh_performed"], true);
+        assert_eq!(applied["proposal"]["patch"], created["proposal"]["patch"]);
+        assert_eq!(
+            applied["event"]["payload"]["target_after_hash"],
+            applied["apply_attempt"]["plan"]["target_after_hash"]
+        );
+        let store = Store::open_readonly(&f.0.join(".awr/state.db")).unwrap();
+        let project = store
+            .project_by_root(&f.0.canonicalize().unwrap())
+            .unwrap()
+            .id;
+        let kind_value = match kind {
+            "goal" => EntityKind::Goal,
+            "plan" => EntityKind::Plan,
+            _ => EntityKind::Evidence,
+        };
+        let target = store.mutation_target(project, kind_value, key).unwrap();
+        let object = json!({"object":target.item,"source":target.source});
+        assert_eq!(
+            object["object"]["id"],
+            created["proposal"]["patch"]["target"]["meta"]["id"]
+        );
+        assert_eq!(
+            object["source"]["fingerprint"],
+            applied["apply_attempt"]["plan"]["after_fingerprint"]
+        );
+        if kind == "evidence" {
+            assert_eq!(object["object"]["level"], "unknown");
+            assert!(object["object"]["verified_at"].is_null());
+        }
+    }
 }

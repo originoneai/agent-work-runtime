@@ -577,6 +577,13 @@ fn inspect_mutations(
         .collect::<rusqlite::Result<Vec<_>>>()
         .map_err(db_error)?;
     for (id, status) in rows {
+        if let Some(attempt) = crate::mutation_apply::latest(conn, project, id)?
+            .filter(|a| a.resolved_event_id.is_none())
+        {
+            findings.push(finding("incomplete_mutation","error","mutation_proposal",id,
+                format!("Application {} is unfinished; source bytes may already be written. Inspect proposal show {id} and retained snapshots at {}; use proposal recover with the current revision to resolve it",attempt.event_id,attempt.plan.recovery_directory()),None));
+            continue;
+        }
         let failed = status == "failed";
         findings.push(finding(
             if failed {

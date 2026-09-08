@@ -107,8 +107,10 @@ pub enum ProposalCommand {
     Approve(ReviewArgs),
     /// Reject an open proposal, including when its source is unavailable.
     Reject(ReviewArgs),
-    /// Check an approved proposal; unavailable writers return proposal_required without changing files.
+    /// Apply an approved exact YAML mutation; unsupported targets return proposal_required.
     Apply(ReviewArgs),
+    /// Recover an interrupted apply using its durable journal and source fingerprints.
+    Recover(ReviewArgs),
 }
 fn summary(p: &MutationProposal) -> Value {
     let binding = p.bound_patch().ok();
@@ -194,6 +196,7 @@ pub fn run(root: &Path, command: &ProposalCommand, json_output: bool) -> Result<
         }
         ProposalCommand::Show { id, full } => {
             let proposal = store.proposal(project.id, *id)?;
+            let apply_attempt = store.proposal_apply_attempt(project.id, *id)?;
             let actual = store.project(project.id)?.project_revision;
             if actual != project.project_revision {
                 return Err(Error::RevisionConflict {
@@ -203,18 +206,20 @@ pub fn run(root: &Path, command: &ProposalCommand, json_output: bool) -> Result<
             }
             return print(
                 &json!({"ok":true,"read_only":true,"source_refresh_performed":false,
-                "project_revision":actual,"patch_included":full,"proposal":if *full {serde_json::to_value(proposal)?} else {summary(&proposal)}}),
+                "project_revision":actual,"patch_included":full,"apply_attempt":apply_attempt,"proposal":if *full {serde_json::to_value(proposal)?} else {summary(&proposal)}}),
                 json_output,
             );
         }
         ProposalCommand::Submit(args)
         | ProposalCommand::Approve(args)
         | ProposalCommand::Reject(args)
-        | ProposalCommand::Apply(args) => {
+        | ProposalCommand::Apply(args)
+        | ProposalCommand::Recover(args) => {
             let action = match command {
                 ProposalCommand::Submit(_) => ReviewProposalAction::Submit,
                 ProposalCommand::Approve(_) => ReviewProposalAction::Approve,
                 ProposalCommand::Reject(_) => ReviewProposalAction::Reject,
+                ProposalCommand::Recover(_) => ReviewProposalAction::Recover,
                 _ => ReviewProposalAction::Apply,
             };
             awr_runtime::review_proposal(

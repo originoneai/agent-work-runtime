@@ -46,7 +46,7 @@ fn proposal_row(row: &Row<'_>) -> rusqlite::Result<MutationProposal> {
     })
 }
 
-fn proposal_at(conn: &Connection, project: Id, id: Id) -> Result<MutationProposal> {
+pub(crate) fn proposal_at(conn: &Connection, project: Id, id: Id) -> Result<MutationProposal> {
     conn.query_row(
         &format!("SELECT {PROPOSAL_COLUMNS} FROM mutation_proposals WHERE project_id=?1 AND id=?2"),
         params![project.to_string(), id.to_string()],
@@ -124,7 +124,7 @@ fn source_at(conn: &Connection, project: Id, id: Id) -> Result<Source> {
     .ok_or_else(|| Error::NotFound(format!("active source {id}")))
 }
 
-fn bound_mutation_target_at(
+pub(crate) fn bound_mutation_target_at(
     conn: &Connection,
     project: Id,
     patch: &MutationPatch,
@@ -182,7 +182,7 @@ fn projection_meta(value: &Value) -> Result<ProjectionMeta> {
         .map_err(|error| Error::InvalidInput(format!("target lacks projection metadata: {error}")))
 }
 
-fn validate_binding(
+pub(crate) fn validate_binding(
     conn: &Connection,
     project: Id,
     source_id: Id,
@@ -280,7 +280,7 @@ fn proposal_work_and_session(
     }
 }
 
-fn proposal_branch(
+pub(crate) fn proposal_branch(
     conn: &Connection,
     project: Id,
     proposal: &MutationProposal,
@@ -463,6 +463,9 @@ impl Store {
             EventDraft::new(action.event_type(), "Reviewed source mutation proposal"),
             |tx, _, event| {
                 let mut proposal = proposal_at(tx, project, id)?;
+                if crate::mutation_apply::pending_for_source(tx, project, proposal.source_id)?.is_some_and(|attempt| attempt.proposal_id == id) {
+                    return Err(Error::InvalidTransition("proposal has an unfinished application; inspect and recover it before review".into()));
+                }
                 let from = proposal.status;
                 let to = action.next_status(from)?;
                 if matches!(

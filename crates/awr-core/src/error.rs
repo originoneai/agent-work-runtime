@@ -30,6 +30,14 @@ pub enum Error {
         proposal_id: crate::Id,
         reason: String,
     },
+    #[error(
+        "mutation application {attempt_event_id} for proposal {proposal_id} needs recovery: {reason}"
+    )]
+    MutationIncomplete {
+        proposal_id: crate::Id,
+        attempt_event_id: crate::Id,
+        reason: String,
+    },
     #[error("mutation conflict: {0}")]
     MutationConflict(String),
     #[error(
@@ -79,6 +87,7 @@ impl Error {
             Self::EvidenceMissing(_) => "EvidenceMissing",
             Self::MutationUnsupported(_) => "MutationUnsupported",
             Self::ProposalRequired { .. } => "proposal_required",
+            Self::MutationIncomplete { .. } => "MutationIncomplete",
             Self::MutationConflict(_) => "MutationConflict",
             Self::CheckpointIncomplete { .. } => "CheckpointIncomplete",
             Self::ContextIncomplete(_) => "ContextIncomplete",
@@ -110,6 +119,13 @@ impl Error {
                     reason,
                 } => Some(
                     serde_json::json!({"proposal_id":proposal_id,"reason":reason,"source_write_performed":false}),
+                ),
+                Self::MutationIncomplete {
+                    proposal_id,
+                    attempt_event_id,
+                    reason,
+                } => Some(
+                    serde_json::json!({"proposal_id":proposal_id,"attempt_event_id":attempt_event_id,"reason":reason}),
                 ),
                 _ => None,
             },

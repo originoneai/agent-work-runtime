@@ -7,6 +7,7 @@ mod events;
 mod evidence;
 mod handoff;
 mod mutation;
+mod mutation_apply;
 mod projection;
 mod query;
 mod reconcile;

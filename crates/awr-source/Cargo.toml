@@ -15,4 +15,5 @@ toml.workspace = true
 sha2.workspace = true
 url.workspace = true
 serde_yaml_ng.workspace = true
+yaml-rust2.workspace = true
 pulldown-cmark.workspace = true

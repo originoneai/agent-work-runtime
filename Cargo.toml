@@ -26,6 +26,7 @@ toml = "1.1.5"
 sha2 = "0.10.9"
 url = "2.5.8"
 serde_yaml_ng = "0.10.0"
+yaml-rust2 = { version = "0.12.0", default-features = false }
 pulldown-cmark = { version = "0.13.4", default-features = false }
 globset = "0.4.20"
 tiktoken-rs = "0.12.0"

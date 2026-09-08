@@ -8,6 +8,7 @@ mod manifest;
 mod markdown;
 mod mutation;
 mod yaml_ledger;
+mod yaml_mutation;
 
 pub use adapter::{ParseContext, ProjectionBatch, SourceAdapter};
 pub use awr_core::{Error, Result};
@@ -21,5 +22,6 @@ pub use manifest::{Manifest, ProjectConfig, SourceSpec};
 pub use markdown::{
     MarkdownHeadingAdapter, MarkdownRulesAdapter, MarkdownSection, markdown_sections,
 };
-pub use mutation::{MutationSourceCheck, verify_mutation_source};
+pub use mutation::{MutationSourceCheck, inspect_mutation_source, verify_mutation_source};
 pub use yaml_ledger::YamlLedgerAdapter;
+pub use yaml_mutation::{PreparedYamlMutation, parse_mutation_projection, prepare_yaml_mutation};

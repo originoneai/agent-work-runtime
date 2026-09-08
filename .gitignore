@@ -12,6 +12,7 @@ __pycache__/
 .awr/state.db
 .awr/state.db-*
 .awr/artifacts/
+.awr/mutations/
 .awr/cache/
 
 # Local credentials; examples must use synthetic values

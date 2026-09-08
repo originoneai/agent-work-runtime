@@ -5,6 +5,7 @@ pub use awr_core::{Error, Result};
 mod artifact;
 mod doctor;
 mod mutation;
+mod mutation_apply;
 mod read;
 mod resume;
 pub use artifact::ArtifactFile;

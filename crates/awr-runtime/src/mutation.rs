@@ -20,6 +20,7 @@ pub enum ReviewProposalAction {
     Approve,
     Reject,
     Apply,
+    Recover,
 }
 impl ReviewProposalAction {
     fn store_action(self) -> ProposalAction {
@@ -27,7 +28,7 @@ impl ReviewProposalAction {
             Self::Submit => ProposalAction::Submit,
             Self::Approve => ProposalAction::Approve,
             Self::Reject => ProposalAction::Reject,
-            Self::Apply => ProposalAction::RequireManualApply,
+            Self::Apply | Self::Recover => ProposalAction::RequireManualApply,
         }
     }
 }
@@ -47,14 +48,17 @@ pub struct ProposalReport {
     pub proposal: MutationProposal,
     pub event: Event,
     pub source_refresh_performed: bool,
-    pub source_write_performed: bool,
+    pub source_write_performed: Option<bool>,
+    pub write_outcome: &'static str,
+    pub apply_attempt: Option<MutationApplyAttempt>,
+    pub recovery_directory: Option<String>,
     pub source_check: Option<MutationSourceCheck>,
     pub error: Option<ErrorReport>,
     /// The CLI returns a nonzero exit status after printing the durable transition receipt.
     #[serde(skip)]
     pub failure: Option<Error>,
 }
-fn report(
+pub(crate) fn report(
     proposal: MutationProposal,
     event: Event,
     refreshed: bool,
@@ -71,7 +75,10 @@ fn report(
         proposal,
         event,
         source_refresh_performed: refreshed,
-        source_write_performed: false,
+        source_write_performed: Some(false),
+        write_outcome: "not_requested",
+        apply_attempt: None,
+        recovery_directory: None,
         source_check,
         error: failure.as_ref().map(Error::report),
         failure,
@@ -132,6 +139,17 @@ pub fn review_proposal(
     let root = root.canonicalize()?;
     let project = store.project_by_root(&root)?.id;
     require_revision(store, project, request.expected_revision)?;
+    if matches!(
+        request.action,
+        ReviewProposalAction::Apply | ReviewProposalAction::Recover
+    ) {
+        return crate::mutation_apply::apply(
+            store,
+            &root,
+            request,
+            matches!(request.action, ReviewProposalAction::Recover),
+        );
+    }
     let proposal = store.proposal(project, request.proposal_id)?;
     let action = request.action.store_action();
     action.next_status(proposal.status)?;
@@ -161,17 +179,6 @@ pub fn review_proposal(
                 failure = Some(error);
             }
         }
-    }
-    if chosen == ProposalAction::RequireManualApply {
-        // P6-002 owns the file-write/reindex/verification transaction. Until it is delivered,
-        // all adapters retain approved proposals and return an explicit manual-action receipt.
-        failure = Some(Error::ProposalRequired {
-            proposal_id: proposal.id,
-            reason: format!(
-                "automatic source writeback is not available for {}; the approved proposal is retained",
-                checked.as_ref().unwrap().adapter
-            ),
-        });
     }
     let reason = match failure.as_ref() {
         Some(error) => format!("{}; {}", request.reason, error),
