@@ -194,6 +194,25 @@ pub fn run(root: &Path, command: &ContextCommand, json_output: bool) -> Result<(
     }
 }
 
+/// Every CLI surface embedding a compiled L1 report uses the same transport metadata.
+pub(crate) fn l1_value(report: &awr_context::WorkContextReport) -> Result<serde_json::Value> {
+    let mut value = serde_json::to_value(report)?;
+    value["ok"] = serde_json::json!(report.completeness.complete);
+    value["project_revision"] = serde_json::json!(report.completeness.project_revision);
+    value["freshness_basis"] = serde_json::json!("source_refresh");
+    value["source_refresh_performed"] = serde_json::json!(true);
+    value["read_only"] = serde_json::json!(false);
+    if !report.completeness.complete {
+        value["error"] = serde_json::json!(
+            Error::ContextIncomplete(
+                "L1 has required gaps; inspect completeness before execution".into()
+            )
+            .report()
+        );
+    }
+    Ok(value)
+}
+
 pub(crate) fn print_l1(
     report: &awr_context::WorkContextReport,
     revision: awr_core::Revision,
@@ -211,15 +230,7 @@ pub(crate) fn print_l1(
         )
     });
     if json_output {
-        let mut value = serde_json::to_value(report)?;
-        value["ok"] = serde_json::json!(error.is_none());
-        value["project_revision"] = serde_json::json!(revision);
-        value["freshness_basis"] = serde_json::json!("source_refresh");
-        value["source_refresh_performed"] = serde_json::json!(true);
-        value["read_only"] = serde_json::json!(false);
-        if let Some(error) = &error {
-            value["error"] = serde_json::json!(error.report());
-        }
+        let value = l1_value(report)?;
         println!("{}", serde_json::to_string_pretty(&value)?);
     } else {
         print!("{}", report.rendered_context());

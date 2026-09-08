@@ -65,7 +65,11 @@ pub fn run(root: &Path, args: &ResumeArgs, json_output: bool) -> Result<()> {
         },
     )?;
     if json_output {
-        println!("{}", serde_json::to_string_pretty(&report)?);
+        let mut value = serde_json::to_value(&report)?;
+        if let Some(context) = &report.context {
+            value["context"] = crate::context::l1_value(context)?;
+        }
+        println!("{}", serde_json::to_string_pretty(&value)?);
     } else {
         println!(
             "Resume: {}\nFrom: {}\nCheckpoint: {}\nContext ready: {}",
