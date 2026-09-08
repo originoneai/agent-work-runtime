@@ -1,0 +1,353 @@
+{
+  "work_item": "AWR-SEC-002",
+  "stage": "artifact_bounds",
+  "item_completed": false,
+  "checked_at": "2026-09-08T17:02:19+08:00",
+  "baseline_source_commit": "1ff5141e8e1e4821e1f986840b4d9a87e3387bc1",
+  "baseline": {
+    "test_functions": 4,
+    "failed": 2,
+    "passed": 2,
+    "command": [
+      "cargo",
+      "test",
+      "-p",
+      "awr-runtime",
+      "--test",
+      "security_artifact_bounds",
+      "--locked",
+      "--",
+      "--nocapture"
+    ],
+    "exit_code": 101,
+    "log": ".local/sec002-artifact-bounds-before-v2.log",
+    "sha256": "4521adbaafd1bd43645dc5c0e98e34a2300ba9340fccd211217560b8de3add29",
+    "observation": "Caller budgets above 64 MiB and a managed-storage symlink within .awr were accepted. The existing read ceiling and digest/growth checks already passed."
+  },
+  "contract_id": "awr-security-payloads",
+  "contract_version": "1.2.0",
+  "contract_target": 32,
+  "verified_conditions": [
+    "artifact_import_limit",
+    "artifact_read_limit",
+    "direct_parser_limit",
+    "directory_source_limit",
+    "event_atomic_rejection",
+    "event_field_allowlist",
+    "event_field_types",
+    "event_payload_limit",
+    "event_summary_limit",
+    "git_source_limit",
+    "markdown_limit",
+    "reader_limit_validation",
+    "source_drill_limit",
+    "source_mutation_limit",
+    "source_refresh_limit",
+    "yaml_limit"
+  ],
+  "pending_conditions": [
+    "artifact_secret_rejection",
+    "checkpoint_secret_rejection",
+    "context_secret_withholding",
+    "environment_rejection",
+    "event_secret_rejection",
+    "evidence_secret_rejection",
+    "fts_secret_redaction",
+    "known_token_patterns",
+    "manifest_secret_rejection",
+    "ordinary_text_allowed",
+    "private_prompt_rejection",
+    "source_diagnostic_no_secret",
+    "source_projection_secret_guard",
+    "source_secret_rejection",
+    "unicode_secret_labels",
+    "untrusted_field_diagnostic_no_echo"
+  ],
+  "prior_stage_evidence": {
+    "path": "ledger/evidence/AWR-SEC-002/event-schema.json",
+    "sha256": "bec3f81124266ae67eb0f662fefad0a11d6e28c4aa74d9c359c1137d341e4a59",
+    "verified_conditions": 14,
+    "contract_cases_unchanged": true,
+    "prior_limits_unchanged": true,
+    "code_hashes_rechecked": {
+      "crates/awr-core/src/lib.rs": "087b0fc78f028739214d61716e64fe2030829e0e6d965bc8559a69ad82866385",
+      "crates/awr-core/src/event_payload.rs": "0b0f05f5aa4b1a9986049ce5557931f26157549c6ab8d1e06a27e420f14061bd",
+      "crates/awr-store/Cargo.toml": "c9446580fb22adff9e9e927b22de2301193e92b649a393c03c20c84bfe19846f",
+      "crates/awr-store/src/transaction.rs": "4f3cc6084337efb569331287dd8d78983d4bf6e1b63784193cdeac56f279668b",
+      "crates/awr-store/src/events.rs": "eee665f98d35b88734f1ed8f45ce58a5c1d066fb3e76beab236336f012e56f73",
+      "crates/awr-mcp/src/schema.rs": "38e5a13bdba3f251b1882eea86b530dec1732c1ec7ada103d7dc6000405b635c",
+      "crates/awr-cli/tests/drill_cli.rs": "9ff6e27bfda49f00c582d569aee1f83f6fce6df53970c2dc9aceb12dabefdfa2",
+      "crates/awr-context/tests/recent_delta.rs": "f71a063a8ecebc6920951607858404aabe01f002302df9fad1e33facf87c239d"
+    }
+  },
+  "artifact_checks": {
+    "work_item": "AWR-SEC-002",
+    "contract_id": "awr-security-payloads",
+    "contract_version": "1.2.0",
+    "contract_sha256": "1ed8c19ec86ee5988453f25c3f2743e5e68f86ef2ee0cd20a66cb69924425dd9",
+    "checked_at": "2026-09-08T16:57:02+08:00",
+    "platform": "macOS-26.5.2-arm64-arm-64bit-Mach-O",
+    "stage": "artifact_bounds",
+    "stage_target": 2,
+    "contract_target": 32,
+    "stage_passed": true,
+    "item_completed": false,
+    "e4_completed": 0,
+    "runs": [
+      {
+        "command": [
+          "cargo",
+          "test",
+          "-p",
+          "awr-runtime",
+          "--test",
+          "security_artifact_bounds",
+          "--locked",
+          "--",
+          "--nocapture"
+        ],
+        "exit_code": 0,
+        "passed": true,
+        "test_functions_passed": 4,
+        "cases_emitted": [
+          "artifact_import_limit",
+          "artifact_read_limit"
+        ],
+        "log": ".local/sec002-artifact-bounds-final-1.log",
+        "log_sha256": "42d070b59ab464e16ba6b747f28f332064f53cbf807322c3a1221aeb0b525120",
+        "log_retention": "local_only"
+      },
+      {
+        "command": [
+          "cargo",
+          "test",
+          "-p",
+          "awr-runtime",
+          "--lib",
+          "artifact::tests",
+          "--locked",
+          "--",
+          "--nocapture"
+        ],
+        "exit_code": 0,
+        "passed": true,
+        "test_functions_passed": 2,
+        "cases_emitted": [],
+        "log": ".local/sec002-artifact-bounds-final-2.log",
+        "log_sha256": "ecb68114742c5204d17ac213d10f17b9e7136b85ad3472861c56fb30812eeffb",
+        "log_retention": "local_only"
+      },
+      {
+        "command": [
+          "cargo",
+          "test",
+          "-p",
+          "awr-cli",
+          "--test",
+          "security_artifact_bounds",
+          "--locked",
+          "--",
+          "--nocapture"
+        ],
+        "exit_code": 0,
+        "passed": true,
+        "test_functions_passed": 2,
+        "cases_emitted": [],
+        "log": ".local/sec002-artifact-bounds-final-3.log",
+        "log_sha256": "ad4aeb8f44565af0c5709a0cc242f6afbe52c4bebce9b1c1698e096934e48be9",
+        "log_retention": "local_only"
+      }
+    ],
+    "verified_conditions": [
+      "artifact_import_limit",
+      "artifact_read_limit"
+    ],
+    "pending_conditions": [
+      "artifact_secret_rejection",
+      "checkpoint_secret_rejection",
+      "context_secret_withholding",
+      "direct_parser_limit",
+      "directory_source_limit",
+      "environment_rejection",
+      "event_atomic_rejection",
+      "event_field_allowlist",
+      "event_field_types",
+      "event_payload_limit",
+      "event_secret_rejection",
+      "event_summary_limit",
+      "evidence_secret_rejection",
+      "fts_secret_redaction",
+      "git_source_limit",
+      "known_token_patterns",
+      "manifest_secret_rejection",
+      "markdown_limit",
+      "ordinary_text_allowed",
+      "private_prompt_rejection",
+      "reader_limit_validation",
+      "source_diagnostic_no_secret",
+      "source_drill_limit",
+      "source_mutation_limit",
+      "source_projection_secret_guard",
+      "source_refresh_limit",
+      "source_secret_rejection",
+      "unicode_secret_labels",
+      "untrusted_field_diagnostic_no_echo",
+      "yaml_limit"
+    ],
+    "missing_stage_conditions": [],
+    "unknown_conditions": []
+  },
+  "related_checks": {
+    "stage": "artifact_bounds",
+    "checked_at": "2026-09-08T16:58:28+08:00",
+    "passed": true,
+    "runs": [
+      {
+        "command": [
+          "cargo",
+          "build",
+          "-p",
+          "awr-cli",
+          "-p",
+          "awr-mcp",
+          "--locked"
+        ],
+        "exit_code": 0,
+        "test_functions_passed": 0,
+        "log": ".local/sec002-artifact-related-1.log",
+        "log_sha256": "e0f0c14b2611b5d6ea6c9de18864cfc8ea472f26a3ef14a11f6ba90f1aa9cdb8"
+      },
+      {
+        "command": [
+          "cargo",
+          "test",
+          "-p",
+          "awr-runtime",
+          "--tests",
+          "--locked"
+        ],
+        "exit_code": 0,
+        "test_functions_passed": 12,
+        "log": ".local/sec002-artifact-related-2.log",
+        "log_sha256": "e1d2efe5fe773127e35cdfacf1eb54aa292bf6f615d213c6e8c88880b1342611"
+      },
+      {
+        "command": [
+          "cargo",
+          "test",
+          "-p",
+          "awr-cli",
+          "--test",
+          "security_artifact_bounds",
+          "--test",
+          "records_cli",
+          "--test",
+          "doctor_cli",
+          "--test",
+          "work_complete_cli",
+          "--locked"
+        ],
+        "exit_code": 0,
+        "test_functions_passed": 21,
+        "log": ".local/sec002-artifact-related-3.log",
+        "log_sha256": "e2cec5acf7252a694af2a784f5985ba1a2d361805b85d837559bc92117aba13a"
+      },
+      {
+        "command": [
+          "cargo",
+          "check",
+          "--workspace",
+          "--all-targets",
+          "--locked"
+        ],
+        "exit_code": 0,
+        "test_functions_passed": 0,
+        "log": ".local/sec002-artifact-related-4.log",
+        "log_sha256": "1b279b64cd3627e9371b55b76c5f98844d805a386b04c7c0d0e69c92808b0569"
+      },
+      {
+        "command": [
+          "cargo",
+          "fmt",
+          "--all",
+          "--check"
+        ],
+        "exit_code": 0,
+        "test_functions_passed": 0,
+        "log": ".local/sec002-artifact-related-5.log",
+        "log_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      {
+        "command": [
+          "git",
+          "diff",
+          "--check"
+        ],
+        "exit_code": 0,
+        "test_functions_passed": 0,
+        "log": ".local/sec002-artifact-related-6.log",
+        "log_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      }
+    ],
+    "binaries": {
+      "target/debug/awr": "e5ce92a959c4fd08d6168c1af54bb2f3b477453b530e7476d67725829dc9de4d",
+      "target/debug/awr-mcp": "88b8cc15909febdf7e707c46fd2a8c9e4f81c62e2eaaf089c364fa8686ebfb8e"
+    }
+  },
+  "actual_project_use": {
+    "session_id": "01M1ZZ5JD41WCQB4NPFSQA8D8D",
+    "observation_event_id": "01M204204NZBHWF5HF8K28FJ16",
+    "artifact": {
+      "artifact_type": "verification-report",
+      "id": "01M204205BXM2JDZ1WPCPFP8J4",
+      "locator": ".awr/artifacts/01M2042054NN8KP5KRHSEBYB39",
+      "mime": "application/json",
+      "project_id": "01M1YJBR5PW6QXYGABADJVAJPC",
+      "revision": 1,
+      "sha256": "53f1e4e1fca137140859c5cfac42339f50d5c1877282db53750587074220af25",
+      "size": 321,
+      "source_event_id": "01M204204NZBHWF5HF8K28FJ16"
+    },
+    "artifact_event_id": "01M204205BAKR71ZHZ0KSGN1TC",
+    "raw_content_matches": true,
+    "content_hash_verified": true,
+    "metadata_excludes_body": true,
+    "progress_event_id": "01M20420GS2GTP4M478FG5XCM3",
+    "project_revision": 541,
+    "exact_source_progress_change": true,
+    "recovery_snapshots_match": true,
+    "source_before_fingerprint": "sha256:49427794b8a776c0ac0bf1e85404e2d7130e949fe41a57534ab582636faea06d",
+    "source_after_fingerprint": "sha256:cc0891d9e8acc61273a288ea08843ff28a5c40c73b340cca8b3c6932521c75b5",
+    "context_complete": true,
+    "context_excludes_body": true,
+    "context_tokens": 4998,
+    "context_hash": "0d93b4988dd45a9f8d9251df993b12d77a76bf28eb59a028f187f61571a24d17",
+    "doctor": {
+      "ok": true,
+      "expected_findings": [
+        "active_session"
+      ]
+    }
+  },
+  "artifact_sha256": {
+    "crates/awr-runtime/Cargo.toml": "b1333e7f02c171bf0a61efb7693687cf6002934f865d2aa9bb27522a1632e445",
+    "crates/awr-runtime/src/lib.rs": "100e435474f74b1d3e683790fddabd4546145b3f472a696739b4a1c25abc7409",
+    "crates/awr-runtime/src/artifact.rs": "b1cf22615c2d18c5115ae7376e0109bbd3a6199afd9d8f55a3c57653dbf99295",
+    "crates/awr-runtime/src/read.rs": "91dadaa5bf4745e2a2dec0170c789e555110fe5e28bd2e31d328cca9e618c3c3",
+    "crates/awr-cli/Cargo.toml": "95eb61c7f9d3e58add5428ccdfbed7ec50ee98b70e44b4cb744c6739242f13bc",
+    "crates/awr-cli/src/records.rs": "c6663ce07e5305bd77b7ad0a427a4c24d271304a298ca13f2f6194ca5b8bb6ba",
+    "tests/security/payloads/contract.json": "1ed8c19ec86ee5988453f25c3f2743e5e68f86ef2ee0cd20a66cb69924425dd9",
+    "tests/security/payloads/README.md": "e1363283e422181de69bafbedf12f2ff307464cee6aaa4ec27e4947292b7f188",
+    "tests/security/payloads/artifacts.rs": "da232d74420c3b99d617fbb196617dd03182a6e10f7062a83d73cd9248478671",
+    "tests/security/payloads/artifact_cli.rs": "d7c990192a88063614a6a6173b2e2acc363d9c0b3536f73e538579bbca70ae3b",
+    "tests/security/payloads/verify_artifacts.py": "9ae6640fe148d1e3e5b6dbfe1dddbdf0d5c2f09cd92bb8e63f65a140ef4a1142",
+    "docs/reference/artifact-boundaries.md": "31676bb721a0c2503513f0a44a1226f941f6a7175bbf803d77483bfec6499f92"
+  },
+  "e4_completed": 0,
+  "limitations": [
+    "The item remains in progress with 16 secret-handling conditions pending. This stage alone does not prove confidentiality.",
+    "The new managed import ceiling is 64 MiB. The preexisting explicit read ceiling stays at 16 MiB; metadata-only external references are not automatically copied or made readable.",
+    "Prior source/event evidence is retained because its contract cases, parameters and implementation hashes are unchanged. Test functions overlap; only distinct current contract IDs are counted.",
+    "Execution is local macOS, real CLI, MCP-based project progress and development use. Platform acceptance, E4, metrics and release gates remain separate."
+  ]
+}

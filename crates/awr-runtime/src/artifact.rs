@@ -1,10 +1,13 @@
-use crate::Runtime;
+use crate::{ARTIFACT_IMPORT_CAP, Runtime};
 use awr_core::*;
+use awr_source::{open_dir_exact, open_file_exact};
+use cap_fs_ext::{DirExt, FollowSymlinks, OpenOptionsFollowExt};
+use cap_std::fs::{Dir, OpenOptions};
 use sha2::{Digest, Sha256};
 use std::{
-    fs::{self, File, OpenOptions},
+    fs::File,
     io::{Read, Write},
-    path::PathBuf,
+    path::{Path, PathBuf},
 };
 
 pub struct ArtifactFile {
@@ -15,17 +18,59 @@ pub struct ArtifactFile {
     pub max_bytes: u64,
 }
 struct PendingFile {
-    path: PathBuf,
+    directory: Dir,
+    name: String,
     output: Option<File>,
     registered: bool,
+}
+impl PendingFile {
+    fn new(directory: Dir, id: Id) -> Result<Self> {
+        let name = id.to_string();
+        let mut options = OpenOptions::new();
+        options
+            .create_new(true)
+            .write(true)
+            .follow(FollowSymlinks::No);
+        #[cfg(unix)]
+        {
+            use cap_std::fs::OpenOptionsExt;
+            options.mode(0o600);
+        }
+        let output = directory.open_with(&name, &options)?.into_std();
+        Ok(Self {
+            directory,
+            name,
+            output: Some(output),
+            registered: false,
+        })
+    }
 }
 impl Drop for PendingFile {
     fn drop(&mut self) {
         drop(self.output.take());
         if !self.registered {
-            let _ = fs::remove_file(&self.path);
+            let _ = self.directory.remove_file(&self.name);
         }
     }
+}
+
+fn storage_directory(root: &Path) -> Result<Dir> {
+    let mut parent = open_dir_exact(root)?;
+    for name in [".awr", "artifacts"] {
+        match parent.create_dir(name) {
+            Ok(()) => (),
+            Err(error) if error.kind() == std::io::ErrorKind::AlreadyExists => (),
+            Err(error) => return Err(error.into()),
+        }
+        let meta = parent.symlink_metadata(name)?;
+        if !meta.is_dir() || meta.file_type().is_symlink() {
+            return Err(Error::RuleViolation(
+                "artifact storage must use real directories".into(),
+            ));
+        }
+        parent = parent.open_dir_nofollow(name)?;
+    }
+    Ok(parent)
 }
 
 impl Runtime<'_> {
@@ -43,10 +88,10 @@ impl Runtime<'_> {
             });
         }
         self.store.event(self.project, request.source_event_id)?;
-        if request.max_bytes == 0 {
-            return Err(Error::InvalidInput(
-                "artifact byte limit must be positive".into(),
-            ));
+        if request.max_bytes == 0 || request.max_bytes > ARTIFACT_IMPORT_CAP {
+            return Err(Error::InvalidInput(format!(
+                "artifact import limit must be 1..{ARTIFACT_IMPORT_CAP} bytes"
+            )));
         }
         let root = project.root.canonicalize()?;
         if root != project.root {
@@ -76,44 +121,17 @@ impl Runtime<'_> {
                 "artifact source is outside project and authorized roots".into(),
             ));
         }
-        let mut source = File::open(&path)?;
+        let mut source = open_file_exact(&path)?;
         let before = source.metadata()?;
         if !before.is_file() || before.len() > request.max_bytes {
             return Err(Error::InvalidInput(
                 "artifact source must be a regular file within the byte limit".into(),
             ));
         }
-        let runtime = root.join(".awr");
-        if !runtime.exists() {
-            fs::create_dir(&runtime)?;
-        }
-        let runtime = runtime.canonicalize()?;
-        if !runtime.starts_with(&root) || !runtime.is_dir() {
-            return Err(Error::RuleViolation(
-                "runtime directory escapes project root".into(),
-            ));
-        }
-        let directory = runtime.join("artifacts");
-        if !directory.exists() {
-            fs::create_dir(&directory)?;
-        }
-        let directory = directory.canonicalize()?;
-        if !directory.starts_with(&runtime) || !directory.is_dir() {
-            return Err(Error::RuleViolation(
-                "artifact directory escapes runtime storage".into(),
-            ));
-        }
+        let directory = storage_directory(&root)?;
         let storage_id = Id::new();
-        let destination = directory.join(storage_id.to_string());
-        let output = OpenOptions::new()
-            .create_new(true)
-            .write(true)
-            .open(&destination)?;
-        let mut pending = PendingFile {
-            path: destination.clone(),
-            output: Some(output),
-            registered: false,
-        };
+        let destination = root.join(".awr/artifacts").join(storage_id.to_string());
+        let mut pending = PendingFile::new(directory, storage_id)?;
         let mut hasher = Sha256::new();
         let mut size = 0u64;
         let mut buffer = [0u8; 32 * 1024];
@@ -134,6 +152,8 @@ impl Runtime<'_> {
             hasher.update(&buffer[..n]);
         }
         pending.output.as_ref().unwrap().sync_all()?;
+        #[cfg(unix)]
+        pending.directory.try_clone()?.into_std_file().sync_all()?;
         drop(pending.output.take());
         let after = source.metadata()?;
         if size != before.len()
@@ -164,5 +184,64 @@ impl Runtime<'_> {
         )?;
         pending.registered = true;
         Ok(result)
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+    use std::fs;
+
+    struct Temporary(PathBuf);
+    impl Temporary {
+        fn new() -> Self {
+            let path = std::env::temp_dir().join(format!("awr-artifact-handles-{}", Id::new()));
+            fs::create_dir(&path).unwrap();
+            Self(path.canonicalize().unwrap())
+        }
+    }
+    impl Drop for Temporary {
+        fn drop(&mut self) {
+            let _ = fs::remove_dir_all(&self.0);
+        }
+    }
+
+    #[test]
+    fn failed_creation_never_owns_or_removes_an_existing_artifact() {
+        let root = Temporary::new();
+        let directory = storage_directory(&root.0).unwrap();
+        let id = Id::new();
+        let path = root.0.join(".awr/artifacts").join(id.to_string());
+        fs::write(&path, b"Existing artifact").unwrap();
+        assert!(PendingFile::new(directory, id).is_err());
+        assert_eq!(fs::read(path).unwrap(), b"Existing artifact");
+    }
+
+    #[cfg(unix)]
+    #[test]
+    fn failed_import_cleanup_uses_the_held_directory_after_redirection() {
+        use std::os::unix::fs::symlink;
+        let root = Temporary::new();
+        let directory = storage_directory(&root.0).unwrap();
+        let id = Id::new();
+        let mut pending = PendingFile::new(directory, id).unwrap();
+        pending
+            .output
+            .as_mut()
+            .unwrap()
+            .write_all(b"Pending artifact")
+            .unwrap();
+        let retained = root.0.join(".awr/retained");
+        fs::rename(root.0.join(".awr/artifacts"), &retained).unwrap();
+        let replacement = root.0.join("replacement");
+        fs::create_dir(&replacement).unwrap();
+        fs::write(replacement.join(id.to_string()), b"Unrelated file").unwrap();
+        symlink(&replacement, root.0.join(".awr/artifacts")).unwrap();
+        drop(pending);
+        assert!(!retained.join(id.to_string()).exists());
+        assert_eq!(
+            fs::read(replacement.join(id.to_string())).unwrap(),
+            b"Unrelated file"
+        );
     }
 }

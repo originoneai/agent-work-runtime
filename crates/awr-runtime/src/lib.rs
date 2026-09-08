@@ -26,6 +26,10 @@ pub use mutation::{
 pub use resume::{ResumeReport, ResumeRequest, resume_session};
 pub use work_action::{WorkActionRequest, perform_work_action};
 
+/// Hard ceilings; a caller may select a smaller budget, never raise these limits.
+pub const ARTIFACT_IMPORT_CAP: u64 = 64 * 1024 * 1024;
+pub const REGISTERED_CONTENT_READ_CAP: u64 = 16 * 1024 * 1024;
+
 pub struct Runtime<'a> {
     store: &'a mut Store,
     project: Id,

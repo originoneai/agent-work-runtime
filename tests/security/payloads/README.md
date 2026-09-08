@@ -21,6 +21,14 @@ cargo build -p awr-cli -p awr-mcp --locked
 python3 tests/security/payloads/verify_events.py --report .local/event-bound-checks.json
 ```
 
-[事件载荷合同](../../../docs/reference/event-payloads.md)列出允许字段和大小。组件合同 1.1.0 明确这些大小参数，保持原有 32 个条件及来源门槛不变。所有基线记录保留各自合同版本；当前版本下的来源和事件检查合计最多覆盖 14/32，另外 18 个 artifact、秘密数据和输出边界条件仍需独立验证。
+[事件载荷合同](../../../docs/reference/event-payloads.md)列出允许字段和大小。组件合同 1.1.0 明确这些大小参数，保持原有 32 个条件及来源门槛不变。所有基线记录保留各自合同版本；来源和事件两组检查共覆盖 14 个条件，另外 18 个 artifact、秘密数据和输出边界条件不包含在这两组结果中。
+
+产物阶段验证 2 个条件，包含 64 MiB 导入与 16 MiB 读取的边界值、不可提高的调用者预算、正文返回前的大小/摘要检查、文件增长和失败时的状态保持。额外检查受管目录别名、独占创建与路径重定向后的清理；Unix 目录链接检查按平台显式编译。
+
+```bash
+python3 tests/security/payloads/verify_artifacts.py --report .local/artifact-bound-checks.json
+```
+
+组件合同 1.2.0 补充[产物边界](../../../docs/reference/artifact-boundaries.md)参数，保持原有 32 个条件及已定义的来源/事件参数不变。来源、事件与产物阶段合计最多覆盖 16/32；其余 16 个秘密数据条件仍待完整验证。三个阶段校验器均不单独宣告 SEC-002 完成。
 
 秘密数据检查需要拒绝或隐藏具体敏感值，同时保留普通业务文字的可用性。不能通过删除硬规则、验收或事实后宣称 Context 完整；这一部分由后续同一任务的实现与证据验证。

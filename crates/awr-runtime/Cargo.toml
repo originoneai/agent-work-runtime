@@ -16,3 +16,7 @@ serde.workspace = true
 serde_json.workspace = true
 cap-std.workspace = true
 cap-fs-ext.workspace = true
+
+[[test]]
+name = "security_artifact_bounds"
+path = "../../tests/security/payloads/artifacts.rs"

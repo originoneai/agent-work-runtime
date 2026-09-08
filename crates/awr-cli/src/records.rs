@@ -1,6 +1,6 @@
 use crate::{query::short, session::RuntimeProject};
 use awr_core::*;
-use awr_runtime::{ArtifactFile, Runtime};
+use awr_runtime::{ARTIFACT_IMPORT_CAP, ArtifactFile, REGISTERED_CONTENT_READ_CAP, Runtime};
 use clap::Subcommand;
 use serde_json::{Value, json};
 use std::{
@@ -51,7 +51,7 @@ pub enum ArtifactCommand {
         mime: String,
         #[arg(long)]
         source_event: Id,
-        #[arg(long, default_value_t = 67108864)]
+        #[arg(long, default_value_t = ARTIFACT_IMPORT_CAP)]
         max_bytes: u64,
         #[arg(long)]
         expected_revision: Revision,
@@ -79,7 +79,7 @@ fn print(value: &Value, text: &str, json_output: bool) -> Result<()> {
     Ok(())
 }
 pub(crate) fn check_limit(size: u64, limit: u64) -> Result<()> {
-    if limit == 0 || limit > 16 * 1024 * 1024 {
+    if limit == 0 || limit > REGISTERED_CONTENT_READ_CAP {
         return Err(Error::InvalidInput(
             "read limit must be 1..16777216 bytes".into(),
         ));

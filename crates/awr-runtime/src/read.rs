@@ -1,7 +1,7 @@
-use crate::Runtime;
+use crate::{REGISTERED_CONTENT_READ_CAP, Runtime};
 use awr_core::*;
 use sha2::{Digest, Sha256};
-use std::{fs::File, io::Read, path::Path};
+use std::{io::Read, path::Path};
 
 impl Runtime<'_> {
     /// Explicit artifact body read. No content is returned until size and digest match its record.
@@ -45,7 +45,7 @@ pub(crate) fn read_registered_file(
     expected_sha: Option<&str>,
     max_bytes: u64,
 ) -> Result<Vec<u8>> {
-    if max_bytes == 0 || max_bytes > 16 * 1024 * 1024 {
+    if max_bytes == 0 || max_bytes > REGISTERED_CONTENT_READ_CAP {
         return Err(Error::InvalidInput(
             "read limit must be 1..16777216 bytes".into(),
         ));
@@ -92,7 +92,7 @@ pub(crate) fn read_registered_file(
             "registered content is not a regular file".into(),
         ));
     }
-    let file = File::open(&path)?;
+    let file = awr_source::open_file_exact(&path)?;
     let before = file.metadata()?;
     if !before.is_file() {
         return Err(Error::InvalidInput(
