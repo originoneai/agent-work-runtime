@@ -1,8 +1,8 @@
 schema_version: 1
 contract_id: awr-v1
 contract_version: 1.0.0
-ledger_revision: 161
-updated_at: '2026-09-09T00:01:45+08:00'
+ledger_revision: 162
+updated_at: '2026-09-09T00:06:05+08:00'
 project:
   name: Agent Work Runtime
   external_key: agent-work-runtime
@@ -12,9 +12,9 @@ project:
 current:
   milestone: M9
   work_item: AWR-P9-001
-  next_action: 真实大型台账 9/9 检查已通过；固化验证与远端回执后完成本条，接续 Token、硬事实召回和延迟基准。
+  next_action: 开始 AWR-P9-004：固定实际 tokenizer 与硬事实清单，测量同一真实样本的 Bootstrap、Work Context 和压缩比。
   open_loops:
-  - 真实样本已通过 P9-001 全部九项运行检查：150 唯一任务、39 当前/111 历史、规范源 249449 bytes；原件保持不变。准备记录与失败尝试保留，当前正在绑定完成回执。
+  - P9-001 九项基准已通过并完成源台账写回；150 唯一任务、39 当前/111 历史，独立重建与原件不变已证明。Token/延迟指标不由本项结果推定。
   - P9-002 恢复基准已完成；P9-004 Token/硬事实召回、P9-005 延迟与 QA-003 真实客户端业务验收仍待执行。
   - 8 个 E4 场景和 10 个指标仍为 0；实际 Agent 客户端完整业务执行与可区分独立复核尚待实施，不能用模拟 fixture 或开发自用替代。
   - 本机 Codex、Kimi、Grok 的既有接入材料不证明原生模型调用、真实 MCP tool turn 或自动 hooks 生效；此前 Grok MCP 诊断受项目信任阻塞。
@@ -1786,11 +1786,12 @@ work_items:
   - docs/benchmarks/
   depends_on:
   - AWR-QA-001
-  evidence: []
+  evidence:
+  - ledger/deliveries/AWR-P9-001.json
   id: AWR-P9-001
   kind: quality
   milestone: M9
-  next_action: 真实大型台账 9/9 检查已通过；固化验证与远端回执后完成本条，接续 Token、硬事实召回和延迟基准。
+  next_action: 已完成真实大型台账基准；后续同一样本的 Token、硬事实召回和延迟由 AWR-P9-004/P9-005 验证。
   owner: codex-primary
   priority: P2
   required_for_v1: true
@@ -1799,11 +1800,11 @@ work_items:
   - 41
   - 42
   - 52
-  status: in_progress
+  status: completed
   title: 真实大型 Ledger Benchmark
   verification:
     evidence_directory: ledger/evidence/AWR-P9-001
-    evidence_level: none
+    evidence_level: locally_verified
     minimum: 证明本条验收行为；功能阶段运行必要的定向检查，系统测试在 M9 集中执行。
     preparation_records:
     - ledger/evidence/AWR-P9-001/preparation.json
