@@ -1,0 +1,82 @@
+{
+  "kind": "implementation",
+  "repository": "https://github.com/originoneai/agent-work-runtime",
+  "source_commit": "24c036251bfe797881306d9caa873dae99eb1485",
+  "checked_at": "2026-09-08T14:19:53+08:00",
+  "remote_receipt": {
+    "commit": "24c036251bfe797881306d9caa873dae99eb1485",
+    "url": "https://github.com/originoneai/agent-work-runtime/commit/24c036251bfe797881306d9caa873dae99eb1485",
+    "verified_at": "2026-09-08T14:19:53+08:00"
+  },
+  "version": 1,
+  "work_item": "AWR-P8-003",
+  "source_sha": "24c036251bfe797881306d9caa873dae99eb1485",
+  "command": "bash .local/p8-003-cross-client/06-kimi-start/commands.sh",
+  "scope": [
+    "AWR-P8-003"
+  ],
+  "verified_at": 1788848393681,
+  "checks": [
+    {
+      "name": "documented_cli_cross_provider_continuation",
+      "passed": true,
+      "result": "Executed the Markdown command blocks with Bash strict mode, substituting only paths/model/session placeholders: Kimi start/checkpoint, Grok resume/checkpoint, and Kimi resume/checkpoint/end. All commands succeeded. Three distinct AWR sessions retained one work/branch, checkpoint next action/open loops, and the same claim expiration across moonshot/xai/moonshot metadata. The five source files remained byte-identical; all claims were settled and Doctor had no findings. Provider/model strings did not invoke models.",
+      "criteria": [
+        "提供 CLI 接入与接续同一工作的可执行步骤。",
+        "客户端不具备自动 hook 时给出手动 checkpoint 流程，不宣称未验证自动化。"
+      ]
+    },
+    {
+      "name": "local_client_version_and_configuration_boundaries",
+      "passed": true,
+      "result": "Read-only version/help checks found Kimi Code 0.41.0 and Grok Build 1.0.13 (5e9a58528b76). Kimi current help matches the kimi-code guide and lacks legacy kimi mcp / --mcp-config-file options. Grok exposes project-scoped mcp add and named doctor/list JSON, without mcp get. Embedded JSON/TOML parsed and the actual fixture Grok project table bound the intended binary/root."
+    },
+    {
+      "name": "grok_untrusted_project_diagnostic",
+      "passed": true,
+      "result": "Actual grok mcp add --scope project wrote only the isolated fixture config. The named grok mcp doctor returned folder untrusted and did not start the server. This negative diagnostic is recorded as the client boundary, not successful connectivity. No hook/trust bypass or model turn was used; native Kimi/Grok connections and automatic hooks remain unverified."
+    },
+    {
+      "name": "shared_ready_command_correction",
+      "passed": true,
+      "result": "Direct Markdown execution found the invalid awr work ready recipe. Corrected all three guides to top-level awr ready. The corrected Codex guide was also executed through setup/start/bootstrap/L1/checkpoint/resume/end. Its source correction and verification are a separate commit, with immutable old evidence retained and an additional correction delivery receipt."
+    },
+    {
+      "name": "guide_review_and_links",
+      "passed": true,
+      "result": "Every local Markdown link and embedded configuration parsed successfully. Compared current local CLI options with official Kimi/Grok MCP/session/hook documentation fetched on 2026-09-08. Guides distinguish conversation/AWR IDs, metadata/model calls, local stdio/web connectors, source freshness, incomplete/partial resume, claim expiry, manual checkpoints and client-specific hook activation."
+    }
+  ],
+  "artifacts": [
+    "docs/integrations/kimi.md",
+    "docs/integrations/grok.md",
+    "docs/integrations/codex.md",
+    "ledger/evidence/AWR-P8-003/checks.json",
+    "ledger/evidence/AWR-P8-003/self-use.json"
+  ],
+  "work_items": {
+    "AWR-P8-003": {
+      "acceptance": [
+        {
+          "criterion": "提供 CLI 接入与接续同一工作的可执行步骤。",
+          "passed": true
+        },
+        {
+          "criterion": "客户端不具备自动 hook 时给出手动 checkpoint 流程，不宣称未验证自动化。",
+          "passed": true
+        }
+      ]
+    }
+  },
+  "artifact_sha256": {
+    "docs/integrations/kimi.md": "bbefe93e610d8d7134e06035a32c6e18f873fcf6efa28d3878086aa0160c782d",
+    "docs/integrations/grok.md": "56fd30a6f44d14a24d378a176e95010e5babff826e5e18e72f046a5e28e541b4",
+    "docs/integrations/codex.md": "2361cc7814eafd42a6d8ff91317fbc7b9dcc2f360dbd766306a26dcc04a0eea0"
+  },
+  "limitations": [
+    "Documentation and feature-local CLI verification only; centralized QA, E4, benchmarks and release remain scheduled.",
+    "No Kimi/Grok model turn or native tool invocation was executed. AWR provider/model labels are metadata, and the Grok MCP connection attempt was rejected for missing project trust.",
+    "No automatic lifecycle hooks or remote MCP transport were installed. Current client capability documentation does not prove trigger delivery in an existing session.",
+    "Fixture context sizes are observations, not the ten contractual V1 metrics."
+  ]
+}
