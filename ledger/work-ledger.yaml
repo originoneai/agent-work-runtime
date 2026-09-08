@@ -1,8 +1,8 @@
 schema_version: 1
 contract_id: awr-v1
 contract_version: 1.0.0
-ledger_revision: 145
-updated_at: '2026-09-08T20:46:32+08:00'
+ledger_revision: 147
+updated_at: '2026-09-08T20:52:21+08:00'
 project:
   name: Agent Work Runtime
   external_key: agent-work-runtime
@@ -11,11 +11,11 @@ project:
   release_status: not_released
 current:
   milestone: M9
-  work_item: AWR-QA-001
-  next_action: 17 道集中回归检查与 122 项专项条件通过；绑定执行源码、远端和本项目写回回执，完成 QA-001 后准备 8 个完整业务场景。
+  work_item: AWR-QA-002
+  next_action: 按 V1 合同建立 8 个独立业务场景的材料、工作图、角色、两轮自然追问、产物与复核要求，并生成可校验覆盖矩阵；场景执行结果留待真实客户端验收。
   open_loops:
-  - QA-001 当前合同 1.1.0 的 17/17 检查通过：273 项 workspace 测试、2 项 doctest、122 项专项条件、8 项 CLI/MCP 契约及原样接续示例。普通 Basic 文字误判、短凭据漏检和旧搜索缓存已修复；原始失败记录保留。本项目
-    Doctor 只读诊断和 MCP 进度写回核对完成，等待源码、远端与完成回执；均不计 E4。
+  - QA-001 已完成：17/17 回归检查、273 项 workspace 测试、2 项 doctest、122 项专项条件、8 项 CLI/MCP 契约与原样接续示例通过。Basic 识别、短凭据、旧缓存和示例断言的根因修复已绑定源码
+    9bfdf88；交付 7918772 的 Git/GitHub 回执已核实。本项目完成写回、checkpoint/end 后 Doctor 为零项；后续准备 8 个独立业务场景，均不计 E4。
   - SEC-001 已完成：26/26 路径条件、46 项写回回归和 10 项 MCP 检查通过；源码 217a0b5 的远端回执已核实。实际完成写回、快照核对、checkpoint/end 后 Doctor 为 0 项；进入
     SEC-002。均不计 E4 或正式发布。
   - P0/P1 功能与接入项全部完成；P8-004 已对齐 8 个 MCP Tools 和 CLI 的状态、版本、缺口及写入回执，进入 M8 安全与后续集中质量阶段。
@@ -1674,11 +1674,12 @@ work_items:
   - AWR-SEC-002
   - AWR-SEC-004
   - AWR-SEC-005
-  evidence: []
+  evidence:
+  - ledger/deliveries/AWR-QA-001.json
   id: AWR-QA-001
   kind: quality
   milestone: M9
-  next_action: 17 道集中回归检查与 122 项专项条件通过；绑定执行源码、远端和本项目写回回执，完成 QA-001 后准备 8 个完整业务场景。
+  next_action: 执行源码 9bfdf88、17/17 集中回归及交付 7918772 的远端回执已核实；完成写回、checkpoint/end 与 Doctor 零项复核通过，后续进入 AWR-QA-002。
   owner: codex-primary
   priority: P2
   required_for_v1: true
@@ -1686,38 +1687,38 @@ work_items:
   - 48
   - 50
   - 55
-  status: in_progress
+  status: completed
   title: 集中单元、集成与领域回归
   verification:
     evidence_directory: ledger/evidence/AWR-QA-001
-    evidence_level: none
+    evidence_level: locally_verified
     minimum: 证明本条验收行为；功能阶段运行必要的定向检查，系统测试在 M9 集中执行。
-- id: AWR-QA-002
-  title: 8 个完整业务场景 Fixture 与覆盖矩阵
-  milestone: M9
-  priority: P2
-  kind: quality
-  required_for_v1: true
-  status: planned
-  owner: null
-  depends_on:
-  - AWR-P8-003
-  - AWR-P8-004
-  source_sections:
-  - 52
+- acceptance:
+  - 为合同 8 个场景建立独立 fixture、namespace、任务图、执行/复核角色和产物路径。
+  - 每场景包含自然发起、真实执行产物、两轮业务追问、独立复核、交付与回执；输入不泄漏测试 ID/预期答案。
+  blocker: null
   deliverables:
   - tests/fixtures/business/
   - docs/acceptance/
-  acceptance:
-  - 为合同 8 个场景建立独立 fixture、namespace、任务图、执行/复核角色和产物路径。
-  - 每场景包含自然发起、真实执行产物、两轮业务追问、独立复核、交付与回执；输入不泄漏测试 ID/预期答案。
+  depends_on:
+  - AWR-P8-003
+  - AWR-P8-004
+  evidence: []
+  id: AWR-QA-002
+  kind: quality
+  milestone: M9
+  next_action: 按 V1 合同建立 8 个独立业务场景的材料、工作图、角色、两轮自然追问、产物与复核要求，并生成可校验覆盖矩阵；场景执行结果留待真实客户端验收。
+  owner: codex-primary
+  priority: P2
+  required_for_v1: true
+  source_sections:
+  - 52
+  status: in_progress
+  title: 8 个完整业务场景 Fixture 与覆盖矩阵
   verification:
-    minimum: 证明本条验收行为；功能阶段运行必要的定向检查，系统测试在 M9 集中执行。
     evidence_directory: ledger/evidence/AWR-QA-002
     evidence_level: none
-  evidence: []
-  blocker: null
-  next_action: 按交付物实现并验证：8 个完整业务场景 Fixture 与覆盖矩阵
+    minimum: 证明本条验收行为；功能阶段运行必要的定向检查，系统测试在 M9 集中执行。
 - id: AWR-QA-003
   title: 实际 Agent 客户端完整业务验收
   milestone: M9
