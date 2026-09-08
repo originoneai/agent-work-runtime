@@ -1,0 +1,40 @@
+{
+  "contract_id": "awr-real-large-ledger",
+  "version": "1.0.0",
+  "work_item": "AWR-P9-001",
+  "source_sections": [36, 41, 42, 52],
+  "status_authority": "ledger/work-ledger.yaml",
+  "scale": {
+    "minimum_current_work_items": 30,
+    "minimum_historical_work_items": 100,
+    "minimum_ledger_bytes": 204800,
+    "maximum_ledger_bytes": 4194304,
+    "current_statuses": ["planned", "ready", "claimed", "in_progress", "blocked"],
+    "historical_statuses": ["completed", "cancelled"]
+  },
+  "scale_interpretation": "Current and historical partitions use the existing AWR normalized statuses. Each source work key counts once; repeated Git versions or repeated evidence references do not create additional work items. Unknown statuses remain visible and are not guessed into either partition. The design's several-hundred-KB description is operationalized as at least 200 KiB of the actual ledger, without generated padding.",
+  "required_gates": [
+    "real_project_provenance",
+    "scale_and_domain_richness",
+    "frozen_source_intake",
+    "bounded_work_read",
+    "idempotent_and_incremental_index",
+    "unrelated_history_isolation",
+    "projection_rebuild",
+    "original_source_unchanged",
+    "public_evidence_redaction"
+  ],
+  "provenance": "Use an existing real project supplied for the benchmark. Bind the original source bytes, Git state when available, mapping and frozen copy. Labels, a generated large file or a boolean declaration are not proof of real project provenance.",
+  "domain_richness": "Verify multiple actual milestones and decisions, substantial evidence, and test/history records. Record their observed counts, distinct references and source locations; inspect their business relevance. Do not manufacture entries or inflate volume with duplicate references or padding.",
+  "runtime_requirements": {
+    "frozen_source_intake": "Index the frozen project's explicit source mapping without changing original files; bind source, project and work identities.",
+    "bounded_work_read": "Read one selected current work with its real acceptance, blocker, next action and dependency facts; the response must not expand the full ledger.",
+    "idempotent_and_incremental_index": "An unchanged reindex must preserve IDs and revisions. A controlled source change on a disposable copy must update the intended projection, retain unrelated facts and bind before/after fingerprints.",
+    "unrelated_history_isolation": "Default selected-work context excludes unrelated closed work and its history; explicit historical drill-down remains possible. Necessary dependency facts are assessed separately.",
+    "projection_rebuild": "Rebuild domain projections from the same frozen sources in an independent disposable project and compare source-derived facts. Do not invent runtime sessions, claims, checkpoints or execution history.",
+    "original_source_unchanged": "Recheck original source hashes after preparation and after the run. All mutations belong to explicitly identified disposable copies.",
+    "public_evidence_redaction": "Publish scope, counts, versions, commands and hash bindings. Keep original private text, identities and local paths in retained local evidence; inspect public artifacts before commit."
+  },
+  "counting": "Structural admission only determines whether a sample may proceed to runtime verification. It does not complete this benchmark, any of the ten metrics, E4, or a release. All required gates need actual evidence before the source ledger can mark this item complete.",
+  "related_work": {"compact_recovery": "AWR-P9-002", "token_and_recall": "AWR-P9-004", "latency": "AWR-P9-005"}
+}
