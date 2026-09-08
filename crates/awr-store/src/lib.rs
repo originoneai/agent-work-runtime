@@ -14,6 +14,7 @@ mod projection;
 mod query;
 mod reconcile;
 mod resume;
+mod schema;
 mod search;
 mod session;
 mod source_changes;
@@ -77,6 +78,9 @@ pub struct DoctorReport {
     pub migrations: Vec<MigrationInfo>,
     pub integrity: Vec<String>,
     pub foreign_key_violations: usize,
+    pub schema_issues: Vec<String>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub foreign_key_check_error: Option<String>,
 }
 
 #[derive(Debug, Serialize)]
@@ -213,6 +217,9 @@ impl Store {
                 "schema {current} is newer than supported {SCHEMA_VERSION}"
             )));
         }
+        if current > 0 {
+            schema::verify(&conn, current)?;
+        }
         let mode: String = conn
             .pragma_query_value(None, "journal_mode", |r| r.get(0))
             .map_err(db_error)?;
@@ -233,6 +240,11 @@ impl Store {
             let version: i64 = tx
                 .pragma_query_value(None, "user_version", |r| r.get(0))
                 .map_err(db_error)?;
+            if version > 0 {
+                // Validate the actual base under the writer lock before adding
+                // anything. A failed upgrade must not commit a partial new schema.
+                schema::verify(&tx, version)?;
+            }
             if version == 0 {
                 tx.execute_batch(CATALOG_SQL).map_err(db_error)?;
                 tx.execute(
@@ -261,6 +273,7 @@ impl Store {
             }
             tx.pragma_update(None, "user_version", SCHEMA_VERSION)
                 .map_err(db_error)?;
+            schema::verify(&tx, SCHEMA_VERSION)?;
             tx.commit().map_err(db_error)?;
         }
         let store = Self { conn };
@@ -280,20 +293,7 @@ impl Store {
     }
 
     fn verify_catalog(&self) -> Result<()> {
-        let versions: Vec<i64> = self
-            .conn
-            .prepare("SELECT version FROM schema_migrations ORDER BY version")
-            .map_err(db_error)?
-            .query_map([], |r| r.get(0))
-            .map_err(db_error)?
-            .collect::<rusqlite::Result<_>>()
-            .map_err(db_error)?;
-        if versions != (1..=SCHEMA_VERSION).collect::<Vec<_>>() {
-            return Err(Error::Storage(format!(
-                "migration catalog does not match schema: {versions:?}"
-            )));
-        }
-        Ok(())
+        schema::verify(&self.conn, SCHEMA_VERSION)
     }
 
     /// Inspect without creating, upgrading, or repairing the database.
@@ -327,36 +327,39 @@ impl Store {
             .map_err(db_error)?
             .collect::<rusqlite::Result<Vec<_>>>()
             .map_err(db_error)?;
-        let foreign_key_violations = self
-            .conn
-            .prepare("PRAGMA foreign_key_check")
-            .map_err(db_error)?
-            .query_map([], |_| Ok(()))
-            .map_err(db_error)?
-            .collect::<rusqlite::Result<Vec<_>>>()
-            .map_err(db_error)?
-            .len();
-        let migrations = self
-            .conn
-            .prepare("SELECT version,name,applied_at FROM schema_migrations ORDER BY version")
-            .map_err(db_error)?
-            .query_map([], |r| {
-                Ok(MigrationInfo {
-                    version: r.get(0)?,
-                    name: r.get(1)?,
-                    applied_at: r.get(2)?,
-                })
-            })
-            .map_err(db_error)?
-            .collect::<rusqlite::Result<Vec<_>>>()
-            .map_err(db_error)?;
-        let catalog_ok = migrations.iter().map(|m| m.version).collect::<Vec<_>>()
-            == (1..=SCHEMA_VERSION).collect::<Vec<_>>();
+        let foreign_key_check = (|| -> rusqlite::Result<usize> {
+            Ok(self
+                .conn
+                .prepare("PRAGMA foreign_key_check")?
+                .query_map([], |_| Ok(()))?
+                .collect::<rusqlite::Result<Vec<_>>>()?
+                .len())
+        })();
+        let (foreign_key_violations, foreign_key_check_error) = match foreign_key_check {
+            Ok(count) => (count, None),
+            Err(_) => (
+                0,
+                Some("foreign-key check could not run for this schema".into()),
+            ),
+        };
+        let mut schema_issues = schema::issues(&self.conn, schema_version)?;
+        let migrations = match schema::migrations(&self.conn) {
+            Ok(migrations) => migrations,
+            Err(_) => {
+                schema_issues.push("migration catalog cannot be read".into());
+                Vec::new()
+            }
+        };
+        let catalog_ok = schema::catalog_matches(&migrations, schema_version);
+        if !catalog_ok {
+            schema_issues.push("migration catalog does not match the supported schema".into());
+        }
         Ok(DoctorReport {
             ok: integrity == ["ok"]
                 && foreign_key_violations == 0
+                && foreign_key_check_error.is_none()
                 && schema_version == SCHEMA_VERSION
-                && catalog_ok,
+                && schema_issues.is_empty(),
             application_id,
             schema_version,
             sqlite_version: self
@@ -378,6 +381,8 @@ impl Store {
             migrations,
             integrity,
             foreign_key_violations,
+            schema_issues,
+            foreign_key_check_error,
         })
     }
 }

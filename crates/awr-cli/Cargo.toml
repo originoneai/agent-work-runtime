@@ -34,3 +34,7 @@ path = "../../tests/security/payloads/source_cli.rs"
 [[test]]
 name = "security_artifact_bounds"
 path = "../../tests/security/payloads/artifact_cli.rs"
+
+[[test]]
+name = "doctor_recovery"
+path = "../../tests/recovery/doctor/database.rs"

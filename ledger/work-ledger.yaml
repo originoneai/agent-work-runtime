@@ -1,8 +1,8 @@
 schema_version: 1
 contract_id: awr-v1
 contract_version: 1.0.0
-ledger_revision: 139
-updated_at: '2026-09-08T19:18:23+08:00'
+ledger_revision: 140
+updated_at: '2026-09-08T19:56:54+08:00'
 project:
   name: Agent Work Runtime
   external_key: agent-work-runtime
@@ -12,10 +12,10 @@ project:
 current:
   milestone: M8
   work_item: AWR-SEC-005
-  next_action: 建立数据库完整性与 Doctor 故障合同，检查 schema/迁移、失联依赖、孤立产物、来源访问以及崩溃重开与投影重建边界。
+  next_action: 24 项数据库恢复条件与 143 项检查已通过；绑定源码、远端和本项目诊断/写回证据后完成本条，进入集中领域回归。
   open_loops:
-  - SEC-004 已完成：1.1.0 隔离合同 20/20 和 94 项检查通过，事件替换与显式 main 归属缺陷已修复；源码 2297a27 的 Git/GitHub 回执已核实。本项目完成写回、Claim 释放和
-    checkpoint/end 后 Doctor 为 0 项，进入 SEC-005。实用与专项矩阵不计 E4。
+  - SEC-005 的数据库恢复合同 24/24 与 143 项检查通过，schema 结构误判、迁移名称漏检和错误升级提前提交已修复；三个原始失败样本保留。新 Doctor 在本项目保持全部数据库表和源台账不变，MCP
+    进度写回已核对。等待源码、远端与完成回执；均不计 E4。
   - SEC-001 已完成：26/26 路径条件、46 项写回回归和 10 项 MCP 检查通过；源码 217a0b5 的远端回执已核实。实际完成写回、快照核对、checkpoint/end 后 Doctor 为 0 项；进入
     SEC-002。均不计 E4 或正式发布。
   - P0/P1 功能与接入项全部完成；P8-004 已对齐 8 个 MCP Tools 和 CLI 的状态、版本、缺口及写入回执，进入 M8 安全与后续集中质量阶段。
@@ -1637,6 +1637,7 @@ work_items:
   - crates/awr-store/
   - crates/awr-cli/
   - tests/recovery/doctor/
+  - docs/reference/database-recovery.md
   depends_on:
   - AWR-P5-003
   - AWR-SEC-003
@@ -1644,7 +1645,7 @@ work_items:
   id: AWR-SEC-005
   kind: security
   milestone: M8
-  next_action: 建立数据库完整性与 Doctor 故障合同，检查 schema/迁移、失联依赖、孤立产物、来源访问以及崩溃重开与投影重建边界。
+  next_action: 24 项数据库恢复条件与 143 项检查已通过；绑定源码、远端和本项目诊断/写回证据后完成本条，进入集中领域回归。
   owner: codex-primary
   priority: P2
   required_for_v1: true

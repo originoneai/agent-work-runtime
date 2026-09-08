@@ -1,0 +1,55 @@
+{
+  "kind": "developer_self_use",
+  "work_item": "AWR-SEC-005",
+  "checked_at": "2026-09-08T19:56:54+08:00",
+  "transport": "mcp_stdio_and_cli",
+  "session_id": "01M20BV3WD9ECNN3HWGCXCD6B8",
+  "claim_id": "01M20BV3WZW9DFZ0SH2Y0XM2MR",
+  "observation_event_id": "01M20E1JXDF5TM7EG7WP01D4MW",
+  "progress_event_id": "01M20E1MXGE0SJ6V1XDR8XFXE3",
+  "proposal_id": "01M20E1K0JXAJG0GC98F6TCCSR",
+  "apply_attempt_event_id": "01M20E1M6CTEGQNFG9Y8M6JB66",
+  "project_revision": 667,
+  "explicit_main_selection_retained": true,
+  "session_and_claim_unchanged": true,
+  "exact_source_progress_change": true,
+  "recovery_snapshots_match": true,
+  "final_receipt_matches_attempt": true,
+  "source_before_fingerprint": "sha256:c232d9d75ceadcd97924d62927d6524ce223a2381fa87277ad5bc281f8bd7401",
+  "source_after_fingerprint": "sha256:03c42bfcfbb188c74379550a85f77db3c892681cac4e3e4388d24d614056b14d",
+  "context_complete": true,
+  "context_tokens": 4968,
+  "context_hash": "f52695c17c772715efa86032038d90956cc552c16e7a295d62e117c6bfb25563",
+  "doctor": {
+    "ok": true,
+    "expected_findings": [
+      "active_session"
+    ]
+  },
+  "binary_sha256": {
+    "awr": "0bac286dbac8ac90e0a20760785b83668c3797e755519d8d2d3f455261272186",
+    "awr-mcp": "22e896572eb7713c2a17368df973ac8568655fc08ca85729f3f011e4730a8d4d"
+  },
+  "doctor_read": {
+    "before": {
+      "database_sha256": "ab6770c2d88382481e1ee7c7016b0c324b1766c5f05ca137cefaf62e77f8f8f5",
+      "table_count": 25,
+      "project_revision": 659,
+      "ledger_sha256": "c232d9d75ceadcd97924d62927d6524ce223a2381fa87277ad5bc281f8bd7401"
+    },
+    "after": {
+      "database_sha256": "ab6770c2d88382481e1ee7c7016b0c324b1766c5f05ca137cefaf62e77f8f8f5",
+      "table_count": 25,
+      "project_revision": 659,
+      "ledger_sha256": "c232d9d75ceadcd97924d62927d6524ce223a2381fa87277ad5bc281f8bd7401"
+    },
+    "unchanged": true,
+    "schema_version": 3,
+    "schema_issues": [],
+    "foreign_key_violations": 0
+  },
+  "e4_completed": 0,
+  "limitations": [
+    "Actual project diagnosis and source progress through CLI/MCP. All corruption, migration, process-kill and restore fixtures are isolated temporary projects. No E4, cross-platform or release acceptance."
+  ]
+}

@@ -117,6 +117,12 @@ pub fn run(root: &Path, args: &DoctorArgs, json: bool) -> Result<()> {
                 report.integrity.join(", "),
                 report.foreign_key_violations
             );
+            for issue in &report.schema_issues {
+                println!("Schema issue: {issue}");
+            }
+            if let Some(error) = &report.foreign_key_check_error {
+                println!("Foreign-key check unavailable: {error}");
+            }
         }
         return if report.ok {
             Ok(())

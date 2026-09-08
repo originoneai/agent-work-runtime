@@ -1,0 +1,121 @@
+{
+  "work_item": "AWR-SEC-005",
+  "checked_at": "2026-09-08T19:58:50+08:00",
+  "commands": [
+    "rtk proxy python3 tests/recovery/doctor/verify.py --report .local/sec005-doctor-matrix-v1.json",
+    "rtk proxy .venv/bin/python .local/dev/sec005_self_use.py",
+    "rtk proxy .venv/bin/python scripts/check_ledger.py --render"
+  ],
+  "checks": [
+    {
+      "name": "current_database_recovery_contract",
+      "passed": true,
+      "result": "All 24 fixed conditions in contract 1.0.0 passed through 20 primary tests. Coverage includes ownership, schema definitions, catalog identity, failed/successful migrations, broken bindings, source/artifact diagnostics, live-writer WAL recovery and source/database restoration boundaries."
+    },
+    {
+      "name": "schema_and_migration_fixes",
+      "passed": true,
+      "result": "Three behavioral red baselines were retained. Store opens now validate owned definitions and migration names, including immutable event guards and the active-claim unique index. Supported upgrades validate the base before startup changes, recheck under the writer lock and verify the resulting schema before commit. Doctor reports schema issues and unavailable foreign-key checks explicitly."
+    },
+    {
+      "name": "runtime_recovery_boundaries",
+      "passed": true,
+      "result": "Two confirmed live writers were killed after committed sessions/checkpoints remained WAL-dependent; committed rows reopened intact and an uncommitted transaction rolled back. Reindex retained runtime identities and original events. A new database from the same sources had no invented runtime history. A coherent SQLite backup restored original records, with a missing-artifact finding until its separately retained file was restored."
+    },
+    {
+      "name": "related_regression_and_build",
+      "passed": true,
+      "result": "All 123 related test functions passed: Store 57, CLI 56 and MCP stdio 10; combined with the 20 primary tests this is 143. Locked binaries, all workspace targets, formatting and diff checks passed."
+    },
+    {
+      "name": "actual_project_read_and_write",
+      "passed": true,
+      "result": "New Doctor inspected the actual schema 3 project. All 25 persisted tables, the schema, project revision and source-ledger fingerprint were identical before/after the read. MCP then wrote the exact intended source progress change; runtime session/claim ownership, snapshots and attempt receipt were verified. Context is complete at 4968 tokens and Doctor retains only the intentionally active session."
+    },
+    {
+      "name": "reviewed_failure_handling",
+      "passed": true,
+      "result": "Reviewed migration preflight/transaction ordering, cached pristine schema construction, bounded diagnostic content, fixture ownership, live-child cleanup and WAL dependence, read-only state comparisons and backup/source authority boundaries. No new schema migration, automatic repair, backup CLI or runtime reconstruction claim was introduced."
+    }
+  ],
+  "artifacts": [
+    "crates/awr-store/src/lib.rs",
+    "crates/awr-store/src/schema.rs",
+    "crates/awr-cli/src/doctor.rs",
+    "crates/awr-cli/Cargo.toml",
+    "tests/recovery/doctor/contract.json",
+    "tests/recovery/doctor/database.rs",
+    "tests/recovery/doctor/verify.py",
+    "tests/recovery/doctor/README.md",
+    "docs/reference/database-recovery.md",
+    "ledger/evidence/AWR-SEC-005/database-matrix.json",
+    "ledger/evidence/AWR-SEC-005/self-use.json"
+  ],
+  "artifact_sha256": {
+    "crates/awr-store/src/lib.rs": "933d761b04ae42e54ea81179687629cd96f0ea45cf3bcffebbb6f42ac1f80aa8",
+    "crates/awr-store/src/schema.rs": "ba20a4ff247603fd6752210558813c8a635d9b7bd55a93a9810083d6c7fecfb6",
+    "crates/awr-cli/src/doctor.rs": "32650243874ea4e83ca1b70bb8b5387186f155faf4ba8288bd0e46e0449ff1f8",
+    "crates/awr-cli/Cargo.toml": "3d17a2eaab73971910bef301ed6c561bdb3edec0e36ed4b7f9e00ee7bbe2e404",
+    "tests/recovery/doctor/contract.json": "2b93d537df176b1bb60b9ee7ae7c46331a26886d955480f526a277d218a05075",
+    "tests/recovery/doctor/database.rs": "ef22a5bef922bba9711acad4a060e3bf19e0961169fa4ddd6848349d614337c5",
+    "tests/recovery/doctor/verify.py": "effadbc163a8a33046460cfe238ba8b93a20cf0cf714e62f976c978e64761ebc",
+    "tests/recovery/doctor/README.md": "d83d1076f2684764f8bf7b263ae168e607cbdfc6036eac5057ecff4b2765928b",
+    "docs/reference/database-recovery.md": "37fc6099495bf6359a0c9e79961263cd70b9af09a5be0bcaddfde16bed4ca12d",
+    "ledger/evidence/AWR-SEC-005/database-matrix.json": "299f592432c14ac22feee3b38b713be55fc7f50c35b1d7150c5eba88ecc8a8e3",
+    "ledger/evidence/AWR-SEC-005/self-use.json": "be7492d4ffe32e830b74b642f06517d49da7a0ff2606ffb17b0ce25805d1086d"
+  },
+  "recovery_contract": {
+    "id": "awr-database-recovery",
+    "version": "1.0.0",
+    "target_conditions": 24,
+    "verified_conditions": 24
+  },
+  "binary_sha256": {
+    "awr": "0bac286dbac8ac90e0a20760785b83668c3797e755519d8d2d3f455261272186",
+    "awr-mcp": "22e896572eb7713c2a17368df973ac8568655fc08ca85729f3f011e4730a8d4d"
+  },
+  "local_receipts": [
+    {
+      "path": ".local/sec005-schema-baseline-v1.json",
+      "sha256": "20ceb0b93ae9f2f343e9fbb4cf3165d1aa13712455eb36a61bfdf3cb75f1a8ee",
+      "retention": "local_only"
+    },
+    {
+      "path": ".local/sec005-schema-baseline-v2.json",
+      "sha256": "d68d11cb04422e1a92eb9302a16f8b349d0c6e2a09f39f4e50fcd0cb9a71ee93",
+      "retention": "local_only"
+    },
+    {
+      "path": ".local/sec005-domain-v1.json",
+      "sha256": "d3c011e99e2f8c7f3f6da803a9d20b5d44fa198f974f924e98c69403ea898a83",
+      "retention": "local_only"
+    },
+    {
+      "path": ".local/sec005-domain-v2.json",
+      "sha256": "f5b87fbccd8b586a1619048ce68e9c81535d6202cbf3b81487d91b21aa8b620b",
+      "retention": "local_only"
+    },
+    {
+      "path": ".local/sec005-doctor-matrix-v1.json",
+      "sha256": "724e31157ab78bf805822762cec22bdb0dfa823bc1e46f2230bd2c268a1b6755",
+      "retention": "local_only"
+    },
+    {
+      "path": ".local/sec005-self-use-phases.json",
+      "sha256": "d7e6c495aaab5f546f89a97815dbfe180fd6c3b649d5d10750e72cc4adf4dd60",
+      "retention": "local_only"
+    },
+    {
+      "path": ".local/dev/sec005_self_use.py",
+      "sha256": "6ec3e60ed19981e9198ac8da223d8ed5ec81b400c3a0d8fbda216462bbb82010",
+      "retention": "local_only"
+    }
+  ],
+  "e4_scenarios_completed": 0,
+  "limitations": [
+    "Local macOS component, OS-process and CLI/MCP verification, plus actual-project developer use. No other-platform, E4, metric or release credit.",
+    "Schema checks compare owned definitions to the bundled migrations and allow extra diagnostic objects. They do not establish semantic equivalence of manually rewritten SQL or make externally writable database files tamper-proof.",
+    "The WAL tests confirm live writers and prove the main database alone lacks committed rows before termination. They do not simulate machine power loss.",
+    "The backup fixture restores a coherent SQLite image at the same recorded root and separately retained artifact files. It does not establish atomic backup of active source writers, relocation or distributed storage."
+  ]
+}
