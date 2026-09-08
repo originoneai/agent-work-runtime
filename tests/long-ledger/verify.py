@@ -131,7 +131,7 @@ def run_benchmark(binary, prepared, output):
         report['scale'] = {key: preparation['admission'][key] for key in
                            ('source_bytes', 'unique_work_items', 'current_work_items', 'historical_work_items', 'unknown_status_items')}
         report['richness'] = {key: preparation[key] for key in
-                              ('milestones', 'decisions', 'history_sections', 'history_tasks', 'evidence_references', 'distinct_evidence_locators')}
+                              ('milestones', 'decisions', 'history_sections', 'history_tasks', 'evidence_references', 'distinct_evidence_locators', 'history_redactions')}
         report['richness']['distinct_test_references'] = len(test_references)
         write_json(output / 'test-reference-inventory.json', test_references)
         gate('scale_and_domain_richness', preparation['admission']['scale_eligible']

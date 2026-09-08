@@ -94,6 +94,18 @@ class MappingTests(unittest.TestCase):
         with self.assertRaisesRegex(ValueError, 'disagree'):
             self.map()
 
+    def test_reviewed_redaction_is_bound_to_history_and_keeps_source(self):
+        spec = copy.deepcopy(self.spec)
+        spec['history_redactions'] = [{'work': 'OLD', 'field': 'summary', 'line': 1,
+                                      'source': self.ref(8), 'reason': 'Reviewed private historical data.'}]
+        document, provenance = self.map(spec)
+        self.assertEqual(document['work_items'][1]['summary'], '[withheld]')
+        self.assertEqual(provenance['history_redactions'], spec['history_redactions'])
+        self.assertIn(self.lines[7], (self.root / 'originals/ledger.md').read_text())
+        spec['history_redactions'][0]['field'] = 'acceptance'
+        with self.assertRaisesRegex(ValueError, 'history redactions'):
+            mapped_project(self.root, spec, self.root / 'unused')
+
 
 if __name__ == '__main__':
     unittest.main()

@@ -148,6 +148,13 @@ def mapped_project(intake_dir, spec, output):
         source_map['history_spans'].append(section)
     overrides = {item['work']: item for item in spec['overrides']}
     require(len(overrides) == len(spec['overrides']) and set(overrides) <= seen, 'Invalid task override identity')
+    redactions = {}
+    for item in spec.get('history_redactions', []):
+        identity = (item['work'], item['line'])
+        require(item['field'] == 'summary' and item['work'] in history and identity not in redactions
+                and item.get('reason'), 'Only explicit, unique history redactions are allowed')
+        redactions[identity] = item
+    source_map['history_redactions'] = spec.get('history_redactions', [])
     for item in inventory:
         key, cells = item['external_key'], item['source_cells']
         layout = layouts[item['source_file']]
@@ -174,6 +181,15 @@ def mapped_project(intake_dir, spec, output):
         require(row['status'] in {'planned', 'ready', 'claimed', 'in_progress', 'blocked', 'completed', 'cancelled'},
                 'Unknown normalized status')
         require(all(target in seen for target in row['depends_on']), 'Unknown dependency target')
+        if any(identity[0] == key for identity in redactions):
+            lines = row['summary'].splitlines()
+            for (identity, number), redaction in redactions.items():
+                if identity != key:
+                    continue
+                require(type(number) is int and 1 <= number <= len(lines), 'Invalid historical redaction line')
+                require(lines[number - 1] == mapping.read(redaction['source']), 'Historical redaction differs from its original source')
+                lines[number - 1] = '[withheld]'
+            row['summary'] = '\n'.join(lines)
         # These are original report/document references, not newly verified evidence.
         text = row['summary'] + '\n' + row['acceptance'][0]
         locators = sorted(set(re.findall(r'`((?:docs|target|fixtures)/[^`\s]+\.(?:md|json|yaml|csv))`', text)))
@@ -252,6 +268,7 @@ def main():
               'intake_path': str(intake), 'source_state': before, 'intake_hashes': inputs,
               'mapping_sha256': digest(mapping_path), 'source_map_sha256': digest(output / 'source-map.json'),
               'preparation_code': {path.name: digest(path) for path in [HERE / 'prepare.py', HERE / 'inspect_sample.py']},
+              'history_redactions': len(spec.get('history_redactions', [])),
               'project_files': {p.relative_to(project).as_posix(): digest(p) for p in sorted(project.rglob('*')) if p.is_file()},
               'admission': admission, 'status_counts': dict(counts), 'history_sections': len(spec['history']),
               'history_tasks': len({item['work'] for item in spec['history']}),
