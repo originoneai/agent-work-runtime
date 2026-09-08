@@ -11,6 +11,7 @@ mod resume;
 mod search;
 mod session;
 mod source;
+mod work_action;
 
 #[derive(Debug, Parser)]
 #[command(

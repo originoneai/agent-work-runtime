@@ -191,7 +191,7 @@ pub(crate) fn validate_binding(
     patch: &MutationPatch,
 ) -> Result<Projected<Value>> {
     patch.validate()?;
-    if mutation_type != "update_fields"
+    if mutation_type != patch.mutation_type()
         || source_id != patch.target.meta.source_ref.source_id
         || base_fingerprint != patch.target.meta.source_ref.source_fingerprint
     {
@@ -320,6 +320,7 @@ fn event_metadata(
         "target_key": target.and_then(|target| target.get("meta")).and_then(|meta| meta.get("external_key")),
         "proposal_revision": proposal.revision,
         "expected_revision": proposal.expected_revision,
+        "work_action": proposal.patch.get("work_action"),
     })
 }
 
@@ -341,9 +342,9 @@ impl Store {
         draft: MutationDraft,
     ) -> Result<(MutationProposal, Event)> {
         draft.patch.validate()?;
-        if draft.mutation_type != "update_fields" {
+        if draft.mutation_type != draft.patch.mutation_type() {
             return Err(Error::InvalidInput(
-                "only update_fields mutation proposals are supported".into(),
+                "mutation type disagrees with its validated proposal envelope".into(),
             ));
         }
         let id = Id::new();
@@ -361,6 +362,7 @@ impl Store {
                     &draft.mutation_type,
                     &draft.patch,
                 )?;
+                crate::work_action::validate_action(tx,project,expected,&draft.patch,&target.item,draft.created_by_session)?;
                 let target_work = target_work_id(&draft.patch, &target.item)?;
                 let (work_item_id, session_id) =
                     proposal_work_and_session(tx, project, target_work, draft.created_by_session)?;
@@ -475,7 +477,7 @@ impl Store {
                         | ProposalAction::RequireManualApply
                 ) {
                     let patch = proposal.bound_patch()?;
-                    validate_binding(
+                    let target=validate_binding(
                         tx,
                         project,
                         proposal.source_id,
@@ -483,6 +485,7 @@ impl Store {
                         &proposal.mutation_type,
                         &patch,
                     )?;
+                    crate::work_action::validate_action(tx,project,expected,&patch,&target.item,proposal.created_by_session)?;
                 }
                 let updated = tx
                     .execute(

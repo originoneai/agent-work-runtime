@@ -7,6 +7,16 @@ use std::{collections::BTreeMap, path::Path};
 
 #[derive(Debug, Subcommand)]
 pub enum WorkCommand {
+    /// Record progress in the source ledger; requires an active owned runtime claim.
+    Progress(crate::work_action::ActionArgs),
+    /// Mark in-progress source work blocked with a concrete blocker.
+    Block(crate::work_action::ActionArgs),
+    /// Clear a blocked source state after rechecking required dependencies.
+    Unblock(crate::work_action::ActionArgs),
+    /// Cancel nonterminal source work and release this session's runtime claims.
+    Cancel(crate::work_action::ActionArgs),
+    /// Reopen completed/cancelled source work to planned with a reason and next action.
+    Reopen(crate::work_action::ActionArgs),
     /// Acquire a runtime claim for the selected session; never rewrites source ownership.
     Claim(crate::session::ClaimArgs),
     /// Release an explicit claim held by the selected session.
@@ -253,6 +263,21 @@ pub fn ready(root: &Path, limit: usize, json_output: bool) -> Result<()> {
 
 pub fn work(root: &Path, command: &WorkCommand, json_output: bool) -> Result<()> {
     match command {
+        WorkCommand::Progress(args) => {
+            crate::work_action::run(root, args, WorkAction::Progress, json_output)
+        }
+        WorkCommand::Block(args) => {
+            crate::work_action::run(root, args, WorkAction::Block, json_output)
+        }
+        WorkCommand::Unblock(args) => {
+            crate::work_action::run(root, args, WorkAction::Unblock, json_output)
+        }
+        WorkCommand::Cancel(args) => {
+            crate::work_action::run(root, args, WorkAction::Cancel, json_output)
+        }
+        WorkCommand::Reopen(args) => {
+            crate::work_action::run(root, args, WorkAction::Reopen, json_output)
+        }
         WorkCommand::Claim(_)
         | WorkCommand::Release(_)
         | WorkCommand::History(_)

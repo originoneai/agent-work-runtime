@@ -299,7 +299,7 @@ pub fn prepare_yaml_mutation(
     let changes = patch.changes.as_object().unwrap();
     if let Some(field) = changes
         .keys()
-        .find(|field| !allowed(patch.target.kind, field))
+        .find(|field| patch.work_action.is_none() && !allowed(patch.target.kind, field))
     {
         return Err(unsupported(&format!(
             "field {field} is not supported by this writer; work state, ownership and verification changes require domain actions"

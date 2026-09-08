@@ -38,6 +38,12 @@ pub enum Error {
         attempt_event_id: crate::Id,
         reason: String,
     },
+    #[error("work action proposal {proposal_id} stopped during {stage}: {reason}")]
+    WorkActionIncomplete {
+        proposal_id: crate::Id,
+        stage: String,
+        reason: String,
+    },
     #[error("mutation conflict: {0}")]
     MutationConflict(String),
     #[error(
@@ -88,6 +94,7 @@ impl Error {
             Self::MutationUnsupported(_) => "MutationUnsupported",
             Self::ProposalRequired { .. } => "proposal_required",
             Self::MutationIncomplete { .. } => "MutationIncomplete",
+            Self::WorkActionIncomplete { .. } => "WorkActionIncomplete",
             Self::MutationConflict(_) => "MutationConflict",
             Self::CheckpointIncomplete { .. } => "CheckpointIncomplete",
             Self::ContextIncomplete(_) => "ContextIncomplete",
@@ -126,6 +133,13 @@ impl Error {
                     reason,
                 } => Some(
                     serde_json::json!({"proposal_id":proposal_id,"attempt_event_id":attempt_event_id,"reason":reason}),
+                ),
+                Self::WorkActionIncomplete {
+                    proposal_id,
+                    stage,
+                    reason,
+                } => Some(
+                    serde_json::json!({"proposal_id":proposal_id,"stage":stage,"reason":reason,"source_write_performed":null}),
                 ),
                 _ => None,
             },

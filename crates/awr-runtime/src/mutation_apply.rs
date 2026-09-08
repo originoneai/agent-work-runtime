@@ -288,6 +288,7 @@ pub(crate) fn apply(
     } else {
         let prepared = match (|| {
             verify_mutation_source(root, &source, &patch)?;
+            crate::work_action::verify_work_dependencies(store, root, project, &patch)?;
             prepare_yaml_mutation(root, &source, &proposal, store.projection_ids(&source)?)
         })() {
             Ok(prepared) => prepared,
@@ -346,6 +347,10 @@ pub(crate) fn apply(
                 .join(format!(".awr-write-{}.tmp", Id::new()));
             create_file(&temp, &after, Some(permissions))?;
             let before_replace = (|| {
+                if patch.work_action.is_some() {
+                    store.check_work_proposal(project, &proposal)?;
+                    crate::work_action::verify_work_dependencies(store, root, project, &patch)?;
+                }
                 let (current, _, observed) = inspect_mutation_source(root, &source, &patch)?;
                 if !matches!(current,Locator::File(ref current) if current==&path)
                     || observed.fingerprint != attempt.plan.before_fingerprint

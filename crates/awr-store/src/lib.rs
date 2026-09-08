@@ -17,6 +17,7 @@ mod session;
 mod source_changes;
 mod transaction;
 mod work;
+mod work_action;
 use awr_core::{Error, Result, now_millis};
 pub use catalog::SourceRegistration;
 pub use checkpoint_save::{

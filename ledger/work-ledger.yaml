@@ -1,8 +1,8 @@
 schema_version: 1
 contract_id: awr-v1
 contract_version: 1.0.0
-ledger_revision: 93
-updated_at: '2026-09-08T10:05:35+08:00'
+ledger_revision: 94
+updated_at: '2026-09-08T10:31:51+08:00'
 project:
   name: Agent Work Runtime
   external_key: agent-work-runtime
@@ -12,11 +12,11 @@ project:
 current:
   milestone: M6
   work_item: AWR-P6-003
-  next_action: 复用现有运行态 claim/release/handoff；实现 progress/block/unblock/cancel/reopen 的来源状态转换和领域提案校验，再经 YAML 写回验证实际状态。
+  next_action: 记录交付证据并实现完成任务的依赖、验收与证据门槛。
   open_loops:
   - 功能实现优先；集中测试、优化和打磨在功能开发后执行。
   - 本项目已实际使用 Source、Status、Ready、Work、Search、Session、Claim、Context、Checkpoint、Resume、Doctor 和 YAML 提案写回；继续用开发会话记录当前工作。
-  - P6-002 已交付并核验远端回执。P6-003 补齐任务领域状态动作，Source owner 与执行者/runtime claim 保持区分；P6-004 再接通依赖、验收和证据的完成门槛。
+  - P6-003 已通过任务动作更新本项目的真实开发进展，待提交并核验远端回执；随后实现 P6-004 完成任务的依赖、验收和证据门槛。
 milestones:
 - id: M0
   status: completed
@@ -1195,21 +1195,10 @@ work_items:
     evidence_directory: ledger/evidence/AWR-P6-002
     evidence_level: locally_verified
     minimum: 证明本条验收行为；功能阶段运行必要的定向检查，系统测试在 M9 集中执行。
-- id: AWR-P6-003
-  title: 任务领域动作与状态机
-  milestone: M6
-  priority: P0
-  kind: feature
-  required_for_v1: true
-  status: in_progress
-  owner: codex-primary
-  depends_on:
-  - AWR-P6-002
-  - AWR-P3-001
-  source_sections:
-  - 14
-  - 28
-  - 47
+- acceptance:
+  - claim/release/progress/block/unblock/cancel/handoff 经领域动作推进，拒绝非法转换。
+  - 区分 Source 状态与 runtime claim；reopen 需要理由、事件与版本。
+  blocker: null
   deliverables:
   - crates/awr-runtime/
   - crates/awr-cli/
@@ -1218,16 +1207,28 @@ work_items:
   - crates/awr-source/
   - adapters/yaml-ledger/README.md
   - README.md
-  acceptance:
-  - claim/release/progress/block/unblock/cancel/handoff 经领域动作推进，拒绝非法转换。
-  - 区分 Source 状态与 runtime claim；reopen 需要理由、事件与版本。
+  depends_on:
+  - AWR-P6-002
+  - AWR-P3-001
+  evidence: []
+  id: AWR-P6-003
+  kind: feature
+  milestone: M6
+  next_action: 记录交付证据并实现完成任务的依赖、验收与证据门槛。
+  owner: codex-primary
+  priority: P0
+  required_for_v1: true
+  source_sections:
+  - 14
+  - 28
+  - 47
+  status: in_progress
+  summary: 来源状态动作已接通；包含认领校验、依赖复核、取消释放和带理由重开。
+  title: 任务领域动作与状态机
   verification:
-    minimum: 证明本条验收行为；功能阶段运行必要的定向检查，系统测试在 M9 集中执行。
     evidence_directory: ledger/evidence/AWR-P6-003
     evidence_level: none
-  evidence: []
-  blocker: null
-  next_action: 复用现有运行态 claim/release/handoff；实现 progress/block/unblock/cancel/reopen 的来源状态转换和领域提案校验，再经 YAML 写回验证实际状态。
+    minimum: 证明本条验收行为；功能阶段运行必要的定向检查，系统测试在 M9 集中执行。
 - id: AWR-P6-004
   title: Complete 的依赖、验收与证据门槛
   milestone: M6

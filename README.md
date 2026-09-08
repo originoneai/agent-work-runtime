@@ -145,7 +145,31 @@ Use `--budget` (default 5,000), repeated `--path`, `--tag`, `--goal`, and `--sou
 
 Session inspection, history, handoff, release and end work from the runtime database even when source files are unavailable; JSON reports `source_refresh_performed: false`. History returns bounded summaries and references, with `--session`, `--event-type`, `--after-revision` and `--all-branches` filters. For pagination, pass the returned JSON `next_cursor` to `--cursor`; it retains multiple events at the same revision.
 
-The storage library creates and reopens versioned AWR databases with WAL, foreign keys and migration metadata. Source work mutation remains scheduled.
+The storage library creates and reopens versioned AWR databases with WAL, foreign keys and migration metadata.
+
+Update authoritative work state:
+
+```sh
+awr work progress <work-key> --session <session-id> --reason "Draft produced" --next-action "Review the report" --summary "First draft is available" --expected-revision <revision>
+awr work block <work-key> --session <session-id> --reason "Required input is missing" --blocker "Waiting for the source data" --expected-revision <revision>
+awr work unblock <work-key> --session <session-id> --reason "Source data arrived" --next-action "Validate the supplied data" --expected-revision <revision>
+awr work cancel <work-key> --session <session-id> --reason "The requested deliverable was withdrawn" --expected-revision <revision>
+awr work reopen <work-key> --session <session-id> --reason "The requirements changed" --next-action "Assess the revised scope" --expected-revision <revision>
+```
+
+| Action | Source transition | Execution conditions |
+| --- | --- | --- |
+| `progress` | planned / ready / claimed / in_progress → in_progress | Own unexpired claim, completed required dependency closure, no blocker; nonempty next action |
+| `block` | in_progress → blocked | Own unexpired claim; concrete blocker |
+| `unblock` | blocked → in_progress | Completed required dependency closure; nonempty next action; clears the blocker |
+| `cancel` | Any known nonterminal state → cancelled | Clears the blocker and releases the creating session's claims after verified writeback |
+| `reopen` | completed / cancelled → planned | Explicit reason and next action; clears any retained blocker |
+
+All five actions require an active session bound to the exact work item and reject another session's live claim, including claims on another branch of this project. `unblock`, `cancel` and `reopen` can run without an owned claim so blocked/terminal work can be handled after a previous lease ends. Starting progress then requires `work claim`. Readiness can be derived from a planned source item when its required dependencies are completed; claiming it keeps its source status and business owner unchanged. Source `owner`, session `agent_id` and runtime claim remain distinct throughout progress, release and handoff.
+
+An explicit action creates, submits, approves and applies a deterministic source-bound proposal. Its immutable `work_action` records the starting and target states; the intent retains the caller's reason. These approvals record the requested domain operation, not an independent review. State, exact patch fields, session, claims and relevant dependency facts are checked again before applying. Required dependency source bytes are reread to reject unindexed external edits. No implicit reindex precedes the initial revision check. Unknown states, illegal transitions and missing fields fail explicitly; completed work requires `reopen`. Source ownership, verification and completion cannot be smuggled into a differently labeled action.
+
+Verified actions atomically finalize the proposal as `applied` with a `work.progressed`, `work.blocked`, `work.unblocked`, `work.cancelled` or `work.reopened` event. Cancellation's claim releases share that transaction. Use `work history` or `event show --full` to inspect its state transition, reason, source fingerprints, proposal and released claim IDs. If a later orchestration step fails, `WorkActionIncomplete` retains the proposal ID and failing stage. Inspect that proposal before retrying; ordinary proposal review/apply and interrupted-write recovery retain the same domain binding. Unsupported writers return an approved `proposal_required` without changing source state. `work complete` and its acceptance/evidence gates remain the next delivery item.
 
 Diagnose interruptions and retained state:
 
@@ -182,7 +206,7 @@ A proposal binds one source-backed goal, plan, rule, work item, decision or evid
 
 `draft → ready → approved` records creation, submission and review separately. Each action requires the current project revision and appends a receipt atomically with the proposal state. `expected_revision` inside the proposal remains its creation baseline. Creating, submitting and approving recheck the actual manifest mapping and file/Git snapshot without implicitly reindexing. Application rechecks the same binding before writing. Drift requires a new proposal after explicit reindexing; an existing proposal becomes `conflict`. A failed source read becomes `failed`. These states and `rejected` are terminal. Rejecting an open proposal remains possible without its source or manifest, except while its application is unfinished. Reviewer names are caller-reported identities, not authentication or independent acceptance evidence.
 
-**Approved local YAML proposals can be applied.** The writer replaces the exact source record, preserves bytes outside that record, saves through a temporary file and atomic rename, reindexes the source, and verifies the resulting target before recording `applied`. It retains the original and planned bytes in `.awr/mutations/<write-plan-id>/`, bound to an immutable `proposal.apply_started` event. Supported fields and formatting boundaries are documented in the [YAML adapter](adapters/yaml-ledger/README.md). Markdown, Git snapshots and unsupported YAML targets retain `approved`, record `proposal.required`, and return `proposal_required` with a nonzero exit. Generic field proposals cannot change work status, ownership, blockers, verification or evidence membership; work domain actions and completion gates remain separate delivery items.
+**Approved local YAML proposals can be applied.** The writer replaces the exact source record, preserves bytes outside that record, saves through a temporary file and atomic rename, reindexes the source, and verifies the resulting target before recording `applied`. It retains the original and planned bytes in `.awr/mutations/<write-plan-id>/`, bound to an immutable `proposal.apply_started` event. Supported fields and formatting boundaries are documented in the [YAML adapter](adapters/yaml-ledger/README.md). Markdown, Git snapshots and unsupported YAML targets retain `approved`, record `proposal.required`, and return `proposal_required` with a nonzero exit. Generic field proposals cannot change work status, ownership, blockers, verification or evidence membership; supported work state changes use the domain actions above, while completion gates remain a separate delivery item.
 
 An interrupted application stays `approved` with an unresolved apply attempt. `proposal show` includes the attempt and recovery location derivable from its plan ID. `MutationIncomplete` reports a pending recovery and returns a nonzero exit. After fixing the reported storage problem, `proposal recover` compares the actual source with both recorded fingerprints: original bytes can be written; planned bytes can be reindexed/finalized without a second write; any other bytes produce a conflict without overwriting the current file. Ordinary apply and rejection cannot replace an unfinished attempt. Recovery snapshots are retained after success or failure. `source_write_performed` describes this invocation (`null` means not established); `source_refresh_performed` records whether this invocation rebuilt the projection. A failed start receipt leaves the source untouched and may retain unreferenced staging snapshots.
 

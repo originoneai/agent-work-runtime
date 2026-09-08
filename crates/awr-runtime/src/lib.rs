@@ -8,6 +8,7 @@ mod mutation;
 mod mutation_apply;
 mod read;
 mod resume;
+mod work_action;
 pub use artifact::ArtifactFile;
 use awr_store::Store;
 pub use awr_store::{BranchFilter, EventCursor, EventPage, EventQuery};
@@ -17,6 +18,7 @@ pub use mutation::{
     create_proposal, review_proposal,
 };
 pub use resume::{ResumeReport, ResumeRequest, resume_session};
+pub use work_action::{WorkActionRequest, perform_work_action};
 
 pub struct Runtime<'a> {
     store: &'a mut Store,

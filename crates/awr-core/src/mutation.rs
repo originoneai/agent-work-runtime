@@ -21,8 +21,15 @@ pub struct MutationPatch {
     pub source_config: Value,
     pub intent: String,
     pub changes: Value,
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub work_action: Option<crate::WorkActionBinding>,
 }
 impl MutationPatch {
+    pub fn mutation_type(&self) -> &'static str {
+        self.work_action
+            .as_ref()
+            .map_or("update_fields", |binding| binding.action.mutation_type())
+    }
     pub fn validate(&self) -> Result<()> {
         if self.version != 1 || self.intent.trim().is_empty() || self.intent.len() > 4096 {
             return Err(Error::InvalidInput(
@@ -56,6 +63,14 @@ impl MutationPatch {
         }
         if serde_json::to_vec(self)?.len() > 64 * 1024 {
             return Err(Error::InvalidInput("proposal patch exceeds 64 KiB".into()));
+        }
+        if let Some(binding) = &self.work_action {
+            if self.target.kind != EntityKind::WorkItem {
+                return Err(Error::InvalidInput(
+                    "work actions require an exact WorkItem target".into(),
+                ));
+            }
+            binding.validate(&self.changes)?;
         }
         let meta = &self.target.meta;
         let source = &meta.source_ref;
@@ -143,7 +158,7 @@ impl MutationProposal {
             Error::InvalidInput(format!("proposal lacks a supported source binding: {e}"))
         })?;
         patch.validate()?;
-        if self.mutation_type != "update_fields"
+        if self.mutation_type != patch.mutation_type()
             || patch.target.meta.source_ref.source_id != self.source_id
             || patch.target.meta.source_ref.source_fingerprint != self.base_fingerprint
         {

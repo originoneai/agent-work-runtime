@@ -9,7 +9,7 @@ use awr_core::*;
 use rusqlite::{Connection, OptionalExtension, params};
 use serde_json::json;
 
-const RESOLVED: &str = "SELECT r.id FROM events r WHERE r.project_id=s.project_id AND r.event_type IN ('proposal.applied','proposal.apply_failed','proposal.apply_conflict') AND json_extract(r.payload_json,'$.attempt_event_id')=s.id";
+const RESOLVED: &str = "SELECT r.id FROM events r WHERE r.project_id=s.project_id AND r.event_type IN ('proposal.applied','proposal.apply_failed','proposal.apply_conflict','work.progressed','work.blocked','work.unblocked','work.cancelled','work.reopened') AND json_extract(r.payload_json,'$.attempt_event_id')=s.id";
 fn row(row: &rusqlite::Row<'_>) -> rusqlite::Result<MutationApplyAttempt> {
     let payload: serde_json::Value =
         serde_json::from_str(&row.get::<_, String>(1)?).map_err(|e| {
@@ -115,10 +115,11 @@ impl Store {
             if duplicate {return Err(Error::InvalidInput("write plan ID is already recorded".into()));}
             if plan.before_fingerprint!=proposal.base_fingerprint {return Err(Error::SourceConflict("write plan disagrees with proposal baseline".into()));}
             let patch=proposal.bound_patch()?;
-            validate_binding(tx,project,proposal.source_id,&proposal.base_fingerprint,&proposal.mutation_type,&patch)?;
+            let target=validate_binding(tx,project,proposal.source_id,&proposal.base_fingerprint,&proposal.mutation_type,&patch)?;
+            crate::work_action::validate_action(tx,project,expected,&patch,&target.item,proposal.created_by_session)?;
             tx.execute("UPDATE mutation_proposals SET revision=revision+1 WHERE project_id=?1 AND id=?2",params![project.to_string(),id.to_string()]).map_err(db_error)?;
             bind(event,tx,project,&proposal)?;
-            event.payload=json!({"proposal_id":id,"source_id":proposal.source_id,"write_plan":plan,"actor":actor,"reason":reason,"source_write_confirmed":false});
+            event.payload=json!({"proposal_id":id,"source_id":proposal.source_id,"write_plan":plan,"actor":actor,"reason":reason,"work_action":patch.work_action,"source_write_confirmed":false});
             Ok(())
         })?;
         let attempt = latest(&self.conn, project, id)?
@@ -153,6 +154,14 @@ impl Store {
             proposal.status=ProposalStatus::Applied; proposal.revision+=1;
             bind(event,tx,project,&proposal)?;
             event.payload=json!({"proposal_id":id,"source_id":proposal.source_id,"attempt_event_id":attempt_id,"write_plan_id":attempt.plan.id,"before_fingerprint":attempt.plan.before_fingerprint,"after_fingerprint":attempt.plan.after_fingerprint,"target_after_hash":attempt.plan.target_after_hash,"source_revision":target.source.revision,"target_revision":meta.revision,"actor":actor,"reason":reason});
+            if let Some(binding)=patch.work_action {
+                event.event_type=binding.action.event_type().into();
+                event.summary=format!("Verified source work action {:?}",binding.action);
+                event.payload["work_action"]=json!(binding);
+                event.payload["action_reason"]=json!(patch.intent);
+                event.payload["creating_session_id"]=json!(proposal.created_by_session);
+                event.payload["released_claim_ids"]=json!(crate::work_action::release_cancelled_claims(tx,project,&proposal)?);
+            }
             Ok(proposal)
         })
     }

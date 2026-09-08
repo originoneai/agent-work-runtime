@@ -39,6 +39,7 @@ impl Fixture {
         let target = self.store.mutation_target(self.project, kind, key)?;
         let patch = MutationPatch {
             version: 1,
+            work_action: None,
             target: MutationTarget {
                 kind,
                 meta: serde_json::from_value(target.item)?,

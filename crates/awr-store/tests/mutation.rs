@@ -176,6 +176,7 @@ fn proposal_draft(target: &Projected<Value>, changes: Value, session: Option<Id>
         mutation_type: "update_fields".into(),
         patch: MutationPatch {
             version: 1,
+            work_action: None,
             target: MutationTarget {
                 kind: match target.item.get("raw_status") {
                     Some(_) => EntityKind::WorkItem,

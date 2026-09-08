@@ -554,8 +554,13 @@ pub fn work(root: &Path, command: &WorkCommand, json_output: bool) -> Result<()>
                 json_output,
             )
         }
-        WorkCommand::Show { .. } => Err(Error::Unsupported(
-            "use work show through the source query handler".into(),
+        WorkCommand::Show { .. }
+        | WorkCommand::Progress(_)
+        | WorkCommand::Block(_)
+        | WorkCommand::Unblock(_)
+        | WorkCommand::Cancel(_)
+        | WorkCommand::Reopen(_) => Err(Error::Unsupported(
+            "use the work command router for source-backed operations".into(),
         )),
     }
 }
