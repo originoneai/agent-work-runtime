@@ -1,8 +1,8 @@
 schema_version: 1
 contract_id: awr-v1
 contract_version: 1.0.0
-ledger_revision: 156
-updated_at: '2026-09-08T22:19:46+08:00'
+ledger_revision: 158
+updated_at: '2026-09-08T22:36:07+08:00'
 project:
   name: Agent Work Runtime
   external_key: agent-work-runtime
@@ -11,11 +11,11 @@ project:
   release_status: not_released
 current:
   milestone: M9
-  work_item: AWR-P9-001
-  next_action: 建立真实大型台账的样本准入、冻结副本和读取、增量索引、历史隔离、投影重建基准入口；等待样本路径后运行真实数据并绑定脱敏回执，规模不足的材料不计完成。
+  work_item: AWR-P9-002
+  next_action: 建立冻结的会话恢复样本与独立进程驱动，验证事件和来源变化经过 checkpoint 后在新 Session 中恢复；保留异常断点与原件不变证据。
   open_loops:
-  - QA-004 已完成：macOS arm64、Linux x64、Windows x64 在同一源码 d483766 上原生 11/11 通过，Rust 测试实际为 274/274/261；Linux 目录同步及 Windows
-    fixture 资源释放缺陷已修复。P9-001 已认领，先建立真实大型台账准入与基准入口，样本路径待用户确认。
+  - P9-001 已交付结构准入工具和 4 项解析检查，尚缺合格真实样本：本项目为 8 当前/54 历史任务、65742 bytes，不能补足 30/100 与 200 KiB。已通过 AWR 保存 blocker/checkpoint/end，Doctor
+    为 0 项；继续独立的 P9-002 会话恢复基准。
   - SEC-001 已完成：26/26 路径条件、46 项写回回归和 10 项 MCP 检查通过；源码 217a0b5 的远端回执已核实。实际完成写回、快照核对、checkpoint/end 后 Doctor 为 0 项；进入
     SEC-002。均不计 E4 或正式发布。
   - P0/P1 功能与接入项全部完成；P8-004 已对齐 8 个 MCP Tools 和 CLI 的状态、版本、缺口及写入回执，进入 M8 安全与后续集中质量阶段。
@@ -24,7 +24,8 @@ current:
   - 本机版本为 Codex 0.153.4、Kimi Code 0.41.0、Grok Build 1.0.13。Grok 的具名 MCP 诊断因项目未受信任而未启动服务；原生模型调用、真实 MCP tool turn
     和自动 hooks 均不计作已验证。
   - 共享示例的 awr work ready 错误已改为 awr ready，并直接执行了三份指南的 CLI 命令；P8-002 原始证据保留，新增独立纠正提交与回执。
-  - L0 的 1000-token 目标仍未通过；8 个 E4 场景、10 个指标、独立复核、平台验证和发布门槛均待后续台账。examples/basic/README.md 的早期功能说明留待 P9-003 文档收口时更新。
+  - L0 的 1000-token 目标仍未通过；8 个 E4 场景、10 个指标、独立复核和发布门槛仍未完成。QA-004 三平台原生验证已通过；examples/basic/README.md 的早期说明留待 P9-003
+    文档收口。
 milestones:
 - id: M0
   status: completed
@@ -1787,17 +1788,18 @@ work_items:
 - acceptance:
   - 真实复杂项目至少含 30 当前/100 历史任务、多里程碑/决策、大量证据与数百 KB 台账。
   - 验证按任务读取、增量索引、历史隔离及投影重建；公开证据须脱敏。
-  blocker: null
+  blocker: 需要用户指定真实复杂项目台账路径；本项目只有 8 当前、54 历史任务和 65742 bytes，未达到 30/100 与 200 KiB 的基准规模。
   deliverables:
   - tests/long-ledger/
   - docs/benchmarks/
   depends_on:
   - AWR-QA-001
-  evidence: []
+  evidence:
+  - ledger/evidence/AWR-P9-001/preparation.json
   id: AWR-P9-001
   kind: quality
   milestone: M9
-  next_action: 建立真实大型台账的样本准入、冻结副本和读取、增量索引、历史隔离、投影重建基准入口；等待样本路径后运行真实数据并绑定脱敏回执，规模不足的材料不计完成。
+  next_action: 收到真实样本路径后核实来源与规模、制作冻结副本，再完成四项实际运行验证；当前仅准入工具已交付。
   owner: codex-primary
   priority: P2
   required_for_v1: true
@@ -1806,40 +1808,40 @@ work_items:
   - 41
   - 42
   - 52
-  status: in_progress
+  status: blocked
   title: 真实大型 Ledger Benchmark
   verification:
     evidence_directory: ledger/evidence/AWR-P9-001
     evidence_level: none
     minimum: 证明本条验收行为；功能阶段运行必要的定向检查，系统测试在 M9 集中执行。
-- id: AWR-P9-002
-  title: Compact Recovery Benchmark
-  milestone: M9
-  priority: P2
-  kind: quality
-  required_for_v1: true
-  status: planned
-  owner: null
+- acceptance:
+  - 模拟 Session A→事件→源变化→checkpoint→新 Session，检查任务/next action/open loops/硬规则一致。
+  - 来源增量被包含，无关旧历史被排除；异常断点有复现记录。
+  blocker: null
+  deliverables:
+  - tests/compact-recovery/
+  - docs/benchmarks/
   depends_on:
   - AWR-QA-001
+  evidence: []
+  id: AWR-P9-002
+  kind: quality
+  milestone: M9
+  next_action: 建立冻结的会话恢复样本与独立进程驱动，验证事件和来源变化经过 checkpoint 后在新 Session 中恢复；保留异常断点与原件不变证据。
+  owner: codex-primary
+  priority: P2
+  required_for_v1: true
   source_sections:
   - 23
   - 24
   - 43
   - 52
-  deliverables:
-  - tests/compact-recovery/
-  - docs/benchmarks/
-  acceptance:
-  - 模拟 Session A→事件→源变化→checkpoint→新 Session，检查任务/next action/open loops/硬规则一致。
-  - 来源增量被包含，无关旧历史被排除；异常断点有复现记录。
+  status: in_progress
+  title: Compact Recovery Benchmark
   verification:
-    minimum: 证明本条验收行为；功能阶段运行必要的定向检查，系统测试在 M9 集中执行。
     evidence_directory: ledger/evidence/AWR-P9-002
     evidence_level: none
-  evidence: []
-  blocker: null
-  next_action: 按交付物实现并验证：Compact Recovery Benchmark
+    minimum: 证明本条验收行为；功能阶段运行必要的定向检查，系统测试在 M9 集中执行。
 - id: AWR-P9-004
   title: Token 与 Hard Fact Recall Benchmark
   milestone: M9
