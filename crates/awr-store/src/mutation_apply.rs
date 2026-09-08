@@ -9,7 +9,7 @@ use awr_core::*;
 use rusqlite::{Connection, OptionalExtension, params};
 use serde_json::json;
 
-const RESOLVED: &str = "SELECT r.id FROM events r WHERE r.project_id=s.project_id AND r.event_type IN ('proposal.applied','proposal.apply_failed','proposal.apply_conflict','work.progressed','work.blocked','work.unblocked','work.cancelled','work.reopened') AND json_extract(r.payload_json,'$.attempt_event_id')=s.id";
+const RESOLVED: &str = "SELECT r.id FROM events r WHERE r.project_id=s.project_id AND r.event_type IN ('proposal.applied','proposal.apply_failed','proposal.apply_conflict','work.progressed','work.blocked','work.unblocked','work.cancelled','work.reopened','work.completed') AND json_extract(r.payload_json,'$.attempt_event_id')=s.id";
 fn row(row: &rusqlite::Row<'_>) -> rusqlite::Result<MutationApplyAttempt> {
     let payload: serde_json::Value =
         serde_json::from_str(&row.get::<_, String>(1)?).map_err(|e| {
@@ -146,6 +146,13 @@ impl Store {
                 || target.source.config!=patch.source_config || mutation_projection_hash(&target.item)? != attempt.plan.target_after_hash {
                 return Err(Error::SourceConflict("post-write projection does not match the planned source and target facts".into()));
             }
+            if let Some(binding)=patch.work_action.as_ref().and_then(|a|a.completion.as_ref()) {
+                let work:WorkItem=serde_json::from_value(target.item.clone())?;
+                if work.status!=WorkStatus::Completed {return Err(Error::SourceConflict("completion requires a completed source projection".into()));}
+                let branch=proposal_branch(tx,project,&proposal)?;
+                crate::work_action::check_dependencies(tx,project,expected,&work,branch,false)?;
+                crate::work_action::validate_completion_binding(tx,project,&work,branch,binding)?;
+            }
             let meta:ProjectionMeta=serde_json::from_value(target.item)?;
             if meta.source_ref.source_id!=proposal.source_id || meta.source_ref.source_fingerprint!=attempt.plan.after_fingerprint || meta.source_ref.source_revision!=target.source.revision || meta.source_ref.pointer!=patch.target.meta.source_ref.pointer {
                 return Err(Error::SourceConflict("post-write target provenance does not match the exact source pointer".into()));
@@ -160,7 +167,7 @@ impl Store {
                 event.payload["work_action"]=json!(binding);
                 event.payload["action_reason"]=json!(patch.intent);
                 event.payload["creating_session_id"]=json!(proposal.created_by_session);
-                event.payload["released_claim_ids"]=json!(crate::work_action::release_cancelled_claims(tx,project,&proposal)?);
+                event.payload["released_claim_ids"]=json!(crate::work_action::release_terminal_claims(tx,project,&proposal)?);
             }
             Ok(proposal)
         })

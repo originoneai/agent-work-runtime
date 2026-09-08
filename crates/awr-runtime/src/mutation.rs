@@ -164,7 +164,15 @@ pub fn review_proposal(
             if !active {
                 return Err(Error::SourceConflict("proposal source is retired".into()));
             }
-            verify_mutation_source(&root, &source, &patch)
+            let checked = verify_mutation_source(&root, &source, &patch)?;
+            crate::completion::verify_completion_proof(
+                store,
+                &root,
+                project,
+                &patch,
+                proposal.created_by_session,
+            )?;
+            Ok(checked)
         })();
         match verification {
             Ok(check) => checked = Some(check),

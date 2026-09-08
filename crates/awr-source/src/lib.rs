@@ -24,4 +24,7 @@ pub use markdown::{
 };
 pub use mutation::{MutationSourceCheck, inspect_mutation_source, verify_mutation_source};
 pub use yaml_ledger::YamlLedgerAdapter;
-pub use yaml_mutation::{PreparedYamlMutation, parse_mutation_projection, prepare_yaml_mutation};
+pub use yaml_mutation::{
+    PreparedYamlMutation, parse_mutation_projection, prepare_yaml_mutation,
+    read_yaml_mutation_record,
+};

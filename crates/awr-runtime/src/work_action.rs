@@ -27,8 +27,24 @@ pub(crate) fn verify_work_dependencies(
     {
         return Ok(());
     }
-    let graph = store.dependency_closure(project, &patch.target.meta.external_key, true)?;
-    let mut checked = BTreeSet::from([patch.target.meta.source_ref.source_id]);
+    verify_required_sources(
+        store,
+        root,
+        project,
+        &patch.target.meta.external_key,
+        patch.target.meta.source_ref.source_id,
+    )
+}
+
+pub(crate) fn verify_required_sources(
+    store: &Store,
+    root: &Path,
+    project: Id,
+    key: &str,
+    source: Id,
+) -> Result<()> {
+    let graph = store.dependency_closure(project, key, true)?;
+    let mut checked = BTreeSet::from([source]);
     for dependency in &graph.dependencies {
         if checked.insert(dependency.source.id) {
             let probe = MutationPatch {
@@ -96,6 +112,24 @@ pub fn perform_work_action(
             created_by_session: Some(request.session_id),
         },
     )?;
+    apply_work_proposal(
+        store,
+        &root,
+        proposal,
+        event,
+        actor,
+        request.input.reason.clone(),
+    )
+}
+
+pub(crate) fn apply_work_proposal(
+    store: &mut Store,
+    root: &Path,
+    proposal: MutationProposal,
+    event: Event,
+    actor: String,
+    reason: String,
+) -> Result<ProposalReport> {
     let id = proposal.id;
     let mut result = crate::mutation::report(proposal, event, false, None, None);
     for (stage, action) in [
@@ -111,7 +145,7 @@ pub fn perform_work_action(
                 expected_revision: result.project_revision,
                 action,
                 actor: actor.clone(),
-                reason: request.input.reason.clone(),
+                reason: reason.clone(),
             },
         )
         .map_err(|error| Error::WorkActionIncomplete {

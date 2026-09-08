@@ -17,6 +17,8 @@ pub enum WorkCommand {
     Cancel(crate::work_action::ActionArgs),
     /// Reopen completed/cancelled source work to planned with a reason and next action.
     Reopen(crate::work_action::ActionArgs),
+    /// Complete source work only after verifying dependencies, acceptance and actual evidence reports.
+    Complete(crate::work_action::CompleteArgs),
     /// Acquire a runtime claim for the selected session; never rewrites source ownership.
     Claim(crate::session::ClaimArgs),
     /// Release an explicit claim held by the selected session.
@@ -278,6 +280,7 @@ pub fn work(root: &Path, command: &WorkCommand, json_output: bool) -> Result<()>
         WorkCommand::Reopen(args) => {
             crate::work_action::run(root, args, WorkAction::Reopen, json_output)
         }
+        WorkCommand::Complete(args) => crate::work_action::complete(root, args, json_output),
         WorkCommand::Claim(_)
         | WorkCommand::Release(_)
         | WorkCommand::History(_)

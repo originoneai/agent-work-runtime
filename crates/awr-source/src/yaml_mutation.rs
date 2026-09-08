@@ -201,6 +201,30 @@ fn document(snapshot: &SourceSnapshot) -> Result<Value> {
         .map_err(|e| Error::InvalidInput(format!("YAML mutation: {e}")))?;
     Ok(serde_json::to_value(yaml)?)
 }
+
+/// Read the exact current YAML record when constructing a preserving domain mutation.
+pub fn read_yaml_mutation_record(
+    root: &Path,
+    source: &Source,
+    patch: &MutationPatch,
+) -> Result<Value> {
+    crate::verify_mutation_source(root, source, patch)?;
+    if source.adapter != "yaml-ledger-v1" {
+        return Err(unsupported(
+            "completion requires a writable YAML ledger source",
+        ));
+    }
+    let (_, _, snapshot) = inspect_mutation_source(root, source, patch)?;
+    if snapshot.fingerprint != patch.target.meta.source_ref.source_fingerprint {
+        return Err(Error::SourceConflict(
+            "source changed while reading its record".into(),
+        ));
+    }
+    document(&snapshot)?
+        .pointer(patch.target.meta.source_ref.pointer.as_deref().unwrap())
+        .cloned()
+        .ok_or_else(|| Error::SourceConflict("exact YAML record is missing".into()))
+}
 fn allowed(kind: EntityKind, field: &str) -> bool {
     match kind {
         EntityKind::Goal => matches!(
@@ -307,6 +331,18 @@ pub fn prepare_yaml_mutation(
     }
     let pointer = patch.target.meta.source_ref.pointer.as_deref().unwrap();
     let original = document(&before)?;
+    if let Some(binding) = patch
+        .work_action
+        .as_ref()
+        .and_then(|a| a.completion.as_ref())
+    {
+        let record = original
+            .pointer(pointer)
+            .ok_or_else(|| unsupported("exact YAML record is missing"))?;
+        if patch.changes != completion_source_changes(record, binding)? {
+            return Err(Error::InvalidInput("completion patch must preserve existing evidence and verification metadata exactly".into()));
+        }
+    }
     let mut expected = original.clone();
     let record = expected
         .pointer_mut(pointer)

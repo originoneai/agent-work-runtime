@@ -544,6 +544,7 @@ fn domain_labels_cannot_forge_status_ownership_or_verification_changes() {
         "work.unblocked",
         "work.cancelled",
         "work.reopened",
+        "work.completed",
     ] {
         assert!(matches!(
             store.append_event(p, rev, EventDraft::new(kind, "Forged receipt")),

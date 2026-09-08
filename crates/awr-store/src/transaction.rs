@@ -142,6 +142,7 @@ impl Store {
                         | "work.unblocked"
                         | "work.cancelled"
                         | "work.reopened"
+                        | "work.completed"
                         | "claim.released"
                         | "claim.expired"
                         | "session.interrupted"

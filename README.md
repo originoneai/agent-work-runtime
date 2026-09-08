@@ -155,6 +155,7 @@ awr work block <work-key> --session <session-id> --reason "Required input is mis
 awr work unblock <work-key> --session <session-id> --reason "Source data arrived" --next-action "Validate the supplied data" --expected-revision <revision>
 awr work cancel <work-key> --session <session-id> --reason "The requested deliverable was withdrawn" --expected-revision <revision>
 awr work reopen <work-key> --session <session-id> --reason "The requirements changed" --next-action "Assess the revised scope" --expected-revision <revision>
+awr work complete <work-key> --session <session-id> --reason "Reviewed the report and delivery" --input completion.json --expected-revision <revision>
 ```
 
 | Action | Source transition | Execution conditions |
@@ -164,12 +165,60 @@ awr work reopen <work-key> --session <session-id> --reason "The requirements cha
 | `unblock` | blocked → in_progress | Completed required dependency closure; nonempty next action; clears the blocker |
 | `cancel` | Any known nonterminal state → cancelled | Clears the blocker and releases the creating session's claims after verified writeback |
 | `reopen` | completed / cancelled → planned | Explicit reason and next action; clears any retained blocker |
+| `complete` | in_progress → completed | Own unexpired claim, completed required dependencies, exact acceptance mapping, current verified report files, no blocker |
 
-All five actions require an active session bound to the exact work item and reject another session's live claim, including claims on another branch of this project. `unblock`, `cancel` and `reopen` can run without an owned claim so blocked/terminal work can be handled after a previous lease ends. Starting progress then requires `work claim`. Readiness can be derived from a planned source item when its required dependencies are completed; claiming it keeps its source status and business owner unchanged. Source `owner`, session `agent_id` and runtime claim remain distinct throughout progress, release and handoff.
+All six actions require an active session bound to the exact work item and reject another session's live claim, including claims on another branch of this project. `unblock`, `cancel` and `reopen` can run without an owned claim so blocked/terminal work can be handled after a previous lease ends. Starting progress then requires `work claim`. Readiness can be derived from a planned source item when its required dependencies are completed; claiming it keeps its source status and business owner unchanged. Source `owner`, session `agent_id` and runtime claim remain distinct throughout progress, release and handoff.
 
 An explicit action creates, submits, approves and applies a deterministic source-bound proposal. Its immutable `work_action` records the starting and target states; the intent retains the caller's reason. These approvals record the requested domain operation, not an independent review. State, exact patch fields, session, claims and relevant dependency facts are checked again before applying. Required dependency source bytes are reread to reject unindexed external edits. No implicit reindex precedes the initial revision check. Unknown states, illegal transitions and missing fields fail explicitly; completed work requires `reopen`. Source ownership, verification and completion cannot be smuggled into a differently labeled action.
 
-Verified actions atomically finalize the proposal as `applied` with a `work.progressed`, `work.blocked`, `work.unblocked`, `work.cancelled` or `work.reopened` event. Cancellation's claim releases share that transaction. Use `work history` or `event show --full` to inspect its state transition, reason, source fingerprints, proposal and released claim IDs. If a later orchestration step fails, `WorkActionIncomplete` retains the proposal ID and failing stage. Inspect that proposal before retrying; ordinary proposal review/apply and interrupted-write recovery retain the same domain binding. Unsupported writers return an approved `proposal_required` without changing source state. `work complete` and its acceptance/evidence gates remain the next delivery item.
+Verified actions atomically finalize the proposal as `applied` with a `work.progressed`, `work.blocked`, `work.unblocked`, `work.cancelled`, `work.reopened` or `work.completed` event. Cancellation and completion claim releases share that transaction. Use `work history` or `event show --full` to inspect its state transition, reason, source fingerprints, proposal and released claim IDs. If a later orchestration step fails, `WorkActionIncomplete` retains the proposal ID and failing stage. Inspect that proposal before retrying; ordinary proposal review/apply and interrupted-write recovery retain the same domain binding. Unsupported writers return an approved `proposal_required` without changing source state.
+
+Complete a work item with registered evidence:
+
+1. Produce a version 1 JSON report, then register it with `evidence add`. The evidence must declare its level, report locator and SHA256, full 40/64-digit source SHA, exact command, scope, verification time in epoch milliseconds and applicable work/branch. Bind the work explicitly, or leave the work ID unset and declare its work key or `*` in scope. A source ledger reference alone has an unknown evidence level and cannot qualify.
+2. Map each current source acceptance criterion exactly once to one or more registered evidence keys/IDs. Optional `required_evidence` adds reports that must also pass. Every report selected for a criterion must contain a passing check covering that criterion.
+3. Call `work complete` with the current project revision and work-bound session. The input and proposal are limited to 64 KiB; at most 100 distinct evidence records can be selected. Each report is limited to 1 MiB, with an explicit failure on overflow.
+
+`completion.json` example (replace the sample hash with the actual verified source SHA):
+
+```json
+{
+  "version": 1,
+  "source_sha": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+  "minimum_level": "locally_verified",
+  "acceptance": [
+    {"criterion": "The report is reviewed and delivered", "evidence": ["report-review"]}
+  ],
+  "required_evidence": []
+}
+```
+
+The registered report file uses this shape:
+
+```json
+{
+  "version": 1,
+  "work_item": "W",
+  "source_sha": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+  "command": "verify-report --work W",
+  "scope": ["W"],
+  "verified_at": 1788800000000,
+  "checks": [
+    {
+      "name": "delivery review",
+      "passed": true,
+      "details": "Reviewed the report and its delivery receipt",
+      "criteria": ["The report is reviewed and delivered"]
+    }
+  ]
+}
+```
+
+Reports require unique nonempty check names, passing results and nonempty details. `result` is accepted as an alias for `details`. Additional producer metadata may accompany the report; it is hash-bound but is not interpreted as an extra approval or gate. The work, SHA, command, scope and verification time must agree with the registered evidence, and times cannot be in the future. Unknown criteria and missing criterion coverage fail. Report files must exist within the project or authorized roots; remote content, the changing ledger itself and mutable `.awr` state cannot serve as reports (registered files under `.awr/artifacts` can).
+
+Completion checks the project revision first, then required dependencies (including actual source bytes), source acceptance, evidence and blocker before creating its proposal. An eligible source state and active work-bound claim are also required. Its immutable binding retains the exact evidence IDs and metadata, source SHA, minimum level and criterion mappings. The default and lowest permitted minimum is `locally_verified`; callers can require a higher level. Application and recovery recheck both current database bindings and actual report bytes. A proposal cannot drop previous evidence or unrelated verification metadata: the writer appends report locators, sets the evidence level to the lowest level across all selected records, and preserves the rest of the source record.
+
+Only the verified completed source projection permits the atomic `work.completed` receipt and claim release. A failure during finalization retains its apply attempt. If report contents changed during the interruption, restore the exact bound report before recovery can finish; creating a new evidence assertion cannot silently substitute for it. AWR verifies evidence bindings and report contents, but does not execute reported commands, judge natural-language acceptance quality, establish reviewer independence, infer a clean checkout from the supplied SHA, or certify release/E4 readiness. Reopening retains prior evidence/history; after new progress it can complete again only through a new revision-bound proposal and the same current-proof gates.
 
 Diagnose interruptions and retained state:
 
@@ -206,7 +255,7 @@ A proposal binds one source-backed goal, plan, rule, work item, decision or evid
 
 `draft → ready → approved` records creation, submission and review separately. Each action requires the current project revision and appends a receipt atomically with the proposal state. `expected_revision` inside the proposal remains its creation baseline. Creating, submitting and approving recheck the actual manifest mapping and file/Git snapshot without implicitly reindexing. Application rechecks the same binding before writing. Drift requires a new proposal after explicit reindexing; an existing proposal becomes `conflict`. A failed source read becomes `failed`. These states and `rejected` are terminal. Rejecting an open proposal remains possible without its source or manifest, except while its application is unfinished. Reviewer names are caller-reported identities, not authentication or independent acceptance evidence.
 
-**Approved local YAML proposals can be applied.** The writer replaces the exact source record, preserves bytes outside that record, saves through a temporary file and atomic rename, reindexes the source, and verifies the resulting target before recording `applied`. It retains the original and planned bytes in `.awr/mutations/<write-plan-id>/`, bound to an immutable `proposal.apply_started` event. Supported fields and formatting boundaries are documented in the [YAML adapter](adapters/yaml-ledger/README.md). Markdown, Git snapshots and unsupported YAML targets retain `approved`, record `proposal.required`, and return `proposal_required` with a nonzero exit. Generic field proposals cannot change work status, ownership, blockers, verification or evidence membership; supported work state changes use the domain actions above, while completion gates remain a separate delivery item.
+**Approved local YAML proposals can be applied.** The writer replaces the exact source record, preserves bytes outside that record, saves through a temporary file and atomic rename, reindexes the source, and verifies the resulting target before recording `applied`. It retains the original and planned bytes in `.awr/mutations/<write-plan-id>/`, bound to an immutable `proposal.apply_started` event. Supported fields and formatting boundaries are documented in the [YAML adapter](adapters/yaml-ledger/README.md). Markdown, Git snapshots and unsupported YAML targets retain `approved`, record `proposal.required`, and return `proposal_required` with a nonzero exit. Generic field proposals cannot change work status, ownership, blockers, verification or evidence membership; supported work state changes use the domain actions above, including guarded completion.
 
 An interrupted application stays `approved` with an unresolved apply attempt. `proposal show` includes the attempt and recovery location derivable from its plan ID. `MutationIncomplete` reports a pending recovery and returns a nonzero exit. After fixing the reported storage problem, `proposal recover` compares the actual source with both recorded fingerprints: original bytes can be written; planned bytes can be reindexed/finalized without a second write; any other bytes produce a conflict without overwriting the current file. Ordinary apply and rejection cannot replace an unfinished attempt. Recovery snapshots are retained after success or failure. `source_write_performed` describes this invocation (`null` means not established); `source_refresh_performed` records whether this invocation rebuilt the projection. A failed start receipt leaves the source untouched and may retain unreferenced staging snapshots.
 

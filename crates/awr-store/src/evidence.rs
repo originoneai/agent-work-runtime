@@ -8,6 +8,14 @@ use awr_core::*;
 use rusqlite::{Connection, params};
 
 fn evidence_rows(conn: &Connection, project: Id, key: Option<&str>) -> Result<Vec<EvidenceRecord>> {
+    evidence_rows_by(conn, project, key, false)
+}
+fn evidence_rows_by(
+    conn: &Connection,
+    project: Id,
+    key: Option<&str>,
+    exact_id: bool,
+) -> Result<Vec<EvidenceRecord>> {
     let columns = SOURCE_COLUMNS
         .split(',')
         .map(|c| format!("s.{c}"))
@@ -15,15 +23,27 @@ fn evidence_rows(conn: &Connection, project: Id, key: Option<&str>) -> Result<Ve
         .join(",");
     conn.prepare(&format!("SELECT {columns},e.payload_json,p.project_revision FROM evidence e
         LEFT JOIN sources s ON s.id=e.source_id AND s.project_id=e.project_id JOIN projects p ON p.id=e.project_id
-        WHERE e.project_id=?1 AND e.active=1 AND (e.source_id IS NULL OR s.active=1) AND (?2 IS NULL OR e.external_key=?2 OR e.id=?2)
-        ORDER BY e.external_key")).map_err(db_error)?.query_map(params![project.to_string(),key],|r| {
+        WHERE e.project_id=?1 AND e.active=1 AND (e.source_id IS NULL OR s.active=1) AND (?2 IS NULL OR (NOT ?3 AND e.external_key=?2) OR e.id=?2)
+        ORDER BY e.external_key")).map_err(db_error)?.query_map(params![project.to_string(),key,exact_id],|r| {
             let item=serde_json::from_str(&r.get::<_,String>(11)?).map_err(|e|rusqlite::Error::FromSqlConversionFailure(11,rusqlite::types::Type::Text,Box::new(e)))?;
             let source=if r.get::<_,Option<String>>(0)?.is_some() {Some(source_row(r)?)} else {None};
             Ok(EvidenceRecord {item,source,project_revision:revision_at(r,12)?})
         }).map_err(db_error)?.collect::<rusqlite::Result<Vec<_>>>().map_err(db_error)
 }
 
+pub(crate) fn evidence_by_id(conn: &Connection, project: Id, id: Id) -> Result<EvidenceRecord> {
+    evidence_rows_by(conn, project, Some(&id.to_string()), true)?
+        .pop()
+        .ok_or_else(|| {
+            Error::EvidenceMissing(format!("bound evidence {id} is no longer available"))
+        })
+}
+
 impl Store {
+    /// Immutable proposal bindings use IDs exclusively, never ambiguous external-key lookup.
+    pub fn evidence_by_id(&self, project: Id, id: Id) -> Result<EvidenceRecord> {
+        evidence_by_id(&self.conn, project, id)
+    }
     pub fn decision(&self, project: Id, key: &str) -> Result<Projected<Decision>> {
         let keys=self.conn.prepare("SELECT d.external_key FROM decisions d JOIN sources s ON s.id=d.source_id AND s.project_id=d.project_id WHERE d.project_id=?1 AND d.active=1 AND s.active=1 AND (d.external_key=?2 OR d.id=?2) LIMIT 2").map_err(db_error)?.query_map(params![project.to_string(),key],|r|r.get::<_,String>(0)).map_err(db_error)?.collect::<rusqlite::Result<Vec<_>>>().map_err(db_error)?;
         match keys.as_slice() {

@@ -194,6 +194,7 @@ fn preparation_failure(
 }
 fn stopped(
     store: &mut Store,
+    root: &Path,
     project: Id,
     request: &ReviewProposalRequest,
     attempt: &MutationApplyAttempt,
@@ -202,7 +203,32 @@ fn stopped(
 ) -> Result<ProposalReport> {
     // A storage/finalization failure must retain the open attempt for exact recovery, even
     // when the source already has the planned bytes. Never conceal that fact with a bare error.
-    if matches!(error, Error::Storage(_) | Error::RevisionConflict { .. }) {
+    let completion_written = store
+        .proposal(project, attempt.proposal_id)
+        .ok()
+        .and_then(|proposal| proposal.bound_patch().ok())
+        .filter(|patch| {
+            patch
+                .work_action
+                .as_ref()
+                .is_some_and(|b| b.action == WorkAction::Complete)
+        })
+        .is_some_and(|patch| {
+            store
+                .source(project, attempt.source_id)
+                .is_ok_and(
+                    |source| match inspect_mutation_source(root, &source, &patch) {
+                        Ok((_, _, snapshot)) => {
+                            snapshot.fingerprint == attempt.plan.after_fingerprint
+                        }
+                        Err(_) => {
+                            wrote != Some(false)
+                                || source.fingerprint == attempt.plan.after_fingerprint
+                        }
+                    },
+                )
+        });
+    if matches!(error, Error::Storage(_) | Error::RevisionConflict { .. }) || completion_written {
         return pending(store, project, attempt, wrote, error.to_string());
     }
     let conflict = matches!(error, Error::SourceConflict(_) | Error::SourceStale(_));
@@ -288,6 +314,13 @@ pub(crate) fn apply(
     } else {
         let prepared = match (|| {
             verify_mutation_source(root, &source, &patch)?;
+            crate::completion::verify_completion_proof(
+                store,
+                root,
+                project,
+                &patch,
+                proposal.created_by_session,
+            )?;
             crate::work_action::verify_work_dependencies(store, root, project, &patch)?;
             prepare_yaml_mutation(root, &source, &proposal, store.projection_ids(&source)?)
         })() {
@@ -349,6 +382,13 @@ pub(crate) fn apply(
             let before_replace = (|| {
                 if patch.work_action.is_some() {
                     store.check_work_proposal(project, &proposal)?;
+                    crate::completion::verify_completion_proof(
+                        store,
+                        root,
+                        project,
+                        &patch,
+                        proposal.created_by_session,
+                    )?;
                     crate::work_action::verify_work_dependencies(store, root, project, &patch)?;
                 }
                 let (current, _, observed) = inspect_mutation_source(root, &source, &patch)?;
@@ -409,6 +449,13 @@ pub(crate) fn apply(
                 "source changed while its projection was rebuilt".into(),
             ));
         }
+        crate::completion::verify_completion_proof(
+            store,
+            root,
+            project,
+            &patch,
+            proposal.created_by_session,
+        )?;
         let revision = store.project(project)?.project_revision;
         store.finish_proposal_apply(
             project,
@@ -428,7 +475,7 @@ pub(crate) fn apply(
             wrote,
             if recover { "recovered" } else { "applied" },
         ),
-        Err(error) => stopped(store, project, request, &attempt, wrote, error),
+        Err(error) => stopped(store, root, project, request, &attempt, wrote, error),
     }?;
     result.source_refresh_performed = refreshed;
     Ok(result)

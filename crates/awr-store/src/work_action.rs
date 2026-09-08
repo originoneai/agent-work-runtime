@@ -57,39 +57,25 @@ pub(crate) fn validate_action(
         }
     }
     if binding.action.needs_dependencies() {
-        let ready = readiness(
+        check_dependencies(
             conn,
             project,
-            &work.meta.external_key,
-            session.branch_id,
-            at,
             revision,
+            &work,
+            session.branch_id,
+            matches!(binding.action, WorkAction::Unblock | WorkAction::Complete),
         )?;
-        let problems = ready
-            .diagnostics
-            .iter()
-            .filter(|d| {
-                !matches!(d.code.as_str(), "status_not_selectable" | "active_claim")
-                    && !(binding.action == WorkAction::Unblock
-                        && d.code == "active_blocker"
-                        && d.work_item_key == work.meta.external_key)
-            })
-            .collect::<Vec<_>>();
-        if problems.iter().any(|d| d.code == "source_not_fresh") {
-            return Err(Error::SourceStale(
-                "work or a required dependency source is not fresh".into(),
-            ));
-        }
-        if !problems.is_empty() {
-            return Err(Error::DependencyBlocked(serde_json::to_string(&problems)?));
-        }
+    }
+    if let Some(completion) = &binding.completion {
+        validate_completion_binding(conn, project, &work, session.branch_id, completion)?;
+        check_blocker(&work)?;
     }
     Ok(())
 }
 
-/// Cancellation releases only the creating session's occupancy; the source owner is
+/// Terminal source actions release only the creating session's occupancy; the source owner is
 /// untouched. The release IDs are recorded in the same verified work action receipt.
-pub(crate) fn release_cancelled_claims(
+pub(crate) fn release_terminal_claims(
     conn: &Connection,
     project: Id,
     proposal: &MutationProposal,
@@ -97,7 +83,7 @@ pub(crate) fn release_cancelled_claims(
     let Some(binding) = proposal.bound_patch()?.work_action else {
         return Ok(Vec::new());
     };
-    if binding.action != WorkAction::Cancel {
+    if !matches!(binding.action, WorkAction::Cancel | WorkAction::Complete) {
         return Ok(Vec::new());
     }
     let ids=conn.prepare("SELECT id FROM claims WHERE project_id=?1 AND work_item_id=?2 AND session_id=?3 AND status='active'").map_err(db_error)?
@@ -127,5 +113,132 @@ impl Store {
             &target.item,
             proposal.created_by_session,
         )
+    }
+}
+
+fn check_blocker(work: &WorkItem) -> Result<()> {
+    if work.blocker.as_ref().is_some_and(|b| !b.trim().is_empty()) {
+        return Err(Error::DependencyBlocked(
+            "work has an active blocker; resolve it before completion".into(),
+        ));
+    }
+    Ok(())
+}
+pub(crate) fn check_dependencies(
+    conn: &Connection,
+    project: Id,
+    revision: Revision,
+    work: &WorkItem,
+    branch: Option<Id>,
+    ignore_root_blocker: bool,
+) -> Result<()> {
+    let ready = readiness(
+        conn,
+        project,
+        &work.meta.external_key,
+        branch,
+        now_millis()?,
+        revision,
+    )?;
+    let problems = ready
+        .diagnostics
+        .iter()
+        .filter(|d| {
+            !matches!(d.code.as_str(), "status_not_selectable" | "active_claim")
+                && !(ignore_root_blocker
+                    && d.code == "active_blocker"
+                    && d.work_item_key == work.meta.external_key)
+        })
+        .collect::<Vec<_>>();
+    if problems.iter().any(|d| d.code == "source_not_fresh") {
+        return Err(Error::SourceStale(
+            "work or a required dependency source is not fresh".into(),
+        ));
+    }
+    if !problems.is_empty() {
+        return Err(Error::DependencyBlocked(serde_json::to_string(&problems)?));
+    }
+    Ok(())
+}
+pub(crate) fn validate_completion_binding(
+    conn: &Connection,
+    project: Id,
+    work: &WorkItem,
+    branch: Option<Id>,
+    binding: &CompletionBinding,
+) -> Result<()> {
+    binding.validate()?;
+    validate_criteria(&work.acceptance)?;
+    let declared = binding
+        .acceptance
+        .iter()
+        .map(|a| a.criterion.as_str())
+        .collect::<std::collections::BTreeSet<_>>();
+    if declared != work.acceptance.iter().map(String::as_str).collect() {
+        return Err(Error::EvidenceMissing(
+            "bound acceptance no longer matches every source criterion".into(),
+        ));
+    }
+    for bound in &binding.evidence {
+        let record = crate::evidence::evidence_by_id(conn, project, bound.id)?;
+        if serde_json::to_value(&record.item)? != serde_json::to_value(bound)? {
+            return Err(Error::EvidenceMissing(format!(
+                "evidence {} changed after binding",
+                bound.id
+            )));
+        }
+        let applies = match bound.work_item_id {
+            Some(id) => id == work.meta.id,
+            None => bound
+                .scope
+                .iter()
+                .any(|key| key == &work.meta.external_key || key == "*"),
+        };
+        let assessment = record.assess(Some(&binding.source_sha), branch);
+        if !applies
+            || assessment.currency != EvidenceCurrency::Current
+            || !assessment.missing_bindings.is_empty()
+        {
+            return Err(Error::EvidenceMissing(format!(
+                "evidence {} is not current, fully bound evidence for this work and branch",
+                bound.id
+            )));
+        }
+        // YAML appends report references into a source-owned evidence namespace. Do not
+        // steal a runtime record's key or discover the collision only after source writing.
+        let key = format!("{}/evidence/{}", work.meta.external_key, bound.locator);
+        let collision:bool=conn.query_row("SELECT EXISTS(SELECT 1 FROM evidence WHERE project_id=?1 AND external_key=?2 AND (source_id IS NULL OR source_id!=?3))",params![project.to_string(),key,work.meta.source_ref.source_id.to_string()],|r|r.get(0)).map_err(db_error)?;
+        if collision {
+            return Err(Error::SourceConflict("completion report reference collides with another evidence owner; register a report at a distinct locator".into()));
+        }
+    }
+    Ok(())
+}
+impl Store {
+    pub fn check_completion_dependencies(
+        &self,
+        project: Id,
+        key: &str,
+        branch: Option<Id>,
+    ) -> Result<()> {
+        let work = self.work_item(project, key)?.item;
+        check_dependencies(
+            &self.conn,
+            project,
+            self.project(project)?.project_revision,
+            &work,
+            branch,
+            true,
+        )
+    }
+    /// Validate current database proof facts. The runtime additionally reads report bytes.
+    pub fn check_completion_binding(
+        &self,
+        project: Id,
+        work: &WorkItem,
+        branch: Option<Id>,
+        binding: &CompletionBinding,
+    ) -> Result<()> {
+        validate_completion_binding(&self.conn, project, work, branch, binding)
     }
 }

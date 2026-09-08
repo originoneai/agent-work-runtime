@@ -11,6 +11,7 @@ pub enum WorkAction {
     Unblock,
     Cancel,
     Reopen,
+    Complete,
 }
 impl WorkAction {
     pub fn mutation_type(self) -> &'static str {
@@ -20,6 +21,7 @@ impl WorkAction {
             Self::Unblock => "work.unblock",
             Self::Cancel => "work.cancel",
             Self::Reopen => "work.reopen",
+            Self::Complete => "work.complete",
         }
     }
     pub fn event_type(self) -> &'static str {
@@ -29,6 +31,7 @@ impl WorkAction {
             Self::Unblock => "work.unblocked",
             Self::Cancel => "work.cancelled",
             Self::Reopen => "work.reopened",
+            Self::Complete => "work.completed",
         }
     }
     pub fn next_status(self, from: WorkStatus) -> Result<WorkStatus> {
@@ -39,16 +42,17 @@ impl WorkAction {
             (Self::Unblock, Blocked) => Ok(InProgress),
             (Self::Cancel, Planned | Ready | Claimed | InProgress | Blocked) => Ok(Cancelled),
             (Self::Reopen, Completed | Cancelled) => Ok(Planned),
+            (Self::Complete, InProgress) => Ok(Completed),
             _ => Err(Error::InvalidTransition(format!(
                 "cannot {self:?} work with source state {from:?}"
             ))),
         }
     }
     pub fn needs_dependencies(self) -> bool {
-        matches!(self, Self::Progress | Self::Unblock)
+        matches!(self, Self::Progress | Self::Unblock | Self::Complete)
     }
     pub fn needs_claim(self) -> bool {
-        matches!(self, Self::Progress | Self::Block)
+        matches!(self, Self::Progress | Self::Block | Self::Complete)
     }
 }
 
@@ -58,10 +62,26 @@ pub struct WorkActionBinding {
     pub action: WorkAction,
     pub from: WorkStatus,
     pub to: WorkStatus,
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub completion: Option<crate::CompletionBinding>,
 }
 impl WorkActionBinding {
     /// Whitelist the exact action patch; a domain label cannot authorize arbitrary fields.
     pub fn validate(&self, changes: &Value) -> Result<()> {
+        match (self.action, &self.completion) {
+            (WorkAction::Complete, Some(binding)) => binding.validate()?,
+            (WorkAction::Complete, None) => {
+                return Err(Error::EvidenceMissing(
+                    "completion action requires immutable acceptance and evidence bindings".into(),
+                ));
+            }
+            (_, Some(_)) => {
+                return Err(Error::InvalidInput(
+                    "only completion may carry a completion binding".into(),
+                ));
+            }
+            _ => (),
+        }
         if self.action.next_status(self.from)? != self.to {
             return Err(Error::InvalidTransition(
                 "work action target state disagrees with its transition".into(),
@@ -78,7 +98,14 @@ impl WorkActionBinding {
         for (field, value) in fields {
             match field.as_str() {
                 "status" => (),
-                "next_action" => bounded(value.as_str(), 4096, "next_action")?,
+                "evidence" | "verification" | "evidence_level"
+                    if self.action == WorkAction::Complete =>
+                {
+                    ()
+                }
+                "next_action" if self.action != WorkAction::Complete => {
+                    bounded(value.as_str(), 4096, "next_action")?
+                }
                 "summary" if self.action == WorkAction::Progress => {
                     bounded(value.as_str(), 16384, "summary")?
                 }
@@ -145,6 +172,7 @@ impl WorkActionInput {
             action: self.action,
             from: work.status,
             to: self.action.next_status(work.status)?,
+            completion: None,
         };
         let mut changes = json!({"status":binding.to});
         if let Some(value) = &self.next_action {

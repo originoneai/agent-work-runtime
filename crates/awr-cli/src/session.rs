@@ -559,6 +559,7 @@ pub fn work(root: &Path, command: &WorkCommand, json_output: bool) -> Result<()>
         | WorkCommand::Block(_)
         | WorkCommand::Unblock(_)
         | WorkCommand::Cancel(_)
+        | WorkCommand::Complete(_)
         | WorkCommand::Reopen(_) => Err(Error::Unsupported(
             "use the work command router for source-backed operations".into(),
         )),
