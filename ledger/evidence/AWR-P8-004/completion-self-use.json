@@ -1,0 +1,29 @@
+{
+  "kind": "developer_self_use_completion",
+  "work_item": "AWR-P8-004",
+  "source_commit": "979ad672e20ec7742039e803df3975c83313a682",
+  "checked_at": "2026-09-08T14:50:22+08:00",
+  "transport": "mcp_stdio",
+  "tool": "awr_work_transition",
+  "session_id": "01M1ZTSQVSN2FNPGZTBDGJMEWB",
+  "proposal_id": "01M1ZWFSKE5YA6M2GW0404FPXA",
+  "completion_event_id": "01M1ZWFT3K41PS5Y8FD4GD6EV7",
+  "released_claim_id": "01M1ZTSQWA8B179QN9K2XF27ET",
+  "source_before_fingerprint": "sha256:3d08c56efcd6056626accf6f30f2844b417f5a7e7c52eeab5b7ffc715f1cb752",
+  "source_after_fingerprint": "sha256:47b66a41c57a100f907d38342dbf14e6d9a8d86e728a2acc77c62f194ae58efe",
+  "verification_report": "ledger/deliveries/AWR-P8-004.json",
+  "verification_report_sha256": "e0eaa06b16faf5e4004171909e5fdd7a2b559d9e1a6cdff785b5410c48b3d12f",
+  "context_tokens": 4997,
+  "checkpoint_id": "01M1ZWGD9CS11906E29YH1XXJ1",
+  "final_project_revision": 444,
+  "source_completed": true,
+  "recovery_snapshots_match": true,
+  "report_unchanged": true,
+  "doctor": {
+    "ok": true,
+    "findings": []
+  },
+  "limitations": [
+    "Actual development self-use of source completion through MCP stdio and checkpoint/end through the CLI; not native client MCP activation, automated hooks, E4 or released product acceptance."
+  ]
+}

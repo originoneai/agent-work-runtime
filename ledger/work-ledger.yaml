@@ -1,8 +1,8 @@
 schema_version: 1
 contract_id: awr-v1
 contract_version: 1.0.0
-ledger_revision: 112
-updated_at: '2026-09-08T14:48:40+08:00'
+ledger_revision: 114
+updated_at: '2026-09-08T14:51:32+08:00'
 project:
   name: Agent Work Runtime
   external_key: agent-work-runtime
@@ -10,13 +10,13 @@ project:
   authority_mode: source_first
   release_status: not_released
 current:
-  milestone: M7
-  work_item: AWR-P8-004
-  next_action: 核对交付源码与远端回执，完成 P8-004 并进入 M8。
+  milestone: M8
+  work_item: AWR-SEC-001
+  next_action: 检查来源解析、读取和写回的授权根与 symlink 边界，建立路径覆盖矩阵并修复可复用根因。
   open_loops:
-  - P0 功能、8 个 MCP Tools 与 Codex/Kimi/Grok 接续指南已交付；继续 P1 最后一项 CLI/MCP 输出对齐，随后按台账集中质量、优化和打磨。
-  - 本项目通过 AWR 实际进行会话读取、checkpoint/resume、MCP 证据登记和完成写回。P8-003 的文档命令在独立 fixture 上完成 Kimi→Grok→Kimi 元数据接续，工作、检查点、下一步和
-    claim 到期时间保持一致。
+  - P0/P1 功能与接入项全部完成；P8-004 已对齐 8 个 MCP Tools 和 CLI 的状态、版本、缺口及写入回执，进入 M8 安全与后续集中质量阶段。
+  - 本项目通过 AWR 实际进行会话、checkpoint/resume、事件追加、MCP 证据登记和完成写回。P8-004 在同一 revision 对照 5 个读取动作，MCP 保持 25 张数据表和源文件不变；54
+    项 CLI、10 项 MCP 与 8 组接口 fixture 定向检查通过，均不计 E4。
   - 本机版本为 Codex 0.153.4、Kimi Code 0.41.0、Grok Build 1.0.13。Grok 的具名 MCP 诊断因项目未受信任而未启动服务；原生模型调用、真实 MCP tool turn
     和自动 hooks 均不计作已验证。
   - 共享示例的 awr work ready 错误已改为 awr ready，并直接执行了三份指南的 CLI 命令；P8-002 原始证据保留，新增独立纠正提交与回执。
@@ -37,9 +37,9 @@ milestones:
 - id: M6
   status: completed
 - id: M7
-  status: in_progress
+  status: completed
 - id: M8
-  status: planned
+  status: in_progress
 - id: M9
   status: planned
 - id: M10
@@ -1460,7 +1460,8 @@ work_items:
   depends_on:
   - AWR-P8-001
   - AWR-P4-008
-  evidence: []
+  evidence:
+  - ledger/deliveries/AWR-P8-004.json
   id: AWR-P8-004
   kind: feature
   milestone: M7
@@ -1473,38 +1474,38 @@ work_items:
   - 29
   - 40
   - 46
-  status: in_progress
+  status: completed
   title: CLI / MCP 输出与错误契约对齐
   verification:
     evidence_directory: ledger/evidence/AWR-P8-004
-    evidence_level: none
+    evidence_level: locally_verified
     minimum: 证明本条验收行为；功能阶段运行必要的定向检查，系统测试在 M9 集中执行。
-- id: AWR-SEC-001
-  title: 路径、符号链接与授权 Root 加固
-  milestone: M8
-  priority: P2
-  kind: security
-  required_for_v1: true
-  status: planned
-  owner: null
-  depends_on:
-  - AWR-P8-004
-  source_sections:
-  - 32
-  - 55
+- acceptance:
+  - 系统验证 ../、绝对路径、symlink escape 与显式授权 Root。
+  - 读取与写入均不能越过实际授权边界；拒绝结果可定位到来源。
+  blocker: null
   deliverables:
   - crates/awr-source/
   - tests/security/paths/
-  acceptance:
-  - 系统验证 ../、绝对路径、symlink escape 与显式授权 Root。
-  - 读取与写入均不能越过实际授权边界；拒绝结果可定位到来源。
+  depends_on:
+  - AWR-P8-004
+  evidence: []
+  id: AWR-SEC-001
+  kind: security
+  milestone: M8
+  next_action: 检查来源解析、读取和写回的授权根与 symlink 边界，建立路径覆盖矩阵并修复可复用根因。
+  owner: codex-primary
+  priority: P2
+  required_for_v1: true
+  source_sections:
+  - 32
+  - 55
+  status: in_progress
+  title: 路径、符号链接与授权 Root 加固
   verification:
-    minimum: 证明本条验收行为；功能阶段运行必要的定向检查，系统测试在 M9 集中执行。
     evidence_directory: ledger/evidence/AWR-SEC-001
     evidence_level: none
-  evidence: []
-  blocker: null
-  next_action: 按交付物实现并验证：路径、符号链接与授权 Root 加固
+    minimum: 证明本条验收行为；功能阶段运行必要的定向检查，系统测试在 M9 集中执行。
 - id: AWR-SEC-002
   title: 读取上限、Event Schema 与秘密数据防护
   milestone: M8
