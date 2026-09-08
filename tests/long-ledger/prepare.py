@@ -175,12 +175,13 @@ def mapped_project(intake_dir, spec, output):
                 source_map['unresolved_phase_labels'].append({'work': key, 'raw_phase': phase})
         if key in overrides:
             for field, value in overrides[key]['fields'].items():
-                require(field in {'status', 'blocker', 'next_action', 'depends_on'}, 'Unsupported task override field')
+                require(field in {'status', 'blocker', 'next_action', 'depends_on', 'goals'}, 'Unsupported task override field')
                 row[field] = mapping.field(value)
             references['overrides'] = overrides[key]['fields']
         require(row['status'] in {'planned', 'ready', 'claimed', 'in_progress', 'blocked', 'completed', 'cancelled'},
                 'Unknown normalized status')
         require(all(target in seen for target in row['depends_on']), 'Unknown dependency target')
+        require(all(target in {goal['id'] for goal in document['goals']} for target in row.get('goals', [])), 'Unknown goal target')
         if any(identity[0] == key for identity in redactions):
             lines = row['summary'].splitlines()
             for (identity, number), redaction in redactions.items():
