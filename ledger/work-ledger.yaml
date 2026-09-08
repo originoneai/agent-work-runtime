@@ -1,8 +1,8 @@
 schema_version: 1
 contract_id: awr-v1
 contract_version: 1.0.0
-ledger_revision: 100
-updated_at: '2026-09-08T12:09:39+08:00'
+ledger_revision: 103
+updated_at: '2026-09-08T12:48:31+08:00'
 project:
   name: Agent Work Runtime
   external_key: agent-work-runtime
@@ -10,16 +10,15 @@ project:
   authority_mode: source_first
   release_status: not_released
 current:
-  milestone: M6
-  work_item: AWR-P7-003
-  next_action: 实现 Git / Source 合并后的重索引、合并摘要与 Branch Close，明确活跃会话、claim 和 open loop 的处置，并在保留分支上继续自用。
+  milestone: M7
+  work_item: AWR-P8-001
+  next_action: 实现 8 个精简 MCP Tools，以 stdio 服务复用现有领域服务，保持读取无副作用并验证变更约束。
   open_loops:
-  - 功能实现优先；集中测试、优化和打磨在功能开发后执行。
-  - 本项目已实际使用 Source、Work、Search、Session、Claim、Context、Checkpoint、Resume、Doctor、YAML 写回、work complete、Work Branch、命名分支上下文与
-    Delta。
-  - P7-002 已交付并核验远端；p7-001-development 保留原 fork=290 和 Git 创建回执，两轮自用会话均已结束。P7-003 接续实现合并后重索引、摘要和关闭；明确遗留 claim/open
-    loop 的处置。
-  - 功能定向检查和项目自用不计入 E4。独立复核、集中质量和发布门槛继续按后续台账执行。
+  - P0 功能台账已完成；继续 P1 的 MCP、Codex、Kimi/Grok 接入，功能开发后集中测试、优化和打磨。
+  - 本项目已实际使用 Source、Work、Search、Session、Claim、Context、Checkpoint、Resume、Doctor、YAML 写回、work complete、Work Branch、命名分支上下文、Delta
+    与分支关闭。
+  - p7-001-development 已 merged；两条 open loop 已逐条处置，原 fork、Git 创建回执和两轮分支会话历史保留。P8-001 接续提供设计指定的 8 个 MCP Tools。
+  - 功能定向检查和项目自用不计入 E4；独立复核、集中质量、真实客户端验收及发布门槛继续按后续台账执行。
 milestones:
 - id: M0
   status: completed
@@ -34,9 +33,9 @@ milestones:
 - id: M5
   status: completed
 - id: M6
-  status: in_progress
+  status: completed
 - id: M7
-  status: planned
+  status: in_progress
 - id: M8
   status: planned
 - id: M9
@@ -1335,7 +1334,7 @@ work_items:
   priority: P0
   kind: feature
   required_for_v1: true
-  status: in_progress
+  status: completed
   owner: codex-primary
   depends_on:
   - AWR-P7-002
@@ -1355,18 +1354,19 @@ work_items:
   verification:
     minimum: 证明本条验收行为；功能阶段运行必要的定向检查，系统测试在 M9 集中执行。
     evidence_directory: ledger/evidence/AWR-P7-003
-    evidence_level: none
-  evidence: []
+    evidence_level: locally_verified
+  evidence:
+  - ledger/deliveries/AWR-P7-003.json
   blocker: null
-  next_action: 实现 Git / Source 合并后的重索引、合并摘要与 Branch Close，明确活跃会话、claim 和 open loop 的处置，并在保留分支上继续自用。
+  next_action: 已交付并核验远端；保留分支已关闭、两条 open loop 已处置，继续 P8-001 MCP 接入。
 - id: AWR-P8-001
   title: 8 个精简 MCP Tools
   milestone: M7
   priority: P1
   kind: feature
   required_for_v1: true
-  status: planned
-  owner: null
+  status: in_progress
+  owner: codex-primary
   depends_on:
   - AWR-P6-004
   - AWR-P7-003
@@ -1375,6 +1375,8 @@ work_items:
   - 29
   deliverables:
   - crates/awr-mcp/
+  - Cargo.lock
+  - README.md
   acceptance:
   - 只暴露设计指定的 8 个工具，复用领域服务、错误与上下文输出。
   - 只读查询不变更状态，变更工具遵循 revision/fingerprint/证据约束。
@@ -1384,7 +1386,7 @@ work_items:
     evidence_level: none
   evidence: []
   blocker: null
-  next_action: 按交付物实现并验证：8 个精简 MCP Tools
+  next_action: 实现 8 个精简 MCP Tools，以 stdio 服务复用现有领域服务，保持读取无副作用并验证变更约束。
 - id: AWR-P8-002
   title: Codex 接入协议与使用示例
   milestone: M7
