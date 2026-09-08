@@ -49,13 +49,26 @@ impl SourceSnapshot {
 pub fn read_capped(path: &Path, cap: u64) -> Result<Vec<u8>> {
     let file = File::open(path)
         .map_err(|e| Error::SourceUnavailable(format!("{}: {e}", path.display())))?;
+    read_file_capped(file, cap)
+}
+
+/// Read a canonical source path whose authority was checked by Locator/Manifest.
+/// Unlike caller-supplied input files, it must not be redirected by a replacement link.
+pub fn read_source_capped(path: &Path, cap: u64) -> Result<Vec<u8>> {
+    read_file_capped(crate::open_file_exact(path)?, cap)
+}
+
+fn read_file_capped(file: File, cap: u64) -> Result<Vec<u8>> {
     if !file.metadata()?.is_file() {
         return Err(Error::InvalidInput(
             "source reader needs a regular file".into(),
         ));
     }
     let mut bytes = Vec::new();
-    file.take(cap + 1).read_to_end(&mut bytes)?;
+    let read_limit = cap
+        .checked_add(1)
+        .ok_or_else(|| Error::InvalidInput("read cap is too large".into()))?;
+    file.take(read_limit).read_to_end(&mut bytes)?;
     if bytes.len() as u64 > cap {
         return Err(Error::InvalidInput(format!(
             "source exceeds {cap} byte read cap"
@@ -173,7 +186,7 @@ impl Locator {
     pub fn read(&self, root: &Path, cap: u64) -> Result<SourceSnapshot> {
         match self {
             Self::File(path) => {
-                let bytes = read_capped(path, cap)?;
+                let bytes = read_source_capped(path, cap)?;
                 let locator = Url::from_file_path(path)
                     .map_err(|_| Error::InvalidInput("invalid file locator".into()))?
                     .to_string();

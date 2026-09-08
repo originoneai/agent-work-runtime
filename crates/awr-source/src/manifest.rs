@@ -46,7 +46,7 @@ impl Manifest {
         if !path.starts_with(&root) {
             return Err(Error::RuleViolation("manifest escapes project root".into()));
         }
-        let bytes = crate::read_capped(&path, 64 * 1024)?;
+        let bytes = crate::read_source_capped(&path, 64 * 1024)?;
         let text = std::str::from_utf8(&bytes).map_err(|e| Error::InvalidInput(e.to_string()))?;
         Self::parse(text)
     }

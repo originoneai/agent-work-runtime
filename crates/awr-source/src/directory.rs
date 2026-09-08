@@ -7,7 +7,6 @@ use serde::{Deserialize, Serialize};
 use serde_json::Value;
 use std::{
     collections::BTreeMap,
-    fs,
     path::{Path, PathBuf},
 };
 
@@ -132,7 +131,8 @@ impl SourceAdapter for MarkdownDirectoryAdapter {
                 let mut pending = vec![directory];
                 let mut files = vec![];
                 while let Some(directory) = pending.pop() {
-                    for entry in fs::read_dir(&directory)
+                    for entry in crate::open_dir_exact(&directory)?
+                        .entries()
                         .map_err(|e| Error::SourceUnavailable(e.to_string()))?
                     {
                         let entry = entry.map_err(|e| Error::SourceUnavailable(e.to_string()))?;
@@ -144,9 +144,9 @@ impl SourceAdapter for MarkdownDirectoryAdapter {
                             .map_err(|e| Error::SourceUnavailable(e.to_string()))?;
                         // Symlink children are not implicit new authority roots.
                         if kind.is_dir() && options.recursive {
-                            pending.push(entry.path());
-                        } else if kind.is_file() && markdown_path(&entry.path()) {
-                            files.push(Locator::File(entry.path()));
+                            pending.push(directory.join(entry.file_name()));
+                        } else if kind.is_file() && markdown_path(Path::new(&entry.file_name())) {
+                            files.push(Locator::File(directory.join(entry.file_name())));
                         }
                         if files.len() + pending.len() > 4096 {
                             return Err(Error::BudgetExceeded {

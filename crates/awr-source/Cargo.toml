@@ -17,3 +17,9 @@ url.workspace = true
 serde_yaml_ng.workspace = true
 yaml-rust2.workspace = true
 pulldown-cmark.workspace = true
+cap-std.workspace = true
+cap-fs-ext.workspace = true
+
+[[test]]
+name = "security_paths"
+path = "../../tests/security/paths/containment.rs"
