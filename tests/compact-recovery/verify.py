@@ -207,9 +207,13 @@ def main():
         row['gates']['exact_current_work_and_acceptance'] = True
         require(current['next_action'] == e['current_next_action'] and e['current_next_action'] in text
                 and bootstrap['context']['work']['next_action'] == e['current_next_action'], 'New source next action was lost')
-        rules = {rule['text'] for rule in bootstrap['context']['critical_rules']}
-        require(rules == {e['current_common_rule'], e['receiver_rule']}, 'Receiver hard-rule scope differs from the contract')
-        require(all(rule in text for rule in rules) and e['sender_rule'] not in text, 'L1 contains missing or inapplicable hard rules')
+        rules = {rule['external_key'].rsplit('#', 1)[-1]: rule for rule in bootstrap['context']['critical_rules']}
+        require(set(rules) == {'facts', 'receiving'} and
+                rules['facts']['text'] == e['common_rule_title'] + '\n\n' + e['current_common_rule'] and
+                rules['receiving']['text'] == e['receiver_rule_title'] + '\n\n' + e['receiver_rule'],
+                'Receiver hard-rule scope or verbatim heading/body differs from the contract')
+        require(all(rule['text'] in text for rule in rules.values()) and e['sender_rule'] not in text,
+                'L1 contains missing or inapplicable hard rules')
         row['gates']['current_rules_and_receiver_scope'] = True
 
         delta = run('14-delta', 'context', 'delta', '--session', nid)
@@ -222,13 +226,14 @@ def main():
             require(saved['object'] == cp['checkpoint'] and saved['session_delta']['session_events'], 'Saved progress observations were lost')
             if case['source_change'] == 'before_checkpoint':
                 observed = saved['session_delta']['source_observations']
-                changed = {v['external_key'] for s in observed for v in s['changes']}
-                require({e['work'], 'facts'} <= changed, 'Checkpoint omitted observed source changes')
+                changed = {v['id'] for s in observed for v in s['changes']}
+                require({current['id'], rules['facts']['id']} <= changed, 'Checkpoint omitted observed source changes')
                 require(saved['object']['changed_entities'] and all(item in bootstrap['rendered_context']
                         for item in saved['object']['changed_entities']), 'Bootstrap omitted saved changed identities')
             else:
-                changed = {v['external_key'] for s in delta['delta']['events']['source_changes'] for v in s['changed_entities']}
-                require({e['work'], 'facts'} <= changed and 'source.projected' in text, 'Post-checkpoint source delta missing')
+                changed = {v['id'] for s in delta['delta']['events']['source_changes'] for v in s['changed_entities']}
+                require({current['id'], rules['facts']['id']} <= changed and 'source.projected' in text,
+                        'Post-checkpoint source delta missing')
         else:
             require(resumed['checkpoint_id'] is None and resumed['checkpoint_save'] is None
                     and bootstrap['context']['checkpoint'] is None and shown['inherited_checkpoint'] is None,

@@ -1,6 +1,6 @@
 {
   "contract_id": "awr-compact-recovery",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "work_item": "AWR-P9-002",
   "source_sections": [23, 24, 43, 52],
   "status_authority": "ledger/work-ledger.yaml",
@@ -32,6 +32,8 @@
     "open_loops": ["Supplier timing is still awaiting confirmation.", "The night-shift contact has not reviewed the draft."],
     "original_common_rule": "Preserve the approved handover facts.",
     "current_common_rule": "Preserve the approved handover facts and label unconfirmed timing.",
+    "common_rule_title": "Handover facts",
+    "receiver_rule_title": "Receiving editor",
     "receiver_rule": "The receiving editor must retain the unresolved supplier question.",
     "sender_rule": "The drafting editor must collect the original shift notes.",
     "unrelated_work": "OLD-STOCK",
