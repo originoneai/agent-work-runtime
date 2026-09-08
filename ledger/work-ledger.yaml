@@ -1,8 +1,8 @@
 schema_version: 1
 contract_id: awr-v1
 contract_version: 1.0.0
-ledger_revision: 134
-updated_at: '2026-09-08T18:28:19+08:00'
+ledger_revision: 136
+updated_at: '2026-09-08T18:32:36+08:00'
 project:
   name: Agent Work Runtime
   external_key: agent-work-runtime
@@ -11,10 +11,11 @@ project:
   release_status: not_released
 current:
   milestone: M8
-  work_item: AWR-SEC-003
-  next_action: 20 项恢复合同与 60 项相关回归已通过；绑定源码、远端和本项目写回证据后完成本条，进入事件与会话隔离加固。
+  work_item: AWR-SEC-004
+  next_action: 建立事件改写、Claim 到期回收及跨分支会话归属的并发检查矩阵，核对当前公开存储与领域入口。
   open_loops:
-  - SEC-003 固定 20 项恢复合同与 60 项相关回归通过；七个真实进程中断边界及 CLI 接续有独立临时项目证据。已修复临时 I/O/访问错误提前关闭恢复记录和描述符延长来源锁占用，并在本项目通过 MCP 写回进度。等待源码提交、远端回执与完成写回。
+  - SEC-003 已完成：20/20 恢复条件、60 项相关检查、七个真实进程中断边界与本项目写回通过；源码 7dd9414 的 Git 和 GitHub 回执已核实。MCP 完成写回、释放 claim、checkpoint/end
+    后 Doctor 为 0 项，进入 SEC-004。恢复矩阵为本地组件和 CLI 证据，不计 E4。
   - SEC-001 已完成：26/26 路径条件、46 项写回回归和 10 项 MCP 检查通过；源码 217a0b5 的远端回执已核实。实际完成写回、快照核对、checkpoint/end 后 Doctor 为 0 项；进入
     SEC-002。均不计 E4 或正式发布。
   - P0/P1 功能与接入项全部完成；P8-004 已对齐 8 个 MCP Tools 和 CLI 的状态、版本、缺口及写入回执，进入 M8 安全与后续集中质量阶段。
@@ -1575,7 +1576,8 @@ work_items:
   depends_on:
   - AWR-P6-004
   - AWR-P7-003
-  evidence: []
+  evidence:
+  - ledger/deliveries/AWR-SEC-003.json
   id: AWR-SEC-003
   kind: security
   milestone: M8
@@ -1588,41 +1590,41 @@ work_items:
   - 25
   - 33
   - 34
-  status: in_progress
+  status: completed
   title: 并发冲突与 Source/DB 写入故障恢复
   verification:
     evidence_directory: ledger/evidence/AWR-SEC-003
-    evidence_level: none
+    evidence_level: locally_verified
     minimum: 证明本条验收行为；功能阶段运行必要的定向检查，系统测试在 M9 集中执行。
-- id: AWR-SEC-004
-  title: Event 不可变、Claim TTL 与分支隔离加固
-  milestone: M8
-  priority: P2
-  kind: security
-  required_for_v1: true
-  status: planned
-  owner: null
+- acceptance:
+  - 验证存储/领域公开路径不能修改既有事件，过期 claim 回收不夺取有效 claim。
+  - 并发 Session 与工作分支保持独立归属，冲突可观测。
+  blocker: null
+  deliverables:
+  - crates/awr-store/
+  - crates/awr-runtime/
+  - tests/concurrency/
   depends_on:
   - AWR-P7-003
+  evidence: []
+  id: AWR-SEC-004
+  kind: security
+  milestone: M8
+  next_action: 建立事件改写、Claim 到期回收及跨分支会话归属的并发检查矩阵，核对当前公开存储与领域入口。
+  owner: codex-primary
+  priority: P2
+  required_for_v1: true
   source_sections:
   - 11
   - 25
   - 26
   - 33
-  deliverables:
-  - crates/awr-store/
-  - crates/awr-runtime/
-  - tests/concurrency/
-  acceptance:
-  - 验证存储/领域公开路径不能修改既有事件，过期 claim 回收不夺取有效 claim。
-  - 并发 Session 与工作分支保持独立归属，冲突可观测。
+  status: in_progress
+  title: Event 不可变、Claim TTL 与分支隔离加固
   verification:
-    minimum: 证明本条验收行为；功能阶段运行必要的定向检查，系统测试在 M9 集中执行。
     evidence_directory: ledger/evidence/AWR-SEC-004
     evidence_level: none
-  evidence: []
-  blocker: null
-  next_action: 按交付物实现并验证：Event 不可变、Claim TTL 与分支隔离加固
+    minimum: 证明本条验收行为；功能阶段运行必要的定向检查，系统测试在 M9 集中执行。
 - id: AWR-SEC-005
   title: 数据库完整性与 Doctor 故障矩阵
   milestone: M8
