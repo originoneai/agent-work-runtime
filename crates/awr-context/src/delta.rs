@@ -13,6 +13,7 @@ pub struct DeltaContextRequest {
 
 #[derive(Debug, Clone, Serialize)]
 pub struct DeltaContextReport {
+    pub branch_context: crate::BranchContextBinding,
     pub source_refresh_ok: bool,
     pub source_issues: Vec<awr_source::IndexIssue>,
     pub delta: RecentDelta,
@@ -23,6 +24,28 @@ pub fn context_delta(
     store: &mut Store,
     root: &Path,
     request: &DeltaContextRequest,
+) -> Result<DeltaContextReport> {
+    context_delta_selected(store, root, request, None)
+}
+
+/// Read the exact named branch since fork; source refresh is shared and defaults stay unchanged.
+pub fn branch_delta(
+    store: &mut Store,
+    root: &Path,
+    reference: &str,
+    request: &DeltaContextRequest,
+) -> Result<DeltaContextReport> {
+    crate::branch::require_fork_request(&request.delta.baseline)?;
+    let mut request = request.clone();
+    request.delta.baseline = DeltaBaseline::BranchFork;
+    context_delta_selected(store, root, &request, Some(reference))
+}
+
+fn context_delta_selected(
+    store: &mut Store,
+    root: &Path,
+    request: &DeltaContextRequest,
+    reference: Option<&str>,
 ) -> Result<DeltaContextReport> {
     if [&request.work_item_key, &request.agent_id]
         .into_iter()
@@ -36,9 +59,15 @@ pub fn context_delta(
     let refresh =
         awr_source::index_project(store, root, &awr_source::Manifest::load(root)?, false)?;
     let project = store.project_by_root(&root.canonicalize()?)?;
+    let branch = match reference {
+        Some(reference) => store.resolve_branch(project.id, reference)?,
+        None => project.current_branch_id,
+    };
+    let branch_context = crate::branch::branch_binding(store, &project, branch)?;
     let selected = crate::compile::select_work(
         store,
         &project,
+        branch,
         &crate::ContextRequest {
             work_item_key: request.work_item_key.clone(),
             session_id: request.delta.session_id,
@@ -55,7 +84,7 @@ pub fn context_delta(
         store,
         project.id,
         &work.item.meta.external_key,
-        project.current_branch_id,
+        branch,
         &DeltaRequest {
             session_id: selected.session.map(|s| s.id),
             ..request.delta.clone()
@@ -68,6 +97,7 @@ pub fn context_delta(
         });
     }
     Ok(DeltaContextReport {
+        branch_context,
         source_refresh_ok: refresh.ok,
         source_issues: refresh.issues,
         delta,
@@ -79,6 +109,8 @@ pub fn context_delta(
 pub enum DeltaBaseline {
     #[default]
     Auto,
+    /// Exact branch runtime window starts at its recorded fork; main starts at revision zero.
+    BranchFork,
     Checkpoint {
         id: Id,
     },
@@ -110,6 +142,8 @@ pub struct RecentDelta {
     pub work_item_key: String,
     pub branch_id: Option<Id>,
     pub after_revision: Revision,
+    #[serde(default)]
+    pub fork_project_revision: Revision,
     pub baseline_origin: String,
     pub checkpoint_id: Option<Id>,
     pub events: DeltaEvents,
@@ -158,11 +192,8 @@ pub fn recent_delta(
     request: &DeltaRequest,
 ) -> Result<RecentDelta> {
     let project = store.project(project_id)?;
-    if project.current_branch_id != branch {
-        return Err(Error::Unsupported(
-            "delta requires the selected project branch; overlays are not yet implemented".into(),
-        ));
-    }
+    let binding = crate::branch::branch_binding(store, &project, branch)?;
+    let fork = binding.fork_project_revision;
     let work = store.work_item(project_id, work_key)?;
     let session = request
         .session_id
@@ -182,7 +213,7 @@ pub fn recent_delta(
             "explicit_checkpoint",
         ),
         DeltaBaseline::Revision { .. } => (None, "explicit_revision"),
-        DeltaBaseline::Auto => context_checkpoint(
+        DeltaBaseline::Auto | DeltaBaseline::BranchFork => context_checkpoint(
             store,
             project_id,
             work.item.meta.id,
@@ -197,8 +228,21 @@ pub fn recent_delta(
                 "delta checkpoint belongs to a different work item or branch".into(),
             ));
         }
+        if cp.project_revision < fork || cp.project_revision > project.project_revision {
+            return Err(Error::InvalidInput(
+                "checkpoint revision is outside the branch lifetime".into(),
+            ));
+        }
     }
-    let after_revision = match (&checkpoint, &request.baseline) {
+    let mut after_revision = match (&checkpoint, &request.baseline) {
+        (_, DeltaBaseline::BranchFork) => {
+            origin = if branch.is_some() {
+                "branch_fork"
+            } else {
+                "main_project_start"
+            };
+            fork
+        }
         (Some(cp), _) => cp.project_revision,
         (_, DeltaBaseline::Revision { revision }) => *revision,
         _ => {
@@ -216,6 +260,18 @@ pub fn recent_delta(
             }
         }
     };
+    if after_revision < fork {
+        if matches!(
+            request.baseline,
+            DeltaBaseline::Revision { .. } | DeltaBaseline::Checkpoint { .. }
+        ) {
+            return Err(Error::InvalidInput(
+                "delta baseline precedes branch fork".into(),
+            ));
+        }
+        after_revision = fork;
+        origin = "branch_fork";
+    }
     let events = store.delta_events(
         project_id,
         project.project_revision,
@@ -249,7 +305,7 @@ pub fn recent_delta(
     }
     Ok(RecentDelta {
         project_id, work_item_id: work.item.meta.id, work_item_key: work_key.into(), branch_id: branch,
-        after_revision, baseline_origin: origin.into(), checkpoint_id: checkpoint.map(|cp| cp.id), events, gaps,
+        after_revision, fork_project_revision: fork, baseline_origin: origin.into(), checkpoint_id: checkpoint.map(|cp| cp.id), events, gaps,
         history_scope: "Source changes: all project sources after baseline, including retired sources. Process history: this work or project-global events on the exact branch; high/critical summaries after baseline. Full immutable events remain available through Store.event/project EventQuery; omitted counts are explicit.".into(),
     })
 }

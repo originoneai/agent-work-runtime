@@ -14,7 +14,8 @@ pub struct ContextRequest {
     #[serde(default, skip_serializing_if = "is_false")]
     pub detached: bool,
     pub agent_id: Option<String>,
-    /// None selects the current project branch; named overlays are a later work item.
+    /// None selects the current default; Some reads that branch without switching.
+    /// Use compile_branch_context for a name or an explicit main baseline.
     pub branch_id: Option<Id>,
     pub goal_keys: Vec<String>,
     pub paths: Option<Vec<String>>,
@@ -83,6 +84,7 @@ pub(crate) struct Selection {
 pub(crate) fn select_work(
     store: &Store,
     project: &Project,
+    branch: Option<Id>,
     request: &ContextRequest,
 ) -> Result<Selection> {
     if request.detached && (request.session_id.is_some() || request.work_item_key.is_none()) {
@@ -110,7 +112,7 @@ pub(crate) fn select_work(
         None
     } else if let Some(id) = request.session_id {
         let session = store.session(project.id, id)?;
-        if session.branch_id != project.current_branch_id
+        if session.branch_id != branch
             || request
                 .agent_id
                 .as_ref()
@@ -130,7 +132,7 @@ pub(crate) fn select_work(
             None,
             work.as_ref().map(|w| w.item.meta.id),
             request.agent_id.as_deref(),
-            project.current_branch_id,
+            branch,
         ) {
             Ok(s) => Some(s),
             Err(Error::NotFound(_)) => None,
@@ -308,6 +310,31 @@ pub fn compile_context(
     root: &Path,
     request: &ContextRequest,
 ) -> Result<WorkContextReport> {
+    compile_context_selected(store, root, request, None)
+}
+
+/// Read a named branch overlay without changing project defaults or any runtime ownership.
+pub fn compile_branch_context(
+    store: &mut Store,
+    root: &Path,
+    reference: &str,
+    request: &ContextRequest,
+) -> Result<WorkContextReport> {
+    if request.branch_id.is_some() {
+        return Err(Error::InvalidInput("use only one branch selector".into()));
+    }
+    crate::branch::require_fork_request(&request.delta_baseline)?;
+    let mut request = request.clone();
+    request.delta_baseline = DeltaBaseline::BranchFork;
+    compile_context_selected(store, root, &request, Some(reference))
+}
+
+fn compile_context_selected(
+    store: &mut Store,
+    root: &Path,
+    request: &ContextRequest,
+    reference: Option<&str>,
+) -> Result<WorkContextReport> {
     if request.token_budget == 0
         || request.token_budget > 100000
         || request.intent.trim().is_empty()
@@ -333,13 +360,13 @@ pub fn compile_context(
     let root = root.canonicalize()?;
     let refresh = index_project(store, &root, &Manifest::load(&root)?, false)?;
     let project = store.project(refresh.project_id)?;
-    if request.branch_id.is_some() && request.branch_id != project.current_branch_id {
-        return Err(Error::Unsupported(
-            "context branch overlays are not yet implemented".into(),
-        ));
-    }
+    let branch = match reference {
+        Some(reference) => store.resolve_branch(project.id, reference)?,
+        None => request.branch_id.or(project.current_branch_id),
+    };
+    let branch_context = crate::branch::branch_binding(store, &project, branch)?;
     let sources = store.sources(project.id)?;
-    let selection = select_work(store, &project, request)?;
+    let selection = select_work(store, &project, branch, request)?;
     let goal_basis = if request.goal_keys.is_empty() {
         "project_primary_goal_sources"
     } else {
@@ -354,6 +381,7 @@ pub fn compile_context(
     let Some(work) = selection.work.as_ref() else {
         let mut completeness = assess_completeness(CompletenessFacts {
             project: &project,
+            branch,
             work_key: key,
             work: None,
             hard: None,
@@ -361,6 +389,7 @@ pub fn compile_context(
             sources: &sources,
             refresh: Some(&refresh),
         })?;
+        completeness.branch_context = Some(branch_context);
         completeness.goal_context_complete = Some(false);
         let text = format!(
             "CONTEXT INCOMPLETE\nProject: {} [{}] r{}\nRequested work: {}\nNo unambiguous active work projection was resolved. Specify a current --work key.\n",
@@ -394,30 +423,27 @@ pub fn compile_context(
         });
     };
     let scope = scope(request, selection.session.as_ref());
-    let mut related = crate::related::RelatedSelection::dependencies(
-        store,
-        project.id,
-        key,
-        project.current_branch_id,
-    )?;
-    let hard = hard_context(store, project.id, key, project.current_branch_id, &scope)?;
+    let mut related =
+        crate::related::RelatedSelection::dependencies(store, project.id, key, branch)?;
+    let hard = hard_context(store, project.id, key, branch, &scope)?;
     let rules = select_rules(store, &project, Some(work), &scope)?;
     related.decisions(store, scope.paths.as_deref())?;
     let delta = recent_delta(
         store,
         project.id,
         key,
-        project.current_branch_id,
+        branch,
         &DeltaRequest {
             baseline: request.delta_baseline.clone(),
             session_id: selection.session.as_ref().map(|s| s.id),
             ..Default::default()
         },
     )?;
-    related.evidence(store, request.source_sha.as_deref())?;
+    related.branch_evidence(store, request.source_sha.as_deref())?;
     let related = related.finish(store)?;
     let mut completeness = assess_completeness(CompletenessFacts {
         project: &project,
+        branch,
         work_key: key,
         work: Some(work),
         hard: Some(&hard),
@@ -425,6 +451,7 @@ pub fn compile_context(
         sources: &sources,
         refresh: Some(&refresh),
     })?;
+    completeness.branch_context = Some(branch_context.clone());
     let selected_goals = goals(store, &project, &sources, &request.goal_keys)?;
     let mut goal_complete = !selected_goals.is_empty();
     if selected_goals.is_empty() {
@@ -452,6 +479,16 @@ pub fn compile_context(
         }
     }
     let mut required = hard_chunks(&hard)?;
+    required.push(chunk(
+        "branch-context", ContextSection::Metadata,
+        format!("Work branch: {} | revision: {:?} | fork: {} | parent: {}\nGit ref at creation: {}; recorded commit: {}\nSource basis: {}\nRuntime scope: {}",
+            branch_context.name, branch_context.branch_revision, branch_context.fork_project_revision,
+            branch_context.parent_branch_id.map(|id| id.to_string()).unwrap_or_else(|| "main".into()),
+            branch_context.git_ref.as_deref().unwrap_or("unbound"),
+            branch_context.git_binding.as_ref().map(|g| g.commit_sha.as_str()).unwrap_or("unverified"),
+            branch_context.source_basis, branch_context.runtime_scope),
+        branch_context.branch_id.map(|id| vec![SelectedEntity { kind: "branch".into(), id, revision: branch_context.branch_revision.unwrap_or(0) }]).unwrap_or_default(),
+    ));
     let mut optional_chunks = Vec::new();
     let mut omitted_refs = Vec::new();
     required.push(chunk(
@@ -791,7 +828,7 @@ pub fn compile_context(
         work_item_id: work.item.meta.id,
         work_item_key: key.into(),
         work_item_revision: work.item.meta.revision,
-        branch_id: project.current_branch_id,
+        branch_id: branch,
         source_versions: completeness.source_versions.clone(),
     };
     let mut normalized_request = request.clone();

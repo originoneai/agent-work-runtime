@@ -1,6 +1,7 @@
 //! Deterministic, source-refreshed context for resuming agent work.
 pub use awr_core::{Error, Result};
 mod bootstrap;
+mod branch;
 mod budget;
 mod compile;
 mod completeness;
@@ -8,18 +9,21 @@ mod delta;
 mod hard;
 mod related;
 pub use bootstrap::{BootstrapContext, BootstrapPack, BootstrapRequest, bootstrap};
+pub use branch::BranchContextBinding;
 pub use budget::{
     BUDGET_POLICY, BudgetedContext, ContextChunk, ContextIdentity, ContextSection, RankedChunk,
     SelectedEntity, TOKEN_COUNT_SCOPE, TOKENIZER, budget_context, hard_chunks, token_count,
 };
-pub use compile::{ContextOmission, ContextRequest, WorkContextReport, compile_context};
+pub use compile::{
+    ContextOmission, ContextRequest, WorkContextReport, compile_branch_context, compile_context,
+};
 pub use completeness::{
     CompletenessIssue, CompletenessRequest, ContextCompleteness, check_completeness,
     inspect_completeness,
 };
 pub use delta::{
     DeltaBaseline, DeltaContextReport, DeltaContextRequest, DeltaRequest, RecentDelta,
-    context_delta, recent_delta,
+    branch_delta, context_delta, recent_delta,
 };
 pub use hard::{
     HardContext, HardWork, RuleScopeInput, RuleSelection, SourceVersion, hard_context, select_rules,

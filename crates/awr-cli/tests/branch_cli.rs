@@ -169,6 +169,422 @@ impl Drop for Fixture {
 }
 
 #[test]
+fn named_context_combines_current_shared_sources_with_fork_delta_without_switching() {
+    let f = Fixture::new();
+    f.init_git();
+    let main = f.start("executor", true);
+    let ms = main["session"]["id"].as_str().unwrap();
+    f.event(ms, "MAIN_RUNTIME_SENTINEL");
+    f.evidence("main-report", None);
+    let a = Fixture::success(&f.create("analysis", &["--git-ref", "main"]));
+    let aid = a["branch"]["id"].as_str().unwrap();
+    Fixture::success(&f.switch("analysis"));
+    let session = f.start("executor", true);
+    let sid = session["session"]["id"].as_str().unwrap();
+    f.event(sid, "Branch finding before checkpoint");
+    f.evidence("analysis-report", None);
+    let pack = f.ok(&["context", "compile", "--session", sid]);
+    let cp = f.ok(&[
+        "session",
+        "checkpoint",
+        "--session",
+        sid,
+        "--context-hash",
+        pack["work_context"]["context_hash"].as_str().unwrap(),
+        "--digest",
+        "Read the branch inputs",
+        "--next-action",
+        "Review the updated branch input",
+        "--open-loop",
+        "Retain this branch open loop",
+        "--expected-revision",
+        &f.revision(),
+    ]);
+    f.event(sid, "Branch finding after checkpoint");
+    let child = Fixture::success(&f.create("child", &[]));
+    Fixture::success(&f.switch("child"));
+    let sibling_session = f.start("executor", true);
+    let ss = sibling_session["session"]["id"].as_str().unwrap();
+    f.event(ss, "CHILD_RUNTIME_SENTINEL");
+    f.evidence("child-report", None);
+    f.event(ms, "MAIN_LATE_SENTINEL");
+    let fresh_work = WORK.replace(
+        "Continue the selected work",
+        "Use the latest shared source after fork",
+    );
+    fs::write(f.0.join("work.yaml"), &fresh_work).unwrap();
+    fs::write(f.0.join("rules.md"), "# Authority {#authority severity=hard scope=project value=*}\n\nLatest shared hard rule after fork.\n").unwrap();
+    let git_before = f.git(&["status", "--porcelain=v1"]);
+    let source_before = fs::read(f.0.join("work.yaml")).unwrap();
+    let sessions_before = [ms, sid, ss].map(|id| f.ok(&["session", "show", id])["session"].clone());
+    let report = f.ok(&["branch", "context", "analysis", "--work", "W"]);
+    assert_eq!(report["session_id"], sid);
+    assert_eq!(report["checkpoint_id"], cp["checkpoint"]["id"]);
+    assert_eq!(
+        report["delta_after_revision"],
+        a["branch"]["fork_project_revision"]
+    );
+    assert_eq!(report["completeness"]["complete"], true);
+    let binding = &report["completeness"]["branch_context"];
+    assert_eq!(binding["branch_id"], aid);
+    assert_eq!(binding["branch_revision"], a["branch"]["revision"]);
+    assert_eq!(binding["git_binding"], a["git_binding"]);
+    let text = report["work_context"]["rendered_context"].as_str().unwrap();
+    for fact in [
+        "Use the latest shared source after fork",
+        "Latest shared hard rule after fork.",
+        "Branch finding before checkpoint",
+        "Branch finding after checkpoint",
+        "Retain this branch open loop",
+        "analysis-report",
+        "Preserve work and branch ownership",
+    ] {
+        assert!(text.contains(fact), "missing {fact}");
+    }
+    let all = report.to_string();
+    for excluded in [
+        "MAIN_RUNTIME_SENTINEL",
+        "MAIN_LATE_SENTINEL",
+        "CHILD_RUNTIME_SENTINEL",
+        "main-report",
+        "child-report",
+    ] {
+        assert!(
+            !all.contains(excluded),
+            "foreign runtime record: {excluded}"
+        );
+    }
+    assert_eq!(
+        f.ok(&["branch", "show"])["branch_id"],
+        child["branch"]["id"]
+    );
+    assert_eq!(
+        sessions_before,
+        [ms, sid, ss].map(|id| f.ok(&["session", "show", id])["session"].clone())
+    );
+    assert_eq!(source_before, fs::read(f.0.join("work.yaml")).unwrap());
+    assert_eq!(git_before, f.git(&["status", "--porcelain=v1"]));
+    assert_eq!(report, f.ok(&["branch", "context", aid, "--work", "W"]));
+    // This child has a parent, but inherits shared source facts only, never parent runtime.
+    let child_context = f.ok(&["branch", "context", "child", "--work", "W"]);
+    assert_eq!(
+        child_context["completeness"]["branch_context"]["parent_branch_id"],
+        aid
+    );
+    assert!(!child_context.to_string().contains("Branch finding"));
+    assert!(!child_context.to_string().contains("analysis-report"));
+    assert!(
+        child_context
+            .to_string()
+            .contains("Latest shared hard rule after fork.")
+    );
+}
+
+#[test]
+fn named_main_and_branch_context_hashes_bind_branch_and_latest_source_versions() {
+    let f = Fixture::new();
+    f.init_git();
+    let main = f.start("main-agent", false);
+    let ms = main["session"]["id"].as_str().unwrap();
+    f.event(ms, "Main-only finding");
+    let a = Fixture::success(&f.create("experiment", &["--git-ref", "main"]));
+    let aid = a["branch"]["id"].as_str().unwrap();
+    Fixture::success(&f.switch("experiment"));
+    let before = f.ok(&["branch", "context", "experiment", "--work", "W"]);
+    assert!(before["session_id"].is_null()); // Never borrow the main session.
+    assert!(!before.to_string().contains("Main-only finding"));
+    let main_pack = f.ok(&["branch", "context", "main", "--work", "W"]);
+    assert_eq!(main_pack["session_id"], ms);
+    assert!(main_pack["completeness"]["branch_id"].is_null());
+    assert!(main_pack.to_string().contains("Main-only finding"));
+    assert_ne!(
+        main_pack["work_context"]["context_hash"],
+        before["work_context"]["context_hash"]
+    );
+    assert_eq!(f.ok(&["branch", "show"])["branch_id"], aid);
+    fs::write(
+        f.0.join("work.yaml"),
+        WORK.replace("Continue the selected work", "Updated source action"),
+    )
+    .unwrap();
+    let after = f.ok(&["branch", "context", "experiment", "--work", "W"]);
+    assert_ne!(
+        before["completeness"]["source_versions"],
+        after["completeness"]["source_versions"]
+    );
+    assert_ne!(
+        before["work_context"]["context_hash"],
+        after["work_context"]["context_hash"]
+    );
+    assert_eq!(
+        after["work_context"]["identity"]["source_versions"],
+        after["completeness"]["source_versions"]
+    );
+    assert_eq!(
+        before["completeness"]["branch_context"],
+        after["completeness"]["branch_context"]
+    );
+    assert_eq!(
+        after,
+        f.ok(&["branch", "context", "experiment", "--work", "W"])
+    );
+    // The immutable Git observation does not make a later dirty checkout look like fork source.
+    assert_eq!(
+        after["completeness"]["branch_context"]["git_binding"],
+        a["git_binding"]
+    );
+}
+
+#[test]
+fn branch_delta_is_bounded_and_keeps_shared_changes_separate_from_exact_branch_history() {
+    let f = Fixture::new();
+    let main = f.start("main", false);
+    let ms = main["session"]["id"].as_str().unwrap();
+    f.event(ms, "FOREIGN_EVENT_BEFORE_FORK");
+    let a = Fixture::success(&f.create("delta", &[]));
+    Fixture::success(&f.switch("delta"));
+    let session = f.start("executor", false);
+    let sid = session["session"]["id"].as_str().unwrap();
+    for text in [
+        "First branch observation",
+        "Second branch observation",
+        "Third branch observation",
+    ] {
+        f.event(sid, text);
+    }
+    Fixture::success(&f.switch("main"));
+    f.event(ms, "FOREIGN_EVENT_AFTER_FORK");
+    fs::write(
+        f.0.join("work.yaml"),
+        WORK.replace(
+            "Continue the selected work",
+            "Shared source observed from main",
+        ),
+    )
+    .unwrap();
+    let report = f.ok(&[
+        "branch",
+        "delta",
+        "delta",
+        "--work",
+        "W",
+        "--event-limit",
+        "1",
+        "--entity-limit",
+        "1",
+    ]);
+    let delta = &report["delta"];
+    assert_eq!(delta["baseline_origin"], "branch_fork");
+    assert_eq!(
+        delta["after_revision"],
+        a["branch"]["fork_project_revision"]
+    );
+    assert_eq!(
+        delta["fork_project_revision"],
+        a["branch"]["fork_project_revision"]
+    );
+    assert_eq!(delta["events"]["important_event_count"], 3);
+    assert_eq!(delta["events"]["omitted_important_events"], 2);
+    assert_eq!(
+        delta["events"]["important_events"]
+            .as_array()
+            .unwrap()
+            .len(),
+        1
+    );
+    assert_eq!(
+        delta["events"]["important_events"][0]["branch_id"],
+        a["branch"]["id"]
+    );
+    assert_eq!(
+        delta["events"]["source_changes"].as_array().unwrap().len(),
+        1
+    );
+    assert!(!report.to_string().contains("FOREIGN_EVENT"));
+    assert!(f.ok(&["branch", "show"])["branch_id"].is_null());
+    Fixture::error(
+        &f.run(&[
+            "branch",
+            "delta",
+            "delta",
+            "--work",
+            "W",
+            "--event-limit",
+            "0",
+        ]),
+        "InvalidInput",
+    );
+}
+
+#[test]
+fn branch_context_rejects_foreign_sessions_checkpoints_and_pre_fork_windows() {
+    let f = Fixture::new();
+    let main = f.start("main", false);
+    let ms = main["session"]["id"].as_str().unwrap();
+    let pack = f.ok(&["context", "compile", "--session", ms]);
+    let cp = f.ok(&[
+        "session",
+        "checkpoint",
+        "--session",
+        ms,
+        "--context-hash",
+        pack["work_context"]["context_hash"].as_str().unwrap(),
+        "--digest",
+        "Main progress",
+        "--next-action",
+        "MAIN_CHECKPOINT_PRIVATE_NEXT",
+        "--expected-revision",
+        &f.revision(),
+    ]);
+    let a = Fixture::success(&f.create("isolated", &[]));
+    let aid = a["branch"]["id"].as_str().unwrap();
+    let before = f.revision();
+    Fixture::error(
+        &f.run(&["branch", "context", "isolated", "--session", ms]),
+        "InvalidInput",
+    );
+    Fixture::error(
+        &f.run(&["branch", "delta", "isolated", "--session", ms]),
+        "InvalidInput",
+    );
+    Fixture::error(
+        &f.run(&[
+            "context",
+            "compile",
+            "--branch",
+            aid,
+            "--work",
+            "W",
+            "--checkpoint",
+            cp["checkpoint"]["id"].as_str().unwrap(),
+        ]),
+        "InvalidInput",
+    );
+    Fixture::error(
+        &f.run(&[
+            "context",
+            "compile",
+            "--branch",
+            aid,
+            "--work",
+            "W",
+            "--after-revision",
+            "0",
+        ]),
+        "InvalidInput",
+    );
+    Fixture::error(
+        &f.run(&[
+            "context",
+            "compile",
+            "--branch",
+            aid,
+            "--work",
+            "W",
+            "--after-revision",
+            "999999",
+        ]),
+        "InvalidInput",
+    );
+    Fixture::error(
+        &f.run(&["branch", "context", "absent", "--work", "W"]),
+        "NotFound",
+    );
+    let other = Fixture::new();
+    let foreign = Fixture::success(&other.create("other-project", &[]));
+    Fixture::error(
+        &f.run(&[
+            "branch",
+            "context",
+            foreign["branch"]["id"].as_str().unwrap(),
+            "--work",
+            "W",
+        ]),
+        "NotFound",
+    );
+    assert_eq!(before, f.revision());
+    let allowed = f.ok(&["context", "compile", "--branch", aid, "--work", "W"]);
+    assert_eq!(
+        allowed["delta_after_revision"],
+        a["branch"]["fork_project_revision"]
+    );
+    assert!(!allowed.to_string().contains("MAIN_CHECKPOINT_PRIVATE_NEXT"));
+    assert!(f.ok(&["branch", "show"])["branch_id"].is_null());
+}
+
+#[test]
+fn named_branch_context_preserves_incomplete_sources_and_refuses_hard_fact_overflow() {
+    let f = Fixture::new();
+    Fixture::success(&f.create("inspect", &[]));
+    fs::remove_file(f.0.join("rules.md")).unwrap();
+    let failure = f.run(&["branch", "context", "inspect", "--work", "W"]);
+    Fixture::error(&failure, "ContextIncomplete");
+    let diagnostic: Value = serde_json::from_slice(&failure.stdout).unwrap();
+    assert_eq!(diagnostic["completeness"]["source_fresh"], false);
+    assert_eq!(
+        diagnostic["completeness"]["branch_context"]["name"],
+        "inspect"
+    );
+    let delta = f.run(&["branch", "delta", "inspect", "--work", "W"]);
+    Fixture::error(&delta, "SourceStale");
+    assert_eq!(
+        serde_json::from_slice::<Value>(&delta.stdout).unwrap()["source_refresh_ok"],
+        false
+    );
+    let missing = f.run(&["branch", "context", "inspect", "--work", "MISSING"]);
+    Fixture::error(&missing, "ContextIncomplete");
+    let missing: Value = serde_json::from_slice(&missing.stdout).unwrap();
+    assert!(missing["work_context"].is_null());
+    assert_eq!(missing["completeness"]["branch_context"]["name"], "inspect");
+    fs::write(
+        f.0.join("rules.md"),
+        format!(
+            "# Authority {{severity=hard scope=project value=*}}\n\n{}REQUIRED_TAIL\n",
+            "Required source fact. ".repeat(10000)
+        ),
+    )
+    .unwrap();
+    let overflow = f.run(&["branch", "context", "inspect", "--work", "W"]);
+    Fixture::error(&overflow, "BudgetExceeded");
+    assert!(overflow.stdout.is_empty());
+    assert!(
+        fs::read_to_string(f.0.join("rules.md"))
+            .unwrap()
+            .contains("REQUIRED_TAIL")
+    );
+    assert!(f.ok(&["branch", "show"])["branch_id"].is_null());
+}
+
+#[test]
+fn closed_or_corrupt_branch_metadata_cannot_compile_a_current_execution_pack() {
+    let f = Fixture::new();
+    let created = Fixture::success(&f.create("closed", &[]));
+    let id = created["branch"]["id"].as_str().unwrap();
+    let db = rusqlite::Connection::open(f.0.join(".awr/state.db")).unwrap();
+    db.execute("UPDATE branches SET status='abandoned' WHERE id=?1", [id])
+        .unwrap();
+    Fixture::error(
+        &f.run(&["branch", "context", "closed", "--work", "W"]),
+        "InvalidTransition",
+    );
+    Fixture::error(
+        &f.run(&["branch", "delta", "closed", "--work", "W"]),
+        "InvalidTransition",
+    );
+    db.execute(
+        "UPDATE branches SET status='active',fork_project_revision=999999 WHERE id=?1",
+        [id],
+    )
+    .unwrap();
+    assert!(
+        !f.run(&["branch", "context", "closed", "--work", "W"])
+            .status
+            .success()
+    );
+    assert!(f.ok(&["branch", "show", "main"])["branch_id"].is_null());
+}
+
+#[test]
 fn creating_branch_records_observed_git_commit_without_changing_checkout_sources_or_selection() {
     let f = Fixture::new();
     f.init_git();
@@ -430,7 +846,7 @@ fn context_and_evidence_keep_branch_identity_and_explicit_main_evidence_is_prese
         "--session",
         cs,
         "--after-revision",
-        "0",
+        &created["branch"]["fork_project_revision"].to_string(),
     ]);
     assert_eq!(pack["completeness"]["complete"], true);
     assert_eq!(pack["work_context"]["identity"]["branch_id"], bid);

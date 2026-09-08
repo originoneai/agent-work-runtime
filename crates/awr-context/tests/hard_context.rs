@@ -146,7 +146,7 @@ fn hard_context_preserves_exact_acceptance_state_rules_and_provenance() {
     assert!(selected.unknown.is_empty());
     assert!(matches!(
         hard_context(&f.store, f.project.id, "W", Some(Id::new()), &scope()),
-        Err(Error::Unsupported(_))
+        Err(Error::NotFound(_))
     ));
     let identity = awr_context::ContextIdentity {
         project_id: project.id,

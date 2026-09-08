@@ -111,9 +111,7 @@ impl RelatedSelection {
         branch: Option<Id>,
     ) -> Result<Self> {
         let project = store.project(project)?;
-        if branch != project.current_branch_id {
-            return Err(Error::Unsupported("related context currently requires the selected project branch; branch overlays are scheduled".into()));
-        }
+        crate::branch::branch_binding(store, &project, branch)?;
         let work = store.work_item(project.id, work_key)?;
         let graph = store.dependency_closure(project.id, work_key, true)?;
         let mut ids = BTreeSet::from([work.source.id]);
@@ -206,10 +204,32 @@ impl RelatedSelection {
         Ok(())
     }
     pub(crate) fn evidence(&mut self, store: &Store, source_sha: Option<&str>) -> Result<()> {
+        self.select_evidence(store, source_sha, false)
+    }
+    pub(crate) fn branch_evidence(
+        &mut self,
+        store: &Store,
+        source_sha: Option<&str>,
+    ) -> Result<()> {
+        self.select_evidence(store, source_sha, true)
+    }
+    fn select_evidence(
+        &mut self,
+        store: &Store,
+        source_sha: Option<&str>,
+        isolate_runtime: bool,
+    ) -> Result<()> {
         let work_key = self.context.work_item_key.as_str();
         let branch = self.context.branch_id;
-        let assessments =
-            store.evidence_for_work(self.context.project_id, work_key, source_sha, branch)?;
+        let assessments = store
+            .evidence_for_work(self.context.project_id, work_key, source_sha, branch)?
+            .into_iter()
+            .filter(|a| {
+                !isolate_runtime
+                    || a.evidence.source.is_some()
+                    || a.evidence.item.branch_id == branch
+            })
+            .collect::<Vec<_>>();
         let mut evidence = Vec::new();
         let mut evidence_gaps = Vec::new();
         if assessments.is_empty() {

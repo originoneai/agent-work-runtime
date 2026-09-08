@@ -31,6 +31,26 @@ pub enum BranchCommand {
     },
     /// Read a branch and its creation/Git receipt; omit the selector for the current branch.
     Show { reference: Option<String> },
+    /// Compile shared current source facts plus this named branch's runtime delta since fork.
+    Context {
+        reference: String,
+        #[command(flatten)]
+        options: BranchContextArgs,
+    },
+    /// Inspect source changes and exact-branch runtime summaries since fork, without switching.
+    Delta {
+        reference: String,
+        #[arg(long)]
+        work: Option<String>,
+        #[arg(long)]
+        session: Option<Id>,
+        #[arg(long)]
+        agent: Option<String>,
+        #[arg(long, default_value_t = 12)]
+        event_limit: usize,
+        #[arg(long, default_value_t = 24)]
+        entity_limit: usize,
+    },
     /// Select defaults for later operations. Existing sessions and claims keep their branch.
     Switch {
         reference: String,
@@ -41,6 +61,27 @@ pub enum BranchCommand {
         #[arg(long)]
         expected_revision: Revision,
     },
+}
+#[derive(Debug, clap::Args)]
+pub struct BranchContextArgs {
+    #[arg(long)]
+    work: Option<String>,
+    #[arg(long)]
+    session: Option<Id>,
+    #[arg(long)]
+    agent: Option<String>,
+    #[arg(long)]
+    goal: Vec<String>,
+    #[arg(long)]
+    path: Option<Vec<String>>,
+    #[arg(long)]
+    tag: Option<Vec<String>>,
+    #[arg(long)]
+    source_sha: Option<String>,
+    #[arg(long, default_value = "work")]
+    intent: String,
+    #[arg(long, default_value_t = 5000)]
+    budget: usize,
 }
 pub fn run(root: &Path, command: &BranchCommand, json_output: bool) -> Result<()> {
     let root = root.canonicalize()?;
@@ -56,6 +97,66 @@ pub fn run(root: &Path, command: &BranchCommand, json_output: bool) -> Result<()
     };
     let project = store.project_by_root(&root)?;
     match command {
+        BranchCommand::Context { reference, options } => {
+            let report = awr_context::compile_branch_context(
+                &mut store,
+                &root,
+                reference,
+                &awr_context::ContextRequest {
+                    work_item_key: options.work.clone(),
+                    session_id: options.session,
+                    agent_id: options.agent.clone(),
+                    goal_keys: options.goal.clone(),
+                    paths: options.path.clone(),
+                    tags: options.tag.clone(),
+                    source_sha: options.source_sha.clone(),
+                    intent: options.intent.clone(),
+                    token_budget: options.budget,
+                    ..Default::default()
+                },
+            )?;
+            if json_output {
+                println!("{}", serde_json::to_string_pretty(&report)?);
+            } else {
+                print!("{}", report.rendered_context());
+            }
+            if !report.completeness.complete {
+                return Err(Error::ContextIncomplete(
+                    "branch context contains required gaps; inspect completeness and sources"
+                        .into(),
+                ));
+            }
+        }
+        BranchCommand::Delta {
+            reference,
+            work,
+            session,
+            agent,
+            event_limit,
+            entity_limit,
+        } => {
+            let report = awr_context::branch_delta(
+                &mut store,
+                &root,
+                reference,
+                &awr_context::DeltaContextRequest {
+                    work_item_key: work.clone(),
+                    agent_id: agent.clone(),
+                    delta: awr_context::DeltaRequest {
+                        session_id: *session,
+                        event_limit: *event_limit,
+                        entity_limit_per_source: *entity_limit,
+                        ..Default::default()
+                    },
+                },
+            )?;
+            println!("{}", serde_json::to_string_pretty(&report)?);
+            if !report.source_refresh_ok {
+                return Err(Error::SourceStale(
+                    "branch delta contains source refresh issues".into(),
+                ));
+            }
+        }
         BranchCommand::Create {
             name,
             parent,

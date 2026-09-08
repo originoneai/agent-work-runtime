@@ -193,9 +193,7 @@ pub fn hard_context(
     input: &RuleScopeInput,
 ) -> Result<HardContext> {
     let project = store.project(project)?;
-    if branch != project.current_branch_id {
-        return Err(Error::Unsupported("hard context currently requires the selected project branch; branch overlay compilation is scheduled".into()));
-    }
+    crate::branch::branch_binding(store, &project, branch)?;
     let work = store.work_item(project.id, work_key)?;
     let selection = select_rules(store, &project, Some(&work), input)?;
     let mut issues = Vec::new();

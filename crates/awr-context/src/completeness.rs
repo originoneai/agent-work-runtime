@@ -28,6 +28,8 @@ pub struct ContextCompleteness {
     pub project_revision: Revision,
     pub work_item_key: String,
     pub branch_id: Option<Id>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub branch_context: Option<crate::BranchContextBinding>,
     pub source_refresh_performed: bool,
     pub freshness_basis: &'static str,
     pub source_fresh: bool,
@@ -52,6 +54,7 @@ pub struct ContextCompleteness {
 
 pub(crate) struct CompletenessFacts<'a> {
     pub project: &'a Project,
+    pub branch: Option<Id>,
     pub work_key: &'a str,
     pub work: Option<&'a Projected<WorkItem>>,
     pub hard: Option<&'a HardContext>,
@@ -63,6 +66,7 @@ pub(crate) struct CompletenessFacts<'a> {
 pub(crate) fn assess_completeness(facts: CompletenessFacts<'_>) -> Result<ContextCompleteness> {
     let CompletenessFacts {
         project,
+        branch,
         work_key,
         work,
         hard,
@@ -101,12 +105,10 @@ pub(crate) fn assess_completeness(facts: CompletenessFacts<'_>) -> Result<Contex
         || hard.is_some_and(|h| {
             h.project_id != project.id
                 || h.work.meta.external_key != work_key
-                || h.branch_id != project.current_branch_id
+                || h.branch_id != branch
         })
         || related.is_some_and(|r| {
-            r.project_id != project.id
-                || r.work_item_key != work_key
-                || r.branch_id != project.current_branch_id
+            r.project_id != project.id || r.work_item_key != work_key || r.branch_id != branch
         })
     {
         return Err(Error::InvalidInput(
@@ -365,7 +367,8 @@ pub(crate) fn assess_completeness(facts: CompletenessFacts<'_>) -> Result<Contex
         project_id: project.id,
         project_revision: project.project_revision,
         work_item_key: work_key.into(),
-        branch_id: project.current_branch_id,
+        branch_id: branch,
+        branch_context: None,
         source_refresh_performed: refresh.is_some(),
         freshness_basis: if refresh.is_some() {
             "source_refresh_at_project_revision"
@@ -402,11 +405,7 @@ pub fn inspect_completeness(
     refresh: Option<&IndexReport>,
 ) -> Result<ContextCompleteness> {
     let project = store.project(project_id)?;
-    if project.current_branch_id != request.branch_id {
-        return Err(Error::Unsupported(
-            "completeness requires the selected project branch".into(),
-        ));
-    }
+    let binding = crate::branch::branch_binding(store, &project, request.branch_id)?;
     if request.work_item_key.trim().is_empty() {
         return Err(Error::InvalidInput("work key must not be blank".into()));
     }
@@ -441,8 +440,9 @@ pub fn inspect_completeness(
         })
         .transpose()?;
     let sources = store.sources(project_id)?;
-    let report = assess_completeness(CompletenessFacts {
+    let mut report = assess_completeness(CompletenessFacts {
         project: &project,
+        branch: request.branch_id,
         work_key: &request.work_item_key,
         work: work.as_ref(),
         hard: hard.as_ref(),
@@ -450,6 +450,7 @@ pub fn inspect_completeness(
         sources: &sources,
         refresh,
     })?;
+    report.branch_context = Some(binding);
     let actual = store.project(project_id)?.project_revision;
     if actual != project.project_revision {
         return Err(Error::RevisionConflict {
