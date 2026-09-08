@@ -1,6 +1,6 @@
 {
   "contract_id": "awr-concentrated-regression",
-  "version": "1.0.0",
+  "version": "1.1.0",
   "work_item": "AWR-QA-001",
   "evidence_level": "local_workspace_cli_mcp_and_process_fixtures",
   "workspace_members": ["awr-cli", "awr-context", "awr-core", "awr-mcp", "awr-runtime", "awr-source", "awr-store"],
@@ -17,7 +17,7 @@
     {"id": "workspace", "kind": "rust_tests", "requires_build": true, "command": ["cargo", "test", "--workspace", "--all-targets", "--no-fail-fast", "--locked"], "covers": ["Every current unit and integration target", "Source projection and authority", "Sessions, claims, branches, context, artifacts and source mutations", "Normal, boundary, failure and recovery behavior"]},
     {"id": "doctests", "kind": "rust_tests", "requires_build": true, "command": ["cargo", "test", "--workspace", "--doc", "--no-fail-fast", "--locked"], "covers": ["Documentation examples and compile-fail storage API contracts"]},
     {"id": "paths", "kind": "contract", "requires_build": true, "contract": "tests/security/paths/contract.json", "version": "1.0.0", "target_conditions": 26, "command": ["{python}", "tests/security/paths/verify.py", "--report", "{output}/paths.json"], "covers": ["Path traversal, containment, links and write races"]},
-    {"id": "payloads", "kind": "contract", "requires_build": true, "contract": "tests/security/payloads/contract.json", "version": "1.3.0", "target_conditions": 32, "command": ["{python}", "tests/security/payloads/verify_all.py", "--report", "{output}/payloads.json"], "covers": ["Source, event and artifact bounds", "Secret sanitization through CLI and MCP"]},
+    {"id": "payloads", "kind": "contract", "requires_build": true, "contract": "tests/security/payloads/contract.json", "version": "1.4.0", "target_conditions": 32, "command": ["{python}", "tests/security/payloads/verify_all.py", "--report", "{output}/payloads.json"], "covers": ["Source, event and artifact bounds", "Secret sanitization through CLI and MCP"]},
     {"id": "mutation_recovery", "kind": "contract", "requires_build": true, "contract": "tests/recovery/mutations/contract.json", "version": "1.0.0", "target_conditions": 20, "command": ["{python}", "tests/recovery/mutations/verify.py", "--report", "{output}/mutation_recovery.json"], "covers": ["Source mutation crashes, retries and durable receipts", "Explicit ignored CLI recovery after process death"]},
     {"id": "concurrency", "kind": "contract", "requires_build": true, "contract": "tests/concurrency/contract.json", "version": "1.1.0", "target_conditions": 20, "command": ["{python}", "tests/concurrency/verify.py", "--report", "{output}/concurrency.json"], "covers": ["Immutable events, competing claims, sessions and branch isolation", "Explicit main-branch CLI/MCP selectors"]},
     {"id": "database_recovery", "kind": "contract", "requires_build": true, "contract": "tests/recovery/doctor/contract.json", "version": "1.0.0", "target_conditions": 24, "command": ["{python}", "tests/recovery/doctor/verify.py", "--report", "{output}/database_recovery.json"], "covers": ["Schema, migrations and Doctor", "Live-writer WAL recovery", "Source projection, database backup and artifact restoration boundaries"]},

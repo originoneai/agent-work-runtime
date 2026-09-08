@@ -46,3 +46,5 @@ python3 tests/security/payloads/verify_all.py --report .local/payload-boundary-c
 ```
 
 完整入口重新构建 CLI/MCP、执行四组检查，核对同一合同摘要及互不重复的全部 32 个条件；它仍将任务完成状态留给台账及远端交付回执。
+
+QA-001 集中回归将当前合同推进到 1.4.0、秘密策略 2 和 FTS 策略 4，条件总数仍为 32。Basic 普通短语需要保持可用，Base64 用户名/密码组合（包括短值及无填充形式）需要拒绝，策略 3 的旧搜索缓存需要重新构建。秘密阶段现执行 7 项 core、11 项 runtime 和 3 项 CLI/MCP 检查。原有回执保留原合同与执行结果，不自动继承为新版通过。

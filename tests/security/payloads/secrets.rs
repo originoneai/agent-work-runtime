@@ -444,6 +444,16 @@ fn labelled_unicode_environment_private_prompt_and_recognizable_tokens_reach_rea
             ["sk-", "ghp_", "github_pat_", "xoxb-"]
                 .iter()
                 .map(|p| format!("{p}{}", "a".repeat(40)))
+                .chain(
+                    [
+                        "Basic dXNlcjpwYXNz",
+                        "Basic dXNlcjo",
+                        "Basic YTpi",
+                        "Basic Og==",
+                    ]
+                    .into_iter()
+                    .map(String::from),
+                )
                 .collect(),
         ),
     ] {
@@ -455,6 +465,69 @@ fn labelled_unicode_environment_private_prompt_and_recognizable_tokens_reach_rea
         }
         println!("AWR_PAYLOAD_CASE {case}");
     }
+}
+
+#[test]
+fn policy_three_basic_cache_is_rebuilt_without_rewriting_authority() {
+    for (authority, cached, expected) in [
+        ("Basic YTpi", "Basic YTpi", "[redacted]"),
+        (
+            "Review basic source-intake requirements",
+            "[redacted]",
+            "Review basic source-intake requirements",
+        ),
+    ] {
+        let mut f = Fixture::new();
+        let query = SearchQuery {
+            kind: Some("work_item".into()),
+            ..Default::default()
+        };
+        f.store.search(f.project, &query).unwrap();
+        let conn = f.sql();
+        conn.execute(
+            "UPDATE work_items SET summary=?1 WHERE external_key='W'",
+            [authority],
+        )
+        .unwrap();
+        conn.execute(
+            "UPDATE search_documents SET summary=?1 WHERE external_key='W' AND kind='work_item'",
+            [cached],
+        )
+        .unwrap();
+        conn.execute("INSERT INTO search_fts(search_fts) VALUES('rebuild')", [])
+            .unwrap();
+        conn.execute("UPDATE search_state SET policy_version=3", [])
+            .unwrap();
+        let revision = f.revision();
+        let report = f.store.search(f.project, &query).unwrap();
+        let hit = report.hits.iter().find(|h| h.external_key == "W").unwrap();
+        assert_eq!(hit.summary, expected);
+        let stored: String = conn
+            .query_row(
+                "SELECT summary FROM work_items WHERE external_key='W'",
+                [],
+                |row| row.get(0),
+            )
+            .unwrap();
+        assert_eq!(stored, authority);
+        let rebuilt: String = conn
+            .query_row(
+                "SELECT summary FROM search_documents WHERE external_key='W' AND kind='work_item'",
+                [],
+                |row| row.get(0),
+            )
+            .unwrap();
+        assert_eq!(rebuilt, expected);
+        assert_eq!(f.revision(), revision);
+        assert!(
+            f.store
+                .events_since(f.project, revision, 100)
+                .unwrap()
+                .is_empty()
+        );
+        assert_eq!(fs::read_to_string(f.root.join("work.yaml")).unwrap(), WORK);
+    }
+    println!("AWR_PAYLOAD_CASE fts_secret_redaction");
 }
 
 #[test]
@@ -494,7 +567,7 @@ fn legacy_search_redacts_summaries_omits_sensitive_identity_and_rebuilds_the_old
             },
         )
         .unwrap();
-    assert_eq!(report.index_policy_version, 3);
+    assert_eq!(report.index_policy_version, 4);
     let hit = report.hits.iter().find(|h| h.external_key == "W").unwrap();
     assert_eq!(hit.summary, "[redacted]");
     assert!(!serde_json::to_string(&report).unwrap().contains(SENTINEL));
@@ -646,8 +719,7 @@ fn legacy_required_facts_withhold_l0_l1_and_checkpoint_delta_without_false_compl
 fn ordinary_security_discussion_stays_writable_searchable_and_context_complete() {
     let mut f = Fixture::new();
     let session = f.session();
-    let text =
-        "Review password protection and token budgets; discuss API keys and environment variables.";
+    let text = "Review password protection and token budgets; discuss API keys and environment variables. The basic source-intake example covers basic authentication concepts.";
     fs::write(
         f.root.join("work.yaml"),
         WORK.replace("Draft the analysis", text),

@@ -31,7 +31,8 @@ fn main() -> awr_core::Result<()> {
     let failed = store
         .append_event(project.id, revision + 1, invalid)
         .unwrap_err();
-    assert_eq!(failed.code(), "Storage");
+    // Missing domain bindings are rejected before reaching SQLite's FK check.
+    assert!(matches!(failed, Error::NotFound(_)));
     assert_eq!(store.project(project.id)?.project_revision, revision + 1);
     let events = store.events_since(project.id, revision, 10)?;
     assert_eq!(events.len(), 1);

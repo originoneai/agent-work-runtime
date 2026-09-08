@@ -2,12 +2,16 @@
 //! labelled secret values and environment dumps, not arbitrary unlabelled private data.
 //! Rejection diagnostics never contain the matched key, value or surrounding text.
 use crate::{Error, Result};
+use base64::{
+    Engine as _,
+    engine::general_purpose::{STANDARD, STANDARD_NO_PAD},
+};
 use regex::Regex;
 use serde::Serialize;
 use serde_json::Value;
 use std::{borrow::Cow, sync::LazyLock};
 
-pub const SECRET_POLICY_VERSION: u32 = 1;
+pub const SECRET_POLICY_VERSION: u32 = 2;
 pub const SENSITIVE_CONTENT_WITHHELD: &str = "[sensitive content withheld]";
 const REJECTION: &str =
     "sensitive content is not accepted; remove secret values or use explicit redacted placeholders";
@@ -18,10 +22,15 @@ static KNOWN: LazyLock<Regex> = LazyLock::new(|| {
         r"xox[baprs]-[a-z0-9-]{12,}|\b(?:AKIA|ASIA)[A-Z0-9]{16}\b|",
         r"\beyJ[a-z0-9_-]{8,}\.[a-z0-9_-]{8,}\.[a-z0-9_-]{8,}|",
         r"-----BEGIN (?:[A-Z0-9]+ )?PRIVATE KEY-----|",
-        r"\b(?:bearer|basic)[\s]+[a-z0-9+/_=-]{8,}|",
+        r"\bbearer[\s]+[a-z0-9+/_=-]{8,}|",
         r"[a-z][a-z0-9+.-]*://[^\s/@:]+:[^\s/@]+@)"
     ))
     .expect("fixed credential pattern")
+});
+
+static BASIC_AUTH: LazyLock<Regex> = LazyLock::new(|| {
+    Regex::new(r"(?i)(?:^|[^\p{L}\p{N}_])basic[\s]+([a-z0-9+/_=-]+)")
+        .expect("fixed Basic authentication pattern")
 });
 
 static ASSIGNMENT: LazyLock<Regex> = LazyLock::new(|| {
@@ -140,6 +149,15 @@ fn has_value(rest: &str) -> bool {
 pub fn contains_sensitive_text(text: &str) -> bool {
     let text = normalized(text);
     KNOWN.is_match(&text)
+        || BASIC_AUTH.captures_iter(&text).any(|capture| {
+            // RFC 7617 section 2 encodes user-id:password, not ordinary words
+            // following "basic". Accept omitted padding for detection as well.
+            // https://www.rfc-editor.org/rfc/rfc7617#section-2
+            STANDARD
+                .decode(&capture[1])
+                .or_else(|_| STANDARD_NO_PAD.decode(&capture[1]))
+                .is_ok_and(|bytes| bytes.contains(&b':'))
+        })
         || ASSIGNMENT
             .find_iter(&text)
             .any(|m| has_value(&text[m.end()..]))
@@ -361,6 +379,35 @@ mod tests {
         }
         ensure_public_value(&json!({"pending_secret_conditions":16,"token_budget":5000,"environment":"candidate","api_key":"${EXAMPLE_API_KEY}"})).unwrap();
         assert!(ensure_public_text("password: [redacted]fixture").is_err());
+    }
+    #[test]
+    fn basic_prose_remains_usable() {
+        for text in [
+            "The basic source-intake ledger has no phase declaration.",
+            "Review basic authentication and basic validation requirements.",
+            "A basic\ncomponent requires an explicit work identity.",
+            "The BASIC infrastructure documentation is ready.",
+        ] {
+            ensure_public_text(text).unwrap();
+            ensure_public_value(&json!({"summary": text})).unwrap();
+            assert_eq!(safe_diagnostic(text), text);
+        }
+    }
+    #[test]
+    fn basic_credentials_are_rejected_without_echo() {
+        // Public synthetic user/password pairs, including short and unpadded values.
+        for text in [
+            "Basic dXNlcjpwYXNz",
+            "basic dXNlcjo=",
+            "Basic dXNlcjo",
+            "Basic YTpi",
+            "Basic Og==",
+            "Ｂａｓｉｃ　dXNlcjpwYXNz",
+        ] {
+            assert!(ensure_public_text(text).is_err());
+            assert!(ensure_public_value(&json!({"body": text})).is_err());
+            assert_eq!(safe_diagnostic(text), SENSITIVE_CONTENT_WITHHELD);
+        }
     }
     #[test]
     fn unicode_and_escaped_labels_cannot_bypass_detection() {

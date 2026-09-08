@@ -32,9 +32,9 @@ def main():
               "stage_passed": False, "item_completed": False, "e4_completed": 0, "runs": []}
     commands = [
         (["cargo", "test", "-p", "awr-core", "--lib", "secrets::tests", "--locked"],
-         r"test result: ok\. (\d+) passed; 0 failed; 0 ignored", 5),
+         r"test result: ok\. (\d+) passed; 0 failed; 0 ignored", 7),
         (["cargo", "test", "-p", "awr-runtime", "--test", "security_secrets", "--locked", "--", "--nocapture"],
-         r"test result: ok\. (\d+) passed; 0 failed; 0 ignored", 10),
+         r"test result: ok\. (\d+) passed; 0 failed; 0 ignored", 11),
         ([sys.executable, "crates/awr-mcp/tests/security_secrets.py", "--awr", "target/debug/awr", "--mcp", "target/debug/awr-mcp"],
          r"Ran (\d+) tests", 3),
     ]
