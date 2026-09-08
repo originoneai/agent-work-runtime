@@ -1,0 +1,85 @@
+{
+  "kind": "implementation",
+  "repository": "https://github.com/originoneai/agent-work-runtime",
+  "source_commit": "70a5896498bd345cf5173a9fa0a9113cc875d111",
+  "checked_at": "2026-09-08T11:06:41+08:00",
+  "remote_receipt": {
+    "commit": "70a5896498bd345cf5173a9fa0a9113cc875d111",
+    "url": "https://github.com/originoneai/agent-work-runtime/commit/70a5896498bd345cf5173a9fa0a9113cc875d111",
+    "verified_at": "2026-09-08T11:09:11+08:00"
+  },
+  "version": 1,
+  "work_item": "AWR-P6-004",
+  "source_sha": "70a5896498bd345cf5173a9fa0a9113cc875d111",
+  "command": "cargo test --locked -p awr-cli --test work_complete_cli --test work_action_cli --test proposal_cli --test session_cli --test doctor_cli",
+  "scope": [
+    "AWR-P6-004"
+  ],
+  "verified_at": 1788836951900,
+  "checks": [
+    {
+      "name": "completion_contract_and_cli",
+      "passed": true,
+      "result": "cargo test --locked -p awr-cli --test work_complete_cli: 12/12 passed. Covers preserving source completion, minimum evidence level across mapped and additional required reports, exact acceptance coverage, missing evidence, report version/result/work/SHA/scope/command/time checks, report bytes/hash/size, ordered gates, own-claim requirement, forged metadata, immutable evidence-ID lookup despite external-key collisions, receipt failure and recovery, changed source preservation, and reopening with a new completion receipt.",
+      "criteria": [
+        "依次检查 revision、必需依赖、验收、证据、blocker 后才生成并应用提案。",
+        "重索引确认 Source 投影为 completed 后记录完成事件；缺证据不直接改 DB 完成。"
+      ]
+    },
+    {
+      "name": "related_cli_mutation_session_doctor",
+      "passed": true,
+      "result": "cargo test --locked -p awr-cli --test work_action_cli --test proposal_cli --test session_cli --test doctor_cli: 33/33 passed (10 work actions, 14 proposals, 5 sessions, 4 Doctor). Existing action behavior and interrupted-write recovery remain covered; work.completed cannot be forged via raw event append."
+    },
+    {
+      "name": "related_store_and_yaml_writer",
+      "passed": true,
+      "result": "cargo test --locked -p awr-store --test evidence --test mutation --test reconcile -p awr-source --test yaml_mutation: 20/20 passed (3 evidence, 6 mutation, 7 reconciliation, 4 YAML). Together with CLI checks: 65 distinct passing tests."
+    },
+    {
+      "name": "workspace_compilation_and_format",
+      "passed": true,
+      "result": "cargo check --locked --workspace --all-targets; cargo fmt --all -- --check; git diff --check passed. Existing unused meta/commit helper warning in the store mutation fixture remains; no new warning was observed."
+    },
+    {
+      "name": "completion_flow_review",
+      "passed": true,
+      "result": "Reviewed revision/dependency/acceptance/evidence/blocker ordering; immutable selected evidence records and criterion-to-ID bindings; exact-ID database checks; report file and hash rereads before writing and finalization; YAML preservation and evidence namespace collisions; completed source projection before the work.completed receipt; claim release sharing the final transaction. After-write failures retain recovery when actual source still matches the planned bytes. This is an implementation review by the implementing agent, not independent business acceptance."
+    }
+  ],
+  "artifacts": [
+    "crates/awr-core/src/completion.rs",
+    "crates/awr-core/src/work_action.rs",
+    "crates/awr-store/src/work_action.rs",
+    "crates/awr-store/src/mutation_apply.rs",
+    "crates/awr-runtime/src/completion.rs",
+    "crates/awr-runtime/src/mutation_apply.rs",
+    "crates/awr-source/src/yaml_mutation.rs",
+    "crates/awr-cli/src/work_action.rs",
+    "crates/awr-cli/tests/work_complete_cli.rs",
+    "README.md",
+    "adapters/yaml-ledger/README.md",
+    "ledger/evidence/AWR-P6-004/checks.json"
+  ],
+  "work_items": {
+    "AWR-P6-004": {
+      "acceptance": [
+        {
+          "criterion": "依次检查 revision、必需依赖、验收、证据、blocker 后才生成并应用提案。",
+          "passed": true
+        },
+        {
+          "criterion": "重索引确认 Source 投影为 completed 后记录完成事件；缺证据不直接改 DB 完成。",
+          "passed": true
+        }
+      ]
+    }
+  },
+  "limitations": [
+    "Feature-local verification only; centralized regression, security, eight real-client business scenarios and ten benchmarks remain scheduled in later work items. No release or E4 acceptance is claimed.",
+    "Completion checks supplied evidence metadata and actual versioned report contents. It does not execute the report command, judge natural-language acceptance quality or establish independent reviewer identity. A supplied source SHA does not prove the live checkout is clean.",
+    "Completion uses local YAML source writeback. Evidence reports must be registered local files within allowed roots; source references with unknown level cannot qualify. The explicit minimum is at least locally_verified.",
+    "Report producer metadata is hash-bound but not interpreted as extra authority. Individual selected reports are limited to 1 MiB; completion input and proposal are limited to 64 KiB with at most 100 distinct evidence records.",
+    "Filesystem rename is not a CAS against an unrelated external editor. Actual source and report bytes are reread at critical boundaries; pending write receipts retain before/after snapshots and require explicit recovery."
+  ]
+}

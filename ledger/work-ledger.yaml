@@ -1,8 +1,8 @@
 schema_version: 1
 contract_id: awr-v1
 contract_version: 1.0.0
-ledger_revision: 97
-updated_at: '2026-09-08T10:34:51+08:00'
+ledger_revision: 98
+updated_at: '2026-09-08T11:13:08+08:00'
 project:
   name: Agent Work Runtime
   external_key: agent-work-runtime
@@ -11,12 +11,14 @@ project:
   release_status: not_released
 current:
   milestone: M6
-  work_item: AWR-P6-004
-  next_action: 实现 work complete 的版本、必需依赖、验收映射、证据绑定与 blocker 门槛；复用领域提案和 YAML 写回，验证来源 completed 后记录完成事件。
+  work_item: AWR-P7-001
+  next_action: 实现 Work Branch 的 create/list/switch 与 Git ref 元数据绑定，固定 fork revision 和来源边界，并在本项目开始实际使用。
   open_loops:
   - 功能实现优先；集中测试、优化和打磨在功能开发后执行。
-  - 本项目已实际使用 Source、Status、Ready、Work、Search、Session、Claim、Context、Checkpoint、Resume、Doctor 和 YAML 提案写回；继续用开发会话记录当前工作。
-  - P6-003 已交付并核验远端。P6-004 实现完成任务的依赖、验收与证据门槛；事件描述发生过什么，证据须另行绑定 command、source SHA、report 与 scope，不能以事件冒充验证。
+  - 本项目已实际使用 Source、Status、Ready、Work、Search、Session、Claim、Context、Checkpoint、Resume、Doctor、YAML 提案写回和 work complete；继续用开发会话记录当前工作。
+  - P6-004 已交付并核验远端，且通过实际 work complete 关闭本项。P7-001 继续建立 Work Branch / Git Ref / fork revision 的明确绑定；Source/Git
+    保持共享权威，运行态必须保持分支归属。
+  - 完成检查只核对明确登记的证据及报告，不自动证明自然语言验收质量、独立复核或 E4；集中质量与发布门槛继续按后续台账执行。
 milestones:
 - id: M0
   status: completed
@@ -1230,21 +1232,10 @@ work_items:
     evidence_directory: ledger/evidence/AWR-P6-003
     evidence_level: locally_verified
     minimum: 证明本条验收行为；功能阶段运行必要的定向检查，系统测试在 M9 集中执行。
-- id: AWR-P6-004
-  title: Complete 的依赖、验收与证据门槛
-  milestone: M6
-  priority: P0
-  kind: feature
-  required_for_v1: true
-  status: in_progress
-  owner: codex-primary
-  depends_on:
-  - AWR-P6-003
-  - AWR-P2-003
-  source_sections:
-  - 14
-  - 38
-  - 47
+- acceptance:
+  - 依次检查 revision、必需依赖、验收、证据、blocker 后才生成并应用提案。
+  - 重索引确认 Source 投影为 completed 后记录完成事件；缺证据不直接改 DB 完成。
+  blocker: null
   deliverables:
   - crates/awr-runtime/
   - crates/awr-core/
@@ -1253,24 +1244,36 @@ work_items:
   - crates/awr-cli/
   - README.md
   - adapters/yaml-ledger/README.md
-  acceptance:
-  - 依次检查 revision、必需依赖、验收、证据、blocker 后才生成并应用提案。
-  - 重索引确认 Source 投影为 completed 后记录完成事件；缺证据不直接改 DB 完成。
+  depends_on:
+  - AWR-P6-003
+  - AWR-P2-003
+  evidence:
+  - ledger/deliveries/AWR-P6-004.json
+  id: AWR-P6-004
+  kind: feature
+  milestone: M6
+  next_action: 已由 AWR work complete 验证写回并记录完成回执；继续 P7-001 的 Work Branch / Git Ref 绑定。
+  owner: codex-primary
+  priority: P0
+  required_for_v1: true
+  source_sections:
+  - 14
+  - 38
+  - 47
+  status: completed
+  title: Complete 的依赖、验收与证据门槛
   verification:
-    minimum: 证明本条验收行为；功能阶段运行必要的定向检查，系统测试在 M9 集中执行。
     evidence_directory: ledger/evidence/AWR-P6-004
-    evidence_level: none
-  evidence: []
-  blocker: null
-  next_action: 实现 work complete 的版本、必需依赖、验收映射、证据绑定与 blocker 门槛；复用领域提案和 YAML 写回，验证来源 completed 后记录完成事件。
+    evidence_level: locally_verified
+    minimum: 证明本条验收行为；功能阶段运行必要的定向检查，系统测试在 M9 集中执行。
 - id: AWR-P7-001
   title: Work Branch 与 Git Ref 绑定
   milestone: M6
   priority: P0
   kind: feature
   required_for_v1: true
-  status: ready
-  owner: null
+  status: in_progress
+  owner: codex-primary
   depends_on:
   - AWR-P5-002
   source_sections:
@@ -1280,6 +1283,9 @@ work_items:
   deliverables:
   - crates/awr-runtime/
   - crates/awr-store/
+  - crates/awr-core/
+  - crates/awr-cli/
+  - README.md
   acceptance:
   - create/list/switch 记录父分支、fork revision 与 git ref。
   - Session/Event/Claim/Context/Evidence 有分支归属，明确共享 Source 与运行态隔离的边界。
@@ -1289,7 +1295,7 @@ work_items:
     evidence_level: none
   evidence: []
   blocker: null
-  next_action: 按交付物实现并验证：Work Branch 与 Git Ref 绑定
+  next_action: 实现 Work Branch 的 create/list/switch 与 Git ref 元数据绑定，固定 fork revision 和来源边界，并在本项目开始实际使用。
 - id: AWR-P7-002
   title: Branch Context 与 Delta
   milestone: M6

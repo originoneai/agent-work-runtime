@@ -1,0 +1,48 @@
+{
+  "work_item": "AWR-P6-004",
+  "kind": "developer_self_use",
+  "checked_at": "2026-09-08T11:12:08+08:00",
+  "source_commit": "70a5896498bd345cf5173a9fa0a9113cc875d111",
+  "verification_report": "ledger/deliveries/AWR-P6-004.json",
+  "verification_report_sha256": "fae326fb6d19dd7d527558f19bb0279cda4ba77e90eed9ffd387c991c7c77b2c",
+  "session_id": "01M1ZDXB3D8ZVEE2FYF1M2KSK7",
+  "proposal_id": "01M1ZFVE08K722R64E5NQ1N5MM",
+  "completion_event_id": "01M1ZFVEDWKTMJQV7EAAFN3H2H",
+  "apply_attempt_event_id": "01M1ZFVE846CDBE1FQ3Q2CFC8B",
+  "released_claim_id": "01M1ZDXB3V1EG63ZYJMYXHAW6N",
+  "source_before_fingerprint": "sha256:f29887acb5ac1ab9c7b3980faec7d61e2ac9573e424e9c206855615432940c21",
+  "source_after_fingerprint": "sha256:874f0f6a429297dcf0d68d923944efcc5127ade4e714a41e8bfaf1d3035017d5",
+  "initial_project_revision": 275,
+  "final_project_revision": 285,
+  "source_revision": 81,
+  "target_revision": 5,
+  "checks": {
+    "exact_semantic_change": true,
+    "recovery_snapshots_match": true,
+    "cached_projection_matches": true,
+    "source_owner_unchanged": true,
+    "own_claim_released": true,
+    "report_unchanged": true,
+    "context_complete": true,
+    "planning_index_refreshed_after_source_write": true
+  },
+  "context_tokens": 4993,
+  "context_hash": "31aae066ca9f27bcd053cdf5f66f7b2a21145b7ebdcc76c155a2e55ec9fc6a37",
+  "checkpoint_id": "01M1ZFYAE9FB8P1M0SQC4ETTX0",
+  "session_outcome": "ended",
+  "doctor": {
+    "ok": true,
+    "findings": []
+  },
+  "observations": [
+    "Registered the versioned report against the pushed implementation SHA and verified GitHub receipt before calling work complete on the actual P6-004 development session.",
+    "Only the selected work status, appended report reference and verification evidence level changed in the parsed ledger. Existing source owner and verification minimum/evidence-directory metadata were preserved.",
+    "The source write was confirmed by fresh projection, matching recovery snapshots and a work.completed receipt; claim release shared that final transaction.",
+    "The planning checker initially reported its generated index stale after source write; regenerated the index with --render, then the unchanged planning contract passed at 36/59. No source completion was repeated."
+  ],
+  "limitations": [
+    "Actual developer self-use through AWR CLI on this repository, not E4 or independent business acceptance.",
+    "The preserved report proves the implementation checks for its exact source SHA; this later self-use receipt does not change those registered report bytes.",
+    "Eight real-client scenarios, ten benchmarks, centralized security/regression and release remain outstanding."
+  ]
+}
