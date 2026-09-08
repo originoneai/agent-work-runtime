@@ -1,0 +1,67 @@
+{
+  "kind": "implementation",
+  "repository": "https://github.com/originoneai/agent-work-runtime",
+  "source_commit": "da0533527872b063812cf5950be09e6e5c72cdca",
+  "checked_at": "2026-09-08T08:29:15+08:00",
+  "remote_receipt": {
+    "commit": "da0533527872b063812cf5950be09e6e5c72cdca",
+    "url": "https://github.com/originoneai/agent-work-runtime/commit/da0533527872b063812cf5950be09e6e5c72cdca",
+    "verified_at": "2026-09-08T08:30:00+08:00"
+  },
+  "checks": [
+    {
+      "name": "resume_cli_behavior",
+      "passed": true,
+      "result": "resume_cli 6/6 passed: target agent/provider/model metadata and hard rules, exact saved next action/open loops, current source edits after interruption, deterministic final L1, bootstrap inheritance, one successor per predecessor, default live-claim expiry preservation, expired-claim non-revival and explicit reacquisition, no-checkpoint gap, stale revision and missing source rejection, unknown hard-rule scope preflight, ambiguous active predecessors, atomic claim-conflict rollback, and post-commit budget overflow with the created successor retained for context retry. The checkpointless regression reproduced the old bug (default context baseline 12 instead of 9) before the fix; source deltas now survive default context reads, further successors and post-commit budget retries with or without a checkpoint."
+    },
+    {
+      "name": "related_context_and_session_regression",
+      "passed": true,
+      "result": "awr-cli session_cli 5/5, bootstrap_cli 3/3, context_compile_cli 4/4 and drill_cli 3/3; awr-store checkpoint_save 2/2, checkpoints 2/2 and events 4/4 passed (23 related checks). After the recovery-baseline fix, awr-context recent_delta 2/2 and the 10 related context/bootstrap/drill CLI checks passed again."
+    },
+    {
+      "name": "workspace_build",
+      "passed": true,
+      "result": "cargo build --locked --workspace and cargo build --locked --workspace --examples; cargo fmt --all --check and git diff --check passed. SQLite schema remains version 3."
+    },
+    {
+      "name": "actual_project_resume",
+      "passed": true,
+      "result": "Saved the actual P5-002 development session at base revision 193 and closed it interrupted at revision 196. Updated the real ledger progress while closed; sources refreshed to revision 198 and work entity revision 4 -> 5. Resume created a successor and new explicit claim at revision 199. Its complete L1 used 4973 tokens and preserved the saved next action/open loop, all five current hard rules verbatim, and source changes. Recompiling the same request was identical; source bytes were unchanged by resume. The successor then saved its own checkpoint and ended at revision 202; doctor passed."
+    },
+    {
+      "name": "bounded_independent_code_review",
+      "passed": true,
+      "result": "A separate read-only reviewer checked source/revision gates, session/claim atomicity, checkpoint inheritance and target-agent hard rules. It confirmed the checkpointless recovery-baseline defect; the root agent reproduced and fixed it, then the reviewer confirmed the independent baseline, continuous successors and context-retry paths preserve the source-change window. This was static feature review, not E4 business acceptance."
+    }
+  ],
+  "artifacts": [
+    "crates/awr-store/src/resume.rs",
+    "crates/awr-runtime/src/resume.rs",
+    "crates/awr-core/src/runtime.rs",
+    "crates/awr-context/src/compile.rs",
+    "crates/awr-cli/src/resume.rs",
+    "crates/awr-cli/src/session.rs",
+    "crates/awr-cli/tests/resume_cli.rs",
+    "README.md",
+    "crates/awr-context/src/delta.rs",
+    "ledger/evidence/AWR-P5-002/checks.json"
+  ],
+  "work_items": {
+    "AWR-P5-002": {
+      "acceptance": [
+        {
+          "criterion": "新会话复核来源新鲜度和 revision 后恢复工作，并包含中断后的来源变化。",
+          "passed": true
+        },
+        {
+          "criterion": "保留下一步、未闭环事项和硬规则；可切换 Agent/provider/model 接续。",
+          "passed": true
+        }
+      ]
+    }
+  },
+  "limitations": [
+    "Feature-local validation and real project self-use only; no E4 scenario, system benchmark or release claim. The actual self-use stayed on its real agent/provider/model; changing those metadata and agent-scoped hard rules was exercised in isolated fixtures, not external provider execution. Resume records environment identity and compiles context; it does not invoke a model. Missing historical checkpoint memory remains explicitly unavailable; incomplete saves are excluded rather than repaired. Reconciliation, broad validation and release work remain scheduled."
+  ]
+}

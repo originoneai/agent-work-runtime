@@ -1,8 +1,8 @@
 schema_version: 1
 contract_id: awr-v1
 contract_version: 1.0.0
-ledger_revision: 79
-updated_at: '2026-09-08T08:24:26+08:00'
+ledger_revision: 82
+updated_at: '2026-09-08T08:30:20+08:00'
 project:
   name: Agent Work Runtime
   external_key: agent-work-runtime
@@ -11,11 +11,12 @@ project:
   release_status: not_released
 current:
   milestone: M5
-  work_item: AWR-P5-002
-  next_action: Resume 已通过 5 项行为检查与 23 项相关回归；接续已保存的开发 Session，验证中断后的台账变化并固化交付。
+  work_item: AWR-P5-003
+  next_action: 扩展只读 Doctor，诊断过期认领、孤立会话与产物、未完成检查点和无效分支，并提供范围明确的修复入口。
   open_loops:
   - 功能实现优先；集中测试、优化和打磨在功能开发后执行。
-  - 本项目已用 Source、Status、Ready、Work 和 Search CLI 管理实际开发读取；继续接入 Session、Claim 和 Context。
+  - 本项目已实际使用 Source、Status、Ready、Work、Search、Session、Claim、Context、Checkpoint 和 Resume；继续用开发会话记录当前工作。
+  - P5-003：保留现有 SQLite/schema 只读诊断，新增中断运行态发现与明确范围的修复；尚未实现的 mutation/branch 操作不伪装为可修复。
 milestones:
 - id: M0
   status: completed
@@ -1068,7 +1069,7 @@ work_items:
   priority: P0
   kind: feature
   required_for_v1: true
-  status: in_progress
+  status: completed
   owner: codex-primary
   depends_on:
   - AWR-P5-001
@@ -1090,18 +1091,19 @@ work_items:
   verification:
     minimum: 证明本条验收行为；功能阶段运行必要的定向检查，系统测试在 M9 集中执行。
     evidence_directory: ledger/evidence/AWR-P5-002
-    evidence_level: none
-  evidence: []
+    evidence_level: locally_verified
+  evidence:
+  - ledger/deliveries/AWR-P5-002.json
   blocker: null
-  next_action: Resume 已通过 5 项行为检查与 23 项相关回归；接续已保存的开发 Session，验证中断后的台账变化并固化交付。
+  next_action: 已交付；继续依赖就绪的功能任务。
 - id: AWR-P5-003
   title: 中断运行态 Reconciliation 与 Doctor
   milestone: M5
   priority: P0
   kind: feature
   required_for_v1: true
-  status: planned
-  owner: null
+  status: in_progress
+  owner: codex-primary
   depends_on:
   - AWR-P5-002
   source_sections:
@@ -1109,6 +1111,9 @@ work_items:
   deliverables:
   - crates/awr-runtime/
   - crates/awr-cli/
+  - crates/awr-store/
+  - crates/awr-core/
+  - README.md
   acceptance:
   - doctor 诊断 expired claim、orphan session/artifact、incomplete checkpoint 和失效分支。
   - 修复行为范围明确，默认诊断结果不冒充已修复。
@@ -1118,14 +1123,14 @@ work_items:
     evidence_level: none
   evidence: []
   blocker: null
-  next_action: 按交付物实现并验证：中断运行态 Reconciliation 与 Doctor
+  next_action: 扩展只读 Doctor，诊断过期认领、孤立会话与产物、未完成检查点和无效分支，并提供范围明确的修复入口。
 - id: AWR-P6-001
   title: Mutation Proposal 生命周期
   milestone: M6
   priority: P0
   kind: feature
   required_for_v1: true
-  status: planned
+  status: ready
   owner: null
   depends_on:
   - AWR-P5-002
@@ -1236,7 +1241,7 @@ work_items:
   priority: P0
   kind: feature
   required_for_v1: true
-  status: planned
+  status: ready
   owner: null
   depends_on:
   - AWR-P5-002
