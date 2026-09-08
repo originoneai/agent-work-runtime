@@ -1,0 +1,20 @@
+# Merge this table into the target project's .codex/config.toml after replacing
+# both absolute paths. Keep any existing configuration and hooks.
+# Project configuration is loaded only for a trusted project.
+[mcp_servers.awr]
+command = "/absolute/path/to/awr-mcp"
+args = ["--project", "/absolute/path/to/initialized/project"]
+cwd = "/absolute/path/to/initialized/project"
+enabled_tools = [
+  "awr_project_status",
+  "awr_work_ready",
+  "awr_work_get",
+  "awr_context_compile",
+  "awr_work_transition",
+  "awr_event_append",
+  "awr_evidence_record",
+  "awr_search",
+]
+
+# This file is a template, not an installed server or a lifecycle hook.
+# Inspect /mcp in the receiving client to confirm a live connection.

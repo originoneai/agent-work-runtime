@@ -1,0 +1,21 @@
+# Lifecycle fixture: the basic source-intake ledger has no phase declaration.
+# A complete bootstrap needs an explicit phase as well as work identity/state.
+milestones:
+  - id: demo
+    title: Source intake demonstration
+    status: in_progress
+
+work_items:
+  - id: EXAMPLE-001
+    title: Exercise source intake with a recoverable session
+    status: ready
+    milestone: demo
+    goal: goal#demo
+    required: true
+    priority: P0
+    acceptance:
+      - List the configured project sources.
+      - Repeat indexing and confirm unchanged sources are skipped.
+    depends_on: []
+    next_action: Inspect the configured sources and their indexing receipts.
+    evidence: []
