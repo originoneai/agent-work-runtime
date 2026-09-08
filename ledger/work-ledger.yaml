@@ -1,8 +1,8 @@
 schema_version: 1
 contract_id: awr-v1
 contract_version: 1.0.0
-ledger_revision: 162
-updated_at: '2026-09-09T00:06:05+08:00'
+ledger_revision: 165
+updated_at: '2026-09-09T00:39:44+08:00'
 project:
   name: Agent Work Runtime
   external_key: agent-work-runtime
@@ -11,8 +11,8 @@ project:
   release_status: not_released
 current:
   milestone: M9
-  work_item: AWR-P9-001
-  next_action: 开始 AWR-P9-004：固定实际 tokenizer 与硬事实清单，测量同一真实样本的 Bootstrap、Work Context 和压缩比。
+  work_item: AWR-P9-004
+  next_action: 运行冻结的四组 Token/硬事实基准与 compact 恢复回归；根据全部实测值登记指标，保留失败与完整 JSON 开销。
   open_loops:
   - P9-001 九项基准已通过并完成源台账写回；150 唯一任务、39 当前/111 历史，独立重建与原件不变已证明。Token/延迟指标不由本项结果推定。
   - P9-002 恢复基准已完成；P9-004 Token/硬事实召回、P9-005 延迟与 QA-003 真实客户端业务验收仍待执行。
@@ -1838,35 +1838,39 @@ work_items:
     evidence_directory: ledger/evidence/AWR-P9-002
     evidence_level: locally_verified
     minimum: 证明本条验收行为；功能阶段运行必要的定向检查，系统测试在 M9 集中执行。
-- id: AWR-P9-004
-  title: Token 与 Hard Fact Recall Benchmark
-  milestone: M9
-  priority: P2
-  kind: quality
-  required_for_v1: true
-  status: planned
-  owner: null
+- acceptance:
+  - 在冻结 fixture 上验证 Bootstrap <=1000、Work Context <=5000、压缩比 >20x 和必需硬事实召回 100%。
+  - 分别报告估算与实际 tokenizer 测量、预算溢出及缺口；50–100x 作为争取目标。
+  blocker: null
+  deliverables:
+  - tests/benchmarks/context/
+  - docs/benchmarks/
+  - crates/awr-context/src/bootstrap.rs
+  - crates/awr-cli/tests/bootstrap_cli.rs
   depends_on:
   - AWR-P9-001
+  evidence: []
+  id: AWR-P9-004
+  kind: quality
+  milestone: M9
+  next_action: 运行冻结的四组 Token/硬事实基准与 compact 恢复回归；根据全部实测值登记指标，保留失败与完整 JSON 开销。
+  owner: codex-primary
+  priority: P2
+  required_for_v1: true
   source_sections:
   - 19
   - 39
   - 42
   - 52
   - 57
-  deliverables:
-  - tests/benchmarks/context/
-  - docs/benchmarks/
-  acceptance:
-  - 在冻结 fixture 上验证 Bootstrap <=1000、Work Context <=5000、压缩比 >20x 和必需硬事实召回 100%。
-  - 分别报告估算与实际 tokenizer 测量、预算溢出及缺口；50–100x 作为争取目标。
+  status: in_progress
+  title: Token 与 Hard Fact Recall Benchmark
   verification:
-    minimum: 证明本条验收行为；功能阶段运行必要的定向检查，系统测试在 M9 集中执行。
     evidence_directory: ledger/evidence/AWR-P9-004
     evidence_level: none
-  evidence: []
-  blocker: null
-  next_action: 按交付物实现并验证：Token 与 Hard Fact Recall Benchmark
+    minimum: 证明本条验收行为；功能阶段运行必要的定向检查，系统测试在 M9 集中执行。
+    scope_adjustment: 首轮真实样本 L0 为 1232 tokens、L1 为 3182 tokens，Rust 与 Python o200k_base 一致。将通用 L0 展示精简及对应 CLI 回归纳入本条，保留全部规定的
+      L0 事实、原文硬规则和结构化来源绑定；不修改验收预算或分母。
 - id: AWR-P9-005
   title: 本地延迟与规模 Benchmark
   milestone: M9

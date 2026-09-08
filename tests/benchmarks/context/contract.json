@@ -1,0 +1,62 @@
+{
+  "contract_id": "awr-context-tokens-and-recall",
+  "version": "1.0.0",
+  "work_item": "AWR-P9-004",
+  "status_authority": "ledger/work-ledger.yaml",
+  "sample": {
+    "admission_contract": "tests/long-ledger/contract.json",
+    "preparation_sha256": "6c0719587da118643980867f9fc8cc28ca91c6c458465921f4e14ef5fdb893bb",
+    "mapping_sha256": "bf600bf0b239f20965b48ddc57c4f5a8682b29d6e440152447473f4d2adcc494",
+    "source_map_sha256": "dc7d027182f6c9081bbd023333259def82058ea2e2ac01ce1d4a7a4dd870a408"
+  },
+  "tokenizer": {
+    "encoding": "o200k_base",
+    "independent_python_package": "tiktoken==0.14.0",
+    "native_rust_package": "tiktoken-rs==0.12.0",
+    "method": "encode_ordinary",
+    "metric_scope": "UTF-8 rendered_context only; no JSON envelope, tool framing, conversation or model billing",
+    "legacy_field": "token_estimate is an exact native encoding count, not a heuristic; report its equality to the independent Python count",
+    "baseline": "Read each canonical .md or .yaml authority file once, sorted by relative path, and join their complete UTF-8 contents with one LF. Exclude manifest/configuration/runtime files. Never concatenate raw and canonical copies of the same facts."
+  },
+  "budgets": {
+    "bootstrap": 1000,
+    "work_context": 5000
+  },
+  "thresholds": {
+    "compression_ratio_exclusive_minimum": 20,
+    "hard_fact_recall": 1
+  },
+  "stretch_compression_ratio": [
+    50,
+    100
+  ],
+  "baseline_repetitions": 3,
+  "controlled_dependency_probe": {
+    "selection": "First sorted existing direct prerequisite; retain every other source fact",
+    "status": "blocked",
+    "blocker": "The prerequisite supporting receipt is awaiting review.",
+    "next_action": "Review the prerequisite receipt before the dependent work proceeds.",
+    "meaning": "An isolated coverage probe, not a change to the historical project status or real business acceptance."
+  },
+  "hard_fact_categories": [
+    "work_item_id",
+    "status",
+    "next_action",
+    "acceptance",
+    "blocker",
+    "applicable_hard_rules",
+    "unresolved_required_dependencies"
+  ],
+  "required_gates": [
+    "frozen_real_source",
+    "independent_tokenizer_parity",
+    "all_token_thresholds",
+    "exact_hard_fact_recall",
+    "nonempty_unresolved_dependency_coverage",
+    "stable_context_and_provenance",
+    "budget_failure_is_explicit",
+    "originals_and_inputs_unchanged"
+  ],
+  "aggregation": "Use the maximum L0 and L1 counts, minimum compression ratio and all exact fact assertions across every baseline repetition and the controlled probe. All gates must pass; never average away a missing hard fact or select a favorable project ID.",
+  "boundary": "Fresh native CLI processes, no model calls, and a new disposable project per case. This proves deterministic source-to-context retrieval for the frozen sample. It does not measure model recall, automatic hooks, E4 or release readiness. Publish aggregate counts and hashes; retain private facts, source paths and raw CLI receipts locally."
+}

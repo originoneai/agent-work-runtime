@@ -226,3 +226,44 @@ fn unknown_rules_and_unavailable_sources_remain_explicit_incomplete_context() {
     );
     assert_eq!(pack["context"]["work"]["external_key"], "W");
 }
+
+#[test]
+fn rule_heavy_bootstrap_keeps_verbatim_facts_and_resolvable_provenance_within_budget() {
+    let f = Fixture::new();
+    let mut text = String::new();
+    for group in 0..3 {
+        text.push_str(&format!(
+            "# Approved group {group} {{#group-{group} severity=hard scope=project value=*}}\n\n"
+        ));
+        for clause in 0..10 {
+            text.push_str(&format!(
+                "Clause {group}.{clause}: retain each approved business fact and trace its authoritative source before editing.\n"
+            ));
+        }
+        text.push('\n');
+    }
+    fs::write(f.0.join("rules.md"), &text).unwrap();
+    let pack = f.ok(&["context", "bootstrap", "--work", "W", "--budget", "1000"]);
+    assert!(pack["token_estimate"].as_u64().unwrap() <= 1000);
+    let rendered = pack["rendered_context"].as_str().unwrap();
+    let rules = pack["context"]["critical_rules"].as_array().unwrap();
+    assert_eq!(rules.len(), 3);
+    for rule in rules {
+        assert!(rendered.contains(rule["text"].as_str().unwrap()));
+        assert!(rule["id"].as_str().unwrap().parse::<Id>().is_ok());
+        let reference = &rule["source_ref"];
+        assert!(rendered.contains(reference["source_id"].as_str().unwrap()));
+        assert!(rendered.contains(reference["pointer"].as_str().unwrap()));
+        let source = pack["context"]["source_revisions"]
+            .as_array()
+            .unwrap()
+            .iter()
+            .find(|source| source["id"] == reference["source_id"])
+            .unwrap();
+        assert_eq!(source["fingerprint"], reference["source_fingerprint"]);
+        assert_eq!(source["revision"], reference["source_revision"]);
+        assert!(!source["locator"].as_str().unwrap().is_empty());
+    }
+    assert_eq!(pack["context"]["complete"], true);
+    assert_eq!(fs::read_to_string(f.0.join("rules.md")).unwrap(), text);
+}

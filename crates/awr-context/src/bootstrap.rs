@@ -4,7 +4,10 @@ use awr_source::{Manifest, index_project};
 use awr_store::Store;
 use serde::{Deserialize, Serialize};
 use sha2::{Digest, Sha256};
-use std::{collections::BTreeSet, path::Path};
+use std::{
+    collections::{BTreeMap, BTreeSet},
+    path::Path,
+};
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct BootstrapRequest {
@@ -93,6 +96,7 @@ fn reference(meta: &ProjectionMeta) -> String {
         meta.source_ref.pointer.as_deref().unwrap_or_default()
     )
 }
+
 fn render(context: &BootstrapContext) -> String {
     let mut text = format!(
         "AWR L0 Bootstrap\nProject: {} [{}] {}\nRevision: {} | Branch: {}\n",
@@ -106,7 +110,7 @@ fn render(context: &BootstrapContext) -> String {
             .unwrap_or_else(|| "main".into())
     );
     if let Some(work) = &context.work {
-        text.push_str(&format!("Work: {} [{}] r{} — {}\nPhase: {} | Status: {} ({:?})\nNext: {}\nBlocker: {}\nWork source: {}{}\n",work.external_key,work.id,work.revision,work.title,work.phase.as_deref().unwrap_or("unspecified"),work.raw_status,work.status,work.next_action,work.blocker.as_deref().unwrap_or("none"),work.source_ref.source_id,work.source_ref.pointer.as_deref().unwrap_or_default()));
+        text.push_str(&format!("Work: {} [{}] r{} — {}\nPhase: {} | Status: {} ({:?})\nNext: {}\nBlocker: {}\nWork source: {}{}@r{}\n",work.external_key,work.id,work.revision,work.title,work.phase.as_deref().unwrap_or("unspecified"),work.raw_status,work.status,work.next_action,work.blocker.as_deref().unwrap_or("none"),work.source_ref.source_id,work.source_ref.pointer.as_deref().unwrap_or_default(),work.source_ref.source_revision));
     } else {
         text.push_str("Work: unselected\n");
     }
@@ -123,12 +127,25 @@ fn render(context: &BootstrapContext) -> String {
     } else {
         text.push_str("Session: none\n");
     }
+    // Share each source-version heading while retaining every exact pointer
+    // and rule text. The structured envelope also retains full entity IDs.
+    let mut rule_groups = BTreeMap::new();
     for rule in &context.critical_rules {
-        text.push_str(&format!(
-            "Hard rule [{}]:\n{}\n",
-            reference(&rule.meta),
-            rule.text
-        ));
+        let source = &rule.meta.source_ref;
+        rule_groups
+            .entry((source.source_id, source.source_revision))
+            .or_insert_with(Vec::new)
+            .push(rule);
+    }
+    for ((source_id, revision), rules) in rule_groups {
+        text.push_str(&format!("Hard rules [{source_id}@r{revision}]:\n"));
+        for rule in rules {
+            text.push_str(&format!(
+                "[{}]\n{}\n",
+                rule.meta.source_ref.pointer.as_deref().unwrap_or("/"),
+                rule.text
+            ));
+        }
     }
     if let Some(cp) = &context.checkpoint {
         text.push_str(&format!(
@@ -154,12 +171,9 @@ fn render(context: &BootstrapContext) -> String {
     } else {
         text.push_str("Checkpoint: none for selected work\n");
     }
-    for source in &context.source_revisions {
-        text.push_str(&format!(
-            "Source {} r{} {:?} {} {}\n",
-            source.id, source.revision, source.freshness, source.fingerprint, source.locator
-        ));
-    }
+    // L1 carries the source revision inventory. Keep that complete inventory in
+    // the structured L0 envelope and hash binding without repeating it in the
+    // orientation text. Unavailable/stale source gaps below remain explicit.
     if context.complete {
         text.push_str("Bootstrap: complete\n");
     } else {
@@ -171,7 +185,7 @@ fn render(context: &BootstrapContext) -> String {
             issue.code, issue.reference, issue.reason
         ));
     }
-    text.push_str("L0 restores orientation. Compile work context before execution; acceptance, dependencies, decisions, delta and evidence are L1.\n");
+    text.push_str("Compile L1 before execution.\n");
     text
 }
 
@@ -479,7 +493,7 @@ fn bootstrap_selected(
         });
     }
     let mut hasher = Sha256::new();
-    hasher.update(b"awr.bootstrap.v1\0o200k_base\0");
+    hasher.update(b"awr.bootstrap.v2\0o200k_base\0");
     hasher.update(serde_json::to_vec(request)?);
     hasher.update(serde_json::to_vec(&context)?);
     hasher.update(rendered_context.as_bytes());
