@@ -66,3 +66,30 @@ Use the maximum L0/L1 counts and minimum compression ratio across all four
 cases. Hard-fact recall must be 100% in every category and case. The 50–100x
 compression range is a stretch target. These results do not grant any latency,
 E4, hook activation, model-client integration or release credit.
+
+## Measured result, 2026-09-09
+
+The run at source commit `e9cad5e6ac941c075c214dbab849803ef1836192`
+passed all eight gates through 36 fresh CLI calls. All 68 exact source-fact
+assertions passed, including a nonempty unresolved prerequisite. The unchanged
+sample contains 77,230 source tokens; the controlled prerequisite copy contains
+77,245. The maximum/minimum aggregation includes every case:
+
+| Metric | Observed | Required |
+| --- | ---: | ---: |
+| Bootstrap rendered tokens | 933 maximum | <= 1,000 |
+| Work Context rendered tokens | 3,250 maximum | <= 5,000 |
+| Compression ratio | 23.767692 minimum | > 20 |
+| Exact hard-fact recall | 68/68, 100% | 100% |
+
+The complete JSON response is larger: up to 3,443 tokens for L0 and 7,175 for
+L1, before any client/tool framing. Those transport counts are not represented
+as meeting the rendered-context limits. The prior development probe returned
+`BudgetExceeded` at 1,232 L0 tokens; the shared source headings and removal of
+duplicate orientation metadata resolved that overflow without dropping rules.
+
+The same binary passed the four-case compact-recovery contract again: 83 fresh
+CLI calls and 36 gates, including absent checkpoints and missing rule sources.
+The public measurements are in
+[benchmark.json](../../ledger/evidence/AWR-P9-004/benchmark.json); raw source and
+receipts remain local. This result does not claim the 50–100x stretch target.

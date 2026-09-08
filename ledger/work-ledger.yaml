@@ -1,8 +1,8 @@
 schema_version: 1
 contract_id: awr-v1
 contract_version: 1.0.0
-ledger_revision: 165
-updated_at: '2026-09-09T00:39:44+08:00'
+ledger_revision: 166
+updated_at: '2026-09-09T00:45:28+08:00'
 project:
   name: Agent Work Runtime
   external_key: agent-work-runtime
@@ -14,11 +14,11 @@ current:
   work_item: AWR-P9-004
   next_action: 运行冻结的四组 Token/硬事实基准与 compact 恢复回归；根据全部实测值登记指标，保留失败与完整 JSON 开销。
   open_loops:
-  - P9-001 九项基准已通过并完成源台账写回；150 唯一任务、39 当前/111 历史，独立重建与原件不变已证明。Token/延迟指标不由本项结果推定。
-  - P9-002 恢复基准已完成；P9-004 Token/硬事实召回、P9-005 延迟与 QA-003 真实客户端业务验收仍待执行。
-  - 8 个 E4 场景和 10 个指标仍为 0；实际 Agent 客户端完整业务执行与可区分独立复核尚待实施，不能用模拟 fixture 或开发自用替代。
-  - 本机 Codex、Kimi、Grok 的既有接入材料不证明原生模型调用、真实 MCP tool turn 或自动 hooks 生效；此前 Grok MCP 诊断受项目信任阻塞。
-  - L0 的大型台账 1000-token 目标和实际 tokenizer 尚待 P9-004；小型恢复 fixture 的估算不能计作达标。examples/basic/README.md 的早期功能说明留待 P9-003 文档收口。
+  - P9-004 四组实测全部通过：L0 最大 933、L1 最大 3250、压缩比最低 23.767692、68/68 必需事实；四个指标等待绑定远端完成回执。计数只针对渲染正文，完整 JSON 开销另列。
+  - P9-001 大型真实台账和 P9-002 恢复已完成；P9-005 延迟与 QA-003 真实客户端业务验收仍待执行。
+  - 8 个 E4 场景仍为 0；实际客户端完整业务执行与可区分独立复核尚待实施，不能用模拟 fixture 或开发自用替代。
+  - Codex、Kimi、Grok 既有接入材料不证明原生模型调用、真实 MCP tool turn 或自动 hooks 生效；此前 Grok MCP 诊断受项目信任阻塞。
+  - 四组基准满足冻结 fixture 的 Token/Recall 门槛，不代表任何大小的规则、会话 checkpoint 或完整 JSON 都会小于同一预算；50–100x 尚未达到。
 milestones:
 - id: M0
   status: completed
@@ -1867,10 +1867,11 @@ work_items:
   title: Token 与 Hard Fact Recall Benchmark
   verification:
     evidence_directory: ledger/evidence/AWR-P9-004
-    evidence_level: none
+    evidence_level: locally_verified
     minimum: 证明本条验收行为；功能阶段运行必要的定向检查，系统测试在 M9 集中执行。
     scope_adjustment: 首轮真实样本 L0 为 1232 tokens、L1 为 3182 tokens，Rust 与 Python o200k_base 一致。将通用 L0 展示精简及对应 CLI 回归纳入本条，保留全部规定的
       L0 事实、原文硬规则和结构化来源绑定；不修改验收预算或分母。
+    benchmark_report: ledger/evidence/AWR-P9-004/benchmark.json
 - id: AWR-P9-005
   title: 本地延迟与规模 Benchmark
   milestone: M9
