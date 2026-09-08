@@ -128,6 +128,7 @@ impl Store {
             if event.event_type.starts_with("source.")
                 || event.event_type.starts_with("checkpoint.")
                 || event.event_type.starts_with("proposal.")
+                || event.event_type.starts_with("branch.")
                 || matches!(
                     event.event_type.as_str(),
                     "session.started"

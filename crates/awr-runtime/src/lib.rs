@@ -3,6 +3,7 @@
 use awr_core::{Claim, Event, Id, Revision, Session, SessionDraft, SessionOutcome, SessionStarted};
 pub use awr_core::{Error, Result};
 mod artifact;
+mod branch;
 mod completion;
 mod doctor;
 mod mutation;
@@ -13,6 +14,7 @@ mod work_action;
 pub use artifact::ArtifactFile;
 use awr_store::Store;
 pub use awr_store::{BranchFilter, EventCursor, EventPage, EventQuery};
+pub use branch::{CreateBranchRequest, create_branch, observe_git_ref, switch_branch};
 pub use completion::{CompleteWorkRequest, complete_work};
 pub use doctor::{ProjectDoctorReport, diagnose_project};
 pub use mutation::{

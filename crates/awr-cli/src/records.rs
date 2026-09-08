@@ -115,7 +115,12 @@ pub fn evidence(root: &Path, command: &EvidenceCommand, json_output: bool) -> Re
             let mut bytes = Vec::new();
             file.take(1024 * 1024 + 1).read_to_end(&mut bytes)?;
             check_limit(bytes.len() as u64, 1024 * 1024)?;
-            let draft: EvidenceDraft = serde_json::from_slice(&bytes)?;
+            let input: Value = serde_json::from_slice(&bytes)?;
+            let declared_branch = input.get("branch_id").is_some();
+            let mut draft: EvidenceDraft = serde_json::from_value(input)?;
+            if !declared_branch {
+                draft.branch_id = db.project.current_branch_id;
+            }
             let (item, event) = Runtime::attach(&mut db.store, project)?
                 .record_evidence(*expected_revision, draft)?;
             let mut value = db.metadata(event.project_revision);

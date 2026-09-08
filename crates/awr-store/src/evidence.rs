@@ -280,6 +280,7 @@ impl Store {
             event.work_item_id = Some(self.work_item(project, key)?.item.meta.id);
         }
         self.runtime_transaction(project,expected,event,|tx,_| {
+            crate::session::require_branch(tx,project,item.branch_id)?;
             let mut item=item;
             if let Some(key)=&draft.work_item_key {let work:Projected<WorkItem>=projection(tx,project,EntityKind::WorkItem,key)?;item.work_item_id=Some(work.item.meta.id);}
             let exists:bool=tx.query_row("SELECT EXISTS(SELECT 1 FROM evidence WHERE project_id=?1 AND external_key=?2)",params![project.to_string(),item.external_key],|r|r.get(0)).map_err(db_error)?;

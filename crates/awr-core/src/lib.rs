@@ -1,4 +1,5 @@
 //! Domain contracts shared by storage, source adapters, runtime and interfaces.
+mod branch;
 mod completion;
 mod error;
 mod model;
@@ -7,6 +8,7 @@ mod query;
 mod runtime;
 mod work_action;
 
+pub use branch::*;
 pub use completion::*;
 pub use error::{Error, ErrorReport, Result};
 pub use model::*;

@@ -147,6 +147,28 @@ Session inspection, history, handoff, release and end work from the runtime data
 
 The storage library creates and reopens versioned AWR databases with WAL, foreign keys and migration metadata.
 
+Create and select an Agent Work Branch:
+
+```sh
+awr branch list
+awr branch create report-review --parent main --git-ref refs/heads/main --actor reviewer --reason "Review the current report implementation" --expected-revision <revision>
+awr branch show report-review
+awr branch switch report-review --actor reviewer --reason "Continue the review" --expected-revision <revision>
+awr session start --work <work-key> --agent reviewer --provider <provider> --model <model> --claim --expected-revision <revision>
+awr context compile --session <session-id> --budget 5000
+awr branch switch main --actor reviewer --reason "Return to main work" --expected-revision <revision>
+```
+
+`main` denotes the existing baseline with a null branch ID. Existing sessions, events, claims and evidence retain their original IDs and branch ownership; no historical rows are migrated or relabeled. Other branch names are unique within the project and limited to 128 bytes. Creation defaults the parent to the current work branch; `--parent main` explicitly forks from the baseline. The immutable `fork_project_revision` is the revision immediately before `branch.created`, and the new row begins active. Creation keeps the current selection; switching is a separate revision-checked operation.
+
+`--git-ref` is optional. Without it the work branch is explicitly unbound to Git. With it, AWR resolves an existing local branch, tag, HEAD or commit in the project's Git repository and saves the requested ref, resolved symbolic ref when available, exact commit SHA, repository root and observation time in the immutable creation receipt. It rereads the ref during observation and rejects detected drift. These are facts observed at creation: subsequent ref movement does not rewrite the receipt. A recorded commit does not assert that the checkout was clean, copy the worktree, or freeze Source files. AWR does not create or checkout Git branches, fetch, merge, write sources or reindex sources through these branch operations.
+
+`branch show` defaults to the current selection and exposes the creation receipt and Git binding. Legacy branch rows remain readable, with a missing receipt/binding explicitly labeled unverified. `branch list --status active|merged|abandoned --offset <n> --limit <n>` returns a bounded page (default 50, maximum 1000), total matching count and `has_more`; main is listed separately from stored work branches. Listing, inspection and switching can operate when Git or project source files are unavailable. Mutations require actor, reason and an exact project revision; branch creation, selection and their receipts commit atomically. Failed event writes roll back the branch/pointer change. Selecting the already-current branch returns an explicit no-op transition error.
+
+Switching changes the default for later operations. It reports active sessions and live claims retained on the previous branch; it does not transfer or close them. New CLI sessions inherit the selected branch. Session events and claims keep that session's branch even if the default changes later; evidence registration inherits the current branch when `branch_id` is omitted, while an explicit ID or `null` binds the named work branch or main. New sessions, claims, evidence and raw process events require an active branch. Cleanup and historical reads remain available for retained records. L1 contexts bind the selected branch in their identity/hash and process delta; an explicit session must match that selection. Switch back before compiling an older branch's session.
+
+Sources, projected work state, rules, decisions and the project revision are shared across work branches. Runtime records are branch-bound, and separate work branches can hold separate claims on the same projected task. Writing that shared source task still rejects any other session's live claim across branches; switching alone does not resolve competing occupancy. Evidence currency compares both branch and source SHA, so an explicitly inspected report from another branch is historical. This provides branch identity and current-branch execution; the named `branch context` overlay with a fork-based delta and branch merge/close workflow are the following P7 deliveries. Existing related-evidence summaries can still show historical branch comparisons; they are not assertions that those reports verify the selected branch.
+
 Update authoritative work state:
 
 ```sh
@@ -293,7 +315,7 @@ awr artifact cat <artifact-id> --max-bytes 262144
 }
 ```
 
-For verified evidence levels, the store requires a report SHA256, full source SHA, command, scope and verification timestamp (Unix milliseconds). These are supplied bindings: `evidence add` does not run the command or promote work status. JSON reports that distinction and `evidence show` reports missing bindings and currency relative to an explicit source SHA and branch.
+When `branch_id` is omitted, CLI registration uses the current work branch; the explicit `null` in this example selects main. For verified evidence levels, the store requires a report SHA256, full source SHA, command, scope and verification timestamp (Unix milliseconds). These are supplied bindings: `evidence add` does not run the command or promote work status. JSON reports that distinction and `evidence show` reports missing bindings and currency relative to an explicit source SHA and branch.
 
 Default reads return summaries and references. `--content`, `--full` and `artifact cat` explicitly request bodies, defaulting to 64 KiB with a maximum of 16 MiB per read. Oversized or changed content returns an error before emitting a body. Artifact reads always verify recorded size and SHA256; evidence report reads verify SHA256 when present and report whether it was available. Local paths must resolve inside the project or configured authorized roots. Remote report locators remain references. Plain artifact cat emits exact bytes; JSON body output requires UTF-8. Artifact metadata remains readable without opening its body or refreshing sources.
 

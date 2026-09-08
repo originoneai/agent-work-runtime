@@ -133,6 +133,9 @@ pub(crate) fn bind_event(
     }
     if let Some(id) = draft.branch_id {
         has_id(conn, "branches", project, id)?;
+        if require_active {
+            crate::session::require_branch(conn, project, Some(id))?;
+        }
     }
     if draft.event_type.trim().is_empty()
         || !draft.payload.is_object()

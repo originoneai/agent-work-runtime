@@ -1,0 +1,56 @@
+{
+  "work_item": "AWR-P7-001",
+  "checked_at": "2026-09-08T11:38:12+08:00",
+  "commands": [
+    "cargo test --locked -p awr-cli --test branch_cli --test context_compile_cli --test session_cli --test records_cli --test work_complete_cli --test work_action_cli",
+    "cargo test --locked -p awr-store --test events --test sessions --test evidence --test reconcile",
+    "cargo check --locked --workspace --all-targets",
+    "cargo fmt --all -- --check",
+    "git diff --check"
+  ],
+  "checks": [
+    {
+      "name": "branch_creation_selection_and_ownership",
+      "passed": true,
+      "result": "cargo test --locked -p awr-cli --test branch_cli: 10/10 passed. Covers parent/current/main selection, exact fork revision, real Git ref/tag/detached HEAD/commit resolution, immutable Git observation after ref movement, preservation of a dirty checkout, per-branch sessions/claims/events/context/evidence, shared-source write conflicts, explicit main evidence, bounded read queries, missing Git/source access, closed/invalid parents, true cross-project parents, name/ID ambiguity, and event-failure rollback."
+    },
+    {
+      "name": "related_context_records_sessions_and_actions",
+      "passed": true,
+      "result": "cargo test --locked -p awr-cli --test context_compile_cli --test records_cli --test session_cli --test work_action_cli --test work_complete_cli: 34/34 passed (4 L1, 3 record reads, 5 sessions, 10 work actions, 12 completion gates). The six CLI suites together pass 44 distinct tests."
+    },
+    {
+      "name": "related_store_branch_provenance",
+      "passed": true,
+      "result": "cargo test --locked -p awr-store --test events --test sessions --test evidence --test reconcile: 19/19 passed (4 events, 5 sessions, 3 evidence, 7 reconciliation). With CLI verification: 63 distinct passing tests. Branch creation/switching receipts cannot be forged by raw append; closed branches cannot receive new raw process events or evidence, while cleanup/history behavior remains available."
+    },
+    {
+      "name": "workspace_compilation_and_format",
+      "passed": true,
+      "result": "cargo check --locked --workspace --all-targets; cargo fmt --all -- --check; git diff --check passed. The existing unused meta/commit fixture helper warning in the store mutation tests remains; no new warning was observed."
+    },
+    {
+      "name": "branch_domain_review",
+      "passed": true,
+      "result": "Reviewed branch row/receipt consistency, current-selection CAS, active parent/target validation, immutable fork revision, resolved Git observation, explicit main/None semantics, no historical ownership migration, read query limits, and current/default versus explicitly bound evidence. Branch commands do not checkout, create/fetch Git branches, copy sources, mutate source files or silently reindex. This is a feature implementation review, not independent business acceptance."
+    }
+  ],
+  "artifacts": [
+    "crates/awr-core/src/branch.rs",
+    "crates/awr-store/src/branch.rs",
+    "crates/awr-runtime/src/branch.rs",
+    "crates/awr-cli/src/branch.rs",
+    "crates/awr-cli/src/records.rs",
+    "crates/awr-store/src/events.rs",
+    "crates/awr-store/src/evidence.rs",
+    "crates/awr-cli/tests/branch_cli.rs",
+    "README.md"
+  ],
+  "limitations": [
+    "Feature-local verification only; centralized regression/security, eight real-client business scenarios, ten benchmarks and release remain scheduled. No release/E4 acceptance is claimed.",
+    "main denotes the existing unbranched baseline (null branch ID); it is distinct from the physical Git branch. Git bindings record observed refs/commit SHAs at creation, not a frozen Source/worktree or continuous verification of a moving Git ref.",
+    "Sources, projections and project revision remain shared. Branch metadata scopes runtime records; separate claims do not authorize concurrent writes to the shared source task. Switching does not migrate or end existing sessions/claims/evidence.",
+    "Current-branch L1 identity and process-event scoping work; named branch context with fork-based delta belongs to P7-002. Existing related-evidence summaries may include explicitly historical comparisons to other branches. Git/Source merge, reindex summary and branch close belong to P7-003.",
+    "Caller actor/model strings are provenance metadata, not authentication or proof of independent review. Legacy branch rows without creation receipts retain unverified Git references."
+  ]
+}

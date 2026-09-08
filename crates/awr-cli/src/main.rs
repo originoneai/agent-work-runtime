@@ -1,6 +1,7 @@
 use awr_core::{Error, Result};
 use clap::{CommandFactory, Parser, Subcommand};
 use std::path::PathBuf;
+mod branch;
 mod context;
 mod doctor;
 mod drill;
@@ -96,6 +97,11 @@ enum Command {
         #[command(subcommand)]
         command: mutation::ProposalCommand,
     },
+    /// Create, inspect or select an Agent Work Branch without changing Git checkout.
+    Branch {
+        #[command(subcommand)]
+        command: branch::BranchCommand,
+    },
     /// Diagnose project/database state; apply only explicitly selected runtime repairs.
     Doctor(doctor::DoctorArgs),
     #[command(external_subcommand)]
@@ -120,6 +126,7 @@ fn run(cli: &Cli) -> Result<()> {
         Some(Command::Event { command }) => drill::event(&cli.project, command, cli.json),
         Some(Command::Search(args)) => search::run(&cli.project, args, cli.json),
         Some(Command::Proposal { command }) => mutation::run(&cli.project, command, cli.json),
+        Some(Command::Branch { command }) => branch::run(&cli.project, command, cli.json),
         Some(Command::Doctor(args)) => doctor::run(&cli.project, args, cli.json),
         None => {
             Cli::command().print_help()?;
