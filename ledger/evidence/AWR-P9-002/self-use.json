@@ -1,0 +1,34 @@
+{
+  "kind": "developer_recovery_self_use",
+  "work_item": "AWR-P9-002",
+  "source_commit": "e08b33cbbde4e67c053cb0d2cee2b18af217a866",
+  "checked_at": "2026-09-08T22:47:56+08:00",
+  "transport": [
+    "mcp_stdio",
+    "cli"
+  ],
+  "session_a": "01M20Q47YHV02F7V33T8TA2NKA",
+  "session_b": "01M20QRM95Y8NY1J0G27QMG6R3",
+  "observation_event_id": "01M20QRHVAAN30VAV5FZXS8F6H",
+  "checkpoint_id": "01M20QRK4C8S8QASW9PH0BRSM6",
+  "saved_next_action_and_open_loops_retained": true,
+  "source_unchanged": true,
+  "source_sha256": "e5078eb1614648a2f076ea13104974f38b57762ab60904f10c789ab4f95ea609",
+  "claims_transferred": true,
+  "context_complete": true,
+  "context_token_estimate": 4968,
+  "doctor": {
+    "ok": true,
+    "findings": [
+      {
+        "code": "active_session",
+        "severity": "info",
+        "object_id": "01M20QRM95Y8NY1J0G27QMG6R3"
+      }
+    ],
+    "unexpected_findings": 0
+  },
+  "limitations": [
+    "Actual development runtime self-use; the intended current session remains active until completion. No native model-client invocation, automated hook, independent reviewer, E4, token metric or release claim."
+  ]
+}

@@ -1,0 +1,758 @@
+{
+  "kind": "compact_recovery_benchmark",
+  "contract_id": "awr-compact-recovery",
+  "contract_version": "1.0.1",
+  "source_commit": "e08b33cbbde4e67c053cb0d2cee2b18af217a866",
+  "checked_at": "2026-09-08T22:44:13+08:00",
+  "environment": {
+    "system": "Darwin",
+    "machine": "arm64",
+    "python": "3.12.11"
+  },
+  "binary_sha256": "58f569dd305ee2c4593e1e651996961ba2a0bb1bc2ca7177dfc5a1ed6f2b3ae9",
+  "inputs": {
+    "tests/compact-recovery/contract.json": "e0fcf3acedf932ccabebafbdaab45a1acd919b7457e377cfd89b17b3329a5caa",
+    "tests/compact-recovery/verify.py": "8c5ee2f09c321344e8d8b65ff841c9d87604cd6841426f27e753216e23f57297",
+    "tests/compact-recovery/fixture/GOALS.md": "02d81aa121600ed15d6d0c2e6a5e7ed46f7811e12a41b403d5359f43d9269ea8",
+    "tests/compact-recovery/fixture/RULES.md": "03a074d5236048b383003145e5c4ec45462c3fe3616dbb15c1a6c60f4a1faa64",
+    "tests/compact-recovery/fixture/project.toml": "e11114479ee490b58a4d6cdaeb0c0715163821ad5b2254d0f98645d5f2d02971",
+    "tests/compact-recovery/fixture/work-ledger.yaml": "0f634fd6363d57a229af497dd38bf8318284eb2ad674b54e59cc28233b5bf01f"
+  },
+  "passed": true,
+  "cases": [
+    {
+      "id": "source-before-checkpoint",
+      "passed": true,
+      "gates": {
+        "separate_processes_and_durable_sessions": true,
+        "exact_current_work_and_acceptance": true,
+        "current_rules_and_receiver_scope": true,
+        "current_and_saved_next_actions_distinguished": true,
+        "saved_open_loops_or_explicit_recovery_gap": true,
+        "source_delta_and_saved_observations": true,
+        "unrelated_history_excluded_but_retrievable": true,
+        "fault_receipt_and_retry_without_duplicate_successor": true,
+        "unchanged_fixture_and_read_only_recovery_sources": true
+      },
+      "commands": [
+        {
+          "label": "01-init",
+          "exit_code": 0,
+          "receipt": "source-before-checkpoint/receipts/01-init.json",
+          "sha256": "76a17ba050d9b54d1906c2f2bf7e5a176421d8d82861cc8fa71639434897c971"
+        },
+        {
+          "label": "02-status",
+          "exit_code": 0,
+          "receipt": "source-before-checkpoint/receipts/02-status.json",
+          "sha256": "18287028277c9b40389ed5baf4aea53ab114826600bf26360fdf81a42f420c61"
+        },
+        {
+          "label": "02-start",
+          "exit_code": 0,
+          "receipt": "source-before-checkpoint/receipts/02-start.json",
+          "sha256": "d1fc9395654bcfdb6471269f0ee5b3c32618b95ec9acdd986652ba15b8681396"
+        },
+        {
+          "label": "03-work",
+          "exit_code": 0,
+          "receipt": "source-before-checkpoint/receipts/03-work.json",
+          "sha256": "0daddccb5730fc17e16c10f7e1e26a0c590bc29925613c34d9fca31ea40b0d04"
+        },
+        {
+          "label": "04-progress-event",
+          "exit_code": 0,
+          "receipt": "source-before-checkpoint/receipts/04-progress-event.json",
+          "sha256": "6ef2c95e4855aa7c26398a5393db6b1ca9a8c1fc0148f711bc8792aa9331b3dd"
+        },
+        {
+          "label": "05-used-context",
+          "exit_code": 0,
+          "receipt": "source-before-checkpoint/receipts/05-used-context.json",
+          "sha256": "c2853a727a7fd367850ebc4bfc5abd3b3652353b88e6dd4dcc2344b42324f476"
+        },
+        {
+          "label": "06-checkpoint",
+          "exit_code": 0,
+          "receipt": "source-before-checkpoint/receipts/06-checkpoint.json",
+          "sha256": "a558af5e29d17c7289a590ec96adbf87553a4174829b23bc3b6a7adc95fb2e82"
+        },
+        {
+          "label": "07-status",
+          "exit_code": 0,
+          "receipt": "source-before-checkpoint/receipts/07-status.json",
+          "sha256": "33c3907eaf963d2e1b66ef1598120a0255c3e41c0573f0c434935d02bfd8717b"
+        },
+        {
+          "label": "07-unrelated-event",
+          "exit_code": 0,
+          "receipt": "source-before-checkpoint/receipts/07-unrelated-event.json",
+          "sha256": "ba474e58373564db451e4b1a18810be2794d4bfab46e831e0534419532ae19d9"
+        },
+        {
+          "label": "09-refreshed-status",
+          "exit_code": 0,
+          "receipt": "source-before-checkpoint/receipts/09-refreshed-status.json",
+          "sha256": "25298e0657fc6923b7f047659c3408eead3bb87c5968fb50bb981789dec033ec"
+        },
+        {
+          "label": "09-resume",
+          "exit_code": 0,
+          "receipt": "source-before-checkpoint/receipts/09-resume.json",
+          "sha256": "c31bb8499a4d3f1577fab5e545f6a4beb09ff6ce13c14f7c552810c0ba320d97"
+        },
+        {
+          "label": "10-new-process-session",
+          "exit_code": 0,
+          "receipt": "source-before-checkpoint/receipts/10-new-process-session.json",
+          "sha256": "5a2afc676c215ecc336e1612a631609ebe47cbbbf9d894401d93055d992b3b5d"
+        },
+        {
+          "label": "11-bootstrap",
+          "exit_code": 0,
+          "receipt": "source-before-checkpoint/receipts/11-bootstrap.json",
+          "sha256": "ff963c21d97296e95eb5a73a66a46857d269243da291c615e3f5c77fef9565f6"
+        },
+        {
+          "label": "12-recompiled-context",
+          "exit_code": 0,
+          "receipt": "source-before-checkpoint/receipts/12-recompiled-context.json",
+          "sha256": "90414a6af7cc3b1be5a558e456c549ebe09d7d2de791376fb237b8ee6298d4f9"
+        },
+        {
+          "label": "13-current-work",
+          "exit_code": 0,
+          "receipt": "source-before-checkpoint/receipts/13-current-work.json",
+          "sha256": "9102f99906c142e28ab5a0a82ae1d18348d9427067019cff3e5193a350e58a03"
+        },
+        {
+          "label": "14-delta",
+          "exit_code": 0,
+          "receipt": "source-before-checkpoint/receipts/14-delta.json",
+          "sha256": "c5d85f4bebcc0f9732932c4cffbd731c960713cab98255d1cb369641751697bc"
+        },
+        {
+          "label": "15-saved-checkpoint",
+          "exit_code": 0,
+          "receipt": "source-before-checkpoint/receipts/15-saved-checkpoint.json",
+          "sha256": "f157fb5194aff1625d6ae5796db899787d06094c66d99626defa1c405af4b28d"
+        },
+        {
+          "label": "16-explicit-history",
+          "exit_code": 0,
+          "receipt": "source-before-checkpoint/receipts/16-explicit-history.json",
+          "sha256": "c02d23a095037f351529a796f65cbb7b3458fa495dade1d1b8866d9b7b8c332c"
+        },
+        {
+          "label": "17-duplicate-resume",
+          "exit_code": 1,
+          "receipt": "source-before-checkpoint/receipts/17-duplicate-resume.json",
+          "sha256": "ca78f818c833f35c6ba0188a72dfa27153e80c30afa6356be9f7e0855dfeaa1f"
+        },
+        {
+          "label": "18-end",
+          "exit_code": 0,
+          "receipt": "source-before-checkpoint/receipts/18-end.json",
+          "sha256": "930d88047a849ee871dfa1e1bffbbdd9188729a5a46b3960714420e8ca94b464"
+        },
+        {
+          "label": "19-doctor",
+          "exit_code": 0,
+          "receipt": "source-before-checkpoint/receipts/19-doctor.json",
+          "sha256": "194d9e35288115d2b632c9b4ae3be814fccae17684d1fa2fc5d226ed0909aa00"
+        }
+      ],
+      "faults": [
+        {
+          "code": "InvalidTransition",
+          "runtime_records_unchanged": true
+        }
+      ],
+      "controlled_source_hashes": {
+        ".gitignore": "41c28943c910261599214d8f6dbd221a0720d74c82d1cadfeb0d88d06729283e",
+        "GOALS.md": "02d81aa121600ed15d6d0c2e6a5e7ed46f7811e12a41b403d5359f43d9269ea8",
+        "RULES.md": "f6b34bd7f3cb2c8d51b63c6905f8f84392029c77cfe5e5ac148c9e8ca711f2b5",
+        "project.toml": "e11114479ee490b58a4d6cdaeb0c0715163821ad5b2254d0f98645d5f2d02971",
+        "work-ledger.yaml": "7c7aa8ae1c3ca0ebbb985e50bb7ed0f0ea07173fb4a9e206564e2e1a4cdea20e"
+      },
+      "session_a": "01M20QM2D94RNMZHXXZE5A4WF8",
+      "session_b": "01M20QM3N99YER5SGFDSQ4PCPR",
+      "project_id": "01M20QM2A34NWRY40KB44SY64E",
+      "work_id": "01M20QM2A9QTWNEQ33G0377VX8",
+      "checkpoint_id": "01M20QM31B43W39EAZ0ADS44SZ",
+      "bootstrap_token_estimate": 697,
+      "work_context_token_estimate": 1555,
+      "source_hashes_after_recovery": {
+        ".gitignore": "41c28943c910261599214d8f6dbd221a0720d74c82d1cadfeb0d88d06729283e",
+        "GOALS.md": "02d81aa121600ed15d6d0c2e6a5e7ed46f7811e12a41b403d5359f43d9269ea8",
+        "RULES.md": "f6b34bd7f3cb2c8d51b63c6905f8f84392029c77cfe5e5ac148c9e8ca711f2b5",
+        "old-history.json": "6cdcb16d8473132bcf60e22eaac543e2194df081dc74d554a382d77668dd4d6d",
+        "project.toml": "e11114479ee490b58a4d6cdaeb0c0715163821ad5b2254d0f98645d5f2d02971",
+        "work-ledger.yaml": "7c7aa8ae1c3ca0ebbb985e50bb7ed0f0ea07173fb4a9e206564e2e1a4cdea20e"
+      },
+      "doctor_findings": 0
+    },
+    {
+      "id": "source-after-checkpoint",
+      "passed": true,
+      "gates": {
+        "separate_processes_and_durable_sessions": true,
+        "exact_current_work_and_acceptance": true,
+        "current_rules_and_receiver_scope": true,
+        "current_and_saved_next_actions_distinguished": true,
+        "saved_open_loops_or_explicit_recovery_gap": true,
+        "source_delta_and_saved_observations": true,
+        "unrelated_history_excluded_but_retrievable": true,
+        "fault_receipt_and_retry_without_duplicate_successor": true,
+        "unchanged_fixture_and_read_only_recovery_sources": true
+      },
+      "commands": [
+        {
+          "label": "01-init",
+          "exit_code": 0,
+          "receipt": "source-after-checkpoint/receipts/01-init.json",
+          "sha256": "0c3842895387b004ef0b53d47ec48aba128a7c9feaf1031d871ed2a34496a2ff"
+        },
+        {
+          "label": "02-status",
+          "exit_code": 0,
+          "receipt": "source-after-checkpoint/receipts/02-status.json",
+          "sha256": "a47a964a17cffb173d639521d08c8bab7c1bc6ac6f1054c00daa7fa59073efde"
+        },
+        {
+          "label": "02-start",
+          "exit_code": 0,
+          "receipt": "source-after-checkpoint/receipts/02-start.json",
+          "sha256": "6b4d07fb2b807b34e3d9c0c3be7543a116137a7c772bd75ea4f5baefbecc0f1e"
+        },
+        {
+          "label": "03-work",
+          "exit_code": 0,
+          "receipt": "source-after-checkpoint/receipts/03-work.json",
+          "sha256": "1c3db8957fc1a4f85ab462223ea2f3d16d74c0609e155068cca2f467fff69ff5"
+        },
+        {
+          "label": "04-progress-event",
+          "exit_code": 0,
+          "receipt": "source-after-checkpoint/receipts/04-progress-event.json",
+          "sha256": "b162bf2e6d702769c841960ae3c536e6a49de7968e61dbdea45eeeb8d9eeeebd"
+        },
+        {
+          "label": "05-used-context",
+          "exit_code": 0,
+          "receipt": "source-after-checkpoint/receipts/05-used-context.json",
+          "sha256": "977bf51b0543846445bc9cd10cfd3b7d2ebe7f183200bc06a7e83d71f7169e6c"
+        },
+        {
+          "label": "06-checkpoint",
+          "exit_code": 0,
+          "receipt": "source-after-checkpoint/receipts/06-checkpoint.json",
+          "sha256": "5ed45fe6b4ce3671e94337f97f7e14fb28789e751c45f5e794eba67177e972ed"
+        },
+        {
+          "label": "07-status",
+          "exit_code": 0,
+          "receipt": "source-after-checkpoint/receipts/07-status.json",
+          "sha256": "9b37f22551c0ad914fb138f1069973a48e0ea35118c3045c556f756b216f65d2"
+        },
+        {
+          "label": "07-unrelated-event",
+          "exit_code": 0,
+          "receipt": "source-after-checkpoint/receipts/07-unrelated-event.json",
+          "sha256": "f15a22a52cd463d5cead0fc284bd9c6892604fa136a70c661a92e50f1ba4fefc"
+        },
+        {
+          "label": "08-rejected-stale-revision",
+          "exit_code": 1,
+          "receipt": "source-after-checkpoint/receipts/08-rejected-stale-revision.json",
+          "sha256": "9e70aa36fe86fc955b51640c3af3d872fe0e961980cc31fba86cb1920ff912d5"
+        },
+        {
+          "label": "09-refreshed-status",
+          "exit_code": 0,
+          "receipt": "source-after-checkpoint/receipts/09-refreshed-status.json",
+          "sha256": "1021dba2e067bb164f34fa2a27737b61a0def94ae08f047f7fa3dea18221b9e4"
+        },
+        {
+          "label": "09-resume",
+          "exit_code": 0,
+          "receipt": "source-after-checkpoint/receipts/09-resume.json",
+          "sha256": "999ce7bd2ee6c5744e335a8af7fde3f1abf9daad36ee0fab731b3a5e8a2baa8c"
+        },
+        {
+          "label": "10-new-process-session",
+          "exit_code": 0,
+          "receipt": "source-after-checkpoint/receipts/10-new-process-session.json",
+          "sha256": "e3ab69e2de856413863ad6f37e8429587470ec4bd5380b3b49c24cad5ddaa9b7"
+        },
+        {
+          "label": "11-bootstrap",
+          "exit_code": 0,
+          "receipt": "source-after-checkpoint/receipts/11-bootstrap.json",
+          "sha256": "53878ab43737c80ac4af26bf481947e034a65fa41440410f269f4eeddb06b0d7"
+        },
+        {
+          "label": "12-recompiled-context",
+          "exit_code": 0,
+          "receipt": "source-after-checkpoint/receipts/12-recompiled-context.json",
+          "sha256": "507e781923bf32750e67a8ca26ef3b556d45989031be0ec6c77978d901a6acdf"
+        },
+        {
+          "label": "13-current-work",
+          "exit_code": 0,
+          "receipt": "source-after-checkpoint/receipts/13-current-work.json",
+          "sha256": "2e98800201cc84f78f930279858d3cfe865eacfed380926325e6ccd687668bb8"
+        },
+        {
+          "label": "14-delta",
+          "exit_code": 0,
+          "receipt": "source-after-checkpoint/receipts/14-delta.json",
+          "sha256": "c5508772bb8a9bce065608b028a3edf774025f863267991228025621a684850e"
+        },
+        {
+          "label": "15-saved-checkpoint",
+          "exit_code": 0,
+          "receipt": "source-after-checkpoint/receipts/15-saved-checkpoint.json",
+          "sha256": "c8afd73a028bd3f94fbca73db63e8e6709e5b2f322fb30d391cd69f3e5726025"
+        },
+        {
+          "label": "16-explicit-history",
+          "exit_code": 0,
+          "receipt": "source-after-checkpoint/receipts/16-explicit-history.json",
+          "sha256": "57949eb1e10f171bb461ff1720f5c325bdafcb02c201017c251b6c4bce554c28"
+        },
+        {
+          "label": "17-duplicate-resume",
+          "exit_code": 1,
+          "receipt": "source-after-checkpoint/receipts/17-duplicate-resume.json",
+          "sha256": "974598260d105841f464a8be95ab31e57d51bfdf099a33321144acdcceb4a6ae"
+        },
+        {
+          "label": "18-end",
+          "exit_code": 0,
+          "receipt": "source-after-checkpoint/receipts/18-end.json",
+          "sha256": "6a1aafb153a77b5f22c71f85c02f094a13bc9f34d88797d4c540a24f46c84cdd"
+        },
+        {
+          "label": "19-doctor",
+          "exit_code": 0,
+          "receipt": "source-after-checkpoint/receipts/19-doctor.json",
+          "sha256": "ad37cd738fdec74013e1ac15aeb1729b3ec96c1f3c8d6b1c5718cb223e346d86"
+        }
+      ],
+      "faults": [
+        {
+          "code": "RevisionConflict",
+          "runtime_records_unchanged": true
+        },
+        {
+          "code": "InvalidTransition",
+          "runtime_records_unchanged": true
+        }
+      ],
+      "controlled_source_hashes": {
+        ".gitignore": "41c28943c910261599214d8f6dbd221a0720d74c82d1cadfeb0d88d06729283e",
+        "GOALS.md": "02d81aa121600ed15d6d0c2e6a5e7ed46f7811e12a41b403d5359f43d9269ea8",
+        "RULES.md": "f6b34bd7f3cb2c8d51b63c6905f8f84392029c77cfe5e5ac148c9e8ca711f2b5",
+        "old-history.json": "6cdcb16d8473132bcf60e22eaac543e2194df081dc74d554a382d77668dd4d6d",
+        "project.toml": "e11114479ee490b58a4d6cdaeb0c0715163821ad5b2254d0f98645d5f2d02971",
+        "work-ledger.yaml": "7c7aa8ae1c3ca0ebbb985e50bb7ed0f0ea07173fb4a9e206564e2e1a4cdea20e"
+      },
+      "session_a": "01M20QM53RMFNREC69Q8ZJ1A06",
+      "session_b": "01M20QM6DMY8G457VJQBZRS8A2",
+      "project_id": "01M20QM50JSMWHJC7J4BKN6PA3",
+      "work_id": "01M20QM50QXBMW9GB9G4TB8QN8",
+      "checkpoint_id": "01M20QM5Q5KYCQ2FGE43X7H9E1",
+      "bootstrap_token_estimate": 660,
+      "work_context_token_estimate": 2202,
+      "source_hashes_after_recovery": {
+        ".gitignore": "41c28943c910261599214d8f6dbd221a0720d74c82d1cadfeb0d88d06729283e",
+        "GOALS.md": "02d81aa121600ed15d6d0c2e6a5e7ed46f7811e12a41b403d5359f43d9269ea8",
+        "RULES.md": "f6b34bd7f3cb2c8d51b63c6905f8f84392029c77cfe5e5ac148c9e8ca711f2b5",
+        "old-history.json": "6cdcb16d8473132bcf60e22eaac543e2194df081dc74d554a382d77668dd4d6d",
+        "project.toml": "e11114479ee490b58a4d6cdaeb0c0715163821ad5b2254d0f98645d5f2d02971",
+        "work-ledger.yaml": "7c7aa8ae1c3ca0ebbb985e50bb7ed0f0ea07173fb4a9e206564e2e1a4cdea20e"
+      },
+      "doctor_findings": 0
+    },
+    {
+      "id": "missing-checkpoint",
+      "passed": true,
+      "gates": {
+        "separate_processes_and_durable_sessions": true,
+        "exact_current_work_and_acceptance": true,
+        "current_rules_and_receiver_scope": true,
+        "current_and_saved_next_actions_distinguished": true,
+        "saved_open_loops_or_explicit_recovery_gap": true,
+        "source_delta_and_saved_observations": true,
+        "unrelated_history_excluded_but_retrievable": true,
+        "fault_receipt_and_retry_without_duplicate_successor": true,
+        "unchanged_fixture_and_read_only_recovery_sources": true
+      },
+      "commands": [
+        {
+          "label": "01-init",
+          "exit_code": 0,
+          "receipt": "missing-checkpoint/receipts/01-init.json",
+          "sha256": "272f79392dc0af4c5c2c8ca3e35ef6572be07a0463d31ce5693c93089f4e051a"
+        },
+        {
+          "label": "02-status",
+          "exit_code": 0,
+          "receipt": "missing-checkpoint/receipts/02-status.json",
+          "sha256": "72b0a76a14cef27e3268d52d052549e5892959c4515a95a455a13c9b83238c24"
+        },
+        {
+          "label": "02-start",
+          "exit_code": 0,
+          "receipt": "missing-checkpoint/receipts/02-start.json",
+          "sha256": "606bf497212893fef19c5c062a4e6952bbc4c89a7658a36a53819332453b222d"
+        },
+        {
+          "label": "03-work",
+          "exit_code": 0,
+          "receipt": "missing-checkpoint/receipts/03-work.json",
+          "sha256": "e2464dc737522b178839c6a96a4ae1607cce6ff6afd46d0327cccd6dff4b1b02"
+        },
+        {
+          "label": "04-progress-event",
+          "exit_code": 0,
+          "receipt": "missing-checkpoint/receipts/04-progress-event.json",
+          "sha256": "31e0c115233f80470048f9c878bec6736115a3fda1ad9b3ca75649d16a6e0c51"
+        },
+        {
+          "label": "07-status",
+          "exit_code": 0,
+          "receipt": "missing-checkpoint/receipts/07-status.json",
+          "sha256": "21e23b21bc67301d1aaf827b9bc49609c190151235693fb984e6f78963bde33d"
+        },
+        {
+          "label": "07-unrelated-event",
+          "exit_code": 0,
+          "receipt": "missing-checkpoint/receipts/07-unrelated-event.json",
+          "sha256": "f9973110fd593dfb1847167557bc758c08fdc2074506d019e313b034c0765fa3"
+        },
+        {
+          "label": "09-refreshed-status",
+          "exit_code": 0,
+          "receipt": "missing-checkpoint/receipts/09-refreshed-status.json",
+          "sha256": "b52c4064228f1cede47b26a763129ce4de933b50aa29170aecf41029814aa499"
+        },
+        {
+          "label": "09-resume",
+          "exit_code": 0,
+          "receipt": "missing-checkpoint/receipts/09-resume.json",
+          "sha256": "7e10a6a586fc58a76f8a883dd8ea89a660e68abd098d0ac203cd4f151a9ce56a"
+        },
+        {
+          "label": "10-new-process-session",
+          "exit_code": 0,
+          "receipt": "missing-checkpoint/receipts/10-new-process-session.json",
+          "sha256": "45fa7b45d03b94233daff4a320ce34228fe045586f6fbb0d01b08f793bf3393a"
+        },
+        {
+          "label": "11-bootstrap",
+          "exit_code": 0,
+          "receipt": "missing-checkpoint/receipts/11-bootstrap.json",
+          "sha256": "3907a9a168b112225cd469aa2f0e19f70b2e981855368ebb8f6e42dbddc7a360"
+        },
+        {
+          "label": "12-recompiled-context",
+          "exit_code": 0,
+          "receipt": "missing-checkpoint/receipts/12-recompiled-context.json",
+          "sha256": "6c485fbe0c280a6ed700eca9b1d715dfee3c4d5308879b42c1e3f9a4f2778bbf"
+        },
+        {
+          "label": "13-current-work",
+          "exit_code": 0,
+          "receipt": "missing-checkpoint/receipts/13-current-work.json",
+          "sha256": "060c97e8f43f3519a9ca296b346d6e0acda4db70261307c5eb64e57e9ee31c9c"
+        },
+        {
+          "label": "14-delta",
+          "exit_code": 0,
+          "receipt": "missing-checkpoint/receipts/14-delta.json",
+          "sha256": "ef90e13fd28a705e022636bb87bc53122d5518805b8dc280fc44c222e9a88d53"
+        },
+        {
+          "label": "16-explicit-history",
+          "exit_code": 0,
+          "receipt": "missing-checkpoint/receipts/16-explicit-history.json",
+          "sha256": "ad3ca42139baba9d3bc98336b0d7cded58cb05cf8f2febb4a5087eb9fc88a923"
+        },
+        {
+          "label": "17-duplicate-resume",
+          "exit_code": 1,
+          "receipt": "missing-checkpoint/receipts/17-duplicate-resume.json",
+          "sha256": "58bce6b919b60bff481f3e2503d425d91c12f86f4ad7c1b9cd8d5499f65e1b12"
+        },
+        {
+          "label": "18-end",
+          "exit_code": 0,
+          "receipt": "missing-checkpoint/receipts/18-end.json",
+          "sha256": "87daea07c2ef24ccbbf51147d47e50b364a06d876eb2ddd0475c3049b12b13d9"
+        },
+        {
+          "label": "19-doctor",
+          "exit_code": 0,
+          "receipt": "missing-checkpoint/receipts/19-doctor.json",
+          "sha256": "aa24f2e2dd213111d5eef77c79cd74406f70c007b5f3ce0dbc36f9b7263e2ffc"
+        }
+      ],
+      "faults": [
+        {
+          "code": "NoSuccessfulCheckpoint",
+          "gaps": [
+            "No successful checkpoint: recover current source facts and delta since session start; unrecorded digest/next action/open loops are unavailable."
+          ],
+          "fabricated_state": false
+        },
+        {
+          "code": "InvalidTransition",
+          "runtime_records_unchanged": true
+        }
+      ],
+      "controlled_source_hashes": {
+        ".gitignore": "41c28943c910261599214d8f6dbd221a0720d74c82d1cadfeb0d88d06729283e",
+        "GOALS.md": "02d81aa121600ed15d6d0c2e6a5e7ed46f7811e12a41b403d5359f43d9269ea8",
+        "RULES.md": "f6b34bd7f3cb2c8d51b63c6905f8f84392029c77cfe5e5ac148c9e8ca711f2b5",
+        "old-history.json": "6cdcb16d8473132bcf60e22eaac543e2194df081dc74d554a382d77668dd4d6d",
+        "project.toml": "e11114479ee490b58a4d6cdaeb0c0715163821ad5b2254d0f98645d5f2d02971",
+        "work-ledger.yaml": "7c7aa8ae1c3ca0ebbb985e50bb7ed0f0ea07173fb4a9e206564e2e1a4cdea20e"
+      },
+      "session_a": "01M20QM817X2X96S3YVC748CSS",
+      "session_b": "01M20QM8RDHJJ2P2Y7S2WW5R2W",
+      "project_id": "01M20QM7Y1D12MNKM65YKKSWMF",
+      "work_id": "01M20QM7Y6MNM4D459ZK8XQY4W",
+      "checkpoint_id": null,
+      "bootstrap_token_estimate": 542,
+      "work_context_token_estimate": 2012,
+      "source_hashes_after_recovery": {
+        ".gitignore": "41c28943c910261599214d8f6dbd221a0720d74c82d1cadfeb0d88d06729283e",
+        "GOALS.md": "02d81aa121600ed15d6d0c2e6a5e7ed46f7811e12a41b403d5359f43d9269ea8",
+        "RULES.md": "f6b34bd7f3cb2c8d51b63c6905f8f84392029c77cfe5e5ac148c9e8ca711f2b5",
+        "old-history.json": "6cdcb16d8473132bcf60e22eaac543e2194df081dc74d554a382d77668dd4d6d",
+        "project.toml": "e11114479ee490b58a4d6cdaeb0c0715163821ad5b2254d0f98645d5f2d02971",
+        "work-ledger.yaml": "7c7aa8ae1c3ca0ebbb985e50bb7ed0f0ea07173fb4a9e206564e2e1a4cdea20e"
+      },
+      "doctor_findings": 0
+    },
+    {
+      "id": "missing-rule-source",
+      "passed": true,
+      "gates": {
+        "separate_processes_and_durable_sessions": true,
+        "exact_current_work_and_acceptance": true,
+        "current_rules_and_receiver_scope": true,
+        "current_and_saved_next_actions_distinguished": true,
+        "saved_open_loops_or_explicit_recovery_gap": true,
+        "source_delta_and_saved_observations": true,
+        "unrelated_history_excluded_but_retrievable": true,
+        "fault_receipt_and_retry_without_duplicate_successor": true,
+        "unchanged_fixture_and_read_only_recovery_sources": true
+      },
+      "commands": [
+        {
+          "label": "01-init",
+          "exit_code": 0,
+          "receipt": "missing-rule-source/receipts/01-init.json",
+          "sha256": "71ea806eb9892b9c5e7ba703cccd3d733e76bbab0334b7e61537955389ae0a89"
+        },
+        {
+          "label": "02-status",
+          "exit_code": 0,
+          "receipt": "missing-rule-source/receipts/02-status.json",
+          "sha256": "c2a5d95593c5995fbd3b1cf85d59ef86ad1392342bbed2dffa5de19943566885"
+        },
+        {
+          "label": "02-start",
+          "exit_code": 0,
+          "receipt": "missing-rule-source/receipts/02-start.json",
+          "sha256": "6e1937ec031c14093fdd144926252c3052d0518bdc31e3bb50e48d45dbd7dbaa"
+        },
+        {
+          "label": "03-work",
+          "exit_code": 0,
+          "receipt": "missing-rule-source/receipts/03-work.json",
+          "sha256": "b84e6a81e94b72fc1df0615f15fa8f66f8c6e6e3d6b6b4e748b0f843f4b57aae"
+        },
+        {
+          "label": "04-progress-event",
+          "exit_code": 0,
+          "receipt": "missing-rule-source/receipts/04-progress-event.json",
+          "sha256": "87da69c7ee9114044b09562b0d31ee9a400a1c2df78f6d2e99669b19cea8e427"
+        },
+        {
+          "label": "05-used-context",
+          "exit_code": 0,
+          "receipt": "missing-rule-source/receipts/05-used-context.json",
+          "sha256": "8dc108d470530cb5109db1ebcec716ef49fef13f94893cba90b24943ec5c4a2f"
+        },
+        {
+          "label": "06-checkpoint",
+          "exit_code": 0,
+          "receipt": "missing-rule-source/receipts/06-checkpoint.json",
+          "sha256": "6fefcf8a22cfee3ac9e1e5062c4cef7957de9af286223e281905d6b7b1c9560c"
+        },
+        {
+          "label": "07-status",
+          "exit_code": 0,
+          "receipt": "missing-rule-source/receipts/07-status.json",
+          "sha256": "86c602f8d7d68d780e46f76ff8fc1a1c8ccaef193f1fb99b2a83601df3442c16"
+        },
+        {
+          "label": "07-unrelated-event",
+          "exit_code": 0,
+          "receipt": "missing-rule-source/receipts/07-unrelated-event.json",
+          "sha256": "80fe80068307adfbe30755a7be176a6189cd0aef5f506b1578c533b2e0b3b83b"
+        },
+        {
+          "label": "08-rejected-missing-source",
+          "exit_code": 1,
+          "receipt": "missing-rule-source/receipts/08-rejected-missing-source.json",
+          "sha256": "bd2edec4d20f2b28bf8d6ab2e61a8c9c4e89c18cc233483e5dd26f77a0fec517"
+        },
+        {
+          "label": "09-refreshed-status",
+          "exit_code": 0,
+          "receipt": "missing-rule-source/receipts/09-refreshed-status.json",
+          "sha256": "cb8f353a61a59891901d2bac547c7dbc69e679efce29fc0bf4052423da9bdd76"
+        },
+        {
+          "label": "09-resume",
+          "exit_code": 0,
+          "receipt": "missing-rule-source/receipts/09-resume.json",
+          "sha256": "fa28e012a93c8a04f8ecb154951b6a12cdc1472a273e4b1f48bdc3d2e29f0aa4"
+        },
+        {
+          "label": "10-new-process-session",
+          "exit_code": 0,
+          "receipt": "missing-rule-source/receipts/10-new-process-session.json",
+          "sha256": "b6b0d4088fbfae2c202ee323dd7055be66a9f478b7a392d275a78dd120c33ae8"
+        },
+        {
+          "label": "11-bootstrap",
+          "exit_code": 0,
+          "receipt": "missing-rule-source/receipts/11-bootstrap.json",
+          "sha256": "c92847e0149e13743b0c15158fe6d6cc53ddc2461d387097f460953a3398e0ad"
+        },
+        {
+          "label": "12-recompiled-context",
+          "exit_code": 0,
+          "receipt": "missing-rule-source/receipts/12-recompiled-context.json",
+          "sha256": "fb36ca1501b240071a82573273ae2ba87db47f65a5df8510deb1966527e47f63"
+        },
+        {
+          "label": "13-current-work",
+          "exit_code": 0,
+          "receipt": "missing-rule-source/receipts/13-current-work.json",
+          "sha256": "2e78b19b9a6aebbc7c94c21a7f191d27164f3b43ead167acee482c405fc42b8f"
+        },
+        {
+          "label": "14-delta",
+          "exit_code": 0,
+          "receipt": "missing-rule-source/receipts/14-delta.json",
+          "sha256": "950a82395bf8da61120b1ed8386e2f5e8e92e705e9995bae55101c58b646b7b1"
+        },
+        {
+          "label": "15-saved-checkpoint",
+          "exit_code": 0,
+          "receipt": "missing-rule-source/receipts/15-saved-checkpoint.json",
+          "sha256": "55a4f31d4e81c14233dc9374eed18aeff68f35780b94fa8ea10e1c1299806e80"
+        },
+        {
+          "label": "16-explicit-history",
+          "exit_code": 0,
+          "receipt": "missing-rule-source/receipts/16-explicit-history.json",
+          "sha256": "389e680cc295426028f6d43e1d0f853c522357fc5766ed31d6bb40f7c5b5f7db"
+        },
+        {
+          "label": "17-duplicate-resume",
+          "exit_code": 1,
+          "receipt": "missing-rule-source/receipts/17-duplicate-resume.json",
+          "sha256": "4a1ef9a4ab64cd282f9f92f1208d21621a6d17c956fbd5cd83ecf6aac94c1b21"
+        },
+        {
+          "label": "18-end",
+          "exit_code": 0,
+          "receipt": "missing-rule-source/receipts/18-end.json",
+          "sha256": "18934d5f9442db699a0188fe2ca3e917418f5366628d263ace136a490451c4c9"
+        },
+        {
+          "label": "19-doctor",
+          "exit_code": 0,
+          "receipt": "missing-rule-source/receipts/19-doctor.json",
+          "sha256": "8ea57a244e7fe087305e7220b7121da72693f6f87bdfbdddca43ec86c33e0c44"
+        }
+      ],
+      "faults": [
+        {
+          "code": "SourceStale",
+          "runtime_records_unchanged": true
+        },
+        {
+          "code": "InvalidTransition",
+          "runtime_records_unchanged": true
+        }
+      ],
+      "controlled_source_hashes": {
+        ".gitignore": "41c28943c910261599214d8f6dbd221a0720d74c82d1cadfeb0d88d06729283e",
+        "GOALS.md": "02d81aa121600ed15d6d0c2e6a5e7ed46f7811e12a41b403d5359f43d9269ea8",
+        "RULES.md": "f6b34bd7f3cb2c8d51b63c6905f8f84392029c77cfe5e5ac148c9e8ca711f2b5",
+        "project.toml": "e11114479ee490b58a4d6cdaeb0c0715163821ad5b2254d0f98645d5f2d02971",
+        "work-ledger.yaml": "7c7aa8ae1c3ca0ebbb985e50bb7ed0f0ea07173fb4a9e206564e2e1a4cdea20e"
+      },
+      "session_a": "01M20QMA64KCBFJ7GG6FD3AJ1S",
+      "session_b": "01M20QMBEZP241TQ399G0K5SJP",
+      "project_id": "01M20QMA2YBFXMFDX8WR9RB1Q2",
+      "work_id": "01M20QMA3310F67DZQEFHMZTWC",
+      "checkpoint_id": "01M20QMAT0PBRAFJNJTED5E8M5",
+      "bootstrap_token_estimate": 703,
+      "work_context_token_estimate": 1761,
+      "source_hashes_after_recovery": {
+        ".gitignore": "41c28943c910261599214d8f6dbd221a0720d74c82d1cadfeb0d88d06729283e",
+        "GOALS.md": "02d81aa121600ed15d6d0c2e6a5e7ed46f7811e12a41b403d5359f43d9269ea8",
+        "RULES.md": "f6b34bd7f3cb2c8d51b63c6905f8f84392029c77cfe5e5ac148c9e8ca711f2b5",
+        "old-history.json": "6cdcb16d8473132bcf60e22eaac543e2194df081dc74d554a382d77668dd4d6d",
+        "project.toml": "e11114479ee490b58a4d6cdaeb0c0715163821ad5b2254d0f98645d5f2d02971",
+        "work-ledger.yaml": "7c7aa8ae1c3ca0ebbb985e50bb7ed0f0ea07173fb4a9e206564e2e1a4cdea20e"
+      },
+      "doctor_findings": 0
+    }
+  ],
+  "source_unchanged": true,
+  "cases_passed": 4,
+  "gate_assertions": 36,
+  "e4_completed": 0,
+  "metric_credit": 0,
+  "model_invocations": 0,
+  "local_report": {
+    "path": ".local/compact-recovery/run-v3/report.json",
+    "sha256": "8c93bd2a06a447e8aed091349b1e8b3d9a70199195cb664f705bfa5fd149fbae",
+    "retention": "local_only"
+  },
+  "cli_calls": 83,
+  "retained_early_failures": [
+    {
+      "source_commit": "67706a228b4d101302ed7a91de9dd40ea0cc352e",
+      "report": ".local/compact-recovery/run-v1/report.json",
+      "sha256": "b5bb9582e5fc750ebbc92740834d8f3a1e9dff4e1ccbaeb0f7de813d74d120d4",
+      "passed": false,
+      "last_command": "12-recompiled-context",
+      "cause": "The driver compared different work selection, intent and delta-baseline selectors; align the requests before comparing deterministic context."
+    },
+    {
+      "source_commit": "99d38401131d8fb3d7a0bd9bbf09241e5a773f65",
+      "report": ".local/compact-recovery/run-v2/report.json",
+      "sha256": "ad6426cacd4f409cc15e7ec102324822f1ae739687bd02efd01c969ce4c06fbd",
+      "passed": false,
+      "last_command": "13-current-work",
+      "cause": "Markdown rule projections retain headings and source-qualified identities; compare full text and observed IDs, not bare paragraph and anchor guesses."
+    }
+  ],
+  "scope": "Four independent public synthetic projects, fresh native CLI processes, read-only database evidence. No model or real-client business execution.",
+  "limitations": [
+    "Bootstrap budget was explicitly 3000; reported estimates on these small fixtures are not the large-ledger 1000-token metric.",
+    "No power-loss durability, large-ledger benchmark, E4 scenario, independent business review or release credit."
+  ]
+}
