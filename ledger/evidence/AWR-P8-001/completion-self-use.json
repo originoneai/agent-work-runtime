@@ -1,0 +1,31 @@
+{
+  "kind": "developer_self_use_completion",
+  "work_item": "AWR-P8-001",
+  "source_commit": "cbed25e99300dc7555d9142a5b40457fca2c0fb7",
+  "checked_at": "2026-09-08T13:26:58+08:00",
+  "transport": "mcp_stdio",
+  "tool": "awr_work_transition",
+  "session_id": "01M1ZNMK8BYBNZXHR6GP5KVWK5",
+  "proposal_id": "01M1ZQQMT76F7VWPN3HS8Y04NH",
+  "completion_event_id": "01M1ZQQN8RG1GF44W17T7G6KWT",
+  "released_claim_id": "01M1ZNMK8VN43X9V9FV6MKV0EB",
+  "source_before_fingerprint": "sha256:98a6aa6827eb406876e87b5487465e198a478054fee958e7da158b221c5bdd8d",
+  "source_after_fingerprint": "sha256:e0ce111e23a15fd17bbde045a7802bbaa2d27d3f6e267754ecbb274c864ce5a6",
+  "verification_report": "ledger/deliveries/AWR-P8-001.json",
+  "verification_report_sha256": "801c5e1e98ea8093bca6920f5334f6cd014e36db24101cda23153573fe6c6ec2",
+  "context_tokens": 4987,
+  "checkpoint_id": "01M1ZQQPBCHR6XWMJ59FFT9HER",
+  "final_project_revision": 367,
+  "source_completed": true,
+  "recovery_snapshots_match": true,
+  "report_unchanged": true,
+  "all_eight_tools_used": true,
+  "doctor": {
+    "ok": true,
+    "findings": []
+  },
+  "limitations": [
+    "Actual development self-use of all eight tools on this repository through stdio; not E4 or released product acceptance.",
+    "Session checkpoint/end were executed through their CLI domain commands. The final verification report remained immutable after registration."
+  ]
+}
