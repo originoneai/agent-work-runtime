@@ -1,0 +1,57 @@
+{
+  "kind": "developer_self_use",
+  "work_item": "AWR-QA-004",
+  "checked_at": "2026-09-08T22:14:20+08:00",
+  "transport": "mcp_stdio_and_cli",
+  "session_id": "01M20KGAKD0VT66WMWK051TCY1",
+  "claim_id": "01M20KGAM1SFC72Z0WNMBJBPEE",
+  "observation_event_id": "01M20NX7Y8D0V54C6WS73EAZJA",
+  "progress_event_id": "01M20NX9XPPHCVJERXECN6Q5QD",
+  "proposal_id": "01M20NX81EYYNH7M81CZZJS4A0",
+  "apply_attempt_event_id": "01M20NX96VTXZM3VMHXK4E99P1",
+  "project_revision": 774,
+  "explicit_main_selection_retained": true,
+  "session_and_claim_unchanged": true,
+  "exact_source_progress_change": true,
+  "recovery_snapshots_match": true,
+  "final_receipt_matches_attempt": true,
+  "source_before_fingerprint": "sha256:b7b2c63bfeeacae356a50ce83c709ab8032c0c43396d19ad0dc27c8d74f3fbcc",
+  "source_after_fingerprint": "sha256:8ccab80e34c88b8155ad24ca5b2711e20c513cb66453d679f380aef96e5c1da3",
+  "context_complete": true,
+  "context_tokens": 5000,
+  "context_hash": "4f27da688888a4f68816cca33e2c673e87cb04c2aad5321d36c8321df494862a",
+  "doctor": {
+    "ok": true,
+    "expected_findings": [
+      "active_session"
+    ]
+  },
+  "source_commit": "d483766220724114442a2822ecbb8704b5631f58",
+  "platform_contract_version": "1.0.0",
+  "binary_sha256": {
+    "awr": "58f569dd305ee2c4593e1e651996961ba2a0bb1bc2ca7177dfc5a1ed6f2b3ae9",
+    "awr-mcp": "480ada5ed3cd8954a88ac181daf076e6a0e806577b52c802a69f381182f8e61e"
+  },
+  "doctor_read": {
+    "before": {
+      "database_sha256": "e1a3c320e27718bcebfbfda7e249a6fe363e6adcd38d33128865c9feec4ab0cb",
+      "table_count": 25,
+      "project_revision": 766,
+      "ledger_sha256": "b7b2c63bfeeacae356a50ce83c709ab8032c0c43396d19ad0dc27c8d74f3fbcc"
+    },
+    "after": {
+      "database_sha256": "e1a3c320e27718bcebfbfda7e249a6fe363e6adcd38d33128865c9feec4ab0cb",
+      "table_count": 25,
+      "project_revision": 766,
+      "ledger_sha256": "b7b2c63bfeeacae356a50ce83c709ab8032c0c43396d19ad0dc27c8d74f3fbcc"
+    },
+    "unchanged": true,
+    "schema_version": 3,
+    "schema_issues": [],
+    "foreign_key_violations": 0
+  },
+  "e4_completed": 0,
+  "limitations": [
+    "Actual project diagnosis and source progress through CLI/MCP. The separate source-bound native platform reports cover only the three listed OS/architecture targets. No native model client, independent business review, E4, performance metric or release acceptance."
+  ]
+}
