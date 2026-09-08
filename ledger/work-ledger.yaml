@@ -1,8 +1,8 @@
 schema_version: 1
 contract_id: awr-v1
 contract_version: 1.0.0
-ledger_revision: 140
-updated_at: '2026-09-08T19:56:54+08:00'
+ledger_revision: 142
+updated_at: '2026-09-08T20:01:42+08:00'
 project:
   name: Agent Work Runtime
   external_key: agent-work-runtime
@@ -10,12 +10,12 @@ project:
   authority_mode: source_first
   release_status: not_released
 current:
-  milestone: M8
-  work_item: AWR-SEC-005
-  next_action: 24 项数据库恢复条件与 143 项检查已通过；绑定源码、远端和本项目诊断/写回证据后完成本条，进入集中领域回归。
+  milestone: M9
+  work_item: AWR-QA-001
+  next_action: 建立当前源码的集中回归清单，汇总 workspace 单元/集成、CLI/MCP 与专项故障合同，运行后按共享根因修复并绑定完整报告。
   open_loops:
-  - SEC-005 的数据库恢复合同 24/24 与 143 项检查通过，schema 结构误判、迁移名称漏检和错误升级提前提交已修复；三个原始失败样本保留。新 Doctor 在本项目保持全部数据库表和源台账不变，MCP
-    进度写回已核对。等待源码、远端与完成回执；均不计 E4。
+  - SEC-005 已完成：数据库恢复合同 24/24、143 项检查与本项目 25 张表的只读诊断/进度写回通过；三个 schema/迁移缺陷已修复，源码 725ae01 的 Git/GitHub 回执已核实。完成写回和
+    checkpoint/end 后 Doctor 为 0 项，M8 收口并进入集中回归。均不计 E4。
   - SEC-001 已完成：26/26 路径条件、46 项写回回归和 10 项 MCP 检查通过；源码 217a0b5 的远端回执已核实。实际完成写回、快照核对、checkpoint/end 后 Doctor 为 0 项；进入
     SEC-002。均不计 E4 或正式发布。
   - P0/P1 功能与接入项全部完成；P8-004 已对齐 8 个 MCP Tools 和 CLI 的状态、版本、缺口及写入回执，进入 M8 安全与后续集中质量阶段。
@@ -43,9 +43,9 @@ milestones:
 - id: M7
   status: completed
 - id: M8
-  status: in_progress
+  status: completed
 - id: M9
-  status: planned
+  status: in_progress
 - id: M10
   status: planned
 work_items:
@@ -1641,53 +1641,54 @@ work_items:
   depends_on:
   - AWR-P5-003
   - AWR-SEC-003
-  evidence: []
+  evidence:
+  - ledger/deliveries/AWR-SEC-005.json
   id: AWR-SEC-005
   kind: security
   milestone: M8
-  next_action: 24 项数据库恢复条件与 143 项检查已通过；绑定源码、远端和本项目诊断/写回证据后完成本条，进入集中领域回归。
+  next_action: 源码 725ae01 与 Git/GitHub 回执已核实；完成写回、checkpoint/end 和 Doctor 复核通过，后续进入 AWR-QA-001。
   owner: codex-primary
   priority: P2
   required_for_v1: true
   source_sections:
   - 10
   - 34
-  status: in_progress
+  status: completed
   title: 数据库完整性与 Doctor 故障矩阵
   verification:
     evidence_directory: ledger/evidence/AWR-SEC-005
-    evidence_level: none
+    evidence_level: locally_verified
     minimum: 证明本条验收行为；功能阶段运行必要的定向检查，系统测试在 M9 集中执行。
-- id: AWR-QA-001
-  title: 集中单元、集成与领域回归
-  milestone: M9
-  priority: P2
-  kind: quality
-  required_for_v1: true
-  status: planned
-  owner: null
+- acceptance:
+  - 覆盖关键正常、边界、异常、恢复路径，缺陷以可复用根因修复并补同类回归。
+  - 完整 regression 报告绑定源码 SHA，不以组件通过声明真实 E4 完成。
+  blocker: null
+  deliverables:
+  - tests/
+  - crates/
   depends_on:
   - AWR-SEC-001
   - AWR-SEC-002
   - AWR-SEC-004
   - AWR-SEC-005
+  evidence: []
+  id: AWR-QA-001
+  kind: quality
+  milestone: M9
+  next_action: 建立当前源码的集中回归清单，汇总 workspace 单元/集成、CLI/MCP 与专项故障合同，运行后按共享根因修复并绑定完整报告。
+  owner: codex-primary
+  priority: P2
+  required_for_v1: true
   source_sections:
   - 48
   - 50
   - 55
-  deliverables:
-  - tests/
-  - crates/
-  acceptance:
-  - 覆盖关键正常、边界、异常、恢复路径，缺陷以可复用根因修复并补同类回归。
-  - 完整 regression 报告绑定源码 SHA，不以组件通过声明真实 E4 完成。
+  status: in_progress
+  title: 集中单元、集成与领域回归
   verification:
-    minimum: 证明本条验收行为；功能阶段运行必要的定向检查，系统测试在 M9 集中执行。
     evidence_directory: ledger/evidence/AWR-QA-001
     evidence_level: none
-  evidence: []
-  blocker: null
-  next_action: 按交付物实现并验证：集中单元、集成与领域回归
+    minimum: 证明本条验收行为；功能阶段运行必要的定向检查，系统测试在 M9 集中执行。
 - id: AWR-QA-002
   title: 8 个完整业务场景 Fixture 与覆盖矩阵
   milestone: M9
