@@ -4,9 +4,11 @@ use awr_core::{Claim, Event, Id, Revision, Session, SessionDraft, SessionOutcome
 pub use awr_core::{Error, Result};
 mod artifact;
 mod read;
+mod resume;
 pub use artifact::ArtifactFile;
 use awr_store::Store;
 pub use awr_store::{BranchFilter, EventCursor, EventPage, EventQuery};
+pub use resume::{ResumeReport, ResumeRequest, resume_session};
 
 pub struct Runtime<'a> {
     store: &'a mut Store,

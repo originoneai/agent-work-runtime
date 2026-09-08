@@ -1,8 +1,8 @@
 schema_version: 1
 contract_id: awr-v1
 contract_version: 1.0.0
-ledger_revision: 78
-updated_at: '2026-09-08T08:00:56+08:00'
+ledger_revision: 79
+updated_at: '2026-09-08T08:24:26+08:00'
 project:
   name: Agent Work Runtime
   external_key: agent-work-runtime
@@ -12,7 +12,7 @@ project:
 current:
   milestone: M5
   work_item: AWR-P5-002
-  next_action: 接通来源刷新、版本检查、检查点继承和新 Session 恢复，保留中断期间变化与接续 Agent 的硬规则。
+  next_action: Resume 已通过 5 项行为检查与 23 项相关回归；接续已保存的开发 Session，验证中断后的台账变化并固化交付。
   open_loops:
   - 功能实现优先；集中测试、优化和打磨在功能开发后执行。
   - 本项目已用 Source、Status、Ready、Work 和 Search CLI 管理实际开发读取；继续接入 Session、Claim 和 Context。
@@ -1093,7 +1093,7 @@ work_items:
     evidence_level: none
   evidence: []
   blocker: null
-  next_action: 接通来源刷新、版本检查、检查点继承和新 Session 恢复，保留中断期间变化与接续 Agent 的硬规则。
+  next_action: Resume 已通过 5 项行为检查与 23 项相关回归；接续已保存的开发 Session，验证中断后的台账变化并固化交付。
 - id: AWR-P5-003
   title: 中断运行态 Reconciliation 与 Doctor
   milestone: M5

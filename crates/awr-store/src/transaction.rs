@@ -130,6 +130,8 @@ impl Store {
                 || matches!(
                     event.event_type.as_str(),
                     "session.started"
+                        | "session.resumed"
+                        | "session.resumed_from"
                         | "session.ended"
                         | "session.handoff_received"
                         | "work.claimed"

@@ -135,6 +135,7 @@ pub fn run(root: &Path, command: &ContextCommand, json_output: bool) -> Result<(
                 &ContextRequest {
                     work_item_key: work.clone(),
                     session_id: *session,
+                    detached: false,
                     agent_id: agent.clone(),
                     branch_id: *branch,
                     goal_keys: goal.clone(),

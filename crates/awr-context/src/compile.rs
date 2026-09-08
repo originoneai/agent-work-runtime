@@ -10,6 +10,9 @@ use std::{collections::BTreeSet, path::Path};
 pub struct ContextRequest {
     pub work_item_key: Option<String>,
     pub session_id: Option<Id>,
+    /// Prepare explicit work for an agent before a session exists; do not borrow an active session.
+    #[serde(default, skip_serializing_if = "is_false")]
+    pub detached: bool,
     pub agent_id: Option<String>,
     /// None selects the current project branch; named overlays are a later work item.
     pub branch_id: Option<Id>,
@@ -26,6 +29,7 @@ impl Default for ContextRequest {
         Self {
             work_item_key: None,
             session_id: None,
+            detached: false,
             agent_id: None,
             branch_id: None,
             goal_keys: vec![],
@@ -37,6 +41,9 @@ impl Default for ContextRequest {
             delta_baseline: DeltaBaseline::Auto,
         }
     }
+}
+fn is_false(value: &bool) -> bool {
+    !value
 }
 #[derive(Debug, Clone, Serialize)]
 pub struct ContextOmission {
@@ -78,6 +85,11 @@ pub(crate) fn select_work(
     project: &Project,
     request: &ContextRequest,
 ) -> Result<Selection> {
+    if request.detached && (request.session_id.is_some() || request.work_item_key.is_none()) {
+        return Err(Error::InvalidInput(
+            "detached context requires explicit work and no session ID".into(),
+        ));
+    }
     let mut work = match request.work_item_key.as_deref() {
         Some(key) => match store.work_item(project.id, key) {
             Ok(w) => Some(w),
@@ -94,7 +106,9 @@ pub(crate) fn select_work(
             basis: "explicit_work_missing",
         });
     }
-    let session = if let Some(id) = request.session_id {
+    let session = if request.detached {
+        None
+    } else if let Some(id) = request.session_id {
         let session = store.session(project.id, id)?;
         if session.branch_id != project.current_branch_id
             || request
@@ -123,7 +137,9 @@ pub(crate) fn select_work(
             Err(e) => return Err(e),
         }
     };
-    let mut basis = if work.is_some() {
+    let mut basis = if request.detached {
+        "explicit_work_detached_session"
+    } else if work.is_some() {
         "explicit_work"
     } else {
         "none"

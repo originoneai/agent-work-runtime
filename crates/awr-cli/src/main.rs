@@ -5,6 +5,7 @@ mod context;
 mod drill;
 mod query;
 mod records;
+mod resume;
 mod search;
 mod session;
 mod source;

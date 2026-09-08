@@ -41,6 +41,36 @@ pub struct SessionStarted {
     pub claim: Option<Claim>,
 }
 
+#[derive(Debug, Clone, Copy, Default, Serialize, Deserialize, PartialEq, Eq)]
+#[serde(rename_all = "snake_case")]
+pub enum ResumeClaim {
+    #[default]
+    Inherit,
+    Acquire,
+    None,
+}
+
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct SessionResumeDraft {
+    pub from_session_id: Id,
+    pub checkpoint_id: Option<Id>,
+    pub agent_id: String,
+    pub provider: String,
+    pub model: String,
+    pub claim: ResumeClaim,
+    pub claim_ttl_ms: Option<u64>,
+    pub prepared_context_hash: String,
+}
+
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct SessionResumed {
+    pub from_session: Session,
+    pub session: Session,
+    pub checkpoint: Option<Checkpoint>,
+    pub claim: Option<Claim>,
+    pub closed_claim_ids: Vec<Id>,
+}
+
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct Handoff {
     pub from_session: Session,

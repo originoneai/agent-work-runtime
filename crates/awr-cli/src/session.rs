@@ -33,6 +33,8 @@ impl From<Outcome> for SessionOutcome {
 
 #[derive(Debug, Subcommand)]
 pub enum SessionCommand {
+    /// Refresh current facts and continue work in a new agent/provider/model session.
+    Resume(crate::resume::ResumeArgs),
     /// Refresh sources and start a session at the supplied project revision.
     Start {
         #[arg(long)]
@@ -214,6 +216,9 @@ fn print(value: &Value, text: &str, json_output: bool) -> Result<()> {
 }
 
 pub fn run(root: &Path, command: &SessionCommand, json_output: bool) -> Result<()> {
+    if let SessionCommand::Resume(args) = command {
+        return crate::resume::run(root, args, json_output);
+    }
     let refresh = matches!(
         command,
         SessionCommand::Start { .. } | SessionCommand::Checkpoint { .. }
@@ -221,6 +226,7 @@ pub fn run(root: &Path, command: &SessionCommand, json_output: bool) -> Result<(
     let mut db = RuntimeProject::open(root, refresh)?;
     let project = db.project.id;
     match command {
+        SessionCommand::Resume(_) => unreachable!(),
         SessionCommand::Start {
             work,
             agent,
@@ -301,6 +307,7 @@ pub fn run(root: &Path, command: &SessionCommand, json_output: bool) -> Result<(
             let checkpoint = db.store.latest_checkpoint(project, *id)?;
             let inherited = db.store.incoming_handoff(project, *id)?;
             let claims = db.store.session_claims(project, *id)?;
+            let successor = db.store.resumed_successor(project, *id)?;
             let saves = db.store.checkpoint_attempts(project, *id, 20)?;
             let checkpoint_save = checkpoint
                 .as_ref()
@@ -316,6 +323,7 @@ pub fn run(root: &Path, command: &SessionCommand, json_output: bool) -> Result<(
             value["checkpoint"] = json!(checkpoint);
             value["inherited_checkpoint"] = json!(inherited);
             value["claims"] = json!(claims);
+            value["resumed_successor"] = json!(successor);
             value["checkpoint_saves"] = json!(saves);
             value["checkpoint_save"] = json!(checkpoint_save);
             value["inherited_checkpoint_save"] = json!(inherited_save);

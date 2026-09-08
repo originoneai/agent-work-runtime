@@ -8,6 +8,7 @@ mod evidence;
 mod handoff;
 mod projection;
 mod query;
+mod resume;
 mod search;
 mod session;
 mod source_changes;

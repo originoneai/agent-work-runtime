@@ -9,7 +9,7 @@ use crate::{
 use awr_core::*;
 use rusqlite::{Connection, OptionalExtension, Row, params};
 
-const SESSION_COLUMNS: &str = "id,project_id,work_item_id,branch_id,agent_id,provider,model,status,started_at,ended_at,start_project_revision,end_project_revision,last_checkpoint_id,revision";
+pub(crate) const SESSION_COLUMNS: &str = "id,project_id,work_item_id,branch_id,agent_id,provider,model,status,started_at,ended_at,start_project_revision,end_project_revision,last_checkpoint_id,revision";
 const CLAIM_COLUMNS: &str = "id,project_id,work_item_id,session_id,agent_id,branch_id,status,acquired_at,expires_at,released_at,revision";
 
 pub(crate) fn session_row(row: &Row<'_>) -> rusqlite::Result<Session> {
@@ -99,7 +99,7 @@ pub(crate) fn expires_at(at: i64, ttl: Option<u64>) -> Result<Option<i64>> {
     .transpose()
 }
 
-fn acquire(
+pub(crate) fn acquire(
     conn: &Connection,
     session: &Session,
     ttl: Option<u64>,

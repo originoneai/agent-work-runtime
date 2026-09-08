@@ -203,8 +203,13 @@ pub fn recent_delta(
         (_, DeltaBaseline::Revision { revision }) => *revision,
         _ => {
             if let Some(session) = &session {
-                origin = "session_start";
-                session.start_project_revision
+                let revision = store.session_recovery_revision(project_id, session.id)?;
+                origin = if revision < session.start_project_revision {
+                    "resumed_session_start"
+                } else {
+                    "session_start"
+                };
+                revision
             } else {
                 origin = "project_start";
                 0

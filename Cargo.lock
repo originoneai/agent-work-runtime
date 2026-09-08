@@ -122,6 +122,8 @@ dependencies = [
  "awr-core",
  "awr-source",
  "awr-store",
+ "serde",
+ "serde_json",
  "sha2",
 ]
 

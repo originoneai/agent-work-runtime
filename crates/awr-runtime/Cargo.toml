@@ -12,3 +12,5 @@ awr-store.workspace = true
 awr-source.workspace = true
 awr-context.workspace = true
 sha2.workspace = true
+serde.workspace = true
+serde_json.workspace = true

@@ -4,7 +4,7 @@ mod model;
 mod query;
 mod runtime;
 
-pub use error::{Error, Result};
+pub use error::{Error, ErrorReport, Result};
 pub use model::*;
 pub use query::*;
 pub use runtime::*;

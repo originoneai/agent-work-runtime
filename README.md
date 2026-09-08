@@ -31,7 +31,11 @@ L1 work-context compilation is available:
 awr context compile --work <work-key> --budget 5000
 ```
 
-Refreshed session resume remains scheduled.
+Session resume refreshes sources and compiles current context for the receiving agent:
+
+```sh
+awr session resume --from-session <session-id> --agent <agent-id> --provider <provider> --model <model> --expected-revision <revision>
+```
 
 Bootstrap targets at most 1,000 tokens; work context targets at most 5,000 tokens, with 100% recall of required hard facts. Over-budget hard context must be reported explicitly.
 
@@ -129,11 +133,19 @@ Default session/checkpoint queries expose save counts and receipt references. `o
 
 `session end --session <id> --outcome ended|interrupted|incomplete --expected-revision <revision>` closes a session and releases its claims. `work release <work-key> --session <id> --claim <claim-id> --expected-revision <revision>` releases just one claim. Omitting `--session` selects only one active matching session on the current branch; `--agent` and `--work` can narrow the selection. Multiple candidates produce an error with their IDs.
 
-Handoff requires a latest checkpoint. Without `--to-session`, it closes the sender as incomplete and releases its claim for later pickup. With `--to-session <id>`, the receiver must be active on the same work and branch; the live claim transfers atomically with both history receipts. An expired claim is never revived. `session show` exposes the inherited checkpoint separately, including next action and open loops. Refreshed resume remains scheduled; a caller-supplied checkpoint hash does not certify context completeness.
+Handoff requires a latest checkpoint. Without `--to-session`, it closes the sender as incomplete and releases its claim for later pickup. With `--to-session <id>`, the receiver must be active on the same work and branch; the live claim transfers atomically with both history receipts. An expired claim is never revived. `session show` exposes the inherited checkpoint separately, including next action and open loops. A caller-supplied checkpoint hash does not certify context completeness.
+
+Resume creates a new session with the requested agent/provider/model. Use `--from-session <id>` for an explicit predecessor, or `--work <key>` to select its active session or most recent recoverable closed session on the current branch. Without either selector, it selects an active or interrupted/incomplete session for nonterminal work; competing active sessions require an explicit predecessor. A predecessor can have one resume successor, exposed by `session show`; continue that successor after a retry instead of creating parallel descendants.
+
+The command refreshes sources and checks `--expected-revision` before compiling target-agent context. It retains checkpoint next action/open loops, current hard rules and source changes after the checkpoint. The checkpoint is inherited by reference, retaining its original owner and saved delta. If no successful checkpoint exists, recovery uses current sources and changes since session start and explicitly reports that unrecorded memory is unavailable. That recovery revision is retained separately from the successor's actual start, so ordinary context reads, retries and further resumes keep the earlier source-change window. Incomplete saves are never recovery points. Provider/model fields record the receiving environment; AWR does not invoke or configure that provider.
+
+By default, resume transfers only a still-live predecessor claim with its exact expiration time. `--claim` acquires a fresh claim under the normal readiness/conflict checks, optionally with `--ttl-ms`; `--no-claim` skips ownership. An expired or previously released claim is not revived automatically. Closing an active predecessor, creating its successor, inheriting the checkpoint and handling claims commit in one transaction. A claim conflict rolls back the entire transition.
+
+Use `--budget` (default 5,000), repeated `--path`, `--tag`, `--goal`, and `--source-sha` to describe the execution context. Unknown rule scope or incomplete preflight returns diagnostics without creating a successor. The final context is compiled again for the committed successor. If that compilation fails or exceeds its budget, JSON retains `resumed.session.id`, `context_phase: "resumed_session"`, and the error with `context_ready: false`; the command exits nonzero. Compile context for that existing session with corrected inputs rather than repeating resume. Source refresh can advance the project revision even when resume does not create a session.
 
 Session inspection, history, handoff, release and end work from the runtime database even when source files are unavailable; JSON reports `source_refresh_performed: false`. History returns bounded summaries and references, with `--session`, `--event-type`, `--after-revision` and `--all-branches` filters. For pagination, pass the returned JSON `next_cursor` to `--cursor`; it retains multiple events at the same revision.
 
-The storage library creates and reopens versioned AWR databases with WAL, foreign keys and migration metadata. Source work mutation and refreshed resume remain scheduled.
+The storage library creates and reopens versioned AWR databases with WAL, foreign keys and migration metadata. Source work mutation remains scheduled.
 
 Inspect evidence, decisions and artifacts by external key or internal ID:
 
