@@ -3,11 +3,13 @@
 use awr_core::{Claim, Event, Id, Revision, Session, SessionDraft, SessionOutcome, SessionStarted};
 pub use awr_core::{Error, Result};
 mod artifact;
+mod doctor;
 mod read;
 mod resume;
 pub use artifact::ArtifactFile;
 use awr_store::Store;
 pub use awr_store::{BranchFilter, EventCursor, EventPage, EventQuery};
+pub use doctor::{ProjectDoctorReport, diagnose_project};
 pub use resume::{ResumeReport, ResumeRequest, resume_session};
 
 pub struct Runtime<'a> {

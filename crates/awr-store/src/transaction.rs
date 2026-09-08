@@ -138,6 +138,9 @@ impl Store {
                         | "work.handoff"
                         | "claim.released"
                         | "claim.expired"
+                        | "session.interrupted"
+                        | "checkpoint.abandoned"
+                        | "branch.current_cleared"
                         | "artifact.recorded"
                         | "evidence.recorded"
                 )

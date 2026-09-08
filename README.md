@@ -91,7 +91,7 @@ Initialization previews the mapping before acceptance. An existing matching `.aw
 `source list` is read-only and shows the last observed state. `source scan` refreshes availability and flags pending changes; `source reindex` parses and commits those changes. `--json` provides structured reports and incomplete operations exit nonzero. Use read-only database diagnostics when needed:
 
 ```sh
-target/debug/awr --json doctor --database path/to/awr.db
+target/debug/awr --json doctor --database path/to/awr.db --database-only
 ```
 
 Read current work without opening the full ledger:
@@ -127,7 +127,7 @@ Checkpoint saving now records the session's actual event references and observed
 
 The caller still supplies the digest, next action, open loops and hash of its last-used context. Hash syntax is checked; checkpoint saving does not independently verify that context, and JSON reports `context_hash_verified: false`. Additional `--changed-entity` entries are retained as caller-reported references separately from automatically observed changes. In new saves, `checkpoint.changed_entities` contains observed identities. The older single-transaction store API remains available for compatibility; its checkpoints explicitly have no recorded delta.
 
-A save first commits `checkpoint.started`, then atomically commits the delta, checkpoint, latest-checkpoint pointer and `checkpoint.created` receipt. A successful CLI save advances the project revision twice; the checkpoint's base revision remains the pre-save snapshot. If the process stops or the final transaction fails, the prior checkpoint remains active. `session show <id>` reports incomplete attempts as `pending_or_interrupted`, without treating them as recovery points; the label also covers a save currently in flight. Use `event show <attempt-id> --full` to inspect its retained draft. An intervening project change invalidates that attempt and requires a fresh save with the current revision. Old unfinished attempts remain visible for later reconciliation; automatic repair is a later work item.
+A save first commits `checkpoint.started`, then atomically commits the delta, checkpoint, latest-checkpoint pointer and `checkpoint.created` receipt. A successful CLI save advances the project revision twice; the checkpoint's base revision remains the pre-save snapshot. If the process stops or the final transaction fails, the prior checkpoint remains active. `session show <id>` reports incomplete attempts as `pending_or_interrupted`, without treating them as recovery points; the label also covers a save currently in flight. Use `event show <attempt-id> --full` to inspect its retained draft. An intervening project change invalidates that attempt and requires a fresh save with the current revision. After confirming the writer has stopped, an explicit Doctor repair can mark an unfinished attempt `abandoned`, retaining its draft and excluding it from the incomplete count. It cannot be completed afterward and never becomes a recovery checkpoint.
 
 Default session/checkpoint queries expose save counts and receipt references. `object show checkpoint <id> --full` explicitly retrieves the immutable `session_delta`, subject to the same read cap as the checkpoint body. Event history can page older attempts using `--session <id> --event-type checkpoint.started`. Full history is persisted for recovery and inspection without automatically putting it into L0/L1 context.
 
@@ -146,6 +146,23 @@ Use `--budget` (default 5,000), repeated `--path`, `--tag`, `--goal`, and `--sou
 Session inspection, history, handoff, release and end work from the runtime database even when source files are unavailable; JSON reports `source_refresh_performed: false`. History returns bounded summaries and references, with `--session`, `--event-type`, `--after-revision` and `--all-branches` filters. For pagination, pass the returned JSON `next_cursor` to `--cursor`; it retains multiple events at the same revision.
 
 The storage library creates and reopens versioned AWR databases with WAL, foreign keys and migration metadata. Source work mutation remains scheduled.
+
+Diagnose interruptions and retained state:
+
+```sh
+awr --json doctor
+awr doctor --database-only
+awr doctor repair expire-claim <claim-id> --expected-revision <revision> --reason "The lease has elapsed"
+awr doctor repair interrupt-session <session-id> --expected-revision <revision> --reason "The writer stopped; preserve its checkpoint"
+awr doctor repair abandon-checkpoint <attempt-event-id> --expected-revision <revision> --reason "The interrupted save will not be retried"
+awr doctor repair clear-invalid-branch <branch-id> --expected-revision <revision> --reason "The selected branch is no longer valid"
+```
+
+Default Doctor is read only. It combines SQLite/schema checks with expired claims, inconsistent/orphan sessions, incomplete checkpoints, invalid branches, retained mutation state, source access/configuration/fingerprints, and registered/managed artifact checks. Source reads compare current files against the cache without reindexing or marking retained freshness; directory additions/removals are visible. Registered local artifact files are checked against their size and SHA256. Content is never emitted; source reads are capped at 16 MiB each, and artifact hashing defaults to 16 MiB per file (`--max-bytes`, up to 1 GiB). Files outside current authorized roots are not read. Unregistered managed files may belong to an import in flight, so they are reported and preserved.
+
+`ok` is false, with a nonzero exit, when warning/error findings remain; `database_ok` separately reports SQLite/schema health. Normal active sessions are informational because AWR has no process-liveness proof. A missing manifest or unavailable source does not hide database/runtime findings. `--database-only` retains the original database inspection scope and does not certify project/file health. Concurrent project revision changes are explicit diagnostics.
+
+Each repair targets one object and requires a current project revision and a nonempty reason. Expiration applies only to an elapsed active lease; interruption explicitly closes one active session and releases its claims; abandonment closes only an unfinished save; invalid-branch repair clears only the invalid current pointer and preserves the branch records. The condition is rechecked inside the transaction, with an immutable receipt and rollback on failure. Repairs open an existing current-schema database without creating, migrating or changing its journal mode. They do not refresh or rewrite project sources, delete artifact files, infer that a live writer stopped, complete pending mutations or repair every reported problem. A successful repair reports only that selected change; rerun Doctor to inspect remaining findings.
 
 Inspect evidence, decisions and artifacts by external key or internal ID:
 

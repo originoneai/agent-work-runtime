@@ -2,6 +2,7 @@ use awr_core::{Error, Result};
 use clap::{CommandFactory, Parser, Subcommand};
 use std::path::PathBuf;
 mod context;
+mod doctor;
 mod drill;
 mod query;
 mod records;
@@ -88,11 +89,8 @@ enum Command {
     },
     /// Search bounded summaries, optionally filtering by entity type, status or work item.
     Search(search::SearchArgs),
-    /// Inspect an existing AWR database without creating or repairing it.
-    Doctor {
-        #[arg(long)]
-        database: Option<PathBuf>,
-    },
+    /// Diagnose project/database state; apply only explicitly selected runtime repairs.
+    Doctor(doctor::DoctorArgs),
     #[command(external_subcommand)]
     Unsupported(Vec<String>),
 }
@@ -114,30 +112,7 @@ fn run(cli: &Cli) -> Result<()> {
         Some(Command::Object { command }) => drill::object(&cli.project, command, cli.json),
         Some(Command::Event { command }) => drill::event(&cli.project, command, cli.json),
         Some(Command::Search(args)) => search::run(&cli.project, args, cli.json),
-        Some(Command::Doctor { database }) => {
-            let path = database
-                .clone()
-                .unwrap_or_else(|| cli.project.join(".awr/state.db"));
-            let report = awr_store::Store::inspect(&path)?;
-            if cli.json {
-                println!("{}", serde_json::to_string_pretty(&report)?);
-            } else {
-                println!(
-                    "SQLite: {}\nSchema: {}\nJournal: {}\nIntegrity: {}\nForeign-key violations: {}",
-                    report.sqlite_version,
-                    report.schema_version,
-                    report.journal_mode,
-                    report.integrity.join(", "),
-                    report.foreign_key_violations
-                );
-            }
-            if !report.ok {
-                return Err(Error::Storage(
-                    "doctor reported integrity or schema problems".into(),
-                ));
-            }
-            Ok(())
-        }
+        Some(Command::Doctor(args)) => doctor::run(&cli.project, args, cli.json),
         None => {
             Cli::command().print_help()?;
             println!();

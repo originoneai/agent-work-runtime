@@ -106,5 +106,19 @@ fn search_cli_combines_text_and_structured_filters() {
     let no_match = f.ok(&["search", "Build", "--status", "completed"]);
     assert!(no_match["hits"].as_array().unwrap().is_empty());
     assert!(!f.run(&["search", "Build", "--limit", "0"]).status.success());
-    assert_eq!(f.ok(&["doctor"])["schema_version"], 3);
+    let diagnosed = f.run(&["doctor"]);
+    assert!(!diagnosed.status.success());
+    let diagnosis: Value = serde_json::from_slice(&diagnosed.stdout).unwrap();
+    assert_eq!(diagnosis["schema_version"], 3);
+    assert_eq!(diagnosis["database_ok"], true);
+    assert!(
+        diagnosis["findings"]
+            .as_array()
+            .unwrap()
+            .iter()
+            .any(|finding| {
+                finding["code"] == "missing_dependency"
+                    && finding["message"].as_str().unwrap().contains("MISSING")
+            })
+    );
 }

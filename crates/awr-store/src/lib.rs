@@ -8,6 +8,7 @@ mod evidence;
 mod handoff;
 mod projection;
 mod query;
+mod reconcile;
 mod resume;
 mod search;
 mod session;
@@ -23,6 +24,7 @@ pub use delta::{
     DeltaEvents, EntityDelta, EventReference, HistoryCount, ImportantEvent, SourceDelta,
 };
 pub use events::{BranchFilter, EventCursor, EventPage, EventQuery};
+pub use reconcile::{ReconcileAction, ReconcileReceipt, RuntimeFinding, RuntimeInspection};
 use rusqlite::{Connection, OpenFlags, TransactionBehavior};
 pub use search::{SearchHit, SearchQuery, SearchReport};
 use serde::Serialize;
@@ -82,6 +84,30 @@ impl Store {
         if owner != APPLICATION_ID || version != SCHEMA_VERSION {
             return Err(Error::Storage(
                 "read queries require a current AWR database; use doctor to inspect it".into(),
+            ));
+        }
+        let store = Self { conn };
+        store.verify_catalog()?;
+        Ok(store)
+    }
+
+    /// Open an existing current-schema database for domain writes without creating or migrating it.
+    pub fn open_existing(path: &Path) -> Result<Self> {
+        if !path.is_file() {
+            return Err(Error::NotFound(format!("AWR database: {}", path.display())));
+        }
+        let conn = Connection::open_with_flags(path, OpenFlags::SQLITE_OPEN_READ_WRITE)
+            .map_err(db_error)?;
+        Self::configure(&conn)?;
+        let owner: i64 = conn
+            .pragma_query_value(None, "application_id", |r| r.get(0))
+            .map_err(db_error)?;
+        let version: i64 = conn
+            .pragma_query_value(None, "user_version", |r| r.get(0))
+            .map_err(db_error)?;
+        if owner != APPLICATION_ID || version != SCHEMA_VERSION {
+            return Err(Error::Storage(
+                "writes require an existing current AWR database; inspect it before repair".into(),
             ));
         }
         let store = Self { conn };

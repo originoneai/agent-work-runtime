@@ -229,6 +229,8 @@ impl Store {
             let started=tx.query_row("SELECT id,project_id,work_item_id,session_id,branch_id,event_type,importance,summary,payload_json,project_revision,created_at
                 FROM events WHERE project_id=?1 AND id=?2 AND event_type='checkpoint.started'",params![project.to_string(),attempt.to_string()],event_row).optional().map_err(db_error)?
                 .ok_or_else(||Error::NotFound(format!("checkpoint save attempt {attempt}")))?;
+            let abandoned:bool=tx.query_row("SELECT EXISTS(SELECT 1 FROM events WHERE project_id=?1 AND event_type='checkpoint.abandoned' AND json_extract(payload_json,'$.attempt_id')=?2)",params![project.to_string(),attempt.to_string()],|r|r.get(0)).map_err(db_error)?;
+            if abandoned {return Err(Error::InvalidTransition("checkpoint attempt was abandoned".into()));}
             if started.project_revision!=expected {return Err(Error::RevisionConflict{expected:started.project_revision,actual:expected});}
             let completed:bool=tx.query_row("SELECT EXISTS(SELECT 1 FROM events WHERE project_id=?1 AND event_type='checkpoint.created' AND json_extract(payload_json,'$.attempt_id')=?2)",params![project.to_string(),attempt.to_string()],|r|r.get(0)).map_err(db_error)?;
             if completed {return Err(Error::InvalidTransition("checkpoint attempt already completed".into()));}
@@ -277,14 +279,16 @@ impl Store {
             ));
         }
         let mut attempts=self.conn.prepare("SELECT e.id,e.project_revision,e.created_at,
-            (SELECT json_extract(c.payload_json,'$.checkpoint_id') FROM events c WHERE c.project_id=e.project_id AND c.event_type='checkpoint.created' AND json_extract(c.payload_json,'$.attempt_id')=e.id LIMIT 1)
+            (SELECT json_extract(c.payload_json,'$.checkpoint_id') FROM events c WHERE c.project_id=e.project_id AND c.event_type='checkpoint.created' AND json_extract(c.payload_json,'$.attempt_id')=e.id LIMIT 1),
+            EXISTS(SELECT 1 FROM events a WHERE a.project_id=e.project_id AND a.event_type='checkpoint.abandoned' AND json_extract(a.payload_json,'$.attempt_id')=e.id)
             FROM events e WHERE e.project_id=?1 AND e.session_id=?2 AND e.event_type='checkpoint.started' ORDER BY e.project_revision DESC,e.id DESC LIMIT ?3").map_err(db_error)?
             .query_map(params![project.to_string(),session.to_string(),(limit+1) as i64],|r| {
-                let revision=revision_at(r,1)?;let checkpoint_id=optional_id(r,3)?;
-                Ok(CheckpointAttempt {id:id_at(r,0)?,base_project_revision:revision.saturating_sub(1),started_project_revision:revision,created_at:r.get(2)?,checkpoint_id,status:if checkpoint_id.is_some(){"completed"}else{"pending_or_interrupted"}})
+                let revision=revision_at(r,1)?;let checkpoint_id=optional_id(r,3)?;let abandoned:bool=r.get(4)?;
+                Ok(CheckpointAttempt {id:id_at(r,0)?,base_project_revision:revision.saturating_sub(1),started_project_revision:revision,created_at:r.get(2)?,checkpoint_id,status:if checkpoint_id.is_some(){"completed"}else if abandoned{"abandoned"}else{"pending_or_interrupted"}})
             }).map_err(db_error)?.collect::<rusqlite::Result<Vec<_>>>().map_err(db_error)?;
         let incomplete_count=self.conn.query_row("SELECT count(*) FROM events e WHERE e.project_id=?1 AND e.session_id=?2 AND e.event_type='checkpoint.started'
-            AND NOT EXISTS(SELECT 1 FROM events c WHERE c.project_id=e.project_id AND c.event_type='checkpoint.created' AND json_extract(c.payload_json,'$.attempt_id')=e.id)",params![project.to_string(),session.to_string()],|r|r.get::<_,i64>(0)).map_err(db_error)? as usize;
+            AND NOT EXISTS(SELECT 1 FROM events c WHERE c.project_id=e.project_id AND c.event_type='checkpoint.created' AND json_extract(c.payload_json,'$.attempt_id')=e.id)
+            AND NOT EXISTS(SELECT 1 FROM events a WHERE a.project_id=e.project_id AND a.event_type='checkpoint.abandoned' AND json_extract(a.payload_json,'$.attempt_id')=e.id)",params![project.to_string(),session.to_string()],|r|r.get::<_,i64>(0)).map_err(db_error)? as usize;
         let may_have_more = attempts.len() > limit;
         attempts.truncate(limit);
         Ok(CheckpointAttempts {

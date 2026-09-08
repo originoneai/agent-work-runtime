@@ -1,0 +1,82 @@
+{
+  "work_item": "AWR-P5-003",
+  "checked_at": "2026-09-08T08:48:18+08:00",
+  "checks": [
+    {
+      "name": "store_reconciliation",
+      "passed": true,
+      "result": "awr-store reconcile 7/7 passed: read-only snapshot and metadata diagnostics; four single-object CAS repairs; scoped immutable receipts readable through session/branch history; stale revision and invalid repair rejection; completion-event insertion failure rollback; abandoned attempts stay inactive and cannot finish; historical released/expired claims and closed branch parents are not mistaken for current execution errors; open_existing neither creates nor migrates; reserved receipt types cannot be forged by raw append."
+    },
+    {
+      "name": "doctor_cli_and_related_contracts",
+      "passed": true,
+      "result": "awr-cli doctor_cli 4/4, records_cli 3/3, resume_cli 6/6, session_cli 5/5, source_cli 2/2 and work_cli 3/3 passed (23 total). Covers live source fingerprint/config/inventory and artifact diagnostics without cache/source mutation, unavailable-manifest cleanup, single-object repair response boundaries, missing database/invalid arguments, and retained history/resume behavior. Existing records/work expectations now correctly require nonzero Doctor results for a corrupted artifact and missing dependency."
+    },
+    {
+      "name": "related_store_regression",
+      "passed": true,
+      "result": "awr-store checkpoint_save 2/2, checkpoints 2/2, sessions 5/5 and events 4/4 passed; with reconcile 7/7, the selected Store run passed 20/20."
+    },
+    {
+      "name": "dangling_reference_diagnosis",
+      "passed": true,
+      "result": "python3 ledger/evidence/AWR-P5-003/check_dangling_fixture.py passed. In a disposable fixture only, a work row was removed with foreign keys disabled. Doctor retained database_ok=false and named the orphan session; no repair candidate or write was allowed, and project revision, active session and source bytes were unchanged. Current readable-schema diagnostics continue even when FK checks fail."
+    },
+    {
+      "name": "workspace_build",
+      "passed": true,
+      "result": "cargo build --locked --workspace and --workspace --examples, cargo fmt --all --check and git diff --check passed. No schema migration or dependency change."
+    },
+    {
+      "name": "actual_project_doctor_and_repair",
+      "passed": true,
+      "result": "The real P5-003 development session was inspected at revision 209. Doctor detected a real ledger progress edit without changing the cached next action, source bytes or project revision. After explicit reindex to 211, all 7 sources and 2 artifacts passed. A complete 4976-token L1 context supplied the saved checkpoint hash. Explicit interrupt-session repair closed that selected development session and its claim at revision 214, preserved its checkpoint and source bytes, and produced a session-scoped receipt. A fresh Doctor result had no findings."
+    },
+    {
+      "name": "bounded_code_review",
+      "passed": true,
+      "result": "A separate read-only reviewer checked Runtime/CLI read-only behavior, source identity/config parity, artifact path/hash checks, selected-repair response scope and FK-failure handling. The primary agent reviewed Store changes and required receipt scope plus historical-claim/parent-branch corrections; those corrections have targeted regressions. This is feature-local code review, not independent E4 business acceptance."
+    }
+  ],
+  "observed": {
+    "session_id": "01M1Z6X72WPGXD9YA44A5GB866",
+    "diagnosed_revision": 209,
+    "diagnosis_read_only": true,
+    "source_change_detected_without_cache_mutation": true,
+    "source_bytes_unchanged_by_diagnosis": true,
+    "ledger_sha256": "f04ffd10db1ec67c671f955c3f1cd9452f7c9f93fbd396e5b23cc5ad9a700593",
+    "refreshed_revision": 211,
+    "sources_checked": 7,
+    "artifacts_checked": 2,
+    "active_sessions_informational": true,
+    "schema_version": 3,
+    "context_complete": true,
+    "context_tokens": 4976,
+    "context_hash": "b667757f2573aab6f5a1dc1a65d4fd64bda5296f86872c6894b23c082e1b49d8",
+    "checkpoint_id": "01M1Z7QV7PF478ZK8ZF3SAGJKW",
+    "repair_event_id": "01M1Z7QV94KBBED4ZXZCQ233T7",
+    "repair_revision": 214,
+    "final_project_revision": 214,
+    "final_findings": [],
+    "source_bytes_unchanged_by_repair": true,
+    "checkpoint_preserved": true,
+    "claims_closed": true
+  },
+  "artifacts": [
+    "crates/awr-store/src/reconcile.rs",
+    "crates/awr-store/src/checkpoint_save.rs",
+    "crates/awr-store/src/lib.rs",
+    "crates/awr-store/src/transaction.rs",
+    "crates/awr-store/tests/reconcile.rs",
+    "crates/awr-runtime/src/doctor.rs",
+    "crates/awr-cli/src/doctor.rs",
+    "crates/awr-cli/tests/doctor_cli.rs",
+    "crates/awr-cli/tests/records_cli.rs",
+    "crates/awr-cli/tests/work_cli.rs",
+    "ledger/evidence/AWR-P5-003/check_dangling_fixture.py",
+    "README.md"
+  ],
+  "limitations": [
+    "Feature-local validation and actual project self-use, not E4 scenario completion, a system benchmark or release. Process liveness is not inferred from active status or age. Pending saves/imports may still be in flight; no automatic interruption, artifact deletion, source rewrite, mutation application, database reconstruction or branch merge is attempted. Repair success applies only to the selected object; remaining findings require a fresh Doctor run. SQLite corruption/schema/FK failures block repair; readable current-schema FK failures still permit named read-only diagnostics. Source reads and artifact hashing are bounded and never emit content."
+  ]
+}

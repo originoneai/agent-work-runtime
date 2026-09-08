@@ -171,7 +171,18 @@ fn explicit_report_reads_are_bounded_hash_checked_and_do_not_promote_work() {
     );
     assert_eq!(f.revision(), revision);
     assert!(f.ok(&["artifact", "show", aid]).get("content").is_none());
-    assert_eq!(f.ok(&["doctor"])["ok"], true);
+    let diagnosed = f.run(&["doctor"], true);
+    assert!(!diagnosed.status.success());
+    let diagnosis: Value = serde_json::from_slice(&diagnosed.stdout).unwrap();
+    assert_eq!(diagnosis["database_ok"], true);
+    assert!(
+        diagnosis["findings"]
+            .as_array()
+            .unwrap()
+            .iter()
+            .any(|f| f["code"] == "artifact_digest_mismatch")
+    );
+    assert_eq!(f.revision(), revision);
 }
 
 #[test]
