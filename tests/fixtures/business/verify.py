@@ -26,7 +26,7 @@ def render(contract, specs):
         lines.append('| '+ ' | '.join([key,spec['business_title'],str(len(result['work_keys'])),', '.join(result['roles']),', '.join(spec['dimensions'])])+' |')
     lines += ['', '所有场景都要求自然发起、实际执行与产物、两轮业务追问、独立复核、最终交付、可追溯回执、独立 fixture，以及独立提交和远端 SHA。', '',
               '恢复、并行与跨客户端场景还要求真实前序过程；准备工具不会创建会话、claim、checkpoint、事件、通过记录或交付产物。', '',
-              '大型真实项目与性能指标另由 AWR-QA-005 / AWR-P9 系列工作验证；本矩阵不替代该范围。', '']
+              '大型真实项目由 AWR-P9-001 验证，恢复、Token 与延迟指标由其余 AWR-P9 工作验证；本矩阵不替代该范围。', '']
     return matrix,'\n'.join(lines)
 
 
