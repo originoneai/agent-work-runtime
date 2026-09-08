@@ -1,0 +1,271 @@
+{
+  "work_item": "AWR-SEC-002",
+  "stage": "source_bounds",
+  "item_completed": false,
+  "checked_at": "2026-09-08T15:52:47+08:00",
+  "baseline_source_commit": "64a5d380e2aac73eba63e961432d5da14300a81b",
+  "baseline": {
+    "test_functions": 6,
+    "failed": 6,
+    "local_log": ".local/sec002-source-bounds-before.log",
+    "log_sha256": "2e8a418b6b97a25d727466ba7efae66989fbfe1868370a9af54037b4b1e35ce4",
+    "observation": "Oversized file/Git sources and refreshes were accepted, direct parsers and directory scans bypassed adapter limits, and a zero-byte reader limit was accepted."
+  },
+  "source_bounds": {
+    "work_item": "AWR-SEC-002",
+    "contract_id": "awr-security-payloads",
+    "contract_version": "1.0.0",
+    "contract_sha256": "59d982a4110ea4739ac03bd3f3fd723a3ada4aa165ed0d0f8177f798597ce2e3",
+    "checked_at": "2026-09-08T15:49:49+08:00",
+    "platform": "macOS-26.5.2-arm64-arm-64bit-Mach-O",
+    "stage": "source_bounds",
+    "stage_target": 9,
+    "contract_target": 32,
+    "stage_passed": true,
+    "item_completed": false,
+    "e4_completed": 0,
+    "runs": [
+      {
+        "command": [
+          "cargo",
+          "test",
+          "-p",
+          "awr-source",
+          "--test",
+          "security_source_payloads",
+          "--locked",
+          "--",
+          "--nocapture"
+        ],
+        "exit_code": 0,
+        "passed": true,
+        "test_functions_passed": 6,
+        "cases_emitted": [
+          "direct_parser_limit",
+          "directory_source_limit",
+          "git_source_limit",
+          "markdown_limit",
+          "reader_limit_validation",
+          "source_refresh_limit",
+          "yaml_limit"
+        ],
+        "log": ".local/sec002-source-bounds-final-1.log",
+        "log_sha256": "6275c5366e5411b5dd04a7e1f570c7db12be2eca4600c0f31a39963a7183f863",
+        "log_retention": "local_only"
+      },
+      {
+        "command": [
+          "cargo",
+          "test",
+          "-p",
+          "awr-cli",
+          "--test",
+          "security_source_bounds",
+          "--locked",
+          "--",
+          "--nocapture"
+        ],
+        "exit_code": 0,
+        "passed": true,
+        "test_functions_passed": 2,
+        "cases_emitted": [
+          "source_drill_limit",
+          "source_mutation_limit"
+        ],
+        "log": ".local/sec002-source-bounds-final-2.log",
+        "log_sha256": "bd622a601ab4da1af6d83131998b7de1973d08ecee73230413bee062e4499a89",
+        "log_retention": "local_only"
+      }
+    ],
+    "verified_conditions": [
+      "direct_parser_limit",
+      "directory_source_limit",
+      "git_source_limit",
+      "markdown_limit",
+      "reader_limit_validation",
+      "source_drill_limit",
+      "source_mutation_limit",
+      "source_refresh_limit",
+      "yaml_limit"
+    ],
+    "pending_conditions": [
+      "artifact_import_limit",
+      "artifact_read_limit",
+      "artifact_secret_rejection",
+      "checkpoint_secret_rejection",
+      "context_secret_withholding",
+      "environment_rejection",
+      "event_atomic_rejection",
+      "event_field_allowlist",
+      "event_field_types",
+      "event_payload_limit",
+      "event_secret_rejection",
+      "event_summary_limit",
+      "evidence_secret_rejection",
+      "fts_secret_redaction",
+      "known_token_patterns",
+      "manifest_secret_rejection",
+      "ordinary_text_allowed",
+      "private_prompt_rejection",
+      "source_diagnostic_no_secret",
+      "source_projection_secret_guard",
+      "source_secret_rejection",
+      "unicode_secret_labels",
+      "untrusted_field_diagnostic_no_echo"
+    ],
+    "missing_stage_conditions": [],
+    "unknown_conditions": []
+  },
+  "related_checks": {
+    "checked_at": "2026-09-08T15:50:35+08:00",
+    "passed": true,
+    "runs": [
+      {
+        "command": [
+          "cargo",
+          "test",
+          "-p",
+          "awr-source",
+          "--tests",
+          "--locked"
+        ],
+        "exit_code": 0,
+        "tests_passed": 25,
+        "log": ".local/sec002-source-related-checks-1.log",
+        "log_sha256": "2233ca0bb557b0ee9d3de241f62721ac1c759638358628c8428ed1c2520972e9"
+      },
+      {
+        "command": [
+          "cargo",
+          "test",
+          "-p",
+          "awr-cli",
+          "--test",
+          "source_cli",
+          "--test",
+          "drill_cli",
+          "--test",
+          "proposal_cli",
+          "--test",
+          "doctor_cli",
+          "--locked"
+        ],
+        "exit_code": 0,
+        "tests_passed": 23,
+        "log": ".local/sec002-source-related-checks-2.log",
+        "log_sha256": "49d11e7e913d6ca80dfae2901f0d34e47c599736c9f6c0cea7286d723cd74e45"
+      },
+      {
+        "command": [
+          "cargo",
+          "test",
+          "-p",
+          "awr-mcp",
+          "--test",
+          "stdio",
+          "--locked"
+        ],
+        "exit_code": 0,
+        "tests_passed": 10,
+        "log": ".local/sec002-source-related-checks-3.log",
+        "log_sha256": "4902f6518d68fe26b45186fdd3fd181f9ebde9679e651d2e1120f1dc57ba6152"
+      },
+      {
+        "command": [
+          "cargo",
+          "check",
+          "--workspace",
+          "--all-targets",
+          "--locked"
+        ],
+        "exit_code": 0,
+        "tests_passed": 0,
+        "log": ".local/sec002-source-related-checks-4.log",
+        "log_sha256": "c4577472ead43b816fbd4b7a0021db0e67314a2a46d675f30ded87db1b7bc2d4"
+      },
+      {
+        "command": [
+          "cargo",
+          "build",
+          "-p",
+          "awr-cli",
+          "-p",
+          "awr-mcp",
+          "--locked"
+        ],
+        "exit_code": 0,
+        "tests_passed": 0,
+        "log": ".local/sec002-source-related-checks-5.log",
+        "log_sha256": "4c1cfa73c004795a2035f7b18184b11c3599ea049e0a2f8e1540863194baca59"
+      },
+      {
+        "command": [
+          "cargo",
+          "fmt",
+          "--all",
+          "--check"
+        ],
+        "exit_code": 0,
+        "tests_passed": 0,
+        "log": ".local/sec002-source-related-checks-6.log",
+        "log_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      {
+        "command": [
+          "git",
+          "diff",
+          "--check"
+        ],
+        "exit_code": 0,
+        "tests_passed": 0,
+        "log": ".local/sec002-source-related-checks-7.log",
+        "log_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      }
+    ]
+  },
+  "actual_project_use": {
+    "session_id": "01M1ZZ5JD41WCQB4NPFSQA8D8D",
+    "progress_event_id": "01M2002PC0XM6S2CBKMZFR54SV",
+    "project_revision": 512,
+    "exact_source_progress_change": true,
+    "recovery_snapshots_match": true,
+    "source_before_fingerprint": "sha256:bfe8b3cfbe3ee0325755d4171961ff8ff31380386bf1d4809c7cec36b2279e6a",
+    "source_after_fingerprint": "sha256:d0aa396beb2a61b8639fa31feeb79e1a330233bd931bf4320b2c01143d9aee5b",
+    "context_complete": true,
+    "context_tokens": 4984,
+    "context_hash": "f644edd4d4627063d99c1ed6719ffe29ac96149ec34f0ed1114795657bffe526",
+    "doctor": {
+      "ok": true,
+      "expected_findings": [
+        "active_session"
+      ]
+    }
+  },
+  "artifact_sha256": {
+    "crates/awr-source/Cargo.toml": "a8e8adaab57d3d8ff871a0ff08fc84938c409bbc31dd2d5ee72399502d0c12ee",
+    "crates/awr-source/src/limits.rs": "3e3160ddb2b8c3c8fd1f9875718dc9ea98a4e79cf2221175d584e5ca7b048dd6",
+    "crates/awr-source/src/lib.rs": "f924edd8a0a77335821f72748312c2226f4410a7c3807fbd264534e1be1f55e7",
+    "crates/awr-source/src/indexer.rs": "c7b585f21fce51ee73a987a5fb1cb1b3be8cad448d4f2bad9c9efa469ecb41cb",
+    "crates/awr-source/src/locator.rs": "1295cdf3d068d61c1c6597c8c6abaf37d3745a6d94d8af2d98eac321eaeafa70",
+    "crates/awr-source/src/markdown.rs": "c9572a9d99ed01dae0b16665cfb46c864aa71cdc91cfa5c15992a339ab978bf0",
+    "crates/awr-source/src/yaml_ledger.rs": "5551aafd9e8fe7e714e020fde41432cea185d104779b7b6a20a991172556d3f4",
+    "crates/awr-source/src/yaml_mutation.rs": "474b8cef123a3a524374418408f56c562085d59667c7d376952c289f537afee4",
+    "crates/awr-source/src/directory.rs": "b7ba5be1cbe2d480673b84e6074ad49bd766724184a22578d8524c1efb417732",
+    "crates/awr-source/src/mutation.rs": "7cf4e552d9c36d74dd32d4bce50720f101428d9c8b87e948457169deeefb440a",
+    "crates/awr-runtime/src/doctor.rs": "da60bb8a5781083da4ff6c60ac4cd9a1a98dfc0c1ec969557f4e918f29bfb947",
+    "crates/awr-cli/src/drill.rs": "e5bafdfaab8b2ee9e40233dd3d594b3af1213a488eb60b026feb6c01473ff509",
+    "crates/awr-cli/Cargo.toml": "6edd57967f600736523d1ab4e5051c4f47c560af96d4ef71075c916478555efd",
+    "tests/security/payloads/contract.json": "59d982a4110ea4739ac03bd3f3fd723a3ada4aa165ed0d0f8177f798597ce2e3",
+    "tests/security/payloads/sources.rs": "2f028b52385398e0862b8ffd628f2997159e8c68379a6b9c7cdef950d5ce9a9d",
+    "tests/security/payloads/source_cli.rs": "2a63091a303997090bff1efeb82019e7a05d966ffd79ea44ac58bd09191dcf8e",
+    "tests/security/payloads/verify_source_bounds.py": "512ef64342e077497637d945cb164bac598c255e60ab5ac3e2e2459bdde12d95",
+    "tests/security/payloads/README.md": "d6df3d91af4e6a59efd612c7464466cc11a658ad37a39c1205296fc3eff74584"
+  },
+  "e4_completed": 0,
+  "limitations": [
+    "Only the source-size stage is verified. Remaining Event Schema, artifact and secret-handling conditions are pending; SEC-002 is not completed.",
+    "The 25 source test functions include the six new source-bound functions and six prior path functions; do not add overlapping totals as independent coverage.",
+    "A first new CLI test used an unsupported absolute-path source selector. It was corrected to the documented domain selector; the final real-CLI run passed both tests.",
+    "Execution evidence is local macOS, CLI/MCP stdio and current-project development use, not multi-platform, native-client E4 or released-product acceptance."
+  ]
+}

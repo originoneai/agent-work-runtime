@@ -100,6 +100,7 @@ impl MarkdownDirectoryAdapter {
         spec: &SourceSpec,
         cap: u64,
     ) -> Result<DirectoryInventory> {
+        let cap = cap.min(crate::MARKDOWN_READ_CAP);
         let mut inventory = DirectoryInventory::default();
         for locator in self.discover(root, manifest, spec)? {
             inventory.files.insert(

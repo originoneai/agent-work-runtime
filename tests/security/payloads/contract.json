@@ -1,0 +1,176 @@
+{
+  "schema_version": 1,
+  "contract_id": "awr-security-payloads",
+  "version": "1.0.0",
+  "work_item": "AWR-SEC-002",
+  "target_cases": 32,
+  "evidence_level": "local_component_and_cli",
+  "business_scenarios": false,
+  "limits": {
+    "markdown_source_bytes": 2097152,
+    "yaml_source_bytes": 4194304
+  },
+  "completion": "Only executed, passing conditions count. Source-bound checks are an intermediate stage; this item also requires Event Schema, artifact and secret boundaries. Task status and remote receipt remain in ledger/work-ledger.yaml.",
+  "cases": [
+    {
+      "id": "markdown_limit",
+      "area": "bounds",
+      "expected": "allowed_within_limit_and_rejected_above_limit_without_replacing_authority"
+    },
+    {
+      "id": "yaml_limit",
+      "area": "bounds",
+      "expected": "allowed_within_limit_and_rejected_above_limit_without_replacing_authority"
+    },
+    {
+      "id": "direct_parser_limit",
+      "area": "bounds",
+      "expected": "allowed_within_limit_and_rejected_above_limit_without_replacing_authority"
+    },
+    {
+      "id": "source_refresh_limit",
+      "area": "bounds",
+      "expected": "allowed_within_limit_and_rejected_above_limit_without_replacing_authority"
+    },
+    {
+      "id": "git_source_limit",
+      "area": "bounds",
+      "expected": "allowed_within_limit_and_rejected_above_limit_without_replacing_authority"
+    },
+    {
+      "id": "directory_source_limit",
+      "area": "bounds",
+      "expected": "allowed_within_limit_and_rejected_above_limit_without_replacing_authority"
+    },
+    {
+      "id": "source_mutation_limit",
+      "area": "bounds",
+      "expected": "allowed_within_limit_and_rejected_above_limit_without_replacing_authority"
+    },
+    {
+      "id": "source_drill_limit",
+      "area": "bounds",
+      "expected": "allowed_within_limit_and_rejected_above_limit_without_replacing_authority"
+    },
+    {
+      "id": "reader_limit_validation",
+      "area": "bounds",
+      "expected": "allowed_within_limit_and_rejected_above_limit_without_replacing_authority"
+    },
+    {
+      "id": "artifact_import_limit",
+      "area": "bounds",
+      "expected": "allowed_within_limit_and_rejected_above_limit_without_replacing_authority"
+    },
+    {
+      "id": "artifact_read_limit",
+      "area": "bounds",
+      "expected": "allowed_within_limit_and_rejected_above_limit_without_replacing_authority"
+    },
+    {
+      "id": "event_payload_limit",
+      "area": "bounds",
+      "expected": "allowed_within_limit_and_rejected_above_limit_without_replacing_authority"
+    },
+    {
+      "id": "event_summary_limit",
+      "area": "bounds",
+      "expected": "allowed_within_limit_and_rejected_above_limit_without_replacing_authority"
+    },
+    {
+      "id": "event_field_allowlist",
+      "area": "schema",
+      "expected": "typed_fields_only_and_rejection_without_runtime_commit"
+    },
+    {
+      "id": "event_field_types",
+      "area": "schema",
+      "expected": "typed_fields_only_and_rejection_without_runtime_commit"
+    },
+    {
+      "id": "event_atomic_rejection",
+      "area": "schema",
+      "expected": "typed_fields_only_and_rejection_without_runtime_commit"
+    },
+    {
+      "id": "source_secret_rejection",
+      "area": "confidentiality",
+      "expected": "reject_or_withhold_sensitive_fixture_values_and_keep_ordinary_business_text_usable"
+    },
+    {
+      "id": "source_diagnostic_no_secret",
+      "area": "confidentiality",
+      "expected": "reject_or_withhold_sensitive_fixture_values_and_keep_ordinary_business_text_usable"
+    },
+    {
+      "id": "manifest_secret_rejection",
+      "area": "confidentiality",
+      "expected": "reject_or_withhold_sensitive_fixture_values_and_keep_ordinary_business_text_usable"
+    },
+    {
+      "id": "event_secret_rejection",
+      "area": "confidentiality",
+      "expected": "reject_or_withhold_sensitive_fixture_values_and_keep_ordinary_business_text_usable"
+    },
+    {
+      "id": "checkpoint_secret_rejection",
+      "area": "confidentiality",
+      "expected": "reject_or_withhold_sensitive_fixture_values_and_keep_ordinary_business_text_usable"
+    },
+    {
+      "id": "evidence_secret_rejection",
+      "area": "confidentiality",
+      "expected": "reject_or_withhold_sensitive_fixture_values_and_keep_ordinary_business_text_usable"
+    },
+    {
+      "id": "artifact_secret_rejection",
+      "area": "confidentiality",
+      "expected": "reject_or_withhold_sensitive_fixture_values_and_keep_ordinary_business_text_usable"
+    },
+    {
+      "id": "environment_rejection",
+      "area": "confidentiality",
+      "expected": "reject_or_withhold_sensitive_fixture_values_and_keep_ordinary_business_text_usable"
+    },
+    {
+      "id": "private_prompt_rejection",
+      "area": "confidentiality",
+      "expected": "reject_or_withhold_sensitive_fixture_values_and_keep_ordinary_business_text_usable"
+    },
+    {
+      "id": "fts_secret_redaction",
+      "area": "confidentiality",
+      "expected": "reject_or_withhold_sensitive_fixture_values_and_keep_ordinary_business_text_usable"
+    },
+    {
+      "id": "context_secret_withholding",
+      "area": "confidentiality",
+      "expected": "reject_or_withhold_sensitive_fixture_values_and_keep_ordinary_business_text_usable"
+    },
+    {
+      "id": "ordinary_text_allowed",
+      "area": "confidentiality",
+      "expected": "reject_or_withhold_sensitive_fixture_values_and_keep_ordinary_business_text_usable"
+    },
+    {
+      "id": "unicode_secret_labels",
+      "area": "confidentiality",
+      "expected": "reject_or_withhold_sensitive_fixture_values_and_keep_ordinary_business_text_usable"
+    },
+    {
+      "id": "known_token_patterns",
+      "area": "confidentiality",
+      "expected": "reject_or_withhold_sensitive_fixture_values_and_keep_ordinary_business_text_usable"
+    },
+    {
+      "id": "untrusted_field_diagnostic_no_echo",
+      "area": "confidentiality",
+      "expected": "reject_or_withhold_sensitive_fixture_values_and_keep_ordinary_business_text_usable"
+    },
+    {
+      "id": "source_projection_secret_guard",
+      "area": "confidentiality",
+      "expected": "reject_or_withhold_sensitive_fixture_values_and_keep_ordinary_business_text_usable"
+    }
+  ]
+}

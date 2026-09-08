@@ -197,6 +197,7 @@ fn target_range(text: &str, pointer: &str) -> Result<Range<usize>> {
     found.ok_or_else(|| Error::SourceConflict("YAML mutation target pointer is missing".into()))
 }
 fn document(snapshot: &SourceSnapshot) -> Result<Value> {
+    crate::limits::check_source_size(&snapshot.bytes, crate::YAML_READ_CAP)?;
     let yaml: serde_yaml_ng::Value = serde_yaml_ng::from_str(snapshot.text()?)
         .map_err(|e| Error::InvalidInput(format!("YAML mutation: {e}")))?;
     Ok(serde_json::to_value(yaml)?)
@@ -363,9 +364,7 @@ pub fn prepare_yaml_mutation(
     let range = target_range(before.text()?, pointer)?;
     let mut output = before.text()?.to_string();
     output.replace_range(range, &replacement);
-    if output.len() > 16 * 1024 * 1024 {
-        return Err(Error::InvalidInput("updated source exceeds 16 MiB".into()));
-    }
+    crate::limits::check_source_size(output.as_bytes(), crate::YAML_READ_CAP)?;
     let after = SourceSnapshot {
         locator: before.locator.clone(),
         fingerprint: fingerprint(output.as_bytes()),

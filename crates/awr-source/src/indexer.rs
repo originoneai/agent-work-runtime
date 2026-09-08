@@ -288,7 +288,8 @@ fn index_one(
         &source,
         json!({"mapping_key":key,"adapter_options":spec.options,"adapter_version":1}),
     )?;
-    let observed = observe_source(store, &source, root, locator, 16 * 1024 * 1024)?;
+    let cap = crate::source_read_cap(&spec.adapter)?;
+    let observed = observe_source(store, &source, root, locator, cap)?;
     if let Some(error) = observed.error {
         return Err(error);
     }
@@ -312,7 +313,7 @@ fn index_one(
     let batch = adapter.parse(&snapshot, &context, spec)?;
     let warnings = batch.warnings.clone();
     if matches!(locator, Locator::File(_))
-        && locator.read(root, 16 * 1024 * 1024)?.fingerprint != snapshot.fingerprint
+        && locator.read(root, cap)?.fingerprint != snapshot.fingerprint
     {
         return Err(Error::SourceConflict(
             "source changed while parsing; reindex required".into(),

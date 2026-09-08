@@ -242,7 +242,7 @@ fn inspect_sources(
                     "Current manifest source has no active projection; reindex required.",
                 ));
             }
-            match locator.read(root, 16 * 1024 * 1024) {
+            match locator.read(root, awr_source::source_read_cap(&spec.adapter)?) {
                 Ok(snapshot) => {
                     report.sources_checked += 1;
                     if let Some(source) = source {

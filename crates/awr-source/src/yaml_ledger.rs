@@ -137,6 +137,7 @@ impl SourceAdapter for YamlLedgerAdapter {
         context: &ParseContext<'_>,
         spec: &SourceSpec,
     ) -> Result<ProjectionBatch> {
+        crate::limits::check_source_size(&snapshot.bytes, crate::YAML_READ_CAP)?;
         if spec.domain != "ledger" {
             return Err(Error::InvalidInput(
                 "yaml-ledger-v1 requires the ledger domain".into(),

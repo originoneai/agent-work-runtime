@@ -64,15 +64,24 @@ pub fn read_source_capped(path: &Path, cap: u64) -> Result<Vec<u8>> {
 }
 
 fn read_file_capped(file: File, cap: u64) -> Result<Vec<u8>> {
-    if !file.metadata()?.is_file() {
+    if cap == 0 {
+        return Err(Error::InvalidInput("read cap must be positive".into()));
+    }
+    let read_limit = cap
+        .checked_add(1)
+        .ok_or_else(|| Error::InvalidInput("read cap is too large".into()))?;
+    let metadata = file.metadata()?;
+    if !metadata.is_file() {
         return Err(Error::InvalidInput(
             "source reader needs a regular file".into(),
         ));
     }
+    if metadata.len() > cap {
+        return Err(Error::InvalidInput(format!(
+            "source exceeds {cap} byte read cap"
+        )));
+    }
     let mut bytes = Vec::new();
-    let read_limit = cap
-        .checked_add(1)
-        .ok_or_else(|| Error::InvalidInput("read cap is too large".into()))?;
     file.take(read_limit).read_to_end(&mut bytes)?;
     if bytes.len() as u64 > cap {
         return Err(Error::InvalidInput(format!(

@@ -119,7 +119,7 @@ pub fn inspect_mutation_source(
         )));
     }
     let (locator, spec) = matches.pop().unwrap();
-    let snapshot = locator.read(&root, 16 * 1024 * 1024)?;
+    let snapshot = locator.read(&root, crate::source_read_cap(&spec.adapter)?)?;
     if snapshot.locator != patch.target.meta.source_ref.locator {
         return Err(Error::SourceConflict("proposal source bytes or immutable locator changed; keep the proposal for review and create a new one from current facts".into()));
     }

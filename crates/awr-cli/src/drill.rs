@@ -398,7 +398,10 @@ pub fn source_show(root: &Path, request: &SourceRead, json_output: bool) -> Resu
             adapter: source.adapter.clone(),
             options: Default::default(),
         };
-        let snapshot = Locator::from_spec(root, &manifest, &spec)?.read(root, request.max_bytes)?;
+        let cap = request
+            .max_bytes
+            .min(awr_source::source_read_cap(&spec.adapter)?);
+        let snapshot = Locator::from_spec(root, &manifest, &spec)?.read(root, cap)?;
         if snapshot.fingerprint != source.fingerprint {
             return Err(Error::SourceConflict(
                 "source bytes changed since indexing; reindex and obtain a new reference".into(),

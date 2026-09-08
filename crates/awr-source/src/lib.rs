@@ -3,6 +3,7 @@ mod adapter;
 mod directory;
 mod freshness;
 mod indexer;
+mod limits;
 mod locator;
 mod manifest;
 mod markdown;
@@ -17,6 +18,7 @@ pub use freshness::{SourceObservation, observe_source};
 pub use indexer::{
     IndexIssue, IndexReport, IndexedSource, index_project, scan_project, source_adapter,
 };
+pub use limits::{MARKDOWN_READ_CAP, YAML_READ_CAP, source_read_cap};
 pub use locator::{Locator, SourceSnapshot, fingerprint, read_capped, read_source_capped};
 mod safe_fs;
 pub use manifest::{Manifest, ProjectConfig, SourceSpec};

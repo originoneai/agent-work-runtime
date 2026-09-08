@@ -23,3 +23,7 @@ cap-fs-ext.workspace = true
 [[test]]
 name = "security_paths"
 path = "../../tests/security/paths/containment.rs"
+
+[[test]]
+name = "security_source_payloads"
+path = "../../tests/security/payloads/sources.rs"

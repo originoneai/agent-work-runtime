@@ -55,6 +55,7 @@ fn line(text: &str, offset: usize) -> usize {
 
 /// Disjoint source sections. Code blocks and quoted/list-contained headings do not split authority.
 pub fn markdown_sections(snapshot: &SourceSnapshot) -> Result<Vec<MarkdownSection>> {
+    crate::limits::check_source_size(&snapshot.bytes, crate::MARKDOWN_READ_CAP)?;
     let text = snapshot.text()?;
     if text.trim().is_empty() {
         return Ok(vec![]);
