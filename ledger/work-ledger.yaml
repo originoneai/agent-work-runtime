@@ -1,8 +1,8 @@
 schema_version: 1
 contract_id: awr-v1
 contract_version: 1.0.1
-ledger_revision: 169
-updated_at: '2026-09-09T01:08:03+08:00'
+ledger_revision: 170
+updated_at: '2026-09-09T01:17:35+08:00'
 project:
   name: Agent Work Runtime
   external_key: agent-work-runtime
@@ -14,12 +14,11 @@ current:
   work_item: AWR-P9-005
   next_action: 按用户调整后的合同 1.0.1 固化六项毫秒级 p95，保留原严格目标差距，然后接续实际客户端验收。
   open_loops:
-  - P9-004 已通过原生 AWR 完成写回；4/10 指标达标。四组正文实测最大 L0 933、L1 3250、最低压缩比 23.767692、68/68 硬事实；完整 JSON 单独报告。
-  - 用户接受首轮 43–144 ms 的六项操作 p95；当前 V1 准入改为统一 <1000 ms，原严格目标继续公开但不再阻断 V1。
-  - P9-001 大型真实台账和 P9-002 恢复已完成；P9-005 延迟与 QA-003 真实客户端业务验收仍待执行。
+  - P9-005 六项 p95 实测 33.817084–135.13625 ms，256 次调用行为正确，已满足合同 1.0.1 的 <1000 ms；六个延迟指标等待绑定远端完成回执。原严格目标和首轮失败保留。
+  - P9-004 四项正文指标已完成：L0 最大 933、L1 最大 3250、压缩比最低 23.767692、68/68 硬事实；完整 JSON 单独报告，50–100x 尚未达到。
   - 8 个 E4 场景仍为 0；实际客户端完整业务执行与可区分独立复核尚待实施，不能用模拟 fixture 或开发自用替代。
   - Codex、Kimi、Grok 既有接入材料不证明原生模型调用、真实 MCP tool turn 或自动 hooks 生效；此前 Grok MCP 诊断受项目信任阻塞。
-  - 四组基准满足冻结 fixture 的 Token/Recall 门槛，不代表任何大小的规则、会话 checkpoint 或完整 JSON 都会小于同一预算；50–100x 尚未达到。
+  - QA-003 实际客户端验收及其后的文档、二进制和 V1 发布收口仍未完成。
 milestones:
 - id: M0
   status: completed
@@ -1874,7 +1873,35 @@ work_items:
     minimum: 证明本条验收行为；功能阶段运行必要的定向检查，系统测试在 M9 集中执行。
     scope_adjustment: 首轮真实样本 L0 为 1232 tokens、L1 为 3182 tokens，Rust 与 Python o200k_base 一致。将通用 L0 展示精简及对应 CLI 回归纳入本条，保留全部规定的
       L0 事实、原文硬规则和结构化来源绑定；不修改验收预算或分母。
-- {"acceptance":["固定硬件、数据规模与冷热缓存条件，记录 status/work/ready/compile/search/reindex 耗时。","六项操作预热后至少 30 次按 p95 <1000 ms 验收；冷进程启动另报，原 20/20/50/100/100/500 ms 保留为后续优化目标。"],"blocker":null,"deliverables":["tests/benchmarks/performance/","docs/benchmarks/","contracts/awr-v1.json","AGENTS.md"],"depends_on":["AWR-P9-001"],"evidence":[],"id":"AWR-P9-005","kind":"quality","milestone":"M9","next_action":"按合同 1.0.1 记录六项 p95 <1000 ms 准入；完成延迟台账后推进实际客户端业务验收。","owner":"codex-primary","priority":"P2","required_for_v1":true,"source_sections":[41],"status":"in_progress","title":"本地延迟与规模 Benchmark","verification":{"evidence_directory":"ledger/evidence/AWR-P9-005","evidence_level":"none","minimum":"证明本条验收行为；功能阶段运行必要的定向检查，系统测试在 M9 集中执行。","scope_adjustment":"按 2026-09-09 用户确认的毫秒级可接受口径更新合同 1.0.1，停止为原严格目标继续优化；初轮 3/6 严格目标达标的记录保留。"}}
+- acceptance:
+  - 固定硬件、数据规模与冷热缓存条件，记录 status/work/ready/compile/search/reindex 耗时。
+  - 六项操作预热后至少 30 次按 p95 <1000 ms 验收；冷进程启动另报，原 20/20/50/100/100/500 ms 保留为后续优化目标。
+  blocker: null
+  deliverables:
+  - tests/benchmarks/performance/
+  - docs/benchmarks/
+  - contracts/awr-v1.json
+  - AGENTS.md
+  depends_on:
+  - AWR-P9-001
+  evidence: []
+  id: AWR-P9-005
+  kind: quality
+  milestone: M9
+  next_action: 按合同 1.0.1 记录六项 p95 <1000 ms 准入；完成延迟台账后推进实际客户端业务验收。
+  owner: codex-primary
+  priority: P2
+  required_for_v1: true
+  source_sections:
+  - 41
+  status: in_progress
+  title: 本地延迟与规模 Benchmark
+  verification:
+    evidence_directory: ledger/evidence/AWR-P9-005
+    evidence_level: locally_verified
+    minimum: 证明本条验收行为；功能阶段运行必要的定向检查，系统测试在 M9 集中执行。
+    scope_adjustment: 按 2026-09-09 用户确认的毫秒级可接受口径更新合同 1.0.1，停止为原严格目标继续优化；初轮 3/6 严格目标达标的记录保留。
+    benchmark_report: ledger/evidence/AWR-P9-005/benchmark.json
 - id: AWR-P9-003
   title: 开源文档、Examples 与使用参考
   milestone: M10

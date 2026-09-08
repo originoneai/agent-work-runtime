@@ -65,3 +65,25 @@ explicit optimization targets, with their own pass/fail fields. No runtime
 optimization was applied in response to this adjustment. Workload, sampling,
 startup accounting, correctness checks and all other V1 gates stay unchanged.
 The old run is retained in `ledger/evidence/AWR-P9-005/baseline.json`.
+
+## Measured V1 admission result
+
+On 2026-09-09, source `20d3cad172f8c0bfd54f59a561c8e3775febddd2`
+passed all seven gates through 256 CLI calls on an Apple M3 Max / macOS 26.5.2
+host. The sample contains 150 work items, 38 ready candidates and 249,449 ledger
+bytes. Each row below contains 30 retained primary measurements.
+
+| Operation | p95 (ms) | V1 limit (ms) |
+| --- | ---: | ---: |
+| Status | 44.916042 | <1000 |
+| Work show | 56.282834 | <1000 |
+| Ready | 50.211834 | <1000 |
+| Context compile | 121.225958 | <1000 |
+| FTS search | 33.817084 | <1000 |
+| Incremental reindex | 135.136250 | <1000 |
+
+`ledger/evidence/AWR-P9-005/benchmark.json` retains every timing, the build and
+source hashes, hardware details, correctness gates and original optimization
+target results. The ledger records completion only after the remote evidence
+receipt is bound. This result establishes local CLI latency for this workload;
+actual-client business acceptance remains a separate gate.
