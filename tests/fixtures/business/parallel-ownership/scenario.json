@@ -1,0 +1,123 @@
+{
+  "scenario_id": "AWR-SC-004",
+  "fixture_version": "1.0.0",
+  "namespace": "awr-v1/parallel-ownership",
+  "business_title": "星桥活动筹备",
+  "project_directory": "project",
+  "work_graph": "work-graph.yaml",
+  "entry_work": "XQ-INPUT",
+  "participants": {
+    "executor": {
+      "purpose": "在实际客户端推进业务工作并保留工具及产物记录"
+    },
+    "reviewer": {
+      "purpose": "独立检查产物、来源及两轮修订，给出可追溯意见"
+    },
+    "executor_peer": {
+      "purpose": "使用独立实际会话负责并行工作，与另一执行者明确交接"
+    }
+  },
+  "reviewer_distinct_from": [
+    "executor",
+    "executor_peer"
+  ],
+  "initial_request": "这两项工作需要并行推进，请先明确分工和交接关系，再分别产出结果。",
+  "prelude": {
+    "request": "请把活动内容安排和现场保障分别交给两位执行者推进，各自保留正在处理的内容和需要对方配合的事项。",
+    "required_live_preconditions": [
+      "两位不同实际执行者各自持有真实工作会话和工作所有权。",
+      "保留重叠认领的实际冲突回执；冲突不能由直接改数据库制造。"
+    ]
+  },
+  "followups": [
+    {
+      "number": 1,
+      "request": "其中一位执行者暂时离开，请安排接续，保留尚未解决的问题。",
+      "publish": [
+        {
+          "source": "updates/round-1/materials/absence-note.md",
+          "target": "materials/absence-note.md",
+          "expected_previous_sha256": null
+        }
+      ],
+      "required_observation": "有真实 claim/session 接续记录；不能让两个执行者同时拥有同一工作。"
+    },
+    {
+      "number": 2,
+      "request": "请分别复核两项工作的结果，并汇总需要共同处理的事项。",
+      "publish": [
+        {
+          "source": "updates/round-2/materials/joint-review.md",
+          "target": "materials/joint-review.md",
+          "expected_previous_sha256": null
+        }
+      ],
+      "required_observation": "分别复核两个实际产物，再修订共同约束。"
+    }
+  ],
+  "artifacts": [
+    {
+      "title": "分工与接续记录",
+      "path": "deliverables/xingqiao-ownership.md",
+      "producer": "executor"
+    },
+    {
+      "title": "两个独立工作产物",
+      "path": "deliverables/xingqiao-independent-results.md",
+      "producer": "executor"
+    },
+    {
+      "title": "协作复核说明",
+      "path": "deliverables/xingqiao-collaboration-review.md",
+      "producer": "executor"
+    },
+    {
+      "title": "内容安排",
+      "path": "deliverables/xingqiao-content.md",
+      "producer": "executor"
+    },
+    {
+      "title": "现场保障方案",
+      "path": "deliverables/xingqiao-venue.md",
+      "producer": "executor_peer"
+    },
+    {
+      "title": "独立复核记录",
+      "path": "deliverables/xq-independent-review.md",
+      "producer": "reviewer"
+    },
+    {
+      "title": "最终交付与未决事项",
+      "path": "deliverables/xq-delivery.md",
+      "producer": "executor"
+    }
+  ],
+  "review_rubric": [
+    "两个产物、会话和工作分支可以区分，执行者身份真实不同。",
+    "离开与接续有真实记录，原未决事项未被覆盖。",
+    "时间总量和设备交接经过独立核对，不能只汇总两份未协调文档。"
+  ],
+  "required_gates": [
+    "natural_client_initiation",
+    "tool_or_role_execution",
+    "real_artifact",
+    "business_followup_1",
+    "business_followup_2",
+    "independent_review",
+    "final_delivery",
+    "traceable_receipt",
+    "fixture_isolation",
+    "independent_commit_and_remote_sha"
+  ],
+  "dimensions": [
+    "topology",
+    "multi_agent",
+    "claim_conflict",
+    "branch"
+  ],
+  "artifact_directory": "ledger/evidence/business/AWR-SC-004",
+  "minimum_real_clients": 1,
+  "native_mcp_required": false,
+  "runtime_seed_policy": "Never seed sessions, claims, events, checkpoints, completed source work or E4 receipts. Prelude state must come from actual client execution.",
+  "generated_material": null
+}

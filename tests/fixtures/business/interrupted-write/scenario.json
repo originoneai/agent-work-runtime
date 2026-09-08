@@ -1,0 +1,110 @@
+{
+  "scenario_id": "AWR-SC-006",
+  "fixture_version": "1.0.0",
+  "namespace": "awr-v1/interrupted-write",
+  "business_title": "竹声维护交接",
+  "project_directory": "project",
+  "work_graph": "work-graph.yaml",
+  "entry_work": "ZS-DIAG",
+  "participants": {
+    "executor": {
+      "purpose": "在实际客户端推进业务工作并保留工具及产物记录"
+    },
+    "reviewer": {
+      "purpose": "独立检查产物、来源及两轮修订，给出可追溯意见"
+    }
+  },
+  "reviewer_distinct_from": [
+    "executor"
+  ],
+  "initial_request": "刚才工作意外中断了，请核实保留下来的结果，恢复到可以继续推进的状态。",
+  "prelude": {
+    "request": "请先整理维护交接中需要补充的事项，保留改动建议和已经整理好的内容，暂时不要把建议直接写入权威台账。",
+    "required_live_preconditions": [
+      "实际客户端先产生真实产物及尚未应用的变更建议。",
+      "实际客户端发生可追溯的中断；不得通过预造数据库状态或修改标签声称发生崩溃。",
+      "若没有发生实际中断或待应用变更，场景保持待执行，不能用 CLI 探针补齐。"
+    ]
+  },
+  "followups": [
+    {
+      "number": 1,
+      "request": "请查清哪些修改已经保存、哪些还没生效，并补齐交接说明。",
+      "publish": [
+        {
+          "source": "updates/round-1/materials/archive-confirmation.md",
+          "target": "materials/archive-confirmation.md",
+          "expected_previous_sha256": null
+        }
+      ],
+      "required_observation": "对照真实保存结果和未生效建议，更新交接说明。"
+    },
+    {
+      "number": 2,
+      "request": "继续处理剩余工作，确认没有重复写入或丢失结果后交付。",
+      "publish": [
+        {
+          "source": "updates/round-2/materials/role-confirmation.md",
+          "target": "materials/role-confirmation.md",
+          "expected_previous_sha256": null
+        }
+      ],
+      "required_observation": "应用需要的修订后核对实际来源和回执，保留失败与修订轨迹。"
+    }
+  ],
+  "artifacts": [
+    {
+      "title": "中断诊断",
+      "path": "deliverables/zhusheng-interruption-diagnosis.md",
+      "producer": "executor"
+    },
+    {
+      "title": "恢复及续做记录",
+      "path": "deliverables/zhusheng-recovery-work.md",
+      "producer": "executor"
+    },
+    {
+      "title": "最终一致性说明",
+      "path": "deliverables/zhusheng-consistency.md",
+      "producer": "executor"
+    },
+    {
+      "title": "独立复核记录",
+      "path": "deliverables/zs-independent-review.md",
+      "producer": "reviewer"
+    },
+    {
+      "title": "最终交付与未决事项",
+      "path": "deliverables/zs-delivery.md",
+      "producer": "executor"
+    }
+  ],
+  "review_rubric": [
+    "中断、诊断和恢复有真实客户端及运行回执，来源和产物可追溯。",
+    "待应用变更只被正确应用一次，已保存成果不丢失。",
+    "不能把进程正常退出、手造待处理状态或探针结果计作业务中断。"
+  ],
+  "required_gates": [
+    "natural_client_initiation",
+    "tool_or_role_execution",
+    "real_artifact",
+    "business_followup_1",
+    "business_followup_2",
+    "independent_review",
+    "final_delivery",
+    "traceable_receipt",
+    "fixture_isolation",
+    "independent_commit_and_remote_sha"
+  ],
+  "dimensions": [
+    "exception",
+    "recovery",
+    "crash",
+    "source_mutation"
+  ],
+  "artifact_directory": "ledger/evidence/business/AWR-SC-006",
+  "minimum_real_clients": 1,
+  "native_mcp_required": false,
+  "runtime_seed_policy": "Never seed sessions, claims, events, checkpoints, completed source work or E4 receipts. Prelude state must come from actual client execution.",
+  "generated_material": null
+}

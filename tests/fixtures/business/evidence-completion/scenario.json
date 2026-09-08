@@ -1,0 +1,103 @@
+{
+  "scenario_id": "AWR-SC-005",
+  "fixture_version": "1.0.0",
+  "namespace": "awr-v1/evidence-completion",
+  "business_title": "云帆帮助中心验收",
+  "project_directory": "project",
+  "work_graph": "work-graph.yaml",
+  "entry_work": "YF-GAPS",
+  "participants": {
+    "executor": {
+      "purpose": "在实际客户端推进业务工作并保留工具及产物记录"
+    },
+    "reviewer": {
+      "purpose": "独立检查产物、来源及两轮修订，给出可追溯意见"
+    }
+  },
+  "reviewer_distinct_from": [
+    "executor"
+  ],
+  "initial_request": "请检查这项工作是否已经具备交付条件，补齐必要的验证材料后完成交付。",
+  "prelude": null,
+  "followups": [
+    {
+      "number": 1,
+      "request": "现有报告只说明了本地结果，请补充实际使用过程的验证。",
+      "publish": [
+        {
+          "source": "updates/round-1/materials/usage-inputs.csv",
+          "target": "materials/usage-inputs.csv",
+          "expected_previous_sha256": null
+        }
+      ],
+      "required_observation": "这些只是使用输入；实际结果、返工和客户端回执必须由真实执行产生。"
+    },
+    {
+      "number": 2,
+      "request": "把每条验收要求对应到证据，修订不准确的结论，再确认完成状态。",
+      "publish": [
+        {
+          "source": "updates/round-2/RULES.md",
+          "target": "RULES.md",
+          "expected_previous_sha256": "4205cb30134f1d5edbc8ee4837a6deaaf97ad23def6edb2fae11421bcadb2d28"
+        }
+      ],
+      "required_observation": "存在缺口的结论需修订，完成动作须由真实证据支持。"
+    }
+  ],
+  "artifacts": [
+    {
+      "title": "证据缺口清单",
+      "path": "deliverables/yunfan-evidence-gaps.md",
+      "producer": "executor"
+    },
+    {
+      "title": "补充验证报告",
+      "path": "deliverables/yunfan-usage-report.md",
+      "producer": "executor"
+    },
+    {
+      "title": "完成状态与交付回执",
+      "path": "deliverables/yunfan-delivery-receipt.md",
+      "producer": "executor"
+    },
+    {
+      "title": "独立复核记录",
+      "path": "deliverables/yf-independent-review.md",
+      "producer": "reviewer"
+    },
+    {
+      "title": "最终交付与未决事项",
+      "path": "deliverables/yf-delivery.md",
+      "producer": "executor"
+    }
+  ],
+  "review_rubric": [
+    "实际使用报告有真实客户端过程和产物，不能把预置输入当结果。",
+    "每条验收对应具体证据且范围相符。",
+    "最终完成写回有前后来源、证据和远端交付绑定。"
+  ],
+  "required_gates": [
+    "natural_client_initiation",
+    "tool_or_role_execution",
+    "real_artifact",
+    "business_followup_1",
+    "business_followup_2",
+    "independent_review",
+    "final_delivery",
+    "traceable_receipt",
+    "fixture_isolation",
+    "independent_commit_and_remote_sha"
+  ],
+  "dimensions": [
+    "daily",
+    "boundary",
+    "missing_evidence",
+    "source_mutation"
+  ],
+  "artifact_directory": "ledger/evidence/business/AWR-SC-005",
+  "minimum_real_clients": 1,
+  "native_mcp_required": false,
+  "runtime_seed_policy": "Never seed sessions, claims, events, checkpoints, completed source work or E4 receipts. Prelude state must come from actual client execution.",
+  "generated_material": null
+}

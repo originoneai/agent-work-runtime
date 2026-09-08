@@ -1,0 +1,84 @@
+milestones:
+- id: WH-DELIVERY
+  title: 望海运营手册更新交付
+  status: in_progress
+work_items:
+- id: WH-OPEN
+  title: 整理手册未决事项
+  status: ready
+  owner: null
+  priority: P0
+  milestone: WH-DELIVERY
+  goal: goal#wh
+  acceptance:
+  - 列出缺少的职责、资料链接及晚班交接要求。
+  - 保留实际产物与来源引用，无法确认的内容显式说明。
+  depends_on: []
+  next_action: 整理手册未决事项，先核对当前来源和负责范围。
+  evidence: []
+  verification:
+    evidence_level: none
+- id: WH-DRAFT
+  title: 续做运营手册
+  status: planned
+  owner: null
+  priority: P0
+  milestone: WH-DELIVERY
+  goal: goal#wh
+  acceptance:
+  - 依据保留的工作记录推进手册，解释当前推进顺序。
+  - 保留实际产物与来源引用，无法确认的内容显式说明。
+  depends_on:
+  - WH-OPEN
+  next_action: 续做运营手册，先核对当前来源和负责范围。
+  evidence: []
+  verification:
+    evidence_level: none
+- id: WH-LINKS
+  title: 核对手册材料来源
+  status: planned
+  owner: null
+  priority: P0
+  milestone: WH-DELIVERY
+  goal: goal#wh
+  acceptance:
+  - 检查三个章节的材料引用和仍需确认的问题。
+  - 保留实际产物与来源引用，无法确认的内容显式说明。
+  depends_on:
+  - WH-DRAFT
+  next_action: 核对手册材料来源，先核对当前来源和负责范围。
+  evidence: []
+  verification:
+    evidence_level: none
+- id: WH-REVIEW
+  title: 独立复核运营手册
+  status: planned
+  owner: null
+  priority: P0
+  milestone: WH-DELIVERY
+  goal: goal#wh
+  acceptance:
+  - 独立检查恢复前后未决事项、补充要求和来源保持情况。
+  - 保留实际产物与来源引用，无法确认的内容显式说明。
+  depends_on:
+  - WH-LINKS
+  next_action: 独立复核运营手册，先核对当前来源和负责范围。
+  evidence: []
+  verification:
+    evidence_level: none
+- id: WH-DELIVER
+  title: 交付手册和交接说明
+  status: planned
+  owner: null
+  priority: P0
+  milestone: WH-DELIVERY
+  goal: goal#wh
+  acceptance:
+  - 处理复核意见，交付可继续追溯的手册及交接说明。
+  - 保留实际产物与来源引用，无法确认的内容显式说明。
+  depends_on:
+  - WH-REVIEW
+  next_action: 交付手册和交接说明，先核对当前来源和负责范围。
+  evidence: []
+  verification:
+    evidence_level: none

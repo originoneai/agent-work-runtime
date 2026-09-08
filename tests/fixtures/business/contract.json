@@ -1,0 +1,115 @@
+{
+  "contract_id": "awr-business-fixtures",
+  "version": "1.0.0",
+  "work_item": "AWR-QA-002",
+  "target_fixtures": 8,
+  "authority": {
+    "contract": "contracts/awr-v1.json",
+    "version": "1.0.0",
+    "sha256": "97eda9fffb63cd2aa5348bae5b59af810ce805b8e65d7a9d5770282da638dd63"
+  },
+  "status_authority": "ledger/work-ledger.yaml",
+  "required_gates": [
+    "natural_client_initiation",
+    "tool_or_role_execution",
+    "real_artifact",
+    "business_followup_1",
+    "business_followup_2",
+    "independent_review",
+    "final_delivery",
+    "traceable_receipt",
+    "fixture_isolation",
+    "independent_commit_and_remote_sha"
+  ],
+  "counting": "Prepared fixtures and intake checks are not completed business scenarios. E4 completion requires actual client execution, both followups, independent review and remote delivery evidence under the V1 ledger.",
+  "scenarios": [
+    {
+      "id": "AWR-SC-001",
+      "specification": "tests/fixtures/business/project-onboarding/scenario.json",
+      "namespace": "awr-v1/project-onboarding",
+      "dimensions": [
+        "daily",
+        "single_agent",
+        "cli"
+      ]
+    },
+    {
+      "id": "AWR-SC-002",
+      "specification": "tests/fixtures/business/long-task-resume/scenario.json",
+      "namespace": "awr-v1/long-task-resume",
+      "dimensions": [
+        "daily",
+        "recovery",
+        "session_change",
+        "cli"
+      ]
+    },
+    {
+      "id": "AWR-SC-003",
+      "specification": "tests/fixtures/business/source-change/scenario.json",
+      "namespace": "awr-v1/source-change",
+      "dimensions": [
+        "boundary",
+        "exception",
+        "freshness",
+        "cli"
+      ]
+    },
+    {
+      "id": "AWR-SC-004",
+      "specification": "tests/fixtures/business/parallel-ownership/scenario.json",
+      "namespace": "awr-v1/parallel-ownership",
+      "dimensions": [
+        "topology",
+        "multi_agent",
+        "claim_conflict",
+        "branch"
+      ]
+    },
+    {
+      "id": "AWR-SC-005",
+      "specification": "tests/fixtures/business/evidence-completion/scenario.json",
+      "namespace": "awr-v1/evidence-completion",
+      "dimensions": [
+        "daily",
+        "boundary",
+        "missing_evidence",
+        "source_mutation"
+      ]
+    },
+    {
+      "id": "AWR-SC-006",
+      "specification": "tests/fixtures/business/interrupted-write/scenario.json",
+      "namespace": "awr-v1/interrupted-write",
+      "dimensions": [
+        "exception",
+        "recovery",
+        "crash",
+        "source_mutation"
+      ]
+    },
+    {
+      "id": "AWR-SC-007",
+      "specification": "tests/fixtures/business/restricted-material/scenario.json",
+      "namespace": "awr-v1/restricted-material",
+      "dimensions": [
+        "permission",
+        "boundary",
+        "secret",
+        "size_limit"
+      ]
+    },
+    {
+      "id": "AWR-SC-008",
+      "specification": "tests/fixtures/business/branch-handoff/scenario.json",
+      "namespace": "awr-v1/branch-handoff",
+      "dimensions": [
+        "channel",
+        "topology",
+        "recovery",
+        "branch_merge",
+        "mcp"
+      ]
+    }
+  ]
+}

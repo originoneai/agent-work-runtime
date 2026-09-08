@@ -1,0 +1,24 @@
+namespace: awr-v1/long-task-resume
+nodes:
+- key: WH-OPEN
+  role: executor
+  depends_on: []
+- key: WH-DRAFT
+  role: executor
+  depends_on:
+  - WH-OPEN
+- key: WH-LINKS
+  role: executor
+  depends_on:
+  - WH-DRAFT
+- key: WH-REVIEW
+  role: reviewer
+  depends_on:
+  - WH-LINKS
+- key: WH-DELIVER
+  role: executor
+  depends_on:
+  - WH-REVIEW
+reviewer_distinct_from:
+- executor
+handoff_requirement: 执行与复核保留不同实际身份和来源；不能用角色名称或模型标签代替独立参与者。

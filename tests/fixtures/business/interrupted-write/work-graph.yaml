@@ -1,0 +1,24 @@
+namespace: awr-v1/interrupted-write
+nodes:
+- key: ZS-DIAG
+  role: executor
+  depends_on: []
+- key: ZS-COMPARE
+  role: executor
+  depends_on:
+  - ZS-DIAG
+- key: ZS-RECOVER
+  role: executor
+  depends_on:
+  - ZS-COMPARE
+- key: ZS-REVIEW
+  role: reviewer
+  depends_on:
+  - ZS-RECOVER
+- key: ZS-DELIVER
+  role: executor
+  depends_on:
+  - ZS-REVIEW
+reviewer_distinct_from:
+- executor
+handoff_requirement: 执行与复核保留不同实际身份和来源；不能用角色名称或模型标签代替独立参与者。

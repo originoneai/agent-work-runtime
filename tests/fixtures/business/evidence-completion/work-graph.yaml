@@ -1,0 +1,24 @@
+namespace: awr-v1/evidence-completion
+nodes:
+- key: YF-GAPS
+  role: executor
+  depends_on: []
+- key: YF-USE
+  role: executor
+  depends_on:
+  - YF-GAPS
+- key: YF-MAP
+  role: executor
+  depends_on:
+  - YF-USE
+- key: YF-REVIEW
+  role: reviewer
+  depends_on:
+  - YF-MAP
+- key: YF-DELIVER
+  role: executor
+  depends_on:
+  - YF-REVIEW
+reviewer_distinct_from:
+- executor
+handoff_requirement: 执行与复核保留不同实际身份和来源；不能用角色名称或模型标签代替独立参与者。

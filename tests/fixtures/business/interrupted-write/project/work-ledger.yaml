@@ -1,0 +1,84 @@
+milestones:
+- id: ZS-DELIVERY
+  title: 竹声维护交接交付
+  status: in_progress
+work_items:
+- id: ZS-DIAG
+  title: 核实中断前保留结果
+  status: ready
+  owner: null
+  priority: P0
+  milestone: ZS-DELIVERY
+  goal: goal#zs
+  acceptance:
+  - 列清真实保存的产物、待应用变更及当前来源状态。
+  - 保留实际产物与来源引用，无法确认的内容显式说明。
+  depends_on: []
+  next_action: 核实中断前保留结果，先核对当前来源和负责范围。
+  evidence: []
+  verification:
+    evidence_level: none
+- id: ZS-COMPARE
+  title: 比对已保存与未生效内容
+  status: planned
+  owner: null
+  priority: P0
+  milestone: ZS-DELIVERY
+  goal: goal#zs
+  acceptance:
+  - 用实际回执解释哪些变更已提交，哪些仍待处理。
+  - 保留实际产物与来源引用，无法确认的内容显式说明。
+  depends_on:
+  - ZS-DIAG
+  next_action: 比对已保存与未生效内容，先核对当前来源和负责范围。
+  evidence: []
+  verification:
+    evidence_level: none
+- id: ZS-RECOVER
+  title: 恢复并推进交接工作
+  status: planned
+  owner: null
+  priority: P0
+  milestone: ZS-DELIVERY
+  goal: goal#zs
+  acceptance:
+  - 处理待应用改动，保留重试或恢复的证据，避免重复写入。
+  - 保留实际产物与来源引用，无法确认的内容显式说明。
+  depends_on:
+  - ZS-COMPARE
+  next_action: 恢复并推进交接工作，先核对当前来源和负责范围。
+  evidence: []
+  verification:
+    evidence_level: none
+- id: ZS-REVIEW
+  title: 独立复核恢复一致性
+  status: planned
+  owner: null
+  priority: P0
+  milestone: ZS-DELIVERY
+  goal: goal#zs
+  acceptance:
+  - 核对来源前后与事件回执，确认未丢失结果或重复交付。
+  - 保留实际产物与来源引用，无法确认的内容显式说明。
+  depends_on:
+  - ZS-RECOVER
+  next_action: 独立复核恢复一致性，先核对当前来源和负责范围。
+  evidence: []
+  verification:
+    evidence_level: none
+- id: ZS-DELIVER
+  title: 交付恢复后的维护交接
+  status: planned
+  owner: null
+  priority: P0
+  milestone: ZS-DELIVERY
+  goal: goal#zs
+  acceptance:
+  - 交付最终交接说明及未决事项。
+  - 保留实际产物与来源引用，无法确认的内容显式说明。
+  depends_on:
+  - ZS-REVIEW
+  next_action: 交付恢复后的维护交接，先核对当前来源和负责范围。
+  evidence: []
+  verification:
+    evidence_level: none

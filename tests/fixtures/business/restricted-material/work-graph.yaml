@@ -1,0 +1,24 @@
+namespace: awr-v1/restricted-material
+nodes:
+- key: CC-SCOPE
+  role: executor
+  depends_on: []
+- key: CC-LOG
+  role: executor
+  depends_on:
+  - CC-SCOPE
+- key: CC-PUBLIC
+  role: executor
+  depends_on:
+  - CC-LOG
+- key: CC-REVIEW
+  role: reviewer
+  depends_on:
+  - CC-PUBLIC
+- key: CC-DELIVER
+  role: executor
+  depends_on:
+  - CC-REVIEW
+reviewer_distinct_from:
+- executor
+handoff_requirement: 执行与复核保留不同实际身份和来源；不能用角色名称或模型标签代替独立参与者。

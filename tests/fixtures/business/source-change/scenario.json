@@ -1,0 +1,103 @@
+{
+  "scenario_id": "AWR-SC-003",
+  "fixture_version": "1.0.0",
+  "namespace": "awr-v1/source-change",
+  "business_title": "松果伙伴接入方案",
+  "project_directory": "project",
+  "work_graph": "work-graph.yaml",
+  "entry_work": "SG-DIFF",
+  "participants": {
+    "executor": {
+      "purpose": "在实际客户端推进业务工作并保留工具及产物记录"
+    },
+    "reviewer": {
+      "purpose": "独立检查产物、来源及两轮修订，给出可追溯意见"
+    }
+  },
+  "reviewer_distinct_from": [
+    "executor"
+  ],
+  "initial_request": "项目计划和规则刚有调整，请重新梳理当前任务，确保后续工作使用最新要求。",
+  "prelude": null,
+  "followups": [
+    {
+      "number": 1,
+      "request": "对比刚才的安排，说明这次变化影响了哪些依赖和验收条件。",
+      "publish": [
+        {
+          "source": "updates/round-1/RULES.md",
+          "target": "RULES.md",
+          "expected_previous_sha256": "29d58166a2bf2fcc7420556341b736b7ed896b31af10d0f69a4ca7d5930729c9"
+        }
+      ],
+      "required_observation": "对比变化前后上下文与计划，识别新的窗口和依赖限制。"
+    },
+    {
+      "number": 2,
+      "request": "请把仍不确定的内容核清楚，再给我一版可以执行的安排。",
+      "publish": [
+        {
+          "source": "updates/round-2/materials/clarification.md",
+          "target": "materials/clarification.md",
+          "expected_previous_sha256": null
+        }
+      ],
+      "required_observation": "依据新增材料核清不确定项，不将尚未确认的日期写成结论。"
+    }
+  ],
+  "artifacts": [
+    {
+      "title": "变化影响说明",
+      "path": "deliverables/songguo-change-impact.md",
+      "producer": "executor"
+    },
+    {
+      "title": "修订后的工作计划",
+      "path": "deliverables/songguo-revised-plan.md",
+      "producer": "executor"
+    },
+    {
+      "title": "来源版本对照",
+      "path": "deliverables/songguo-source-versions.md",
+      "producer": "executor"
+    },
+    {
+      "title": "独立复核记录",
+      "path": "deliverables/sg-independent-review.md",
+      "producer": "reviewer"
+    },
+    {
+      "title": "最终交付与未决事项",
+      "path": "deliverables/sg-delivery.md",
+      "producer": "executor"
+    }
+  ],
+  "review_rubric": [
+    "有真实文件变化前后的指纹或版本引用。",
+    "新旧规则冲突被显式处理，缓存不能替代最新来源。",
+    "窗口、材料依赖和对外日期表述均符合当前来源。"
+  ],
+  "required_gates": [
+    "natural_client_initiation",
+    "tool_or_role_execution",
+    "real_artifact",
+    "business_followup_1",
+    "business_followup_2",
+    "independent_review",
+    "final_delivery",
+    "traceable_receipt",
+    "fixture_isolation",
+    "independent_commit_and_remote_sha"
+  ],
+  "dimensions": [
+    "boundary",
+    "exception",
+    "freshness",
+    "cli"
+  ],
+  "artifact_directory": "ledger/evidence/business/AWR-SC-003",
+  "minimum_real_clients": 1,
+  "native_mcp_required": false,
+  "runtime_seed_policy": "Never seed sessions, claims, events, checkpoints, completed source work or E4 receipts. Prelude state must come from actual client execution.",
+  "generated_material": null
+}

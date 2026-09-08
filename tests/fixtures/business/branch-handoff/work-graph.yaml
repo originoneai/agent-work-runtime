@@ -1,0 +1,25 @@
+namespace: awr-v1/branch-handoff
+nodes:
+- key: YL-DRAFT
+  role: previous_executor
+  depends_on: []
+- key: YL-HANDOFF
+  role: executor
+  depends_on:
+  - YL-DRAFT
+- key: YL-REVISE
+  role: executor
+  depends_on:
+  - YL-HANDOFF
+- key: YL-REVIEW
+  role: reviewer
+  depends_on:
+  - YL-REVISE
+- key: YL-DELIVER
+  role: executor
+  depends_on:
+  - YL-REVIEW
+reviewer_distinct_from:
+- executor
+- previous_executor
+handoff_requirement: 执行与复核保留不同实际身份和来源；不能用角色名称或模型标签代替独立参与者。

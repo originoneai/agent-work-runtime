@@ -1,0 +1,96 @@
+{
+  "contract_id": "awr-business-fixtures",
+  "version": "1.0.0",
+  "scenario_count": 8,
+  "work_node_count": 40,
+  "dimensions": {
+    "boundary": [
+      "AWR-SC-003",
+      "AWR-SC-005",
+      "AWR-SC-007"
+    ],
+    "branch": [
+      "AWR-SC-004"
+    ],
+    "branch_merge": [
+      "AWR-SC-008"
+    ],
+    "channel": [
+      "AWR-SC-008"
+    ],
+    "claim_conflict": [
+      "AWR-SC-004"
+    ],
+    "cli": [
+      "AWR-SC-001",
+      "AWR-SC-002",
+      "AWR-SC-003"
+    ],
+    "crash": [
+      "AWR-SC-006"
+    ],
+    "daily": [
+      "AWR-SC-001",
+      "AWR-SC-002",
+      "AWR-SC-005"
+    ],
+    "exception": [
+      "AWR-SC-003",
+      "AWR-SC-006"
+    ],
+    "freshness": [
+      "AWR-SC-003"
+    ],
+    "mcp": [
+      "AWR-SC-008"
+    ],
+    "missing_evidence": [
+      "AWR-SC-005"
+    ],
+    "multi_agent": [
+      "AWR-SC-004"
+    ],
+    "permission": [
+      "AWR-SC-007"
+    ],
+    "recovery": [
+      "AWR-SC-002",
+      "AWR-SC-006",
+      "AWR-SC-008"
+    ],
+    "secret": [
+      "AWR-SC-007"
+    ],
+    "session_change": [
+      "AWR-SC-002"
+    ],
+    "single_agent": [
+      "AWR-SC-001"
+    ],
+    "size_limit": [
+      "AWR-SC-007"
+    ],
+    "source_mutation": [
+      "AWR-SC-005",
+      "AWR-SC-006"
+    ],
+    "topology": [
+      "AWR-SC-004",
+      "AWR-SC-008"
+    ]
+  },
+  "required_gates": [
+    "natural_client_initiation",
+    "tool_or_role_execution",
+    "real_artifact",
+    "business_followup_1",
+    "business_followup_2",
+    "independent_review",
+    "final_delivery",
+    "traceable_receipt",
+    "fixture_isolation",
+    "independent_commit_and_remote_sha"
+  ],
+  "status_authority": "ledger/work-ledger.yaml",
+  "execution_status_inferred": false
+}

@@ -1,0 +1,109 @@
+{
+  "scenario_id": "AWR-SC-002",
+  "fixture_version": "1.0.0",
+  "namespace": "awr-v1/long-task-resume",
+  "business_title": "望海运营手册更新",
+  "project_directory": "project",
+  "work_graph": "work-graph.yaml",
+  "entry_work": "WH-OPEN",
+  "participants": {
+    "executor": {
+      "purpose": "在实际客户端推进业务工作并保留工具及产物记录"
+    },
+    "reviewer": {
+      "purpose": "独立检查产物、来源及两轮修订，给出可追溯意见"
+    }
+  },
+  "reviewer_distinct_from": [
+    "executor"
+  ],
+  "initial_request": "请继续整理这项持续多天的工作，完成交接记录，并推进还没有闭环的部分。",
+  "prelude": {
+    "request": "请先梳理这份运营手册的缺口，做一轮整理，并把当前进展、未决问题和下次可以继续的事情留下来。",
+    "required_live_preconditions": [
+      "真实客户端中完成一段有产物的工作并保存 checkpoint。",
+      "在新的真实客户端会话中接续，保留前序会话与 checkpoint 的绑定。"
+    ]
+  },
+  "followups": [
+    {
+      "number": 1,
+      "request": "先补齐上次遗留的问题，并解释现在的推进顺序。",
+      "publish": [
+        {
+          "source": "updates/round-1/materials/duty-notes.md",
+          "target": "materials/duty-notes.md",
+          "expected_previous_sha256": null
+        }
+      ],
+      "required_observation": "补齐遗留问题，解释接续后的推进顺序，不能丢弃原 open loop。"
+    },
+    {
+      "number": 2,
+      "request": "我补充了验收要求，请据此调整下一步并给出最终交付说明。",
+      "publish": [
+        {
+          "source": "updates/round-2/RULES.md",
+          "target": "RULES.md",
+          "expected_previous_sha256": "13834a21aea934aa9f64cca6c104d8c043b1d7eb200887cb383907b4388519cb"
+        }
+      ],
+      "required_observation": "把追加验收要求纳入修订和交付说明。"
+    }
+  ],
+  "artifacts": [
+    {
+      "title": "中断前交接",
+      "path": "deliverables/wanghai-before-handoff.md",
+      "producer": "executor"
+    },
+    {
+      "title": "恢复后的工作记录",
+      "path": "deliverables/wanghai-resumed-work.md",
+      "producer": "executor"
+    },
+    {
+      "title": "最终交付说明",
+      "path": "deliverables/wanghai-final-delivery.md",
+      "producer": "executor"
+    },
+    {
+      "title": "独立复核记录",
+      "path": "deliverables/wh-independent-review.md",
+      "producer": "reviewer"
+    },
+    {
+      "title": "最终交付与未决事项",
+      "path": "deliverables/wh-delivery.md",
+      "producer": "executor"
+    }
+  ],
+  "review_rubric": [
+    "接续后的记录保留真实前序 checkpoint、未决事项和下一步。",
+    "新增职责和资料要求进入手册及最终说明。",
+    "前后工作记录来自不同会话，没有用改写模型标签替代实际恢复。"
+  ],
+  "required_gates": [
+    "natural_client_initiation",
+    "tool_or_role_execution",
+    "real_artifact",
+    "business_followup_1",
+    "business_followup_2",
+    "independent_review",
+    "final_delivery",
+    "traceable_receipt",
+    "fixture_isolation",
+    "independent_commit_and_remote_sha"
+  ],
+  "dimensions": [
+    "daily",
+    "recovery",
+    "session_change",
+    "cli"
+  ],
+  "artifact_directory": "ledger/evidence/business/AWR-SC-002",
+  "minimum_real_clients": 1,
+  "native_mcp_required": false,
+  "runtime_seed_policy": "Never seed sessions, claims, events, checkpoints, completed source work or E4 receipts. Prelude state must come from actual client execution.",
+  "generated_material": null
+}

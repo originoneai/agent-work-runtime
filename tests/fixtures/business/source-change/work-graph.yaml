@@ -1,0 +1,24 @@
+namespace: awr-v1/source-change
+nodes:
+- key: SG-DIFF
+  role: executor
+  depends_on: []
+- key: SG-DEPEND
+  role: executor
+  depends_on:
+  - SG-DIFF
+- key: SG-PLAN
+  role: executor
+  depends_on:
+  - SG-DEPEND
+- key: SG-REVIEW
+  role: reviewer
+  depends_on:
+  - SG-PLAN
+- key: SG-DELIVER
+  role: executor
+  depends_on:
+  - SG-REVIEW
+reviewer_distinct_from:
+- executor
+handoff_requirement: 执行与复核保留不同实际身份和来源；不能用角色名称或模型标签代替独立参与者。

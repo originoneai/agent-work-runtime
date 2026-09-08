@@ -1,0 +1,20 @@
+namespace: awr-v1/project-onboarding
+nodes:
+- key: QH-INPUT
+  role: executor
+  depends_on: []
+- key: QH-BRIEF
+  role: executor
+  depends_on:
+  - QH-INPUT
+- key: QH-REVIEW
+  role: reviewer
+  depends_on:
+  - QH-BRIEF
+- key: QH-DELIVER
+  role: executor
+  depends_on:
+  - QH-REVIEW
+reviewer_distinct_from:
+- executor
+handoff_requirement: 执行与复核保留不同实际身份和来源；不能用角色名称或模型标签代替独立参与者。

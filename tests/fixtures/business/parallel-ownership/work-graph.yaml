@@ -1,0 +1,30 @@
+namespace: awr-v1/parallel-ownership
+nodes:
+- key: XQ-INPUT
+  role: executor
+  depends_on: []
+- key: XQ-CONTENT
+  role: executor
+  depends_on:
+  - XQ-INPUT
+- key: XQ-VENUE
+  role: executor_peer
+  depends_on:
+  - XQ-INPUT
+- key: XQ-MERGE
+  role: executor
+  depends_on:
+  - XQ-CONTENT
+  - XQ-VENUE
+- key: XQ-REVIEW
+  role: reviewer
+  depends_on:
+  - XQ-MERGE
+- key: XQ-DELIVER
+  role: executor
+  depends_on:
+  - XQ-REVIEW
+reviewer_distinct_from:
+- executor
+- executor_peer
+handoff_requirement: 执行与复核保留不同实际身份和来源；不能用角色名称或模型标签代替独立参与者。

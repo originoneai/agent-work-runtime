@@ -1,0 +1,84 @@
+milestones:
+- id: YF-DELIVERY
+  title: 云帆帮助中心验收交付
+  status: in_progress
+work_items:
+- id: YF-GAPS
+  title: 核对交付与证据缺口
+  status: ready
+  owner: null
+  priority: P0
+  milestone: YF-DELIVERY
+  goal: goal#yf
+  acceptance:
+  - 区分文件存在检查、实际使用验证和独立复核。
+  - 保留实际产物与来源引用，无法确认的内容显式说明。
+  depends_on: []
+  next_action: 核对交付与证据缺口，先核对当前来源和负责范围。
+  evidence: []
+  verification:
+    evidence_level: none
+- id: YF-USE
+  title: 组织实际使用并保留产物
+  status: planned
+  owner: null
+  priority: P0
+  milestone: YF-DELIVERY
+  goal: goal#yf
+  acceptance:
+  - 在实际客户端中使用交付文档完成输入案例，保留过程及返工。
+  - 保留实际产物与来源引用，无法确认的内容显式说明。
+  depends_on:
+  - YF-GAPS
+  next_action: 组织实际使用并保留产物，先核对当前来源和负责范围。
+  evidence: []
+  verification:
+    evidence_level: none
+- id: YF-MAP
+  title: 建立逐条验收证据映射
+  status: planned
+  owner: null
+  priority: P0
+  milestone: YF-DELIVERY
+  goal: goal#yf
+  acceptance:
+  - 每条验收有实际证据引用，缺证据时不得宣告完成。
+  - 保留实际产物与来源引用，无法确认的内容显式说明。
+  depends_on:
+  - YF-USE
+  next_action: 建立逐条验收证据映射，先核对当前来源和负责范围。
+  evidence: []
+  verification:
+    evidence_level: none
+- id: YF-REVIEW
+  title: 独立复核验收结论
+  status: planned
+  owner: null
+  priority: P0
+  milestone: YF-DELIVERY
+  goal: goal#yf
+  acceptance:
+  - 核对证据对应关系与实际使用记录，指出不准确结论。
+  - 保留实际产物与来源引用，无法确认的内容显式说明。
+  depends_on:
+  - YF-MAP
+  next_action: 独立复核验收结论，先核对当前来源和负责范围。
+  evidence: []
+  verification:
+    evidence_level: none
+- id: YF-DELIVER
+  title: 完成帮助中心交付
+  status: planned
+  owner: null
+  priority: P0
+  milestone: YF-DELIVERY
+  goal: goal#yf
+  acceptance:
+  - 处理复核意见并生成可追溯完成回执。
+  - 保留实际产物与来源引用，无法确认的内容显式说明。
+  depends_on:
+  - YF-REVIEW
+  next_action: 完成帮助中心交付，先核对当前来源和负责范围。
+  evidence: []
+  verification:
+    evidence_level: none

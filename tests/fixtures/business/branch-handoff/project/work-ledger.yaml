@@ -1,0 +1,84 @@
+milestones:
+- id: YL-DELIVERY
+  title: 远岚产品发布说明交付
+  status: in_progress
+work_items:
+- id: YL-DRAFT
+  title: 整理发布说明工作路线
+  status: ready
+  owner: null
+  priority: P0
+  milestone: YL-DELIVERY
+  goal: goal#yl
+  acceptance:
+  - 在实际工作分支保留初稿和交接信息。
+  - 保留实际产物与来源引用，无法确认的内容显式说明。
+  depends_on: []
+  next_action: 整理发布说明工作路线，先核对当前来源和负责范围。
+  evidence: []
+  verification:
+    evidence_level: none
+- id: YL-HANDOFF
+  title: 接续并核对分支成果
+  status: planned
+  owner: null
+  priority: P0
+  milestone: YL-DELIVERY
+  goal: goal#yl
+  acceptance:
+  - 在不同真实客户端接续原工作，核对工作分支与 Git 引用。
+  - 保留实际产物与来源引用，无法确认的内容显式说明。
+  depends_on:
+  - YL-DRAFT
+  next_action: 接续并核对分支成果，先核对当前来源和负责范围。
+  evidence: []
+  verification:
+    evidence_level: none
+- id: YL-REVISE
+  title: 结合主线修订发布说明
+  status: planned
+  owner: null
+  priority: P0
+  milestone: YL-DELIVERY
+  goal: goal#yl
+  acceptance:
+  - 显式处理主线变化与分支文本的差异。
+  - 保留实际产物与来源引用，无法确认的内容显式说明。
+  depends_on:
+  - YL-HANDOFF
+  next_action: 结合主线修订发布说明，先核对当前来源和负责范围。
+  evidence: []
+  verification:
+    evidence_level: none
+- id: YL-REVIEW
+  title: 独立复核合并内容
+  status: planned
+  owner: null
+  priority: P0
+  milestone: YL-DELIVERY
+  goal: goal#yl
+  acceptance:
+  - 核对两客户端过程、合并影响和未决事项。
+  - 保留实际产物与来源引用，无法确认的内容显式说明。
+  depends_on:
+  - YL-REVISE
+  next_action: 独立复核合并内容，先核对当前来源和负责范围。
+  evidence: []
+  verification:
+    evidence_level: none
+- id: YL-DELIVER
+  title: 合并并交付发布说明
+  status: planned
+  owner: null
+  priority: P0
+  milestone: YL-DELIVERY
+  goal: goal#yl
+  acceptance:
+  - 交付合并说明，关闭已结束分支并保留仍需跟进的问题。
+  - 保留实际产物与来源引用，无法确认的内容显式说明。
+  depends_on:
+  - YL-REVIEW
+  next_action: 合并并交付发布说明，先核对当前来源和负责范围。
+  evidence: []
+  verification:
+    evidence_level: none

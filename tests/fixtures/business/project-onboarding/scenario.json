@@ -1,0 +1,102 @@
+{
+  "scenario_id": "AWR-SC-001",
+  "fixture_version": "1.0.0",
+  "namespace": "awr-v1/project-onboarding",
+  "business_title": "青禾文档门户上线",
+  "project_directory": "project",
+  "work_graph": "work-graph.yaml",
+  "entry_work": "QH-INPUT",
+  "participants": {
+    "executor": {
+      "purpose": "在实际客户端推进业务工作并保留工具及产物记录"
+    },
+    "reviewer": {
+      "purpose": "独立检查产物、来源及两轮修订，给出可追溯意见"
+    }
+  },
+  "reviewer_distinct_from": [
+    "executor"
+  ],
+  "initial_request": "帮我接手这个项目，整理当前目标、最先能推进的工作，以及开始前需要遵守的要求。",
+  "prelude": null,
+  "followups": [
+    {
+      "number": 1,
+      "request": "把本周优先交付的内容收拢成一份可执行清单，并说明依赖。",
+      "publish": [
+        {
+          "source": "updates/round-1/materials/week-window.md",
+          "target": "materials/week-window.md",
+          "expected_previous_sha256": null
+        }
+      ],
+      "required_observation": "根据窗口约束调整可执行清单，并保留尚未确认的接入依赖。"
+    },
+    {
+      "number": 2,
+      "request": "我调整了项目规则，请更新简报，说明哪些安排需要改变。",
+      "publish": [
+        {
+          "source": "updates/round-2/RULES.md",
+          "target": "RULES.md",
+          "expected_previous_sha256": "14fb573ef193e475f1f6d6bf54cfcf59888646150cee3ea0719de39733327386"
+        }
+      ],
+      "required_observation": "新规则须进入后续上下文，简报应指出受影响的安排。"
+    }
+  ],
+  "artifacts": [
+    {
+      "title": "工作简报",
+      "path": "deliverables/qinghe-brief.md",
+      "producer": "executor"
+    },
+    {
+      "title": "任务与依赖清单",
+      "path": "deliverables/qinghe-dependencies.md",
+      "producer": "executor"
+    },
+    {
+      "title": "更新后的 Context Pack",
+      "path": "deliverables/qinghe-context-reference.md",
+      "producer": "executor"
+    },
+    {
+      "title": "独立复核记录",
+      "path": "deliverables/qh-independent-review.md",
+      "producer": "reviewer"
+    },
+    {
+      "title": "最终交付与未决事项",
+      "path": "deliverables/qh-delivery.md",
+      "producer": "executor"
+    }
+  ],
+  "review_rubric": [
+    "优先安排符合周三半天窗口，没有把待确认域名当作已就绪。",
+    "两轮修订可追溯到新增窗口和规则材料。",
+    "对外版本不含个人联系人，最终交付与未决事项分开说明。"
+  ],
+  "required_gates": [
+    "natural_client_initiation",
+    "tool_or_role_execution",
+    "real_artifact",
+    "business_followup_1",
+    "business_followup_2",
+    "independent_review",
+    "final_delivery",
+    "traceable_receipt",
+    "fixture_isolation",
+    "independent_commit_and_remote_sha"
+  ],
+  "dimensions": [
+    "daily",
+    "single_agent",
+    "cli"
+  ],
+  "artifact_directory": "ledger/evidence/business/AWR-SC-001",
+  "minimum_real_clients": 1,
+  "native_mcp_required": false,
+  "runtime_seed_policy": "Never seed sessions, claims, events, checkpoints, completed source work or E4 receipts. Prelude state must come from actual client execution.",
+  "generated_material": null
+}

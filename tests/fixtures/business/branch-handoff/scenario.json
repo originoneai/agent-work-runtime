@@ -1,0 +1,114 @@
+{
+  "scenario_id": "AWR-SC-008",
+  "fixture_version": "1.0.0",
+  "namespace": "awr-v1/branch-handoff",
+  "business_title": "远岚产品发布说明",
+  "project_directory": "project",
+  "work_graph": "work-graph.yaml",
+  "entry_work": "YL-DRAFT",
+  "participants": {
+    "executor": {
+      "purpose": "在实际客户端推进业务工作并保留工具及产物记录"
+    },
+    "reviewer": {
+      "purpose": "独立检查产物、来源及两轮修订，给出可追溯意见"
+    },
+    "previous_executor": {
+      "purpose": "在不同真实客户端形成前序分支成果和交接"
+    }
+  },
+  "reviewer_distinct_from": [
+    "executor",
+    "previous_executor"
+  ],
+  "initial_request": "请接续另一位执行者留下的工作分支，核实进展后完成后续交付。",
+  "prelude": {
+    "request": "请先沿一条独立工作路线整理发布说明初稿，保留已有结果、尚未确认的问题，以及另一位执行者可以接续的说明。",
+    "required_live_preconditions": [
+      "前序执行者在真实客户端创建工作分支、Git 引用和交接记录。",
+      "后序使用不同真实客户端，其中至少一个执行实际 MCP 工具轮次；改写 provider/model 元数据不算跨客户端。"
+    ]
+  },
+  "followups": [
+    {
+      "number": 1,
+      "request": "主线已有新的变化，请结合这些变化修订方案并继续推进。",
+      "publish": [
+        {
+          "source": "updates/round-1/materials/mainline-notes.md",
+          "target": "materials/mainline-notes.md",
+          "expected_previous_sha256": "952f1ed69573d8c4e7fe6c385782411f572648af0010a0023f789f7b1bce3d29"
+        }
+      ],
+      "required_observation": "记录主线更新前后引用，解释合并影响而非直接覆盖分支产物。"
+    },
+    {
+      "number": 2,
+      "request": "整合结果后整理合并说明，关闭已结束的工作，并交代仍需跟进的问题。",
+      "publish": [
+        {
+          "source": "updates/round-2/RULES.md",
+          "target": "RULES.md",
+          "expected_previous_sha256": "6d59688963180724c6052e5dac1e627da2e81b7344ec412a4d373b6ede42211a"
+        }
+      ],
+      "required_observation": "在实际客户端完成整合、复核、分支收尾和交付回执。"
+    }
+  ],
+  "artifacts": [
+    {
+      "title": "跨客户端交接记录",
+      "path": "deliverables/yuanlan-client-handoff.md",
+      "producer": "previous_executor"
+    },
+    {
+      "title": "合并影响说明",
+      "path": "deliverables/yuanlan-merge-impact.md",
+      "producer": "executor"
+    },
+    {
+      "title": "分支结束与最终交付记录",
+      "path": "deliverables/yuanlan-final-release-notes.md",
+      "producer": "executor"
+    },
+    {
+      "title": "独立复核记录",
+      "path": "deliverables/yl-independent-review.md",
+      "producer": "reviewer"
+    },
+    {
+      "title": "最终交付与未决事项",
+      "path": "deliverables/yl-delivery.md",
+      "producer": "executor"
+    }
+  ],
+  "review_rubric": [
+    "两个实际客户端及其工具轮次可区分，包含真实 MCP 调用。",
+    "工作分支、Git 引用、主线变化和合并结果有连续证据。",
+    "关闭动作经过实际复核，未决事项没有被静默删除。"
+  ],
+  "required_gates": [
+    "natural_client_initiation",
+    "tool_or_role_execution",
+    "real_artifact",
+    "business_followup_1",
+    "business_followup_2",
+    "independent_review",
+    "final_delivery",
+    "traceable_receipt",
+    "fixture_isolation",
+    "independent_commit_and_remote_sha"
+  ],
+  "dimensions": [
+    "channel",
+    "topology",
+    "recovery",
+    "branch_merge",
+    "mcp"
+  ],
+  "artifact_directory": "ledger/evidence/business/AWR-SC-008",
+  "minimum_real_clients": 2,
+  "native_mcp_required": true,
+  "runtime_seed_policy": "Never seed sessions, claims, events, checkpoints, completed source work or E4 receipts. Prelude state must come from actual client execution.",
+  "generated_material": null
+}
