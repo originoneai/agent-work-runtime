@@ -172,7 +172,7 @@ def run_benchmark(binary, prepared, output):
         # A controlled event contains a verbatim old receipt. It is a benchmark
         # operation now, not a fabricated claim that the original project emitted it.
         old_payload = output / 'historical-probe-payload.json'
-        write_json(old_payload, {'source_receipt': historical['summary'], 'probe': 'controlled history-isolation observation'})
+        write_json(old_payload, {'body': historical['summary']})
         event = run('07-unrelated-history-event', 'event', 'append', '--work', historical['id'],
                     '--type', 'work.progress', '--importance', 'critical', '--summary', historical['title'],
                     '--payload', old_payload, '--expected-revision', baseline_revision)
@@ -182,7 +182,7 @@ def run_benchmark(binary, prepared, output):
         full_event = run('10-explicit-history-event', 'event', 'show', event['event']['id'], '--full')
         text = context['work_context']['rendered_context']
         require(full_history['object']['summary'] == historical['summary'] and historical['summary'], 'Historical receipt cannot be explicitly retrieved')
-        require(full_event['event']['payload']['source_receipt'] == historical['summary'], 'Historical event payload was lost')
+        require(full_event['event']['payload']['body'] == historical['summary'], 'Historical event payload was lost')
         require(all(value in text for value in [selected['next_action'], selected['blocker'], *selected['acceptance']]),
                 'Selected hard facts missing from compiled context')
         require(not any(value in json.dumps(context, ensure_ascii=False) for value in
