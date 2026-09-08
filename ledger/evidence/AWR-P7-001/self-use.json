@@ -1,0 +1,58 @@
+{
+  "kind": "developer_self_use",
+  "work_item": "AWR-P7-001",
+  "checked_at": "2026-09-08T11:44:32+08:00",
+  "source_commit": "a98dd1ad888ea10d3dc366781e2c5d1cddc67508",
+  "branch_id": "01M1ZHQVT3Q20ABR2D3ANYB7S5",
+  "branch_name": "p7-001-development",
+  "parent_branch_id": null,
+  "fork_project_revision": 290,
+  "git_ref": "refs/heads/main",
+  "resolved_git_ref": "refs/heads/main",
+  "recorded_git_commit": "a98dd1ad888ea10d3dc366781e2c5d1cddc67508",
+  "main_session_id": "01M1ZG406CQ6TC73FTPCN50A0N",
+  "branch_session_id": "01M1ZHQVW5K4B9EDFGTHEMRAF0",
+  "branch_session_outcome": "ended",
+  "branch_checkpoint_id": "01M1ZHQXF2HJRRBPEDSYE51BD4",
+  "branch_evidence_id": "01M1ZHQWP47PM64SDN71271VGN",
+  "branch_evidence_event_id": "01M1ZHQWP4AE7H0HNW730Y1JYA",
+  "observation_locator": "ledger/evidence/AWR-P7-001/branch-observation.json",
+  "observation_sha256": "433cb3be0136f89ed443d4f103f03826e3fac921116c9a0df7a4062a9a4dbe4f",
+  "branch_context_tokens": 4968,
+  "main_context_tokens": 4994,
+  "initial_project_revision": 290,
+  "final_project_revision": 298,
+  "checks": {
+    "parent_fork_revision_git_binding": true,
+    "session_claim_context_evidence_event_branch_match": true,
+    "main_runtime_records_unchanged": true,
+    "source_unchanged": true,
+    "git_checkout_unchanged": true,
+    "branch_evidence_historical_on_main": true,
+    "branch_session_ended_and_claim_released": true,
+    "main_selected_again": true,
+    "doctor_no_warning_or_error": true
+  },
+  "doctor": {
+    "ok": true,
+    "findings": [
+      {
+        "code": "active_session",
+        "severity": "info",
+        "object_kind": "session",
+        "object_id": "01M1ZG406CQ6TC73FTPCN50A0N",
+        "message": "Session is active in the database; process liveness was not inspected, so death cannot be inferred",
+        "repair": {
+          "kind": "interrupt_session",
+          "session_id": "01M1ZG406CQ6TC73FTPCN50A0N"
+        }
+      }
+    ]
+  },
+  "limitations": [
+    "Actual CLI developer self-use, not E4 or independent business acceptance. Branch observation is an intermediate report; the final delivery separately binds the full behavior checks and this completed self-use chain.",
+    "Doctor correctly reports the still-active main development session as informational. No warning/error or repair requirement was found.",
+    "The work branch remains active for subsequent branch context/merge/close development; no Git branch or Source snapshot was created.",
+    "The current-branch context works. Named branch overlays, fork-based deltas and strict selection of branch evidence remain P7-002; merge/close remains P7-003."
+  ]
+}

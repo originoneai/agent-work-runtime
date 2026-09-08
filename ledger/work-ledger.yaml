@@ -1,8 +1,8 @@
 schema_version: 1
 contract_id: awr-v1
 contract_version: 1.0.0
-ledger_revision: 98
-updated_at: '2026-09-08T11:13:08+08:00'
+ledger_revision: 99
+updated_at: '2026-09-08T11:51:02+08:00'
 project:
   name: Agent Work Runtime
   external_key: agent-work-runtime
@@ -11,14 +11,13 @@ project:
   release_status: not_released
 current:
   milestone: M6
-  work_item: AWR-P7-001
-  next_action: 实现 Work Branch 的 create/list/switch 与 Git ref 元数据绑定，固定 fork revision 和来源边界，并在本项目开始实际使用。
+  work_item: AWR-P7-002
+  next_action: 实现指定分支的上下文编译与 fork 后增量，绑定分支和 Source 版本并隔离其他分支运行记录；在保留的真实工作分支上连续自用。
   open_loops:
   - 功能实现优先；集中测试、优化和打磨在功能开发后执行。
-  - 本项目已实际使用 Source、Status、Ready、Work、Search、Session、Claim、Context、Checkpoint、Resume、Doctor、YAML 提案写回和 work complete；继续用开发会话记录当前工作。
-  - P6-004 已交付并核验远端，且通过实际 work complete 关闭本项。P7-001 继续建立 Work Branch / Git Ref / fork revision 的明确绑定；Source/Git
-    保持共享权威，运行态必须保持分支归属。
-  - 完成检查只核对明确登记的证据及报告，不自动证明自然语言验收质量、独立复核或 E4；集中质量与发布门槛继续按后续台账执行。
+  - 本项目已实际使用 Source、Work、Search、Session、Claim、Context、Checkpoint、Resume、Doctor、YAML 写回、work complete 和 Work Branch；继续记录当前开发会话。
+  - P7-001 已交付并核验远端；保留 p7-001-development 工作分支。P7-002 实现指定分支上下文与 fork 后增量，P7-003 再完成 Git 合并后重索引及分支关闭。
+  - 功能定向检查和项目自用不计入 E4。独立复核、集中质量和发布门槛继续按后续台账执行。
 milestones:
 - id: M0
   status: completed
@@ -1266,44 +1265,45 @@ work_items:
     evidence_directory: ledger/evidence/AWR-P6-004
     evidence_level: locally_verified
     minimum: 证明本条验收行为；功能阶段运行必要的定向检查，系统测试在 M9 集中执行。
-- id: AWR-P7-001
-  title: Work Branch 与 Git Ref 绑定
-  milestone: M6
-  priority: P0
-  kind: feature
-  required_for_v1: true
-  status: in_progress
-  owner: codex-primary
-  depends_on:
-  - AWR-P5-002
-  source_sections:
-  - 6
-  - 25
-  - 26
+- acceptance:
+  - create/list/switch 记录父分支、fork revision 与 git ref。
+  - Session/Event/Claim/Context/Evidence 有分支归属，明确共享 Source 与运行态隔离的边界。
+  blocker: null
   deliverables:
   - crates/awr-runtime/
   - crates/awr-store/
   - crates/awr-core/
   - crates/awr-cli/
   - README.md
-  acceptance:
-  - create/list/switch 记录父分支、fork revision 与 git ref。
-  - Session/Event/Claim/Context/Evidence 有分支归属，明确共享 Source 与运行态隔离的边界。
+  depends_on:
+  - AWR-P5-002
+  evidence:
+  - ledger/deliveries/AWR-P7-001.json
+  id: AWR-P7-001
+  kind: feature
+  milestone: M6
+  next_action: 已交付并通过本项目 work complete 关闭；保留实际工作分支用于 P7-002/P7-003 连续自用。
+  owner: codex-primary
+  priority: P0
+  required_for_v1: true
+  source_sections:
+  - 6
+  - 25
+  - 26
+  status: completed
+  title: Work Branch 与 Git Ref 绑定
   verification:
-    minimum: 证明本条验收行为；功能阶段运行必要的定向检查，系统测试在 M9 集中执行。
     evidence_directory: ledger/evidence/AWR-P7-001
-    evidence_level: none
-  evidence: []
-  blocker: null
-  next_action: 实现 Work Branch 的 create/list/switch 与 Git ref 元数据绑定，固定 fork revision 和来源边界，并在本项目开始实际使用。
+    evidence_level: locally_verified
+    minimum: 证明本条验收行为；功能阶段运行必要的定向检查，系统测试在 M9 集中执行。
 - id: AWR-P7-002
   title: Branch Context 与 Delta
   milestone: M6
   priority: P0
   kind: feature
   required_for_v1: true
-  status: planned
-  owner: null
+  status: in_progress
+  owner: codex-primary
   depends_on:
   - AWR-P7-001
   - AWR-P4-002
@@ -1312,6 +1312,10 @@ work_items:
   - 26
   deliverables:
   - crates/awr-context/
+  - crates/awr-runtime/
+  - crates/awr-store/
+  - crates/awr-cli/
+  - README.md
   acceptance:
   - 上下文结合 main 当前有效状态与本分支 fork 后增量。
   - 其他分支运行事件不会混入；分支及来源版本进入 hash 和完整性字段。
@@ -1321,7 +1325,7 @@ work_items:
     evidence_level: none
   evidence: []
   blocker: null
-  next_action: 按交付物实现并验证：Branch Context 与 Delta
+  next_action: 实现指定分支的上下文编译与 fork 后增量，绑定分支和 Source 版本并隔离其他分支运行记录；在保留的真实工作分支上连续自用。
 - id: AWR-P7-003
   title: Git 合并后重索引与 Branch Close
   milestone: M6
