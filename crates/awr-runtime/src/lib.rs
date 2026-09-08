@@ -7,6 +7,7 @@ mod branch;
 mod branch_close;
 mod completion;
 mod doctor;
+mod fs_sync;
 mod mutation;
 mod mutation_apply;
 mod read;

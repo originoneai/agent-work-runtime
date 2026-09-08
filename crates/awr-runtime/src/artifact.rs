@@ -1,4 +1,4 @@
-use crate::{ARTIFACT_IMPORT_CAP, Runtime};
+use crate::{ARTIFACT_IMPORT_CAP, Runtime, fs_sync::sync_directory};
 use awr_core::*;
 use awr_source::{open_dir_exact, open_file_exact};
 use cap_fs_ext::{DirExt, FollowSymlinks, OpenOptionsFollowExt};
@@ -158,8 +158,7 @@ impl Runtime<'_> {
         let mut pending = PendingFile::new(directory, storage_id)?;
         pending.output.as_mut().unwrap().write_all(&bytes)?;
         pending.output.as_ref().unwrap().sync_all()?;
-        #[cfg(unix)]
-        pending.directory.try_clone()?.into_std_file().sync_all()?;
+        sync_directory(&pending.directory)?;
         drop(pending.output.take());
         let locator = destination
             .strip_prefix(&root)

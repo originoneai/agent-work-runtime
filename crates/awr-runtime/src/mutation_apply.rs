@@ -1,3 +1,4 @@
+use crate::fs_sync::sync_directory;
 use crate::mutation::{ProposalReport, ReviewProposalRequest, report};
 use awr_core::*;
 use awr_source::{
@@ -28,13 +29,6 @@ fn directory(parent: &Dir, name: &str, path: &Path) -> Result<Dir> {
         )));
     }
     Ok(parent.open_dir_nofollow(name)?)
-}
-fn sync_directory(directory: &Dir) -> Result<()> {
-    #[cfg(unix)]
-    {
-        directory.try_clone()?.into_std_file().sync_all()?;
-    }
-    Ok(())
 }
 fn recovery_root(root: &Path) -> Result<Dir> {
     let runtime = root.join(".awr");
