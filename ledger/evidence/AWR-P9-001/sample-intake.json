@@ -1,0 +1,66 @@
+{
+  "kind": "partial_benchmark_sample_intake",
+  "work_item": "AWR-P9-001",
+  "sample_id": "real-ledger-sample-01",
+  "checked_at": "2026-09-08T23:17:42+08:00",
+  "source_commit": "4064f57ec9617f53a0c139e729ac572b7c281f6f",
+  "source_commit_date": "2026-07-30",
+  "source_scope": "Existing user-selected real project local checkout; historical snapshot, not an assertion about its latest deployment.",
+  "current_work_items": 39,
+  "historical_work_items": 111,
+  "counted_work_items": 150,
+  "counted_ledger_bytes": 385111,
+  "frozen_source_bytes": 862715,
+  "counted_ledgers": 2,
+  "supporting_documents": 4,
+  "unique_keys_verified": true,
+  "git_blobs_match_originals": true,
+  "originals_unchanged": true,
+  "scale_eligible": true,
+  "source_format": "Markdown tables with explicitly documented checkbox meanings; item-specific blockers require preservation.",
+  "runtime_benchmark_executed": false,
+  "benchmark_completed": false,
+  "metric_credit": 0,
+  "e4_credit": 0,
+  "private_intake_sha256": "8244d33e5ced505c4387b7a00b3c0bec0fa22544e622389692affb65653dca63",
+  "source_hashes": [
+    {
+      "role": "counted_ledger",
+      "bytes": 205382,
+      "sha256": "ab3024ec624cd0c3569d193082e71f0405bacff91b4fe7c69fd603efaad45a70"
+    },
+    {
+      "role": "counted_ledger",
+      "bytes": 179729,
+      "sha256": "0d3d2fb00378b937fed223f506484a52be425de047f83978daa0c4aa19a7922f"
+    },
+    {
+      "role": "supporting_only",
+      "bytes": 443444,
+      "sha256": "220b08adc198aaf46328237d8ba92cd57902a0b5f0184902ab72a7b725055244"
+    },
+    {
+      "role": "supporting_only",
+      "bytes": 4365,
+      "sha256": "12911d5dd9ff2196cef78a4e687223f503aedb393b427c2d78fb70d7152facdd"
+    },
+    {
+      "role": "supporting_only",
+      "bytes": 22051,
+      "sha256": "34e3502335d888fd9142a290afd8c5ba2ac030e2c5fe7807398393055c904b6a"
+    },
+    {
+      "role": "supporting_only",
+      "bytes": 7744,
+      "sha256": "8260d6bb48e1ff3bdfec653fc4304fce9de070b9bf8628b6cbff5735b7a7f98a"
+    }
+  ],
+  "session_id": "01M20SFR370KWEQAER7B90B6E9",
+  "unblock_proposal_id": "01M20SFS1RTYCBPPM9RNN4G1FV",
+  "claim_id": "01M20SFV8D3NMABE8CEJP1B0D8",
+  "next_action": "Implement explicit Markdown-to-AWR source mapping and run task reads, incremental index, history isolation and projection rebuild against disposable copies.",
+  "limitations": [
+    "Original text, task identities, local paths and named Session contents are retained locally; only aggregate scope and fingerprints are public.",
+    "Sample scale and origin are established; canonical source admission and all required runtime benchmark gates remain unexecuted."
+  ]
+}
