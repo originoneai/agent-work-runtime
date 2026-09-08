@@ -51,7 +51,16 @@ fn recovery_root(root: &Path) -> Result<Dir> {
         .map_err(|e| Error::SourceUnavailable(format!("{}: {e}", runtime.display())))?;
     directory(&runtime_dir, "mutations", &runtime.join("mutations"))
 }
-fn source_lock(root: &Path, source: Id) -> Result<File> {
+struct SourceLock(File);
+impl Drop for SourceLock {
+    fn drop(&mut self) {
+        // Release this writer's reservation explicitly. A concurrent process spawn
+        // can briefly retain the same file description until close-on-exec runs;
+        // dropping our descriptor alone need not release the OS lock at this point.
+        let _ = self.0.unlock();
+    }
+}
+fn source_lock(root: &Path, source: Id) -> Result<SourceLock> {
     let directory = recovery_root(root)?;
     let name = format!("{source}.lock");
     let path = root.join(".awr/mutations").join(&name);
@@ -87,7 +96,7 @@ fn source_lock(root: &Path, source: Id) -> Result<File> {
             path.display()
         ))
     })?;
-    Ok(file)
+    Ok(SourceLock(file))
 }
 fn new_file(directory: &Dir, name: &OsStr) -> Result<File> {
     let mut options = OpenOptions::new();
@@ -338,7 +347,17 @@ fn stopped(
                     },
                 )
         });
-    if matches!(error, Error::Storage(_) | Error::RevisionConflict { .. }) || completion_written {
+    // Once an attempt is durable, an I/O/access failure cannot prove whether installation
+    // happened in an earlier process. Keep both snapshots and retry the exact binding.
+    // A later observed fingerprint/configuration conflict still stops without overwriting it.
+    if matches!(
+        error,
+        Error::Storage(_)
+            | Error::RevisionConflict { .. }
+            | Error::Io(_)
+            | Error::SourceUnavailable(_)
+    ) || completion_written
+    {
         return pending(store, project, attempt, wrote, error.to_string());
     }
     let conflict = matches!(error, Error::SourceConflict(_) | Error::SourceStale(_));
@@ -387,6 +406,18 @@ pub(crate) fn apply(
     root: &Path,
     request: &ReviewProposalRequest,
     recover: bool,
+) -> Result<ProposalReport> {
+    apply_observed(store, root, request, recover, |_| Ok(()))
+}
+
+// The production entrypoint supplies only a no-op. Private tests can observe exact
+// durability boundaries without adding environment switches to the shipped runtime.
+fn apply_observed(
+    store: &mut Store,
+    root: &Path,
+    request: &ReviewProposalRequest,
+    recover: bool,
+    mut observe: impl FnMut(&'static str) -> Result<()>,
 ) -> Result<ProposalReport> {
     if request.actor.trim().is_empty()
         || request.actor.len() > 256
@@ -455,6 +486,7 @@ pub(crate) fn apply(
             &prepared.before.bytes,
             &prepared.after.bytes,
         )?;
+        observe("before_journal")?;
         store
             .begin_proposal_apply(
                 project,
@@ -466,6 +498,7 @@ pub(crate) fn apply(
             )?
             .0
     };
+    observe("after_journal")?;
     let mut wrote = Some(false);
     let mut refreshed = false;
     let result = (|| {
@@ -489,6 +522,7 @@ pub(crate) fn apply(
                 return Err(Error::SourceUnavailable("source file is read-only".into()));
             }
             let mut replacement = SourceReplacement::prepare(&path, &after, permissions)?;
+            observe("after_temp")?;
             let before_replace = (|| {
                 if patch.work_action.is_some() {
                     store.check_work_proposal(project, &proposal)?;
@@ -522,12 +556,15 @@ pub(crate) fn apply(
                 wrote = None;
                 replacement.install()?;
                 wrote = Some(true);
-                sync_directory(&replacement.directory)
+                observe("after_rename")?;
+                sync_directory(&replacement.directory)?;
+                observe("after_sync")
             })();
             before_replace?;
         } else if snapshot.fingerprint != attempt.plan.after_fingerprint {
             return Err(Error::SourceConflict("current source matches neither recorded snapshot; retained both snapshots without overwriting it".into()));
         }
+        observe("before_projection")?;
         let source = store.source(project, proposal.source_id)?;
         let (_, spec, observed) = inspect_mutation_source(root, &source, &patch)?;
         if observed.fingerprint != attempt.plan.after_fingerprint {
@@ -548,6 +585,7 @@ pub(crate) fn apply(
             ));
         }
         let projected = store.commit_source_projection(&source, &observed.fingerprint, batch)?;
+        observe("after_projection")?;
         refreshed = projected.revision != source.revision;
         let source = store.source(project, proposal.source_id)?;
         let (_, _, latest) = inspect_mutation_source(root, &source, &patch)?;
@@ -573,6 +611,9 @@ pub(crate) fn apply(
             &request.reason,
         )
     })();
+    if result.is_ok() {
+        observe("after_finalization")?;
+    }
     let mut result = match result {
         Ok((proposal, event)) => decorate(
             report(proposal, event, false, None, None),
@@ -587,3 +628,7 @@ pub(crate) fn apply(
     result.source_refresh_performed = refreshed;
     Ok(result)
 }
+
+#[cfg(test)]
+#[path = "../../../tests/recovery/mutations/engine.rs"]
+mod recovery_tests;

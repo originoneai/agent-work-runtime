@@ -1,8 +1,8 @@
 schema_version: 1
 contract_id: awr-v1
 contract_version: 1.0.0
-ledger_revision: 133
-updated_at: '2026-09-08T17:57:32+08:00'
+ledger_revision: 134
+updated_at: '2026-09-08T18:28:19+08:00'
 project:
   name: Agent Work Runtime
   external_key: agent-work-runtime
@@ -12,10 +12,9 @@ project:
 current:
   milestone: M8
   work_item: AWR-SEC-003
-  next_action: 建立并发版本与指纹冲突、写前/写后/重索引中断的恢复矩阵，定位现有故障注入与恢复入口。
+  next_action: 20 项恢复合同与 60 项相关回归已通过；绑定源码、远端和本项目写回证据后完成本条，进入事件与会话隔离加固。
   open_loops:
-  - SEC-002 已完成：当前合同 1.3.0 的 32/32 条件、113 项相关检查与本项目实用验证通过；源码 8fc2666 的 Git 和 GitHub 回执已核实。MCP 完成写回、释放 claim、checkpoint/end
-    后 Doctor 为 0 项，进入 SEC-003。历史阶段证据保留，本次完成数来自四组重新执行。
+  - SEC-003 固定 20 项恢复合同与 60 项相关回归通过；七个真实进程中断边界及 CLI 接续有独立临时项目证据。已修复临时 I/O/访问错误提前关闭恢复记录和描述符延长来源锁占用，并在本项目通过 MCP 写回进度。等待源码提交、远端回执与完成写回。
   - SEC-001 已完成：26/26 路径条件、46 项写回回归和 10 项 MCP 检查通过；源码 217a0b5 的远端回执已核实。实际完成写回、快照核对、checkpoint/end 后 Doctor 为 0 项；进入
     SEC-002。均不计 E4 或正式发布。
   - P0/P1 功能与接入项全部完成；P8-004 已对齐 8 个 MCP Tools 和 CLI 的状态、版本、缺口及写入回执，进入 M8 安全与后续集中质量阶段。
@@ -1572,6 +1571,7 @@ work_items:
   - crates/awr-source/
   - crates/awr-runtime/
   - tests/recovery/mutations/
+  - docs/reference/mutation-recovery.md
   depends_on:
   - AWR-P6-004
   - AWR-P7-003
@@ -1579,7 +1579,7 @@ work_items:
   id: AWR-SEC-003
   kind: security
   milestone: M8
-  next_action: 建立并发版本与指纹冲突、写前/写后/重索引中断的恢复矩阵，定位现有故障注入与恢复入口。
+  next_action: 20 项恢复合同与 60 项相关回归已通过；绑定源码、远端和本项目写回证据后完成本条，进入事件与会话隔离加固。
   owner: codex-primary
   priority: P2
   required_for_v1: true

@@ -1,0 +1,272 @@
+{
+  "work_item": "AWR-SEC-003",
+  "checked_at": "2026-09-08T18:30:11+08:00",
+  "commands": [
+    "python3 tests/recovery/mutations/verify.py --report .local/sec003-recovery-matrix-v3.json",
+    "cargo test -p awr-runtime --lib mutation_apply::tests --locked",
+    "cargo test -p awr-source --test yaml_mutation --locked",
+    "cargo test -p awr-store --test mutation --locked",
+    "cargo test -p awr-cli --test proposal_cli --test work_action_cli --test work_complete_cli --locked",
+    "cargo test -p awr-mcp --test stdio --locked",
+    "cargo check --workspace --all-targets --locked",
+    "cargo fmt --all --check",
+    "git diff --check",
+    ".venv/bin/python .local/dev/sec003_self_use.py",
+    ".venv/bin/python scripts/check_ledger.py --render"
+  ],
+  "checks": [
+    {
+      "name": "current_recovery_contract",
+      "passed": true,
+      "result": "All 20 fixed conditions in contract 1.0.0 passed. Twelve runtime tests and one real CLI test cover concurrent revisions/sources, final fingerprint and mapping checks, seven process-death boundaries, damaged/newer source recovery and exactly one durable receipt."
+    },
+    {
+      "name": "recoverable_errors_and_lock_lifetime",
+      "passed": true,
+      "result": "Red baselines retained: two tests failed for temporary I/O closing attempts, and one deterministic duplicate-descriptor test failed for delayed lock release. Temporary I/O/source-access failures now retain pending recovery, including retries after an earlier write; source lock ownership explicitly unlocks at scope exit. Updated tests pass."
+    },
+    {
+      "name": "related_mutation_behavior",
+      "passed": true,
+      "result": "60 related tests passed: runtime held-path checks 4, source YAML mutations 4, Store proposal transactions 6, CLI proposal/work/complete 36 and MCP stdio 10. Workspace all-target check, locked distribution build, formatting and diff checks passed."
+    },
+    {
+      "name": "actual_project_use",
+      "passed": true,
+      "result": "The rebuilt binaries recorded observation and exact source progress through MCP in this project. Before/after snapshots match the real ledger and the final receipt resolves its original attempt. Context is complete at 4985 tokens; Doctor reports only the intentionally active session."
+    },
+    {
+      "name": "reviewed_failure_boundaries",
+      "passed": true,
+      "result": "Reviewed both behavior fixes and every observation boundary. Production supplies a private no-op observer and consumes no test fault environment variables. SQL projection/receipt failure tests preserve old stale or new fresh projection as appropriate and never report completion before its event commits."
+    }
+  ],
+  "artifacts": [
+    "crates/awr-runtime/src/mutation_apply.rs",
+    "tests/recovery/mutations/contract.json",
+    "tests/recovery/mutations/engine.rs",
+    "tests/recovery/mutations/verify.py",
+    "tests/recovery/mutations/README.md",
+    "docs/reference/mutation-recovery.md",
+    "ledger/evidence/AWR-SEC-003/recovery-matrix.json",
+    "ledger/evidence/AWR-SEC-003/self-use.json"
+  ],
+  "artifact_sha256": {
+    "crates/awr-runtime/src/mutation_apply.rs": "2b8b946ed3e94dc3d629b7d54cad4d6113177a50d2963dde2d55b14d4ae2bb7b",
+    "tests/recovery/mutations/contract.json": "0d7ad62972b604929346ab9a560acab99617d59adbde068d1d4e5f0d36a72afd",
+    "tests/recovery/mutations/engine.rs": "8def09fbed5fa94b662782ff4640def8a888ba6e695c878e0a2646fe1984c48a",
+    "tests/recovery/mutations/verify.py": "12771e175fdbefbb1b92df37ec0c2f9aeea1d6fbdbbfa5deacdd70ed84bd4ff9",
+    "tests/recovery/mutations/README.md": "dbf8e424760bb2a8da237df9e5c2770af8e33a7cbba0ec4e46967af3ea446f77",
+    "docs/reference/mutation-recovery.md": "42c24d9fd8bc3f2ae26538d0740e2eb8be33e8d65762fb66f6dc39e7de4f7894",
+    "ledger/evidence/AWR-SEC-003/recovery-matrix.json": "99a176e4530c98db9757c217f409e55dbde9a63799f327f1ca69f1609bc93d4a",
+    "ledger/evidence/AWR-SEC-003/self-use.json": "f38e645f8377dec24659c833aaeed7eaf08b18c57469092841b7165260aa7895"
+  },
+  "recovery_contract": {
+    "id": "awr-mutation-recovery",
+    "version": "1.0.0",
+    "target_conditions": 20,
+    "verified_conditions": 20
+  },
+  "binary_sha256": {
+    "awr": "3b805b71e313e346371887ac8dd194a6b453d5b85d3e956c4917ddc822f42dcf",
+    "awr-mcp": "c7a441f497e8c2f7ed6ebd283de2c3c6da47030a0b069eb0ea5220e6ff63c120"
+  },
+  "related_checks": [
+    {
+      "name": "write_handles",
+      "command": [
+        "rtk",
+        "proxy",
+        "cargo",
+        "test",
+        "-p",
+        "awr-runtime",
+        "--lib",
+        "mutation_apply::tests",
+        "--locked"
+      ],
+      "exit_code": 0,
+      "passed": true,
+      "tests": 4,
+      "log": ".local/sec003-related-v1-write_handles.log",
+      "sha256": "e6e628ef4b2c3053281532e2f2cabe9e53eb5a42a61b72cf4bd34d084ffdd658"
+    },
+    {
+      "name": "source",
+      "command": [
+        "rtk",
+        "proxy",
+        "cargo",
+        "test",
+        "-p",
+        "awr-source",
+        "--test",
+        "yaml_mutation",
+        "--locked"
+      ],
+      "exit_code": 0,
+      "passed": true,
+      "tests": 4,
+      "log": ".local/sec003-related-v1-source.log",
+      "sha256": "5395dadb146914e221398e9953467f9cbac9632b9a123e10f5eacb8310fb7edb"
+    },
+    {
+      "name": "store",
+      "command": [
+        "rtk",
+        "proxy",
+        "cargo",
+        "test",
+        "-p",
+        "awr-store",
+        "--test",
+        "mutation",
+        "--locked"
+      ],
+      "exit_code": 0,
+      "passed": true,
+      "tests": 6,
+      "log": ".local/sec003-related-v1-store.log",
+      "sha256": "86f17529175887894c6b996fae0a519ceaf2ad836a86ba8edb4def64b3cbcc19"
+    },
+    {
+      "name": "cli",
+      "command": [
+        "rtk",
+        "proxy",
+        "cargo",
+        "test",
+        "-p",
+        "awr-cli",
+        "--test",
+        "proposal_cli",
+        "--test",
+        "work_action_cli",
+        "--test",
+        "work_complete_cli",
+        "--locked"
+      ],
+      "exit_code": 0,
+      "passed": true,
+      "tests": 36,
+      "log": ".local/sec003-related-v1-cli.log",
+      "sha256": "206c023d0dbc348d3d22dd8e62c91aed56a361f66505a03905ebdd010f848acb"
+    },
+    {
+      "name": "mcp",
+      "command": [
+        "rtk",
+        "proxy",
+        "cargo",
+        "test",
+        "-p",
+        "awr-mcp",
+        "--test",
+        "stdio",
+        "--locked"
+      ],
+      "exit_code": 0,
+      "passed": true,
+      "tests": 10,
+      "log": ".local/sec003-related-v1-mcp.log",
+      "sha256": "8c848b4b4d54b4dc530eb7d0e449090ff7d9d08707760a29e0b60ae748f315e0"
+    },
+    {
+      "name": "check",
+      "command": [
+        "rtk",
+        "proxy",
+        "cargo",
+        "check",
+        "--workspace",
+        "--all-targets",
+        "--locked"
+      ],
+      "exit_code": 0,
+      "passed": true,
+      "tests": 0,
+      "log": ".local/sec003-related-v1-check.log",
+      "sha256": "96d8830a560899d93edf31429d447dae625a046d9b70aae8c8aacc643b762e9b"
+    },
+    {
+      "name": "format",
+      "command": [
+        "rtk",
+        "proxy",
+        "cargo",
+        "fmt",
+        "--all",
+        "--check"
+      ],
+      "exit_code": 0,
+      "passed": true,
+      "tests": 0,
+      "log": ".local/sec003-related-v1-format.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "name": "diff",
+      "command": [
+        "rtk",
+        "proxy",
+        "git",
+        "diff",
+        "--check"
+      ],
+      "exit_code": 0,
+      "passed": true,
+      "tests": 0,
+      "log": ".local/sec003-related-v1-diff.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    }
+  ],
+  "local_receipts": [
+    {
+      "path": ".local/sec003-io-baseline.json",
+      "sha256": "3d317be58430787578a620d374cbcc194065b80e21d53d581231daf657d919b8",
+      "retention": "local_only"
+    },
+    {
+      "path": ".local/sec003-io-baseline-v2.json",
+      "sha256": "bb4dfab99c12d9f4dd9db8583bcc0ddf988a9dea3b15d2fae388cc63f1a82b24",
+      "retention": "local_only"
+    },
+    {
+      "path": ".local/sec003-lock-release-baseline.json",
+      "sha256": "6a3e10cddd54cacadf31fdfa382f5cf6d01d797dc8eb850468cfbb46dd584590",
+      "retention": "local_only"
+    },
+    {
+      "path": ".local/sec003-recovery-matrix-v1.json",
+      "sha256": "51c2c1c1171904271d7c7c807063cc4b57c373c63929d5312384ffd0898c341e",
+      "retention": "local_only"
+    },
+    {
+      "path": ".local/sec003-recovery-matrix-v2.json",
+      "sha256": "fbb3bf867a59a6d84cb1355d869067298d5692bb43ec53fcb34a2392db45bbd9",
+      "retention": "local_only"
+    },
+    {
+      "path": ".local/sec003-recovery-matrix-v3.json",
+      "sha256": "40ea04608cbf6a16e3be3869d813b6be30df4f07bbedc12f4c035b2cedb8d0bf",
+      "retention": "local_only"
+    },
+    {
+      "path": ".local/sec003-related-v1.json",
+      "sha256": "8883e2c9c4f94c5cd9d4520eee53010238ceb952ba3a80986bde371bca654ab8",
+      "retention": "local_only"
+    },
+    {
+      "path": ".local/sec003-self-use-phases.json",
+      "sha256": "661a63cf2c9c32651ac7b855fca9ce5d85c941f32e06038c210d901b8ceeee0f",
+      "retention": "local_only"
+    }
+  ],
+  "e4_scenarios_completed": 0,
+  "limitations": [
+    "Local macOS component, process, CLI/MCP stdio and current-project developer use. M9 cross-platform, E4, metric and release gates remain pending.",
+    "Per-source locks coordinate participating AWR writers. Fingerprint checks do not make arbitrary external editors or SQLite plus the filesystem one atomic transaction.",
+    "Process-kill evidence does not simulate machine power loss. Unreferenced staging files after interruption are retained; no automatic garbage collection was added.",
+    "Fixture helper and built-CLI tests are intentionally ignored in default Cargo runs and explicitly executed by the current contract runner."
+  ]
+}

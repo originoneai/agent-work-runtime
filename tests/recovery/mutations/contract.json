@@ -1,0 +1,112 @@
+{
+  "schema_version": 1,
+  "contract_id": "awr-mutation-recovery",
+  "version": "1.0.0",
+  "work_item": "AWR-SEC-003",
+  "target_cases": 20,
+  "evidence_level": "local_component_process_and_cli",
+  "business_scenarios": false,
+  "cases": [
+    {
+      "id": "revision_cas_writers",
+      "area": "concurrency",
+      "expected": "one event commit for one expected revision; the losing writer remains observable"
+    },
+    {
+      "id": "same_source_apply_writers",
+      "area": "concurrency",
+      "expected": "one source writer and one explicit conflict with no lost source update"
+    },
+    {
+      "id": "independent_sources_progress",
+      "area": "concurrency",
+      "expected": "disjoint sources retain both updates after explicit revision retry"
+    },
+    {
+      "id": "fingerprint_before_apply",
+      "area": "conflict",
+      "expected": "a newer source prevents apply without changing its bytes"
+    },
+    {
+      "id": "fingerprint_before_replace",
+      "area": "conflict",
+      "expected": "the final source check preserves an edit made after preparation"
+    },
+    {
+      "id": "revision_before_replace",
+      "area": "conflict",
+      "expected": "an intervening runtime revision prevents source replacement and leaves a recoverable attempt"
+    },
+    {
+      "id": "mapping_change_during_apply",
+      "area": "conflict",
+      "expected": "a changed source mapping cannot redirect a pending write"
+    },
+    {
+      "id": "crash_before_journal",
+      "area": "crash",
+      "expected": "process death before the journal retains the source and permits a fresh apply"
+    },
+    {
+      "id": "crash_after_journal",
+      "area": "crash",
+      "expected": "process death with a durable attempt is recoverable after reopen"
+    },
+    {
+      "id": "crash_after_temp",
+      "area": "crash",
+      "expected": "process death after temp-file sync never exposes partial source bytes"
+    },
+    {
+      "id": "crash_after_rename",
+      "area": "crash",
+      "expected": "process death after rename is recognized as a written source"
+    },
+    {
+      "id": "crash_after_sync",
+      "area": "crash",
+      "expected": "process death after directory sync retains the exact source and attempt"
+    },
+    {
+      "id": "crash_after_projection",
+      "area": "crash",
+      "expected": "process death after projection commits does not repeat the file replacement"
+    },
+    {
+      "id": "crash_after_finalize",
+      "area": "crash",
+      "expected": "a committed final receipt survives a missing process response"
+    },
+    {
+      "id": "temporary_io_after_write",
+      "area": "recovery",
+      "expected": "temporary I/O failure after rename retains an open attempt and later recovers"
+    },
+    {
+      "id": "temporary_io_during_recovery",
+      "area": "recovery",
+      "expected": "temporary I/O failure while resuming an already-written source retains retryability"
+    },
+    {
+      "id": "projection_or_receipt_storage_failure",
+      "area": "recovery",
+      "expected": "SQL/event failures roll back only the transaction and retain written-source recovery"
+    },
+    {
+      "id": "recovery_newer_source_preserved",
+      "area": "recovery",
+      "expected": "recovery never replaces a source matching neither snapshot"
+    },
+    {
+      "id": "recovery_snapshot_corruption",
+      "area": "recovery",
+      "expected": "damaged recovery snapshots cannot be installed or confirmed"
+    },
+    {
+      "id": "recovery_once_and_cli_receipts",
+      "area": "recovery",
+      "expected": "real CLI recovery binds the original attempt and resolves once without duplicate completion"
+    }
+  ],
+  "completion": "Only executed conditions count. Crash cases must terminate a live writer process at an observed boundary, reopen its database, inspect actual source/journal state, recover or inspect a committed receipt, and bind final evidence. Simulated persisted state alone does not satisfy the crash cases. No E4 or release credit."
+}
