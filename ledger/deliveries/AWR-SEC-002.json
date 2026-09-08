@@ -1,0 +1,168 @@
+{
+  "kind": "implementation",
+  "repository": "https://github.com/originoneai/agent-work-runtime",
+  "source_commit": "8fc2666c4f72f4040e42fe2ae7782699a09d9e24",
+  "checked_at": "2026-09-08T17:55:00+08:00",
+  "remote_receipt": {
+    "commit": "8fc2666c4f72f4040e42fe2ae7782699a09d9e24",
+    "url": "https://github.com/originoneai/agent-work-runtime/commit/8fc2666c4f72f4040e42fe2ae7782699a09d9e24",
+    "verified_at": "2026-09-08T17:55:00+08:00"
+  },
+  "version": 1,
+  "work_item": "AWR-SEC-002",
+  "source_sha": "8fc2666c4f72f4040e42fe2ae7782699a09d9e24",
+  "command": "python3 tests/security/payloads/verify_all.py --report .local/sec002-payloads-final-v2.json",
+  "scope": [
+    "AWR-SEC-002"
+  ],
+  "verified_at": 1788861300292,
+  "checks": [
+    {
+      "name": "current_payload_contract",
+      "passed": true,
+      "result": "32/32 unchanged conditions passed under contract 1.3.0: sources 9, event schema 5, artifacts 2, secret and output safeguards 16. All four stages were executed anew. The suite contains 44 component/transport test functions; these are not E4 scenarios.",
+      "criteria": [
+        "Markdown/YAML、事件字段白名单及 payload/artifact 读取上限被执行。",
+        "拒绝或脱敏 API key、token、密码、私有 prompt 和环境变量；日志/FTS/Context 不泄露 fixture 秘密。"
+      ]
+    },
+    {
+      "name": "secret_write_and_output_boundaries",
+      "passed": true,
+      "result": "Shared text/structured policy rejects source, manifest, direct projection/configuration, proposal, event, checkpoint, evidence and artifact secrets. Legacy FTS summaries are redacted and sensitive identity metadata omitted. Required L0/L1 facts are withheld with ContextIncomplete. CLI/MCP unknown-field errors do not echo values, and MCP text/structured copies and stderr remain clean in synthetic fixtures."
+    },
+    {
+      "name": "related_behavior",
+      "passed": true,
+      "result": "113 targeted tests passed: store 20, source 13, context 15, CLI 55 and MCP stdio 10. Workspace all-target check, locked builds, formatting and diff checks passed."
+    },
+    {
+      "name": "actual_project_use",
+      "passed": true,
+      "result": "Used the rebuilt distribution binaries in this project for MCP observation/progress and CLI artifact import/read. Exact source change and recovery snapshots match. Context is complete at 4962 tokens and excludes report body; Doctor has only the active_session informational finding."
+    },
+    {
+      "name": "reviewed_limits_and_receipts",
+      "passed": true,
+      "result": "Reviewed all changed ingress and output paths. Bounded artifact snapshots are scanned before any managed file creation, and only those same bytes are written. Case IDs and caps stay unchanged; all stage logs and final distribution executables have recorded digests."
+    }
+  ],
+  "artifacts": [
+    "Cargo.lock",
+    "Cargo.toml",
+    "crates/awr-cli/src/branch.rs",
+    "crates/awr-cli/src/main.rs",
+    "crates/awr-cli/src/records.rs",
+    "crates/awr-cli/src/work_action.rs",
+    "crates/awr-context/src/bootstrap.rs",
+    "crates/awr-context/src/compile.rs",
+    "crates/awr-context/src/delta.rs",
+    "crates/awr-context/src/hard.rs",
+    "crates/awr-context/src/lib.rs",
+    "crates/awr-context/src/related.rs",
+    "crates/awr-core/Cargo.toml",
+    "crates/awr-core/src/error.rs",
+    "crates/awr-core/src/event_payload.rs",
+    "crates/awr-core/src/lib.rs",
+    "crates/awr-core/src/mutation.rs",
+    "crates/awr-core/src/secrets.rs",
+    "crates/awr-mcp/src/operations.rs",
+    "crates/awr-mcp/tests/security_secrets.py",
+    "crates/awr-runtime/Cargo.toml",
+    "crates/awr-runtime/src/artifact.rs",
+    "crates/awr-runtime/src/read.rs",
+    "crates/awr-source/src/indexer.rs",
+    "crates/awr-source/src/limits.rs",
+    "crates/awr-source/src/locator.rs",
+    "crates/awr-source/src/manifest.rs",
+    "crates/awr-source/src/yaml_ledger.rs",
+    "crates/awr-store/src/catalog.rs",
+    "crates/awr-store/src/checkpoint.rs",
+    "crates/awr-store/src/evidence.rs",
+    "crates/awr-store/src/mutation.rs",
+    "crates/awr-store/src/projection.rs",
+    "crates/awr-store/src/search.rs",
+    "crates/awr-store/tests/search.rs",
+    "docs/reference/artifact-boundaries.md",
+    "docs/reference/event-payloads.md",
+    "docs/reference/secret-boundaries.md",
+    "ledger/evidence/AWR-SEC-002/payload-matrix.json",
+    "ledger/evidence/AWR-SEC-002/self-use.json",
+    "tests/security/payloads/README.md",
+    "tests/security/payloads/contract.json",
+    "tests/security/payloads/events_cli_mcp.py",
+    "tests/security/payloads/secrets.rs",
+    "tests/security/payloads/verify_all.py",
+    "tests/security/payloads/verify_secrets.py",
+    "ledger/evidence/AWR-SEC-002/checks.json",
+    "ledger/evidence/AWR-SEC-002/self-use.json"
+  ],
+  "work_items": {
+    "AWR-SEC-002": {
+      "acceptance": [
+        {
+          "criterion": "Markdown/YAML、事件字段白名单及 payload/artifact 读取上限被执行。",
+          "passed": true
+        },
+        {
+          "criterion": "拒绝或脱敏 API key、token、密码、私有 prompt 和环境变量；日志/FTS/Context 不泄露 fixture 秘密。",
+          "passed": true
+        }
+      ]
+    }
+  },
+  "artifact_sha256": {
+    "Cargo.lock": "8f71b4e32a59d13d8af6b1c8105bb48d93f39f9dd0b06ac3061ed50e1c5c26e4",
+    "Cargo.toml": "53e2f16baa7fffde62d06b559f9c7c85a9704dbb053a73a9609bd59e8ee7eaaf",
+    "crates/awr-cli/src/branch.rs": "c71d40eb8bb8a45d880caa1a6fab881cb6ae0442d22fd9f7456f2b7701ffbf07",
+    "crates/awr-cli/src/main.rs": "872b4052723c6d98ac2de636cae219a05a618cfd6a0bb90159b4ef2bde86dc33",
+    "crates/awr-cli/src/records.rs": "e9d67b7d1ec97e94dccd07428ffd13304cc300525cdb58a12f343a274c4592f0",
+    "crates/awr-cli/src/work_action.rs": "c30067d6dd170472639260432b8dbddba6e53c0e20c58560f309994213f8107d",
+    "crates/awr-context/src/bootstrap.rs": "925f65afed51e32ddbe1d108b65308a80e3be773c7c66738deb5cc151dd61be1",
+    "crates/awr-context/src/compile.rs": "4f5b6913aaccb07eee6d68ee3182f90fece9ed172f727a5616346c13a88591a0",
+    "crates/awr-context/src/delta.rs": "dcb1aab140666dbd44e3ee519bc8305d600dada392f46ba0ef23a1032e752234",
+    "crates/awr-context/src/hard.rs": "2a96631ab60e363bc19426dcc449fb9a591fed0e453728de92d32a2638a6fef0",
+    "crates/awr-context/src/lib.rs": "3c50217cd35a713710969376688951cc7ac5589ded6f6ec88cbd859761123c54",
+    "crates/awr-context/src/related.rs": "40a26416effefe30fa998f0ced2c99990cbdada26c13e963432bf21fb51cdd49",
+    "crates/awr-core/Cargo.toml": "998e6a2e0d4a2e006052cb981968235ca2be5044419ce7caf9bfcb4e00c305d3",
+    "crates/awr-core/src/error.rs": "0e0e337f828da6ef2ca99667d324b2dd210cec1074ed91fd75cf834693a35277",
+    "crates/awr-core/src/event_payload.rs": "36f3ca18c63c112d92f2094374359a29ca920e6959a98ca036ab4745ac84b8a2",
+    "crates/awr-core/src/lib.rs": "0867122368db57bbc7afb627733e54461b21e478278811d90f9e9860ee682454",
+    "crates/awr-core/src/mutation.rs": "25b289d0561fa5b833d7d288ea0a8a195fd031b8e2f53a2fd932f46b40931489",
+    "crates/awr-core/src/secrets.rs": "95d9896d770f76350584b20b052eba0485d2f50e2aa1b62166ebd5575da33352",
+    "crates/awr-mcp/src/operations.rs": "01512bd177a43999d0f2cf6dd3b5c82ce17e10074b93a6591d0c62bdb96b73a7",
+    "crates/awr-mcp/tests/security_secrets.py": "929c12387f67776434553986887f4e1a0d135bcb5743399af3c563a62659d69e",
+    "crates/awr-runtime/Cargo.toml": "677e75a50db05b9e25c7a678c2d595b0319aa4f6ae9081287d65d47313e0d825",
+    "crates/awr-runtime/src/artifact.rs": "bd0ec574f562876dc091045452647f6cb1b7d1969482e23dfb89dc6a53428d9b",
+    "crates/awr-runtime/src/read.rs": "3c617f18c5fe39b1b4119d92ede5d76a8ae95d1d9a482e662f4e5fe96e3afe37",
+    "crates/awr-source/src/indexer.rs": "d5aa4e4d511d9b411922d29d5cb33d132819a3948b7da51ab043e28ece7ac138",
+    "crates/awr-source/src/limits.rs": "5339be98037ce3c80070896a5dda423cad70ba5a2d8be3fbd5adea3aa6e2500b",
+    "crates/awr-source/src/locator.rs": "8a10d3dce641e7386f6ebfb049a8c49237792bc3307b15c62aee2624bfc6d6da",
+    "crates/awr-source/src/manifest.rs": "4d43316e0923677028ef2c5b5f9c4257a613ca3960ad086c91c69c4d203485a9",
+    "crates/awr-source/src/yaml_ledger.rs": "1f0a958e62b410bc9c25cdb65a3fef3cdf26415be78cc6e11f6112ea0b567151",
+    "crates/awr-store/src/catalog.rs": "54a3be50973d6a44a6f109f01e270aadf3931fe7b3cdb4eccbbff8411a9042bf",
+    "crates/awr-store/src/checkpoint.rs": "4a6a2ad70008fcb837133d6a3c92ebdb42e6e997a78fdace6d573f9242802313",
+    "crates/awr-store/src/evidence.rs": "fa7df95c1daa23c6e1d7286c7689c7d3bfd246206882879f5d6236c12b6c9cd8",
+    "crates/awr-store/src/mutation.rs": "7f4c3579faff9c4a194ef568bf67c3c699b7616d237ecff2aed21a92336bed0c",
+    "crates/awr-store/src/projection.rs": "8b6beb97beb0ef66d27acb39511fcdf8ccd2cf9e9fc2950cd5464dcba2499cce",
+    "crates/awr-store/src/search.rs": "ce4dc894b6435293dd4d8c768563a82520894105371885d5365c1e199120be30",
+    "crates/awr-store/tests/search.rs": "350a46397f3b2c2e59195c57a64536a0541ec2d674633b3acf2536ad96e08e57",
+    "docs/reference/secret-boundaries.md": "849b55259b2065a1137b839df0dd8fba79203f8cd4b1e58c80d87f5f10efb58e",
+    "ledger/evidence/AWR-SEC-002/payload-matrix.json": "d1b4c8c56fe2b981f0c47403d1204b9f572bf0c7f5bc11a95e3f5f804ec00789",
+    "ledger/evidence/AWR-SEC-002/self-use.json": "796ae5a4c922c960d4a02591d55098c706a1d8a37944eaf8052ddb9f104387ba",
+    "tests/security/payloads/README.md": "a9e8633a5ad62964782fde9698736c4ae689917beb0012ec5168c7e0ca41f045",
+    "tests/security/payloads/contract.json": "369f508b9c6bb6c696e862f852c164424338004fa40cab3cf2e735f6353d4c91",
+    "tests/security/payloads/events_cli_mcp.py": "1cc72685578844450881b83c28fb56587499f6a64e6f053cacb8a05f7992a1fc",
+    "tests/security/payloads/secrets.rs": "4e8cd2626960a4c60e83110b3ae83071e76e4bb221d140995e5fa95257ad6a9e",
+    "tests/security/payloads/verify_all.py": "9d1f94e9be0c5c52ec3d6a5d3b18ece8db5c698ff4204142712111ef393d1555",
+    "tests/security/payloads/verify_secrets.py": "ff9c3499c0fa16a3ab5ec5584d3d6f3a79d83ae9863d1aa0f0dd18c054279630",
+    "docs/reference/artifact-boundaries.md": "01bb56db18e232ee5deb9dbd9f243a48c066008bb91ea270d47487b50a0d80ba",
+    "docs/reference/event-payloads.md": "a9cc2e8d3095e3187dcdc98b7e77fa9fdf614e591ac584cec4660688076bcf14"
+  },
+  "limitations": [
+    "Local macOS component, CLI/MCP stdio and current-project development use; other platforms, E4, metrics and release gates remain pending.",
+    "Secret policy 1 recognizes documented labels/patterns. It is not encryption, arbitrary private-data detection, credential rotation or physical deletion of old database/backup content.",
+    "Artifact inspection uses a bounded in-memory snapshot up to the existing 64 MiB cap; explicit registered-content reads retain the 16 MiB cap.",
+    "The original design remains preserved. Source/manifest parse diagnostics intentionally omit untrusted field content."
+  ]
+}

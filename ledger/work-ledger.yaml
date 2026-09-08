@@ -1,8 +1,8 @@
 schema_version: 1
 contract_id: awr-v1
 contract_version: 1.0.0
-ledger_revision: 131
-updated_at: '2026-09-08T17:51:01+08:00'
+ledger_revision: 133
+updated_at: '2026-09-08T17:57:32+08:00'
 project:
   name: Agent Work Runtime
   external_key: agent-work-runtime
@@ -11,10 +11,11 @@ project:
   release_status: not_released
 current:
   milestone: M8
-  work_item: AWR-SEC-002
-  next_action: 当前合同 32/32 条件、相关回归及实际项目使用已验证；绑定源码和远端回执后完成本条，进入并发冲突与故障恢复。
+  work_item: AWR-SEC-003
+  next_action: 建立并发版本与指纹冲突、写前/写后/重索引中断的恢复矩阵，定位现有故障注入与恢复入口。
   open_loops:
-  - SEC-002 当前合同 1.3.0 的 32/32 条件与 113 项相关定向检查通过；已在本项目验证安全报告导入、摘要、MCP 进度写回及完整 Context。本条等待源码提交、远端回执与完成写回。来源、事件、产物的历史阶段证据保留，但本次数量来自四组重新执行。
+  - SEC-002 已完成：当前合同 1.3.0 的 32/32 条件、113 项相关检查与本项目实用验证通过；源码 8fc2666 的 Git 和 GitHub 回执已核实。MCP 完成写回、释放 claim、checkpoint/end
+    后 Doctor 为 0 项，进入 SEC-003。历史阶段证据保留，本次完成数来自四组重新执行。
   - SEC-001 已完成：26/26 路径条件、46 项写回回归和 10 项 MCP 检查通过；源码 217a0b5 的远端回执已核实。实际完成写回、快照核对、checkpoint/end 后 Doctor 为 0 项；进入
     SEC-002。均不计 E4 或正式发布。
   - P0/P1 功能与接入项全部完成；P8-004 已对齐 8 个 MCP Tools 和 CLI 的状态、版本、缺口及写入回执，进入 M8 安全与后续集中质量阶段。
@@ -1545,53 +1546,54 @@ work_items:
   - docs/reference/secret-boundaries.md
   depends_on:
   - AWR-P8-004
-  evidence: []
+  evidence:
+  - ledger/deliveries/AWR-SEC-002.json
   id: AWR-SEC-002
   kind: security
   milestone: M8
-  next_action: 当前合同 32/32 条件、相关回归及实际项目使用已验证；绑定源码和远端回执后完成本条，进入并发冲突与故障恢复。
+  next_action: 源码与远端回执已绑定，验收完成；后续工作转入 AWR-SEC-003。
   owner: codex-primary
   priority: P2
   required_for_v1: true
   source_sections:
   - 12
   - 32
-  status: in_progress
+  status: completed
   title: 读取上限、Event Schema 与秘密数据防护
   verification:
     evidence_directory: ledger/evidence/AWR-SEC-002
-    evidence_level: none
+    evidence_level: locally_verified
     minimum: 证明本条验收行为；功能阶段运行必要的定向检查，系统测试在 M9 集中执行。
-- id: AWR-SEC-003
-  title: 并发冲突与 Source/DB 写入故障恢复
-  milestone: M8
-  priority: P2
-  kind: security
-  required_for_v1: true
-  status: planned
-  owner: null
+- acceptance:
+  - 并发 expected_revision/fingerprint 冲突可重现，不能发生静默丢更新。
+  - 覆盖文件写前、写后、重索引前后的中断，pending proposal 可恢复且不能假报完成。
+  blocker: null
+  deliverables:
+  - crates/awr-source/
+  - crates/awr-runtime/
+  - tests/recovery/mutations/
   depends_on:
   - AWR-P6-004
   - AWR-P7-003
+  evidence: []
+  id: AWR-SEC-003
+  kind: security
+  milestone: M8
+  next_action: 建立并发版本与指纹冲突、写前/写后/重索引中断的恢复矩阵，定位现有故障注入与恢复入口。
+  owner: codex-primary
+  priority: P2
+  required_for_v1: true
   source_sections:
   - 15
   - 25
   - 33
   - 34
-  deliverables:
-  - crates/awr-source/
-  - crates/awr-runtime/
-  - tests/recovery/mutations/
-  acceptance:
-  - 并发 expected_revision/fingerprint 冲突可重现，不能发生静默丢更新。
-  - 覆盖文件写前、写后、重索引前后的中断，pending proposal 可恢复且不能假报完成。
+  status: in_progress
+  title: 并发冲突与 Source/DB 写入故障恢复
   verification:
-    minimum: 证明本条验收行为；功能阶段运行必要的定向检查，系统测试在 M9 集中执行。
     evidence_directory: ledger/evidence/AWR-SEC-003
     evidence_level: none
-  evidence: []
-  blocker: null
-  next_action: 按交付物实现并验证：并发冲突与 Source/DB 写入故障恢复
+    minimum: 证明本条验收行为；功能阶段运行必要的定向检查，系统测试在 M9 集中执行。
 - id: AWR-SEC-004
   title: Event 不可变、Claim TTL 与分支隔离加固
   milestone: M8
