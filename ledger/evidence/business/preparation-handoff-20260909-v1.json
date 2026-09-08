@@ -1,0 +1,25 @@
+{
+  "kind": "developer_preparation_handoff",
+  "work_item": "AWR-QA-003",
+  "checked_at": "2026-09-09T01:28:30+08:00",
+  "source_commit": "4f6fd11c5283a4ddb52e6cb6fe8ef5a5fd8931aa",
+  "session_id": "01M210J7CAZ2BY7T1K7298118B",
+  "claim_id": "01M210J7D3P29KT7H95NYVXA5V",
+  "progress_proposal": "01M2110R13MMB962RC99445D3S",
+  "checkpoint_id": "01M2110W4YAHTRRQ6G16AE34W6",
+  "context_tokens": 4996,
+  "context_hash": "504ef584d039f6839c81cf0b136aa5ba3652c66a65192d980c5d047a19a4a46d",
+  "session_outcome": "incomplete",
+  "final_project_revision": 969,
+  "doctor": {
+    "ok": true,
+    "findings": []
+  },
+  "preparation_receipt": "ledger/evidence/business/preparation-20260909-v1.json",
+  "preparation_receipt_sha256": "29a2a6eab4f95da151a8c67965b88987370c68c2e209a4e5c33a2b2bf0cd478c",
+  "e4_completed": 0,
+  "authorization_status": "awaiting_explicit_user_authorization",
+  "limitations": [
+    "Actual AWR developer progress/checkpoint/end only. No business client execution, independent review or release claim."
+  ]
+}
