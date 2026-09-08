@@ -1,0 +1,122 @@
+{
+  "kind": "implementation",
+  "repository": "https://github.com/originoneai/agent-work-runtime",
+  "source_commit": "217a0b54c67d0d1ae428de94ad51013c53b63676",
+  "checked_at": "2026-09-08T15:36:22+08:00",
+  "remote_receipt": {
+    "commit": "217a0b54c67d0d1ae428de94ad51013c53b63676",
+    "url": "https://github.com/originoneai/agent-work-runtime/commit/217a0b54c67d0d1ae428de94ad51013c53b63676",
+    "verified_at": "2026-09-08T15:36:22+08:00"
+  },
+  "version": 1,
+  "work_item": "AWR-SEC-001",
+  "source_sha": "217a0b54c67d0d1ae428de94ad51013c53b63676",
+  "command": "python3 tests/security/paths/verify.py --report .local/sec001-matrix-final.json",
+  "scope": [
+    "AWR-SEC-001"
+  ],
+  "verified_at": 1788852982479,
+  "checks": [
+    {
+      "name": "versioned_read_and_write_boundaries",
+      "passed": true,
+      "result": "26/26 conditions in awr-security-paths version 1.0.0 passed: 6 source, 4 private runtime-helper and 4 actual CLI test functions. Includes traversal, absolute/file URI paths, prefix siblings, explicit relative/absolute external roots, permitted symlinks, replaced leaves/ancestors/discovered children, unauthorized manifests and Git paths, write source identity, bound external writes, runtime-owned sources and recovery aliases. Runtime tests independently verify directory-handle replacement and cleanup preserve outside source/temp traps, lock aliases cannot affect outside files, and exclusive snapshot creation preserves existing files.",
+      "criteria": [
+        "系统验证 ../、绝对路径、symlink escape 与显式授权 Root。",
+        "读取与写入均不能越过实际授权边界；拒绝结果可定位到来源。"
+      ]
+    },
+    {
+      "name": "related_write_lifecycle",
+      "passed": true,
+      "result": "46 targeted CLI tests passed: proposal_cli 14, work_action_cli 10, work_complete_cli 12 and branch_close_cli 10. Claims, current source versions, dependency and completion proof, interruption recovery, atomic receipts and closure behavior remain enforced. The first branch suite run exposed a fixture using a noncanonical macOS /var path as an already-authorized Locator. Its report hash now uses fixture bytes directly; all actual product source/closure validations remain in place."
+    },
+    {
+      "name": "mcp_stdio_contract",
+      "passed": true,
+      "result": "10 existing MCP stdio tests passed after the reader and writer changes, including actual source actions, reserved events, read immutability, current source refresh and evidence-bound completion."
+    },
+    {
+      "name": "build_and_format",
+      "passed": true,
+      "result": "Both executables built and the locked workspace with all targets, rustfmt and diff whitespace checks passed. One existing unused fixture-helper warning remains in awr-store/tests/support/mod.rs; no compilation error."
+    },
+    {
+      "name": "actual_project_self_use",
+      "passed": true,
+      "result": "Used the rebuilt MCP server to update this active work item on the project source ledger. Parsed source change is exactly the declared next_action; before/after recovery snapshots equal the actual file bytes, and no new temp file remains. The resulting 4982-token L1 context is complete. Doctor reports only the expected informational active_session while the current session is running."
+    },
+    {
+      "name": "reviewed_authority_and_diagnostics",
+      "passed": true,
+      "result": "Reviewed configured source authorization and exact-opening call sites. Authority remains in Locator/Manifest; canonical source paths are opened component by component without following later links. Temp creation, rename and cleanup hold one directory object. Lock and recovery snapshot access use held directories, no-follow opens and exclusive new files; snapshot size/fingerprints remain checked. Alias/recovery rejection is explicit and recovery/lock validation identifies the concrete path. Domain revision, claim, evidence, fingerprint and post-write verification checks remain intact."
+    }
+  ],
+  "artifacts": [
+    "Cargo.toml",
+    "Cargo.lock",
+    "crates/awr-source/Cargo.toml",
+    "crates/awr-source/src/safe_fs.rs",
+    "crates/awr-source/src/locator.rs",
+    "crates/awr-source/src/manifest.rs",
+    "crates/awr-source/src/directory.rs",
+    "crates/awr-source/src/lib.rs",
+    "crates/awr-runtime/Cargo.toml",
+    "crates/awr-runtime/src/mutation_apply.rs",
+    "crates/awr-cli/Cargo.toml",
+    "crates/awr-cli/tests/branch_close_cli.rs",
+    "tests/security/paths/contract.json",
+    "tests/security/paths/containment.rs",
+    "tests/security/paths/write_handles.rs",
+    "tests/security/paths/write_cli.rs",
+    "tests/security/paths/verify.py",
+    "tests/security/paths/README.md",
+    "ledger/evidence/AWR-SEC-001/path-matrix.json",
+    "ledger/evidence/AWR-SEC-001/self-use.json",
+    "ledger/evidence/AWR-SEC-001/checks.json",
+    "ledger/evidence/AWR-SEC-001/self-use.json"
+  ],
+  "work_items": {
+    "AWR-SEC-001": {
+      "acceptance": [
+        {
+          "criterion": "系统验证 ../、绝对路径、symlink escape 与显式授权 Root。",
+          "passed": true
+        },
+        {
+          "criterion": "读取与写入均不能越过实际授权边界；拒绝结果可定位到来源。",
+          "passed": true
+        }
+      ]
+    }
+  },
+  "artifact_sha256": {
+    "Cargo.toml": "d60b7e20b2a1fa064ed95a743df400839465006427133b7b9a8950eef13b96df",
+    "Cargo.lock": "23b86fdc5f355c28b1f786a689fb467e31942cd999717d63bafdf3e4a8bdbc36",
+    "crates/awr-source/Cargo.toml": "ae8e0475defcf27bc946660615925c4657bc4665c59a548a6985486a4018849d",
+    "crates/awr-source/src/safe_fs.rs": "e860dbcec8779ad6fdd3751a572c8da300c670defb3a691226965ea4ff97b8c1",
+    "crates/awr-source/src/locator.rs": "be3cb1f8a349b781fa9f2865ffb31d9871bb654306de29915e501f35850c3705",
+    "crates/awr-source/src/manifest.rs": "b67774f570266abf96e17af65bd5a63cede582167dbd383eb65f83763af5fe31",
+    "crates/awr-source/src/directory.rs": "f7a3b1771ebfce268a34a619c86258ac8b894aff2ddcc16ff1c5169d6aa1d575",
+    "crates/awr-source/src/lib.rs": "c6a8a8cdb773e1acd4967583e66fead6dd04f572dd5c669f5d14be441e8cbe21",
+    "crates/awr-runtime/Cargo.toml": "3f354805f3c92ee97ce198e1ffa39b40fe9ca1d88ee850d1bb5457b14b382a71",
+    "crates/awr-runtime/src/mutation_apply.rs": "90421477507d2f251f1e0b86a1d63b45ddcb381287b51f9c167cbd9a35b8e713",
+    "crates/awr-cli/Cargo.toml": "cd44e0aad7ba388d41ae4562846d9649ea634f1b009c9e184225242e35f25fc5",
+    "crates/awr-cli/tests/branch_close_cli.rs": "c0c879a012aef02a28b8ae8a110e4aea0725c43bd3bef6e8b4928c540ffe34c4",
+    "tests/security/paths/contract.json": "b1e0d8c2078788235513324fdc758bb62d4c3e0ee07b970b3fd3a5dd36eea63e",
+    "tests/security/paths/containment.rs": "09e8ea00f927df8845fe4b554bfab03468ac7918b821b20a8fcd4b2b1acec9e1",
+    "tests/security/paths/write_handles.rs": "61a0d505e38620d934ba3d90d3536165808a689b54ccec2846cccc7a266910ff",
+    "tests/security/paths/write_cli.rs": "b2d0fcfb606a79525db103365b5057ef3420c1e8327e8c14ffa11d3e5d768ef4",
+    "tests/security/paths/verify.py": "5f0b36d13df00737aa0d3e6732d7034e1fb79130d4fb4871cf381b2139f580e8",
+    "tests/security/paths/README.md": "5c8d4a13433492904a335ccc4fb0b8a8f983ee36d56143a6d76b256ca18b859e",
+    "ledger/evidence/AWR-SEC-001/path-matrix.json": "43d1afd63011b26fa2ff959299623742650218dc10a30b4d43fd368b75204156",
+    "ledger/evidence/AWR-SEC-001/self-use.json": "e0a59cd9ad3290e9a7969dd5246d1f167c9ff093472bae614ee929c3f1708dce"
+  },
+  "limitations": [
+    "Local macOS component, real CLI/MCP stdio and current-project development self-use only; no E4 or released-product acceptance.",
+    "Unix symlink tests have been executed on macOS. Other platforms still need their separate platform gate; the matrix refuses to count missing conditions as passed.",
+    "Held directories retain the originally authorized directory object. Exact-opening primitives require prior authority resolution and do not grant access or replace source identity/fingerprint/revision checks.",
+    "The initial matrix run had a Rust fixture borrow-check error, fixed before the fully passing final run. Initial failed receipts are retained.",
+    "Broad concurrency/fault campaigns, remaining security topics, cross-platform validation, contractual metrics and release gates remain later ledger items."
+  ]
+}
