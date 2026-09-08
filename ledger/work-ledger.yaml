@@ -1,8 +1,8 @@
 schema_version: 1
 contract_id: awr-v1
 contract_version: 1.0.0
-ledger_revision: 111
-updated_at: '2026-09-08T14:21:21+08:00'
+ledger_revision: 112
+updated_at: '2026-09-08T14:48:40+08:00'
 project:
   name: Agent Work Runtime
   external_key: agent-work-runtime
@@ -12,7 +12,7 @@ project:
 current:
   milestone: M7
   work_item: AWR-P8-004
-  next_action: 核对同一操作的 CLI/MCP 状态、revision、错误与 completeness 差异，补齐必要的统一输出和实际对照检查。
+  next_action: 核对交付源码与远端回执，完成 P8-004 并进入 M8。
   open_loops:
   - P0 功能、8 个 MCP Tools 与 Codex/Kimi/Grok 接续指南已交付；继续 P1 最后一项 CLI/MCP 输出对齐，随后按台账集中质量、优化和打磨。
   - 本项目通过 AWR 实际进行会话读取、checkpoint/resume、MCP 证据登记和完成写回。P8-003 的文档命令在独立 fixture 上完成 Kimi→Grok→Kimi 元数据接续，工作、检查点、下一步和
@@ -1464,7 +1464,7 @@ work_items:
   id: AWR-P8-004
   kind: feature
   milestone: M7
-  next_action: 核对同一操作的 CLI/MCP 状态、revision、错误与 completeness 差异，补齐必要的统一输出和实际对照检查。
+  next_action: 核对交付源码与远端回执，完成 P8-004 并进入 M8。
   owner: codex-primary
   priority: P1
   required_for_v1: true

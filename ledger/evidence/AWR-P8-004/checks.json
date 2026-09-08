@@ -1,0 +1,108 @@
+{
+  "work_item": "AWR-P8-004",
+  "checked_at": "2026-09-08T14:48:40+08:00",
+  "commands": [
+    "python3 crates/awr-mcp/tests/cli_parity.py --awr target/debug/awr --mcp target/debug/awr-mcp",
+    "cargo test -p awr-cli --test output_cli --test work_cli --test context_compile_cli --test records_cli --test branch_cli --test work_action_cli --test work_complete_cli --test drill_cli --locked",
+    "cargo test -p awr-mcp --test stdio --locked",
+    "cargo test -p awr-cli --test context_compile_cli --test branch_cli --locked",
+    "cargo build -p awr-cli -p awr-mcp --locked",
+    "cargo check --workspace --all-targets --locked",
+    "cargo fmt --all --check",
+    ".venv/bin/python .local/dev/p8_004_self_use.py"
+  ],
+  "checks": [
+    {
+      "name": "eight_tool_domain_parity",
+      "passed": true,
+      "result": "8 isolated fixture test functions passed against real CLI and MCP stdio. All 8 tools exercised. Equal query/domain JSON at the same revision, including active claim IDs, Context hash, rendered text, required gaps and budget error details. Verified main/named branch selection, all 6 source transition actions, actual source bytes, completion proof and claim release; Event/Evidence full receipts match after separately checking generated IDs/times. MCP reads preserve every database table and authoritative source bytes. Stale CAS fails before refresh; invalid JSON and unknown-tool protocol behavior are explicit."
+    },
+    {
+      "name": "cli_errors_and_related_feature_checks",
+      "passed": true,
+      "result": "54 targeted Rust CLI tests passed: output_cli 3, work_cli 3, context_compile_cli 4, records_cli 3, branch_cli 16, work_action_cli 10, work_complete_cli 12, drill_cli 3. Usage errors remain parseable with --json before/after known subcommands; literal --json data does not change format; help/version and Unsupported exit codes verified. Re-ran the 20 context/branch tests after adding the top-level context revision consistency guard."
+    },
+    {
+      "name": "mcp_stdio_contract",
+      "passed": true,
+      "result": "10 existing MCP stdio tests passed, including catalog/protocol handling, read immutability, source changes, reserved events, branch binding, typed failures and completion with actual bound evidence. The catalog remains exactly 8 tools."
+    },
+    {
+      "name": "build_and_format",
+      "passed": true,
+      "result": "Built both executables, checked the complete workspace and all targets using Cargo.lock, and passed rustfmt/diff whitespace checks. Workspace check has one existing unused fixture-helper warning in awr-store/tests/support/mod.rs; no compilation error."
+    },
+    {
+      "name": "actual_project_self_use",
+      "passed": true,
+      "result": "On this project at revision 423, all 5 reads returned equal domain JSON through CLI/MCP and left all 25 DB tables and source files unchanged during MCP reads. Appended an actual development observation through the new CLI event command, read back the exact event, then used MCP work progress to change only the declared next_action. Recovery snapshots match. L1 remains complete; Doctor has only the expected informational current active_session finding."
+    },
+    {
+      "name": "documented_output_contract",
+      "passed": true,
+      "result": "Reviewed docs/reference/cli-mcp-contract.md against implemented arguments and error paths. It defines field/branch/JSON-input mapping, truthful source freshness differences, partial diagnostics, unsupported/usage/domain/protocol errors, exit codes, bounds and migration of evidence-add type to evidence_type. It documents Context branch/fork differences and the CLI completion-file path base without claiming unsupported native clients."
+    }
+  ],
+  "artifacts": [
+    "crates/awr-cli/src/main.rs",
+    "crates/awr-cli/src/query.rs",
+    "crates/awr-cli/src/context.rs",
+    "crates/awr-cli/src/branch.rs",
+    "crates/awr-cli/src/drill.rs",
+    "crates/awr-cli/src/event_append.rs",
+    "crates/awr-cli/src/session.rs",
+    "crates/awr-cli/src/records.rs",
+    "crates/awr-cli/src/work_action.rs",
+    "crates/awr-cli/tests/output_cli.rs",
+    "crates/awr-mcp/src/project.rs",
+    "crates/awr-mcp/src/operations.rs",
+    "crates/awr-mcp/tests/cli_parity.py",
+    "docs/reference/cli-mcp-contract.md"
+  ],
+  "artifact_sha256": {
+    "crates/awr-cli/src/main.rs": "c060ccaa3bc4f72d059bda14754b3cbcd84fa7c70a294516b29f2d0b379adc72",
+    "crates/awr-cli/src/query.rs": "7d2f055c45f1a5950bb7aaf67e8c8daa63d81ef4f53ffac03453d2b8b3808674",
+    "crates/awr-cli/src/context.rs": "4d0c9243b5c0a234e019664b6f4e2d565e14e349d9f03c20fe9eefff85f94d3b",
+    "crates/awr-cli/src/branch.rs": "e5b9ee7f9ad33deb2ed430d69adfccd2ce4099362606cbd3927ef44b27f2296e",
+    "crates/awr-cli/src/drill.rs": "00b8a9aaa0921c1c67a2f8d979045c46ca6522a733e582d62c3b2cdfb88c6b7e",
+    "crates/awr-cli/src/event_append.rs": "60a14ca637631ad13f00278005f7dc28275e21b632caf5c9b7c2cad2de34853e",
+    "crates/awr-cli/src/session.rs": "486d75ba44f2f5bb1c508b1eba97a859340b84591d9456ec5b1299bff31ed878",
+    "crates/awr-cli/src/records.rs": "5d0fdb7b3ed17715c70f07dc661178c231265660e78d407a591e903e350cecfb",
+    "crates/awr-cli/src/work_action.rs": "68e77a5589820397bc34d7463a30c64061649d28ce4b21ac594de16c87213944",
+    "crates/awr-cli/tests/output_cli.rs": "2d4cc4a583c55e798e48a6369c5142b8dd90a8337b51edb3c2e0926f2e952e5d",
+    "crates/awr-mcp/src/project.rs": "63709842fb3d084c813fc162a8aecac5aeb6baf9c6137bd5a7628aa89eae2646",
+    "crates/awr-mcp/src/operations.rs": "7a155b6fa74efcd9d7bbf69b9a201fc3f3ebec66f9107263aab6cbc05cedfd27",
+    "crates/awr-mcp/tests/cli_parity.py": "2f2866a69bf6c4605f5d047d2da87c5c3224d8b236fbb0072190e3cae0a51715",
+    "docs/reference/cli-mcp-contract.md": "cc72ec4d65d1bc3645177b8f3008ec188c37b5250312db6bfa89cb9e92345dda"
+  },
+  "tools_exercised": [
+    "awr_context_compile",
+    "awr_event_append",
+    "awr_evidence_record",
+    "awr_project_status",
+    "awr_search",
+    "awr_work_get",
+    "awr_work_ready",
+    "awr_work_transition"
+  ],
+  "fixture_test_functions": 8,
+  "e4_scenarios_completed": 0,
+  "local_receipts": [
+    {
+      "path": ".local/p8-004-parity-final-reviewed.json",
+      "sha256": "be8484b3583d76bff7062a8305cf301111c11e786d7545906b5d9424955889f7",
+      "retention": "local_only"
+    },
+    {
+      "path": ".local/p8-004-self-use-phases.json",
+      "sha256": "538726bb43baebd4c1dcfd2c51a1c6b583d329981c0514373bbe5e3015049b76",
+      "retention": "local_only"
+    }
+  ],
+  "limitations": [
+    "Feature-local CLI/MCP and current-project development self-use only; no native agent-client tool turn or E4 business acceptance.",
+    "Broad security/regression, multi-platform validation, the 10 contractual metrics and release gates remain scheduled in later ledger items.",
+    "CLI refreshes the projection cache while MCP reads verify a disposable snapshot. These declared freshness fields intentionally differ.",
+    "Independent mutation calls generate their own IDs/times. Tests compare durable outcomes and revision bindings, not identity equality between separate executions."
+  ]
+}

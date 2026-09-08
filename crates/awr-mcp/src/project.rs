@@ -8,7 +8,14 @@ pub(crate) fn database(root: &Path) -> Result<PathBuf> {
     let runtime = root.join(".awr");
     let database = runtime.join("state.db");
     for path in [&runtime, &database] {
-        if std::fs::symlink_metadata(path)?.file_type().is_symlink() {
+        let metadata = std::fs::symlink_metadata(path).map_err(|error| {
+            if error.kind() == std::io::ErrorKind::NotFound {
+                Error::NotFound("AWR database; initialize this project first".into())
+            } else {
+                Error::Io(error)
+            }
+        })?;
+        if metadata.file_type().is_symlink() {
             return Err(Error::RuleViolation(
                 "MCP runtime directory/database must not be a symbolic link".into(),
             ));
@@ -29,6 +36,7 @@ pub(crate) struct ReadProject {
     pub store: Store,
     pub project: Project,
     origin: Store,
+    source_warnings: usize,
 }
 impl ReadProject {
     pub fn open(root: &Path) -> Result<Self> {
@@ -46,6 +54,7 @@ impl ReadProject {
             store,
             project,
             origin,
+            source_warnings: 0,
         };
         view.finish(root)?;
         Ok(view)
@@ -75,10 +84,15 @@ impl ReadProject {
                 actual,
             });
         }
+        self.source_warnings = refresh
+            .sources
+            .iter()
+            .map(|source| source.warnings.len())
+            .sum();
         Ok(())
     }
     pub fn metadata(&self) -> Value {
-        json!({"ok":true,"project_revision":self.project.project_revision,"freshness_basis":"source_verified_readonly","source_refresh_performed":false,"read_only":true})
+        json!({"ok":true,"project_revision":self.project.project_revision,"freshness_basis":"source_verified_readonly","source_refresh_performed":false,"read_only":true,"source_issues":[],"source_warnings":self.source_warnings})
     }
 }
 

@@ -31,6 +31,9 @@ pub enum ContextCommand {
         work: Option<String>,
         #[arg(long)]
         session: Option<Id>,
+        /// Compile without selecting an active runtime session.
+        #[arg(long)]
+        detached: bool,
         #[arg(long)]
         agent: Option<String>,
         #[arg(long)]
@@ -118,6 +121,7 @@ pub fn run(root: &Path, command: &ContextCommand, json_output: bool) -> Result<(
         ContextCommand::Compile {
             work,
             session,
+            detached,
             agent,
             branch,
             goal,
@@ -135,7 +139,7 @@ pub fn run(root: &Path, command: &ContextCommand, json_output: bool) -> Result<(
                 &ContextRequest {
                     work_item_key: work.clone(),
                     session_id: *session,
-                    detached: false,
+                    detached: *detached,
                     agent_id: agent.clone(),
                     branch_id: *branch,
                     goal_keys: goal.clone(),
@@ -155,17 +159,11 @@ pub fn run(root: &Path, command: &ContextCommand, json_output: bool) -> Result<(
                     },
                 },
             )?;
-            if json_output {
-                println!("{}", serde_json::to_string_pretty(&report)?);
-            } else {
-                print!("{}", report.rendered_context());
-            }
-            if !report.completeness.complete {
-                return Err(Error::ContextIncomplete(
-                    "L1 context contains required gaps; inspect completeness and sources".into(),
-                ));
-            }
-            Ok(())
+            print_l1(
+                &report,
+                db.store.project(db.project.id)?.project_revision,
+                json_output,
+            )
         }
         ContextCommand::Bootstrap {
             work,
@@ -193,5 +191,41 @@ pub fn run(root: &Path, command: &ContextCommand, json_output: bool) -> Result<(
             }
             Ok(())
         }
+    }
+}
+
+pub(crate) fn print_l1(
+    report: &awr_context::WorkContextReport,
+    revision: awr_core::Revision,
+    json_output: bool,
+) -> Result<()> {
+    if revision != report.completeness.project_revision {
+        return Err(Error::RevisionConflict {
+            expected: report.completeness.project_revision,
+            actual: revision,
+        });
+    }
+    let error = (!report.completeness.complete).then(|| {
+        Error::ContextIncomplete(
+            "L1 has required gaps; inspect completeness before execution".into(),
+        )
+    });
+    if json_output {
+        let mut value = serde_json::to_value(report)?;
+        value["ok"] = serde_json::json!(error.is_none());
+        value["project_revision"] = serde_json::json!(revision);
+        value["freshness_basis"] = serde_json::json!("source_refresh");
+        value["source_refresh_performed"] = serde_json::json!(true);
+        value["read_only"] = serde_json::json!(false);
+        if let Some(error) = &error {
+            value["error"] = serde_json::json!(error.report());
+        }
+        println!("{}", serde_json::to_string_pretty(&value)?);
+    } else {
+        print!("{}", report.rendered_context());
+    }
+    match error {
+        Some(error) => Err(error),
+        None => Ok(()),
     }
 }

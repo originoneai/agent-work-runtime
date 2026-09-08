@@ -93,7 +93,8 @@ pub fn complete(root: &Path, args: &CompleteArgs, json_output: bool) -> Result<(
         });
     }
     let bytes = awr_source::read_capped(&args.input, 64 * 1024)?;
-    let input: CompletionInput = serde_json::from_slice(&bytes)?;
+    let input: CompletionInput = serde_json::from_slice(&bytes)
+        .map_err(|e| Error::InvalidInput(format!("completion input: {e}")))?;
     let result = awr_runtime::complete_work(
         &mut store,
         &root,

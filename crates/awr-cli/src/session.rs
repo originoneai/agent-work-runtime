@@ -149,6 +149,43 @@ pub(crate) struct RuntimeProject {
     refreshed: bool,
 }
 impl RuntimeProject {
+    /// Check the caller's revision both before and after source refresh, as MCP writes do.
+    pub fn for_write(root: &Path, expected: Revision) -> Result<Self> {
+        let root = root.canonicalize()?;
+        let database = crate::source::runtime_dir(&root, false)?.join("state.db");
+        let mut store = Store::open_existing(&database)?;
+        let mut project = store.project_by_root(&root)?;
+        if project.project_revision != expected {
+            return Err(Error::RevisionConflict {
+                expected,
+                actual: project.project_revision,
+            });
+        }
+        let refresh = awr_source::index_project(
+            &mut store,
+            &root,
+            &awr_source::Manifest::load(&root)?,
+            false,
+        )?;
+        if !refresh.ok || refresh.pending != 0 {
+            return Err(Error::SourceStale(
+                "source refresh is incomplete; inspect awr source reindex".into(),
+            ));
+        }
+        project = store.project(project.id)?;
+        if project.project_revision != expected {
+            return Err(Error::RevisionConflict {
+                expected,
+                actual: project.project_revision,
+            });
+        }
+        Ok(Self {
+            store,
+            project,
+            refreshed: true,
+        })
+    }
+
     pub fn open(root: &Path, refresh: bool) -> Result<Self> {
         if refresh {
             let query = QueryProject::open(root)?;

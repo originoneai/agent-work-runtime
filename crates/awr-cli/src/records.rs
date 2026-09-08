@@ -93,7 +93,12 @@ pub(crate) fn check_limit(size: u64, limit: u64) -> Result<()> {
 }
 
 pub fn evidence(root: &Path, command: &EvidenceCommand, json_output: bool) -> Result<()> {
-    let mut db = RuntimeProject::open(root, true)?;
+    let mut db = match command {
+        EvidenceCommand::Add {
+            expected_revision, ..
+        } => RuntimeProject::for_write(root, *expected_revision)?,
+        EvidenceCommand::Show { .. } => RuntimeProject::open(root, true)?,
+    };
     let project = db.project.id;
     match command {
         EvidenceCommand::Add {
@@ -115,20 +120,40 @@ pub fn evidence(root: &Path, command: &EvidenceCommand, json_output: bool) -> Re
             let mut bytes = Vec::new();
             file.take(1024 * 1024 + 1).read_to_end(&mut bytes)?;
             check_limit(bytes.len() as u64, 1024 * 1024)?;
-            let input: Value = serde_json::from_slice(&bytes)?;
+            let input: Value = serde_json::from_slice(&bytes)
+                .map_err(|e| Error::InvalidInput(format!("evidence input: {e}")))?;
+            // EvidenceDraft is a domain type, so reject transport-only typos here.
+            if let Some(fields) = input.as_object() {
+                let allowed = [
+                    "external_key",
+                    "work_item_key",
+                    "evidence_type",
+                    "level",
+                    "summary",
+                    "locator",
+                    "sha256",
+                    "source_sha",
+                    "command",
+                    "scope",
+                    "branch_id",
+                    "verified_at",
+                ];
+                if let Some(key) = fields.keys().find(|key| !allowed.contains(&key.as_str())) {
+                    return Err(Error::InvalidInput(format!(
+                        "unknown evidence input field: {key}"
+                    )));
+                }
+            }
             let declared_branch = input.get("branch_id").is_some();
-            let mut draft: EvidenceDraft = serde_json::from_value(input)?;
+            let mut draft: EvidenceDraft = serde_json::from_value(input)
+                .map_err(|e| Error::InvalidInput(format!("evidence input: {e}")))?;
             if !declared_branch {
                 draft.branch_id = db.project.current_branch_id;
             }
             let (item, event) = Runtime::attach(&mut db.store, project)?
                 .record_evidence(*expected_revision, draft)?;
             let mut value = db.metadata(event.project_revision);
-            value["evidence"] = evidence_brief(&EvidenceRecord {
-                item: item.clone(),
-                source: None,
-                project_revision: event.project_revision,
-            });
+            value["evidence"] = serde_json::to_value(&item)?;
             value["event_id"] = json!(event.id);
             value["validation_basis"] = json!("caller_supplied_bindings");
             print(

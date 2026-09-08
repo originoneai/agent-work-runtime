@@ -76,6 +76,12 @@ pub(crate) fn call(root: &Path, name: &str, args: JsonObject) -> Result<CallTool
     view.finish(root)?;
     let incomplete = name == "awr_context_compile" && value["completeness"]["complete"] == false;
     for (key, item) in view.metadata().as_object().expect("metadata object") {
+        // Context packs carry their own required gaps and source provenance.
+        if name == "awr_context_compile"
+            && matches!(key.as_str(), "source_issues" | "source_warnings")
+        {
+            continue;
+        }
         value[key] = item.clone();
     }
     if incomplete {

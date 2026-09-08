@@ -5,6 +5,7 @@ mod branch;
 mod context;
 mod doctor;
 mod drill;
+mod event_append;
 mod mutation;
 mod query;
 mod records;
@@ -44,11 +45,16 @@ enum Command {
         command: source::SourceCommand,
     },
     /// Refresh source projections and summarize current project work.
-    Status,
+    Status {
+        #[arg(long)]
+        branch: Option<String>,
+    },
     /// List dependency-ready work with explicit reasons for excluded work.
     Ready {
         #[arg(long, default_value_t = 10)]
         limit: usize,
+        #[arg(long)]
+        branch: Option<String>,
     },
     /// Read one work item without expanding the full ledger or event history.
     Work {
@@ -85,7 +91,7 @@ enum Command {
         #[command(subcommand)]
         command: drill::ObjectCommand,
     },
-    /// Inspect immutable events and bounded historical summaries.
+    /// Append validated events or inspect immutable events and bounded history.
     Event {
         #[command(subcommand)]
         command: drill::EventCommand,
@@ -114,8 +120,12 @@ fn run(cli: &Cli) -> Result<()> {
             source::initialize(&cli.project, manifest.as_deref(), *accept, cli.json)
         }
         Some(Command::Source { command }) => source::run(&cli.project, command, cli.json),
-        Some(Command::Status) => query::status(&cli.project, cli.json),
-        Some(Command::Ready { limit }) => query::ready(&cli.project, *limit, cli.json),
+        Some(Command::Status { branch }) => {
+            query::status(&cli.project, branch.as_deref(), cli.json)
+        }
+        Some(Command::Ready { limit, branch }) => {
+            query::ready(&cli.project, *limit, branch.as_deref(), cli.json)
+        }
         Some(Command::Work { command }) => query::work(&cli.project, command, cli.json),
         Some(Command::Session { command }) => session::run(&cli.project, command, cli.json),
         Some(Command::Evidence { command }) => records::evidence(&cli.project, command, cli.json),
@@ -138,7 +148,28 @@ fn run(cli: &Cli) -> Result<()> {
 }
 
 fn main() -> std::process::ExitCode {
-    let cli = Cli::parse();
+    let args = std::env::args_os().collect::<Vec<_>>();
+    let cli = match Cli::try_parse_from(&args) {
+        Ok(cli) => cli,
+        Err(error) => {
+            // A literal after `--` is data, and `--field=--json` is not the JSON flag.
+            let json = args
+                .iter()
+                .skip(1)
+                .take_while(|arg| *arg != "--")
+                .any(|arg| arg == "--json");
+            if error.use_stderr() && json {
+                let report = Error::InvalidInput(error.to_string().trim().into()).report();
+                eprintln!(
+                    "{}",
+                    serde_json::to_string(&report).expect("error report serializes")
+                );
+            } else {
+                let _ = error.print();
+            }
+            return std::process::ExitCode::from(error.exit_code() as u8);
+        }
+    };
     match run(&cli) {
         Ok(()) => std::process::ExitCode::SUCCESS,
         Err(error) => {

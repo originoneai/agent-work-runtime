@@ -91,6 +91,8 @@ pub struct BranchContextArgs {
     #[arg(long)]
     session: Option<Id>,
     #[arg(long)]
+    detached: bool,
+    #[arg(long)]
     agent: Option<String>,
     #[arg(long)]
     goal: Vec<String>,
@@ -127,6 +129,7 @@ pub fn run(root: &Path, command: &BranchCommand, json_output: bool) -> Result<()
                 &awr_context::ContextRequest {
                     work_item_key: options.work.clone(),
                     session_id: options.session,
+                    detached: options.detached,
                     agent_id: options.agent.clone(),
                     goal_keys: options.goal.clone(),
                     paths: options.path.clone(),
@@ -137,17 +140,11 @@ pub fn run(root: &Path, command: &BranchCommand, json_output: bool) -> Result<()
                     ..Default::default()
                 },
             )?;
-            if json_output {
-                println!("{}", serde_json::to_string_pretty(&report)?);
-            } else {
-                print!("{}", report.rendered_context());
-            }
-            if !report.completeness.complete {
-                return Err(Error::ContextIncomplete(
-                    "branch context contains required gaps; inspect completeness and sources"
-                        .into(),
-                ));
-            }
+            crate::context::print_l1(
+                &report,
+                store.project(project.id)?.project_revision,
+                json_output,
+            )?;
         }
         BranchCommand::Delta {
             reference,

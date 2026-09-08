@@ -30,6 +30,8 @@ pub enum WorkCommand {
     /// Show source state, readiness, acceptance and related decision/evidence summaries.
     Show {
         id: String,
+        #[arg(long)]
+        branch: Option<String>,
         /// Explicit full source SHA for evidence currency (does not assume HEAD is clean).
         #[arg(long)]
         source_sha: Option<String>,
@@ -64,7 +66,7 @@ impl QueryProject {
     }
     pub(crate) fn metadata(&self) -> Value {
         json!({"ok":self.refresh.ok,"project_revision":self.project.project_revision,
-            "freshness_basis":"source_refresh","source_issues":self.refresh.issues,
+            "freshness_basis":"source_refresh","source_refresh_performed":true,"read_only":false,"source_issues":self.refresh.issues,
             "source_warnings":self.refresh.sources.iter().map(|s|s.warnings.len()).sum::<usize>()})
     }
     pub(crate) fn finish(&self) -> Result<()> {
@@ -109,18 +111,28 @@ fn ready_brief(work: &WorkReadiness) -> Value {
     let mut value = brief(&work.work);
     value["ready"] = json!(work.ready);
     value["diagnostics"] = json!(work.diagnostics);
-    value["active_claims"]=json!(work.active_claims.iter().map(|c|json!({"agent_id":c.agent_id,"session_id":c.session_id,"expires_at":c.expires_at})).collect::<Vec<_>>());
+    value["active_claims"]=json!(work.active_claims.iter().map(|c|json!({"id":c.id,"agent_id":c.agent_id,"session_id":c.session_id,"expires_at":c.expires_at})).collect::<Vec<_>>());
     value
 }
 
-pub fn status(root: &Path, json_output: bool) -> Result<()> {
+pub(crate) fn branch(
+    store: &Store,
+    project: &Project,
+    reference: Option<&str>,
+) -> Result<Option<Id>> {
+    match reference {
+        Some(reference) => store.resolve_branch(project.id, reference),
+        None => Ok(project.current_branch_id),
+    }
+}
+
+pub fn status(root: &Path, reference: Option<&str>, json_output: bool) -> Result<()> {
     let query = QueryProject::open(root)?;
+    let branch_id = branch(&query.store, &query.project, reference)?;
     let works = query.store.work_items(query.project.id)?;
-    let report = query.store.ready_work(
-        query.project.id,
-        query.project.current_branch_id,
-        now_millis()?,
-    )?;
+    let report = query
+        .store
+        .ready_work(query.project.id, branch_id, now_millis()?)?;
     let mut counts = BTreeMap::<String, usize>::new();
     for work in &works {
         *counts
@@ -153,6 +165,8 @@ pub fn status(root: &Path, json_output: bool) -> Result<()> {
         });
     let mut value = query.metadata();
     value["project"] = json!(query.project.name);
+    value["project_id"] = json!(query.project.id);
+    value["branch_id"] = json!(branch_id);
     value["counts"] = json!(counts);
     value["total"] = json!(works.len());
     value["current"] = json!(current.iter().take(5).map(|w| brief(w)).collect::<Vec<_>>());
@@ -191,16 +205,15 @@ pub fn status(root: &Path, json_output: bool) -> Result<()> {
     query.finish()
 }
 
-pub fn ready(root: &Path, limit: usize, json_output: bool) -> Result<()> {
+pub fn ready(root: &Path, limit: usize, reference: Option<&str>, json_output: bool) -> Result<()> {
     if limit == 0 || limit > 100 {
         return Err(Error::InvalidInput("ready limit must be 1..100".into()));
     }
     let query = QueryProject::open(root)?;
-    let report = query.store.ready_work(
-        query.project.id,
-        query.project.current_branch_id,
-        now_millis()?,
-    )?;
+    let branch_id = branch(&query.store, &query.project, reference)?;
+    let report = query
+        .store
+        .ready_work(query.project.id, branch_id, now_millis()?)?;
     let mut counts = BTreeMap::<String, usize>::new();
     for work in &report.blocked {
         for code in work
@@ -213,6 +226,7 @@ pub fn ready(root: &Path, limit: usize, json_output: bool) -> Result<()> {
         }
     }
     let mut value = query.metadata();
+    value["branch_id"] = json!(branch_id);
     value["ready"] = json!(
         report
             .ready
@@ -285,25 +299,28 @@ pub fn work(root: &Path, command: &WorkCommand, json_output: bool) -> Result<()>
         | WorkCommand::Release(_)
         | WorkCommand::History(_)
         | WorkCommand::Handoff(_) => crate::session::work(root, command, json_output),
-        WorkCommand::Show { id, source_sha } => {
+        WorkCommand::Show {
+            id,
+            source_sha,
+            branch: reference,
+        } => {
             if source_sha.as_ref().is_some_and(|s| !is_source_sha(s)) {
                 return Err(Error::InvalidInput(
                     "--source-sha requires a full source SHA".into(),
                 ));
             }
             let query = QueryProject::open(root)?;
-            let work = query.store.work_readiness(
-                query.project.id,
-                id,
-                query.project.current_branch_id,
-                now_millis()?,
-            )?;
+            let branch_id = branch(&query.store, &query.project, reference.as_deref())?;
+            let work =
+                query
+                    .store
+                    .work_readiness(query.project.id, id, branch_id, now_millis()?)?;
             let decisions = query.store.decisions_for_work(query.project.id, id)?;
             let evidence = query.store.evidence_for_work(
                 query.project.id,
                 id,
                 source_sha.as_deref(),
-                query.project.current_branch_id,
+                branch_id,
             )?;
             let mut value = query.metadata();
             value["work"] = ready_brief(&work);
@@ -314,7 +331,8 @@ pub fn work(root: &Path, command: &WorkCommand, json_output: bool) -> Result<()>
             value["dependency_cycles"] = json!(work.dependencies.cycle_keys);
             value["decisions"]=json!(decisions.iter().map(|d|json!({"external_key":d.decision.item.meta.external_key,"summary":short(&d.decision.item.decision),"relevance":d.relevance,"reasons":d.reasons,"source_ref":d.decision.item.meta.source_ref})).collect::<Vec<_>>());
             value["evidence"]=json!(evidence.iter().map(|e|json!({"external_key":e.evidence.item.external_key,"summary":short(&e.evidence.item.summary),"level":e.evidence.item.level,"currency":e.currency,"missing_bindings":e.missing_bindings,"locator":e.evidence.item.locator,"source_sha":e.evidence.item.source_sha,"reasons":e.reasons})).collect::<Vec<_>>());
-            value["evidence_currency_basis"] = json!({"requested_source_sha":source_sha,"branch_id":query.project.current_branch_id});
+            value["evidence_currency_basis"] =
+                json!({"requested_source_sha":source_sha,"branch_id":branch_id});
             query.check_revision()?;
             if json_output {
                 println!("{}", serde_json::to_string_pretty(&value)?);

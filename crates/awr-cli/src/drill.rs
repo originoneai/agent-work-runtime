@@ -54,6 +54,8 @@ pub struct HistoryWindow {
 
 #[derive(Debug, Subcommand)]
 pub enum EventCommand {
+    /// Append a caller event through the same validated domain operation as MCP.
+    Append(crate::event_append::AppendArgs),
     /// Read immutable event metadata. --full explicitly includes its payload.
     Show {
         id: Id,
@@ -258,8 +260,12 @@ fn history(
 }
 
 pub fn event(root: &Path, command: &EventCommand, json_output: bool) -> Result<()> {
+    if let EventCommand::Append(args) = command {
+        return crate::event_append::run(root, args, json_output);
+    }
     let db = RuntimeProject::open(root, false)?;
     match command {
+        EventCommand::Append(_) => unreachable!("append is handled before read-only dispatch"),
         EventCommand::Show {
             id,
             full,
