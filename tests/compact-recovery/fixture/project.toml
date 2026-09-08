@@ -1,0 +1,22 @@
+[project]
+name = "Handover guide recovery fixture"
+external_key = "compact-recovery-fixture"
+authority_mode = "source_first"
+
+[[sources]]
+domain = "goal"
+role = "primary"
+path = "GOALS.md"
+adapter = "markdown-heading-v1"
+
+[[sources]]
+domain = "ledger"
+role = "primary"
+path = "work-ledger.yaml"
+adapter = "yaml-ledger-v1"
+
+[[sources]]
+domain = "rules"
+role = "primary"
+path = "RULES.md"
+adapter = "markdown-rules-v1"

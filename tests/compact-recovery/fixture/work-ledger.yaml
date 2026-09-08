@@ -1,0 +1,26 @@
+milestones:
+  - id: HANDOVER
+    title: Prepare the handover guide
+    status: in_progress
+work_items:
+  - id: NOTES
+    title: Collect the approved shift notes
+    status: completed
+    acceptance:
+      - Preserve the shift owner's confirmed notes.
+    next_action: Use the approved notes when drafting the guide.
+  - id: GUIDE
+    title: Draft the shift handover guide
+    status: in_progress
+    milestone: HANDOVER
+    depends_on: [NOTES]
+    acceptance:
+      - Document both normal handover and delayed supplier confirmation.
+    next_action: Draft the handover checklist from the existing notes.
+    blocker: null
+  - id: OLD-STOCK
+    title: Closed stockroom labeling exercise
+    status: completed
+    acceptance:
+      - Preserve the old stockroom label record.
+    next_action: No current handover work depends on this exercise.

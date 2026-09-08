@@ -1,0 +1,44 @@
+{
+  "contract_id": "awr-compact-recovery",
+  "version": "1.0.0",
+  "work_item": "AWR-P9-002",
+  "source_sections": [23, 24, 43, 52],
+  "status_authority": "ledger/work-ledger.yaml",
+  "fixture_kind": "public synthetic recovery fixture; no model or real-client business invocation",
+  "budgets": {"bootstrap": 3000, "work_context": 5000},
+  "cases": [
+    {"id": "source-before-checkpoint", "source_change": "before_checkpoint", "checkpoint": true, "fault": null},
+    {"id": "source-after-checkpoint", "source_change": "after_checkpoint", "checkpoint": true, "fault": "stale_revision"},
+    {"id": "missing-checkpoint", "source_change": "after_session_start", "checkpoint": false, "fault": "missing_checkpoint"},
+    {"id": "missing-rule-source", "source_change": "before_checkpoint", "checkpoint": true, "fault": "missing_source"}
+  ],
+  "required_gates": [
+    "separate_processes_and_durable_sessions",
+    "exact_current_work_and_acceptance",
+    "current_and_saved_next_actions_distinguished",
+    "saved_open_loops_or_explicit_recovery_gap",
+    "current_rules_and_receiver_scope",
+    "source_delta_and_saved_observations",
+    "unrelated_history_excluded_but_retrievable",
+    "fault_receipt_and_retry_without_duplicate_successor",
+    "unchanged_fixture_and_read_only_recovery_sources"
+  ],
+  "expectations": {
+    "work": "GUIDE",
+    "acceptance": "Document both normal handover and delayed supplier confirmation.",
+    "original_next_action": "Draft the handover checklist from the existing notes.",
+    "current_next_action": "Revise the handover checklist for the updated supplier schedule.",
+    "saved_next_action": "Confirm the missing shift contact before finalizing the draft.",
+    "open_loops": ["Supplier timing is still awaiting confirmation.", "The night-shift contact has not reviewed the draft."],
+    "original_common_rule": "Preserve the approved handover facts.",
+    "current_common_rule": "Preserve the approved handover facts and label unconfirmed timing.",
+    "receiver_rule": "The receiving editor must retain the unresolved supplier question.",
+    "sender_rule": "The drafting editor must collect the original shift notes.",
+    "unrelated_work": "OLD-STOCK",
+    "unrelated_title": "Closed stockroom labeling exercise",
+    "unrelated_summary": "Historical stockroom shelf labels were approved last quarter.",
+    "unrelated_payload": "Old stockroom materials are unrelated to the current handover guide."
+  },
+  "boundary": "Each command starts a separate native CLI process. Session A remains active after its caller exits and is explicitly resumed as Session B; this models loss of caller memory, not a power-loss or model-quality experiment. Runtime writes use AWR CLI only; SQLite is read-only evidence. Missing checkpoints must expose unavailable saved state. Source refresh during rejected preflight may update projections, but must not create a successor or alter existing session/claim/checkpoint records. All changes use new disposable copies.",
+  "counting": "All four cases and all applicable gates must pass. Explicit absence of saved state is the expected missing-checkpoint outcome, never a claim that unrecorded memory was recovered. L0 uses an explicit 3000-token orientation budget here; the V1 1000-token metric remains a separate benchmark. No metrics, E4 scenarios or release are completed by this contract."
+}
