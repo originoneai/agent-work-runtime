@@ -129,8 +129,35 @@ impl Store {
         expected_revision: Revision,
         draft: EventDraft,
     ) -> Result<Event> {
+        self.append_event_checked(project_id, expected_revision, draft, None)
+    }
+
+    /// Treat draft.branch_id as an explicit selection, including None for main.
+    /// Session inference may not silently override that selection.
+    pub fn append_event_in_branch(
+        &mut self,
+        project_id: Id,
+        expected_revision: Revision,
+        draft: EventDraft,
+    ) -> Result<Event> {
+        let branch = draft.branch_id;
+        self.append_event_checked(project_id, expected_revision, draft, Some(branch))
+    }
+
+    fn append_event_checked(
+        &mut self,
+        project_id: Id,
+        expected_revision: Revision,
+        draft: EventDraft,
+        selected_branch: Option<Option<Id>>,
+    ) -> Result<Event> {
         self.runtime_transaction_with_event(project_id, expected_revision, draft, |tx, _, event| {
             crate::events::bind_event(tx, project_id, event, true)?;
+            if selected_branch.is_some_and(|branch| event.branch_id != branch) {
+                return Err(Error::InvalidInput(
+                    "event session conflicts with the explicitly selected branch".into(),
+                ));
+            }
             if awr_core::is_domain_event_type(&event.event_type) {
                 return Err(Error::InvalidInput(
                     "runtime event type is reserved; use the corresponding domain operation".into(),

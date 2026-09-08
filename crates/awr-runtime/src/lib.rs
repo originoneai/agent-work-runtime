@@ -74,6 +74,15 @@ impl<'a> Runtime<'a> {
     ) -> Result<Event> {
         self.store.append_event(self.project, expected, draft)
     }
+    /// Preserve an explicit event branch selection, including main.
+    pub fn append_event_in_branch(
+        &mut self,
+        expected: Revision,
+        draft: awr_core::EventDraft,
+    ) -> Result<Event> {
+        self.store
+            .append_event_in_branch(self.project, expected, draft)
+    }
     pub fn events(&self, query: &EventQuery) -> Result<EventPage> {
         self.store.query_events(self.project, query)
     }

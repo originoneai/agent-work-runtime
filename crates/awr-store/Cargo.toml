@@ -15,3 +15,7 @@ serde_json.workspace = true
 [[test]]
 name = "security_events"
 path = "../../tests/security/payloads/events.rs"
+
+[[test]]
+name = "concurrency_isolation"
+path = "../../tests/concurrency/isolation.rs"

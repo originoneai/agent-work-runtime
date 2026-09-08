@@ -1,0 +1,37 @@
+{
+  "kind": "developer_self_use",
+  "work_item": "AWR-SEC-004",
+  "checked_at": "2026-09-08T19:13:53+08:00",
+  "transport": "mcp_stdio_and_cli",
+  "session_id": "01M20979CZC36T0JSSZJD0HAD7",
+  "claim_id": "01M20979DFMQP9031TMWJ102B5",
+  "observation_event_id": "01M20BJTE40P0J7N4ZDEBZF3G5",
+  "progress_event_id": "01M20BJWDB9SZE1EPZPYSWVE59",
+  "proposal_id": "01M20BJTH868DY20SS9MXZ4A82",
+  "apply_attempt_event_id": "01M20BJVPQ7Y0M9ZE66EJ9HDDY",
+  "project_revision": 630,
+  "explicit_main_selection_retained": true,
+  "session_and_claim_unchanged": true,
+  "exact_source_progress_change": true,
+  "recovery_snapshots_match": true,
+  "final_receipt_matches_attempt": true,
+  "source_before_fingerprint": "sha256:9634d1393ac5090dc0d15ecf142bd160317a623fed01a1dc1e32d0219a9d8dbc",
+  "source_after_fingerprint": "sha256:bf4cc433afffc537327190b8d8f0d5a3105145914fb71e8adea895a617c0d56c",
+  "context_complete": true,
+  "context_tokens": 4989,
+  "context_hash": "0682c08a0e3cc24a4852d19e105fe55b3d6141e48ed176ebd1c5c6f826e6366c",
+  "doctor": {
+    "ok": true,
+    "expected_findings": [
+      "active_session"
+    ]
+  },
+  "binary_sha256": {
+    "awr": "dbf21dbe45b32d2d2fb9bbc2662f97998c710b1380a268dc6349a639cd73a6a1",
+    "awr-mcp": "c0eeded6ce2ffdfd15d4d9f2a7facdbee45e09bce30a05b8df949d19c7532192"
+  },
+  "e4_completed": 0,
+  "limitations": [
+    "Actual project progress through MCP and CLI reads. Negative and competing-process fixtures use isolated temporary projects. No E4, cross-platform or release acceptance."
+  ]
+}

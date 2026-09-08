@@ -304,18 +304,21 @@ fn append_event(root: &Path, args: EventArgs) -> Result<CallToolResult> {
         .work
         .map(|w| store.work_item(project.id, &w).map(|w| w.item.meta.id))
         .transpose()?;
-    let event = Runtime::attach(&mut store, project.id)?.append_event(
-        args.expected_revision,
-        EventDraft {
-            work_item_id,
-            session_id: args.session,
-            branch_id: branch,
-            event_type: args.event_type,
-            importance: args.importance.unwrap_or_else(|| "normal".into()),
-            summary: args.summary,
-            payload: args.payload.unwrap_or_else(|| json!({})),
-        },
-    )?;
+    let draft = EventDraft {
+        work_item_id,
+        session_id: args.session,
+        branch_id: branch,
+        event_type: args.event_type,
+        importance: args.importance.unwrap_or_else(|| "normal".into()),
+        summary: args.summary,
+        payload: args.payload.unwrap_or_else(|| json!({})),
+    };
+    let mut runtime = Runtime::attach(&mut store, project.id)?;
+    let event = if args.branch.is_some() {
+        runtime.append_event_in_branch(args.expected_revision, draft)
+    } else {
+        runtime.append_event(args.expected_revision, draft)
+    }?;
     Ok(CallToolResult::structured(
         json!({"ok":true,"project_revision":event.project_revision,"event":event,"freshness_basis":"source_refresh","source_refresh_performed":true}),
     ))

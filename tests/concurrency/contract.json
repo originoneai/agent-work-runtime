@@ -1,0 +1,118 @@
+{
+  "schema_version": 1,
+  "contract_id": "awr-runtime-isolation",
+  "version": "1.1.0",
+  "work_item": "AWR-SEC-004",
+  "target_cases": 20,
+  "evidence_level": "local_component_process_and_transport",
+  "business_scenarios": false,
+  "cases": [
+    {
+      "id": "event_opaque_storage_api",
+      "area": "events",
+      "expected": "External callers cannot obtain the SQL connection or arbitrary runtime transaction callback."
+    },
+    {
+      "id": "event_row_immutability",
+      "area": "events",
+      "expected": "Existing event identity, metadata and body survive UPDATE, DELETE, UPSERT and REPLACE on configured Store connections and snapshots."
+    },
+    {
+      "id": "event_reserved_and_bound_provenance",
+      "area": "events",
+      "expected": "Public event append rejects reserved receipts and mismatched session, work, branch or project bindings, including an explicit main selector in the CLI and MCP."
+    },
+    {
+      "id": "event_branch_query_isolation",
+      "area": "events",
+      "expected": "Exact branch and session queries, including pagination, preserve each history without relabelling events."
+    },
+    {
+      "id": "claim_compare_revision_processes",
+      "area": "claims",
+      "expected": "Two live processes sharing one expected revision produce one session commit and one explicit revision conflict."
+    },
+    {
+      "id": "claim_single_owner_processes",
+      "area": "claims",
+      "expected": "The losing process cannot claim the same work and branch after refreshing its revision; no orphan session is created."
+    },
+    {
+      "id": "claim_expired_race_processes",
+      "area": "claims",
+      "expected": "Two live contenders for an expired claim create exactly one successor claim and record the reclaimed identity."
+    },
+    {
+      "id": "claim_protect_unexpired_and_indefinite",
+      "area": "claims",
+      "expected": "Explicit expiry rejects unexpired finite and indefinite claims without modifying them."
+    },
+    {
+      "id": "claim_expiry_scope",
+      "area": "claims",
+      "expected": "Expired claim reclamation affects only its selected work and branch; unrelated effective claims remain owned."
+    },
+    {
+      "id": "claim_release_owner",
+      "area": "claims",
+      "expected": "A different session cannot release another session claim, including across branches and projects."
+    },
+    {
+      "id": "claim_ttl_invalid_rolls_back",
+      "area": "claims",
+      "expected": "Zero and overflowing TTLs cannot leave a session, claim, event or revision change."
+    },
+    {
+      "id": "claim_event_failure_rollback",
+      "area": "claims",
+      "expected": "Failure of a reclamation receipt rolls back claim expiry, new ownership and new session creation together."
+    },
+    {
+      "id": "branch_parallel_sessions_claims",
+      "area": "branches",
+      "expected": "Live processes on different branches can retain independent claims after explicit revision retry."
+    },
+    {
+      "id": "branch_switch_retains_ownership",
+      "area": "branches",
+      "expected": "Switching the default branch does not move existing sessions, claims, checkpoints or events."
+    },
+    {
+      "id": "branch_session_selection",
+      "area": "branches",
+      "expected": "Implicit session selection stays within the selected branch and reports ambiguity; explicit identity filters remain observable."
+    },
+    {
+      "id": "branch_handoff_binding",
+      "area": "branches",
+      "expected": "Handoff rejects a different branch, preserves checkpoint ownership and transfers only a live claim within the same branch."
+    },
+    {
+      "id": "branch_resume_binding",
+      "area": "branches",
+      "expected": "Resume requires the original current branch, preserves claim expiry and creates only one successor."
+    },
+    {
+      "id": "branch_cleanup_scope",
+      "area": "branches",
+      "expected": "Session end and explicit interruption release only their own claims and preserve other branch sessions."
+    },
+    {
+      "id": "branch_closed_mutation_rejection",
+      "area": "branches",
+      "expected": "Closed branches reject new sessions, claims and generic events without modifying existing history."
+    },
+    {
+      "id": "branch_checkpoint_and_evidence_scoping",
+      "area": "branches",
+      "expected": "Checkpoint selection and related evidence keep named branch ownership while permitting shared source facts."
+    }
+  ],
+  "completion": "Every condition must execute under this contract. Concurrency cases must coordinate distinct live OS processes and inspect committed session/claim/event ownership. Compile-fail API checks and SQL fault fixtures are component evidence, not real agent collaboration or E4. Historical counts never satisfy this contract.",
+  "required_transport_supplement": {
+    "file": "tests/concurrency/branch_selectors.py",
+    "test_functions": 3,
+    "case": "event_reserved_and_bound_provenance",
+    "expected": "Explicit main and named branch selectors cannot be silently overridden by a bound session; CLI/MCP errors preserve persisted state."
+  }
+}

@@ -45,18 +45,21 @@ pub fn run(root: &Path, args: &AppendArgs, json_output: bool) -> Result<()> {
                 .map(|w| w.item.meta.id)
         })
         .transpose()?;
-    let event = Runtime::attach(&mut db.store, db.project.id)?.append_event(
-        args.expected_revision,
-        EventDraft {
-            work_item_id,
-            session_id: args.session,
-            branch_id,
-            event_type: args.event_type.clone(),
-            importance: args.importance.clone(),
-            summary: args.summary.clone(),
-            payload,
-        },
-    )?;
+    let draft = EventDraft {
+        work_item_id,
+        session_id: args.session,
+        branch_id,
+        event_type: args.event_type.clone(),
+        importance: args.importance.clone(),
+        summary: args.summary.clone(),
+        payload,
+    };
+    let mut runtime = Runtime::attach(&mut db.store, db.project.id)?;
+    let event = if args.branch.is_some() {
+        runtime.append_event_in_branch(args.expected_revision, draft)
+    } else {
+        runtime.append_event(args.expected_revision, draft)
+    }?;
     if json_output {
         let mut value = db.metadata(event.project_revision);
         value["event"] = serde_json::to_value(&event)?;

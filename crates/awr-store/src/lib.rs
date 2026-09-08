@@ -42,9 +42,28 @@ const CATALOG_SQL: &str = include_str!("../migrations/001_catalog.sql");
 const DOMAIN_SQL: &str = include_str!("../migrations/002_domain.sql");
 const SEARCH_SQL: &str = include_str!("../migrations/003_search.sql");
 
+/// Domain operations own database writes; no SQL handle is exposed to callers.
+///
+/// ```compile_fail
+/// fn overwrite(store: &mut awr_store::Store) {
+///     store.conn.execute("UPDATE events SET summary='rewritten'", []).unwrap();
+/// }
+/// ```
+///
+/// ```compile_fail
+/// fn arbitrary_write(store: &mut awr_store::Store, project: awr_core::Id) {
+///     store.runtime_transaction(project, 0,
+///         awr_core::EventDraft::new("report.observed", "Review report"),
+///         |_transaction, _revision| Ok(())).unwrap();
+/// }
+/// ```
 pub struct Store {
     pub(crate) conn: Connection,
 }
+
+#[cfg(test)]
+#[path = "../../../tests/concurrency/event_guards.rs"]
+mod isolation_event_tests;
 
 #[derive(Debug, Serialize)]
 pub struct DoctorReport {
@@ -253,6 +272,10 @@ impl Store {
         conn.busy_timeout(Duration::from_millis(5000))
             .map_err(db_error)?;
         conn.pragma_update(None, "foreign_keys", true)
+            .map_err(db_error)?;
+        // REPLACE performs an implicit delete. Without recursive triggers SQLite
+        // can bypass event_no_delete and overwrite an existing append-only receipt.
+        conn.pragma_update(None, "recursive_triggers", true)
             .map_err(db_error)
     }
 
