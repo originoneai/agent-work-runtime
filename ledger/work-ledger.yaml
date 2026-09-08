@@ -1,8 +1,8 @@
 schema_version: 1
 contract_id: awr-v1
 contract_version: 1.0.0
-ledger_revision: 147
-updated_at: '2026-09-08T20:52:21+08:00'
+ledger_revision: 148
+updated_at: '2026-09-08T21:29:25+08:00'
 project:
   name: Agent Work Runtime
   external_key: agent-work-runtime
@@ -12,10 +12,10 @@ project:
 current:
   milestone: M9
   work_item: AWR-QA-002
-  next_action: 按 V1 合同建立 8 个独立业务场景的材料、工作图、角色、两轮自然追问、产物与复核要求，并生成可校验覆盖矩阵；场景执行结果留待真实客户端验收。
+  next_action: 8 套业务材料、40 个独立工作节点及两轮输入更新已通过接入检查；绑定执行源码、远端和本项目写回回执，完成 QA-002 后进入三平台运行验证。
   open_loops:
-  - QA-001 已完成：17/17 回归检查、273 项 workspace 测试、2 项 doctest、122 项专项条件、8 项 CLI/MCP 契约与原样接续示例通过。Basic 识别、短凭据、旧缓存和示例断言的根因修复已绑定源码
-    9bfdf88；交付 7918772 的 Git/GitHub 回执已核实。本项目完成写回、checkpoint/end 后 Doctor 为零项；后续准备 8 个独立业务场景，均不计 E4。
+  - QA-002 合同 1.0.0 的 8/8 材料接入、40 个独立工作节点、16 次输入更新和 24 次完整上下文编译通过；编辑冲突得到保护，未预写运行态或产物。本项目 MCP 进度写回与 Doctor 只读复核通过，等待源码、远端与完成回执；真实业务验收仍为
+    0/8。
   - SEC-001 已完成：26/26 路径条件、46 项写回回归和 10 项 MCP 检查通过；源码 217a0b5 的远端回执已核实。实际完成写回、快照核对、checkpoint/end 后 Doctor 为 0 项；进入
     SEC-002。均不计 E4 或正式发布。
   - P0/P1 功能与接入项全部完成；P8-004 已对齐 8 个 MCP Tools 和 CLI 的状态、版本、缺口及写入回执，进入 M8 安全与后续集中质量阶段。
@@ -1707,7 +1707,7 @@ work_items:
   id: AWR-QA-002
   kind: quality
   milestone: M9
-  next_action: 按 V1 合同建立 8 个独立业务场景的材料、工作图、角色、两轮自然追问、产物与复核要求，并生成可校验覆盖矩阵；场景执行结果留待真实客户端验收。
+  next_action: 8 套业务材料、40 个独立工作节点及两轮输入更新已通过接入检查；绑定执行源码、远端和本项目写回回执，完成 QA-002 后进入三平台运行验证。
   owner: codex-primary
   priority: P2
   required_for_v1: true

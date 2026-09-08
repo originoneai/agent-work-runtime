@@ -1,0 +1,1264 @@
+{
+  "work_item": "AWR-QA-002",
+  "contract_id": "awr-business-fixtures",
+  "contract_version": "1.0.0",
+  "contract_sha256": "01835503fe4069649a5973ac4c38fba9479e33289c162dee03b7c1b173ffb7f6",
+  "checked_at": "2026-09-08T21:28:45+08:00",
+  "source_commit": "f4ec535d25aeb8147f37112b85df17ad45a7e063",
+  "source_tree": "268155746d7704ef10daab8bcd59ca9247bada0e",
+  "clean_source": true,
+  "fixture_input_sha256": {
+    "tests/fixtures/business/README.md": "27a17d400388837c1f1edffa11e7bdd634ba1de248de324dec9519d9f3d91274",
+    "tests/fixtures/business/branch-handoff/project/.gitignore": "6a53f49e42cd698827d93a42132da508bbfe893dd2688aee6db092adb261b663",
+    "tests/fixtures/business/branch-handoff/project/GOALS.md": "3e8652370f3839279a253b7a18a0e730343e8de13da07c632a33e4f6f90e064b",
+    "tests/fixtures/business/branch-handoff/project/PLAN.md": "c9ffac03fdbcbc29ae4c21ad002691de919a50283fe304ce01e06b2a994e901f",
+    "tests/fixtures/business/branch-handoff/project/README.md": "1b16b3d060cf17b5f11f5438ae17a90107e8a58280a037eb0b6a580812da2224",
+    "tests/fixtures/business/branch-handoff/project/RULES.md": "6d59688963180724c6052e5dac1e627da2e81b7344ec412a4d373b6ede42211a",
+    "tests/fixtures/business/branch-handoff/project/materials/mainline-notes.md": "952f1ed69573d8c4e7fe6c385782411f572648af0010a0023f789f7b1bce3d29",
+    "tests/fixtures/business/branch-handoff/project/materials/release-scope.md": "5098160c6936f34780f7bf70b91e4c57f9ffde57eccbc63fa3ea49380bc57e56",
+    "tests/fixtures/business/branch-handoff/project/project.toml": "1e41227978a7bf68ec1dcea5cd963f602413ef855ed133576bbfb829b2b21124",
+    "tests/fixtures/business/branch-handoff/project/work-ledger.yaml": "4d9034ac250248a96ff8312bd21276fadca5add7ed082e7fce6da29dc28a8c6a",
+    "tests/fixtures/business/branch-handoff/prompts/followup-1.md": "21c088751aa4191b823d42ac148034574d9cc237c3bd088f42cfa061daae4449",
+    "tests/fixtures/business/branch-handoff/prompts/followup-2.md": "14b6747717a3f388c37b99493cf6165dac38fbe877ffb982117193d3117818a2",
+    "tests/fixtures/business/branch-handoff/prompts/initial.md": "4d001ee3b3c9900d4cde15d655ffd7225534f80d739d5531642c93696b8349f7",
+    "tests/fixtures/business/branch-handoff/prompts/prelude.md": "3deebdf718988782c55b777985aa90e641ee72a2fa213ee67657bf253075c00f",
+    "tests/fixtures/business/branch-handoff/scenario.json": "99d1a93074f45f0aac90adfb7df4a9e6cd77bd9517e37b77bc1e4272e85c5502",
+    "tests/fixtures/business/branch-handoff/updates/round-1/materials/mainline-notes.md": "6328ea2601e2f676e311451de18ad592a8c253fbfc2f351acfcd7a94844c9ace",
+    "tests/fixtures/business/branch-handoff/updates/round-2/RULES.md": "6701b855267683b5f5e3fab707cc2d8fefbf13ec3419a7f336343728436c8b31",
+    "tests/fixtures/business/branch-handoff/work-graph.yaml": "bd4365ea983d76d6cc392ce34bf0f23e94927aef21ea4474058ad22385882a1d",
+    "tests/fixtures/business/contract.json": "01835503fe4069649a5973ac4c38fba9479e33289c162dee03b7c1b173ffb7f6",
+    "tests/fixtures/business/coverage.json": "d08498f4596b0f0ab2ba7e8bc86153dde5aa78f686bfcf1c8b7f4418b80d14c8",
+    "tests/fixtures/business/evidence-completion/project/.gitignore": "6a53f49e42cd698827d93a42132da508bbfe893dd2688aee6db092adb261b663",
+    "tests/fixtures/business/evidence-completion/project/GOALS.md": "6422d45f96484905337108d38bd7077de94f0c8cf94f02a092eda6e04bb91d3f",
+    "tests/fixtures/business/evidence-completion/project/PLAN.md": "0a7f619a201e82337b62680d8f7f9a869180e906f3c766081bc6a42e0cfdf8e1",
+    "tests/fixtures/business/evidence-completion/project/README.md": "22ae3e557ac081f85787e53e796a8f81b64894b1adb387a73d935b293296b46a",
+    "tests/fixtures/business/evidence-completion/project/RULES.md": "4205cb30134f1d5edbc8ee4837a6deaaf97ad23def6edb2fae11421bcadb2d28",
+    "tests/fixtures/business/evidence-completion/project/materials/help-draft.md": "bbb1980471ead2a84b1c641c0536ff81d547ec0beac7366db1439ad091520941",
+    "tests/fixtures/business/evidence-completion/project/materials/local-check.md": "f31020534185182cda3cb408fed52fc26708f532e12b64763614b7d1d8f227a4",
+    "tests/fixtures/business/evidence-completion/project/project.toml": "8e7b90b4e41dc55851912ed662b19d885b7df3f1777af904046a4d82601b7b5b",
+    "tests/fixtures/business/evidence-completion/project/work-ledger.yaml": "89d96c5f3b964029346acb3c216df04734bef61046aef149d7b77c46cf81512f",
+    "tests/fixtures/business/evidence-completion/prompts/followup-1.md": "4c0d543fd0124e97ec8fa26153437de135dfab3674fcb44b74cffa4436e70816",
+    "tests/fixtures/business/evidence-completion/prompts/followup-2.md": "f05c33f6b83d368bb9d45cb6aef0492344fab3ec4bd4e78fed78116e6eabd67a",
+    "tests/fixtures/business/evidence-completion/prompts/initial.md": "9e7c5348e5c5cfe60cfef7c912e0d229001bd9d8427321b47cafe2892d8b8713",
+    "tests/fixtures/business/evidence-completion/scenario.json": "8ecf56d7e3e012fc1336ab3d3e00e5d2355c358abd35f226d741237bc329f508",
+    "tests/fixtures/business/evidence-completion/updates/round-1/materials/usage-inputs.csv": "b3fd3f7e16405a84fea59bbefb70d5ada50d7659a8cb7274d6f65be51897798f",
+    "tests/fixtures/business/evidence-completion/updates/round-2/RULES.md": "0d685c2f575e04fba4892a56ca4f7ff8caf9abeff2090c391f0490b9e28cec36",
+    "tests/fixtures/business/evidence-completion/work-graph.yaml": "1dfac7d57234509116918f5f5a5c935e1c6a233445022dbaf9f06c6793a2b716",
+    "tests/fixtures/business/gate-contract.json": "0bc0c866cf6a683c8ddf7f8a6f86c5fd2b2f8ca660d93f5c7de215752811687d",
+    "tests/fixtures/business/interrupted-write/project/.gitignore": "6a53f49e42cd698827d93a42132da508bbfe893dd2688aee6db092adb261b663",
+    "tests/fixtures/business/interrupted-write/project/GOALS.md": "254aec11ac1dd7abe79a2b6f8c3dd45be84633765af2ebd74ecbeeaea1ef4152",
+    "tests/fixtures/business/interrupted-write/project/PLAN.md": "eda91c43584652bed15afb4d61f2598d379641610db0883a1b0435fa66185995",
+    "tests/fixtures/business/interrupted-write/project/README.md": "fc1b2386d842d4f701a3550589e85dea22b14cefb9393e66ecdf131a13a2fac1",
+    "tests/fixtures/business/interrupted-write/project/RULES.md": "4c28d3a308958136b8449d9c61c59da81e0d5f7dcbfd9075b32c87d61a0cb606",
+    "tests/fixtures/business/interrupted-write/project/materials/change-requests.csv": "0872b48bc80817d733fd80b799d50e850406949f805db81b83aaa54eba433ee2",
+    "tests/fixtures/business/interrupted-write/project/materials/handover-draft.md": "4cbac09bd7a59e47e245a2d5f76e6c18a694680be26c411f97c503972df62361",
+    "tests/fixtures/business/interrupted-write/project/project.toml": "365a256d696bfcad6c5f86f5f188474c4c26355c6f75d270fa8cc0080e64c76f",
+    "tests/fixtures/business/interrupted-write/project/work-ledger.yaml": "cc6fcf9cd5d15bb64a24e9ff43dc8f5328e4b2119e3a9735c5249897799c902a",
+    "tests/fixtures/business/interrupted-write/prompts/followup-1.md": "138a50b851170a3c681c554d06ceaf619e3bbdb465e6510a63198d49c141fd19",
+    "tests/fixtures/business/interrupted-write/prompts/followup-2.md": "ff98e3ab40c098bd8a93c4d7facfda5dc97445b71eefeb7487c51b6201a64b60",
+    "tests/fixtures/business/interrupted-write/prompts/initial.md": "fc97e65c3c31721f4f8ca1316076e8b96740ee57ccc3f2a6bd4d00f678d04cc4",
+    "tests/fixtures/business/interrupted-write/prompts/prelude.md": "6e97e308e6fec6cbcd165f6a45bb417fc53d753e5aa57fa0a91926b24c50dd97",
+    "tests/fixtures/business/interrupted-write/scenario.json": "b9df844a417e244f2dcdaec460f6f8b27bb1ce32202aa7883c34e9df534d4b34",
+    "tests/fixtures/business/interrupted-write/updates/round-1/materials/archive-confirmation.md": "03fd800c15f3571df42ec52f69073f9230425e0eb1aaa6019ec5fdfa5b60cf5c",
+    "tests/fixtures/business/interrupted-write/updates/round-2/materials/role-confirmation.md": "8117dffe9cf6088adf357e9d0c404d1f4f547c430dd520cf1095d8cb27bf1da5",
+    "tests/fixtures/business/interrupted-write/work-graph.yaml": "5b06ffc0b93e22d4732429b1e8de7724fd587f05d40c1918765cd58154799619",
+    "tests/fixtures/business/long-task-resume/project/.gitignore": "6a53f49e42cd698827d93a42132da508bbfe893dd2688aee6db092adb261b663",
+    "tests/fixtures/business/long-task-resume/project/GOALS.md": "d8b2a093f141e286467618caa7fc1a97ce49decc08c1b99302c901aeef41e94b",
+    "tests/fixtures/business/long-task-resume/project/PLAN.md": "9e11cb63739d64842aa61ab2a75c170eecb2f5c2d2914841aa35df91470bd280",
+    "tests/fixtures/business/long-task-resume/project/README.md": "b4cfe6c2b50147936e99b32d05ee843e6704eb701cdc97a0b0474487b2dbaaee",
+    "tests/fixtures/business/long-task-resume/project/RULES.md": "13834a21aea934aa9f64cca6c104d8c043b1d7eb200887cb383907b4388519cb",
+    "tests/fixtures/business/long-task-resume/project/materials/manual-outline.md": "47a3a73e7b11cc8759a0c81addd7040169299591d2b7db0a0d0159fa1f465693",
+    "tests/fixtures/business/long-task-resume/project/materials/open-questions.csv": "a61c84473cebead6658e1fc1bfbfd4fe344ebfb87f1d1c7850f5da5c4fc6b812",
+    "tests/fixtures/business/long-task-resume/project/project.toml": "601be0360e02db8f10044d6110c9bcd7236be2391baadef473b1ba31bac59ff7",
+    "tests/fixtures/business/long-task-resume/project/work-ledger.yaml": "d60e43069991e62f422a96ef628f05265c87942ece508147a273ef2a2c459e6e",
+    "tests/fixtures/business/long-task-resume/prompts/followup-1.md": "7d54b6f36ad87498c668e21a07cdb8e4bbf38774f6632c4047c3821b1b045949",
+    "tests/fixtures/business/long-task-resume/prompts/followup-2.md": "42cca14a430ac9ea6f5cbb0de34f7c27a0d83e08ef1f95343460bf85b234e044",
+    "tests/fixtures/business/long-task-resume/prompts/initial.md": "c3fc98adc3f710cb30307d999697e68a13892682d988a3f3e7974e5005377659",
+    "tests/fixtures/business/long-task-resume/prompts/prelude.md": "033ba198ad0595221462c6b2697bfbbe20f62a429638771ec29712f6c72ccf59",
+    "tests/fixtures/business/long-task-resume/scenario.json": "b376881b6ebcdad3388740a29db82d562aff3294aded6f7e11efffdd3629033e",
+    "tests/fixtures/business/long-task-resume/updates/round-1/materials/duty-notes.md": "eda536064f05aea30bc45c43079e8470074414cd8b2a56271ace283db20b9875",
+    "tests/fixtures/business/long-task-resume/updates/round-2/RULES.md": "f1562e163d17cbbcd5f43af3356c2d4e9076063712c010a9495c54f17466876e",
+    "tests/fixtures/business/long-task-resume/work-graph.yaml": "0821c1787a3dc86959def050066d84aebbf1a89725d7c42a0cecc24100dac2fa",
+    "tests/fixtures/business/parallel-ownership/project/.gitignore": "6a53f49e42cd698827d93a42132da508bbfe893dd2688aee6db092adb261b663",
+    "tests/fixtures/business/parallel-ownership/project/GOALS.md": "b4c7d4b82ee317c7fdd4186bed1abb78ba366ef98ac0866b09f85844e22fbf15",
+    "tests/fixtures/business/parallel-ownership/project/PLAN.md": "729e1a14fe3b11ed869252e5b8aa85d8a3854719865d1cb7b3602ef91aa90ed9",
+    "tests/fixtures/business/parallel-ownership/project/README.md": "77ab994eb549c3cefc1774f038ae7149c1adc69887899e0f910ff9f69fc4b445",
+    "tests/fixtures/business/parallel-ownership/project/RULES.md": "31ac59aa580dc3f29f17cd1f532eebbaa0152a041ccd8e00ca74e6d4cd914e19",
+    "tests/fixtures/business/parallel-ownership/project/materials/agenda.csv": "0b946ce991d14b6fe703e991a3192484888fbcda324969bf5d29eff347c92d05",
+    "tests/fixtures/business/parallel-ownership/project/materials/venue.md": "be74fba2f6c04946fcd19a676eaf7f4b6c721cc51e8728718cd0a6df06b28fb6",
+    "tests/fixtures/business/parallel-ownership/project/project.toml": "499909a1826ad7e9012d612ffb5ffc73bb3e09f1a61e992ba8e3ed55e99e039e",
+    "tests/fixtures/business/parallel-ownership/project/work-ledger.yaml": "e98cc65ea60c3740138c52d16e0e602153d9a5dbd262e6791ac53db31990e22f",
+    "tests/fixtures/business/parallel-ownership/prompts/followup-1.md": "761970384237cff0b0f5f7a720eb461132e0d6a6c24fb1900c99e0db446f8ea3",
+    "tests/fixtures/business/parallel-ownership/prompts/followup-2.md": "c34415d25da819abab9abe3089a1e0e5d215d42b8864d8cf050a5659c12f4b44",
+    "tests/fixtures/business/parallel-ownership/prompts/initial.md": "480bbd03b7e89fa0c10899e3a7bca3e63e163c642f338a17619c0ca85be746e7",
+    "tests/fixtures/business/parallel-ownership/prompts/prelude.md": "b024fa6ccc2f5918a9fdf9b20793cc10bb65145341adfc96a03fef175cfff2c7",
+    "tests/fixtures/business/parallel-ownership/scenario.json": "740f07da09f2c76e522592daa9f928624599b5bb76517baac5f17de18562fd3b",
+    "tests/fixtures/business/parallel-ownership/updates/round-1/materials/absence-note.md": "99aaf718844939814cc93c095bbd4bfcdd0fde8e6b9c10443d0cb83b2e66bc85",
+    "tests/fixtures/business/parallel-ownership/updates/round-2/materials/joint-review.md": "6205ec3a29224e4defee548e308f9c0f3d6cb56caf201ac211ff7d15c81f0dde",
+    "tests/fixtures/business/parallel-ownership/work-graph.yaml": "54e81cf9a0710d416e7d6a2582a00ed909158a706680783f80c448f0f97670d6",
+    "tests/fixtures/business/prepare.py": "324780d11ca30353eb77151be7b04d6cf3332c2d55070555fe35191644b85017",
+    "tests/fixtures/business/project-onboarding/project/.gitignore": "6a53f49e42cd698827d93a42132da508bbfe893dd2688aee6db092adb261b663",
+    "tests/fixtures/business/project-onboarding/project/GOALS.md": "575f650e4ff9b782bebdb8830f5b2670a3bdc447a41ff84e53eec7cf35c249a8",
+    "tests/fixtures/business/project-onboarding/project/PLAN.md": "2d726e0e77754a51f779b5eee59ac29c919a4e7ab87b2a43a53a74938b2ba053",
+    "tests/fixtures/business/project-onboarding/project/README.md": "c04cc9f1bb9391f415be8f3aca0c133c442b0785396b4651b947c92e6b24d30b",
+    "tests/fixtures/business/project-onboarding/project/RULES.md": "14fb573ef193e475f1f6d6bf54cfcf59888646150cee3ea0719de39733327386",
+    "tests/fixtures/business/project-onboarding/project/materials/backlog.csv": "bf2e68415f5b4258e0c13fa70de3db8485904ebc0a228ae347fac1a7ad5e6ca6",
+    "tests/fixtures/business/project-onboarding/project/materials/request.md": "97e6a3c7fa089071b15ebd6be40683c20d088b2cfa222d7c70ccce1fc1c85bca",
+    "tests/fixtures/business/project-onboarding/project/project.toml": "632f3745e45d042bfd2b661cde84d9507738a258b313a042f1092dc615038342",
+    "tests/fixtures/business/project-onboarding/project/work-ledger.yaml": "4baf77a2bd8ac2aa91d704dc586aebcb4c599faa4bc789d8e49a791d3880caa8",
+    "tests/fixtures/business/project-onboarding/prompts/followup-1.md": "de71f1913ba93df2414004b551a1868666adde266da430339167bb3db1a29075",
+    "tests/fixtures/business/project-onboarding/prompts/followup-2.md": "4042b2ce7624b41a17911abc6dcb7ae311ca7b6fc404f376ea122ad52af53819",
+    "tests/fixtures/business/project-onboarding/prompts/initial.md": "ebffdaab17df9dbaeaa6ae6260dc0ea7070d2c6afc42b4acd2ac12e1683d8bfa",
+    "tests/fixtures/business/project-onboarding/scenario.json": "834c28b6d59c397ff4d11f5136e6b9223060e6df5a4a0d77ced3b35e8fc61250",
+    "tests/fixtures/business/project-onboarding/updates/round-1/materials/week-window.md": "df1bc8d6a0b3a51eabaefacbbebde71931840de029bc21a757e856ad6b04425b",
+    "tests/fixtures/business/project-onboarding/updates/round-2/RULES.md": "05c7d1e94f96e3f6bdaccfd8790895a07e11472fe95542c046eb570456ad218d",
+    "tests/fixtures/business/project-onboarding/work-graph.yaml": "fb0337bd7f9f7cd8a9d55b8855f0a666c351be9306182283afbc12f1e352bfea",
+    "tests/fixtures/business/restricted-material/project/.gitignore": "6a53f49e42cd698827d93a42132da508bbfe893dd2688aee6db092adb261b663",
+    "tests/fixtures/business/restricted-material/project/GOALS.md": "6acc82d527807f5daa3e30aa53305ea788df181cea5069f82b2b98e72cf6c276",
+    "tests/fixtures/business/restricted-material/project/PLAN.md": "38cd2ffee2ed18c9b5055c7ea4e2fc97a13b600dbd98ce83a9951ffd097a18a4",
+    "tests/fixtures/business/restricted-material/project/README.md": "7e0a078bcc87ecbc7f106f9510cd8652f0f37a30545e1d16ad0e99734c897ad8",
+    "tests/fixtures/business/restricted-material/project/RULES.md": "027c33c13e43b106ecb0a1ebf5178b364ea4b95e53b73f279868c1a59abc149d",
+    "tests/fixtures/business/restricted-material/project/materials/access-register.md": "b6e4e023be4e205b5a9ec6bae4c4f6a20d8d85b61b96d46e9245781f97decaf9",
+    "tests/fixtures/business/restricted-material/project/materials/public-summary.csv": "8465ff50f822730007c279f0f522f706dd37d879ca87ac87dab4cd219f25a2a5",
+    "tests/fixtures/business/restricted-material/project/project.toml": "d4c6d9759fddd2d889a68ebd11573ed304d259179ac7c943bc9614a10d634f95",
+    "tests/fixtures/business/restricted-material/project/work-ledger.yaml": "a519ff8a2c10386fbec9e5fb7a209548990ef42d38cc5b383cff3e2c5cb25de7",
+    "tests/fixtures/business/restricted-material/prompts/followup-1.md": "1e4849b92d2b08628362e50e24b213b345949a84b9178f3c232de88d3b4e0c6f",
+    "tests/fixtures/business/restricted-material/prompts/followup-2.md": "7277d250ea4e8ee6cf70e843a9281f173d7a1bce1b25492845a6048e98340a91",
+    "tests/fixtures/business/restricted-material/prompts/initial.md": "c6839908d239440f5421aae6523572fc2aa4d94a9be218d4480aff41f81d33f1",
+    "tests/fixtures/business/restricted-material/scenario.json": "4f8e3138685e2791f35310416bd8cf93a5d902194ad2f2e083af984d131d1736",
+    "tests/fixtures/business/restricted-material/updates/round-1/materials/log-notice.md": "5651b4898510fda4da4211855415d4833f90acfc2ab20debdc0b4d8a366ea83d",
+    "tests/fixtures/business/restricted-material/updates/round-2/RULES.md": "1cb74e953069b0da793cdc35e4b5b2eb0d7cab6e15d60619ed0d9ed8eaed11b0",
+    "tests/fixtures/business/restricted-material/work-graph.yaml": "ae9aaa8fc43edf4b964aa5aa195f21c2cb075c735f13f79f490cae1d6d5abf32",
+    "tests/fixtures/business/source-change/project/.gitignore": "6a53f49e42cd698827d93a42132da508bbfe893dd2688aee6db092adb261b663",
+    "tests/fixtures/business/source-change/project/GOALS.md": "72db42bd7c8026e45523101a06a3bc3c4f23ab7fd92fbbbe745cc2e15b21a259",
+    "tests/fixtures/business/source-change/project/PLAN.md": "a5fdfcd2e2922d451655eafc43705a8b0ac21baf3587fec73bce49caa15972b5",
+    "tests/fixtures/business/source-change/project/README.md": "cd8425ce06bb69fe3f3a8ba1f4c67a033e7516ad7a6a64b3bea3839e59305935",
+    "tests/fixtures/business/source-change/project/RULES.md": "29d58166a2bf2fcc7420556341b736b7ed896b31af10d0f69a4ca7d5930729c9",
+    "tests/fixtures/business/source-change/project/materials/initial-plan.md": "068d12832d34cef9d11640de05597523bc2647260fd063a863034e54ae0b2513",
+    "tests/fixtures/business/source-change/project/materials/partner-requests.csv": "af1cd4a95205845f01b56e9ff182d1f5cddbe06b47f0e1b9bb64001a5cf38db3",
+    "tests/fixtures/business/source-change/project/project.toml": "79ddac0830e7c302aa015a7e5b1895dc9265fe92bc7eb78e57acb73af73e6d87",
+    "tests/fixtures/business/source-change/project/work-ledger.yaml": "971f7f4e58a8c4a10ffae6164b819ca14795e4c3d60f828edc5c5154adee6395",
+    "tests/fixtures/business/source-change/prompts/followup-1.md": "4cda64ca247915a76e990daf239b6ba2f60c37aa73e69988f11439552f50cbce",
+    "tests/fixtures/business/source-change/prompts/followup-2.md": "a2e8bc998be62e6f137d8f20554ef88bbe5dd01ed3000df570b6b39bc872a421",
+    "tests/fixtures/business/source-change/prompts/initial.md": "513d3787292b68798d728a118bd3aea5126231b51f028d3105b691c1ff2ce205",
+    "tests/fixtures/business/source-change/scenario.json": "3443af7d590392126cae8bebb925164309996ed4797a50306b059f0c970a6fe0",
+    "tests/fixtures/business/source-change/updates/round-1/RULES.md": "bbd2f4b5241b1c3fbdd774c9c749464960beaa47ac1d70501f2ddcdae441499a",
+    "tests/fixtures/business/source-change/updates/round-2/materials/clarification.md": "8177205a3f6aa84f02efb5f3ebb28333c4711db302f6400d443608cb38cf1e1e",
+    "tests/fixtures/business/source-change/work-graph.yaml": "02f385fc7e0143fc2e923add9d281a3bc6ccf0ae12a1f7448718268ea48af8ff",
+    "tests/fixtures/business/support.py": "51ae9acdf5f384cd8415ae47d1be1e61ab36358d0f4c152d9902671d500440b7",
+    "tests/fixtures/business/verify.py": "ebfe10d41c5fe7242ba7ce8f52457dbc5c6f4f9b5a20591b37b685eca41d0f97"
+  },
+  "binary_sha256": "c4a45fd3359745fac38e86d03444bc4ae3a2f146f3e537e793fffb7b155d81f4",
+  "matrix": {
+    "contract_id": "awr-business-fixtures",
+    "version": "1.0.0",
+    "scenario_count": 8,
+    "work_node_count": 40,
+    "dimensions": {
+      "boundary": [
+        "AWR-SC-003",
+        "AWR-SC-005",
+        "AWR-SC-007"
+      ],
+      "branch": [
+        "AWR-SC-004"
+      ],
+      "branch_merge": [
+        "AWR-SC-008"
+      ],
+      "channel": [
+        "AWR-SC-008"
+      ],
+      "claim_conflict": [
+        "AWR-SC-004"
+      ],
+      "cli": [
+        "AWR-SC-001",
+        "AWR-SC-002",
+        "AWR-SC-003"
+      ],
+      "crash": [
+        "AWR-SC-006"
+      ],
+      "daily": [
+        "AWR-SC-001",
+        "AWR-SC-002",
+        "AWR-SC-005"
+      ],
+      "exception": [
+        "AWR-SC-003",
+        "AWR-SC-006"
+      ],
+      "freshness": [
+        "AWR-SC-003"
+      ],
+      "mcp": [
+        "AWR-SC-008"
+      ],
+      "missing_evidence": [
+        "AWR-SC-005"
+      ],
+      "multi_agent": [
+        "AWR-SC-004"
+      ],
+      "permission": [
+        "AWR-SC-007"
+      ],
+      "recovery": [
+        "AWR-SC-002",
+        "AWR-SC-006",
+        "AWR-SC-008"
+      ],
+      "secret": [
+        "AWR-SC-007"
+      ],
+      "session_change": [
+        "AWR-SC-002"
+      ],
+      "single_agent": [
+        "AWR-SC-001"
+      ],
+      "size_limit": [
+        "AWR-SC-007"
+      ],
+      "source_mutation": [
+        "AWR-SC-005",
+        "AWR-SC-006"
+      ],
+      "topology": [
+        "AWR-SC-004",
+        "AWR-SC-008"
+      ]
+    },
+    "required_gates": [
+      "natural_client_initiation",
+      "tool_or_role_execution",
+      "real_artifact",
+      "business_followup_1",
+      "business_followup_2",
+      "independent_review",
+      "final_delivery",
+      "traceable_receipt",
+      "fixture_isolation",
+      "independent_commit_and_remote_sha"
+    ],
+    "status_authority": "ledger/work-ledger.yaml",
+    "execution_status_inferred": false
+  },
+  "passed": true,
+  "definition_rejections": [
+    {
+      "case": "missing_followup",
+      "rejected": true,
+      "reason": "Two canonical business followups are required"
+    },
+    {
+      "case": "missing_hard_gate",
+      "rejected": true,
+      "reason": "Missing or changed business gate"
+    },
+    {
+      "case": "reviewer_not_independent",
+      "rejected": true,
+      "reason": "Independent reviewer must differ from every producer"
+    },
+    {
+      "case": "missing_required_artifact",
+      "rejected": true,
+      "reason": "Missing required business artifact"
+    },
+    {
+      "case": "changed_namespace",
+      "rejected": true,
+      "reason": "Scenario identity mismatch"
+    },
+    {
+      "case": "leaked_evaluator_input",
+      "rejected": true,
+      "reason": "Initial input changed"
+    },
+    {
+      "case": "dependency_cycle",
+      "rejected": true,
+      "reason": "Work graph cycle"
+    }
+  ],
+  "fixtures": [
+    {
+      "scenario_id": "AWR-SC-001",
+      "namespace": "awr-v1/project-onboarding/qa002-fixtures-v2-case-1",
+      "project_root": ".local/qa002-fixtures-v2/case-1/project",
+      "source_seed_commit": "755798812c0321d294275732ad952a97871782a0",
+      "commands": [
+        {
+          "label": "01-preview",
+          "exit_code": 0,
+          "receipt": ".local/qa002-fixtures-v2/case-1/01-preview.json",
+          "sha256": "76b2f3e801fe216134639b386d6b2d5b37f3dd44234b89f13880e789e61f3322"
+        },
+        {
+          "label": "02-init",
+          "exit_code": 0,
+          "receipt": ".local/qa002-fixtures-v2/case-1/02-init.json",
+          "sha256": "1b8c8c630802cfe728866fbfbfc6e7c56c6e871a02d51eb9b513ae4d0fefc098"
+        },
+        {
+          "label": "03-status",
+          "exit_code": 0,
+          "receipt": ".local/qa002-fixtures-v2/case-1/03-status.json",
+          "sha256": "bfba2692e150191350b431e3688b786f66f5cfcf882c2ba80cd8d461f3ef840d"
+        },
+        {
+          "label": "04-entry",
+          "exit_code": 0,
+          "receipt": ".local/qa002-fixtures-v2/case-1/04-entry.json",
+          "sha256": "b21e2ee5d6e6f9b5dcff9507e52a31e402c6d2003710a06428bddccd655545d2"
+        },
+        {
+          "label": "05-context",
+          "exit_code": 0,
+          "receipt": ".local/qa002-fixtures-v2/case-1/05-context.json",
+          "sha256": "e6f2e4f518bc4821f7ed3163f9998092ffe622db2e3f6f35139466527f3ed642"
+        },
+        {
+          "label": "06-round-1-reindex",
+          "exit_code": 0,
+          "receipt": ".local/qa002-fixtures-v2/case-1/06-round-1-reindex.json",
+          "sha256": "0853d0ff9b67a5b169813d5fdaad889a886cb63311025f838950754191c129ba"
+        },
+        {
+          "label": "07-round-1-context",
+          "exit_code": 0,
+          "receipt": ".local/qa002-fixtures-v2/case-1/07-round-1-context.json",
+          "sha256": "e6f2e4f518bc4821f7ed3163f9998092ffe622db2e3f6f35139466527f3ed642"
+        },
+        {
+          "label": "06-round-2-reindex",
+          "exit_code": 0,
+          "receipt": ".local/qa002-fixtures-v2/case-1/06-round-2-reindex.json",
+          "sha256": "c4b806a1d412e8a055b0ca8980ee5a4e0fa260b1928ec79c0bc26ae81e4dd744"
+        },
+        {
+          "label": "07-round-2-context",
+          "exit_code": 0,
+          "receipt": ".local/qa002-fixtures-v2/case-1/07-round-2-context.json",
+          "sha256": "ab7d2d29dd004e85287d59ddffb544214ac458f9ebd4fc6f602392af6ee02251"
+        },
+        {
+          "label": "08-doctor",
+          "exit_code": 0,
+          "receipt": ".local/qa002-fixtures-v2/case-1/08-doctor.json",
+          "sha256": "1b763e55452d9cde6c4b1c5989620f8c54c332e31db52528418f2288132cdf61"
+        }
+      ],
+      "passed": true,
+      "business_completed": false,
+      "run_reuse_rejected": true,
+      "out_of_order_round_rejected": true,
+      "author_edit_conflict_preserved": true,
+      "project_id": "01M20K9W5NBP8RZJMEPJME3HCZ",
+      "work_count": 4,
+      "runtime_work_ids": [
+        "01M20K9W69283BD4PVX20ECXVJ",
+        "01M20K9W696BKSH2C3BS8B7083",
+        "01M20K9W69VEH9HGZ83CVT0VF4",
+        "01M20K9W69XKG7SP582D06840M"
+      ],
+      "source_context_hashes": [
+        "687edd1fb6bddfe75b037dfec34f0bb71af3af221610df3e434449cc730ed64c",
+        "687edd1fb6bddfe75b037dfec34f0bb71af3af221610df3e434449cc730ed64c",
+        "221e3913634516586507fb7ec13b6297eafd7ca8f1bb48ffbc528ef47db5321d"
+      ],
+      "final_context_tokens": 4427,
+      "runtime_counts": {
+        "sessions": 0,
+        "claims": 0,
+        "checkpoints": 0,
+        "artifacts": 0,
+        "mutation_proposals": 0
+      },
+      "prepared_rounds": [
+        1,
+        2
+      ],
+      "doctor_findings": 0,
+      "generated_material": null,
+      "e4_credit": 0,
+      "preparation_receipts": [
+        {
+          "path": ".local/qa002-fixtures-v2/case-1/run.json",
+          "sha256": "0b08047907b8d576cc6422b3377b4fd24362021645eab4ebed21209a1038995c",
+          "retention": "local_only"
+        },
+        {
+          "path": ".local/qa002-fixtures-v2/case-1/round-1-inputs.json",
+          "sha256": "3e72583615671b3f362ccb5da6108bf0bcd76a20df6f79de03b3ee93dfa4868d",
+          "retention": "local_only"
+        },
+        {
+          "path": ".local/qa002-fixtures-v2/case-1/round-2-inputs.json",
+          "sha256": "3a1c9c9f0c373cbbd716ee7addf91f72eb34fdff20f17cba279921bb600c5726",
+          "retention": "local_only"
+        }
+      ]
+    },
+    {
+      "scenario_id": "AWR-SC-002",
+      "namespace": "awr-v1/long-task-resume/qa002-fixtures-v2-case-2",
+      "project_root": ".local/qa002-fixtures-v2/case-2/project",
+      "source_seed_commit": "5fc67addcef623a2f0d077a46f1aef6384c8d4c8",
+      "commands": [
+        {
+          "label": "01-preview",
+          "exit_code": 0,
+          "receipt": ".local/qa002-fixtures-v2/case-2/01-preview.json",
+          "sha256": "81192d21646846315671e92c4c01f2c9a18c6eaefbdcf9305eff1553361891cd"
+        },
+        {
+          "label": "02-init",
+          "exit_code": 0,
+          "receipt": ".local/qa002-fixtures-v2/case-2/02-init.json",
+          "sha256": "9ff7aca4515ef4597aa254aa11e04d70d0b0764a264adf36b7b6d5322827e961"
+        },
+        {
+          "label": "03-status",
+          "exit_code": 0,
+          "receipt": ".local/qa002-fixtures-v2/case-2/03-status.json",
+          "sha256": "b1fe85b13851bfb8307a675a248f58ade27f5acc651a873e0313386b2971e76c"
+        },
+        {
+          "label": "04-entry",
+          "exit_code": 0,
+          "receipt": ".local/qa002-fixtures-v2/case-2/04-entry.json",
+          "sha256": "c0b1e1e1a0ba51c36096a36a76121999dfcb5b6f28f4715a2fa8a8c233383f46"
+        },
+        {
+          "label": "05-context",
+          "exit_code": 0,
+          "receipt": ".local/qa002-fixtures-v2/case-2/05-context.json",
+          "sha256": "eae98d82e1b9923fdc690990667151e826d59153eadeb8274d68adcf585cb17e"
+        },
+        {
+          "label": "06-round-1-reindex",
+          "exit_code": 0,
+          "receipt": ".local/qa002-fixtures-v2/case-2/06-round-1-reindex.json",
+          "sha256": "e4daf084d8aeda3c7730dc42a441e34c2faff1db31bbc901deffd82542d38c76"
+        },
+        {
+          "label": "07-round-1-context",
+          "exit_code": 0,
+          "receipt": ".local/qa002-fixtures-v2/case-2/07-round-1-context.json",
+          "sha256": "eae98d82e1b9923fdc690990667151e826d59153eadeb8274d68adcf585cb17e"
+        },
+        {
+          "label": "06-round-2-reindex",
+          "exit_code": 0,
+          "receipt": ".local/qa002-fixtures-v2/case-2/06-round-2-reindex.json",
+          "sha256": "025ffa6a92c0395b8bd3e6bded7ba45ad1f85ea9b8354f4f9f9cead9977b81fa"
+        },
+        {
+          "label": "07-round-2-context",
+          "exit_code": 0,
+          "receipt": ".local/qa002-fixtures-v2/case-2/07-round-2-context.json",
+          "sha256": "b6e3777644e32f19f0cb58db0a4fe3996756688ad36d6c4772a499fb7d9fc7f6"
+        },
+        {
+          "label": "08-doctor",
+          "exit_code": 0,
+          "receipt": ".local/qa002-fixtures-v2/case-2/08-doctor.json",
+          "sha256": "3fb6df84616934c79d1144379f594d08329d85713013423dc6937d3cd0632d99"
+        }
+      ],
+      "passed": true,
+      "business_completed": false,
+      "run_reuse_rejected": true,
+      "out_of_order_round_rejected": true,
+      "project_id": "01M20K9YFKXEN800SQDXRKXDE6",
+      "work_count": 5,
+      "runtime_work_ids": [
+        "01M20K9YGA4CR0P6MM1402YEF6",
+        "01M20K9YGA5PEECC4NF2AJYJ3S",
+        "01M20K9YGAA17DVSFS8J44HMWH",
+        "01M20K9YGAJ9XSF9W07Y5QQWK2",
+        "01M20K9YGAN613A0F5WTMNGEWJ"
+      ],
+      "source_context_hashes": [
+        "53c88a973fb2f69798b1f2fe25e47b1a01a8eb2eeeaf7651b17dbf3fae3eae0c",
+        "53c88a973fb2f69798b1f2fe25e47b1a01a8eb2eeeaf7651b17dbf3fae3eae0c",
+        "f942e0012d10cc9ac8344bcf9e306df09e1f12d2b5252858dcbdffd4ebb4b788"
+      ],
+      "final_context_tokens": 4789,
+      "runtime_counts": {
+        "sessions": 0,
+        "claims": 0,
+        "checkpoints": 0,
+        "artifacts": 0,
+        "mutation_proposals": 0
+      },
+      "prepared_rounds": [
+        1,
+        2
+      ],
+      "doctor_findings": 0,
+      "generated_material": null,
+      "e4_credit": 0,
+      "preparation_receipts": [
+        {
+          "path": ".local/qa002-fixtures-v2/case-2/run.json",
+          "sha256": "abbe802f5eb0bf7fe41d83a8e1da9ac94006cd971d0ed8dc1610fdb9b60c1530",
+          "retention": "local_only"
+        },
+        {
+          "path": ".local/qa002-fixtures-v2/case-2/round-1-inputs.json",
+          "sha256": "1eec8d647f3e1316ed7d81d4792350e5b9b30b880397083262ed1a457b24bd60",
+          "retention": "local_only"
+        },
+        {
+          "path": ".local/qa002-fixtures-v2/case-2/round-2-inputs.json",
+          "sha256": "2ef521aa204aeb0c8c9cecbfcc99657d47dfc57e4eb2465b5ec2a8dcf1656227",
+          "retention": "local_only"
+        }
+      ]
+    },
+    {
+      "scenario_id": "AWR-SC-003",
+      "namespace": "awr-v1/source-change/qa002-fixtures-v2-case-3",
+      "project_root": ".local/qa002-fixtures-v2/case-3/project",
+      "source_seed_commit": "c67badc7bd16d727ad5951aebd8494d3919c841c",
+      "commands": [
+        {
+          "label": "01-preview",
+          "exit_code": 0,
+          "receipt": ".local/qa002-fixtures-v2/case-3/01-preview.json",
+          "sha256": "0497276fe72d0e05c4b2d2e940d35c718b9b0d50626ad72be09df7e5f0e40c72"
+        },
+        {
+          "label": "02-init",
+          "exit_code": 0,
+          "receipt": ".local/qa002-fixtures-v2/case-3/02-init.json",
+          "sha256": "7c0eef740c8aa1dee0aca0717abd5bd16d3f8353e4edfc8a2ad78872419c698c"
+        },
+        {
+          "label": "03-status",
+          "exit_code": 0,
+          "receipt": ".local/qa002-fixtures-v2/case-3/03-status.json",
+          "sha256": "b2cb3333de4e6fd8a43db4b7293753f718e582e4ad7278c4fde942ab8e86eb83"
+        },
+        {
+          "label": "04-entry",
+          "exit_code": 0,
+          "receipt": ".local/qa002-fixtures-v2/case-3/04-entry.json",
+          "sha256": "acf70b44488da43b0d592d597a48b348740db5332da4aa48e9a8b67e287ee6bc"
+        },
+        {
+          "label": "05-context",
+          "exit_code": 0,
+          "receipt": ".local/qa002-fixtures-v2/case-3/05-context.json",
+          "sha256": "273e9a18528af5d605889265b6f8c299498ad4c604166fb3b60591efa5f9070c"
+        },
+        {
+          "label": "06-round-1-reindex",
+          "exit_code": 0,
+          "receipt": ".local/qa002-fixtures-v2/case-3/06-round-1-reindex.json",
+          "sha256": "5756cd4f6b91bc3f1e835bf8cb434ce3c9869ca325141a9705870e3baddc37f9"
+        },
+        {
+          "label": "07-round-1-context",
+          "exit_code": 0,
+          "receipt": ".local/qa002-fixtures-v2/case-3/07-round-1-context.json",
+          "sha256": "b39ac35af335d4aeca1fdf3e8eb88348e0e5ce39fee03eb185473f2c4d7f7e70"
+        },
+        {
+          "label": "06-round-2-reindex",
+          "exit_code": 0,
+          "receipt": ".local/qa002-fixtures-v2/case-3/06-round-2-reindex.json",
+          "sha256": "7bfd0bef7cf135fecb115ab9d2b83a0a69c53693006a96b0b8f04afd144a9bc3"
+        },
+        {
+          "label": "07-round-2-context",
+          "exit_code": 0,
+          "receipt": ".local/qa002-fixtures-v2/case-3/07-round-2-context.json",
+          "sha256": "b39ac35af335d4aeca1fdf3e8eb88348e0e5ce39fee03eb185473f2c4d7f7e70"
+        },
+        {
+          "label": "08-doctor",
+          "exit_code": 0,
+          "receipt": ".local/qa002-fixtures-v2/case-3/08-doctor.json",
+          "sha256": "30d7427c58cb8d829a3d523a07ccef58242b419f1e955203fe555afff9117eed"
+        }
+      ],
+      "passed": true,
+      "business_completed": false,
+      "run_reuse_rejected": true,
+      "out_of_order_round_rejected": true,
+      "project_id": "01M20KA0W8881C93WX0P1NB340",
+      "work_count": 5,
+      "runtime_work_ids": [
+        "01M20KA0WZ05CYZXHWHGMH9TD5",
+        "01M20KA0WZ7FSAT3QMN76Q3ABX",
+        "01M20KA0WZGC7D6RY56HQREC0V",
+        "01M20KA0WZR4D3H3D77HJSQ1C7",
+        "01M20KA0WZRE9QK30SMFK6FW6T"
+      ],
+      "source_context_hashes": [
+        "17e9ee20b3ad713a30b237b3fbf26e3684d1564935bb47dcb93342d485c85779",
+        "7671b03ef3bea5e0178aaf761fce0555e6ea2873b1c24dd56a0fee490358638f",
+        "7671b03ef3bea5e0178aaf761fce0555e6ea2873b1c24dd56a0fee490358638f"
+      ],
+      "final_context_tokens": 4793,
+      "runtime_counts": {
+        "sessions": 0,
+        "claims": 0,
+        "checkpoints": 0,
+        "artifacts": 0,
+        "mutation_proposals": 0
+      },
+      "prepared_rounds": [
+        1,
+        2
+      ],
+      "doctor_findings": 0,
+      "generated_material": null,
+      "e4_credit": 0,
+      "preparation_receipts": [
+        {
+          "path": ".local/qa002-fixtures-v2/case-3/run.json",
+          "sha256": "43de321ab0e04e7557c566cc97c1913ab0486b8b38f38c37f13b5200b7fd4912",
+          "retention": "local_only"
+        },
+        {
+          "path": ".local/qa002-fixtures-v2/case-3/round-1-inputs.json",
+          "sha256": "3cde840aef75b94b77ce8979c1b8b1ad1930456cf991c95812e7639e86aac039",
+          "retention": "local_only"
+        },
+        {
+          "path": ".local/qa002-fixtures-v2/case-3/round-2-inputs.json",
+          "sha256": "f78d5136bbc3e82528a7060358d119db1c14537e75be862782fbc5ec8e20e1ca",
+          "retention": "local_only"
+        }
+      ]
+    },
+    {
+      "scenario_id": "AWR-SC-004",
+      "namespace": "awr-v1/parallel-ownership/qa002-fixtures-v2-case-4",
+      "project_root": ".local/qa002-fixtures-v2/case-4/project",
+      "source_seed_commit": "aa1210561ccd98839062d924ccd8214769a24eae",
+      "commands": [
+        {
+          "label": "01-preview",
+          "exit_code": 0,
+          "receipt": ".local/qa002-fixtures-v2/case-4/01-preview.json",
+          "sha256": "af97ba9d97e13e86ad0420d5b1f6bfa13426d5a9b3e8f7fd251349972ec11283"
+        },
+        {
+          "label": "02-init",
+          "exit_code": 0,
+          "receipt": ".local/qa002-fixtures-v2/case-4/02-init.json",
+          "sha256": "2dce65d48fcb73f9db10232b620ac2d33cc9b7d80cb90f31e0724367639bdb7d"
+        },
+        {
+          "label": "03-status",
+          "exit_code": 0,
+          "receipt": ".local/qa002-fixtures-v2/case-4/03-status.json",
+          "sha256": "c2467d9aae82ba28b0c5b41150ede0b1629dce5f8655905e4b64f3cb5802a857"
+        },
+        {
+          "label": "04-entry",
+          "exit_code": 0,
+          "receipt": ".local/qa002-fixtures-v2/case-4/04-entry.json",
+          "sha256": "e62f76b843319fc6372e4e3c2dc9e4ea0942cda05eb179702c938112d6defc38"
+        },
+        {
+          "label": "05-context",
+          "exit_code": 0,
+          "receipt": ".local/qa002-fixtures-v2/case-4/05-context.json",
+          "sha256": "3618313687c4b084001f91e5fd70ef51587a45d71d95a8160f792c0721f8da63"
+        },
+        {
+          "label": "06-round-1-reindex",
+          "exit_code": 0,
+          "receipt": ".local/qa002-fixtures-v2/case-4/06-round-1-reindex.json",
+          "sha256": "6073bc76114f84d3c69027fbd633bd7501344441fdc9a90738a4ae0aaa09dbbf"
+        },
+        {
+          "label": "07-round-1-context",
+          "exit_code": 0,
+          "receipt": ".local/qa002-fixtures-v2/case-4/07-round-1-context.json",
+          "sha256": "3618313687c4b084001f91e5fd70ef51587a45d71d95a8160f792c0721f8da63"
+        },
+        {
+          "label": "06-round-2-reindex",
+          "exit_code": 0,
+          "receipt": ".local/qa002-fixtures-v2/case-4/06-round-2-reindex.json",
+          "sha256": "6073bc76114f84d3c69027fbd633bd7501344441fdc9a90738a4ae0aaa09dbbf"
+        },
+        {
+          "label": "07-round-2-context",
+          "exit_code": 0,
+          "receipt": ".local/qa002-fixtures-v2/case-4/07-round-2-context.json",
+          "sha256": "3618313687c4b084001f91e5fd70ef51587a45d71d95a8160f792c0721f8da63"
+        },
+        {
+          "label": "08-doctor",
+          "exit_code": 0,
+          "receipt": ".local/qa002-fixtures-v2/case-4/08-doctor.json",
+          "sha256": "9af69b5fec377803114f2b686fd192e097c951a75121c8361add283fe907890d"
+        }
+      ],
+      "passed": true,
+      "business_completed": false,
+      "run_reuse_rejected": true,
+      "out_of_order_round_rejected": true,
+      "project_id": "01M20KA37QY9799HGD13EET54Y",
+      "work_count": 6,
+      "runtime_work_ids": [
+        "01M20KA38H2KRMAA772B3XEMW1",
+        "01M20KA38HJB569SK2Y09CPPP9",
+        "01M20KA38HKN4Y3TCQM4QAY1AN",
+        "01M20KA38HPFYF0YFFH8MXV0JY",
+        "01M20KA38HV3BWWN4PQY3P4X80",
+        "01M20KA38HVS3FMRD259J9H1XF"
+      ],
+      "source_context_hashes": [
+        "5fe990907e4293d5b2a4e21313f9a1a063ce7e4ffeabda42e8636e4cca132d26",
+        "5fe990907e4293d5b2a4e21313f9a1a063ce7e4ffeabda42e8636e4cca132d26",
+        "5fe990907e4293d5b2a4e21313f9a1a063ce7e4ffeabda42e8636e4cca132d26"
+      ],
+      "final_context_tokens": 4927,
+      "runtime_counts": {
+        "sessions": 0,
+        "claims": 0,
+        "checkpoints": 0,
+        "artifacts": 0,
+        "mutation_proposals": 0
+      },
+      "prepared_rounds": [
+        1,
+        2
+      ],
+      "doctor_findings": 0,
+      "generated_material": null,
+      "e4_credit": 0,
+      "preparation_receipts": [
+        {
+          "path": ".local/qa002-fixtures-v2/case-4/run.json",
+          "sha256": "d74083024cb2c6626a0b9ab6f487acd702ef84a0c4500090f9f1f401455f9db5",
+          "retention": "local_only"
+        },
+        {
+          "path": ".local/qa002-fixtures-v2/case-4/round-1-inputs.json",
+          "sha256": "27fd5edb01c6a529b1116da8f45ef401b03eb980e350f9564fdfb7d58d8f6c50",
+          "retention": "local_only"
+        },
+        {
+          "path": ".local/qa002-fixtures-v2/case-4/round-2-inputs.json",
+          "sha256": "0e5e93f1b25a99fe3a2d71c82007d6b265a3c9329b33712169578c2ee98724a4",
+          "retention": "local_only"
+        }
+      ]
+    },
+    {
+      "scenario_id": "AWR-SC-005",
+      "namespace": "awr-v1/evidence-completion/qa002-fixtures-v2-case-5",
+      "project_root": ".local/qa002-fixtures-v2/case-5/project",
+      "source_seed_commit": "a8a8cd4e1f48d7857f28f0581ec5077a018938f9",
+      "commands": [
+        {
+          "label": "01-preview",
+          "exit_code": 0,
+          "receipt": ".local/qa002-fixtures-v2/case-5/01-preview.json",
+          "sha256": "89c2787bc40bb1a0d1d94dba11640edaf5860e69725385126f670e58beca6621"
+        },
+        {
+          "label": "02-init",
+          "exit_code": 0,
+          "receipt": ".local/qa002-fixtures-v2/case-5/02-init.json",
+          "sha256": "9aa8866eb2d82e75bc01443dd694054dedef7d3f196cd5b16cb7b4c4f9da907a"
+        },
+        {
+          "label": "03-status",
+          "exit_code": 0,
+          "receipt": ".local/qa002-fixtures-v2/case-5/03-status.json",
+          "sha256": "ef4f943f5145306d61a981fb58f60a6e374412c9b37ed71c9eecaf37813d1693"
+        },
+        {
+          "label": "04-entry",
+          "exit_code": 0,
+          "receipt": ".local/qa002-fixtures-v2/case-5/04-entry.json",
+          "sha256": "a235078219bfebe54b178ba9539b2176aaf564fff488fb54feaff72a798d8de8"
+        },
+        {
+          "label": "05-context",
+          "exit_code": 0,
+          "receipt": ".local/qa002-fixtures-v2/case-5/05-context.json",
+          "sha256": "b2f0c3a50f8e548ace25970e911dee75cf04f002b3d25f72cc85fba0618f0b65"
+        },
+        {
+          "label": "06-round-1-reindex",
+          "exit_code": 0,
+          "receipt": ".local/qa002-fixtures-v2/case-5/06-round-1-reindex.json",
+          "sha256": "6a67e65d2c4dc66ee838094bfb36829d942597ebd397e371e919869b11dde647"
+        },
+        {
+          "label": "07-round-1-context",
+          "exit_code": 0,
+          "receipt": ".local/qa002-fixtures-v2/case-5/07-round-1-context.json",
+          "sha256": "b2f0c3a50f8e548ace25970e911dee75cf04f002b3d25f72cc85fba0618f0b65"
+        },
+        {
+          "label": "06-round-2-reindex",
+          "exit_code": 0,
+          "receipt": ".local/qa002-fixtures-v2/case-5/06-round-2-reindex.json",
+          "sha256": "57f54311a7c48ca23e2128826a919dc705909fb8523f192ef47e9c4238b6de4d"
+        },
+        {
+          "label": "07-round-2-context",
+          "exit_code": 0,
+          "receipt": ".local/qa002-fixtures-v2/case-5/07-round-2-context.json",
+          "sha256": "3ee75c3f0ed32d66e093f10f8f3d3e29e651a0b9bf9a678e48095f3bcda9776e"
+        },
+        {
+          "label": "08-doctor",
+          "exit_code": 0,
+          "receipt": ".local/qa002-fixtures-v2/case-5/08-doctor.json",
+          "sha256": "2ec5bf44d0d848b6bd2b12c3f2fc78aa7c45a394ff4665cd19332b5ec87ec3c2"
+        }
+      ],
+      "passed": true,
+      "business_completed": false,
+      "run_reuse_rejected": true,
+      "out_of_order_round_rejected": true,
+      "project_id": "01M20KA5NM0X1EWBFKB66RSN2K",
+      "work_count": 5,
+      "runtime_work_ids": [
+        "01M20KA5PB9SW5Z6P07NRT2SZK",
+        "01M20KA5PBFN7E0K87Q157Q1H4",
+        "01M20KA5PBMA0MY0P3A0APZHVK",
+        "01M20KA5PBT7963P1YKY0P3RAS",
+        "01M20KA5PBYHHFVK9YST1SE9WK"
+      ],
+      "source_context_hashes": [
+        "6e3681ea12d827a2c77d0f87d34f06224b153cdab4d60a96e01e99a7a343c654",
+        "6e3681ea12d827a2c77d0f87d34f06224b153cdab4d60a96e01e99a7a343c654",
+        "907db09d2784d28f3e9f157e413170f34697d3e7a2cc58ce1c5051bd752c90d3"
+      ],
+      "final_context_tokens": 4772,
+      "runtime_counts": {
+        "sessions": 0,
+        "claims": 0,
+        "checkpoints": 0,
+        "artifacts": 0,
+        "mutation_proposals": 0
+      },
+      "prepared_rounds": [
+        1,
+        2
+      ],
+      "doctor_findings": 0,
+      "generated_material": null,
+      "e4_credit": 0,
+      "preparation_receipts": [
+        {
+          "path": ".local/qa002-fixtures-v2/case-5/run.json",
+          "sha256": "871c500929dc5bc9a9b74d2a46d6dff0527e140ea3b955a03ba9270e1ad0e53a",
+          "retention": "local_only"
+        },
+        {
+          "path": ".local/qa002-fixtures-v2/case-5/round-1-inputs.json",
+          "sha256": "51648add87aba0b11c9ad212cb0908003a4d97cf1c9a34c060232e8009321c89",
+          "retention": "local_only"
+        },
+        {
+          "path": ".local/qa002-fixtures-v2/case-5/round-2-inputs.json",
+          "sha256": "83588fd25887b1f17720071667569ba4e5cce4979c5d0de763d1035a54d55312",
+          "retention": "local_only"
+        }
+      ]
+    },
+    {
+      "scenario_id": "AWR-SC-006",
+      "namespace": "awr-v1/interrupted-write/qa002-fixtures-v2-case-6",
+      "project_root": ".local/qa002-fixtures-v2/case-6/project",
+      "source_seed_commit": "efbefa6f765a80ba2bedec5e90ddfe576ba500cf",
+      "commands": [
+        {
+          "label": "01-preview",
+          "exit_code": 0,
+          "receipt": ".local/qa002-fixtures-v2/case-6/01-preview.json",
+          "sha256": "f2948e2380e984b624e49f6f65e88509f7adfd596922ea2e510a1f4d98ce3742"
+        },
+        {
+          "label": "02-init",
+          "exit_code": 0,
+          "receipt": ".local/qa002-fixtures-v2/case-6/02-init.json",
+          "sha256": "c945f1c5d09aa824d3c445490af51616847a8638801cdfa68afc408904ba792d"
+        },
+        {
+          "label": "03-status",
+          "exit_code": 0,
+          "receipt": ".local/qa002-fixtures-v2/case-6/03-status.json",
+          "sha256": "c5f8ff5ef6b26624323e5b2dbd850c4888e1aa1f08b3cdf1aa1bfc96ba50ef56"
+        },
+        {
+          "label": "04-entry",
+          "exit_code": 0,
+          "receipt": ".local/qa002-fixtures-v2/case-6/04-entry.json",
+          "sha256": "fae7640f1c48f0fd850e845b284b3aaf480e6c73628ddbf0f41f607585c2a874"
+        },
+        {
+          "label": "05-context",
+          "exit_code": 0,
+          "receipt": ".local/qa002-fixtures-v2/case-6/05-context.json",
+          "sha256": "16c653591ca6c98351e72ba4b9dd5747fb41b7a7c2eeb0938aacfd712a1eeb7d"
+        },
+        {
+          "label": "06-round-1-reindex",
+          "exit_code": 0,
+          "receipt": ".local/qa002-fixtures-v2/case-6/06-round-1-reindex.json",
+          "sha256": "af0dac01bd75e82dd788c60ea60d56398a776b7d9ace50db30a7152b12d92cb0"
+        },
+        {
+          "label": "07-round-1-context",
+          "exit_code": 0,
+          "receipt": ".local/qa002-fixtures-v2/case-6/07-round-1-context.json",
+          "sha256": "16c653591ca6c98351e72ba4b9dd5747fb41b7a7c2eeb0938aacfd712a1eeb7d"
+        },
+        {
+          "label": "06-round-2-reindex",
+          "exit_code": 0,
+          "receipt": ".local/qa002-fixtures-v2/case-6/06-round-2-reindex.json",
+          "sha256": "af0dac01bd75e82dd788c60ea60d56398a776b7d9ace50db30a7152b12d92cb0"
+        },
+        {
+          "label": "07-round-2-context",
+          "exit_code": 0,
+          "receipt": ".local/qa002-fixtures-v2/case-6/07-round-2-context.json",
+          "sha256": "16c653591ca6c98351e72ba4b9dd5747fb41b7a7c2eeb0938aacfd712a1eeb7d"
+        },
+        {
+          "label": "08-doctor",
+          "exit_code": 0,
+          "receipt": ".local/qa002-fixtures-v2/case-6/08-doctor.json",
+          "sha256": "ed53168c20ffae2b1d5ca4f749d7f48d1dbf2cdf7e2121c47a7764844f2fdcb1"
+        }
+      ],
+      "passed": true,
+      "business_completed": false,
+      "run_reuse_rejected": true,
+      "out_of_order_round_rejected": true,
+      "project_id": "01M20KA82B69B1DQF9Z0D6CX3N",
+      "work_count": 5,
+      "runtime_work_ids": [
+        "01M20KA8331KNXJ69YQC60FDTW",
+        "01M20KA833H9SZ0NPFH16Y4P6B",
+        "01M20KA833KTX8TC5QWHTBMD8T",
+        "01M20KA833TZCNABTHPB360VA6",
+        "01M20KA833WPZGFWZYMRHHEJ2R"
+      ],
+      "source_context_hashes": [
+        "c07a6b297858c745d1bdd3bfa8e96b8c462b66aeeb7481a886e134b452407db1",
+        "c07a6b297858c745d1bdd3bfa8e96b8c462b66aeeb7481a886e134b452407db1",
+        "c07a6b297858c745d1bdd3bfa8e96b8c462b66aeeb7481a886e134b452407db1"
+      ],
+      "final_context_tokens": 4423,
+      "runtime_counts": {
+        "sessions": 0,
+        "claims": 0,
+        "checkpoints": 0,
+        "artifacts": 0,
+        "mutation_proposals": 0
+      },
+      "prepared_rounds": [
+        1,
+        2
+      ],
+      "doctor_findings": 0,
+      "generated_material": null,
+      "e4_credit": 0,
+      "preparation_receipts": [
+        {
+          "path": ".local/qa002-fixtures-v2/case-6/run.json",
+          "sha256": "a1cb1628c090a33983bc90d65fe3d3d9c3a8ca638d9da507d816cd8c5b838039",
+          "retention": "local_only"
+        },
+        {
+          "path": ".local/qa002-fixtures-v2/case-6/round-1-inputs.json",
+          "sha256": "04ec492a319b78f6f479b36adffd999cb2890b92f47cb98830217a663b8f3fa9",
+          "retention": "local_only"
+        },
+        {
+          "path": ".local/qa002-fixtures-v2/case-6/round-2-inputs.json",
+          "sha256": "0f65b0b5597c95eb3cc3f018d2350523d90a9fd0c097e72195e22eadfeaf189a",
+          "retention": "local_only"
+        }
+      ]
+    },
+    {
+      "scenario_id": "AWR-SC-007",
+      "namespace": "awr-v1/restricted-material/qa002-fixtures-v2-case-7",
+      "project_root": ".local/qa002-fixtures-v2/case-7/project",
+      "source_seed_commit": "69fcd289317f72ca595d613dfb112d079dcb326c",
+      "commands": [
+        {
+          "label": "01-preview",
+          "exit_code": 0,
+          "receipt": ".local/qa002-fixtures-v2/case-7/01-preview.json",
+          "sha256": "8b3a6c36a392359e1341098c30a1c87d0d473034c96e9a3580cbdd5a313b282e"
+        },
+        {
+          "label": "02-init",
+          "exit_code": 0,
+          "receipt": ".local/qa002-fixtures-v2/case-7/02-init.json",
+          "sha256": "c3a24d6f07fb28c8f87549dd582eb0d7695c6519d3c6cc697e707f4f0768fdb8"
+        },
+        {
+          "label": "03-status",
+          "exit_code": 0,
+          "receipt": ".local/qa002-fixtures-v2/case-7/03-status.json",
+          "sha256": "f2cdc1b4592f029724083bf3afda4f7165da9dbbc0bd2bfbb11cb5058a854c97"
+        },
+        {
+          "label": "04-entry",
+          "exit_code": 0,
+          "receipt": ".local/qa002-fixtures-v2/case-7/04-entry.json",
+          "sha256": "6b9869c8659117b36f3c5b33b9236a17e0fc9442e919cb000f2571e22093a7b5"
+        },
+        {
+          "label": "05-context",
+          "exit_code": 0,
+          "receipt": ".local/qa002-fixtures-v2/case-7/05-context.json",
+          "sha256": "84a97430ef42727e453d066d07d781d7b7709cc5698ccb97af9005ee6ef3a9e6"
+        },
+        {
+          "label": "06-round-1-reindex",
+          "exit_code": 0,
+          "receipt": ".local/qa002-fixtures-v2/case-7/06-round-1-reindex.json",
+          "sha256": "8a8bd5f4491a1b56c36c0e6c250cb43911cbff68f8599b33124156d319a500c4"
+        },
+        {
+          "label": "07-round-1-context",
+          "exit_code": 0,
+          "receipt": ".local/qa002-fixtures-v2/case-7/07-round-1-context.json",
+          "sha256": "84a97430ef42727e453d066d07d781d7b7709cc5698ccb97af9005ee6ef3a9e6"
+        },
+        {
+          "label": "06-round-2-reindex",
+          "exit_code": 0,
+          "receipt": ".local/qa002-fixtures-v2/case-7/06-round-2-reindex.json",
+          "sha256": "06c2aa7e0b7d22da28775e65b40dc768ad03080bd583d6cccdb470f875b5786b"
+        },
+        {
+          "label": "07-round-2-context",
+          "exit_code": 0,
+          "receipt": ".local/qa002-fixtures-v2/case-7/07-round-2-context.json",
+          "sha256": "e78c2418773a5db586e4664d6f6e3a92d82f40b75b25d3ad8e038da5bbdc1d12"
+        },
+        {
+          "label": "08-doctor",
+          "exit_code": 0,
+          "receipt": ".local/qa002-fixtures-v2/case-7/08-doctor.json",
+          "sha256": "77ea187c30d10bd0d98e75bbd9c6a0a711e3998551e77a4ca0e127025c7ce2d0"
+        }
+      ],
+      "passed": true,
+      "business_completed": false,
+      "run_reuse_rejected": true,
+      "out_of_order_round_rejected": true,
+      "project_id": "01M20KAAGGPECH5THFS73PDSKP",
+      "work_count": 5,
+      "runtime_work_ids": [
+        "01M20KAAHA5HCT25F2VF7B778J",
+        "01M20KAAHA7QCHFXXHGSEFEZX4",
+        "01M20KAAHAE4Y36566KRJXPFKF",
+        "01M20KAAHAG6VK4NS66Q9JK1AB",
+        "01M20KAAHAVKNN42ZNDFKGE59D"
+      ],
+      "source_context_hashes": [
+        "df2d23ea404495b34c69266d0a304fcfa3a7a0c1f38aa01966ca990790226ca2",
+        "df2d23ea404495b34c69266d0a304fcfa3a7a0c1f38aa01966ca990790226ca2",
+        "96ad4a4e6dd77f520e370e03efeef2127e835e998bcf4d2dca4d4cc4256ac8a2"
+      ],
+      "final_context_tokens": 4778,
+      "runtime_counts": {
+        "sessions": 0,
+        "claims": 0,
+        "checkpoints": 0,
+        "artifacts": 0,
+        "mutation_proposals": 0
+      },
+      "prepared_rounds": [
+        1,
+        2
+      ],
+      "doctor_findings": 0,
+      "generated_material": {
+        "source": "control/operations.jsonl",
+        "target": "materials/operations.jsonl",
+        "sha256": "c9b17d6cd92f4edd5ec25e67435f7ec5706852256129c0fdc686852811de17ed",
+        "size_bytes": 3145837,
+        "records": 18717,
+        "restricted_source": "control/restricted-note.md",
+        "restricted_sha256": "063aabd22da39bfad530c6489e9e05e53c938202e810b948a063c41fc33c3dfa"
+      },
+      "e4_credit": 0,
+      "preparation_receipts": [
+        {
+          "path": ".local/qa002-fixtures-v2/case-7/run.json",
+          "sha256": "5dd2f0521008e77b10e2e14688b2954d3ab0a79101a445f21e84761928db508b",
+          "retention": "local_only"
+        },
+        {
+          "path": ".local/qa002-fixtures-v2/case-7/round-1-inputs.json",
+          "sha256": "d2736d359fc57251a6cd2d72b0912008a5da3f2b09d34842239210a087d669ad",
+          "retention": "local_only"
+        },
+        {
+          "path": ".local/qa002-fixtures-v2/case-7/round-2-inputs.json",
+          "sha256": "578657fd193b6979d416fa662318709e9f151f0238d376ee635b3c35b43d00a9",
+          "retention": "local_only"
+        }
+      ]
+    },
+    {
+      "scenario_id": "AWR-SC-008",
+      "namespace": "awr-v1/branch-handoff/qa002-fixtures-v2-case-8",
+      "project_root": ".local/qa002-fixtures-v2/case-8/project",
+      "source_seed_commit": "0239e83cb89dd255c855c3c03bd523842b707103",
+      "commands": [
+        {
+          "label": "01-preview",
+          "exit_code": 0,
+          "receipt": ".local/qa002-fixtures-v2/case-8/01-preview.json",
+          "sha256": "d2b53dc43d45e2c4bf871efba4aa00fd25012bbea87db8c63c36fbbd721ffb8e"
+        },
+        {
+          "label": "02-init",
+          "exit_code": 0,
+          "receipt": ".local/qa002-fixtures-v2/case-8/02-init.json",
+          "sha256": "b4cf3f6446033504c66d49761a2c96ca710c3b8f28c7d3ac3531334950e97f49"
+        },
+        {
+          "label": "03-status",
+          "exit_code": 0,
+          "receipt": ".local/qa002-fixtures-v2/case-8/03-status.json",
+          "sha256": "d46a7f56eec6e4fc062d1b73799a224119ab5d3be228eeb0ef5b7cdbeb811389"
+        },
+        {
+          "label": "04-entry",
+          "exit_code": 0,
+          "receipt": ".local/qa002-fixtures-v2/case-8/04-entry.json",
+          "sha256": "803d5132ffb007b868f7a16e26f5685bb05ce495091d19832b75fdd5143a2d39"
+        },
+        {
+          "label": "05-context",
+          "exit_code": 0,
+          "receipt": ".local/qa002-fixtures-v2/case-8/05-context.json",
+          "sha256": "3c2c24406ff00d5f0d41daec417dd58984de3d5cbf089598ef7707069b5fad76"
+        },
+        {
+          "label": "06-round-1-reindex",
+          "exit_code": 0,
+          "receipt": ".local/qa002-fixtures-v2/case-8/06-round-1-reindex.json",
+          "sha256": "43d3de37e92f6ecc25edc10226b5049c80c678f154d0c88b1377d4dea6ca25bc"
+        },
+        {
+          "label": "07-round-1-context",
+          "exit_code": 0,
+          "receipt": ".local/qa002-fixtures-v2/case-8/07-round-1-context.json",
+          "sha256": "3c2c24406ff00d5f0d41daec417dd58984de3d5cbf089598ef7707069b5fad76"
+        },
+        {
+          "label": "06-round-2-reindex",
+          "exit_code": 0,
+          "receipt": ".local/qa002-fixtures-v2/case-8/06-round-2-reindex.json",
+          "sha256": "272bbb60ffe1c4a01e9b4471a31e7264c6de1b44349096e3985b994b510d73df"
+        },
+        {
+          "label": "07-round-2-context",
+          "exit_code": 0,
+          "receipt": ".local/qa002-fixtures-v2/case-8/07-round-2-context.json",
+          "sha256": "0fec66976d49f9a2a474416f63eda4e7c48c1ba7c59af8f51f5c109b89464f91"
+        },
+        {
+          "label": "08-doctor",
+          "exit_code": 0,
+          "receipt": ".local/qa002-fixtures-v2/case-8/08-doctor.json",
+          "sha256": "b1318ac3872040f93524510cb1bf6e24aa4827ae0d05cc593b915950a61b7927"
+        }
+      ],
+      "passed": true,
+      "business_completed": false,
+      "run_reuse_rejected": true,
+      "out_of_order_round_rejected": true,
+      "project_id": "01M20KACZZDC96R29FQ4YJ8ZEH",
+      "work_count": 5,
+      "runtime_work_ids": [
+        "01M20KAD0P27ZET53G3CGRJ0XR",
+        "01M20KAD0P64G0RSC5QNAESR87",
+        "01M20KAD0P9YMAT2H9SG3S2GP5",
+        "01M20KAD0PADVEBS69RS555E9Z",
+        "01M20KAD0PDC3Y66VXSEAFEBNB"
+      ],
+      "source_context_hashes": [
+        "f195a57601f674b0263dec324c0dcb3d65fc3691a7c85eb0942e5fd85513e27b",
+        "f195a57601f674b0263dec324c0dcb3d65fc3691a7c85eb0942e5fd85513e27b",
+        "52e4e972ba66a57b510bff257433832b845ecca578bda92abddf3c9e8be819dc"
+      ],
+      "final_context_tokens": 4829,
+      "runtime_counts": {
+        "sessions": 0,
+        "claims": 0,
+        "checkpoints": 0,
+        "artifacts": 0,
+        "mutation_proposals": 0
+      },
+      "prepared_rounds": [
+        1,
+        2
+      ],
+      "doctor_findings": 0,
+      "generated_material": null,
+      "e4_credit": 0,
+      "preparation_receipts": [
+        {
+          "path": ".local/qa002-fixtures-v2/case-8/run.json",
+          "sha256": "2be3f09e95426764fc5da6c556f1994c8279026b0f0c2712fd7a34785a499135",
+          "retention": "local_only"
+        },
+        {
+          "path": ".local/qa002-fixtures-v2/case-8/round-1-inputs.json",
+          "sha256": "df71ae42496222472ba989e338ae9698f102843a3b447bd60a8f94ff56df0a44",
+          "retention": "local_only"
+        },
+        {
+          "path": ".local/qa002-fixtures-v2/case-8/round-2-inputs.json",
+          "sha256": "804059ba407e18202866fb2485a18999bab8c0c44f67662699825e4be45e550e",
+          "retention": "local_only"
+        }
+      ]
+    }
+  ],
+  "e4_credit_from_this_run": 0,
+  "native_client_invoked": false,
+  "model_calls": 0,
+  "independent_business_review_performed": false,
+  "prepared_fixtures": 8,
+  "distinct_projects": 8,
+  "distinct_work_identities": 40,
+  "source_pack_and_actual_ledger_unchanged": true,
+  "author_conflict_preserved": true,
+  "finished_at": "2026-09-08T21:29:04+08:00",
+  "kind": "business_fixture_intake_verification",
+  "raw_receipt": {
+    "path": ".local/qa002-fixtures-v2/report.json",
+    "sha256": "26de63355eb331cf8385e589667299e48cec003a206deecc0a50a7e1bce257f3",
+    "retention": "local_only"
+  },
+  "artifact_requirements": 42,
+  "cli_commands_executed": 80,
+  "source_binding_note": "All fixture inputs remain byte-identical to execution commit. Actual project source progress and evidence metadata are recorded subsequently and were not part of the isolated business executions.",
+  "limitations": [
+    "Prepared public synthetic business inputs only; no native client, model invocation, actual business execution, reviewer identity or delivery is claimed.",
+    "The large project and metric requirements belong to AWR-P9 work. No E4, metric, cross-platform or release credit."
+  ]
+}
