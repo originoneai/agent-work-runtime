@@ -587,9 +587,13 @@ fn inspect_mutations(
             if failed { "error" } else { "warning" },
             "mutation_proposal",
             id,
-            format!(
-                "Mutation proposal is {status}; reconciliation did not apply it because mutation lifecycle support is deferred"
-            ),
+            if failed {
+                "Mutation proposal failed; reconciliation reported it without retrying or applying it automatically".into()
+            } else {
+                format!(
+                    "Mutation proposal is {status}; it remains pending and was not applied automatically"
+                )
+            },
             None,
         ));
     }

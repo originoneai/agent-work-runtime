@@ -127,6 +127,7 @@ impl Store {
             crate::events::bind_event(tx, project_id, event, true)?;
             if event.event_type.starts_with("source.")
                 || event.event_type.starts_with("checkpoint.")
+                || event.event_type.starts_with("proposal.")
                 || matches!(
                     event.event_type.as_str(),
                     "session.started"

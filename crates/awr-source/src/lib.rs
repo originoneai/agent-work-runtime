@@ -6,6 +6,7 @@ mod indexer;
 mod locator;
 mod manifest;
 mod markdown;
+mod mutation;
 mod yaml_ledger;
 
 pub use adapter::{ParseContext, ProjectionBatch, SourceAdapter};
@@ -20,4 +21,5 @@ pub use manifest::{Manifest, ProjectConfig, SourceSpec};
 pub use markdown::{
     MarkdownHeadingAdapter, MarkdownRulesAdapter, MarkdownSection, markdown_sections,
 };
+pub use mutation::{MutationSourceCheck, verify_mutation_source};
 pub use yaml_ledger::YamlLedgerAdapter;

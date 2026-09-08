@@ -1,11 +1,13 @@
 //! Domain contracts shared by storage, source adapters, runtime and interfaces.
 mod error;
 mod model;
+mod mutation;
 mod query;
 mod runtime;
 
 pub use error::{Error, ErrorReport, Result};
 pub use model::*;
+pub use mutation::*;
 pub use query::*;
 pub use runtime::*;
 pub const VERSION: &str = env!("CARGO_PKG_VERSION");

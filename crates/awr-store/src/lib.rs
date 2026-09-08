@@ -6,6 +6,7 @@ mod delta;
 mod events;
 mod evidence;
 mod handoff;
+mod mutation;
 mod projection;
 mod query;
 mod reconcile;

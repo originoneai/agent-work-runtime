@@ -25,6 +25,11 @@ pub enum Error {
     EvidenceMissing(String),
     #[error("mutation unsupported: {0}")]
     MutationUnsupported(String),
+    #[error("proposal {proposal_id} requires manual handling: {reason}")]
+    ProposalRequired {
+        proposal_id: crate::Id,
+        reason: String,
+    },
     #[error("mutation conflict: {0}")]
     MutationConflict(String),
     #[error(
@@ -73,6 +78,7 @@ impl Error {
             Self::RuleViolation(_) => "RuleViolation",
             Self::EvidenceMissing(_) => "EvidenceMissing",
             Self::MutationUnsupported(_) => "MutationUnsupported",
+            Self::ProposalRequired { .. } => "proposal_required",
             Self::MutationConflict(_) => "MutationConflict",
             Self::CheckpointIncomplete { .. } => "CheckpointIncomplete",
             Self::ContextIncomplete(_) => "ContextIncomplete",
@@ -99,6 +105,12 @@ impl Error {
                 Self::CheckpointIncomplete { attempt_id, reason } => {
                     Some(serde_json::json!({"attempt_id":attempt_id,"reason":reason}))
                 }
+                Self::ProposalRequired {
+                    proposal_id,
+                    reason,
+                } => Some(
+                    serde_json::json!({"proposal_id":proposal_id,"reason":reason,"source_write_performed":false}),
+                ),
                 _ => None,
             },
         }

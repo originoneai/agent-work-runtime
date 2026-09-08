@@ -4,6 +4,7 @@ use std::path::PathBuf;
 mod context;
 mod doctor;
 mod drill;
+mod mutation;
 mod query;
 mod records;
 mod resume;
@@ -89,6 +90,11 @@ enum Command {
     },
     /// Search bounded summaries, optionally filtering by entity type, status or work item.
     Search(search::SearchArgs),
+    /// Create, inspect and review source-bound mutation proposals.
+    Proposal {
+        #[command(subcommand)]
+        command: mutation::ProposalCommand,
+    },
     /// Diagnose project/database state; apply only explicitly selected runtime repairs.
     Doctor(doctor::DoctorArgs),
     #[command(external_subcommand)]
@@ -112,6 +118,7 @@ fn run(cli: &Cli) -> Result<()> {
         Some(Command::Object { command }) => drill::object(&cli.project, command, cli.json),
         Some(Command::Event { command }) => drill::event(&cli.project, command, cli.json),
         Some(Command::Search(args)) => search::run(&cli.project, args, cli.json),
+        Some(Command::Proposal { command }) => mutation::run(&cli.project, command, cli.json),
         Some(Command::Doctor(args)) => doctor::run(&cli.project, args, cli.json),
         None => {
             Cli::command().print_help()?;

@@ -164,6 +164,27 @@ Default Doctor is read only. It combines SQLite/schema checks with expired claim
 
 Each repair targets one object and requires a current project revision and a nonempty reason. Expiration applies only to an elapsed active lease; interruption explicitly closes one active session and releases its claims; abandonment closes only an unfinished save; invalid-branch repair clears only the invalid current pointer and preserves the branch records. The condition is rechecked inside the transaction, with an immutable receipt and rollback on failure. Repairs open an existing current-schema database without creating, migrating or changing its journal mode. They do not refresh or rewrite project sources, delete artifact files, infer that a live writer stopped, complete pending mutations or repair every reported problem. A successful repair reports only that selected change; rerun Doctor to inspect remaining findings.
 
+Create and review a source mutation proposal:
+
+```sh
+awr status
+awr proposal create --kind work --target <work-key> --intent "Continue reviewing the report" --patch '{"next_action":"Review the revised report"}' --session <session-id> --expected-revision <revision>
+awr proposal list --status draft
+awr proposal show <proposal-id> --full
+awr proposal submit <proposal-id> --actor <reviewer> --reason "Ready for review" --expected-revision <current-revision>
+awr proposal approve <proposal-id> --actor <reviewer> --reason "Reviewed the exact proposed fields" --expected-revision <current-revision>
+awr proposal apply <proposal-id> --actor <reviewer> --reason "Request application" --expected-revision <current-revision>
+awr proposal reject <proposal-id> --actor <reviewer> --reason "Superseded by a new proposal" --expected-revision <current-revision>
+```
+
+A proposal binds one source-backed goal, plan, rule, work item, decision or evidence record. Its immutable envelope contains the target ID/key/revision and exact SourceRef, source configuration, base fingerprint, creation project revision, intent and proposed field replacements. `--patch-file` accepts the same JSON object from a file; patches are capped at 64 KiB. Identity and source-binding fields cannot be replaced. Runtime-only records cannot be source-mutation targets. Source evidence retains its own work association; a creating session cannot assign it to different work. Lifecycle receipts retain the creating session's branch, while reviewer identity is recorded separately.
+
+`draft → ready → approved` records creation, submission and review separately. Each action requires the current project revision and appends a receipt atomically with the proposal state. `expected_revision` inside the proposal remains its creation baseline. Creating, submitting, approving and requesting application recheck the actual manifest mapping and file/Git snapshot without implicitly reindexing. Drift requires a new proposal after explicit reindexing; an existing proposal becomes `conflict`. A failed source read becomes `failed`. These states and `rejected` are terminal. Rejecting an open proposal remains possible without its source or manifest. Reviewer names are caller-reported identities, not authentication or independent acceptance evidence.
+
+**Automatic source writeback is not implemented yet.** Applying an approved proposal currently retains `approved`, records `proposal.required`, and returns `proposal_required` with a nonzero exit and `source_write_performed: false`. No command can manually mark a proposal `applied`; that state is reserved for the upcoming verified file-write and reindex path. Proposed fields do not bypass the upcoming work-action dependency/evidence checks. No current proposal command changes project source files or their cached facts.
+
+`proposal list` and `proposal show` read retained state without source access; summaries omit field values and `show --full` returns the complete reviewable patch. Failed/conflicting actions print their durable transition receipt before returning a nonzero exit. Every receipt includes the new project revision for the next action. Source checks are observations, not file locks; a writer must repeat fingerprint validation immediately before any future write.
+
 Inspect evidence, decisions and artifacts by external key or internal ID:
 
 ```sh
