@@ -10,12 +10,21 @@ struct Fixture {
     root: PathBuf,
     manifest: Manifest,
     store: Store,
+    // Fields drop in declaration order: close SQLite before removing its files.
+    _directory: TemporaryDirectory,
+}
+struct TemporaryDirectory(PathBuf);
+impl Drop for TemporaryDirectory {
+    fn drop(&mut self) {
+        fs::remove_dir_all(&self.0).unwrap();
+    }
 }
 impl Fixture {
     fn new(adapter: &str) -> Self {
         let root = std::env::temp_dir().join(format!("awr-payload-source-{}", Id::new()));
         fs::create_dir(&root).unwrap();
         let root = root.canonicalize().unwrap();
+        let directory = TemporaryDirectory(root.clone());
         let (domain, path) = match adapter {
             "yaml-ledger-v1" => ("ledger", "work.yaml"),
             "markdown-directory-v1" => ("decisions", "decisions"),
@@ -29,6 +38,7 @@ impl Fixture {
             root,
             manifest,
             store,
+            _directory: directory,
         }
     }
     fn path(&self) -> PathBuf {
@@ -75,12 +85,6 @@ impl Fixture {
         );
     }
 }
-impl Drop for Fixture {
-    fn drop(&mut self) {
-        fs::remove_dir_all(&self.root).unwrap();
-    }
-}
-
 #[test]
 fn file_adapters_allow_the_exact_byte_limit_and_refuse_one_more_byte() {
     for (adapter, cap, id) in [

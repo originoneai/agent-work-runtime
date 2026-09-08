@@ -6,6 +6,7 @@ python3 crates/awr-mcp/tests/cli_parity.py --awr target/debug/awr --mcp target/d
 No third-party Python dependencies, model calls, or user project writes.
 """
 import argparse
+from contextlib import closing
 import hashlib
 import json
 import queue
@@ -155,7 +156,7 @@ class Parity(unittest.TestCase):
         return body
 
     def state(self):
-        with sqlite3.connect(f"file:{self.root / '.awr/state.db'}?mode=ro", uri=True) as db:
+        with closing(sqlite3.connect(f"file:{self.root / '.awr/state.db'}?mode=ro", uri=True)) as db:
             tables = [row[0] for row in db.execute("select name from sqlite_master where type='table' order by name")]
             rows = {name: sorted(repr(row) for row in db.execute('select * from "' + name.replace('"', '""') + '"'))
                     for name in tables}
@@ -164,13 +165,13 @@ class Parity(unittest.TestCase):
 
     def snapshot(self):
         backup = self.root / "snapshot.db"
-        with sqlite3.connect(self.root / ".awr/state.db") as source, sqlite3.connect(backup) as dest:
+        with closing(sqlite3.connect(self.root / ".awr/state.db")) as source, closing(sqlite3.connect(backup)) as dest:
             source.backup(dest)
         return self.state()[1]
 
     def restore(self, sources):
         # Every connection/process is closed; these are only this test's temporary files.
-        with sqlite3.connect(self.root / "snapshot.db") as source, sqlite3.connect(self.root / ".awr/state.db") as dest:
+        with closing(sqlite3.connect(self.root / "snapshot.db")) as source, closing(sqlite3.connect(self.root / ".awr/state.db")) as dest:
             source.backup(dest)
         for name, body in sources.items():
             (self.root / name).write_bytes(body)

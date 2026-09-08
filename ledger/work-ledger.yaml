@@ -1,8 +1,8 @@
 schema_version: 1
 contract_id: awr-v1
 contract_version: 1.0.0
-ledger_revision: 151
-updated_at: '2026-09-08T21:50:27+08:00'
+ledger_revision: 153
+updated_at: '2026-09-08T21:59:50+08:00'
 project:
   name: Agent Work Runtime
   external_key: agent-work-runtime
@@ -12,10 +12,10 @@ project:
 current:
   milestone: M9
   work_item: AWR-QA-004
-  next_action: 本机 macOS 11/11 通过；Linux 原生运行发现 O_PATH 目录句柄不能直接 fsync 的共享根因，修复写回与产物保存的目录同步，再用新提交运行三平台；首轮失败证据保留。
+  next_action: Linux 目录同步修复已通过原生 11/11 与 274 项 Rust 测试；Windows fixture 资源释放修复的 6 项源码限制、8 项 CLI/MCP 本机检查通过，提交后运行最终三平台原生验证。
   open_loops:
-  - QA-004 原生运行 34233665559 正在执行：远端 macOS 已通过，Linux 7/11 暴露目录同步 Bad file descriptor 根因，Windows 尚待结果；已将共享修复文件纳入本项交付范围。QA-002
-    已完成，业务验收仍为 0/8。
+  - QA-004 正在修复实测差异：Linux 目录同步修复 387917f 已经原生 11/11 通过；Windows 首轮 9/11 暴露 Rust/Python fixture 清理前未关闭 SQLite，修正后本机
+    6+8 检查通过，待新提交的完整原生三平台回执。业务验收仍为 0/8。
   - SEC-001 已完成：26/26 路径条件、46 项写回回归和 10 项 MCP 检查通过；源码 217a0b5 的远端回执已核实。实际完成写回、快照核对、checkpoint/end 后 Doctor 为 0 项；进入
     SEC-002。均不计 E4 或正式发布。
   - P0/P1 功能与接入项全部完成；P8-004 已对齐 8 个 MCP Tools 和 CLI 的状态、版本、缺口及写入回执，进入 M8 安全与后续集中质量阶段。
@@ -1761,13 +1761,15 @@ work_items:
   - crates/awr-runtime/src/artifact.rs
   - crates/awr-runtime/src/mutation_apply.rs
   - crates/awr-runtime/src/lib.rs
+  - tests/security/payloads/sources.rs
+  - crates/awr-mcp/tests/cli_parity.py
   depends_on:
   - AWR-QA-001
   evidence: []
   id: AWR-QA-004
   kind: quality
   milestone: M9
-  next_action: 本机 macOS 11/11 通过；Linux 原生运行发现 O_PATH 目录句柄不能直接 fsync 的共享根因，修复写回与产物保存的目录同步，再用新提交运行三平台；首轮失败证据保留。
+  next_action: Linux 目录同步修复已通过原生 11/11 与 274 项 Rust 测试；Windows fixture 资源释放修复的 6 项源码限制、8 项 CLI/MCP 本机检查通过，提交后运行最终三平台原生验证。
   owner: codex-primary
   priority: P2
   required_for_v1: true
