@@ -1,8 +1,8 @@
 schema_version: 1
 contract_id: awr-v1
 contract_version: 1.0.0
-ledger_revision: 83
-updated_at: '2026-09-08T08:47:07+08:00'
+ledger_revision: 86
+updated_at: '2026-09-08T08:49:37+08:00'
 project:
   name: Agent Work Runtime
   external_key: agent-work-runtime
@@ -10,13 +10,13 @@ project:
   authority_mode: source_first
   release_status: not_released
 current:
-  milestone: M5
-  work_item: AWR-P5-003
-  next_action: Doctor 诊断和明确范围的修复已接通；验证本项目的只读来源检查、检查点保存和指定会话结束后，固化交付。
+  milestone: M6
+  work_item: AWR-P6-001
+  next_action: 实现绑定来源、目标、指纹和版本的 Mutation Proposal 生命周期，并接通提案查询、审核与 proposal_required 返回。
   open_loops:
   - 功能实现优先；集中测试、优化和打磨在功能开发后执行。
-  - 本项目已实际使用 Source、Status、Ready、Work、Search、Session、Claim、Context、Checkpoint 和 Resume；继续用开发会话记录当前工作。
-  - P5-003：保留现有 SQLite/schema 只读诊断，新增中断运行态发现与明确范围的修复；尚未实现的 mutation/branch 操作不伪装为可修复。
+  - 本项目已实际使用 Source、Status、Ready、Work、Search、Session、Claim、Context、Checkpoint、Resume 和 Doctor；继续用开发会话记录当前工作。
+  - M6 接通 Mutation Proposal、YAML 精确写回及任务领域动作；来源文件保持权威，applied 状态必须绑定真实写回结果。
 milestones:
 - id: M0
   status: completed
@@ -29,9 +29,9 @@ milestones:
 - id: M4
   status: completed
 - id: M5
-  status: in_progress
+  status: completed
 - id: M6
-  status: planned
+  status: in_progress
 - id: M7
   status: planned
 - id: M8
@@ -1102,7 +1102,7 @@ work_items:
   priority: P0
   kind: feature
   required_for_v1: true
-  status: in_progress
+  status: completed
   owner: codex-primary
   depends_on:
   - AWR-P5-002
@@ -1120,18 +1120,19 @@ work_items:
   verification:
     minimum: 证明本条验收行为；功能阶段运行必要的定向检查，系统测试在 M9 集中执行。
     evidence_directory: ledger/evidence/AWR-P5-003
-    evidence_level: none
-  evidence: []
+    evidence_level: locally_verified
+  evidence:
+  - ledger/deliveries/AWR-P5-003.json
   blocker: null
-  next_action: Doctor 诊断和明确范围的修复已接通；验证本项目的只读来源检查、检查点保存和指定会话结束后，固化交付。
+  next_action: 已交付；继续依赖就绪的功能任务。
 - id: AWR-P6-001
   title: Mutation Proposal 生命周期
   milestone: M6
   priority: P0
   kind: feature
   required_for_v1: true
-  status: ready
-  owner: null
+  status: in_progress
+  owner: codex-primary
   depends_on:
   - AWR-P5-002
   - AWR-P0-004
@@ -1142,6 +1143,10 @@ work_items:
   deliverables:
   - crates/awr-source/
   - crates/awr-runtime/
+  - crates/awr-store/
+  - crates/awr-core/
+  - crates/awr-cli/
+  - README.md
   acceptance:
   - 提案绑定 source、目标、base fingerprint、expected revision、意图与 patch。
   - draft/ready/approved/applied/conflict/rejected/failed 状态及动作可区分；不支持写入时 proposal_required。
@@ -1151,7 +1156,7 @@ work_items:
     evidence_level: none
   evidence: []
   blocker: null
-  next_action: 按交付物实现并验证：Mutation Proposal 生命周期
+  next_action: 实现绑定来源、目标、指纹和版本的 Mutation Proposal 生命周期，并接通提案查询、审核与 proposal_required 返回。
 - id: AWR-P6-002
   title: YAML 指纹绑定安全写回
   milestone: M6
