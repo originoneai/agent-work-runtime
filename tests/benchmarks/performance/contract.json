@@ -1,0 +1,24 @@
+{
+  "contract_id": "awr-local-cli-latency",
+  "version": "1.0.0",
+  "work_item": "AWR-P9-005",
+  "status_authority": "ledger/work-ledger.yaml",
+  "sample_contract": "tests/benchmarks/context/contract.json",
+  "build": "cargo build --locked --release --workspace --bins",
+  "transport": "Fresh CLI process per invocation; include the installed rtk proxy wrapper, process startup, source freshness checks, command execution, stdout capture and process exit. JSON parsing/verification and source preparation occur outside the timed interval. No overhead is subtracted.",
+  "cache": "For each operation, use a separate disposable copy. After init and baseline status/full-work identity validation, record the first operation measurement, perform three additional warmups, then collect exactly 30 sequential samples. Retain and separately report setup-call durations as well. File/SQLite pages are warm from ordinary preceding operations; every CLI process and its tokenizer are newly started. No OS cache flush, privileged tuning or background-service changes. First-observed timings are cold-process measurements, not a claim of physically cold storage.",
+  "warmups": 3,
+  "samples": 30,
+  "percentile": "Nearest-rank p95: sort every successful measured sample, choose ceil(0.95*N)-1. Never discard an outlier or failed invocation. All 30 invocations must be correct before an operation can pass.",
+  "operations": [
+    {"metric": "status_latency", "command": "status", "exclusive_limit_ms": 20},
+    {"metric": "work_show_latency", "command": "work show <selected work>", "exclusive_limit_ms": 20},
+    {"metric": "ready_latency", "command": "ready --limit 20", "exclusive_limit_ms": 50},
+    {"metric": "context_compile_latency", "command": "context compile --work <selected work> --goal <mapped goal> --after-revision <initial revision> --budget 5000", "exclusive_limit_ms": 100},
+    {"metric": "fts_latency", "command": "search <selected work key> --type work --limit 10", "exclusive_limit_ms": 100},
+    {"metric": "incremental_reindex_latency", "command": "source reindex", "exclusive_limit_ms": 500}
+  ],
+  "reindex": "Before each invocation append a unique iteration note to the selected work's original next_action in the disposable source copy. Time the subsequent native reindex, then independently verify exact projected next_action, stable work identity and one revision advance. Preparation and verification are untimed. Check that all other task revisions remain unchanged. Reindex always processes an actual source change, never an unchanged no-op.",
+  "required_gates": ["fixed_source_and_release_binary", "hardware_os_toolchain_and_scale", "all_invocations_correct", "all_samples_retained", "six_p95_thresholds", "real_incremental_changes", "originals_and_inputs_unchanged"],
+  "boundary": "The measured capacity is the admitted historical real-source sample, not every dataset below 10k work items, 100k objects or 1M events. Record actual rows, ready count, event growth and bytes. These CLI measurements do not grant MCP, model/API, cross-platform latency, E4 or release credit. Keep original text and raw receipts local."
+}

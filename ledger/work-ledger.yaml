@@ -1,8 +1,8 @@
 schema_version: 1
 contract_id: awr-v1
 contract_version: 1.0.0
-ledger_revision: 167
-updated_at: '2026-09-09T00:47:40+08:00'
+ledger_revision: 168
+updated_at: '2026-09-09T00:48:35+08:00'
 project:
   name: Agent Work Runtime
   external_key: agent-work-runtime
@@ -12,7 +12,7 @@ project:
 current:
   milestone: M9
   work_item: AWR-P9-005
-  next_action: 认领本地延迟基准，固定 release 构建、真实样本、硬件和冷热缓存口径，测量六项操作的 p95。
+  next_action: 冻结 release 构建与真实样本，先测包含启动开销的 CLI 六项延迟和首轮/预热 p95，再据证据优化超标项。
   open_loops:
   - P9-004 已通过原生 AWR 完成写回；4/10 指标达标。四组正文实测最大 L0 933、L1 3250、最低压缩比 23.767692、68/68 硬事实；完整 JSON 单独报告。
   - P9-001 大型真实台账和 P9-002 恢复已完成；P9-005 延迟与 QA-003 真实客户端业务验收仍待执行。
@@ -1764,7 +1764,8 @@ work_items:
   id: AWR-QA-004
   kind: quality
   milestone: M9
-  next_action: 执行源码 d483766 的三平台原生 11/11、交付 eab85e7 与 Git/GitHub 回执已核实；完成写回、checkpoint/end 和 Doctor 零项复核通过，后续进入 AWR-P9-001。
+  next_action: 执行源码 d483766 的三平台原生 11/11、交付 eab85e7 与 Git/GitHub 回执已核实；完成写回、checkpoint/end 和 Doctor 零项复核通过，后续进入
+    AWR-P9-001。
   owner: codex-primary
   priority: P2
   required_for_v1: true
@@ -1873,31 +1874,31 @@ work_items:
     minimum: 证明本条验收行为；功能阶段运行必要的定向检查，系统测试在 M9 集中执行。
     scope_adjustment: 首轮真实样本 L0 为 1232 tokens、L1 为 3182 tokens，Rust 与 Python o200k_base 一致。将通用 L0 展示精简及对应 CLI 回归纳入本条，保留全部规定的
       L0 事实、原文硬规则和结构化来源绑定；不修改验收预算或分母。
-- id: AWR-P9-005
-  title: 本地延迟与规模 Benchmark
-  milestone: M9
-  priority: P2
-  kind: quality
-  required_for_v1: true
-  status: planned
-  owner: null
-  depends_on:
-  - AWR-P9-001
-  source_sections:
-  - 41
+- acceptance:
+  - 固定硬件、数据规模与冷热缓存条件，记录 status/work/ready/compile/search/reindex 耗时。
+  - 对照文档 20/20/50/100/100/500 ms 目标，偏差明确记录且未处理不宣称达标。
+  blocker: null
   deliverables:
   - tests/benchmarks/performance/
   - docs/benchmarks/
-  acceptance:
-  - 固定硬件、数据规模与冷热缓存条件，记录 status/work/ready/compile/search/reindex 耗时。
-  - 对照文档 20/20/50/100/100/500 ms 目标，偏差明确记录且未处理不宣称达标。
+  depends_on:
+  - AWR-P9-001
+  evidence: []
+  id: AWR-P9-005
+  kind: quality
+  milestone: M9
+  next_action: 冻结 release 构建与真实样本，先测包含启动开销的 CLI 六项延迟和首轮/预热 p95，再据证据优化超标项。
+  owner: codex-primary
+  priority: P2
+  required_for_v1: true
+  source_sections:
+  - 41
+  status: in_progress
+  title: 本地延迟与规模 Benchmark
   verification:
-    minimum: 证明本条验收行为；功能阶段运行必要的定向检查，系统测试在 M9 集中执行。
     evidence_directory: ledger/evidence/AWR-P9-005
     evidence_level: none
-  evidence: []
-  blocker: null
-  next_action: 按交付物实现并验证：本地延迟与规模 Benchmark
+    minimum: 证明本条验收行为；功能阶段运行必要的定向检查，系统测试在 M9 集中执行。
 - id: AWR-P9-003
   title: 开源文档、Examples 与使用参考
   milestone: M10
