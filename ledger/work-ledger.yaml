@@ -1,8 +1,8 @@
 schema_version: 1
 contract_id: awr-v1
 contract_version: 1.0.0
-ledger_revision: 154
-updated_at: '2026-09-08T22:14:20+08:00'
+ledger_revision: 156
+updated_at: '2026-09-08T22:19:46+08:00'
 project:
   name: Agent Work Runtime
   external_key: agent-work-runtime
@@ -11,11 +11,11 @@ project:
   release_status: not_released
 current:
   milestone: M9
-  work_item: AWR-QA-004
-  next_action: 三平台各 11 道原生检查通过，源码、环境及日志回执已核实；绑定本项目写回与远端回执，完成 QA-004 后进入大型真实台账基准。
+  work_item: AWR-P9-001
+  next_action: 建立真实大型台账的样本准入、冻结副本和读取、增量索引、历史隔离、投影重建基准入口；等待样本路径后运行真实数据并绑定脱敏回执，规模不足的材料不计完成。
   open_loops:
-  - QA-004 三平台原生 11/11 通过；已修复 Linux O_PATH 目录同步与 Windows 测试清理前未关闭 SQLite 的问题，首轮失败和后续完整回执保留。本项目 Doctor 只读复核及 MCP
-    进度写回通过，等待完成交付；真实业务仍为 0/8。
+  - QA-004 已完成：macOS arm64、Linux x64、Windows x64 在同一源码 d483766 上原生 11/11 通过，Rust 测试实际为 274/274/261；Linux 目录同步及 Windows
+    fixture 资源释放缺陷已修复。P9-001 已认领，先建立真实大型台账准入与基准入口，样本路径待用户确认。
   - SEC-001 已完成：26/26 路径条件、46 项写回回归和 10 项 MCP 检查通过；源码 217a0b5 的远端回执已核实。实际完成写回、快照核对、checkpoint/end 后 Doctor 为 0 项；进入
     SEC-002。均不计 E4 或正式发布。
   - P0/P1 功能与接入项全部完成；P8-004 已对齐 8 个 MCP Tools 和 CLI 的状态、版本、缺口及写入回执，进入 M8 安全与后续集中质量阶段。
@@ -1765,51 +1765,53 @@ work_items:
   - crates/awr-mcp/tests/cli_parity.py
   depends_on:
   - AWR-QA-001
-  evidence: []
+  evidence:
+  - ledger/deliveries/AWR-QA-004.json
   id: AWR-QA-004
   kind: quality
   milestone: M9
-  next_action: 三平台各 11 道原生检查通过，源码、环境及日志回执已核实；绑定本项目写回与远端回执，完成 QA-004 后进入大型真实台账基准。
+  next_action: 执行源码 d483766 的三平台原生 11/11、交付 eab85e7 与 Git/GitHub 回执已核实；完成写回、checkpoint/end 和 Doctor 零项复核通过，后续进入
+    AWR-P9-001。
   owner: codex-primary
   priority: P2
   required_for_v1: true
   source_sections:
   - 44
   - 50
-  status: in_progress
+  status: completed
   title: macOS / Linux / Windows 运行验证
   verification:
     evidence_directory: ledger/evidence/AWR-QA-004
-    evidence_level: none
+    evidence_level: locally_verified
     minimum: 证明本条验收行为；功能阶段运行必要的定向检查，系统测试在 M9 集中执行。
-- id: AWR-P9-001
-  title: 真实大型 Ledger Benchmark
-  milestone: M9
-  priority: P2
-  kind: quality
-  required_for_v1: true
-  status: planned
-  owner: null
+- acceptance:
+  - 真实复杂项目至少含 30 当前/100 历史任务、多里程碑/决策、大量证据与数百 KB 台账。
+  - 验证按任务读取、增量索引、历史隔离及投影重建；公开证据须脱敏。
+  blocker: null
+  deliverables:
+  - tests/long-ledger/
+  - docs/benchmarks/
   depends_on:
   - AWR-QA-001
+  evidence: []
+  id: AWR-P9-001
+  kind: quality
+  milestone: M9
+  next_action: 建立真实大型台账的样本准入、冻结副本和读取、增量索引、历史隔离、投影重建基准入口；等待样本路径后运行真实数据并绑定脱敏回执，规模不足的材料不计完成。
+  owner: codex-primary
+  priority: P2
+  required_for_v1: true
   source_sections:
   - 36
   - 41
   - 42
   - 52
-  deliverables:
-  - tests/long-ledger/
-  - docs/benchmarks/
-  acceptance:
-  - 真实复杂项目至少含 30 当前/100 历史任务、多里程碑/决策、大量证据与数百 KB 台账。
-  - 验证按任务读取、增量索引、历史隔离及投影重建；公开证据须脱敏。
+  status: in_progress
+  title: 真实大型 Ledger Benchmark
   verification:
-    minimum: 证明本条验收行为；功能阶段运行必要的定向检查，系统测试在 M9 集中执行。
     evidence_directory: ledger/evidence/AWR-P9-001
     evidence_level: none
-  evidence: []
-  blocker: null
-  next_action: 按交付物实现并验证：真实大型 Ledger Benchmark
+    minimum: 证明本条验收行为；功能阶段运行必要的定向检查，系统测试在 M9 集中执行。
 - id: AWR-P9-002
   title: Compact Recovery Benchmark
   milestone: M9
