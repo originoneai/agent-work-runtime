@@ -11,8 +11,13 @@ use url::Url;
 
 #[derive(Debug, Clone)]
 pub enum Locator {
+    /// Already-authorized canonical path. Use `from_spec` for configured sources;
+    /// reads deliberately refuse links substituted after that authority check.
     File(PathBuf),
-    Git { revision: String, path: PathBuf },
+    Git {
+        revision: String,
+        path: PathBuf,
+    },
 }
 
 #[derive(Debug, Clone)]

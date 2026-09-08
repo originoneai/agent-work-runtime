@@ -1,76 +1,105 @@
 use crate::mutation::{ProposalReport, ReviewProposalRequest, report};
 use awr_core::*;
 use awr_source::{
-    Locator, fingerprint, inspect_mutation_source, parse_mutation_projection,
-    prepare_yaml_mutation, read_capped, verify_mutation_source,
+    Locator, fingerprint, inspect_mutation_source, open_dir_exact, open_file_exact,
+    parse_mutation_projection, prepare_yaml_mutation, verify_mutation_source,
 };
 use awr_store::Store;
+use cap_fs_ext::{DirExt, FollowSymlinks, OpenOptionsFollowExt};
+use cap_std::fs::{Dir, OpenOptions};
 use std::{
-    fs::{self, File, OpenOptions},
-    io::Write,
-    path::{Path, PathBuf},
+    ffi::{OsStr, OsString},
+    fs::{self, File},
+    io::{Read, Write},
+    path::Path,
 };
 
-fn directory(path: &Path) -> Result<()> {
-    match fs::create_dir(path) {
+fn directory(parent: &Dir, name: &str, path: &Path) -> Result<Dir> {
+    match parent.create_dir(name) {
         Ok(()) => (),
         Err(e) if e.kind() == std::io::ErrorKind::AlreadyExists => (),
         Err(e) => return Err(e.into()),
     }
-    let meta = fs::symlink_metadata(path)?;
+    let meta = parent.symlink_metadata(name)?;
     if !meta.is_dir() || meta.file_type().is_symlink() {
-        return Err(Error::RuleViolation(
-            "mutation recovery directory must be a real directory".into(),
-        ));
+        return Err(Error::RuleViolation(format!(
+            "{}: mutation recovery directory must be a real directory",
+            path.display()
+        )));
     }
-    Ok(())
+    Ok(parent.open_dir_nofollow(name)?)
 }
-fn sync_directory(path: &Path) -> Result<()> {
+fn sync_directory(directory: &Dir) -> Result<()> {
     #[cfg(unix)]
     {
-        File::open(path)?.sync_all()?;
+        directory.try_clone()?.into_std_file().sync_all()?;
     }
     Ok(())
 }
-fn recovery_root(root: &Path) -> Result<PathBuf> {
+fn recovery_root(root: &Path) -> Result<Dir> {
     let runtime = root.join(".awr");
-    let meta = fs::symlink_metadata(&runtime)?;
+    let project = open_dir_exact(root)?;
+    let meta = project.symlink_metadata(".awr")?;
     if !meta.is_dir() || meta.file_type().is_symlink() {
-        return Err(Error::RuleViolation(
-            "runtime directory must not be a symlink".into(),
-        ));
+        return Err(Error::RuleViolation(format!(
+            "{}: runtime directory must not be a symlink",
+            runtime.display()
+        )));
     }
-    let path = runtime.join("mutations");
-    directory(&path)?;
-    Ok(path)
+    let runtime_dir = project
+        .open_dir_nofollow(".awr")
+        .map_err(|e| Error::SourceUnavailable(format!("{}: {e}", runtime.display())))?;
+    directory(&runtime_dir, "mutations", &runtime.join("mutations"))
 }
 fn source_lock(root: &Path, source: Id) -> Result<File> {
-    let path = recovery_root(root)?.join(format!("{source}.lock"));
-    if fs::symlink_metadata(&path).is_ok_and(|m| m.file_type().is_symlink() || !m.is_file()) {
-        return Err(Error::RuleViolation(
-            "source lock must be a regular file".into(),
-        ));
+    let directory = recovery_root(root)?;
+    let name = format!("{source}.lock");
+    let path = root.join(".awr/mutations").join(&name);
+    if directory
+        .symlink_metadata(&name)
+        .is_ok_and(|m| m.file_type().is_symlink() || !m.is_file())
+    {
+        return Err(Error::RuleViolation(format!(
+            "{}: source lock must be a regular file",
+            path.display()
+        )));
     }
-    let file = OpenOptions::new()
+    let mut options = OpenOptions::new();
+    options
         .create(true)
         .truncate(false)
         .read(true)
         .write(true)
-        .open(path)?;
+        .follow(FollowSymlinks::No);
+    let file = directory
+        .open_with(&name, &options)
+        .map_err(|e| Error::SourceUnavailable(format!("{}: {e}", path.display())))?
+        .into_std();
+    if !file.metadata()?.is_file() {
+        return Err(Error::RuleViolation(format!(
+            "{}: source lock must be a regular file",
+            path.display()
+        )));
+    }
     file.try_lock().map_err(|e| {
-        Error::MutationConflict(format!("another writer holds the source lock: {e}"))
+        Error::MutationConflict(format!(
+            "{}: another writer holds the source lock: {e}",
+            path.display()
+        ))
     })?;
     Ok(file)
 }
-fn create_file(path: &Path, bytes: &[u8], permissions: Option<fs::Permissions>) -> Result<()> {
+fn new_file(directory: &Dir, name: &OsStr) -> Result<File> {
     let mut options = OpenOptions::new();
     options.create_new(true).write(true);
     #[cfg(unix)]
     {
-        use std::os::unix::fs::OpenOptionsExt;
+        use cap_std::fs::OpenOptionsExt;
         options.mode(0o600);
     }
-    let mut file = options.open(path)?;
+    Ok(directory.open_with(name, &options)?.into_std())
+}
+fn write_file(mut file: File, bytes: &[u8], permissions: Option<fs::Permissions>) -> Result<()> {
     file.write_all(bytes)?;
     if let Some(permissions) = permissions {
         file.set_permissions(permissions)?;
@@ -78,40 +107,72 @@ fn create_file(path: &Path, bytes: &[u8], permissions: Option<fs::Permissions>) 
     file.sync_all()?;
     Ok(())
 }
+fn create_file(
+    directory: &Dir,
+    name: &OsStr,
+    bytes: &[u8],
+    permissions: Option<fs::Permissions>,
+) -> Result<()> {
+    write_file(new_file(directory, name)?, bytes, permissions)
+}
 fn stage(root: &Path, plan: &MutationWritePlan, before: &[u8], after: &[u8]) -> Result<()> {
-    let path = recovery_root(root)?.join(plan.id.to_string());
-    fs::create_dir(&path)?;
-    create_file(&path.join("before.yaml"), before, None)?;
-    create_file(&path.join("after.yaml"), after, None)?;
+    let parent = recovery_root(root)?;
+    let name = plan.id.to_string();
+    parent.create_dir(&name)?;
+    let directory = parent.open_dir_nofollow(&name)?;
+    create_file(&directory, OsStr::new("before.yaml"), before, None)?;
+    create_file(&directory, OsStr::new("after.yaml"), after, None)?;
     create_file(
-        &path.join("plan.json"),
+        &directory,
+        OsStr::new("plan.json"),
         &serde_json::to_vec_pretty(plan)?,
         None,
     )?;
-    sync_directory(&path)?;
-    sync_directory(path.parent().unwrap())
+    sync_directory(&directory)?;
+    sync_directory(&parent)
 }
 fn stored_after(root: &Path, plan: &MutationWritePlan) -> Result<Vec<u8>> {
     let path = root.join(plan.recovery_directory());
-    let meta = fs::symlink_metadata(&path)?;
+    let parent = recovery_root(root)?;
+    let name = plan.id.to_string();
+    let meta = parent.symlink_metadata(&name)?;
     if !meta.is_dir() || meta.file_type().is_symlink() {
-        return Err(Error::RuleViolation(
-            "recovery directory was replaced".into(),
-        ));
+        return Err(Error::RuleViolation(format!(
+            "{}: recovery directory was replaced",
+            path.display()
+        )));
     }
+    let directory = parent.open_dir_nofollow(&name)?;
     let mut after = None;
     for (name, size, fp) in [
         ("before.yaml", plan.before_size, &plan.before_fingerprint),
         ("after.yaml", plan.after_size, &plan.after_fingerprint),
     ] {
-        let file = path.join(name);
-        let meta = fs::symlink_metadata(&file)?;
+        let meta = directory.symlink_metadata(name)?;
         if !meta.is_file() || meta.file_type().is_symlink() {
-            return Err(Error::RuleViolation(
-                "recovery snapshot must be a regular file".into(),
+            return Err(Error::RuleViolation(format!(
+                "{}: recovery snapshot must be a regular file",
+                path.join(name).display()
+            )));
+        }
+        let mut options = OpenOptions::new();
+        options.read(true).follow(FollowSymlinks::No);
+        let file = directory
+            .open_with(name, &options)
+            .map_err(|e| Error::SourceUnavailable(format!("{}: {e}", path.join(name).display())))?;
+        if !file.metadata()?.is_file() {
+            return Err(Error::RuleViolation(format!(
+                "{}: recovery snapshot must be a regular file",
+                path.join(name).display()
+            )));
+        }
+        let mut bytes = Vec::new();
+        file.take(16 * 1024 * 1024 + 1).read_to_end(&mut bytes)?;
+        if bytes.len() > 16 * 1024 * 1024 {
+            return Err(Error::InvalidInput(
+                "recovery snapshot exceeds 16 MiB".into(),
             ));
         }
-        let bytes = read_capped(&file, 16 * 1024 * 1024)?;
         if bytes.len() as u64 != size || fingerprint(&bytes) != *fp {
             return Err(Error::SourceConflict(
                 "recovery snapshot differs from its immutable write plan".into(),
@@ -123,6 +184,55 @@ fn stored_after(root: &Path, plan: &MutationWritePlan) -> Result<Vec<u8>> {
     }
     Ok(after.unwrap())
 }
+
+/// Hold one approved source directory for temp creation, replacement and cleanup.
+/// Domain fingerprint/revision checks still run immediately before install.
+struct SourceReplacement {
+    directory: Dir,
+    name: OsString,
+    temp: Option<OsString>,
+}
+impl SourceReplacement {
+    fn prepare(path: &Path, bytes: &[u8], permissions: fs::Permissions) -> Result<Self> {
+        let directory = open_dir_exact(
+            path.parent()
+                .ok_or_else(|| Error::InvalidInput("source has no parent".into()))?,
+        )?;
+        let temp: OsString = format!(".awr-write-{}.tmp", Id::new()).into();
+        // Ownership begins only after create_new succeeds; never remove a colliding file.
+        let file = new_file(&directory, &temp)?;
+        let replacement = Self {
+            directory,
+            name: path
+                .file_name()
+                .ok_or_else(|| Error::InvalidInput("source has no name".into()))?
+                .to_owned(),
+            temp: Some(temp),
+        };
+        write_file(file, bytes, Some(permissions))?;
+        Ok(replacement)
+    }
+    fn install(&mut self) -> Result<()> {
+        let temp = self.temp.as_ref().ok_or_else(|| {
+            Error::InvalidTransition("source replacement was already installed".into())
+        })?;
+        self.directory.rename(temp, &self.directory, &self.name)?;
+        self.temp = None;
+        Ok(())
+    }
+}
+impl Drop for SourceReplacement {
+    fn drop(&mut self) {
+        // Cleanup uses the same held directory; it cannot follow a replacement parent.
+        if let Some(temp) = &self.temp {
+            let _ = self.directory.remove_file(temp);
+        }
+    }
+}
+
+#[cfg(test)]
+#[path = "../../../tests/security/paths/write_handles.rs"]
+mod tests;
 fn decorate(
     mut result: ProposalReport,
     store: &Store,
@@ -327,7 +437,11 @@ pub(crate) fn apply(
             Ok(prepared) => prepared,
             Err(error) => return preparation_failure(store, project, request, error),
         };
-        if fs::metadata(&prepared.path)?.permissions().readonly() {
+        if open_file_exact(&prepared.path)?
+            .metadata()?
+            .permissions()
+            .readonly()
+        {
             return preparation_failure(
                 store,
                 project,
@@ -370,15 +484,11 @@ pub(crate) fn apply(
         }
         if snapshot.fingerprint == attempt.plan.before_fingerprint {
             verify_mutation_source(root, &source, &patch)?;
-            let permissions = fs::metadata(&path)?.permissions();
+            let permissions = open_file_exact(&path)?.metadata()?.permissions();
             if permissions.readonly() {
                 return Err(Error::SourceUnavailable("source file is read-only".into()));
             }
-            let temp = path
-                .parent()
-                .unwrap()
-                .join(format!(".awr-write-{}.tmp", Id::new()));
-            create_file(&temp, &after, Some(permissions))?;
+            let mut replacement = SourceReplacement::prepare(&path, &after, permissions)?;
             let before_replace = (|| {
                 if patch.work_action.is_some() {
                     store.check_work_proposal(project, &proposal)?;
@@ -410,13 +520,10 @@ pub(crate) fn apply(
                     return Err(Error::RevisionConflict { expected, actual });
                 }
                 wrote = None;
-                fs::rename(&temp, &path)?;
+                replacement.install()?;
                 wrote = Some(true);
-                sync_directory(path.parent().unwrap())
+                sync_directory(&replacement.directory)
             })();
-            if temp.is_file() {
-                let _ = fs::remove_file(&temp);
-            }
             before_replace?;
         } else if snapshot.fingerprint != attempt.plan.after_fingerprint {
             return Err(Error::SourceConflict("current source matches neither recorded snapshot; retained both snapshots without overwriting it".into()));

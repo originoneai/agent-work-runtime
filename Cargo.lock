@@ -160,6 +160,8 @@ dependencies = [
  "awr-core",
  "awr-source",
  "awr-store",
+ "cap-fs-ext",
+ "cap-std",
  "serde",
  "serde_json",
  "sha2",

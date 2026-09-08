@@ -1,0 +1,316 @@
+{
+  "contract_id": "awr-security-paths",
+  "contract_version": "1.0.0",
+  "contract_sha256": "b1e0d8c2078788235513324fdc758bb62d4c3e0ee07b970b3fd3a5dd36eea63e",
+  "checked_at": "2026-09-08T15:33:07+08:00",
+  "platform": "macOS-26.5.2-arm64-arm-64bit-Mach-O",
+  "target_cases": 26,
+  "runs": [
+    {
+      "command": [
+        "cargo",
+        "test",
+        "-p",
+        "awr-source",
+        "--test",
+        "security_paths",
+        "--locked",
+        "--",
+        "--nocapture"
+      ],
+      "exit_code": 0,
+      "passed": true,
+      "test_functions_passed": 6,
+      "cases_emitted": [
+        "absolute_inside",
+        "absolute_outside",
+        "authorized_absolute_root",
+        "authorized_file_uri",
+        "authorized_relative_root",
+        "authorized_symlink",
+        "dangling_symlink",
+        "directory_link_child",
+        "discovered_replaced_leaf",
+        "file_uri_inside",
+        "file_uri_outside",
+        "git_parent_traversal",
+        "manifest_escape",
+        "parent_traversal",
+        "prefix_sibling",
+        "relative_inside",
+        "replaced_leaf",
+        "replaced_parent",
+        "symlink_inside",
+        "symlink_loop",
+        "symlink_outside"
+      ],
+      "log": ".local/sec001-matrix-final-1.log",
+      "log_sha256": "8f2ef979b7992fd0a1e76c98ba374572a2c85215df93bf90a8d4e3ea0277d560",
+      "log_retention": "local_only"
+    },
+    {
+      "command": [
+        "cargo",
+        "test",
+        "-p",
+        "awr-runtime",
+        "--lib",
+        "mutation_apply::tests",
+        "--locked",
+        "--",
+        "--nocapture"
+      ],
+      "exit_code": 0,
+      "passed": true,
+      "test_functions_passed": 4,
+      "cases_emitted": [
+        "write_parent_replacement"
+      ],
+      "log": ".local/sec001-matrix-final-2.log",
+      "log_sha256": "89960e4f2e2f84bccfa0d6b2045df7a831e48aa97d7bef3796769c63b727a304",
+      "log_retention": "local_only"
+    },
+    {
+      "command": [
+        "cargo",
+        "test",
+        "-p",
+        "awr-cli",
+        "--test",
+        "security_write",
+        "--locked",
+        "--",
+        "--nocapture"
+      ],
+      "exit_code": 0,
+      "passed": true,
+      "test_functions_passed": 4,
+      "cases_emitted": [
+        "authorized_external_write",
+        "recovery_symlink",
+        "runtime_source_write",
+        "source_alias_retarget"
+      ],
+      "log": ".local/sec001-matrix-final-3.log",
+      "log_sha256": "ac3add3dd71fd7defca606df668b41c4ce1aa38d0784e76ea82934d0d22b02b1",
+      "log_retention": "local_only"
+    }
+  ],
+  "passed": true,
+  "evidence_level": "local_component_and_cli",
+  "e4_completed": 0,
+  "covered_cases": [
+    "absolute_inside",
+    "absolute_outside",
+    "authorized_absolute_root",
+    "authorized_external_write",
+    "authorized_file_uri",
+    "authorized_relative_root",
+    "authorized_symlink",
+    "dangling_symlink",
+    "directory_link_child",
+    "discovered_replaced_leaf",
+    "file_uri_inside",
+    "file_uri_outside",
+    "git_parent_traversal",
+    "manifest_escape",
+    "parent_traversal",
+    "prefix_sibling",
+    "recovery_symlink",
+    "relative_inside",
+    "replaced_leaf",
+    "replaced_parent",
+    "runtime_source_write",
+    "source_alias_retarget",
+    "symlink_inside",
+    "symlink_loop",
+    "symlink_outside",
+    "write_parent_replacement"
+  ],
+  "missing_cases": [],
+  "unknown_cases": [],
+  "coverage": [
+    {
+      "id": "relative_inside",
+      "axis": "normal",
+      "operation": "read",
+      "expected": "allow",
+      "verified": true
+    },
+    {
+      "id": "absolute_inside",
+      "axis": "normal",
+      "operation": "read",
+      "expected": "allow",
+      "verified": true
+    },
+    {
+      "id": "absolute_outside",
+      "axis": "boundary",
+      "operation": "read",
+      "expected": "reject",
+      "verified": true
+    },
+    {
+      "id": "prefix_sibling",
+      "axis": "boundary",
+      "operation": "read",
+      "expected": "reject",
+      "verified": true
+    },
+    {
+      "id": "parent_traversal",
+      "axis": "boundary",
+      "operation": "read",
+      "expected": "reject",
+      "verified": true
+    },
+    {
+      "id": "file_uri_inside",
+      "axis": "locator",
+      "operation": "read",
+      "expected": "allow",
+      "verified": true
+    },
+    {
+      "id": "file_uri_outside",
+      "axis": "locator",
+      "operation": "read",
+      "expected": "reject",
+      "verified": true
+    },
+    {
+      "id": "authorized_absolute_root",
+      "axis": "authorization",
+      "operation": "read",
+      "expected": "allow",
+      "verified": true
+    },
+    {
+      "id": "authorized_relative_root",
+      "axis": "authorization",
+      "operation": "read",
+      "expected": "allow",
+      "verified": true
+    },
+    {
+      "id": "authorized_file_uri",
+      "axis": "authorization",
+      "operation": "read",
+      "expected": "allow",
+      "verified": true
+    },
+    {
+      "id": "symlink_inside",
+      "axis": "symlink",
+      "operation": "read",
+      "expected": "allow_canonical_target",
+      "verified": true
+    },
+    {
+      "id": "symlink_outside",
+      "axis": "symlink",
+      "operation": "read",
+      "expected": "reject",
+      "verified": true
+    },
+    {
+      "id": "authorized_symlink",
+      "axis": "authorization",
+      "operation": "read",
+      "expected": "allow_canonical_target",
+      "verified": true
+    },
+    {
+      "id": "dangling_symlink",
+      "axis": "failure",
+      "operation": "read",
+      "expected": "reject",
+      "verified": true
+    },
+    {
+      "id": "symlink_loop",
+      "axis": "failure",
+      "operation": "read",
+      "expected": "reject",
+      "verified": true
+    },
+    {
+      "id": "replaced_leaf",
+      "axis": "race",
+      "operation": "read",
+      "expected": "reject",
+      "verified": true
+    },
+    {
+      "id": "replaced_parent",
+      "axis": "race",
+      "operation": "read",
+      "expected": "reject",
+      "verified": true
+    },
+    {
+      "id": "discovered_replaced_leaf",
+      "axis": "race",
+      "operation": "directory_read",
+      "expected": "reject",
+      "verified": true
+    },
+    {
+      "id": "directory_link_child",
+      "axis": "symlink",
+      "operation": "directory_read",
+      "expected": "skip_unregistered_child",
+      "verified": true
+    },
+    {
+      "id": "manifest_escape",
+      "axis": "authority",
+      "operation": "manifest_read",
+      "expected": "reject",
+      "verified": true
+    },
+    {
+      "id": "git_parent_traversal",
+      "axis": "locator",
+      "operation": "git_read",
+      "expected": "reject",
+      "verified": true
+    },
+    {
+      "id": "source_alias_retarget",
+      "axis": "source_binding",
+      "operation": "write",
+      "expected": "reject_without_external_write",
+      "verified": true
+    },
+    {
+      "id": "authorized_external_write",
+      "axis": "authorization",
+      "operation": "write",
+      "expected": "allow_bound_source_only",
+      "verified": true
+    },
+    {
+      "id": "write_parent_replacement",
+      "axis": "race",
+      "operation": "write",
+      "expected": "never_write_redirected_directory",
+      "verified": true
+    },
+    {
+      "id": "recovery_symlink",
+      "axis": "recovery",
+      "operation": "write",
+      "expected": "reject_without_external_write",
+      "verified": true
+    },
+    {
+      "id": "runtime_source_write",
+      "axis": "authority",
+      "operation": "write",
+      "expected": "reject",
+      "verified": true
+    }
+  ]
+}

@@ -48,6 +48,7 @@ fn resolved_file_cannot_follow_a_replaced_leaf() {
         observed.is_err(),
         "resolved source followed a replaced leaf: {observed:?}"
     );
+    println!("AWR_PATH_CASE replaced_leaf");
 }
 
 #[cfg(unix)]
@@ -63,6 +64,7 @@ fn resolved_file_cannot_follow_a_replaced_parent() {
         observed.is_err(),
         "resolved source followed a replaced parent: {observed:?}"
     );
+    println!("AWR_PATH_CASE replaced_parent");
 }
 
 #[cfg(unix)]
@@ -81,6 +83,7 @@ fn discovered_child_cannot_follow_a_replaced_leaf() {
         observed.is_err(),
         "discovered child escaped during read: {observed:?}"
     );
+    println!("AWR_PATH_CASE discovered_replaced_leaf");
 }
 
 #[test]
@@ -158,6 +161,7 @@ fn source_mapping_matrix_preserves_explicit_authority() {
                 .iter()
                 .any(|case| case["id"] == id)
         );
+        println!("AWR_PATH_CASE {id}");
     }
 }
 
@@ -191,6 +195,7 @@ fn configured_symlink_matrix_and_directory_child_policy() {
             ["symlink_inside", "authorized_symlink"].contains(&id),
             "{id}: {result:?}"
         );
+        println!("AWR_PATH_CASE {id}");
     }
     let f = Fixture::new();
     std::os::unix::fs::symlink(f.outside.join("source.md"), f.root.join("docs/link.md")).unwrap();
@@ -200,6 +205,7 @@ fn configured_symlink_matrix_and_directory_child_policy() {
         .unwrap();
     assert_eq!(inventory.files.len(), 1);
     assert!(inventory.files.keys().all(|key| !key.contains("link.md")));
+    println!("AWR_PATH_CASE directory_link_child");
 }
 
 #[cfg(unix)]
@@ -216,6 +222,7 @@ fn manifest_escape_and_git_parent_traversal_are_rejected() {
         Manifest::load(&f.root),
         Err(awr_core::Error::RuleViolation(_))
     ));
+    println!("AWR_PATH_CASE manifest_escape");
     let mut manifest = f.manifest(false);
     manifest.sources[0].path = None;
     manifest.sources[0].locator = Some("git://HEAD:../outside/source.md".into());
@@ -223,4 +230,5 @@ fn manifest_escape_and_git_parent_traversal_are_rejected() {
         Locator::from_spec(&f.root, &manifest, &manifest.sources[0]),
         Err(awr_core::Error::RuleViolation(_))
     ));
+    println!("AWR_PATH_CASE git_parent_traversal");
 }

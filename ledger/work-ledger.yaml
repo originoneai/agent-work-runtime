@@ -1,8 +1,8 @@
 schema_version: 1
 contract_id: awr-v1
 contract_version: 1.0.0
-ledger_revision: 116
-updated_at: '2026-09-08T15:11:37+08:00'
+ledger_revision: 119
+updated_at: '2026-09-08T15:34:09+08:00'
 project:
   name: Agent Work Runtime
   external_key: agent-work-runtime
@@ -12,9 +12,9 @@ project:
 current:
   milestone: M8
   work_item: AWR-SEC-001
-  next_action: 读取侧 21 个路径条件已验证；继续约束 YAML 写回、临时文件和恢复文件的目录句柄，完成剩余 5 个写回条件。
+  next_action: 路径合同 26/26 与相关写回检查通过；核对源码和远端回执后完成 SEC-001，进入 SEC-002。
   open_loops:
-  - SEC-001 读取侧已修复解析后叶子/父目录/目录子项被换成 symlink 的越界；26 条组件路径合同中 21 条读取条件通过，5 条写回/恢复条件仍待处理。本条保持 in_progress，尚无完成交付回执。
+  - SEC-001 的 26 个路径条件及 46 项既有提案/任务/分支写回检查已通过，实际 MCP 写回仅修改本条 next_action；正在绑定源码与远端回执，完成状态尚待正式完成命令。
   - P0/P1 功能与接入项全部完成；P8-004 已对齐 8 个 MCP Tools 和 CLI 的状态、版本、缺口及写入回执，进入 M8 安全与后续集中质量阶段。
   - 本项目通过 AWR 实际进行会话、checkpoint/resume、事件追加、MCP 证据登记和完成写回。P8-004 在同一 revision 对照 5 个读取动作，MCP 保持 25 张数据表和源文件不变；54
     项 CLI、10 项 MCP 与 8 组接口 fixture 定向检查通过，均不计 E4。
@@ -1491,13 +1491,16 @@ work_items:
   - crates/awr-runtime/src/mutation_apply.rs
   - Cargo.toml
   - Cargo.lock
+  - crates/awr-runtime/Cargo.toml
+  - crates/awr-cli/Cargo.toml
+  - crates/awr-cli/tests/branch_close_cli.rs
   depends_on:
   - AWR-P8-004
   evidence: []
   id: AWR-SEC-001
   kind: security
   milestone: M8
-  next_action: 读取侧 21 个路径条件已验证；继续约束 YAML 写回、临时文件和恢复文件的目录句柄，完成剩余 5 个写回条件。
+  next_action: 路径合同 26/26 与相关写回检查通过；核对源码和远端回执后完成 SEC-001，进入 SEC-002。
   owner: codex-primary
   priority: P2
   required_for_v1: true

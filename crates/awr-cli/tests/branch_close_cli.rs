@@ -143,10 +143,8 @@ impl Fixture {
             "Source result reconciled; retain this concrete merge report.\n",
         )
         .unwrap();
-        let snapshot = awr_source::Locator::File(path)
-            .read(&self.0, 1048576)
-            .unwrap();
-        json!({"version":1,"outcome":"merged","summary":"Source results are reconciled","merge":{"kind":"source","locator":"merge-report.txt","sha256":snapshot.fingerprint.strip_prefix("sha256:").unwrap()},"open_loops":[]})
+        let fingerprint = awr_source::fingerprint(&fs::read(path).unwrap());
+        json!({"version":1,"outcome":"merged","summary":"Source results are reconciled","merge":{"kind":"source","locator":"merge-report.txt","sha256":fingerprint.strip_prefix("sha256:").unwrap()},"open_loops":[]})
     }
     fn close_at(&self, name: &str, input: &Value, rev: &str) -> Output {
         let path = self.0.join("close-input.json");
