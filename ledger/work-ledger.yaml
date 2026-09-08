@@ -1,8 +1,8 @@
 schema_version: 1
 contract_id: awr-v1
 contract_version: 1.0.0
-ledger_revision: 106
-updated_at: '2026-09-08T13:28:41+08:00'
+ledger_revision: 107
+updated_at: '2026-09-08T13:58:23+08:00'
 project:
   name: Agent Work Runtime
   external_key: agent-work-runtime
@@ -11,13 +11,13 @@ project:
   release_status: not_released
 current:
   milestone: M7
-  work_item: AWR-P8-002
-  next_action: 核对当前 Codex CLI/MCP 支持，提供 session start/bootstrap、context、checkpoint、resume 的可执行接入示例，并区分已验证能力与手动流程。
+  work_item: AWR-P8-003
+  next_action: 核对 Kimi/Grok 当前客户端与工具边界，提供同一工作的 CLI 接续、手动 checkpoint 和明确的验证范围。
   open_loops:
-  - P0 功能和 8 个精简 MCP Tools 已完成；继续 P1 的 Codex、Kimi/Grok 接入及 CLI/MCP 输出对齐，功能阶段之后集中测试、优化和打磨。
-  - 本项目已通过 MCP stdio 实际读取状态、就绪任务、单项工作、上下文和搜索，登记事件与证据，并调用 work transition 完成 P8-001；12 项定向检查通过。
-  - P8-001 的五个只读工具已验证来源文件、全部数据库表、会话与 claim 保持不变；原 p7-001-development 分支关闭历史保留。接下来核对 Codex 实际客户端支持，不把手工示例视为自动生命周期。
-  - 功能定向检查和项目自用不计入 E4；独立复核、集中质量、真实客户端业务场景及发布门槛继续按后续台账执行。
+  - Codex 接入协议、配置模板和 15 步 CLI 示例已交付；继续 Kimi/Grok 接续指南与 CLI/MCP 输出对齐，随后集中质量、优化和打磨。
+  - 本项目实际完成了 P8-002 的 bootstrap/context/checkpoint/resume，保留下一步、未完事项和 claim 到期时间；通过 MCP 绑定证据并完成台账写回。
+  - 本机 Codex 0.153.4 已解析 stdio 配置模板；原生 AWR MCP 连接与自动生命周期未验证。L0 1555 tokens 超过 1000 目标，明确使用更大预算保留硬规则，指标仍待专项测量。
+  - 开发自用、示例与配置检查不计 E4；8 个真实业务场景、10 个指标、独立复核和发布门槛仍未完成。
 milestones:
 - id: M0
   status: completed
@@ -1389,59 +1389,60 @@ work_items:
     evidence_directory: ledger/evidence/AWR-P8-001
     evidence_level: locally_verified
     minimum: 证明本条验收行为；功能阶段运行必要的定向检查，系统测试在 M9 集中执行。
-- id: AWR-P8-002
-  title: Codex 接入协议与使用示例
-  milestone: M7
-  priority: P1
-  kind: feature
-  required_for_v1: true
-  status: in_progress
-  owner: codex-primary
-  depends_on:
-  - AWR-P8-001
-  source_sections:
-  - 30
-  - 48
+- acceptance:
+  - 提供 session start/bootstrap、work compile、checkpoint、resume 的实际客户端使用流程。
+  - 区分已验证接入与文档示例；自动生命周期能力必须以客户端真实支持为准。
+  blocker: null
   deliverables:
   - docs/integrations/codex.md
   - examples/codex/
-  acceptance:
-  - 提供 session start/bootstrap、work compile、checkpoint、resume 的实际客户端使用流程。
-  - 区分已验证接入与文档示例；自动生命周期能力必须以客户端真实支持为准。
-  verification:
-    minimum: 证明本条验收行为；功能阶段运行必要的定向检查，系统测试在 M9 集中执行。
-    evidence_directory: ledger/evidence/AWR-P8-002
-    evidence_level: none
-  evidence: []
-  blocker: null
-  next_action: 核对当前 Codex CLI/MCP 支持，提供 session start/bootstrap、context、checkpoint、resume 的可执行接入示例，并区分已验证能力与手动流程。
-- id: AWR-P8-003
-  title: Kimi / Grok 跨会话使用指南
-  milestone: M7
-  priority: P1
+  depends_on:
+  - AWR-P8-001
+  evidence:
+  - ledger/deliveries/AWR-P8-002.json
+  id: AWR-P8-002
   kind: feature
+  milestone: M7
+  next_action: 核对当前 Codex CLI/MCP 支持，提供 session start/bootstrap、context、checkpoint、resume 的可执行接入示例，并区分已验证能力与手动流程。
+  owner: codex-primary
+  priority: P1
   required_for_v1: true
-  status: planned
-  owner: null
+  source_sections:
+  - 30
+  - 48
+  status: completed
+  title: Codex 接入协议与使用示例
+  verification:
+    evidence_directory: ledger/evidence/AWR-P8-002
+    evidence_level: locally_verified
+    minimum: 证明本条验收行为；功能阶段运行必要的定向检查，系统测试在 M9 集中执行。
+- acceptance:
+  - 提供 CLI 接入与接续同一工作的可执行步骤。
+  - 客户端不具备自动 hook 时给出手动 checkpoint 流程，不宣称未验证自动化。
+  blocker: null
+  deliverables:
+  - docs/integrations/kimi.md
+  - docs/integrations/grok.md
   depends_on:
   - AWR-P8-002
+  evidence: []
+  id: AWR-P8-003
+  kind: feature
+  milestone: M7
+  next_action: 核对 Kimi/Grok 当前客户端与工具边界，提供同一工作的 CLI 接续、手动 checkpoint 和明确的验证范围。
+  owner: codex-primary
+  priority: P1
+  required_for_v1: true
   source_sections:
   - 2
   - 6
   - 48
-  deliverables:
-  - docs/integrations/kimi.md
-  - docs/integrations/grok.md
-  acceptance:
-  - 提供 CLI 接入与接续同一工作的可执行步骤。
-  - 客户端不具备自动 hook 时给出手动 checkpoint 流程，不宣称未验证自动化。
+  status: in_progress
+  title: Kimi / Grok 跨会话使用指南
   verification:
-    minimum: 证明本条验收行为；功能阶段运行必要的定向检查，系统测试在 M9 集中执行。
     evidence_directory: ledger/evidence/AWR-P8-003
     evidence_level: none
-  evidence: []
-  blocker: null
-  next_action: 按交付物实现并验证：Kimi / Grok 跨会话使用指南
+    minimum: 证明本条验收行为；功能阶段运行必要的定向检查，系统测试在 M9 集中执行。
 - id: AWR-P8-004
   title: CLI / MCP 输出与错误契约对齐
   milestone: M7

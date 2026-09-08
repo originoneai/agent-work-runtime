@@ -1,0 +1,88 @@
+{
+  "kind": "implementation",
+  "repository": "https://github.com/originoneai/agent-work-runtime",
+  "source_commit": "57a5ec86ee2e90c89f95b1eb423410220ff1e2ba",
+  "checked_at": "2026-09-08T13:55:04+08:00",
+  "remote_receipt": {
+    "commit": "57a5ec86ee2e90c89f95b1eb423410220ff1e2ba",
+    "url": "https://github.com/originoneai/agent-work-runtime/commit/57a5ec86ee2e90c89f95b1eb423410220ff1e2ba",
+    "verified_at": "2026-09-08T13:55:04+08:00"
+  },
+  "version": 1,
+  "work_item": "AWR-P8-002",
+  "source_sha": "57a5ec86ee2e90c89f95b1eb423410220ff1e2ba",
+  "command": "python3 examples/codex/lifecycle.py --awr target/debug/awr --output <new-directory>",
+  "scope": [
+    "AWR-P8-002"
+  ],
+  "verified_at": 1788846904594,
+  "checks": [
+    {
+      "name": "executable_cli_lifecycle",
+      "passed": true,
+      "result": "15 CLI steps passed on a fresh copy of the basic fixture with an explicit phase/plan identity: init preview/accept, status, claimed session start, bootstrap, L1, checkpoint, resume, recovered context, predecessor inspection, end, successor inspection and Doctor. Next action/open loop survived, claim expiration was preserved, source bytes were unchanged and the incomplete successor released its claim. L0/L1/recovered L1 used 457/1025/1470 tokens; Doctor had no findings. These fixture counts are not V1 benchmark results.",
+      "criteria": [
+        "提供 session start/bootstrap、work compile、checkpoint、resume 的实际客户端使用流程。",
+        "区分已验证接入与文档示例；自动生命周期能力必须以客户端真实支持为准。"
+      ]
+    },
+    {
+      "name": "current_codex_terminal_self_use",
+      "passed": true,
+      "result": "The current Codex desktop task used the CLI on this repository: bootstrap at 1000 failed explicitly with required=1555; an explicit 2000 budget returned complete L0. The consumed L1 used 4979 tokens. Checkpoint/resume produced a distinct live AWR successor and complete 4982-token recovery, retaining the next action/open loop and original claim expiration while preserving all seven authoritative source files. Doctor reported only the expected informational active_session for that exact successor. No second Codex conversation/model was started."
+    },
+    {
+      "name": "local_codex_stdio_configuration",
+      "passed": true,
+      "result": "Inspected codex-cli 0.153.4, mcp add/get help, and parsed the substituted TOML using codex -c overrides with mcp get awr --json. Command, args, cwd and all eight enabled tools matched exactly. No user/project Codex configuration or hooks were installed or modified. Configuration parsing does not establish a native MCP connection."
+    },
+    {
+      "name": "receipt_preservation",
+      "passed": true,
+      "result": "Running the example against its existing output directory failed before any AWR invocation; all 26 retained files remained byte-identical. Earlier fixture drafts exposed a missing phase and a missing referenced plan; both were corrected in the dedicated fixture. Failed-run receipts remain local; their sessions/claims are settled."
+    },
+    {
+      "name": "documentation_and_example_review",
+      "passed": true,
+      "result": "Reviewed command flags against local AWR and Codex implementations/help and the official MCP/hooks pages fetched on 2026-09-08. Python syntax and every local Markdown link passed. The guide distinguishes L0/L1, context completeness from completion, caller-supplied hashes, source freshness, claim TTL, partial resume commits, configuration from activation, manual checkpoints from hooks, and local self-use from E4/release."
+    }
+  ],
+  "artifacts": [
+    "docs/integrations/codex.md",
+    "examples/codex/README.md",
+    "examples/codex/config.toml.example",
+    "examples/codex/AGENTS.snippet.md",
+    "examples/codex/lifecycle.py",
+    "examples/codex/work-ledger.yaml",
+    "ledger/evidence/AWR-P8-002/checks.json",
+    "ledger/evidence/AWR-P8-002/self-use.json"
+  ],
+  "work_items": {
+    "AWR-P8-002": {
+      "acceptance": [
+        {
+          "criterion": "提供 session start/bootstrap、work compile、checkpoint、resume 的实际客户端使用流程。",
+          "passed": true
+        },
+        {
+          "criterion": "区分已验证接入与文档示例；自动生命周期能力必须以客户端真实支持为准。",
+          "passed": true
+        }
+      ]
+    }
+  },
+  "artifact_sha256": {
+    "docs/integrations/codex.md": "9de01d3f5343126d2513122a0d239a1897d54b2c8390c5cf6572a5669b32730d",
+    "examples/codex/README.md": "fbd7fb1aba5ea05f17be34fb4d6fbf7c810b3e0d1e2f5edc941a281e5ac08dc4",
+    "examples/codex/config.toml.example": "f2f10071e80000207627a3c1a0ac12e1399c7d4b53222b4ae80402b35326094f",
+    "examples/codex/AGENTS.snippet.md": "3d148ad6e26169e0924b0826f6cb3325458fc038755340dc7ba482a0ab344384",
+    "examples/codex/lifecycle.py": "9d10f3de4ff664f059833950f8034c4b0af9be75992ab78008bbd3b716e33ff2",
+    "examples/codex/work-ledger.yaml": "9ab68802ca184068d5680ce5a8f5a1cb846b82f7b0c38417a6280f6e91186e57"
+  },
+  "limitations": [
+    "Feature-local integration documentation/example verification and actual Codex terminal development self-use only; centralized QA, E4, metrics and release remain scheduled.",
+    "No native Codex AWR MCP connection or automatic lifecycle hook activation was verified. CLI config parsing and direct stdio protocol evidence are separate layers.",
+    "AWR provider/model fields are metadata. No additional Codex agent/model was launched or configured.",
+    "The project bootstrap exceeded 1000 tokens. The explicit larger budget preserves hard facts and does not pass the V1 bootstrap metric."
+  ]
+}
