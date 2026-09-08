@@ -126,6 +126,7 @@ def run_benchmark(binary, prepared, output):
         document = yaml.safe_load((project / 'work-ledger.yaml').read_text(encoding='utf-8'))
         work = {item['id']: item for item in document['work_items']}
         selected, historical = work[spec['selected_work']], work[spec['unrelated_historical_work']]
+        goal_args = [argument for key in selected.get('goals', []) for argument in ('--goal', key)]
         gate('real_project_provenance', bool(preparation['source_state']['source_worktree_clean']), 'Missing real Git provenance')
         test_references = sorted(set(re.findall(r'`([^`\n ]+-(?:check|test))`', '\n'.join(item['summary'] for item in work.values()))))
         report['scale'] = {key: preparation['admission'][key] for key in
@@ -177,7 +178,7 @@ def run_benchmark(binary, prepared, output):
                     '--type', 'work.progress', '--importance', 'critical', '--summary', historical['title'],
                     '--payload', old_payload, '--expected-revision', baseline_revision)
         context = run('08-current-context', 'context', 'compile', '--work', selected['id'],
-                      '--after-revision', baseline_revision, '--budget', 5000)
+                      *goal_args, '--after-revision', baseline_revision, '--budget', 5000)
         full_history = run('09-explicit-historical-work', 'object', 'show', 'work', historical['id'], '--full')
         full_event = run('10-explicit-history-event', 'event', 'show', event['event']['id'], '--full')
         text = context['work_context']['rendered_context']
@@ -217,7 +218,7 @@ def run_benchmark(binary, prepared, output):
              and repeated['project'] == changed['project'] and facts(repeated, project) == changed_facts,
              'Repeated incremental index was not idempotent')
         final_context = run('13-changed-context', 'context', 'compile', '--work', selected['id'],
-                            '--after-revision', baseline_revision, '--budget', 5000)
+                            *goal_args, '--after-revision', baseline_revision, '--budget', 5000)
         require(control_next in final_context['work_context']['rendered_context'], 'Changed next action missing from new context')
         require(historical['title'] not in json.dumps(final_context, ensure_ascii=False), 'Source delta reintroduced unrelated history')
         rebuilt = output / 'rebuilt-project'
