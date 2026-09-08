@@ -1,0 +1,119 @@
+{
+  "kind": "real_large_ledger_benchmark",
+  "contract_id": "awr-real-large-ledger",
+  "contract_version": "1.0.0",
+  "source_commit": "9aaef279853ef987ca30184b1c650d3eafcb52b6",
+  "checked_at": "2026-09-08T23:55:38+08:00",
+  "environment": {
+    "system": "Darwin",
+    "machine": "arm64",
+    "python": "3.12.11"
+  },
+  "binary_sha256": "2627095b2c3d9a2e9abd26978694672c5f9b7efbeec8b7769af8d1b21d61faeb",
+  "preparation_sha256": "6c0719587da118643980867f9fc8cc28ca91c6c458465921f4e14ef5fdb893bb",
+  "mapping_sha256": "bf600bf0b239f20965b48ddc57c4f5a8682b29d6e440152447473f4d2adcc494",
+  "source_map_sha256": "dc7d027182f6c9081bbd023333259def82058ea2e2ac01ce1d4a7a4dd870a408",
+  "original_source_commit": "4064f57ec9617f53a0c139e729ac572b7c281f6f",
+  "scale": {
+    "source_bytes": 249449,
+    "unique_work_items": 150,
+    "current_work_items": 39,
+    "historical_work_items": 111,
+    "unknown_status_items": 0
+  },
+  "richness": {
+    "milestones": 6,
+    "decisions": 3,
+    "history_sections": 55,
+    "history_tasks": 55,
+    "evidence_references": 72,
+    "distinct_evidence_locators": 63,
+    "history_redactions": 6,
+    "distinct_test_references": 46
+  },
+  "work_read_bytes": 3507,
+  "changed_domain_entities": 1,
+  "original_sources_unchanged": true,
+  "e4_credit": 0,
+  "metric_credit": 0,
+  "model_invocations": 0,
+  "original_backend_commands_executed": 0,
+  "gates": {
+    "real_project_provenance": true,
+    "scale_and_domain_richness": true,
+    "frozen_source_intake": true,
+    "bounded_work_read": true,
+    "unrelated_history_isolation": true,
+    "idempotent_and_incremental_index": true,
+    "projection_rebuild": true,
+    "original_source_unchanged": true,
+    "public_evidence_redaction": true
+  },
+  "passed": true,
+  "command_count": 16,
+  "commands": [
+    "01-init",
+    "02-status",
+    "03-unchanged-reindex",
+    "04-selected-work",
+    "05-explicit-dependency-work",
+    "06-baseline-status",
+    "07-unrelated-history-event",
+    "08-current-context",
+    "09-explicit-historical-work",
+    "10-explicit-history-event",
+    "11-incremental-reindex",
+    "12-repeat-incremental-reindex",
+    "13-changed-context",
+    "14-independent-rebuild",
+    "15-doctor",
+    "16-rebuild-doctor"
+  ],
+  "mapping_limits": {
+    "unresolved_phase_labels": 13,
+    "dependency_graph": "explicit selected-work prerequisites and one additional driver edge; remaining edges unspecified",
+    "historical_verification": "source references retained; original backend validations not rerun"
+  },
+  "scope": "Native local large-ledger benchmark; no real-client E4, token metric, latency metric or release credit.",
+  "private_report_sha256": "0538d18eae662d4b351f7ea392673f9d9d8e03cc4b1a62c2deb21b66bc57f120",
+  "retained_failed_attempts": [
+    {
+      "attempt": 1,
+      "source_commit": "8c80793e98b1487e77aa7cf97842947b807d9224",
+      "report_sha256": "1156eccd9d705740cec3c25e153e0ad058266be15e728474c5bbe73ffe8cd2aa",
+      "cause": "Source history contained configuration/assignment text rejected by the active privacy policy.",
+      "counted_as_pass": false
+    },
+    {
+      "attempt": 2,
+      "source_commit": "add532e5b72980f6513f896d772e295159ac3900",
+      "report_sha256": "c784199ca016150060b219593d23ca7235ca329234bae5e38dda2242aad1e01a",
+      "cause": "Benchmark caller used non-schema progress payload fields.",
+      "counted_as_pass": false
+    },
+    {
+      "attempt": 3,
+      "source_commit": "b1ec063b03e0d249ae0b8a665cf55eca27cfa85d",
+      "report_sha256": "635156552869079cf8032883450fe85fa8eebc6069910e96ce01bd19920c89cd",
+      "cause": "The prepared mapping omitted explicit accepted-decision applicability and context goal selection.",
+      "counted_as_pass": false
+    },
+    {
+      "attempt": 4,
+      "source_commit": "352af3ab787532d8bc257669c798bf23601abaf5",
+      "report_sha256": "171c6f21dc52eec541a97d43a8d4c47951d152307950bd05252af8be921f562f",
+      "cause": "The caller omitted explicit selection of the goal stored inside the ledger.",
+      "counted_as_pass": false
+    },
+    {
+      "attempt": 5,
+      "source_commit": "9aaef279853ef987ca30184b1c650d3eafcb52b6",
+      "report_sha256": "1764426a54a494f7f652f34e4f327d94406c08cd3aff9c19b66d145333671c86",
+      "cause": "An enumerated project-wide decision scope expanded unrelated work identifiers; the native wildcard preserves its scope.",
+      "counted_as_pass": false
+    }
+  ],
+  "work_read_measurement": "work_read_bytes measures the decoded object serialized by json.dumps with ensure_ascii=False; actual native CLI stdout bytes are reported separately.",
+  "work_read_cli_stdout_bytes": 4032,
+  "work_read_cli_stdout_sha256": "91073dfa599f0555124e2e11c275892eb295c7e8f404dc39f8d74a5ece0bc41a"
+}
