@@ -59,7 +59,7 @@ records do not configure or invoke Codex.
 
 These are commands for Codex's terminal tool or the operator's terminal. Run one
 step at a time and inspect the response. The snippets use Bash, `jq`, an already
-initialized project, and a work key selected from `work ready`. Replace the
+initialized project, and a work key selected from `ready`. Replace the
 example identity with the current agent/provider/model. Keep the receipt
 directory in the handoff; it contains local work context.
 
@@ -73,7 +73,7 @@ AWR_NOTES=$(mktemp -d "${TMPDIR:-/tmp}/awr-codex.XXXXXX")
 awrj() { "$AWR_BIN" --project "$AWR_PROJECT" --json "$@"; }
 
 awrj session list --active
-awrj work ready
+awrj ready
 ```
 
 If a session already exists for the current work, inspect it with `session show`
