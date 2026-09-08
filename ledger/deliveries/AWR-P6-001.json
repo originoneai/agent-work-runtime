@@ -1,0 +1,76 @@
+{
+  "kind": "implementation",
+  "repository": "https://github.com/originoneai/agent-work-runtime",
+  "source_commit": "32006d5522dcb6746c99b0871d287efff12c68f4",
+  "checked_at": "2026-09-08T09:13:14+08:00",
+  "remote_receipt": {
+    "commit": "32006d5522dcb6746c99b0871d287efff12c68f4",
+    "url": "https://github.com/originoneai/agent-work-runtime/commit/32006d5522dcb6746c99b0871d287efff12c68f4",
+    "verified_at": "2026-09-08T09:14:17+08:00"
+  },
+  "checks": [
+    {
+      "name": "proposal_store_lifecycle",
+      "passed": true,
+      "result": "cargo test --locked -p awr-store --test mutation: 6/6 passed. Exact source-backed target resolution for all six kinds; immutable versioned binding and creation project revision; controlled draft/ready/approved/conflict/rejected/failed transitions; no Applied action; CAS and receipt failure rollback; cross-project/session and Evidence work binding; Git registration/snapshot identity separation; ID/key collision-safe exact revalidation; legacy rejection; reserved proposal events; review receipts retain creator branch without impersonating creator session."
+    },
+    {
+      "name": "related_store_checks",
+      "passed": true,
+      "result": "cargo test --locked -p awr-store --test mutation --test reconcile --test projection_queries --test evidence --test events --test sessions: 27/27 passed, including the six mutation tests. The Store implementer ran this bounded regression; the primary agent inspected its changes and results."
+    },
+    {
+      "name": "proposal_cli_and_related_checks",
+      "passed": true,
+      "result": "cargo test --locked -p awr-cli --test proposal_cli --test doctor_cli --test session_cli: 16/16 passed (7 proposal, 4 Doctor, 5 session). Covers reviewable patch/metadata, explicit unsupported apply, immutable file/cache facts, unindexed file and mapping conflicts, direct and previously observed source unavailability, no-manifest reads/rejection, CAS and illegal actions, explicit reindex after drift, Markdown manual handling, real Git ref/immutable commit binding and conflict on ref movement."
+    },
+    {
+      "name": "workspace_build_and_format",
+      "passed": true,
+      "result": "cargo build --locked --workspace --all-targets, cargo fmt --all --check and git diff --check passed. No dependency or schema migration. Build reports only unused shared fixture helper methods in the new Store integration-test target."
+    },
+    {
+      "name": "actual_project_self_use",
+      "passed": true,
+      "result": "Used the real P6-001 development session to create, submit and review an actual next_action proposal against this repository ledger. Apply returned proposal_required, retained approved status and recorded an immutable receipt; source bytes and the complete cached work projection stayed unchanged. Explicit rejection closed the trial proposal. A complete 4962-token L1 context supplied the saved checkpoint hash, the session ended normally, and Doctor then returned ok with no findings (7 sources, 2 artifacts)."
+    },
+    {
+      "name": "bounded_review",
+      "passed": true,
+      "result": "Two read-only review passes identified Git registration-vs-snapshot comparison, hidden reindex before CAS, ID/key collision, unavailable-source classification, Evidence work ownership and branch-history gaps. The primary agent and Store implementer fixed these reusable causes; targeted CLI/Store cases cover them. All delegated work was finished and inspected before integration. This review is not independent E4 acceptance."
+    }
+  ],
+  "artifacts": [
+    "crates/awr-core/src/mutation.rs",
+    "crates/awr-core/src/error.rs",
+    "crates/awr-store/src/mutation.rs",
+    "crates/awr-store/src/transaction.rs",
+    "crates/awr-store/src/reconcile.rs",
+    "crates/awr-store/tests/mutation.rs",
+    "crates/awr-source/src/mutation.rs",
+    "crates/awr-runtime/src/mutation.rs",
+    "crates/awr-cli/src/mutation.rs",
+    "crates/awr-cli/tests/proposal_cli.rs",
+    "README.md",
+    "ledger/evidence/AWR-P6-001/checks.json"
+  ],
+  "work_items": {
+    "AWR-P6-001": {
+      "acceptance": [
+        {
+          "criterion": "提案绑定 source、目标、base fingerprint、expected revision、意图与 patch。",
+          "passed": true
+        },
+        {
+          "criterion": "draft/ready/approved/applied/conflict/rejected/failed 状态及动作可区分；不支持写入时 proposal_required。",
+          "passed": true
+        }
+      ]
+    }
+  },
+  "limitations": [
+    "Feature-local validation and actual project self-use only. Full E4 scenarios, centralized regression/security work, benchmarks and release remain on the ledger.",
+    "Applied is a distinct reserved state. No current proposal action writes source files or marks Applied; automatic YAML writeback and post-write projection verification belong to P6-002, and work-domain dependency/evidence guards belong to P6-003. Unsupported application returns proposal_required with an approved retained proposal.",
+    "Reviewer names are caller-reported metadata. Source checks observe the current manifest and bytes but do not lock files; the future writer must repeat fingerprint comparison immediately before its write. Creating and reviewing proposals do not implicitly reindex source facts."
+  ]
+}
