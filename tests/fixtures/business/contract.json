@@ -1,12 +1,12 @@
 {
   "contract_id": "awr-business-fixtures",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "work_item": "AWR-QA-002",
   "target_fixtures": 8,
   "authority": {
     "contract": "contracts/awr-v1.json",
-    "version": "1.0.0",
-    "sha256": "97eda9fffb63cd2aa5348bae5b59af810ce805b8e65d7a9d5770282da638dd63"
+    "version": "1.0.1",
+    "sha256": "3ed22c45aa3fda0964fbcdd089a2d51d9779aee3c21d846f4c1b9d2a863666d9"
   },
   "status_authority": "ledger/work-ledger.yaml",
   "required_gates": [

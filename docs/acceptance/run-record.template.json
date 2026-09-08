@@ -1,6 +1,6 @@
 {
   "template_only": true,
-  "fixture_contract_version": "1.0.0",
+  "fixture_contract_version": "1.0.1",
   "scenario_id": null,
   "run_namespace": null,
   "source_commit": null,

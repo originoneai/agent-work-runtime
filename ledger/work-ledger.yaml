@@ -1,8 +1,8 @@
 schema_version: 1
 contract_id: awr-v1
 contract_version: 1.0.1
-ledger_revision: 171
-updated_at: '2026-09-09T01:19:44+08:00'
+ledger_revision: 173
+updated_at: '2026-09-09T01:22:02+08:00'
 project:
   name: Agent Work Runtime
   external_key: agent-work-runtime
@@ -12,7 +12,7 @@ project:
 current:
   milestone: M9
   work_item: AWR-QA-003
-  next_action: 认领实际客户端业务验收，准备八套独立新项目并核对客户端、授权和复核身份。
+  next_action: 对齐合同 1.0.1 的业务 fixture 绑定，准备八套独立新项目、自然输入与客户端执行方案；落实实际执行者和独立复核授权后逐场验收。
   open_loops:
   - P9-005 六项延迟已通过 AWR 实际完成写回；10/10 指标达标。延迟 p95 为 33.817084–135.13625 ms，首轮严格目标失败仍保留。
   - P9-004 四项正文指标已完成：L0 最大 933、L1 最大 3250、压缩比最低 23.767692、68/68 硬事实；完整 JSON 单独报告，50–100x 尚未达到。
@@ -1714,36 +1714,39 @@ work_items:
     evidence_directory: ledger/evidence/AWR-QA-002
     evidence_level: locally_verified
     minimum: 证明本条验收行为；功能阶段运行必要的定向检查，系统测试在 M9 集中执行。
-- id: AWR-QA-003
-  title: 实际 Agent 客户端完整业务验收
-  milestone: M9
-  priority: P2
-  kind: quality
-  required_for_v1: true
-  status: planned
-  owner: null
+- acceptance:
+  - 8 个场景全部按当前合同从实际用户客户端执行；后端/数据库仅只读取证。
+  - 每个完成场景有独立提交、远端 SHA 和可区分复核者；阻塞/跳过不计完成。
+  blocker: null
+  deliverables:
+  - ledger/evidence/business/
+  - tests/fixtures/business/contract.json
+  - docs/acceptance/run-record.template.json
   depends_on:
   - AWR-QA-001
   - AWR-QA-002
   - AWR-P9-001
   - AWR-P9-002
   - AWR-P9-004
+  evidence: []
+  id: AWR-QA-003
+  kind: quality
+  milestone: M9
+  next_action: 对齐合同 1.0.1 的业务 fixture 绑定，准备八套独立新项目、自然输入与客户端执行方案；落实实际执行者和独立复核授权后逐场验收。
+  owner: codex-primary
+  priority: P2
+  required_for_v1: true
   source_sections:
   - 43
   - 52
   - 55
-  deliverables:
-  - ledger/evidence/business/
-  acceptance:
-  - 8 个场景全部按当前合同从实际用户客户端执行；后端/数据库仅只读取证。
-  - 每个完成场景有独立提交、远端 SHA 和可区分复核者；阻塞/跳过不计完成。
+  status: in_progress
+  title: 实际 Agent 客户端完整业务验收
   verification:
-    minimum: 证明本条验收行为；功能阶段运行必要的定向检查，系统测试在 M9 集中执行。
     evidence_directory: ledger/evidence/AWR-QA-003
     evidence_level: none
-  evidence: []
-  blocker: null
-  next_action: 按交付物实现并验证：实际 Agent 客户端完整业务验收
+    minimum: 证明本条验收行为；功能阶段运行必要的定向检查，系统测试在 M9 集中执行。
+    scope_adjustment: 合同 1.0.1 仅改变延迟准入；业务准备包同步明确绑定该版本及 SHA，八个业务定义、覆盖维度和硬门槛与 1.0.0 完全一致。既有 QA-002 证据保留其历史源码绑定。
 - acceptance:
   - 为 V1 声明支持的三个平台执行构建及核心持久化/路径/CLI 功能验证。
   - 平台、架构、工具链与结果绑定记录；不可用环境保持未验证。
