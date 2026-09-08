@@ -1,8 +1,8 @@
 schema_version: 1
 contract_id: awr-v1
 contract_version: 1.0.0
-ledger_revision: 137
-updated_at: '2026-09-08T19:13:53+08:00'
+ledger_revision: 139
+updated_at: '2026-09-08T19:18:23+08:00'
 project:
   name: Agent Work Runtime
   external_key: agent-work-runtime
@@ -11,11 +11,11 @@ project:
   release_status: not_released
 current:
   milestone: M8
-  work_item: AWR-SEC-004
-  next_action: 20 项隔离合同与 94 项定向检查已通过；绑定源码、远端和本项目进度证据后完成本条，进入数据库异常与 Doctor 检查。
+  work_item: AWR-SEC-005
+  next_action: 建立数据库完整性与 Doctor 故障合同，检查 schema/迁移、失联依赖、孤立产物、来源访问以及崩溃重开与投影重建边界。
   open_loops:
-  - SEC-004 的 1.1.0 合同 20/20 与 94 项定向检查通过，事件 REPLACE 和 CLI/MCP 显式 main 归属缺陷已修复；原始失败回执保留。已在本项目通过 MCP 显式 main 追加观察并写回进度，Session/Claim
-    归属不变。等待源码提交、远端回执与完成写回；均不计 E4。
+  - SEC-004 已完成：1.1.0 隔离合同 20/20 和 94 项检查通过，事件替换与显式 main 归属缺陷已修复；源码 2297a27 的 Git/GitHub 回执已核实。本项目完成写回、Claim 释放和
+    checkpoint/end 后 Doctor 为 0 项，进入 SEC-005。实用与专项矩阵不计 E4。
   - SEC-001 已完成：26/26 路径条件、46 项写回回归和 10 项 MCP 检查通过；源码 217a0b5 的远端回执已核实。实际完成写回、快照核对、checkpoint/end 后 Doctor 为 0 项；进入
     SEC-002。均不计 E4 或正式发布。
   - P0/P1 功能与接入项全部完成；P8-004 已对齐 8 个 MCP Tools 和 CLI 的状态、版本、缺口及写入回执，进入 M8 安全与后续集中质量阶段。
@@ -1609,11 +1609,12 @@ work_items:
   - crates/awr-mcp/src/operations.rs
   depends_on:
   - AWR-P7-003
-  evidence: []
+  evidence:
+  - ledger/deliveries/AWR-SEC-004.json
   id: AWR-SEC-004
   kind: security
   milestone: M8
-  next_action: 20 项隔离合同与 94 项定向检查已通过；绑定源码、远端和本项目进度证据后完成本条，进入数据库异常与 Doctor 检查。
+  next_action: 源码 2297a27 与 Git/GitHub 回执已核实；完成写回、checkpoint/end 和 Doctor 复核已通过，后续工作转入 AWR-SEC-005。
   owner: codex-primary
   priority: P2
   required_for_v1: true
@@ -1622,40 +1623,40 @@ work_items:
   - 25
   - 26
   - 33
-  status: in_progress
+  status: completed
   title: Event 不可变、Claim TTL 与分支隔离加固
   verification:
     evidence_directory: ledger/evidence/AWR-SEC-004
-    evidence_level: none
+    evidence_level: locally_verified
     minimum: 证明本条验收行为；功能阶段运行必要的定向检查，系统测试在 M9 集中执行。
-- id: AWR-SEC-005
-  title: 数据库完整性与 Doctor 故障矩阵
-  milestone: M8
-  priority: P2
-  kind: security
-  required_for_v1: true
-  status: planned
-  owner: null
-  depends_on:
-  - AWR-P5-003
-  - AWR-SEC-003
-  source_sections:
-  - 10
-  - 34
+- acceptance:
+  - 覆盖 schema 不匹配、dangling edge、缺失依赖、孤立产物和无法访问的 Source。
+  - 确认 crash reopen、迁移失败处理及投影重建边界；恢复运行数据不能只依赖原文件。
+  blocker: null
   deliverables:
   - crates/awr-store/
   - crates/awr-cli/
   - tests/recovery/doctor/
-  acceptance:
-  - 覆盖 schema 不匹配、dangling edge、缺失依赖、孤立产物和无法访问的 Source。
-  - 确认 crash reopen、迁移失败处理及投影重建边界；恢复运行数据不能只依赖原文件。
+  depends_on:
+  - AWR-P5-003
+  - AWR-SEC-003
+  evidence: []
+  id: AWR-SEC-005
+  kind: security
+  milestone: M8
+  next_action: 建立数据库完整性与 Doctor 故障合同，检查 schema/迁移、失联依赖、孤立产物、来源访问以及崩溃重开与投影重建边界。
+  owner: codex-primary
+  priority: P2
+  required_for_v1: true
+  source_sections:
+  - 10
+  - 34
+  status: in_progress
+  title: 数据库完整性与 Doctor 故障矩阵
   verification:
-    minimum: 证明本条验收行为；功能阶段运行必要的定向检查，系统测试在 M9 集中执行。
     evidence_directory: ledger/evidence/AWR-SEC-005
     evidence_level: none
-  evidence: []
-  blocker: null
-  next_action: 按交付物实现并验证：数据库完整性与 Doctor 故障矩阵
+    minimum: 证明本条验收行为；功能阶段运行必要的定向检查，系统测试在 M9 集中执行。
 - id: AWR-QA-001
   title: 集中单元、集成与领域回归
   milestone: M9
