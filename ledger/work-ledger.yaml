@@ -1,8 +1,8 @@
 schema_version: 1
 contract_id: awr-v1
 contract_version: 1.0.0
-ledger_revision: 148
-updated_at: '2026-09-08T21:29:25+08:00'
+ledger_revision: 150
+updated_at: '2026-09-08T21:32:40+08:00'
 project:
   name: Agent Work Runtime
   external_key: agent-work-runtime
@@ -11,10 +11,10 @@ project:
   release_status: not_released
 current:
   milestone: M9
-  work_item: AWR-QA-002
-  next_action: 8 套业务材料、40 个独立工作节点及两轮输入更新已通过接入检查；绑定执行源码、远端和本项目写回回执，完成 QA-002 后进入三平台运行验证。
+  work_item: AWR-QA-004
+  next_action: 按当前支持范围建立 macOS、Linux、Windows 的原生构建与持久化、路径、CLI 运行合同，通过 GitHub Actions 执行并绑定平台、工具链、源码及结果。
   open_loops:
-  - QA-002 合同 1.0.0 的 8/8 材料接入、40 个独立工作节点、16 次输入更新和 24 次完整上下文编译通过；编辑冲突得到保护，未预写运行态或产物。本项目 MCP 进度写回与 Doctor 只读复核通过，等待源码、远端与完成回执；真实业务验收仍为
+  - QA-002 已完成：8 套独立业务材料、40 个节点、42 项产物要求与 21 维覆盖已交付；80 次实际接入检查、16 次输入更新与 24 次完整上下文编译通过。QA-004 已认领，接下来验证 macOS、Linux、Windows；真实业务仍为
     0/8。
   - SEC-001 已完成：26/26 路径条件、46 项写回回归和 10 项 MCP 检查通过；源码 217a0b5 的远端回执已核实。实际完成写回、快照核对、checkpoint/end 后 Doctor 为 0 项；进入
     SEC-002。均不计 E4 或正式发布。
@@ -1703,21 +1703,22 @@ work_items:
   depends_on:
   - AWR-P8-003
   - AWR-P8-004
-  evidence: []
+  evidence:
+  - ledger/deliveries/AWR-QA-002.json
   id: AWR-QA-002
   kind: quality
   milestone: M9
-  next_action: 8 套业务材料、40 个独立工作节点及两轮输入更新已通过接入检查；绑定执行源码、远端和本项目写回回执，完成 QA-002 后进入三平台运行验证。
+  next_action: 执行源码 f4ec535、8/8 材料接入及交付 740dca6 的远端回执已核实；完成写回、checkpoint/end 与 Doctor 零项复核通过，后续进入 AWR-QA-004。
   owner: codex-primary
   priority: P2
   required_for_v1: true
   source_sections:
   - 52
-  status: in_progress
+  status: completed
   title: 8 个完整业务场景 Fixture 与覆盖矩阵
   verification:
     evidence_directory: ledger/evidence/AWR-QA-002
-    evidence_level: none
+    evidence_level: locally_verified
     minimum: 证明本条验收行为；功能阶段运行必要的定向检查，系统测试在 M9 集中执行。
 - id: AWR-QA-003
   title: 实际 Agent 客户端完整业务验收
@@ -1749,32 +1750,32 @@ work_items:
   evidence: []
   blocker: null
   next_action: 按交付物实现并验证：实际 Agent 客户端完整业务验收
-- id: AWR-QA-004
-  title: macOS / Linux / Windows 运行验证
-  milestone: M9
-  priority: P2
-  kind: quality
-  required_for_v1: true
-  status: planned
-  owner: null
-  depends_on:
-  - AWR-QA-001
-  source_sections:
-  - 44
-  - 50
+- acceptance:
+  - 为 V1 声明支持的三个平台执行构建及核心持久化/路径/CLI 功能验证。
+  - 平台、架构、工具链与结果绑定记录；不可用环境保持未验证。
+  blocker: null
   deliverables:
   - .github/workflows/
   - tests/platform/
-  acceptance:
-  - 为 V1 声明支持的三个平台执行构建及核心持久化/路径/CLI 功能验证。
-  - 平台、架构、工具链与结果绑定记录；不可用环境保持未验证。
+  depends_on:
+  - AWR-QA-001
+  evidence: []
+  id: AWR-QA-004
+  kind: quality
+  milestone: M9
+  next_action: 按当前支持范围建立 macOS、Linux、Windows 的原生构建与持久化、路径、CLI 运行合同，通过 GitHub Actions 执行并绑定平台、工具链、源码及结果。
+  owner: codex-primary
+  priority: P2
+  required_for_v1: true
+  source_sections:
+  - 44
+  - 50
+  status: in_progress
+  title: macOS / Linux / Windows 运行验证
   verification:
-    minimum: 证明本条验收行为；功能阶段运行必要的定向检查，系统测试在 M9 集中执行。
     evidence_directory: ledger/evidence/AWR-QA-004
     evidence_level: none
-  evidence: []
-  blocker: null
-  next_action: 按交付物实现并验证：macOS / Linux / Windows 运行验证
+    minimum: 证明本条验收行为；功能阶段运行必要的定向检查，系统测试在 M9 集中执行。
 - id: AWR-P9-001
   title: 真实大型 Ledger Benchmark
   milestone: M9
