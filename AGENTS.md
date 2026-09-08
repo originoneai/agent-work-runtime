@@ -2,7 +2,7 @@
 
 Read [docs/RULES.md](docs/RULES.md), [docs/KICKOFF.md](docs/KICKOFF.md), and the current item in [ledger/work-ledger.yaml](ledger/work-ledger.yaml) before substantive work. Use [ledger/README.md](ledger/README.md) for a compact overview.
 
-- The active scope is [contracts/awr-v1.json](contracts/awr-v1.json), version 1.0.0. The ledger is the only task-status authority.
+- The active scope is [contracts/awr-v1.json](contracts/awr-v1.json), version 1.0.1. The ledger is the only task-status authority.
 - Follow feature-first priority P0 → P1 → P2 → P3 when dependencies allow. Implement the functional chain before broad security and regression campaigns.
 - Claim one ready work item before code changes; record its owner, status and next action. Keep changes within its declared deliverables.
 - Apply necessary local correctness checks with each feature. Run the centralized safety, regression and real-client acceptance work at the scheduled milestones.

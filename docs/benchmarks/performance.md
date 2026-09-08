@@ -15,9 +15,9 @@ qualify. The ready query's actual candidate count is reported even when empty.
 After initialization and baseline status/full-work identity checks, report the
 first operation measurement separately, perform three
 additional warmups, then retain all 30 sequential measured calls. The p95 is
-nearest-rank: sorted sample `ceil(0.95 * N) - 1`. Compare it strictly against
-20/20/50/100/100/500 ms for status, work show, ready, context compile, FTS and
-incremental reindex. Any overflow remains visible and prevents a pass. No outlier
+nearest-rank: sorted sample `ceil(0.95 * N) - 1`. Contract 1.0.1 requires each
+of status, work show, ready, context compile, FTS and incremental reindex to stay
+below 1,000 ms. Any admission overflow remains visible and prevents a pass. No outlier
 is discarded, and no repeated run replaces a recorded failure.
 
 File and SQLite pages become warm through normal preceding operations. Every
@@ -51,3 +51,17 @@ raw command receipt and timing; `public-summary.json` includes all measured and
 warmup durations, hardware, counts and hashes. Source/backend/model commands
 from the original project are never executed. These measurements do not grant
 MCP latency, E4, model-client activation or release credit.
+
+## User-directed V1 acceptance adjustment
+
+The original 1.0.0 run measured p95 values of 50.2355 / 43.3085 / 48.834833 /
+118.48125 / 43.391208 / 143.9205 ms, in the operation order above. It met three
+of the original six strict targets and remains recorded as such.
+
+On 2026-09-09 the user accepted this millisecond-scale response time for V1.
+The active scope contract and this benchmark advance to 1.0.1: all six V1
+latency gates are `<1000 ms`. The original 20/20/50/100/100/500 ms numbers remain
+explicit optimization targets, with their own pass/fail fields. No runtime
+optimization was applied in response to this adjustment. Workload, sampling,
+startup accounting, correctness checks and all other V1 gates stay unchanged.
+The old run is retained in `ledger/evidence/AWR-P9-005/baseline.json`.

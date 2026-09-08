@@ -1,8 +1,8 @@
 {
   "schema_version": 1,
   "contract_id": "awr-v1",
-  "version": "1.0.0",
-  "effective_date": "2026-09-08",
+  "version": "1.0.1",
+  "effective_date": "2026-09-09",
   "product": {
     "name": "Agent Work Runtime",
     "repository": "https://github.com/originoneai/agent-work-runtime",
@@ -309,49 +309,55 @@
       "id": "status_latency",
       "title": "status 延迟",
       "comparison": "lt",
-      "target": 20,
+      "target": 1000,
       "unit": "ms",
-      "required_for_v1": true
+      "required_for_v1": true,
+      "optimization_target": 20
     },
     {
       "id": "work_show_latency",
       "title": "work show 延迟",
       "comparison": "lt",
-      "target": 20,
+      "target": 1000,
       "unit": "ms",
-      "required_for_v1": true
+      "required_for_v1": true,
+      "optimization_target": 20
     },
     {
       "id": "ready_latency",
       "title": "ready 延迟",
       "comparison": "lt",
-      "target": 50,
+      "target": 1000,
       "unit": "ms",
-      "required_for_v1": true
+      "required_for_v1": true,
+      "optimization_target": 50
     },
     {
       "id": "context_compile_latency",
       "title": "context compile 延迟",
       "comparison": "lt",
-      "target": 100,
+      "target": 1000,
       "unit": "ms",
-      "required_for_v1": true
+      "required_for_v1": true,
+      "optimization_target": 100
     },
     {
       "id": "fts_latency",
       "title": "FTS 延迟",
       "comparison": "lt",
-      "target": 100,
+      "target": 1000,
       "unit": "ms",
-      "required_for_v1": true
+      "required_for_v1": true,
+      "optimization_target": 100
     },
     {
       "id": "incremental_reindex_latency",
       "title": "普通增量 reindex 延迟",
       "comparison": "lt",
-      "target": 500,
+      "target": 1000,
       "unit": "ms",
-      "required_for_v1": true
+      "required_for_v1": true,
+      "optimization_target": 500
     }
   ],
   "scenarios": [
@@ -1177,6 +1183,14 @@
         "AWR-P9-004",
         "AWR-P9-007"
       ]
+    }
+  ],
+  "change_history": [
+    {
+      "version": "1.0.1",
+      "date": "2026-09-09",
+      "basis": "用户在看到六项 p95 实测后表示：我觉得都是毫秒级的就 OK 了吧？",
+      "decision": "V1 六项核心操作统一以 p95 <1000 ms 为准入；原 20/20/50/100/100/500 ms 保留为非阻断优化目标。功能、业务场景、Token/Recall 和证据范围不变。"
     }
   ]
 }
