@@ -194,7 +194,10 @@ def main():
         row['gates']['separate_processes_and_durable_sessions'] = True
 
         bootstrap = run('11-bootstrap', 'context', 'bootstrap', '--session', nid, '--budget', contract['budgets']['bootstrap'])
-        context = run('12-recompiled-context', 'context', 'compile', '--session', nid, '--budget', contract['budgets']['work_context'])
+        baseline = ['--checkpoint', cp['checkpoint']['id']] if cp else ['--after-revision', resumed['context']['delta_after_revision']]
+        context = run('12-recompiled-context', 'context', 'compile', '--work', e['work'], '--session', nid,
+                      '--agent', 'receiving-editor', '--intent', 'resume', *baseline,
+                      '--budget', contract['budgets']['work_context'])
         require(context == resumed['context'], 'Unchanged context differs across processes')
         current = run('13-current-work', 'object', 'show', 'work', e['work'], '--full')['object']
         text = context['work_context']['rendered_context']
