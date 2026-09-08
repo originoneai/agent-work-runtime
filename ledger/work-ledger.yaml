@@ -1,8 +1,8 @@
 schema_version: 1
 contract_id: awr-v1
 contract_version: 1.0.0
-ledger_revision: 99
-updated_at: '2026-09-08T11:51:02+08:00'
+ledger_revision: 100
+updated_at: '2026-09-08T12:09:39+08:00'
 project:
   name: Agent Work Runtime
   external_key: agent-work-runtime
@@ -11,12 +11,14 @@ project:
   release_status: not_released
 current:
   milestone: M6
-  work_item: AWR-P7-002
-  next_action: 实现指定分支的上下文编译与 fork 后增量，绑定分支和 Source 版本并隔离其他分支运行记录；在保留的真实工作分支上连续自用。
+  work_item: AWR-P7-003
+  next_action: 实现 Git / Source 合并后的重索引、合并摘要与 Branch Close，明确活跃会话、claim 和 open loop 的处置，并在保留分支上继续自用。
   open_loops:
   - 功能实现优先；集中测试、优化和打磨在功能开发后执行。
-  - 本项目已实际使用 Source、Work、Search、Session、Claim、Context、Checkpoint、Resume、Doctor、YAML 写回、work complete 和 Work Branch；继续记录当前开发会话。
-  - P7-001 已交付并核验远端；保留 p7-001-development 工作分支。P7-002 实现指定分支上下文与 fork 后增量，P7-003 再完成 Git 合并后重索引及分支关闭。
+  - 本项目已实际使用 Source、Work、Search、Session、Claim、Context、Checkpoint、Resume、Doctor、YAML 写回、work complete、Work Branch、命名分支上下文与
+    Delta。
+  - P7-002 已交付并核验远端；p7-001-development 保留原 fork=290 和 Git 创建回执，两轮自用会话均已结束。P7-003 接续实现合并后重索引、摘要和关闭；明确遗留 claim/open
+    loop 的处置。
   - 功能定向检查和项目自用不计入 E4。独立复核、集中质量和发布门槛继续按后续台账执行。
 milestones:
 - id: M0
@@ -1296,44 +1298,45 @@ work_items:
     evidence_directory: ledger/evidence/AWR-P7-001
     evidence_level: locally_verified
     minimum: 证明本条验收行为；功能阶段运行必要的定向检查，系统测试在 M9 集中执行。
-- id: AWR-P7-002
-  title: Branch Context 与 Delta
-  milestone: M6
-  priority: P0
-  kind: feature
-  required_for_v1: true
-  status: in_progress
-  owner: codex-primary
-  depends_on:
-  - AWR-P7-001
-  - AWR-P4-002
-  source_sections:
-  - 22
-  - 26
+- acceptance:
+  - 上下文结合 main 当前有效状态与本分支 fork 后增量。
+  - 其他分支运行事件不会混入；分支及来源版本进入 hash 和完整性字段。
+  blocker: null
   deliverables:
   - crates/awr-context/
   - crates/awr-runtime/
   - crates/awr-store/
   - crates/awr-cli/
   - README.md
-  acceptance:
-  - 上下文结合 main 当前有效状态与本分支 fork 后增量。
-  - 其他分支运行事件不会混入；分支及来源版本进入 hash 和完整性字段。
+  depends_on:
+  - AWR-P7-001
+  - AWR-P4-002
+  evidence:
+  - ledger/deliveries/AWR-P7-002.json
+  id: AWR-P7-002
+  kind: feature
+  milestone: M6
+  next_action: 已交付并通过本项目命名分支上下文自用及 work complete 关闭；继续 P7-003 合并摘要与分支关闭。
+  owner: codex-primary
+  priority: P0
+  required_for_v1: true
+  source_sections:
+  - 22
+  - 26
+  status: completed
+  title: Branch Context 与 Delta
   verification:
-    minimum: 证明本条验收行为；功能阶段运行必要的定向检查，系统测试在 M9 集中执行。
     evidence_directory: ledger/evidence/AWR-P7-002
-    evidence_level: none
-  evidence: []
-  blocker: null
-  next_action: 实现指定分支的上下文编译与 fork 后增量，绑定分支和 Source 版本并隔离其他分支运行记录；在保留的真实工作分支上连续自用。
+    evidence_level: locally_verified
+    minimum: 证明本条验收行为；功能阶段运行必要的定向检查，系统测试在 M9 集中执行。
 - id: AWR-P7-003
   title: Git 合并后重索引与 Branch Close
   milestone: M6
   priority: P0
   kind: feature
   required_for_v1: true
-  status: planned
-  owner: null
+  status: in_progress
+  owner: codex-primary
   depends_on:
   - AWR-P7-002
   - AWR-P6-004
@@ -1342,7 +1345,10 @@ work_items:
   - 28
   deliverables:
   - crates/awr-runtime/
+  - crates/awr-store/
+  - crates/awr-core/
   - crates/awr-cli/
+  - README.md
   acceptance:
   - Source/Git 合并后执行重索引、记录合并摘要，再关闭工作分支。
   - 不实现源码合并引擎；遗留 claim/open loop 的处置明确可追溯。
@@ -1352,7 +1358,7 @@ work_items:
     evidence_level: none
   evidence: []
   blocker: null
-  next_action: 按交付物实现并验证：Git 合并后重索引与 Branch Close
+  next_action: 实现 Git / Source 合并后的重索引、合并摘要与 Branch Close，明确活跃会话、claim 和 open loop 的处置，并在保留分支上继续自用。
 - id: AWR-P8-001
   title: 8 个精简 MCP Tools
   milestone: M7

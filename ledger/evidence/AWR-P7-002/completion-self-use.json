@@ -1,0 +1,28 @@
+{
+  "kind": "developer_self_use_completion",
+  "work_item": "AWR-P7-002",
+  "source_commit": "bbcceb58a3dd093829288bca4d79810fe7824a71",
+  "checked_at": "2026-09-08T12:08:30+08:00",
+  "session_id": "01M1ZJ99NV38K4N7WAXFMRVVRM",
+  "proposal_id": "01M1ZK7ZN39PK6F819MDT6YG3M",
+  "completion_event_id": "01M1ZK8026B1C11EMK774T7CCN",
+  "released_claim_id": "01M1ZJ99P9FKJWD1Z4NY21YS00",
+  "source_before_fingerprint": "sha256:8ed6f1962b3ea75c812ef0b1f2eac477f322f4c732df9481bbfb32ab4182fff0",
+  "source_after_fingerprint": "sha256:73155bb246fadb805506372f61a49f6efaa728b8ffd1d8be7833d8beac11789c",
+  "verification_report": "ledger/deliveries/AWR-P7-002.json",
+  "verification_report_sha256": "151638af8a4aceaa50fb13651331f7e6e0721fb1ba94b63f2072415225c6a88e",
+  "context_tokens": 4954,
+  "checkpoint_id": "01M1ZK811QXCB3FNMFFNS7X9H9",
+  "final_project_revision": 330,
+  "source_completed": true,
+  "recovery_snapshots_match": true,
+  "report_unchanged": true,
+  "doctor": {
+    "ok": true,
+    "findings": []
+  },
+  "limitations": [
+    "Actual development self-use of work complete on this repository; not E4 or released product acceptance.",
+    "The final delivery is immutable after registration. Work branch runtime records are preserved for subsequent P7 work."
+  ]
+}
