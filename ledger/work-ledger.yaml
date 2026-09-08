@@ -1,8 +1,8 @@
 schema_version: 1
 contract_id: awr-v1
 contract_version: 1.0.0
-ledger_revision: 123
-updated_at: '2026-09-08T15:52:47+08:00'
+ledger_revision: 126
+updated_at: '2026-09-08T16:37:57+08:00'
 project:
   name: Agent Work Runtime
   external_key: agent-work-runtime
@@ -12,10 +12,10 @@ project:
 current:
   milestone: M8
   work_item: AWR-SEC-002
-  next_action: 来源大小阶段 9/9 条件通过；继续处理事件字段白名单、载荷上限及秘密数据的存储、错误、FTS 和 Context 边界。
+  next_action: 来源与事件条件 14/32 已验证；继续实现 artifact 大小边界、秘密数据拒绝，以及错误、FTS、Context 的输出保护。
   open_loops:
-  - SEC-002 已修复 6 个来源大小复现；32 条组件合同中的 9 个来源条件通过，其余 23 个 artifact、Event Schema 与秘密数据条件仍待验证。本条保持 in_progress；当前自用写回和
-    Context 正常。
+  - SEC-002 当前合同 1.1.0 的 14/32 条件已通过：来源 9 条、事件 5 条；18 条 artifact 与秘密数据边界仍待验证。本条保持 in_progress。事件限制已在本项目通过实际 MCP
+    追加、进度写回和 Context 编译自用。
   - SEC-001 已完成：26/26 路径条件、46 项写回回归和 10 项 MCP 检查通过；源码 217a0b5 的远端回执已核实。实际完成写回、快照核对、checkpoint/end 后 Doctor 为 0 项；进入
     SEC-002。均不计 E4 或正式发布。
   - P0/P1 功能与接入项全部完成；P8-004 已对齐 8 个 MCP Tools 和 CLI 的状态、版本、缺口及写入回执，进入 M8 安全与后续集中质量阶段。
@@ -1530,13 +1530,18 @@ work_items:
   - crates/awr-cli/src/drill.rs
   - crates/awr-cli/Cargo.toml
   - crates/awr-mcp/src/schema.rs
+  - crates/awr-cli/tests/drill_cli.rs
+  - crates/awr-context/tests/recent_delta.rs
+  - docs/reference/event-payloads.md
+  - crates/awr-cli/src/context.rs
+  - crates/awr-cli/src/resume.rs
   depends_on:
   - AWR-P8-004
   evidence: []
   id: AWR-SEC-002
   kind: security
   milestone: M8
-  next_action: 来源大小阶段 9/9 条件通过；继续处理事件字段白名单、载荷上限及秘密数据的存储、错误、FTS 和 Context 边界。
+  next_action: 来源与事件条件 14/32 已验证；继续实现 artifact 大小边界、秘密数据拒绝，以及错误、FTS、Context 的输出保护。
   owner: codex-primary
   priority: P2
   required_for_v1: true

@@ -1,15 +1,20 @@
 {
   "schema_version": 1,
   "contract_id": "awr-security-payloads",
-  "version": "1.0.0",
+  "version": "1.1.0",
   "work_item": "AWR-SEC-002",
   "target_cases": 32,
   "evidence_level": "local_component_and_cli",
   "business_scenarios": false,
   "limits": {
     "markdown_source_bytes": 2097152,
-    "yaml_source_bytes": 4194304
+    "yaml_source_bytes": 4194304,
+    "generic_event_payload_bytes": 1048576,
+    "domain_event_payload_bytes": 16777216,
+    "event_summary_bytes": 8192,
+    "event_type_bytes": 128
   },
+  "event_payload_schema_version": 1,
   "completion": "Only executed, passing conditions count. Source-bound checks are an intermediate stage; this item also requires Event Schema, artifact and secret boundaries. Task status and remote receipt remain in ledger/work-ledger.yaml.",
   "cases": [
     {

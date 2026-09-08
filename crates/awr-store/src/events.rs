@@ -99,6 +99,30 @@ fn has_id(conn: &Connection, table: &str, project: Id, id: Id) -> Result<()> {
     Ok(())
 }
 
+pub(crate) fn bind_generic_payload(
+    conn: &Connection,
+    project: Id,
+    draft: &EventDraft,
+) -> Result<()> {
+    for (field, table) in [
+        ("source_id", "sources"),
+        ("artifact_id", "artifacts"),
+        ("checkpoint_id", "checkpoints"),
+        ("evidence_id", "evidence"),
+    ] {
+        if let Some(value) = draft.payload.get(field) {
+            let id = value
+                .as_str()
+                .and_then(|v| v.parse::<Id>().ok())
+                .ok_or_else(|| {
+                    Error::InvalidInput("generic event reference must be an object ID".into())
+                })?;
+            has_id(conn, table, project, id)?;
+        }
+    }
+    Ok(())
+}
+
 pub(crate) fn bind_event(
     conn: &Connection,
     project: Id,

@@ -125,7 +125,11 @@ pub fn tools() -> Vec<Tool> {
             "Append a bounded generic event. Reserved lifecycle events require their domain operation; payload is data, never executed.",
             object(
                 json!({
-                    "expected_revision":revision(),"work":optional(text()),"session":optional(text()),"branch":branch(),"event_type":text(),"importance":optional(text()),"summary":text(),"payload":{},
+                    "expected_revision":revision(),"work":optional(text()),"session":optional(text()),"branch":branch(),
+                    "event_type":{"type":"string","minLength":1,"maxLength":awr_core::EVENT_TYPE_CAP,"pattern":"^[A-Za-z0-9_.:-]+$"},
+                    "importance":{"type":["string","null"],"enum":["low","normal","high","critical",null]},
+                    "summary":{"type":"string","minLength":1,"maxLength":awr_core::EVENT_SUMMARY_CAP,"description":"Nonempty summary, at most 8192 UTF-8 bytes."},
+                    "payload":optional(awr_core::generic_event_payload_schema()),
                 }),
                 &["expected_revision", "event_type", "summary"],
             ),

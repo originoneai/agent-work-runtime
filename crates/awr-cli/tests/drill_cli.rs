@@ -268,7 +268,7 @@ fn checkpoint_delta_source_history_and_immutable_events_form_a_traceable_chain()
         let mut event = EventDraft::new("work.observed", "Review the changed input");
         event.session_id = Some(sid.parse().unwrap());
         event.importance = "critical".into();
-        event.payload = json!({"body":"RAW_EVENT_BODY".repeat(1000),"source_id":17});
+        event.payload = json!({"body":"RAW_EVENT_BODY".repeat(1000)});
         store
             .append_event(project.id, project.project_revision, event)
             .unwrap()

@@ -67,7 +67,7 @@ fn append(f: &mut Fixture, work: Option<Id>, importance: &str) -> Event {
     let mut draft = EventDraft::new("work.observed", "A concise observation. ".repeat(80));
     draft.work_item_id = work;
     draft.importance = importance.into();
-    draft.payload = serde_json::json!({"private_body":"EVENT_BODY_NOT_A_DELTA".repeat(1000)});
+    draft.payload = serde_json::json!({"body":"EVENT_BODY_NOT_A_DELTA".repeat(1000)});
     let rev = f.store.project(f.project.id).unwrap().project_revision;
     f.store.append_event(f.project.id, rev, draft).unwrap()
 }
@@ -198,7 +198,7 @@ fn delta_tracks_semantic_changes_and_folds_scoped_events_without_bodies() {
             .unwrap()
     );
     assert!(
-        f.store.event(f.project.id, high.id).unwrap().payload["private_body"]
+        f.store.event(f.project.id, high.id).unwrap().payload["body"]
             .as_str()
             .unwrap()
             .contains("EVENT_BODY_NOT_A_DELTA")

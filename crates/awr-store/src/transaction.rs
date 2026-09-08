@@ -7,11 +7,17 @@ use awr_core::{Error, Event, EventDraft, Id, Result, Revision, now_millis};
 use rusqlite::{Connection, OptionalExtension, Transaction, TransactionBehavior, params};
 
 pub(crate) fn insert_event(conn: &Connection, event: &Event) -> Result<()> {
+    let payload = awr_core::checked_event_payload(
+        &event.event_type,
+        &event.importance,
+        &event.summary,
+        &event.payload,
+    )?;
     conn.execute("INSERT INTO events(id,project_id,work_item_id,session_id,branch_id,event_type,importance,summary,payload_json,project_revision,created_at)
         VALUES(?1,?2,?3,?4,?5,?6,?7,?8,?9,?10,?11)",
         params![event.id.to_string(),event.project_id.to_string(),event.work_item_id.map(|id|id.to_string()),
             event.session_id.map(|id|id.to_string()),event.branch_id.map(|id|id.to_string()),event.event_type,
-            event.importance,event.summary,serde_json::to_string(&event.payload)?,sqlite_revision(event.project_revision)?,event.created_at]).map_err(db_error)?;
+            event.importance,event.summary,payload,sqlite_revision(event.project_revision)?,event.created_at]).map_err(db_error)?;
     Ok(())
 }
 
@@ -125,38 +131,18 @@ impl Store {
     ) -> Result<Event> {
         self.runtime_transaction_with_event(project_id, expected_revision, draft, |tx, _, event| {
             crate::events::bind_event(tx, project_id, event, true)?;
-            if event.event_type.starts_with("source.")
-                || event.event_type.starts_with("checkpoint.")
-                || event.event_type.starts_with("proposal.")
-                || event.event_type.starts_with("branch.")
-                || matches!(
-                    event.event_type.as_str(),
-                    "session.started"
-                        | "session.resumed"
-                        | "session.resumed_from"
-                        | "session.ended"
-                        | "session.handoff_received"
-                        | "work.claimed"
-                        | "work.handoff"
-                        | "work.progressed"
-                        | "work.blocked"
-                        | "work.unblocked"
-                        | "work.cancelled"
-                        | "work.reopened"
-                        | "work.completed"
-                        | "claim.released"
-                        | "claim.expired"
-                        | "session.interrupted"
-                        | "checkpoint.abandoned"
-                        | "branch.current_cleared"
-                        | "artifact.recorded"
-                        | "evidence.recorded"
-                )
-            {
+            if awr_core::is_domain_event_type(&event.event_type) {
                 return Err(Error::InvalidInput(
                     "runtime event type is reserved; use the corresponding domain operation".into(),
                 ));
             }
+            awr_core::checked_event_payload(
+                &event.event_type,
+                &event.importance,
+                &event.summary,
+                &event.payload,
+            )?;
+            crate::events::bind_generic_payload(tx, project_id, event)?;
             Ok(())
         })
         .map(|(_, event)| event)

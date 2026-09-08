@@ -1,0 +1,529 @@
+{
+  "work_item": "AWR-SEC-002",
+  "stage": "event_schema",
+  "item_completed": false,
+  "checked_at": "2026-09-08T16:37:57+08:00",
+  "baseline_source_commit": "3678c41b93e84383b8c25b87c635db9572b25501",
+  "baseline": {
+    "test_functions": 6,
+    "failed": 6,
+    "command": [
+      "cargo",
+      "test",
+      "-p",
+      "awr-store",
+      "--test",
+      "security_events",
+      "--locked",
+      "--",
+      "--nocapture"
+    ],
+    "exit_code": 101,
+    "log": ".local/sec002-events-before.log",
+    "sha256": "8af0cbb8cc2ed0896b2f21e6bcafe509c1005632dc884f19c3bf35be4d45c0a7",
+    "observation": "Oversized generic and generated domain payloads, oversized summaries, unknown fields and incorrect values were accepted before the common final-insert guard."
+  },
+  "contract_id": "awr-security-payloads",
+  "contract_version": "1.1.0",
+  "contract_target": 32,
+  "verified_conditions": [
+    "direct_parser_limit",
+    "directory_source_limit",
+    "event_atomic_rejection",
+    "event_field_allowlist",
+    "event_field_types",
+    "event_payload_limit",
+    "event_summary_limit",
+    "git_source_limit",
+    "markdown_limit",
+    "reader_limit_validation",
+    "source_drill_limit",
+    "source_mutation_limit",
+    "source_refresh_limit",
+    "yaml_limit"
+  ],
+  "pending_conditions": [
+    "artifact_import_limit",
+    "artifact_read_limit",
+    "artifact_secret_rejection",
+    "checkpoint_secret_rejection",
+    "context_secret_withholding",
+    "environment_rejection",
+    "event_secret_rejection",
+    "evidence_secret_rejection",
+    "fts_secret_redaction",
+    "known_token_patterns",
+    "manifest_secret_rejection",
+    "ordinary_text_allowed",
+    "private_prompt_rejection",
+    "source_diagnostic_no_secret",
+    "source_projection_secret_guard",
+    "source_secret_rejection",
+    "unicode_secret_labels",
+    "untrusted_field_diagnostic_no_echo"
+  ],
+  "event_checks": {
+    "work_item": "AWR-SEC-002",
+    "contract_id": "awr-security-payloads",
+    "contract_version": "1.1.0",
+    "contract_sha256": "5e668172e1e8b88a01632932d4e9f6b7103c97e70e20212957aefe07c4261914",
+    "checked_at": "2026-09-08T16:35:29+08:00",
+    "platform": "macOS-26.5.2-arm64-arm-64bit-Mach-O",
+    "stage": "event_schema",
+    "stage_target": 5,
+    "contract_target": 32,
+    "stage_passed": true,
+    "item_completed": false,
+    "e4_completed": 0,
+    "runs": [
+      {
+        "command": [
+          "cargo",
+          "test",
+          "-p",
+          "awr-store",
+          "--test",
+          "security_events",
+          "--locked",
+          "--",
+          "--nocapture"
+        ],
+        "exit_code": 0,
+        "passed": true,
+        "test_functions_passed": 7,
+        "cases_emitted": [
+          "event_atomic_rejection",
+          "event_field_allowlist",
+          "event_field_types",
+          "event_payload_limit",
+          "event_summary_limit"
+        ],
+        "log": ".local/sec002-events-final-v2-1.log",
+        "log_sha256": "f833a17c5afb1fdd8f891ffbc87a278465c81327499d236c8d29a2d902e8341a",
+        "log_retention": "local_only"
+      },
+      {
+        "command": [
+          "/opt/homebrew/opt/python@3.14/bin/python3.14",
+          "tests/security/payloads/events_cli_mcp.py"
+        ],
+        "exit_code": 0,
+        "passed": true,
+        "test_functions_passed": 3,
+        "cases_emitted": [],
+        "log": ".local/sec002-events-final-v2-2.log",
+        "log_sha256": "59fac08d4bf308ef4638d2caaf53235a5d2a058d313fdcb8285abe28b96c006b",
+        "log_retention": "local_only"
+      }
+    ],
+    "verified_conditions": [
+      "event_atomic_rejection",
+      "event_field_allowlist",
+      "event_field_types",
+      "event_payload_limit",
+      "event_summary_limit"
+    ],
+    "pending_conditions": [
+      "artifact_import_limit",
+      "artifact_read_limit",
+      "artifact_secret_rejection",
+      "checkpoint_secret_rejection",
+      "context_secret_withholding",
+      "direct_parser_limit",
+      "directory_source_limit",
+      "environment_rejection",
+      "event_secret_rejection",
+      "evidence_secret_rejection",
+      "fts_secret_redaction",
+      "git_source_limit",
+      "known_token_patterns",
+      "manifest_secret_rejection",
+      "markdown_limit",
+      "ordinary_text_allowed",
+      "private_prompt_rejection",
+      "reader_limit_validation",
+      "source_diagnostic_no_secret",
+      "source_drill_limit",
+      "source_mutation_limit",
+      "source_projection_secret_guard",
+      "source_refresh_limit",
+      "source_secret_rejection",
+      "unicode_secret_labels",
+      "untrusted_field_diagnostic_no_echo",
+      "yaml_limit"
+    ],
+    "missing_stage_conditions": [],
+    "unknown_conditions": []
+  },
+  "source_bounds_recheck": {
+    "work_item": "AWR-SEC-002",
+    "contract_id": "awr-security-payloads",
+    "contract_version": "1.1.0",
+    "contract_sha256": "5e668172e1e8b88a01632932d4e9f6b7103c97e70e20212957aefe07c4261914",
+    "checked_at": "2026-09-08T16:35:35+08:00",
+    "platform": "macOS-26.5.2-arm64-arm-64bit-Mach-O",
+    "stage": "source_bounds",
+    "stage_target": 9,
+    "contract_target": 32,
+    "stage_passed": true,
+    "item_completed": false,
+    "e4_completed": 0,
+    "runs": [
+      {
+        "command": [
+          "cargo",
+          "test",
+          "-p",
+          "awr-source",
+          "--test",
+          "security_source_payloads",
+          "--locked",
+          "--",
+          "--nocapture"
+        ],
+        "exit_code": 0,
+        "passed": true,
+        "test_functions_passed": 6,
+        "cases_emitted": [
+          "direct_parser_limit",
+          "directory_source_limit",
+          "git_source_limit",
+          "markdown_limit",
+          "reader_limit_validation",
+          "source_refresh_limit",
+          "yaml_limit"
+        ],
+        "log": ".local/sec002-source-bounds-event-recheck-v2-1.log",
+        "log_sha256": "a3e49a7c2abc48442ac5dd06301c763c5b322ae0e59bb60ddba516f144db6725",
+        "log_retention": "local_only"
+      },
+      {
+        "command": [
+          "cargo",
+          "test",
+          "-p",
+          "awr-cli",
+          "--test",
+          "security_source_bounds",
+          "--locked",
+          "--",
+          "--nocapture"
+        ],
+        "exit_code": 0,
+        "passed": true,
+        "test_functions_passed": 2,
+        "cases_emitted": [
+          "source_drill_limit",
+          "source_mutation_limit"
+        ],
+        "log": ".local/sec002-source-bounds-event-recheck-v2-2.log",
+        "log_sha256": "b8e2aa5865b4e1aeedee031e0c37bd658e8ab620569e13beb2f9059d0ddebc06",
+        "log_retention": "local_only"
+      }
+    ],
+    "verified_conditions": [
+      "direct_parser_limit",
+      "directory_source_limit",
+      "git_source_limit",
+      "markdown_limit",
+      "reader_limit_validation",
+      "source_drill_limit",
+      "source_mutation_limit",
+      "source_refresh_limit",
+      "yaml_limit"
+    ],
+    "pending_conditions": [
+      "artifact_import_limit",
+      "artifact_read_limit",
+      "artifact_secret_rejection",
+      "checkpoint_secret_rejection",
+      "context_secret_withholding",
+      "environment_rejection",
+      "event_atomic_rejection",
+      "event_field_allowlist",
+      "event_field_types",
+      "event_payload_limit",
+      "event_secret_rejection",
+      "event_summary_limit",
+      "evidence_secret_rejection",
+      "fts_secret_redaction",
+      "known_token_patterns",
+      "manifest_secret_rejection",
+      "ordinary_text_allowed",
+      "private_prompt_rejection",
+      "source_diagnostic_no_secret",
+      "source_projection_secret_guard",
+      "source_secret_rejection",
+      "unicode_secret_labels",
+      "untrusted_field_diagnostic_no_echo"
+    ],
+    "missing_stage_conditions": [],
+    "unknown_conditions": []
+  },
+  "related_checks": {
+    "stage": "event_schema",
+    "checked_at": "2026-09-08T16:35:23+08:00",
+    "passed": true,
+    "prior_failed_run": {
+      "command": [
+        "cargo",
+        "test",
+        "-p",
+        "awr-cli",
+        "--test",
+        "drill_cli",
+        "--test",
+        "session_cli",
+        "--test",
+        "resume_cli",
+        "--test",
+        "branch_cli",
+        "--test",
+        "branch_close_cli",
+        "--test",
+        "proposal_cli",
+        "--test",
+        "work_action_cli",
+        "--test",
+        "work_complete_cli",
+        "--test",
+        "records_cli",
+        "--locked"
+      ],
+      "exit_code": 101,
+      "test_functions_passed": 46,
+      "log": ".local/sec002-events-related-3.log",
+      "log_sha256": "20c70b1b6a2580c99aeee2eef3b4133243d280b16ad4d64cc7168a020b026584"
+    },
+    "integration_repair": "ledger/evidence/AWR-SEC-002/resume-context-envelope.json",
+    "prior_domain_compatibility_failure": ".local/sec002-events-related-final-2.log",
+    "runs": [
+      {
+        "command": [
+          "cargo",
+          "build",
+          "-p",
+          "awr-cli",
+          "-p",
+          "awr-mcp",
+          "--locked"
+        ],
+        "exit_code": 0,
+        "test_functions_passed": 0,
+        "log": ".local/sec002-events-related-final-v2-1.log",
+        "log_sha256": "282c445fb44bbcd339b22ff39016bd5e622312b88bbac14cee5bd104a73916d9"
+      },
+      {
+        "command": [
+          "python3",
+          "tests/security/payloads/verify_events.py",
+          "--report",
+          ".local/sec002-events-final-v2.json"
+        ],
+        "exit_code": 0,
+        "test_functions_passed": 0,
+        "log": ".local/sec002-events-related-final-v2-2.log",
+        "log_sha256": "94c5f7aecaab4ba0a83b2a08c0824ddb625db389fc192b56ad4ab74b39ea9852"
+      },
+      {
+        "command": [
+          "python3",
+          "tests/security/payloads/verify_source_bounds.py",
+          "--report",
+          ".local/sec002-source-bounds-event-recheck-v2.json"
+        ],
+        "exit_code": 0,
+        "test_functions_passed": 0,
+        "log": ".local/sec002-events-related-final-v2-3.log",
+        "log_sha256": "9928dad5b1f5615c44c53940be315ccb70592f663fe5a3a4c3004228b4340a35"
+      },
+      {
+        "command": [
+          "cargo",
+          "test",
+          "-p",
+          "awr-store",
+          "-p",
+          "awr-source",
+          "-p",
+          "awr-context",
+          "-p",
+          "awr-runtime",
+          "--tests",
+          "--locked"
+        ],
+        "exit_code": 0,
+        "test_functions_passed": 88,
+        "log": ".local/sec002-events-related-final-v2-4.log",
+        "log_sha256": "990aa86023b2ba01da707440bbb2c8cdae006c14a8c5c402fc728bb171e37b8f"
+      },
+      {
+        "command": [
+          "cargo",
+          "test",
+          "-p",
+          "awr-cli",
+          "--test",
+          "drill_cli",
+          "--test",
+          "session_cli",
+          "--test",
+          "resume_cli",
+          "--test",
+          "context_compile_cli",
+          "--test",
+          "branch_cli",
+          "--test",
+          "branch_close_cli",
+          "--test",
+          "proposal_cli",
+          "--test",
+          "work_action_cli",
+          "--test",
+          "work_complete_cli",
+          "--test",
+          "records_cli",
+          "--locked"
+        ],
+        "exit_code": 0,
+        "test_functions_passed": 83,
+        "log": ".local/sec002-events-related-final-v2-5.log",
+        "log_sha256": "1e8c7937a44b4666880d880c82f7f169725716a79aa8c9cc7fbb0959537176db"
+      },
+      {
+        "command": [
+          "cargo",
+          "test",
+          "-p",
+          "awr-mcp",
+          "--test",
+          "stdio",
+          "--locked"
+        ],
+        "exit_code": 0,
+        "test_functions_passed": 10,
+        "log": ".local/sec002-events-related-final-v2-6.log",
+        "log_sha256": "bbe44599e6f4031113433009bde81261ae2e8c5e47fd76902fac553f525e0f83"
+      },
+      {
+        "command": [
+          "python3",
+          "crates/awr-mcp/tests/cli_parity.py",
+          "--awr",
+          "target/debug/awr",
+          "--mcp",
+          "target/debug/awr-mcp",
+          "--report",
+          ".local/sec002-events-cli-parity.json"
+        ],
+        "exit_code": 0,
+        "test_functions_passed": 0,
+        "log": ".local/sec002-events-related-final-v2-7.log",
+        "log_sha256": "018dbac15f2f65a8382791c0da3a21ba61867a20e68c78b0f18911962099dc48"
+      },
+      {
+        "command": [
+          "cargo",
+          "check",
+          "--workspace",
+          "--all-targets",
+          "--locked"
+        ],
+        "exit_code": 0,
+        "test_functions_passed": 0,
+        "log": ".local/sec002-events-related-final-v2-8.log",
+        "log_sha256": "e42e4a8aaee338012ceb851a4305842119562722e8ddaee905b69cf5187a63ca"
+      },
+      {
+        "command": [
+          "cargo",
+          "fmt",
+          "--all",
+          "--check"
+        ],
+        "exit_code": 0,
+        "test_functions_passed": 0,
+        "log": ".local/sec002-events-related-final-v2-9.log",
+        "log_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      {
+        "command": [
+          "git",
+          "diff",
+          "--check"
+        ],
+        "exit_code": 0,
+        "test_functions_passed": 0,
+        "log": ".local/sec002-events-related-final-v2-10.log",
+        "log_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      }
+    ]
+  },
+  "cli_mcp_parity": {
+    "suite": "cli-mcp-parity",
+    "tests_run": 8,
+    "passed": true,
+    "failures": [],
+    "errors": [],
+    "tools_exercised": [
+      "awr_context_compile",
+      "awr_event_append",
+      "awr_evidence_record",
+      "awr_project_status",
+      "awr_search",
+      "awr_work_get",
+      "awr_work_ready",
+      "awr_work_transition"
+    ],
+    "binaries": {
+      "/Users/mac/Documents/originone/agent-work-running/target/debug/awr": "83d4e80babe42de3ef46e5c9b10329358d7ad5f8f6bb0a05e2a44170b755338d",
+      "/Users/mac/Documents/originone/agent-work-running/target/debug/awr-mcp": "1881a49cae7a1c777a73e4076414a56ae6cb580c08afb0850c07c62c9e0caa19"
+    },
+    "evidence_level": "local_cli_and_mcp_stdio_only",
+    "model_calls": 0
+  },
+  "actual_project_use": {
+    "session_id": "01M1ZZ5JD41WCQB4NPFSQA8D8D",
+    "observation_event_id": "01M202NBV7K8285C6BP3HQSHE1",
+    "progress_event_id": "01M202NC5NTX5HYGMDW93ES41H",
+    "project_revision": 526,
+    "exact_source_progress_change": true,
+    "recovery_snapshots_match": true,
+    "source_before_fingerprint": "sha256:6d9ece9c76ef41616df6ac9d2f6bc851e409a09e4e7337bb0aa3b0a63c922efb",
+    "source_after_fingerprint": "sha256:f42ffa4d0d8caa6259e3643de91beae6419ccd01a4e9f5a8d88f95e1e7ce6952",
+    "context_complete": true,
+    "context_tokens": 4954,
+    "context_hash": "e1c5f84f19b95db6b998a467b4ca0dc24530bc71c60bcecf40a250cda01ce79e",
+    "doctor": {
+      "ok": true,
+      "expected_findings": [
+        "active_session"
+      ]
+    }
+  },
+  "artifact_sha256": {
+    "crates/awr-core/src/lib.rs": "087b0fc78f028739214d61716e64fe2030829e0e6d965bc8559a69ad82866385",
+    "crates/awr-core/src/event_payload.rs": "0b0f05f5aa4b1a9986049ce5557931f26157549c6ab8d1e06a27e420f14061bd",
+    "crates/awr-store/Cargo.toml": "c9446580fb22adff9e9e927b22de2301193e92b649a393c03c20c84bfe19846f",
+    "crates/awr-store/src/transaction.rs": "4f3cc6084337efb569331287dd8d78983d4bf6e1b63784193cdeac56f279668b",
+    "crates/awr-store/src/events.rs": "eee665f98d35b88734f1ed8f45ce58a5c1d066fb3e76beab236336f012e56f73",
+    "crates/awr-mcp/src/schema.rs": "38e5a13bdba3f251b1882eea86b530dec1732c1ec7ada103d7dc6000405b635c",
+    "crates/awr-cli/tests/drill_cli.rs": "9ff6e27bfda49f00c582d569aee1f83f6fce6df53970c2dc9aceb12dabefdfa2",
+    "crates/awr-context/tests/recent_delta.rs": "f71a063a8ecebc6920951607858404aabe01f002302df9fad1e33facf87c239d",
+    "tests/security/payloads/contract.json": "5e668172e1e8b88a01632932d4e9f6b7103c97e70e20212957aefe07c4261914",
+    "tests/security/payloads/README.md": "2e13ffa5461cd26f5ba12fa0aea540c9f53b00989ba9f10468d1b8621dcfb4c7",
+    "tests/security/payloads/events.rs": "1822df091d906e3385a2631ac9ffc92fe2711028486cd63df941ab26ea9bc238",
+    "tests/security/payloads/events_cli_mcp.py": "64298de04f9f0891b6b6f5bcb216e98299caa8400546d67165784d004bed425c",
+    "tests/security/payloads/verify_events.py": "1940de29491b8febad79a058b58ed9f5b73b6a02063c11e31c60990be1fe2e92",
+    "docs/reference/event-payloads.md": "5b6eb258f5b369c11c1579a2cb37f39c42b62b8e01991f4710fbceb3d026bb31"
+  },
+  "e4_completed": 0,
+  "limitations": [
+    "This is an intermediate event-schema stage. The item remains in progress; artifact and secret boundaries are pending.",
+    "Test function counts overlap across stage and regression runs. Only the 14 distinct contract IDs count toward the 32 conditions.",
+    "The MCP total argument envelope is capped at 1 MiB, so a CLI-accepted exact 1 MiB payload does not fit that envelope; the transport test verifies this distinction.",
+    "Required domain fields permit existing optional expiry and unassigned handoff semantics. Existing typed lifecycle, recovery and CLI/MCP behavior was checked after correcting those validation assumptions.",
+    "The previous recent-delta private_body fixture was changed to the allowed body field; both explicit-body access and default-context exclusion assertions remain.",
+    "Local macOS component, CLI/MCP stdio and current-project development use are not native-client E4, platform validation or a released product."
+  ]
+}
