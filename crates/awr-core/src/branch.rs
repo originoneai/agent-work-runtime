@@ -67,6 +67,8 @@ pub struct BranchRecord {
     /// Missing for legacy rows; a stored ref without this receipt is not verified Git data.
     pub git_binding: Option<GitRefBinding>,
     pub creation_event_id: Option<Id>,
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub closure: Option<crate::BranchClosureRecord>,
 }
 #[derive(Debug, Clone, Serialize)]
 pub struct BranchPage {

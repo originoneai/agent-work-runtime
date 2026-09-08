@@ -1,5 +1,6 @@
 //! SQLite persistence. Callers use domain operations, never an exposed SQL handle.
 mod branch;
+mod branch_close;
 mod catalog;
 mod checkpoint;
 mod checkpoint_save;

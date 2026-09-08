@@ -23,7 +23,7 @@ fn row(r: &rusqlite::Row<'_>) -> rusqlite::Result<Branch> {
         revision: revision_at(r, 7)?,
     })
 }
-fn branch_at(conn: &Connection, project: Id, id: Id) -> Result<Branch> {
+pub(crate) fn branch_at(conn: &Connection, project: Id, id: Id) -> Result<Branch> {
     conn.query_row(
         &format!("SELECT {COLUMNS} FROM branches WHERE project_id=?1 AND id=?2"),
         params![project.to_string(), id.to_string()],
@@ -33,7 +33,7 @@ fn branch_at(conn: &Connection, project: Id, id: Id) -> Result<Branch> {
     .map_err(db_error)?
     .ok_or_else(|| Error::NotFound(format!("work branch {id}")))
 }
-fn current_at(conn: &Connection, project: Id) -> Result<Option<Id>> {
+pub(crate) fn current_at(conn: &Connection, project: Id) -> Result<Option<Id>> {
     conn.query_row(
         "SELECT current_branch_id FROM projects WHERE id=?1",
         [project.to_string()],
@@ -41,7 +41,7 @@ fn current_at(conn: &Connection, project: Id) -> Result<Option<Id>> {
     )
     .map_err(db_error)
 }
-fn actor_reason(actor: &str, reason: &str) -> Result<()> {
+pub(crate) fn actor_reason(actor: &str, reason: &str) -> Result<()> {
     if actor.trim().is_empty()
         || actor.len() > 256
         || reason.trim().is_empty()
@@ -85,12 +85,13 @@ fn record_at(conn: &Connection, project: Id, id: Id) -> Result<BranchRecord> {
         (None, None)
     };
     Ok(BranchRecord {
-        branch,
+        branch: branch.clone(),
         git_binding,
         creation_event_id,
+        closure: crate::branch_close::closure_at(conn, project, &branch)?,
     })
 }
-fn require_usable(
+pub(crate) fn require_usable(
     conn: &Connection,
     project: Id,
     id: Option<Id>,

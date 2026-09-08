@@ -167,7 +167,7 @@ awr branch switch main --actor reviewer --reason "Return to main work" --expecte
 
 Switching changes the default for later operations. It reports active sessions and live claims retained on the previous branch; it does not transfer or close them. New CLI sessions inherit the selected branch. Session events and claims keep that session's branch even if the default changes later; evidence registration inherits the current branch when `branch_id` is omitted, while an explicit ID or `null` binds the named work branch or main. New sessions, claims, evidence and raw process events require an active branch. Cleanup and historical reads remain available for retained records. L1 contexts bind the requested branch in their identity/hash and process delta; an explicit session must match that branch. Use `branch context <name> --session <id>` to read another branch's session without switching.
 
-Sources, projected work state, rules, decisions and the project revision are shared across work branches. Runtime records are branch-bound, and separate work branches can hold separate claims on the same projected task. Writing that shared source task still rejects any other session's live claim across branches; switching alone does not resolve competing occupancy. Evidence currency compares both branch and source SHA, so an explicitly inspected report from another branch is historical. L1 compilation includes runtime evidence only from the requested branch. Source-projected evidence remains part of the shared current authority and retains its branch/SHA currency assessment. Explicit evidence inspection and the standalone related-work inspector can still compare historical branch reports; a historical report does not verify the requested branch. The branch merge/close workflow is the following P7 delivery.
+Sources, projected work state, rules, decisions and the project revision are shared across work branches. Runtime records are branch-bound, and separate work branches can hold separate claims on the same projected task. Writing that shared source task still rejects any other session's live claim across branches; switching alone does not resolve competing occupancy. Evidence currency compares both branch and source SHA, so an explicitly inspected report from another branch is historical. L1 compilation includes runtime evidence only from the requested branch. Source-projected evidence remains part of the shared current authority and retains its branch/SHA currency assessment. Explicit evidence inspection and the standalone related-work inspector can still compare historical branch reports; a historical report does not verify the requested branch. Branch close records an explicit merge/abandonment outcome and preserves the original runtime history.
 
 
 Read a branch without changing the current selection:
@@ -187,6 +187,49 @@ awr context compile --branch <branch-id> --work <work-key>
 `completeness.branch_context` records branch ID, branch revision, parent, fork revision and the immutable creation/Git binding when available. Branch metadata, current source versions/fingerprints and the effective delta baseline participate in the context hash. A legacy branch without a creation receipt retains its declared fork and an unverified Git observation. Closed, unknown or inconsistent branches cannot produce current execution context. Missing/stale required sources return incomplete diagnostics; hard facts exceeding the budget return an explicit error.
 
 Ordinary `context compile --branch <id>` keeps checkpoint/session delta selection on that branch. Without `--branch` it uses the current default. An explicit checkpoint or revision cannot precede fork; an automatic window is bounded by fork. Named `branch context` and `branch delta` always use fork and therefore do not accept checkpoint/revision overrides.
+
+
+Close a reviewed work branch after the external merge:
+
+```sh
+awr source reindex
+awr --json branch show report-review --close-plan
+awr branch close report-review --into main --input close.json --actor reviewer --reason "Record the reviewed delivery" --expected-revision <revision>
+awr --json branch show report-review
+```
+
+A Git-based `close.json` names the actual source tip and checked-out merge target. AWR resolves both refs, verifies that the source is an ancestor of the target, verifies HEAD equals the target and checks that tracked files have no uncommitted changes. Fast-forward, merge-commit and already-integrated results are accepted; an unmerged source tip is rejected. AWR performs no Git merge, checkout, fetch, source write or source-work completion. Untracked files are outside the Git clean-tree check; the independently refreshed Source fingerprints are recorded separately.
+
+```json
+{
+  "version": 1,
+  "outcome": "merged",
+  "summary": "The reviewed branch result is integrated into the main source",
+  "merge": {"kind": "git", "source_ref": "refs/heads/report-result", "target_ref": "refs/heads/main"},
+  "open_loops": []
+}
+```
+
+For a project using an external Source merge instead of Git, use `"merge": {"kind": "source", "locator": "reports/source-merge.json", "sha256": "<64-hex-file-hash>"}`. The report must be a nonempty project file of at most 1 MiB. AWR verifies its bytes/hash and records the reference; it does not interpret the report as proof of business quality. Intentional abandonment uses `"outcome": "abandoned"` and `"merge": null`, with a summary explaining the disposition. Both outcomes refresh and bind current Sources.
+
+The close plan is a read-only DB snapshot with the exact revision, active-status claims, branch sessions, incomplete checkpoint saves, pending proposals and latest-checkpoint open loops. Active sessions must first end or hand off; even an expired but unsettled claim requires explicit cleanup. Unfinished checkpoint attempts must complete or be abandoned, and draft/ready/approved source proposals must be settled. Closing never silently releases a claim, stops an agent, discards a proposal or declares a source task completed.
+
+Every listed open loop needs its exact checkpoint ID, zero-based index and original text in `open_loops`. Use either a resolved disposition with a reason and references, or carry it forward to a current nonterminal source work item:
+
+```json
+{
+  "checkpoint_id": "<checkpoint-id-from-close-plan>",
+  "index": 0,
+  "text": "<exact-open-loop-text-from-close-plan>",
+  "resolution": {"outcome": "carry_forward", "reason": "Continue this follow-up explicitly", "work_item_key": "<target-work-key>"}
+}
+```
+
+A resolved disposition is `"resolution": {"outcome": "resolved", "reason": "Reviewed the recorded result", "references": ["<report-or-receipt-reference>"]}`. These are explicit operator dispositions, not automated certification of their natural-language claims. Carry-forward records bind the target work's ID, revision and Source reference and create a `branch.loop_carried` event on the destination work branch. Original checkpoints and session ownership remain unchanged. The plan uses each session's latest successful checkpoint; superseded checkpoints remain historical. Inventories and requests have explicit caps (1000 sessions, claims or loops; 1 MiB input) and fail rather than truncate a closure decision.
+
+Closure requires the exact refreshed project revision. If Source indexing advances it, the refreshed projections remain available, the command returns `RevisionConflict`, and the branch stays active. Inspect the updated plan and retry at that revision. Missing/stale sources or merge-reference drift also prevent closure. After the checks, the summary (`branch.merged` on the destination, or `branch.abandoned` on the original branch), carry-forward receipts and `branch.closed` commit atomically in one project revision. Failure rolls all those runtime changes back. `--into` selects a work-runtime destination independently of Git refs; default is main. If closing the currently selected branch, its default pointer moves to that destination; any other current branch is preserved.
+
+`branch show` retains the creation/Git binding and exposes a verified closure receipt, including Source versions, external merge observation, dispositions and summary/closure event IDs. History remains inspectable when Source or Git is unavailable. Closed branches cannot receive new execution sessions, claims, evidence or L1 context; other active branches and source work items keep their state. `main` is the persistent baseline and cannot close.
 
 Update authoritative work state:
 

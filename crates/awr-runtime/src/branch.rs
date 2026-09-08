@@ -13,7 +13,7 @@ pub struct CreateBranchRequest {
     pub actor: String,
     pub reason: String,
 }
-fn git(root: &Path, args: &[&str]) -> Result<String> {
+pub(crate) fn git_command(root: &Path, args: &[&str]) -> Command {
     let mut command = Command::new("git");
     command
         .arg("--no-optional-locks")
@@ -30,7 +30,10 @@ fn git(root: &Path, args: &[&str]) -> Result<String> {
     ] {
         command.env_remove(key);
     }
-    let output = command.output()?;
+    command
+}
+fn git(root: &Path, args: &[&str]) -> Result<String> {
+    let output = git_command(root, args).output()?;
     if !output.status.success() {
         return Err(Error::InvalidInput(format!(
             "cannot resolve local Git binding: {}",

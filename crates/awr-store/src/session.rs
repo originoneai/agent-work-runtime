@@ -10,7 +10,7 @@ use awr_core::*;
 use rusqlite::{Connection, OptionalExtension, Row, params};
 
 pub(crate) const SESSION_COLUMNS: &str = "id,project_id,work_item_id,branch_id,agent_id,provider,model,status,started_at,ended_at,start_project_revision,end_project_revision,last_checkpoint_id,revision";
-const CLAIM_COLUMNS: &str = "id,project_id,work_item_id,session_id,agent_id,branch_id,status,acquired_at,expires_at,released_at,revision";
+pub(crate) const CLAIM_COLUMNS: &str = "id,project_id,work_item_id,session_id,agent_id,branch_id,status,acquired_at,expires_at,released_at,revision";
 
 pub(crate) fn session_row(row: &Row<'_>) -> rusqlite::Result<Session> {
     Ok(Session {
@@ -33,7 +33,7 @@ pub(crate) fn session_row(row: &Row<'_>) -> rusqlite::Result<Session> {
         revision: revision_at(row, 13)?,
     })
 }
-fn claim_row(row: &Row<'_>) -> rusqlite::Result<Claim> {
+pub(crate) fn claim_row(row: &Row<'_>) -> rusqlite::Result<Claim> {
     Ok(Claim {
         id: id_at(row, 0)?,
         project_id: id_at(row, 1)?,

@@ -2,7 +2,11 @@ use awr_core::*;
 use awr_store::Store;
 use clap::Subcommand;
 use serde_json::json;
-use std::path::Path;
+use std::{
+    fs::File,
+    io::Read,
+    path::{Path, PathBuf},
+};
 
 #[derive(Debug, Subcommand)]
 pub enum BranchCommand {
@@ -30,7 +34,25 @@ pub enum BranchCommand {
         limit: usize,
     },
     /// Read a branch and its creation/Git receipt; omit the selector for the current branch.
-    Show { reference: Option<String> },
+    Show {
+        reference: Option<String>,
+        #[arg(long)]
+        close_plan: bool,
+    },
+    /// Record an external merge or abandonment, settle every listed loop, then close atomically.
+    Close {
+        reference: String,
+        #[arg(long)]
+        input: PathBuf,
+        #[arg(long, default_value = "main")]
+        into: String,
+        #[arg(long)]
+        actor: String,
+        #[arg(long)]
+        reason: String,
+        #[arg(long)]
+        expected_revision: Revision,
+    },
     /// Compile shared current source facts plus this named branch's runtime delta since fork.
     Context {
         reference: String,
@@ -244,11 +266,36 @@ pub fn run(root: &Path, command: &BranchCommand, json_output: bool) -> Result<()
                 );
             }
         }
-        BranchCommand::Show { reference } => {
+        BranchCommand::Show {
+            reference,
+            close_plan,
+        } => {
             let id = match reference {
                 Some(reference) => store.resolve_branch(project.id, reference)?,
                 None => project.current_branch_id,
             };
+            if *close_plan {
+                let id = id.ok_or_else(|| {
+                    Error::InvalidInput("main cannot close; select a work branch".into())
+                })?;
+                let plan = store.branch_close_plan(project.id, id)?;
+                if json_output {
+                    println!("{}", serde_json::to_string_pretty(&plan)?);
+                } else {
+                    println!(
+                        "Close plan: {}\nRevision: {}\nBlockers: {}\nOpen loops needing disposition: {}\nUse --json to inspect exact checkpoint/index/text references.",
+                        plan.branch.name,
+                        plan.project_revision,
+                        if plan.blockers.is_empty() {
+                            "none".into()
+                        } else {
+                            plan.blockers.join("; ")
+                        },
+                        plan.open_loops.len()
+                    );
+                }
+                return Ok(());
+            }
             let record = id.map(|id| store.branch(project.id, id)).transpose()?;
             let actual = store.project(project.id)?.project_revision;
             if actual != project.project_revision {
@@ -291,6 +338,59 @@ pub fn run(root: &Path, command: &BranchCommand, json_output: bool) -> Result<()
                 println!(
                     "Work branch: main (existing baseline, null branch ID)\nHistorical sessions, events, claims and evidence remain unchanged.\nRevision: {}",
                     project.project_revision
+                );
+            }
+        }
+        BranchCommand::Close {
+            reference,
+            input,
+            into,
+            actor,
+            reason,
+            expected_revision,
+        } => {
+            let file = File::open(input)?;
+            if !file.metadata()?.is_file() {
+                return Err(Error::InvalidInput(
+                    "branch close input must be a JSON file".into(),
+                ));
+            }
+            let mut bytes = Vec::new();
+            file.take(1048577).read_to_end(&mut bytes)?;
+            if bytes.len() > 1048576 {
+                return Err(Error::InvalidInput(
+                    "branch close input exceeds 1 MiB".into(),
+                ));
+            }
+            let input: CloseBranchInput = serde_json::from_slice(&bytes)?;
+            let (closed, event) = awr_runtime::close_branch(
+                &mut store,
+                &root,
+                &awr_runtime::CloseBranchRequest {
+                    reference: reference.clone(),
+                    into: into.clone(),
+                    expected_revision: *expected_revision,
+                    actor: actor.clone(),
+                    reason: reason.clone(),
+                    input,
+                },
+            )?;
+            if json_output {
+                println!(
+                    "{}",
+                    serde_json::to_string_pretty(
+                        &json!({"ok":true,"project_revision":event.project_revision,"branch":closed.branch,"receipt":closed.receipt,"event":event,"source_refresh_performed":true,"source_write_performed":false,"git_write_performed":false})
+                    )?
+                );
+            } else {
+                println!(
+                    "Closed work branch {} ({})\nRevision: {}\nSummary event: {}\nClosure event: {}\nOpen-loop dispositions: {}\nSessions and history retained; no source work item was completed by this command.",
+                    closed.branch.name,
+                    closed.branch.status,
+                    event.project_revision,
+                    closed.receipt.summary_event_id,
+                    event.id,
+                    closed.receipt.open_loops.len()
                 );
             }
         }
