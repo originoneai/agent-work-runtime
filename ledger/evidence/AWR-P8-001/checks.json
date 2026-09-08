@@ -1,0 +1,56 @@
+{
+  "work_item": "AWR-P8-001",
+  "checked_at": "2026-09-08T13:20:25+08:00",
+  "commands": [
+    "cargo test --locked -p awr-mcp --test stdio",
+    "cargo test --locked -p awr-store --test search",
+    "cargo check --workspace --all-targets --locked",
+    "cargo build --locked -p awr-cli -p awr-mcp",
+    "cargo fmt --all -- --check",
+    "git diff --check"
+  ],
+  "checks": [
+    {
+      "name": "mcp_stdio_domain_contract",
+      "passed": true,
+      "result": "10 stdio tests passed against the actual awr-mcp process: exactly eight compact tools; current SDK client and 2025-11-25 negotiation; structured JSON/text/error behavior; all five reads preserve every database table and source bytes; changed files, directory sources and mappings require explicit reindex; context gaps, budgets and branch isolation; source action lifecycle, owned claims, fingerprint/revision conflicts, report hash validation, completion receipts and claim release; generic event reservation, inert evidence commands, duplicate evidence, startup and snapshot limits."
+    },
+    {
+      "name": "search_service_compatibility",
+      "passed": true,
+      "result": "2 existing store search tests passed, covering ranked/versioned structured and FTS results, and exclusion of source bodies, credentials, code and long-tail text. Total: 12 distinct tests passed."
+    },
+    {
+      "name": "workspace_build_format",
+      "passed": true,
+      "result": "Locked all-target workspace check, CLI/MCP build, formatting and diff whitespace checks passed. Only the pre-existing unused meta/commit store test fixture warning appeared."
+    },
+    {
+      "name": "domain_adapter_review",
+      "passed": true,
+      "result": "Reviewed fixed project binding, eight schemas, domain-service reuse, source-check-only memory snapshots, live revision recheck, mandatory revision and completion evidence bindings, structured error/partial proposal preservation, branch selectors and no shell/report execution. Source work actions retain fingerprint-first behavior; event/evidence source refresh can retain reindex progress while rejecting a stale expected revision."
+    }
+  ],
+  "artifacts": [
+    "crates/awr-mcp/Cargo.toml",
+    "crates/awr-mcp/README.md",
+    "crates/awr-mcp/src/lib.rs",
+    "crates/awr-mcp/src/main.rs",
+    "crates/awr-mcp/src/arguments.rs",
+    "crates/awr-mcp/src/operations.rs",
+    "crates/awr-mcp/src/project.rs",
+    "crates/awr-mcp/src/schema.rs",
+    "crates/awr-mcp/tests/stdio.rs",
+    "crates/awr-store/Cargo.toml",
+    "crates/awr-store/src/lib.rs",
+    "Cargo.lock",
+    "README.md"
+  ],
+  "limitations": [
+    "Feature-local verification and development self-use only; agent-specific adapters, centralized regression/security, real-client E4 scenarios, metrics and release remain scheduled.",
+    "This is a project-bound local stdio server. Session/claim/branch lifecycle and detailed drill-down remain CLI operations so the MCP catalog stays at eight tools.",
+    "Readonly requests use a private SQLite memory snapshot capped at 256 MiB, with source observations before/after and a live project revision check. The memory/search scaling targets are not yet benchmarked.",
+    "Evidence registration stores caller assertions. Only the existing completion domain validates referenced report bytes and bindings; neither metadata nor tests certify E4 business quality.",
+    "Cancellation or loss of a transport response does not prove a mutation rolled back; inspect durable receipts before retrying."
+  ]
+}

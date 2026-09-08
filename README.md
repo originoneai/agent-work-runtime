@@ -66,6 +66,19 @@ The budget counts `rendered_context` with the fixed [`o200k_base` ordinary-text 
 | [Work index](ledger/README.md) | Generated readable view of the ledger |
 | [Kickoff](docs/KICKOFF.md) | First implementation task and handoff instructions |
 
+## MCP stdio
+
+Build the project-bound MCP server and configure an MCP client to launch it:
+
+```sh
+cargo build --locked -p awr-mcp
+target/debug/awr-mcp --project /absolute/path/to/initialized-project
+```
+
+The server exposes exactly the eight tools in the design. Its five read tools verify current source files against an isolated memory snapshot; they leave persistent projections, revisions, sessions, claims and search caches unchanged. Changed sources return `SourceStale` and require an explicit `awr source reindex`. Source transitions reuse the CLI domain operations and their revision, fingerprint, claim and evidence constraints.
+
+See the [MCP tool contract and client configuration](crates/awr-mcp/README.md) for arguments, error handling and a development workflow. The stdio implementation uses the [official Rust MCP SDK](https://github.com/modelcontextprotocol/rust-sdk); agent-specific adapters and formal client acceptance follow their ledger items.
+
 ## Validate the planning baseline
 
 Build the current CLI with Rust 1.93.1:

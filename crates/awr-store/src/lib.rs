@@ -72,6 +72,47 @@ pub(crate) fn db_error(error: rusqlite::Error) -> Error {
 }
 
 impl Store {
+    /// Copy a coherent database view into private RAM. Rebuilding caches on the returned
+    /// store cannot persist anything here. Callers still verify source freshness and the
+    /// originating project revision before returning a read result.
+    pub fn memory_snapshot(&self, max_bytes: u64) -> Result<Self> {
+        let pages: u32 = self
+            .conn
+            .pragma_query_value(None, "page_count", |r| r.get(0))
+            .map_err(db_error)?;
+        let page_size: u32 = self
+            .conn
+            .pragma_query_value(None, "page_size", |r| r.get(0))
+            .map_err(db_error)?;
+        if u64::from(pages) * u64::from(page_size) > max_bytes || max_bytes == 0 {
+            return Err(Error::InvalidInput(format!(
+                "database exceeds the {max_bytes} byte read-snapshot limit"
+            )));
+        }
+        let mut conn = Connection::open_in_memory().map_err(db_error)?;
+        {
+            let backup = rusqlite::backup::Backup::new(&self.conn, &mut conn).map_err(db_error)?;
+            if !matches!(
+                backup.step(-1).map_err(db_error)?,
+                rusqlite::backup::StepResult::Done
+            ) {
+                return Err(Error::Storage(
+                    "database snapshot was busy; retry the read".into(),
+                ));
+            }
+        }
+        let copied_pages: u32 = conn
+            .pragma_query_value(None, "page_count", |r| r.get(0))
+            .map_err(db_error)?;
+        if u64::from(copied_pages) * u64::from(page_size) > max_bytes {
+            return Err(Error::InvalidInput(
+                "database grew beyond the read-snapshot limit".into(),
+            ));
+        }
+        Self::configure(&conn)?;
+        Ok(Self { conn })
+    }
+
     /// Open the current schema for queries without creating or upgrading database state.
     pub fn open_readonly(path: &Path) -> Result<Self> {
         if !path.is_file() {
