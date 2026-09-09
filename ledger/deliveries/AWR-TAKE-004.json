@@ -1,0 +1,63 @@
+{
+  "kind": "implementation",
+  "repository": "https://github.com/originoneai/agent-work-runtime",
+  "source_commit": "e82ce5648bcc7e3223bccb717b5c427d26cb6b9c",
+  "checked_at": "2026-09-09T06:28:15.522815+00:00",
+  "remote_receipt": {
+    "commit": "e82ce5648bcc7e3223bccb717b5c427d26cb6b9c",
+    "url": "https://github.com/originoneai/agent-work-runtime/commit/e82ce5648bcc7e3223bccb717b5c427d26cb6b9c",
+    "verified_at": "2026-09-09T06:28:15.522815+00:00"
+  },
+  "checks": [
+    {
+      "name": "takeover_cli_and_recovery_integration",
+      "passed": true,
+      "result": "22 passed in the combined CLI batch; then the execution suite passed 8 checks including the additional context-budget case."
+    },
+    {
+      "name": "domain_context_and_runtime_regression",
+      "passed": true,
+      "result": "140 passed, 3 existing ignored checks across 36 suites."
+    },
+    {
+      "name": "workspace_interface_build",
+      "passed": true,
+      "result": "cargo check --offline --locked --workspace passed."
+    }
+  ],
+  "artifacts": [
+    "crates/awr-cli/src/recovery.rs",
+    "crates/awr-cli/tests/execution_registry.rs",
+    "crates/awr-runtime/src/execution.rs",
+    "crates/awr-runtime/src/resume.rs",
+    "crates/awr-context/src/compile.rs",
+    "docs/TAKEOVER.md",
+    "examples/takeover/README.md",
+    "ledger/evidence/AWR-TAKE-004/checks.json"
+  ],
+  "work_items": {
+    "AWR-TAKE-004": {
+      "acceptance": [
+        {
+          "criterion": "恢复区分受管任务运行中、已成功、已失败、无法确认；每项有核实依据和观察时间。",
+          "passed": true
+        },
+        {
+          "criterion": "核实命令不自动重跑或杀进程；完成结果与仍运行任务进入接续上下文，避免静默遗漏。",
+          "passed": true
+        },
+        {
+          "criterion": "以真实短命令验证跨会话运行、结果收取、失败、中断未知和重复登记；保留原有 checkpoint/resume 行为。",
+          "passed": true
+        }
+      ]
+    }
+  },
+  "limitations": [
+    "Live observations are timestamped snapshots and are separate from deterministic source/context hashes.",
+    "Unknown state never causes an automatic restart or process termination.",
+    "Receipt fallback was verified with an actual child and an isolated fault-injected final journal write.",
+    "Native hook activation, E4 and other operating systems require their own evidence.",
+    "This feature branch has not been merged or published to npm/PyPI."
+  ]
+}

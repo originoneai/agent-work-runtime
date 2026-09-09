@@ -1,8 +1,8 @@
 schema_version: 1
 contract_id: awr-v1
 contract_version: 1.1.0
-ledger_revision: 197
-updated_at: '2026-09-09T06:14:37.771119+00:00'
+ledger_revision: 198
+updated_at: '2026-09-09T06:28:15.522815+00:00'
 project:
   name: Agent Work Runtime
   external_key: agent-work-runtime
@@ -12,10 +12,11 @@ project:
 current:
   milestone: M11
   work_item: AWR-TAKE-004
-  next_action: 核实 supervisor 身份和完成回执，接入恢复命令、客户端上下文及 L0/L1。
+  next_action: 四项实现和本地验证已交付独立分支，进入草稿 PR 评审；原生激活及版本发布单独取证。
   open_loops:
-  - 本分支仅执行用户新增的四项能力；主线程 AWR-QA-003 的实际业务验收继续独立推进，已有证据不计入新增功能。
-  - 首次接入的推测进度必须标为待核实，运行现场无法确认时不自动重跑。
+  - 四项新增能力仅在 codex/project-takeover 分支交付；未操作主线程工作区或接续其验收任务。
+  - 原生客户端 hook 激活、其他操作系统和完整 E4 尚未计入本批证据。
+  - 本批源码尚未合并，也未发布到 npm/PyPI；集成时保留主线程最新台账与验收记录。
 milestones:
 - id: M0
   status: completed
@@ -40,7 +41,7 @@ milestones:
 - id: M10
   status: planned
 - id: M11
-  status: in_progress
+  status: completed
 work_items:
 - id: AWR-BOOT-001
   title: 公开仓库、Apache 2.0 与原始方案基线
@@ -2109,7 +2110,7 @@ work_items:
   priority: P0
   kind: feature
   required_for_v1: true
-  status: in_progress
+  status: completed
   owner: codex-side-conversation
   depends_on:
   - AWR-TAKE-002
@@ -2133,10 +2134,11 @@ work_items:
   verification:
     minimum: 运行覆盖本条直接行为与恢复边界的真实 CLI/集成检查；不将本地检查视为 E4。
     evidence_directory: ledger/evidence/AWR-TAKE-004
-    evidence_level: none
-  evidence: []
+    evidence_level: locally_verified
+  evidence:
+  - ledger/deliveries/AWR-TAKE-004.json
   blocker: null
-  next_action: 核实 supervisor 身份和完成回执，接入恢复命令、客户端上下文及 L0/L1。
+  next_action: 四项实现和本地验证已交付独立分支，进入草稿 PR 评审；原生激活及版本发布单独取证。
 scenarios:
 - id: AWR-SC-001
   status: completed
