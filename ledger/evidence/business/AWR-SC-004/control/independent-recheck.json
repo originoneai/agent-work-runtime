@@ -1,0 +1,199 @@
+{
+  "version": 1,
+  "kind": "independent_business_recheck",
+  "recorded_at": "2026-09-09T15:13:00+08:00",
+  "scenario": "parallel-ownership",
+  "work_item": "XQ-REVIEW",
+  "verdict": "passed_for_xq_review_scope",
+  "requires_executor_changes": false,
+  "review_identity": {
+    "agent_id": "independent-reviewer-recheck",
+    "provider": "openai-codex",
+    "model": "gpt-6",
+    "session_id": "01M22EXK425XHY2N02VFPN7T6K",
+    "claim_id": "01M22EXVYZ7TNS1ZD3Y7BSC2N2",
+    "checkpoint_id": "01M22G6AZ11CSDHDXQ1EF3GQPZ",
+    "context_hash": "c3f5d96506d85225b3a06e17d5f6b812b76367fa0804173f5ac1b3078cfac620",
+    "different_from_native_business_clients": [
+      "01a083c0-2c0b-7fc1-ba7d-0b0721dfeb0f",
+      "01a083ca-4a86-7b81-93cd-59afa64767e0",
+      "01a08460-5417-75c3-8ee2-7249153e9c67"
+    ]
+  },
+  "fixed_inputs": {
+    "review_correction_seal": {
+      "path": "control/review-correction-sealed.json",
+      "sha256": "54e8014758354247bb33f122be129d09eb3ea14242cea9ae0f2415fa63e25ef0"
+    },
+    "review_correction_publication": {
+      "path": "control/review-correction-publication.json",
+      "sha256": "6c4a15d910a83eb44ee1967c6b6c25f17f4c5c32ebab54e8e4878f3fda5380d5",
+      "declared_files": 202,
+      "actual_files": 202,
+      "missing": 0,
+      "extra": 0,
+      "hash_mismatch": 0
+    },
+    "original_review_publication": {
+      "path": "control/review-input-publication.json",
+      "sha256": "0fb081c8482a604e4e3cfc03857393fa38f1616c9a53b2a923c02dd9dbb6e01b",
+      "listed_files_preserved": 147,
+      "missing": 0,
+      "hash_mismatch": 0,
+      "note": "Later correction and process publications coexist under review-inputs and are not treated as changes to the original 147 listed paths."
+    },
+    "parallel_process_publication": {
+      "path": "control/parallel-process-review-publication.json",
+      "sha256": "55efb2f825d76ef3c30e93ac2fac0c0690e873c854a7e2f3ff4a367de3fca73e",
+      "declared_files": 10,
+      "actual_files": 10,
+      "missing": 0,
+      "extra": 0,
+      "hash_mismatch": 0
+    },
+    "root_technical_read_scope_binding": {
+      "path": "control/root-technical-read-scope-binding.json",
+      "sha256": "a3b1f4f73793420c509be507e7c13c4c5498e3e83ac69a0da6cb064fc381d850",
+      "use": "Complementary operator technical-scope audit; not substituted for this business recheck."
+    }
+  },
+  "source": {
+    "git_head": "8f4031f40c096691df03099c2382cbb86112be19",
+    "work_ledger_before_recheck_sha256": "c571682e22d0a891f8d7072c8f4ce4575909463b974e9443fe72f062d3b316ae",
+    "work_ledger_final_sha256": "e68a404d8933c93103cb22ba2aa67ad620b055c2a16a36ef8214826b26d76b96",
+    "final_source_revision": 29,
+    "git_commit_or_push_performed": false
+  },
+  "findings": [
+    {
+      "id": "XQ-R01",
+      "result": "closed",
+      "basis": "Current ownership record, AWR session show and XQ-CONTENT work show agree that the original content session ended at project revision 165 and no active claim remains."
+    },
+    {
+      "id": "XQ-R02",
+      "result": "closed",
+      "basis": "XQ-INPUT, XQ-CONTENT, XQ-VENUE and XQ-MERGE remain completed and use current summaries/next actions that no longer repeat completed work."
+    }
+  ],
+  "business_acceptance": {
+    "two_distinct_producer_roles": true,
+    "third_successor_received_four_handoffs": true,
+    "two_natural_followups_and_later_wording_correction": true,
+    "revision_conflict_distinguished_from_claim_conflict": true,
+    "runtime_branch_id": "01M21Z7CBNFNN0B7HVMY9WTVTC",
+    "runtime_branch_git_ref": "refs/heads/main",
+    "runtime_branch_is_git_file_isolation": false,
+    "time_projector_and_three_table_constraints_consistent": true,
+    "historical_point_in_time_records_preserved": true,
+    "unknowns_preserved": [
+      "90+10 boundary and absolute time",
+      "venue dimensions and three-table feasibility",
+      "projector hardware and end-to-end test",
+      "participants and named on-site roles",
+      "final content files and material quantities",
+      "external send and on-site acceptance"
+    ]
+  },
+  "business_files_sha256": {
+    "deliverables/xingqiao-independent-results.md": "681ebc8aa9988fe7d27d581eb4e76d68dc24dbacce49a59c5df17953311f8699",
+    "deliverables/xingqiao-content.md": "7fc0ccf93f8f8aa6b8d881c91c6f61dc32e63ed979f6cc120f5ba9086eb253c5",
+    "deliverables/xingqiao-venue.md": "3035f626d7ef00cd860d2fd4781513b76d9587b1e6c67924b549ce8865c828a6",
+    "deliverables/xingqiao-ownership.md": "d1238aea798cc63e1d190cb4cbae24ba0b415f786501e1221312d83dcfcceafc",
+    "deliverables/xingqiao-collaboration-review.md": "21e564a7fa985cb67a842e1e836ed84f9a69db2865c86171e0edef4df891d5c0",
+    "deliverables/xq-independent-review.md": "c4dd2d34080ba24bfdb3d8408990c55b2152c33241ab259b86e4d034335c9c13",
+    "deliverables/xq-independent-recheck.md": "e177be268f07a30c35d8f9d1539ab6248a75fb01a935966ce3045809628d902f"
+  },
+  "awr_result": {
+    "final_project_revision": 311,
+    "review_status": "completed",
+    "review_work_revision": 8,
+    "review_active_claims": 0,
+    "claim_status": "released",
+    "session_status": "ended",
+    "evidence_external_key": "XQ-INDEPENDENT-RECHECK-20260909-V3",
+    "evidence_id": "01M22G3V7QMZB78H4KGKFD40MG",
+    "evidence_add_event_id": "01M22G3V7Q1D399MMW0N6HBQAP",
+    "completion_proposal_id": "01M22G4BXJWEJQKMS96GGFM3CJ",
+    "completion_event_id": "01M22G4BZKRYRX60MQZTGHXQK9",
+    "deliver_status": "planned",
+    "deliver_graph_ready": true,
+    "deliver_active_claims": 0,
+    "doctor_database_ok": true,
+    "doctor_findings": 0
+  },
+  "review_outputs_sha256": {
+    "deliverables/xq-independent-recheck.md": "e177be268f07a30c35d8f9d1539ab6248a75fb01a935966ce3045809628d902f",
+    ".work-receipts/reviewer-recheck-verification.json": "2bdee2ae42fbcb257273f94aa3487e50d13b2dd63c83ee9f7cae88c299aae69b",
+    ".work-receipts/reviewer-recheck-completion-report.json": "81cb64388692c1f5c94e9404c212b624854f14309eb53434a3016cf861e86405",
+    ".work-receipts/reviewer-recheck-evidence-add-v3.json": "73977e897deda2d9dbda009adcbc5f20a398d3edd8e8bb520ab470fe3c9885fc",
+    ".work-receipts/reviewer-recheck-work-complete.json": "9b10cf513c13aec4783b7d521774dc1bf385b4b29891af2df1acc2a0e67e0745",
+    ".work-receipts/reviewer-recheck-checkpoint.json": "19947f9956bb4d71d6d6f7dff8e581dd2dde5a752cc253186a100d8f5cf7f89c",
+    ".work-receipts/reviewer-recheck-session-end.json": "7a41466d4fada1a0b828b152df6ba048d04249b65be2ec6bc0471af9c938d8ff"
+  },
+  "retained_failures": [
+    {
+      "path": "project/.work-receipts/xq-venue-progress-conflict-r29.json",
+      "sha256": "b933a12b7d7575bf87bd54fd014c04df0ebc4e6dbef7d6131d8f9e1ca3d55181",
+      "result": "RevisionConflict expected 29 actual 31"
+    },
+    {
+      "path": "project/.work-receipts/018-work-progress-xq-content-handoff-wording-conflict.json",
+      "sha256": "d9d01e9a41934057f3a39dc1f871f6ce57751107a565267ba6b5b5ad61febbea",
+      "result": "ClaimConflict"
+    },
+    {
+      "path": "project/review-inputs/parallel-process-evidence/peer-initial-sealed.json",
+      "sha256": "0cb4af31f665beee96aab94edf9e7f4576557837aa1aa72fafbb1aa5a81e921e",
+      "result": "110 command executions and 6 failed attempts retained"
+    },
+    {
+      "path": "project/.work-receipts/reviewer-verification-attempt-1.json",
+      "sha256": "9db0eeae04db343f81366f937e3d90a690efb8309a1706bbfdf93371d2627a24",
+      "result": "First independent-review verifier used an overly narrow wording assertion"
+    },
+    {
+      "path": "control/review-correction-sealed.json",
+      "sha256": "54e8014758354247bb33f122be129d09eb3ea14242cea9ae0f2415fa63e25ef0",
+      "result": "180 command executions and 11 nonzero commands retained; overall native process exited 0"
+    },
+    {
+      "path": "project/.work-receipts/042-reopen-xq-merge-invalid-summary.json",
+      "sha256": "662b65d5f5a6df7dc4d8ac957801cefcc0ef82dd66c46d84b1556c6800e5b783",
+      "result": "InvalidInput for unauthorized summary field"
+    },
+    {
+      "path": "project/.work-receipts/048-proposal-create-xq-input-session-conflict.json",
+      "sha256": "db92180164c30abc6350399b7b35d310b08dc462859d6e6a48b917204ac0be1a",
+      "result": "InvalidInput for work target conflicting with creating session"
+    },
+    {
+      "path": "project/.work-receipts/084-return-check-handoff-verification-attempt-1.json",
+      "sha256": "d7df2061c8d06a69b365c6f8ad960cc0f98338f07fa4dd4a6e59a6f47728765c",
+      "result": "Historical verifier expected a multi-line YAML block after source normalization"
+    },
+    {
+      "path": "project/.work-receipts/reviewer-recheck-verification-before.json",
+      "sha256": "67c7c061b4781e5c6fc6758f5cbad59b0441ab49befe7ef04d5104c97d845305",
+      "result": "Recheck verifier first used two overly narrow wording assertions"
+    },
+    {
+      "path": "project/.work-receipts/reviewer-recheck-work-complete-attempt-1.json",
+      "sha256": "67ca5113f997e056b1384c1418c207d13e75a2e9edb9e9c5b272ab68c58ebf04",
+      "result": "EvidenceMissing because completion report lacked version"
+    },
+    {
+      "path": "project/.work-receipts/reviewer-recheck-work-complete-attempt-2.json",
+      "sha256": "84a8f665193c41c375cab64c0200f3848a3aebb15a638502c676904c6f89988d",
+      "result": "EvidenceMissing because completion report lacked work_item"
+    }
+  ],
+  "boundaries": {
+    "producer_files_modified_by_reviewer": false,
+    "original_independent_review_modified": false,
+    "final_delivery_performed": false,
+    "final_delivery_artifact_present": false,
+    "whole_scenario_e4_granted": false
+  },
+  "next_action": "A separate final-delivery role may now inspect the fixed correction package, this recheck report and all unresolved business facts, then claim XQ-DELIVER. It must update its own current status as part of that work and may not promote local planning evidence to on-site execution or E4."
+}

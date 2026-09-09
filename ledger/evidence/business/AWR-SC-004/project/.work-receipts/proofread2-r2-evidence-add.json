@@ -1,0 +1,28 @@
+{
+  "event_id": "01M220HYBFSQ8KGW0ANMHNXVKH",
+  "evidence": {
+    "branch_id": "01M21Z7CBNFNN0B7HVMY9WTVTC",
+    "command": "rtk proxy sh .work-receipts/verify-proofread2-r2.sh",
+    "evidence_type": "report",
+    "external_key": "XQ-CONTENT-PROOFREAD2-R2-20260909",
+    "id": "01M220HYBFSH35HHA1FVP5GX0D",
+    "level": "locally_verified",
+    "locator": ".work-receipts/proofread2-r2-evidence-report.json",
+    "project_id": "01M21W3H8XNKD8AKP4N1JNQQTM",
+    "revision": 1,
+    "scope": [
+      "XQ-CONTENT"
+    ],
+    "sha256": "b394b4ad7f760ac16f182346f1c21187b9c782131ae7b0f4864dd7b07d1ca824",
+    "source_ref": null,
+    "source_sha": "8f4031f40c096691df03099c2382cbb86112be19",
+    "summary": "第二内容校对已对原负责人吸收现场回执后的当前快照完成增量核对；计划层面对齐，实际现场事实和接收回执仍待闭合。",
+    "verified_at": 1788921417000,
+    "work_item_id": "01M21W3H924XZK5JAZCTWTQPJH"
+  },
+  "freshness_basis": "source_refresh",
+  "ok": true,
+  "project_revision": 80,
+  "source_refresh_performed": true,
+  "validation_basis": "caller_supplied_bindings"
+}

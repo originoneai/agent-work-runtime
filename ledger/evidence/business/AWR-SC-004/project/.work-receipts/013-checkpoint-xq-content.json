@@ -1,0 +1,53 @@
+{
+  "checkpoint": {
+    "changed_entities": [
+      "work_items:01M21W3H924XZK5JAZCTWTQPJH"
+    ],
+    "context_hash": "a7e4a6d6761701b050f715954cc99c8e4a45ea85ad7e04e7a4da32d20be94b93",
+    "created_at": 1788918032218,
+    "digest": "已形成 T+00 至 T+85 的内容安排草稿，保留 5 分钟未分配缓冲，并列出内容侧与现场侧双向交接项。",
+    "id": "01M21X5STTN3K2KT8JK8R1F4SN",
+    "next_action": "收到现场执行者关于 90+10 分钟边界、投影可用窗口和桌面切换时长的回执后，修订内容时间轴。",
+    "open_loops": [
+      "需要现场执行者确认额外 10 分钟的拆分及其与 90 分钟开放窗口的包含关系。",
+      "需要现场执行者确认 T+10—T+35 投影连续可用，以及 T+35、T+65 两处桌面形态切换的最短时长。",
+      "内容侧仍需补齐开场说明和成果交流是否使用投影，以及人员、音响、供电、物料和展示需求，再回传现场执行者。"
+    ],
+    "project_revision": 47,
+    "revision": 1,
+    "session_id": "01M21WYFWXQHZNK0BJTYVD8N1K"
+  },
+  "checkpoint_save": {
+    "after_revision": 39,
+    "attempt_id": "01M21X5STSEJSWRRFS6XHNAYAY",
+    "delta_bytes": 3707,
+    "delta_recorded": true,
+    "event_id": "01M21X5STT2NX02NJJ67N3NFB7",
+    "observed_changed_entity_count": 1,
+    "reported_changed_entity_count": 1,
+    "session_event_count": 2,
+    "source_observation_count": 2,
+    "through_revision": 47
+  },
+  "context_hash_basis": "caller_supplied_last_used_context",
+  "context_hash_verified": false,
+  "event": {
+    "artifact_id": null,
+    "branch_id": null,
+    "checkpoint_id": "01M21X5STTN3K2KT8JK8R1F4SN",
+    "created_at": 1788918032218,
+    "id": "01M21X5STT2NX02NJJ67N3NFB7",
+    "importance": "normal",
+    "project_revision": 49,
+    "session_id": "01M21WYFWXQHZNK0BJTYVD8N1K",
+    "source_id": null,
+    "summary": "Saved session checkpoint and observed delta",
+    "type": "checkpoint.created",
+    "work_item_id": "01M21W3H924XZK5JAZCTWTQPJH"
+  },
+  "freshness_basis": "source_refresh",
+  "ok": true,
+  "project_revision": 49,
+  "save_status": "completed",
+  "source_refresh_performed": true
+}

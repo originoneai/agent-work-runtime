@@ -1,0 +1,53 @@
+{
+  "checkpoint": {
+    "changed_entities": [],
+    "context_hash": "95e13e9009ef2c66d5be2c825fba85161498ae40ecf96a30a531f3c5d0d431b0",
+    "created_at": 1788922853615,
+    "digest": "已依据校对 COORD-06 核对实际接收时间线并修正措辞：C→V 回复仅已成稿，尚未证实发送、接收或确认。",
+    "id": "01M221RY7F976FXCBXCGYFRVBH",
+    "next_action": "完成 C→V-01 至 C→V-04 的实际发送并取得现场接收确认，同时补齐案例材料、人员设备信息和场地方条件。",
+    "open_loops": [
+      "C→V-01 至 C→V-04 尚无实际发送凭证或现场接收确认；计划层面对齐不等于交接完成。",
+      "场地方仍需确认额外 10 分钟是否位于 90 分钟之外、7/3 假设、绝对开放和开始时间。",
+      "三组桌面贯穿全程仍需实际核验人数、容量、视线和通道。",
+      "投影实机、接口、线材、信号源、操作人、离线材料和测试结果未闭合。",
+      "人员、分组、纸笔、扩声、供电等仍待定；正式 XQ-MERGE/XQ-REVIEW 未发生。"
+    ],
+    "project_revision": 90,
+    "revision": 1,
+    "session_id": "01M21WYFWXQHZNK0BJTYVD8N1K"
+  },
+  "checkpoint_save": {
+    "after_revision": 77,
+    "attempt_id": "01M221RY7E1EETN2HHCYMYH237",
+    "delta_bytes": 1508,
+    "delta_recorded": true,
+    "event_id": "01M221RY7FEMRQ626PXQF91R7J",
+    "observed_changed_entity_count": 0,
+    "reported_changed_entity_count": 1,
+    "session_event_count": 2,
+    "source_observation_count": 0,
+    "through_revision": 90
+  },
+  "context_hash_basis": "caller_supplied_last_used_context",
+  "context_hash_verified": false,
+  "event": {
+    "artifact_id": null,
+    "branch_id": null,
+    "checkpoint_id": "01M221RY7F976FXCBXCGYFRVBH",
+    "created_at": 1788922853615,
+    "id": "01M221RY7FEMRQ626PXQF91R7J",
+    "importance": "normal",
+    "project_revision": 92,
+    "session_id": "01M21WYFWXQHZNK0BJTYVD8N1K",
+    "source_id": null,
+    "summary": "Saved session checkpoint and observed delta",
+    "type": "checkpoint.created",
+    "work_item_id": "01M21W3H924XZK5JAZCTWTQPJH"
+  },
+  "freshness_basis": "source_refresh",
+  "ok": true,
+  "project_revision": 92,
+  "save_status": "completed",
+  "source_refresh_performed": true
+}

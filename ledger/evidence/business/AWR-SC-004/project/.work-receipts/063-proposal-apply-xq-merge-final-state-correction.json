@@ -1,0 +1,93 @@
+{
+  "apply_attempt": {
+    "event_id": "01M22DHXW0ZXV7CQD88CMHQJN3",
+    "plan": {
+      "after_fingerprint": "sha256:14853e9b2f248b846c8b24e5c5e736d2211ab2426b1143dc96016a9babe2b82b",
+      "after_size": 4916,
+      "before_fingerprint": "sha256:991bb34984447d815d468bbad73f37dfc9fab5571dd59cb49deacf9d0dad6429",
+      "before_size": 4853,
+      "id": "01M22DHXVCQM9FVDP27CHFRN0C",
+      "target_after_hash": "cfcb38bcd3dac17f4c0b6ea57691030af58bcfdff7fa3c0f7fd3e449c009254e"
+    },
+    "project_revision": 252,
+    "proposal_id": "01M22DH80T096N7ZBNZ3AZANH3",
+    "resolved_event_id": "01M22DHXWK6ATVEPMSMS21D9WD",
+    "source_id": "01M21W3H91TRWQ6G4NPD4BJPHC"
+  },
+  "code": "proposal_recorded",
+  "error": null,
+  "event": {
+    "branch_id": null,
+    "created_at": 1788935206803,
+    "event_type": "proposal.applied",
+    "id": "01M22DHXWK6ATVEPMSMS21D9WD",
+    "importance": "normal",
+    "payload": {
+      "actor": "xq-merge-final-state-corrector",
+      "after_fingerprint": "sha256:14853e9b2f248b846c8b24e5c5e736d2211ab2426b1143dc96016a9babe2b82b",
+      "attempt_event_id": "01M22DHXW0ZXV7CQD88CMHQJN3",
+      "before_fingerprint": "sha256:991bb34984447d815d468bbad73f37dfc9fab5571dd59cb49deacf9d0dad6429",
+      "proposal_id": "01M22DH80T096N7ZBNZ3AZANH3",
+      "reason": "应用完成后现行下一步校正，使其只指向独立返检和最终交付门禁",
+      "source_id": "01M21W3H91TRWQ6G4NPD4BJPHC",
+      "source_revision": 24,
+      "target_after_hash": "cfcb38bcd3dac17f4c0b6ea57691030af58bcfdff7fa3c0f7fd3e449c009254e",
+      "target_revision": 7,
+      "write_plan_id": "01M22DHXVCQM9FVDP27CHFRN0C"
+    },
+    "project_id": "01M21W3H8XNKD8AKP4N1JNQQTM",
+    "project_revision": 255,
+    "session_id": null,
+    "summary": "Verified source mutation and projection",
+    "work_item_id": "01M21W3H92RVAXHPQ6ZEDVXV4S"
+  },
+  "ok": true,
+  "project_revision": 255,
+  "proposal": {
+    "base_fingerprint": "sha256:991bb34984447d815d468bbad73f37dfc9fab5571dd59cb49deacf9d0dad6429",
+    "created_by_session": "01M22DGDJ081585RHWQSGBA30N",
+    "expected_revision": 248,
+    "id": "01M22DH80T096N7ZBNZ3AZANH3",
+    "mutation_type": "update_fields",
+    "patch": {
+      "changes": {
+        "next_action": "本工作及本轮整改均已完成，认领已释放；固定整改版本已交回独立返检。由运营方另派不同独立参与者返检 XQ-R01/XQ-R02；仅在其再次完成 XQ-REVIEW 后才认领 XQ-DELIVER。"
+      },
+      "intent": "完成后复验发现 next_action 首句仍指向已经完成的验证和释放动作；只校正现行下一步，不改变完成状态、证据或历史",
+      "source_config": {
+        "adapter_options": {},
+        "adapter_version": 1,
+        "mapping_key": "ledger|work-ledger.yaml"
+      },
+      "target": {
+        "kind": "work_item",
+        "meta": {
+          "external_key": "XQ-MERGE",
+          "id": "01M21W3H92RVAXHPQ6ZEDVXV4S",
+          "revision": 6,
+          "source_ref": {
+            "end_line": null,
+            "locator": "file:///Users/mac/Documents/originone/agent-work-running/.local/business-live-20260909-v1/parallel-ownership/project/work-ledger.yaml",
+            "pointer": "/work_items/3",
+            "section_fingerprint": null,
+            "source_fingerprint": "sha256:991bb34984447d815d468bbad73f37dfc9fab5571dd59cb49deacf9d0dad6429",
+            "source_id": "01M21W3H91TRWQ6G4NPD4BJPHC",
+            "source_revision": 23,
+            "start_line": null
+          }
+        }
+      },
+      "version": 1
+    },
+    "project_id": "01M21W3H8XNKD8AKP4N1JNQQTM",
+    "revision": 5,
+    "source_id": "01M21W3H91TRWQ6G4NPD4BJPHC",
+    "status": "applied",
+    "work_item_id": "01M21W3H92RVAXHPQ6ZEDVXV4S"
+  },
+  "recovery_directory": ".awr/mutations/01M22DHXVCQM9FVDP27CHFRN0C",
+  "source_check": null,
+  "source_refresh_performed": true,
+  "source_write_performed": true,
+  "write_outcome": "applied"
+}

@@ -1,0 +1,49 @@
+{
+  "checkpoint": null,
+  "checkpoint_save": null,
+  "checkpoint_saves": {
+    "attempts": [],
+    "incomplete_count": 0,
+    "limit": 20,
+    "may_have_more": false
+  },
+  "claims": [
+    {
+      "acquired_at": 1788936646622,
+      "agent_id": "independent-reviewer-recheck",
+      "branch_id": null,
+      "expires_at": null,
+      "id": "01M22EXVYZ7TNS1ZD3Y7BSC2N2",
+      "project_id": "01M21W3H8XNKD8AKP4N1JNQQTM",
+      "released_at": null,
+      "revision": 1,
+      "session_id": "01M22EXK425XHY2N02VFPN7T6K",
+      "status": "active",
+      "work_item_id": "01M21W3H924SNZ0DV020S3BM69"
+    }
+  ],
+  "context_requires_refresh": true,
+  "freshness_basis": "runtime_database",
+  "inherited_checkpoint": null,
+  "inherited_checkpoint_save": null,
+  "ok": true,
+  "project_revision": 284,
+  "resumed_successor": null,
+  "session": {
+    "agent_id": "independent-reviewer-recheck",
+    "branch_id": null,
+    "end_project_revision": null,
+    "ended_at": null,
+    "id": "01M22EXK425XHY2N02VFPN7T6K",
+    "last_checkpoint_id": null,
+    "model": "gpt-6",
+    "project_id": "01M21W3H8XNKD8AKP4N1JNQQTM",
+    "provider": "openai-codex",
+    "revision": 1,
+    "start_project_revision": 282,
+    "started_at": 1788936637570,
+    "status": "active",
+    "work_item_id": "01M21W3H924SNZ0DV020S3BM69"
+  },
+  "source_refresh_performed": false
+}

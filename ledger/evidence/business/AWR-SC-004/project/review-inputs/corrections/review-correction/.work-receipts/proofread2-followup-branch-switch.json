@@ -1,0 +1,36 @@
+{
+  "event": {
+    "branch_id": "01M21Z7CBNFNN0B7HVMY9WTVTC",
+    "created_at": 1788922192580,
+    "event_type": "branch.switched",
+    "id": "01M2214RP45HPD0JBDQ6MYMWYN",
+    "importance": "normal",
+    "payload": {
+      "actor": "xq-content-reviewer-2",
+      "git_write_performed": false,
+      "reason": "继续跟进内容回复的现场接收确认，校对暂不交回协调者",
+      "selection": {
+        "current_branch_id": "01M21Z7CBNFNN0B7HVMY9WTVTC",
+        "previous_branch_id": null,
+        "retained_active_claims": 0,
+        "retained_active_sessions": 1
+      },
+      "source_write_performed": false
+    },
+    "project_id": "01M21W3H8XNKD8AKP4N1JNQQTM",
+    "project_revision": 85,
+    "session_id": null,
+    "summary": "Changed current work branch",
+    "work_item_id": null
+  },
+  "git_write_performed": false,
+  "project_id": "01M21W3H8XNKD8AKP4N1JNQQTM",
+  "project_revision": 85,
+  "selection": {
+    "current_branch_id": "01M21Z7CBNFNN0B7HVMY9WTVTC",
+    "previous_branch_id": null,
+    "retained_active_claims": 0,
+    "retained_active_sessions": 1
+  },
+  "source_write_performed": false
+}

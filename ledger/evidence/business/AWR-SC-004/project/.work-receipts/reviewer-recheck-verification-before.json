@@ -1,0 +1,75 @@
+{
+  "kind": "independent_recheck_verification",
+  "publications": [
+    {
+      "publication": "review-correction-publication.json",
+      "publication_sha256": "6c4a15d910a83eb44ee1967c6b6c25f17f4c5c32ebab54e8e4878f3fda5380d5",
+      "target": "review-inputs/corrections/review-correction",
+      "declared_files": 202,
+      "actual_files": 202,
+      "missing": [],
+      "mismatched": [],
+      "extras": [],
+      "listed_hashes_verified": true,
+      "exact_snapshot_verified": true
+    },
+    {
+      "publication": "review-input-publication.json",
+      "publication_sha256": "0fb081c8482a604e4e3cfc03857393fa38f1616c9a53b2a923c02dd9dbb6e01b",
+      "target": "review-inputs",
+      "declared_files": 147,
+      "actual_files": 359,
+      "missing": [],
+      "mismatched": [],
+      "extras": [],
+      "listed_hashes_verified": true,
+      "exact_snapshot_verified": false
+    },
+    {
+      "publication": "parallel-process-review-publication.json",
+      "publication_sha256": "55efb2f825d76ef3c30e93ac2fac0c0690e873c854a7e2f3ff4a367de3fca73e",
+      "target": "review-inputs/parallel-process-evidence",
+      "declared_files": 10,
+      "actual_files": 10,
+      "missing": [],
+      "mismatched": [],
+      "extras": [],
+      "listed_hashes_verified": true,
+      "exact_snapshot_verified": true
+    }
+  ],
+  "current_hashes_before_recheck_source_completion": {
+    "work-ledger.yaml": "c571682e22d0a891f8d7072c8f4ce4575909463b974e9443fe72f062d3b316ae",
+    "deliverables/xingqiao-independent-results.md": "681ebc8aa9988fe7d27d581eb4e76d68dc24dbacce49a59c5df17953311f8699",
+    "deliverables/xingqiao-content.md": "7fc0ccf93f8f8aa6b8d881c91c6f61dc32e63ed979f6cc120f5ba9086eb253c5",
+    "deliverables/xingqiao-venue.md": "3035f626d7ef00cd860d2fd4781513b76d9587b1e6c67924b549ce8865c828a6",
+    "deliverables/xingqiao-ownership.md": "d1238aea798cc63e1d190cb4cbae24ba0b415f786501e1221312d83dcfcceafc",
+    "deliverables/xingqiao-collaboration-review.md": "21e564a7fa985cb67a842e1e836ed84f9a69db2865c86171e0edef4df891d5c0",
+    "deliverables/xq-independent-review.md": "c4dd2d34080ba24bfdb3d8408990c55b2152c33241ab259b86e4d034335c9c13",
+    "materials/agenda.csv": "0b946ce991d14b6fe703e991a3192484888fbcda324969bf5d29eff347c92d05",
+    "materials/venue.md": "be74fba2f6c04946fcd19a676eaf7f4b6c721cc51e8728718cd0a6df06b28fb6"
+  },
+  "expected_current_hashes": {
+    "work-ledger.yaml": "c571682e22d0a891f8d7072c8f4ce4575909463b974e9443fe72f062d3b316ae",
+    "deliverables/xingqiao-independent-results.md": "681ebc8aa9988fe7d27d581eb4e76d68dc24dbacce49a59c5df17953311f8699",
+    "deliverables/xingqiao-content.md": "7fc0ccf93f8f8aa6b8d881c91c6f61dc32e63ed979f6cc120f5ba9086eb253c5",
+    "deliverables/xingqiao-venue.md": "3035f626d7ef00cd860d2fd4781513b76d9587b1e6c67924b549ce8865c828a6",
+    "deliverables/xingqiao-ownership.md": "d1238aea798cc63e1d190cb4cbae24ba0b415f786501e1221312d83dcfcceafc",
+    "deliverables/xingqiao-collaboration-review.md": "21e564a7fa985cb67a842e1e836ed84f9a69db2865c86171e0edef4df891d5c0",
+    "deliverables/xq-independent-review.md": "c4dd2d34080ba24bfdb3d8408990c55b2152c33241ab259b86e4d034335c9c13"
+  },
+  "checks": {
+    "correction_seal_sha_matches_operator": true,
+    "correction_publication_sha_matches_operator": true,
+    "current_correction_sources_and_artifacts_match": true,
+    "xq_r01_closed_in_current_ownership": true,
+    "xq_r02_all_completed": true,
+    "xq_r02_repeated_completion_language_removed": false,
+    "review_and_delivery_gate_current": false,
+    "unknowns_and_responsibilities_preserved": true,
+    "historical_conflicts_distinguished": true,
+    "first_review_preserved": true,
+    "final_delivery_absent": true
+  },
+  "passed": false
+}

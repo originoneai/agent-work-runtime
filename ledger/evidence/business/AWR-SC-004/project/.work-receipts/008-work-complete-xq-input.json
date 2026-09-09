@@ -1,0 +1,196 @@
+{
+  "ok": true,
+  "code": "proposal_recorded",
+  "project_revision": 28,
+  "proposal": {
+    "id": "01M21WNFTN5TXHR5KZ7PN1EQZ9",
+    "project_id": "01M21W3H8XNKD8AKP4N1JNQQTM",
+    "work_item_id": "01M21W3H92ENNZNW0MQM61AZND",
+    "source_id": "01M21W3H91TRWQ6G4NPD4BJPHC",
+    "base_fingerprint": "sha256:3e67fd64481aacf279f872a63a66c086b070a3657069f00915f2a60b3cbbff4a",
+    "expected_revision": 21,
+    "mutation_type": "work.complete",
+    "patch": {
+      "changes": {
+        "evidence": [
+          ".work-receipts/004-xq-input-evidence-report.json"
+        ],
+        "status": "completed",
+        "verification": {
+          "evidence_level": "locally_verified"
+        }
+      },
+      "intent": "共同约束已核对并形成可追溯双执行者分派基线",
+      "source_config": {
+        "adapter_options": {},
+        "adapter_version": 1,
+        "mapping_key": "ledger|work-ledger.yaml"
+      },
+      "target": {
+        "kind": "work_item",
+        "meta": {
+          "external_key": "XQ-INPUT",
+          "id": "01M21W3H92ENNZNW0MQM61AZND",
+          "revision": 2,
+          "source_ref": {
+            "end_line": null,
+            "locator": "file:///Users/mac/Documents/originone/agent-work-running/.local/business-live-20260909-v1/parallel-ownership/project/work-ledger.yaml",
+            "pointer": "/work_items/0",
+            "section_fingerprint": null,
+            "source_fingerprint": "sha256:3e67fd64481aacf279f872a63a66c086b070a3657069f00915f2a60b3cbbff4a",
+            "source_id": "01M21W3H91TRWQ6G4NPD4BJPHC",
+            "source_revision": 2,
+            "start_line": null
+          }
+        }
+      },
+      "version": 1,
+      "work_action": {
+        "action": "complete",
+        "completion": {
+          "acceptance": [
+            {
+              "criterion": "明确时长、布置收场和设备共享约束。",
+              "evidence": [
+                "01M21WM8HN4WMAG906HZ42RKEC"
+              ]
+            },
+            {
+              "criterion": "保留实际产物与来源引用，无法确认的内容显式说明。",
+              "evidence": [
+                "01M21WM8HN4WMAG906HZ42RKEC"
+              ]
+            }
+          ],
+          "evidence": [
+            {
+              "branch_id": null,
+              "command": "rtk proxy sh .work-receipts/verify-xq-input.sh",
+              "evidence_type": "report",
+              "external_key": "XQ-INPUT-CONSTRAINTS-20260909",
+              "id": "01M21WM8HN4WMAG906HZ42RKEC",
+              "level": "locally_verified",
+              "locator": ".work-receipts/004-xq-input-evidence-report.json",
+              "project_id": "01M21W3H8XNKD8AKP4N1JNQQTM",
+              "revision": 1,
+              "scope": [
+                "XQ-INPUT"
+              ],
+              "sha256": "4349c25259e4cde74df15cea5cf03eb13807a49b85b3da3cfc1e07b402986853",
+              "source_ref": null,
+              "source_sha": "8f4031f40c096691df03099c2382cbb86112be19",
+              "summary": "共同约束和双执行者分派基线已通过本地结构化核对。",
+              "verified_at": 1788917400000,
+              "work_item_id": "01M21W3H92ENNZNW0MQM61AZND"
+            }
+          ],
+          "minimum_level": "locally_verified",
+          "source_sha": "8f4031f40c096691df03099c2382cbb86112be19",
+          "version": 1
+        },
+        "from": "in_progress",
+        "to": "completed"
+      }
+    },
+    "status": "applied",
+    "created_by_session": "01M21W6Z2DJWT1M8BK8H66KD5T",
+    "revision": 5
+  },
+  "event": {
+    "id": "01M21WNFW9ADRYQ9CMNPM4H9QC",
+    "project_id": "01M21W3H8XNKD8AKP4N1JNQQTM",
+    "work_item_id": "01M21W3H92ENNZNW0MQM61AZND",
+    "session_id": null,
+    "branch_id": null,
+    "event_type": "work.completed",
+    "importance": "normal",
+    "summary": "Verified source work action Complete",
+    "payload": {
+      "action_reason": "共同约束已核对并形成可追溯双执行者分派基线",
+      "actor": "dispatch-coordinator",
+      "after_fingerprint": "sha256:59433c317c60858c43f145416eb0ba4e12f197a31d796596287873319008e574",
+      "attempt_event_id": "01M21WNFVK8SCB6R7M7E1A1BEZ",
+      "before_fingerprint": "sha256:3e67fd64481aacf279f872a63a66c086b070a3657069f00915f2a60b3cbbff4a",
+      "creating_session_id": "01M21W6Z2DJWT1M8BK8H66KD5T",
+      "proposal_id": "01M21WNFTN5TXHR5KZ7PN1EQZ9",
+      "reason": "共同约束已核对并形成可追溯双执行者分派基线",
+      "released_claim_ids": [
+        "01M21W6Z2D44W22V0DGHWX9XPW"
+      ],
+      "source_id": "01M21W3H91TRWQ6G4NPD4BJPHC",
+      "source_revision": 3,
+      "target_after_hash": "1e5950e0bbd3c5cce56be1bd142a4a4698279ed51dd746484b2e22d0780c2643",
+      "target_revision": 3,
+      "work_action": {
+        "action": "complete",
+        "completion": {
+          "acceptance": [
+            {
+              "criterion": "明确时长、布置收场和设备共享约束。",
+              "evidence": [
+                "01M21WM8HN4WMAG906HZ42RKEC"
+              ]
+            },
+            {
+              "criterion": "保留实际产物与来源引用，无法确认的内容显式说明。",
+              "evidence": [
+                "01M21WM8HN4WMAG906HZ42RKEC"
+              ]
+            }
+          ],
+          "evidence": [
+            {
+              "branch_id": null,
+              "command": "rtk proxy sh .work-receipts/verify-xq-input.sh",
+              "evidence_type": "report",
+              "external_key": "XQ-INPUT-CONSTRAINTS-20260909",
+              "id": "01M21WM8HN4WMAG906HZ42RKEC",
+              "level": "locally_verified",
+              "locator": ".work-receipts/004-xq-input-evidence-report.json",
+              "project_id": "01M21W3H8XNKD8AKP4N1JNQQTM",
+              "revision": 1,
+              "scope": [
+                "XQ-INPUT"
+              ],
+              "sha256": "4349c25259e4cde74df15cea5cf03eb13807a49b85b3da3cfc1e07b402986853",
+              "source_ref": null,
+              "source_sha": "8f4031f40c096691df03099c2382cbb86112be19",
+              "summary": "共同约束和双执行者分派基线已通过本地结构化核对。",
+              "verified_at": 1788917400000,
+              "work_item_id": "01M21W3H92ENNZNW0MQM61AZND"
+            }
+          ],
+          "minimum_level": "locally_verified",
+          "source_sha": "8f4031f40c096691df03099c2382cbb86112be19",
+          "version": 1
+        },
+        "from": "in_progress",
+        "to": "completed"
+      },
+      "write_plan_id": "01M21WNFV1MYRAKVA025HVJYW5"
+    },
+    "project_revision": 28,
+    "created_at": 1788917497737
+  },
+  "source_refresh_performed": true,
+  "source_write_performed": true,
+  "write_outcome": "applied",
+  "apply_attempt": {
+    "event_id": "01M21WNFVK8SCB6R7M7E1A1BEZ",
+    "proposal_id": "01M21WNFTN5TXHR5KZ7PN1EQZ9",
+    "source_id": "01M21W3H91TRWQ6G4NPD4BJPHC",
+    "project_revision": 25,
+    "plan": {
+      "id": "01M21WNFV1MYRAKVA025HVJYW5",
+      "before_fingerprint": "sha256:3e67fd64481aacf279f872a63a66c086b070a3657069f00915f2a60b3cbbff4a",
+      "after_fingerprint": "sha256:59433c317c60858c43f145416eb0ba4e12f197a31d796596287873319008e574",
+      "before_size": 2962,
+      "after_size": 3022,
+      "target_after_hash": "1e5950e0bbd3c5cce56be1bd142a4a4698279ed51dd746484b2e22d0780c2643"
+    },
+    "resolved_event_id": "01M21WNFW9ADRYQ9CMNPM4H9QC"
+  },
+  "recovery_directory": ".awr/mutations/01M21WNFV1MYRAKVA025HVJYW5",
+  "source_check": null,
+  "error": null
+}

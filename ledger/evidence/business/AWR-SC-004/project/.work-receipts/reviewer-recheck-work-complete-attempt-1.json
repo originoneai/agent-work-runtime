@@ -1,0 +1,14 @@
+{
+  "kind": "awr_work_complete_failed_attempt",
+  "attempted_at": "2026-09-09T15:05:00+08:00",
+  "work": "XQ-REVIEW",
+  "session_id": "01M22EXK425XHY2N02VFPN7T6K",
+  "expected_project_revision": 299,
+  "input": ".work-receipts/reviewer-recheck-completion-input.json",
+  "exit_code": 1,
+  "error": {
+    "code": "EvidenceMissing",
+    "message": "required evidence missing: evidence 01M22FSCP6GBWK4E81ZY0ZEC1W has no valid completion report: missing field `version` at line 73 column 1"
+  },
+  "resolution": "Preserve the invalid report bytes separately, add the required version field to the completion report, register a new evidence key bound to the corrected hash, and retry only at the latest observed project revision."
+}

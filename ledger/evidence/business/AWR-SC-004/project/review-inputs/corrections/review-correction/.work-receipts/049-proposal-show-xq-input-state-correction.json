@@ -1,0 +1,64 @@
+{
+  "apply_attempt": {
+    "event_id": "01M22C4H82D0XP1Q6K0MKQ5P2M",
+    "plan": {
+      "after_fingerprint": "sha256:3c0dfa8c3e986b0c818c9a2cbe82d8ad87c0f46cac947de2586eba6e21c0b9bb",
+      "after_size": 4622,
+      "before_fingerprint": "sha256:763ff83539c20879ed708bd77927dee15f13930134ba0fc21f8424d96bd09df2",
+      "before_size": 4541,
+      "id": "01M22C4H7DSBS7199YZNQ38TPG",
+      "target_after_hash": "34bc1bbe485f5437620bfbc647fb270cb815c5b1d78143e7f712fb28657155d4"
+    },
+    "project_revision": 207,
+    "proposal_id": "01M22C3ATZBEZRW86EFK653TVX",
+    "resolved_event_id": "01M22C4H8MG88E5G12JFKZJ052",
+    "source_id": "01M21W3H91TRWQ6G4NPD4BJPHC"
+  },
+  "ok": true,
+  "patch_included": true,
+  "project_revision": 229,
+  "proposal": {
+    "base_fingerprint": "sha256:763ff83539c20879ed708bd77927dee15f13930134ba0fc21f8424d96bd09df2",
+    "created_by_session": "01M22C2X6E239YDWE34M4KADFY",
+    "expected_revision": 203,
+    "id": "01M22C3ATZBEZRW86EFK653TVX",
+    "mutation_type": "update_fields",
+    "patch": {
+      "changes": {
+        "next_action": "本工作已完成；85/90/10 分钟、单投影和三组桌面约束继续作为返检与后续现场确认的来源，不再重复执行本工作。"
+      },
+      "intent": "校正 completed 工作项的过时下一步，不改变完成状态、验收证据或历史",
+      "source_config": {
+        "adapter_options": {},
+        "adapter_version": 1,
+        "mapping_key": "ledger|work-ledger.yaml"
+      },
+      "target": {
+        "kind": "work_item",
+        "meta": {
+          "external_key": "XQ-INPUT",
+          "id": "01M21W3H92ENNZNW0MQM61AZND",
+          "revision": 3,
+          "source_ref": {
+            "end_line": null,
+            "locator": "file:///Users/mac/Documents/originone/agent-work-running/.local/business-live-20260909-v1/parallel-ownership/project/work-ledger.yaml",
+            "pointer": "/work_items/0",
+            "section_fingerprint": null,
+            "source_fingerprint": "sha256:763ff83539c20879ed708bd77927dee15f13930134ba0fc21f8424d96bd09df2",
+            "source_id": "01M21W3H91TRWQ6G4NPD4BJPHC",
+            "source_revision": 18,
+            "start_line": null
+          }
+        }
+      },
+      "version": 1
+    },
+    "project_id": "01M21W3H8XNKD8AKP4N1JNQQTM",
+    "revision": 5,
+    "source_id": "01M21W3H91TRWQ6G4NPD4BJPHC",
+    "status": "applied",
+    "work_item_id": "01M21W3H92ENNZNW0MQM61AZND"
+  },
+  "read_only": true,
+  "source_refresh_performed": false
+}

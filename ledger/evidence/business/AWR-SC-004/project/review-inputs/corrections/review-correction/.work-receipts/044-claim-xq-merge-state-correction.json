@@ -1,0 +1,33 @@
+{
+  "claim": {
+    "acquired_at": 1788933189809,
+    "agent_id": "xq-state-correction-coordinator",
+    "branch_id": null,
+    "expires_at": 1788936789809,
+    "id": "01M22BMC5JFKE3VAMQFCBXGABB",
+    "project_id": "01M21W3H8XNKD8AKP4N1JNQQTM",
+    "released_at": null,
+    "revision": 1,
+    "session_id": "01M22BK3JB8VGGGBC2AWHSHGT2",
+    "status": "active",
+    "work_item_id": "01M21W3H92RVAXHPQ6ZEDVXV4S"
+  },
+  "event": {
+    "artifact_id": null,
+    "branch_id": null,
+    "checkpoint_id": null,
+    "created_at": 1788933189810,
+    "id": "01M22BMC5J2TQ772B06M3DAHWT",
+    "importance": "normal",
+    "project_revision": 193,
+    "session_id": "01M22BK3JB8VGGGBC2AWHSHGT2",
+    "source_id": null,
+    "summary": "Acquired runtime work claim",
+    "type": "work.claimed",
+    "work_item_id": "01M21W3H92RVAXHPQ6ZEDVXV4S"
+  },
+  "freshness_basis": "source_refresh",
+  "ok": true,
+  "project_revision": 193,
+  "source_refresh_performed": true
+}

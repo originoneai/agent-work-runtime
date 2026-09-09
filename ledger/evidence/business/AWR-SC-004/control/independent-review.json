@@ -1,0 +1,257 @@
+{
+  "kind": "xq_independent_review",
+  "scenario": "parallel-ownership",
+  "work_item": "XQ-REVIEW",
+  "recorded_at": 1788932531000,
+  "reviewer": {
+    "agent_id": "luna_worker",
+    "independent_from_all_producers": true,
+    "source_commit": "8f4031f40c096691df03099c2382cbb86112be19",
+    "session_id": "01M22A0GPWAEKDDQBCGV95Q1BS",
+    "session_status": "ended",
+    "claim_id": "01M22A0GPXF2J8399BEE4TTGJX",
+    "claim_status": "released",
+    "checkpoint_id": "01M22AV8ZPTFQKVS8PWSJQC2FS"
+  },
+  "verdict": {
+    "value": "requires_executor_changes",
+    "accepted_findings": [
+      "two actual producer roles independently authored content and venue outputs",
+      "a later AWR work branch existed and its shared-Git limitation is retained",
+      "late ClaimConflict is bound separately from early RevisionConflict",
+      "third actual participant received C→V-01 through C→V-04 and handed unfinished venue verification back",
+      "two natural followups plus later wording correction form a traceable preparation chain",
+      "85/90/10 and 5-minute gap, single projector, and conditional three-table plan are internally consistent",
+      "venue, equipment, people, finished materials and external receipt facts remain unresolved"
+    ],
+    "defects": [
+      {
+        "id": "XQ-R01",
+        "summary": "xingqiao-ownership.md still says the ended content executor session remains active."
+      },
+      {
+        "id": "XQ-R02",
+        "summary": "XQ-INPUT, XQ-CONTENT, XQ-VENUE and XQ-MERGE are completed but retain stale in-progress or pre-completion summary/next_action text."
+      }
+    ],
+    "whole_scenario_e4": false,
+    "final_delivery_performed": false
+  },
+  "publications": {
+    "main": {
+      "path": "../control/review-input-publication.json",
+      "sha256": "0fb081c8482a604e4e3cfc03857393fa38f1616c9a53b2a923c02dd9dbb6e01b",
+      "declared": 147,
+      "actual": 147,
+      "missing": [],
+      "extra": [],
+      "mismatches": []
+    },
+    "parallel_process": {
+      "path": "../control/parallel-process-review-publication.json",
+      "sha256": "55efb2f825d76ef3c30e93ac2fac0c0690e873c854a7e2f3ff4a367de3fca73e",
+      "declared": 10,
+      "actual": 10,
+      "missing": [],
+      "extra": [],
+      "mismatches": []
+    }
+  },
+  "producer_clients": {
+    "coordinator": {
+      "native_id": "01a083c0-2c0b-7fc1-ba7d-0b0721dfeb0f",
+      "coordination_correction_exit_code": 0,
+      "coordination_correction_command_count": 87,
+      "publicly_bound_artifact_count": 5,
+      "private_command_transcript_published": false
+    },
+    "venue_and_peer_review": {
+      "native_id": "01a083ca-4a86-7b81-93cd-59afa64767e0",
+      "peer_initial_seal_sha256": "0cb4af31f665beee96aab94edf9e7f4576557837aa1aa72fafbb1aa5a81e921e"
+    },
+    "venue_successor": {
+      "native_id": "01a08460-5417-75c3-8ee2-7249153e9c67",
+      "awr_session_id": "01M22688HDB0K4K691RF9CB8TC",
+      "checkpoint_id": "01M226KV47XENA1P03FR5D1QG7"
+    }
+  },
+  "authorship": [
+    {
+      "path": "deliverables/xingqiao-content.md",
+      "sha256": "7fc0ccf93f8f8aa6b8d881c91c6f61dc32e63ed979f6cc120f5ba9086eb253c5",
+      "producing_turn": "coordination-correction",
+      "actual_client_task_id": "01a083c0-2c0b-7fc1-ba7d-0b0721dfeb0f",
+      "authorship_note": "Actual producing native phase; later shared snapshots only observe this version."
+    },
+    {
+      "path": "deliverables/xingqiao-independent-results.md",
+      "sha256": "6060f7ed92faa5cdb44a95838f0d3d465b9f67012ee31f1c2be8883c89aff9c1",
+      "producing_turn": "coordination-correction",
+      "actual_client_task_id": "01a083c0-2c0b-7fc1-ba7d-0b0721dfeb0f",
+      "authorship_note": "Actual producing native phase; later shared snapshots only observe this version."
+    },
+    {
+      "path": "deliverables/xingqiao-ownership.md",
+      "sha256": "2658295d0430fd4d63104c74e46e4f1c86a9b1d94c4e322d004c4932bcc0dbad",
+      "producing_turn": "venue-continuation",
+      "actual_client_task_id": "01a08460-5417-75c3-8ee2-7249153e9c67",
+      "authorship_note": "Actual producing native phase; later shared snapshots only observe this version."
+    },
+    {
+      "path": "deliverables/xingqiao-collaboration-review.md",
+      "sha256": "21e564a7fa985cb67a842e1e836ed84f9a69db2865c86171e0edef4df891d5c0",
+      "producing_turn": "peer-receipt-followthrough",
+      "actual_client_task_id": "01a083ca-4a86-7b81-93cd-59afa64767e0",
+      "authorship_note": "Actual producing native phase; later shared snapshots only observe this version."
+    },
+    {
+      "path": "deliverables/xingqiao-venue.md",
+      "sha256": "3035f626d7ef00cd860d2fd4781513b76d9587b1e6c67924b549ce8865c828a6",
+      "producing_turn": "peer-initial",
+      "actual_client_task_id": "01a083ca-4a86-7b81-93cd-59afa64767e0",
+      "authorship_note": "Actual producing native phase; later shared snapshots only observe this version."
+    }
+  ],
+  "current_artifacts_sha256": {
+    "deliverables/xingqiao-independent-results.md": "6060f7ed92faa5cdb44a95838f0d3d465b9f67012ee31f1c2be8883c89aff9c1",
+    "deliverables/xingqiao-content.md": "7fc0ccf93f8f8aa6b8d881c91c6f61dc32e63ed979f6cc120f5ba9086eb253c5",
+    "deliverables/xingqiao-venue.md": "3035f626d7ef00cd860d2fd4781513b76d9587b1e6c67924b549ce8865c828a6",
+    "deliverables/xingqiao-ownership.md": "2658295d0430fd4d63104c74e46e4f1c86a9b1d94c4e322d004c4932bcc0dbad",
+    "deliverables/xingqiao-collaboration-review.md": "21e564a7fa985cb67a842e1e836ed84f9a69db2865c86171e0edef4df891d5c0"
+  },
+  "process_evidence": {
+    "actual_parallel_conflict_binding_sha256": "f8be71015503c776048b389f90540c980711254b1d3ab095c5e19671d3b5823c",
+    "artifact_authorship_correction_sha256": "8f266679f4fa8cf63de4698f50dd18387a7a8cdec6a8250362649dc1a101b6f8",
+    "parallel_branch_observation_sha256": "ad4b1941130b15c27f4ff7325080c95875f02068316717cb3500f581e5b66006",
+    "early_revision_conflict": {
+      "code": "RevisionConflict",
+      "message": "revision conflict: expected 29, actual 31",
+      "details": {
+        "actual": 31,
+        "expected": 29
+      }
+    },
+    "late_claim_conflict": {
+      "code": "ClaimConflict",
+      "receipt": ".work-receipts/018-work-progress-xq-content-handoff-wording-conflict.json",
+      "receipt_sha256": "d9d01e9a41934057f3a39dc1f871f6ce57751107a565267ba6b5b5ad61febbea",
+      "native_item_id": "item_40"
+    },
+    "initial_peer_independent_branch_observed": false,
+    "later_runtime_branch": {
+      "name": "xq-content-proofread-2",
+      "id": "01M21Z7CBNFNN0B7HVMY9WTVTC",
+      "git_ref": "refs/heads/main",
+      "git_file_isolation": false
+    }
+  },
+  "review_artifacts": {
+    "report": {
+      "path": "project/deliverables/xq-independent-review.md",
+      "sha256": "c4dd2d34080ba24bfdb3d8408990c55b2152c33241ab259b86e4d034335c9c13"
+    },
+    "verification": {
+      "path": "project/.work-receipts/reviewer-verification.json",
+      "sha256": "859bd48d3c61eea5e2d37d0d100ff228acbb5c6a8ccc7279bb3d6a3139580c4b",
+      "check_count": 26,
+      "ok": true
+    },
+    "completion_report": {
+      "path": "project/.work-receipts/reviewer-completion-report.json",
+      "sha256": "701e78e14fd895ab32e4538171cdf515dea691b1263cc50864c9e57a2fce7296"
+    },
+    "operator_failures": {
+      "path": "project/.work-receipts/reviewer-operator-failures.json",
+      "sha256": "b5f749e9bc86b3ffa0199747a51338759ecccca811652f20aee8b5ac940b8a8e"
+    },
+    "evidence_key": "XQ-INDEPENDENT-REVIEW-20260909"
+  },
+  "awr": {
+    "project_revision": 184,
+    "source_revision": 16,
+    "source_ledger_sha256": "6053d22cac099d54d50a6949e5be82e8326c574f8fb79e301a8395a98ed1dc47",
+    "counts": {
+      "completed": 5,
+      "planned": 1
+    },
+    "xq_review": {
+      "status": "completed",
+      "revision": 3,
+      "summary": "独立复核已核对两项产物、十阶段修订、真实作者、冲突与接续；发现当前分工/AWR 状态现行性缺陷，需原执行者整改",
+      "next_action": "原协调客户端修正分工记录中的已结束会话状态，并用正常 AWR 流程校正 XQ-INPUT、XQ-CONTENT、XQ-VENUE、XQ-MERGE 的过时 summary/next_action；保留历史快照、冲突和失败后交回独立返检",
+      "owner": null,
+      "active_claims": []
+    },
+    "xq_deliver": {
+      "status": "planned",
+      "graph_ready": true,
+      "blocked_by_review_verdict": true,
+      "owner": null,
+      "active_claims": [],
+      "missing_dependencies": []
+    },
+    "doctor": {
+      "ok": true,
+      "database_ok": true,
+      "integrity": [
+        "ok"
+      ],
+      "foreign_key_violations": 0,
+      "schema_issues": [],
+      "findings": []
+    }
+  },
+  "failures": {
+    "kind": "xq_independent_review_failures",
+    "recorded_at": 1788932441656,
+    "reviewer_failures": [
+      {
+        "step": "first reviewer verification run",
+        "result": "failed_assertion",
+        "detail": "successor_scope_stays_bounded was false because the verifier required wording that differed from the actual bounded statement.",
+        "evidence": ".work-receipts/reviewer-verification-attempt-1.json",
+        "sha256": "9db0eeae04db343f81366f937e3d90a690efb8309a1706bbfdf93371d2627a24",
+        "recovery": "Updated only the assertion to match the exact producer wording and reran all 26 checks successfully.",
+        "source_or_business_mutation": false
+      }
+    ],
+    "preserved_process_failures": [
+      {
+        "code": "RevisionConflict",
+        "receipt": ".work-receipts/xq-venue-progress-conflict-r29.json",
+        "sha256": "b933a12b7d7575bf87bd54fd014c04df0ebc4e6dbef7d6131d8f9e1ca3d55181"
+      },
+      {
+        "code": "ClaimConflict",
+        "receipt": ".work-receipts/018-work-progress-xq-content-handoff-wording-conflict.json",
+        "sha256": "d9d01e9a41934057f3a39dc1f871f6ce57751107a565267ba6b5b5ad61febbea"
+      },
+      {
+        "code": "peer_initial_failed_attempts",
+        "count": 6,
+        "source": "review-inputs/parallel-process-evidence/peer-initial-sealed.json"
+      }
+    ],
+    "producer_files_modified": false
+  },
+  "unknowns": [
+    "absolute event and venue times and the 90+10 boundary",
+    "venue size, table capacity, sight lines, safety routes and move time",
+    "projector hardware, interfaces, cables, signal source, operator and test result",
+    "attendee and staff roles",
+    "finished presentation, PDF, fallback outline, prompts and discussion materials",
+    "audio, power, adapters, paper and other quantities and custody",
+    "external send or venue-execution acknowledgement",
+    "final delivery, on-site readiness and whole-scenario E4"
+  ],
+  "exact_next_action": "Return XQ-R01 and XQ-R02 to native coordinator 01a083c0-2c0b-7fc1-ba7d-0b0721dfeb0f. Preserve all five producer artifacts, historical snapshots and failures; correct the current ownership status and completed-work summary/next_action through normal AWR, then reopen XQ-REVIEW for a different participant. Do not run XQ-DELIVER merely because the dependency graph is ready.",
+  "boundaries": {
+    "producer_files_modified_by_reviewer": false,
+    "old_receipts_modified": false,
+    "native_or_kimi_clients_started": false,
+    "subagents_started": false,
+    "git_commit_or_publish_performed": false,
+    "final_delivery_performed": false,
+    "whole_scenario_e4_granted": false
+  }
+}

@@ -1,0 +1,108 @@
+{
+  "ok": true,
+  "code": "proposal_recorded",
+  "project_revision": 104,
+  "proposal": {
+    "id": "01M223PHC3G31GEFNYT70WSGW5",
+    "project_id": "01M21W3H8XNKD8AKP4N1JNQQTM",
+    "work_item_id": "01M21W3H924XZK5JAZCTWTQPJH",
+    "source_id": "01M21W3H91TRWQ6G4NPD4BJPHC",
+    "base_fingerprint": "sha256:13a426a9dff824fe1f20daa8f5a781ad3b61f814f6e8c0dd839877b87c046c12",
+    "expected_revision": 97,
+    "mutation_type": "work.progress",
+    "patch": {
+      "changes": {
+        "next_action": "由内容执行者完成 C→V-01 至 C→V-04 的实际发送并取得现场接收确认，同时继续补齐案例材料、人员设备信息和场地方条件。",
+        "status": "in_progress",
+        "summary": "分工与交接基线已明确；现场保障独立产物已完成，内容安排已结合其回执修订，C→V 回复仍待实际发送和现场接收确认。"
+      },
+      "intent": "按双执行者并行边界重新核对分工、独占产物与双向交接状态",
+      "source_config": {
+        "adapter_options": {},
+        "adapter_version": 1,
+        "mapping_key": "ledger|work-ledger.yaml"
+      },
+      "target": {
+        "kind": "work_item",
+        "meta": {
+          "external_key": "XQ-CONTENT",
+          "id": "01M21W3H924XZK5JAZCTWTQPJH",
+          "revision": 3,
+          "source_ref": {
+            "end_line": null,
+            "locator": "file:///Users/mac/Documents/originone/agent-work-running/.local/business-live-20260909-v1/parallel-ownership/project/work-ledger.yaml",
+            "pointer": "/work_items/1",
+            "section_fingerprint": null,
+            "source_fingerprint": "sha256:13a426a9dff824fe1f20daa8f5a781ad3b61f814f6e8c0dd839877b87c046c12",
+            "source_id": "01M21W3H91TRWQ6G4NPD4BJPHC",
+            "source_revision": 7,
+            "start_line": null
+          }
+        }
+      },
+      "version": 1,
+      "work_action": {
+        "action": "progress",
+        "from": "in_progress",
+        "to": "in_progress"
+      }
+    },
+    "status": "applied",
+    "created_by_session": "01M21WYFWXQHZNK0BJTYVD8N1K",
+    "revision": 5
+  },
+  "event": {
+    "id": "01M223PHDPB8DBKSY93NY2AM6T",
+    "project_id": "01M21W3H8XNKD8AKP4N1JNQQTM",
+    "work_item_id": "01M21W3H924XZK5JAZCTWTQPJH",
+    "session_id": null,
+    "branch_id": null,
+    "event_type": "work.progressed",
+    "importance": "normal",
+    "summary": "Verified source work action Progress",
+    "payload": {
+      "action_reason": "按双执行者并行边界重新核对分工、独占产物与双向交接状态",
+      "actor": "xq-content-executor",
+      "after_fingerprint": "sha256:c54ce22df9cb4690c4d67c0a756d4d45f7c845884a8adb580aa075646a354c4c",
+      "attempt_event_id": "01M223PHD137NMCRTRAZHY2QMY",
+      "before_fingerprint": "sha256:13a426a9dff824fe1f20daa8f5a781ad3b61f814f6e8c0dd839877b87c046c12",
+      "creating_session_id": "01M21WYFWXQHZNK0BJTYVD8N1K",
+      "proposal_id": "01M223PHC3G31GEFNYT70WSGW5",
+      "reason": "按双执行者并行边界重新核对分工、独占产物与双向交接状态",
+      "released_claim_ids": [],
+      "source_id": "01M21W3H91TRWQ6G4NPD4BJPHC",
+      "source_revision": 8,
+      "target_after_hash": "823179287c3b7af372a34710714addebf1246c7645db46aea6979169a87a1f27",
+      "target_revision": 4,
+      "work_action": {
+        "action": "progress",
+        "from": "in_progress",
+        "to": "in_progress"
+      },
+      "write_plan_id": "01M223PHCD9NT2M561W9QJ9YZE"
+    },
+    "project_revision": 104,
+    "created_at": 1788924872118
+  },
+  "source_refresh_performed": true,
+  "source_write_performed": true,
+  "write_outcome": "applied",
+  "apply_attempt": {
+    "event_id": "01M223PHD137NMCRTRAZHY2QMY",
+    "proposal_id": "01M223PHC3G31GEFNYT70WSGW5",
+    "source_id": "01M21W3H91TRWQ6G4NPD4BJPHC",
+    "project_revision": 101,
+    "plan": {
+      "id": "01M223PHCD9NT2M561W9QJ9YZE",
+      "before_fingerprint": "sha256:13a426a9dff824fe1f20daa8f5a781ad3b61f814f6e8c0dd839877b87c046c12",
+      "after_fingerprint": "sha256:c54ce22df9cb4690c4d67c0a756d4d45f7c845884a8adb580aa075646a354c4c",
+      "before_size": 3534,
+      "after_size": 3573,
+      "target_after_hash": "823179287c3b7af372a34710714addebf1246c7645db46aea6979169a87a1f27"
+    },
+    "resolved_event_id": "01M223PHDPB8DBKSY93NY2AM6T"
+  },
+  "recovery_directory": ".awr/mutations/01M223PHCD9NT2M561W9QJ9YZE",
+  "source_check": null,
+  "error": null
+}

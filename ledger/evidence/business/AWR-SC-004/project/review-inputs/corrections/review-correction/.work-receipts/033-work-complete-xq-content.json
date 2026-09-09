@@ -1,0 +1,196 @@
+{
+  "ok": true,
+  "code": "proposal_recorded",
+  "project_revision": 145,
+  "proposal": {
+    "id": "01M228KN11F5MN10W4W8ARN8XB",
+    "project_id": "01M21W3H8XNKD8AKP4N1JNQQTM",
+    "work_item_id": "01M21W3H924XZK5JAZCTWTQPJH",
+    "source_id": "01M21W3H91TRWQ6G4NPD4BJPHC",
+    "base_fingerprint": "sha256:aa2383a1480e9f4249369187eb43318edd736b73b742f320d0286732eed8408b",
+    "expected_revision": 138,
+    "mutation_type": "work.complete",
+    "patch": {
+      "changes": {
+        "evidence": [
+          ".work-receipts/xq-content-handoff-ready-evidence-report.json"
+        ],
+        "status": "completed",
+        "verification": {
+          "evidence_level": "locally_verified"
+        }
+      },
+      "intent": "内容安排状态已按实际接续回执校正，来源、原稿与未知项已保留，本地验收证据已登记",
+      "source_config": {
+        "adapter_options": {},
+        "adapter_version": 1,
+        "mapping_key": "ledger|work-ledger.yaml"
+      },
+      "target": {
+        "kind": "work_item",
+        "meta": {
+          "external_key": "XQ-CONTENT",
+          "id": "01M21W3H924XZK5JAZCTWTQPJH",
+          "revision": 7,
+          "source_ref": {
+            "end_line": null,
+            "locator": "file:///Users/mac/Documents/originone/agent-work-running/.local/business-live-20260909-v1/parallel-ownership/project/work-ledger.yaml",
+            "pointer": "/work_items/1",
+            "section_fingerprint": null,
+            "source_fingerprint": "sha256:aa2383a1480e9f4249369187eb43318edd736b73b742f320d0286732eed8408b",
+            "source_id": "01M21W3H91TRWQ6G4NPD4BJPHC",
+            "source_revision": 11,
+            "start_line": null
+          }
+        }
+      },
+      "version": 1,
+      "work_action": {
+        "action": "complete",
+        "completion": {
+          "acceptance": [
+            {
+              "criterion": "交付各环节安排及现场需要配合的事项。",
+              "evidence": [
+                "01M228CSKEBCC0P4CB4VAN3JP8"
+              ]
+            },
+            {
+              "criterion": "保留实际产物与来源引用，无法确认的内容显式说明。",
+              "evidence": [
+                "01M228CSKEBCC0P4CB4VAN3JP8"
+              ]
+            }
+          ],
+          "evidence": [
+            {
+              "branch_id": null,
+              "command": "rtk proxy sh .work-receipts/verify-xq-content-handoff-ready.sh",
+              "evidence_type": "report",
+              "external_key": "XQ-CONTENT-HANDOFF-READY-20260909",
+              "id": "01M228CSKEBCC0P4CB4VAN3JP8",
+              "level": "locally_verified",
+              "locator": ".work-receipts/xq-content-handoff-ready-evidence-report.json",
+              "project_id": "01M21W3H8XNKD8AKP4N1JNQQTM",
+              "revision": 1,
+              "scope": [
+                "XQ-CONTENT"
+              ],
+              "sha256": "22515bd9f28cba00881269097d7aec79fbf0d856c6cbc83ef95ea5a90466788b",
+              "source_ref": null,
+              "source_sha": "8f4031f40c096691df03099c2382cbb86112be19",
+              "summary": "内容安排已依据实际接续回执校正状态，保留原稿、原现场方案和全部尚未确认的执行条件。",
+              "verified_at": 1788929684000,
+              "work_item_id": "01M21W3H924XZK5JAZCTWTQPJH"
+            }
+          ],
+          "minimum_level": "locally_verified",
+          "source_sha": "8f4031f40c096691df03099c2382cbb86112be19",
+          "version": 1
+        },
+        "from": "in_progress",
+        "to": "completed"
+      }
+    },
+    "status": "applied",
+    "created_by_session": "01M21WYFWXQHZNK0BJTYVD8N1K",
+    "revision": 5
+  },
+  "event": {
+    "id": "01M228KN2NYA90W55SE95PMAYM",
+    "project_id": "01M21W3H8XNKD8AKP4N1JNQQTM",
+    "work_item_id": "01M21W3H924XZK5JAZCTWTQPJH",
+    "session_id": null,
+    "branch_id": null,
+    "event_type": "work.completed",
+    "importance": "normal",
+    "summary": "Verified source work action Complete",
+    "payload": {
+      "action_reason": "内容安排状态已按实际接续回执校正，来源、原稿与未知项已保留，本地验收证据已登记",
+      "actor": "xq-content-executor",
+      "after_fingerprint": "sha256:0b4587df70eb5ebd01f8f733f3eb9996bffca9f96bcb21ab3ad5366109ad5ad9",
+      "attempt_event_id": "01M228KN1ZK7G2P0RR4CSH3Z5Y",
+      "before_fingerprint": "sha256:aa2383a1480e9f4249369187eb43318edd736b73b742f320d0286732eed8408b",
+      "creating_session_id": "01M21WYFWXQHZNK0BJTYVD8N1K",
+      "proposal_id": "01M228KN11F5MN10W4W8ARN8XB",
+      "reason": "内容安排状态已按实际接续回执校正，来源、原稿与未知项已保留，本地验收证据已登记",
+      "released_claim_ids": [
+        "01M227Y9JAEGT1EWRJ40TJ2A1J"
+      ],
+      "source_id": "01M21W3H91TRWQ6G4NPD4BJPHC",
+      "source_revision": 12,
+      "target_after_hash": "e5a1a7a77b2a47fa5551aee76e3017d97f07eeccb45d1f06f1ee344494cae5ca",
+      "target_revision": 8,
+      "work_action": {
+        "action": "complete",
+        "completion": {
+          "acceptance": [
+            {
+              "criterion": "交付各环节安排及现场需要配合的事项。",
+              "evidence": [
+                "01M228CSKEBCC0P4CB4VAN3JP8"
+              ]
+            },
+            {
+              "criterion": "保留实际产物与来源引用，无法确认的内容显式说明。",
+              "evidence": [
+                "01M228CSKEBCC0P4CB4VAN3JP8"
+              ]
+            }
+          ],
+          "evidence": [
+            {
+              "branch_id": null,
+              "command": "rtk proxy sh .work-receipts/verify-xq-content-handoff-ready.sh",
+              "evidence_type": "report",
+              "external_key": "XQ-CONTENT-HANDOFF-READY-20260909",
+              "id": "01M228CSKEBCC0P4CB4VAN3JP8",
+              "level": "locally_verified",
+              "locator": ".work-receipts/xq-content-handoff-ready-evidence-report.json",
+              "project_id": "01M21W3H8XNKD8AKP4N1JNQQTM",
+              "revision": 1,
+              "scope": [
+                "XQ-CONTENT"
+              ],
+              "sha256": "22515bd9f28cba00881269097d7aec79fbf0d856c6cbc83ef95ea5a90466788b",
+              "source_ref": null,
+              "source_sha": "8f4031f40c096691df03099c2382cbb86112be19",
+              "summary": "内容安排已依据实际接续回执校正状态，保留原稿、原现场方案和全部尚未确认的执行条件。",
+              "verified_at": 1788929684000,
+              "work_item_id": "01M21W3H924XZK5JAZCTWTQPJH"
+            }
+          ],
+          "minimum_level": "locally_verified",
+          "source_sha": "8f4031f40c096691df03099c2382cbb86112be19",
+          "version": 1
+        },
+        "from": "in_progress",
+        "to": "completed"
+      },
+      "write_plan_id": "01M228KN1E4XA5MSH5DPRP05CY"
+    },
+    "project_revision": 145,
+    "created_at": 1788930020437
+  },
+  "source_refresh_performed": true,
+  "source_write_performed": true,
+  "write_outcome": "applied",
+  "apply_attempt": {
+    "event_id": "01M228KN1ZK7G2P0RR4CSH3Z5Y",
+    "proposal_id": "01M228KN11F5MN10W4W8ARN8XB",
+    "source_id": "01M21W3H91TRWQ6G4NPD4BJPHC",
+    "project_revision": 142,
+    "plan": {
+      "id": "01M228KN1E4XA5MSH5DPRP05CY",
+      "before_fingerprint": "sha256:aa2383a1480e9f4249369187eb43318edd736b73b742f320d0286732eed8408b",
+      "after_fingerprint": "sha256:0b4587df70eb5ebd01f8f733f3eb9996bffca9f96bcb21ab3ad5366109ad5ad9",
+      "before_size": 3608,
+      "after_size": 3680,
+      "target_after_hash": "e5a1a7a77b2a47fa5551aee76e3017d97f07eeccb45d1f06f1ee344494cae5ca"
+    },
+    "resolved_event_id": "01M228KN2NYA90W55SE95PMAYM"
+  },
+  "recovery_directory": ".awr/mutations/01M228KN1E4XA5MSH5DPRP05CY",
+  "source_check": null,
+  "error": null
+}

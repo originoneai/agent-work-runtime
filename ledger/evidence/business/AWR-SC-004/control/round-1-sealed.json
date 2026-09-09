@@ -1,0 +1,41 @@
+{
+  "kind": "actual_client_turn_snapshot",
+  "recorded_at": "2026-09-09T12:12:37+08:00",
+  "phase": "round-1",
+  "client": "Codex CLI",
+  "client_task_id": "01a083c0-2c0b-7fc1-ba7d-0b0721dfeb0f",
+  "actual_user_turn": {
+    "timestamp": "2026-09-09T03:44:05.672Z",
+    "text": "其中一位执行者暂时离开，请安排接续，保留尚未解决的问题。"
+  },
+  "input_sha256": "761970384237cff0b0f5f7a720eb461132e0d6a6c24fb1900c99e0db446f8ea3",
+  "events_local": ".local/business-live-20260909-v1/parallel-ownership/control/round-1-events.jsonl",
+  "events_sha256": "cacdbdb20fa1e9275f018abc40b9c73677213446e52c43c0546aa8ecff41b7ac",
+  "native_transcript_snapshot_local": ".local/business-live-20260909-v1/parallel-ownership/control/round-1-snapshot/native-transcript.jsonl",
+  "native_transcript_snapshot_sha256": "4c5d14a4e4c020b5fee818fa0c525af68b7dff20babd87ff56cfd87997647ea8",
+  "final_message_sha256": "3820a2da172191d6fbcc256b6c319275ea4debbb1f0a16af94ddb3a5ebe4a6e6",
+  "project_sources_sha256": {
+    "project.toml": "d52670ea0470cd5d8ee1290f6fc5802ae5caadaea5a99d1641471fff8189238a",
+    "GOALS.md": "b4c7d4b82ee317c7fdd4186bed1abb78ba366ef98ac0866b09f85844e22fbf15",
+    "PLAN.md": "729e1a14fe3b11ed869252e5b8aa85d8a3854719865d1cb7b3602ef91aa90ed9",
+    "RULES.md": "31ac59aa580dc3f29f17cd1f532eebbaa0152a041ccd8e00ca74e6d4cd914e19",
+    "work-ledger.yaml": "38f89ffb6ca7fd1275e345587787d54e2aa41234c07765b8a52153773a22e2ec",
+    "AGENTS.md": "d0ca28ca18c438aefdada6a14cb847a0664e261f9e8e48abbfd8701720eb66a2",
+    "DELIVERABLES.md": "b81c90585753fd7d52390d4dd5fb338c4a4d71c4b7cc0bcfb17222be50a34766"
+  },
+  "artifacts_sha256": {
+    "deliverables/xingqiao-collaboration-review.md": "21e564a7fa985cb67a842e1e836ed84f9a69db2865c86171e0edef4df891d5c0",
+    "deliverables/xingqiao-content.md": "7fc9fc339952ecccfa71b2602810e0657191247c7b64346c071f5ae4a75d8eff",
+    "deliverables/xingqiao-ownership.md": "040eec7fbfb403c44ffca8711729741953d9946a5d066d18ded15599bea728c7",
+    "deliverables/xingqiao-venue.md": "3035f626d7ef00cd860d2fd4781513b76d9587b1e6c67924b549ce8865c828a6"
+  },
+  "tool_event_counts": {
+    "agent_message": 4,
+    "command_execution": 39,
+    "file_change": 3
+  },
+  "command_executions": 39,
+  "nonzero_commands": 0,
+  "snapshot_local": ".local/business-live-20260909-v1/parallel-ownership/control/round-1-snapshot",
+  "e4_completion_claim": false
+}

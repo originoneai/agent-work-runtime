@@ -1,0 +1,9 @@
+{
+  "version": 1,
+  "command": "rtk proxy sh .work-receipts/verify-xq-review-remediation.sh",
+  "exit_code": 1,
+  "stdout": "",
+  "result": "failed",
+  "failed_check": "The first verifier revision assumed XQ-DELIVER used the one-line JSON work-item form; the source keeps XQ-DELIVER as multi-line YAML, so the status lookup returned no line.",
+  "resolution": "Keep the failure receipt, narrow the fix to reading the XQ-DELIVER YAML block, and rerun the same verification command. No business artifact or AWR source state was changed by this failed read-only check."
+}

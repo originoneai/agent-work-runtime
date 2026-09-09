@@ -1,0 +1,31 @@
+{
+  "ok": true,
+  "checks": {
+    "control_json_valid": true,
+    "verdict_requires_changes": true,
+    "publication_147_exact": true,
+    "process_10_exact": true,
+    "producer_artifacts_unchanged": true,
+    "review_report_bound": true,
+    "verification_bound": true,
+    "completion_report_bound": true,
+    "session_ended": true,
+    "claim_released": true,
+    "review_completed_unclaimed": true,
+    "deliver_not_executed": true,
+    "graph_ready_but_verdict_blocks": true,
+    "doctor_clean": true,
+    "e4_false": true
+  },
+  "hashes": {
+    "control": "f122e40f274d96fed5fb6ca6157e9c6dbcba2a3bbf93a2aee0c7d405c61b3c24",
+    "report": "c4dd2d34080ba24bfdb3d8408990c55b2152c33241ab259b86e4d034335c9c13",
+    "verification": "859bd48d3c61eea5e2d37d0d100ff228acbb5c6a8ccc7279bb3d6a3139580c4b",
+    "verification_attempt_1": "9db0eeae04db343f81366f937e3d90a690efb8309a1706bbfdf93371d2627a24",
+    "completion_report": "701e78e14fd895ab32e4538171cdf515dea691b1263cc50864c9e57a2fce7296",
+    "operator_failures": "b5f749e9bc86b3ffa0199747a51338759ecccca811652f20aee8b5ac940b8a8e",
+    "work_ledger": "6053d22cac099d54d50a6949e5be82e8326c574f8fb79e301a8395a98ed1dc47"
+  },
+  "project_revision": 184,
+  "source_revision": 16
+}

@@ -1,0 +1,33 @@
+{
+  "version": 1,
+  "work_item": "XQ-CONTENT",
+  "source_sha": "8f4031f40c096691df03099c2382cbb86112be19",
+  "command": "rtk proxy sh .work-receipts/verify-xq-venue-successor.sh",
+  "scope": [
+    "XQ-CONTENT"
+  ],
+  "verified_at": 1788927800000,
+  "producer": {
+    "agent_id": "xq-venue-successor",
+    "session_id": "01M22688HDB0K4K691RF9CB8TC",
+    "ownership_sha256": "2658295d0430fd4d63104c74e46e4f1c86a9b1d94c4e322d004c4932bcc0dbad"
+  },
+  "checks": [
+    {
+      "name": "现场设备安排与内容交接接收核对",
+      "passed": true,
+      "details": "接续者已读取当前内容交接稿并逐项确认收到 C→V-01 至 C→V-04；单投影 T+10 至 T+35 和三组桌面贯穿全程与原现场方案在计划层面一致，同时明确保留信号源、接口、操作人、场地容量和实机测试等未闭合条件。",
+      "criteria": [
+        "交付各环节安排及现场需要配合的事项。"
+      ]
+    },
+    {
+      "name": "原方案、负责范围与未决事项保留",
+      "passed": true,
+      "details": "原现场方案 SHA256 仍为 3035f626d7ef00cd860d2fd4781513b76d9587b1e6c67924b549ce8865c828a6；接续记录区分已接收、条件性计划和未验证事实，明确不修改内容稿、不承担合并或独立复核，并列出需场地方、内容负责人和实际核验人继续协调的事项。",
+      "criteria": [
+        "保留实际产物与来源引用，无法确认的内容显式说明。"
+      ]
+    }
+  ]
+}

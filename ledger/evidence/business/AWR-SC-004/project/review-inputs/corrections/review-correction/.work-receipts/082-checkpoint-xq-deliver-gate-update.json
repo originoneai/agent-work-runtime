@@ -1,0 +1,52 @@
+{
+  "checkpoint": {
+    "changed_entities": [
+      "work_items:01M21W3H92ETY0KG090P5SCSBC"
+    ],
+    "context_hash": "7806281ae6e72cee70c82fefb9705f3cc354b0bee2685b26f2e4ce831798b6d6",
+    "created_at": 1788935833960,
+    "digest": "已把 XQ-DELIVER 摘要和下一步更新为当前返检门禁：工作尚未开始，XQ-REVIEW 未再次完成前不认领、不生成最终交付；本会话没有执行交付。",
+    "id": "01M22E52B8PQ491ZEDM76XZP07",
+    "next_action": "等待不同独立参与者完成 XQ-REVIEW 返检；通过后由最终交付角色核对返检回执、固定版本和未闭合事项，再认领并整理交付包。",
+    "open_loops": [
+      "XQ-REVIEW 独立返检尚未执行，是最终交付的未满足依赖。",
+      "现场场地、设备、人员、成品材料和外部留痕仍需按筹备方案继续保留并在后续条件满足时处理。"
+    ],
+    "project_revision": 278,
+    "revision": 1,
+    "session_id": "01M22E2T0MNSH5DCQKW43DR8M6"
+  },
+  "checkpoint_save": {
+    "after_revision": 270,
+    "attempt_id": "01M22E52B7VHP0KF7WSH4E95ZD",
+    "delta_bytes": 3748,
+    "delta_recorded": true,
+    "event_id": "01M22E52B80JH1YHFX2V3H5AC6",
+    "observed_changed_entity_count": 1,
+    "reported_changed_entity_count": 1,
+    "session_event_count": 2,
+    "source_observation_count": 2,
+    "through_revision": 278
+  },
+  "context_hash_basis": "caller_supplied_last_used_context",
+  "context_hash_verified": false,
+  "event": {
+    "artifact_id": null,
+    "branch_id": null,
+    "checkpoint_id": "01M22E52B8PQ491ZEDM76XZP07",
+    "created_at": 1788935833960,
+    "id": "01M22E52B80JH1YHFX2V3H5AC6",
+    "importance": "normal",
+    "project_revision": 280,
+    "session_id": "01M22E2T0MNSH5DCQKW43DR8M6",
+    "source_id": null,
+    "summary": "Saved session checkpoint and observed delta",
+    "type": "checkpoint.created",
+    "work_item_id": "01M21W3H92ETY0KG090P5SCSBC"
+  },
+  "freshness_basis": "source_refresh",
+  "ok": true,
+  "project_revision": 280,
+  "save_status": "completed",
+  "source_refresh_performed": true
+}

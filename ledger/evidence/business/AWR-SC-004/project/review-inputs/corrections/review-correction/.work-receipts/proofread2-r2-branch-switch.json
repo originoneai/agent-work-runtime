@@ -1,0 +1,9 @@
+{
+  "branch_id": "01M21Z7CBNFNN0B7HVMY9WTVTC",
+  "branch_name": "xq-content-proofread-2",
+  "event_id": "01M21ZXWA6TWCHC3JH5DXENP9Y",
+  "ok": true,
+  "project_revision": 76,
+  "reason": "原内容稿产生新快照，恢复独立分支做增量校对",
+  "selected": true
+}

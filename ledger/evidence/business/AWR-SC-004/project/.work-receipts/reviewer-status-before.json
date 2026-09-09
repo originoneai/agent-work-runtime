@@ -1,0 +1,38 @@
+{
+  "blocked_count": 1,
+  "branch_id": null,
+  "counts": {
+    "completed": 4,
+    "planned": 2
+  },
+  "current": [],
+  "current_total": 0,
+  "freshness_basis": "source_refresh",
+  "next_action": "独立复核两项结果，先核对当前来源和负责范围。",
+  "ok": true,
+  "project": "星桥活动筹备",
+  "project_id": "01M21W3H8XNKD8AKP4N1JNQQTM",
+  "project_revision": 165,
+  "read_only": false,
+  "ready_count": 1,
+  "source_issues": [],
+  "source_refresh_performed": true,
+  "source_warnings": 0,
+  "suggested_work": {
+    "blocker": null,
+    "external_key": "XQ-REVIEW",
+    "freshness": "fresh",
+    "id": "01M21W3H924SNZ0DV020S3BM69",
+    "milestone": "XQ-DELIVERY",
+    "next_action": "独立复核两项结果，先核对当前来源和负责范围。",
+    "owner": null,
+    "priority": "P0",
+    "raw_status": "planned",
+    "revision": 1,
+    "source_revision": 14,
+    "status": "planned",
+    "summary": "独立复核两项结果",
+    "title": "独立复核两项结果"
+  },
+  "total": 6
+}

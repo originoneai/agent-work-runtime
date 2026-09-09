@@ -1,0 +1,365 @@
+{
+  "version": 1,
+  "kind": "sc004_final_delivery_independent_read_only_check",
+  "recorded_at": "2026-09-09T16:35:04+08:00",
+  "reviewer": {
+    "actual_identity": "luna_worker:/root/restricted_material_client_run",
+    "independent_from_producer_native_thread": true,
+    "producer_native_thread_id": "01a083c0-2c0b-7fc1-ba7d-0b0721dfeb0f",
+    "awr_session_or_claim_created_for_this_check": false,
+    "model_or_native_client_started": false
+  },
+  "scope": {
+    "run": "/Users/mac/Documents/originone/agent-work-running/.local/business-live-20260909-v1/parallel-ownership",
+    "covered_phase": "final-delivery",
+    "covered_completed_commands": 126,
+    "historical_audit_referenced_only": {
+      "phases": 12,
+      "completed_commands": 885,
+      "report": "control/technical-read-scope-at-time-check.json",
+      "report_sha256": "d8934df20d15186c9c7da2453aa2a9e863bd46a277ce2f4a14d028f35aeaf6be",
+      "root_binding": "control/root-at-time-rule-scope-binding.json",
+      "root_binding_sha256": "77d68bddc548370cdf91478a4461fba6b954b87dc129ef4b380a7844a36c47e0",
+      "note": "The historical report explicitly excluded final-delivery. This check audits final-delivery separately and does not re-audit the earlier 12 phases."
+    },
+    "excluded": [
+      "private native system, reasoning, and memory context",
+      "raw native transcript publication",
+      "other business runs",
+      "business action replay",
+      "remote artifact delivery and Git publication"
+    ]
+  },
+  "verdict": {
+    "value": "passed_for_sc004_final_delivery_scope",
+    "blocking_findings": [],
+    "summary": "The final draft and actual final reply accurately distinguish completed preparation delivery from unresolved onsite facts and whole-scenario completion. Ownership, handoff conditions, revisions, failures, producer separation, first review, and independent recheck remain traceable. No forbidden technical or business read was observed in the 126 completed final-delivery commands.",
+    "does_not_establish": [
+      "onsite readiness",
+      "event execution",
+      "whole-scenario E4 completion",
+      "Git commit or push of the delivery package",
+      "remote delivery or release"
+    ]
+  },
+  "actual_turn_binding": {
+    "exec_handle": 80418,
+    "exit_code": 0,
+    "submissions": 1,
+    "input_sha256": "4f79a0d6b5bb0f9c559b26ef82d85790e756b3e098e0809c442c44a0e337ddfb",
+    "input_preflight": {
+      "path": "control/final-delivery-input-preflight.json",
+      "sha256": "d915816aa40bd951a862a6b72910e01c6f9097f4177b00be64ed50a065b2a624",
+      "passed": true
+    },
+    "dispatch_receipt": {
+      "path": "control/final-delivery-root-dispatch.json",
+      "sha256": "3034f37acc07edeabdf1f1b68c9e9f0c34dde72a1414b8e80989080c8cca2c75"
+    },
+    "sealed_record": {
+      "path": "control/final-delivery-sealed.json",
+      "sha256": "f597f14a40dc9987d625b347a73d5b54172df3f5b42cfa387db760fc9f86bd4e"
+    },
+    "review_extract": {
+      "path": "control/final-delivery-review-extract.json",
+      "sha256": "7deddf49f0b5920806d68045f3ca3c46480258c7c2aa2a52f0a9dc5d2161a410"
+    },
+    "events_sha256": "caf9d17fb2c4ef04ed1d49617ca4112b0bd9b9bb515bc5227fb02254bed60187",
+    "native_transcript_snapshot_sha256": "5836eb299149316b2ed0b0ede0061105c9b78167bead6a06a37bd1f14ee7ae75",
+    "final_reply_sha256": "3a57279be3c5e99f48317aae3b87d2907a6ace65fc27bfb045be7fde72f5ee13",
+    "observation": {
+      "path": "control/final-delivery-observation.json",
+      "sha256": "1682a0a1a68a7a3e4eab9dfbace970aaa24a58fb8a1ec5836d1011cae57b0678"
+    }
+  },
+  "at_time_rule_binding": {
+    "setup": {
+      "path": "control/client-workflow-setup.json",
+      "sha256": "25a61946f730d504e55319d13e51c7c6f2378a2f7112d672a9bdc755f28ee738",
+      "preceded_actual_business_turns": true
+    },
+    "agents": {
+      "path": "control/final-delivery-snapshot/sources/AGENTS.md",
+      "sha256": "d0ca28ca18c438aefdada6a14cb847a0664e261f9e8e48abbfd8701720eb66a2",
+      "matches_setup_and_final_snapshot": true
+    },
+    "rules": {
+      "path": "control/final-delivery-snapshot/sources/RULES.md",
+      "sha256": "31ac59aa580dc3f29f17cd1f532eebbaa0152a041ccd8e00ca74e6d4cd914e19"
+    },
+    "deliverables": {
+      "path": "control/final-delivery-snapshot/sources/DELIVERABLES.md",
+      "sha256": "b81c90585753fd7d52390d4dd5fb338c4a4d71c4b7cc0bcfb17222be50a34766"
+    },
+    "later_sc007_or_other_rules_applied": false
+  },
+  "source_verification": {
+    "hash_bound_sets": {
+      "final_project_sources": {
+        "declared": 7,
+        "verified": 7,
+        "missing": 0,
+        "mismatch": 0
+      },
+      "final_artifacts": {
+        "declared": 8,
+        "verified": 8,
+        "missing": 0,
+        "mismatch": 0
+      },
+      "final_receipt_files": {
+        "declared": 258,
+        "verified": 258,
+        "missing": 0,
+        "mismatch": 0
+      },
+      "fixed_review_input_publications": [
+        {
+          "path": "control/review-input-publication.json",
+          "sha256": "0fb081c8482a604e4e3cfc03857393fa38f1616c9a53b2a923c02dd9dbb6e01b",
+          "declared": 147,
+          "verified": 147,
+          "missing": 0,
+          "mismatch": 0
+        },
+        {
+          "path": "control/parallel-process-review-publication.json",
+          "sha256": "55efb2f825d76ef3c30e93ac2fac0c0690e873c854a7e2f3ff4a367de3fca73e",
+          "declared": 10,
+          "verified": 10,
+          "missing": 0,
+          "mismatch": 0
+        },
+        {
+          "path": "control/review-correction-publication.json",
+          "sha256": "6c4a15d910a83eb44ee1967c6b6c25f17f4c5c32ebab54e8e4878f3fda5380d5",
+          "declared": 202,
+          "verified": 202,
+          "missing": 0,
+          "mismatch": 0
+        }
+      ],
+      "fixed_review_input_files_total": 359,
+      "fixed_review_input_files_verified": 359,
+      "final_command_hash_records": {
+        "declared": 126,
+        "verified_against_events": 126,
+        "mismatch": 0
+      }
+    },
+    "business_materials_current_and_final_snapshot_match": {
+      "materials/agenda.csv": "0b946ce991d14b6fe703e991a3192484888fbcda324969bf5d29eff347c92d05",
+      "materials/venue.md": "be74fba2f6c04946fcd19a676eaf7f4b6c721cc51e8728718cd0a6df06b28fb6",
+      "materials/absence-note.md": "99aaf718844939814cc93c095bbd4bfcdd0fde8e6b9c10443d0cb83b2e66bc85",
+      "materials/joint-review.md": "6205ec3a29224e4defee548e308f9c0f3d6cb56caf201ac211ff7d15c81f0dde"
+    },
+    "primary_content_sources_reviewed": {
+      "count": 18,
+      "paths": [
+        "project/AGENTS.md",
+        "project/DELIVERABLES.md",
+        "project/GOALS.md",
+        "project/PLAN.md",
+        "project/RULES.md",
+        "project/work-ledger.yaml",
+        "project/materials/agenda.csv",
+        "project/materials/venue.md",
+        "project/materials/absence-note.md",
+        "project/materials/joint-review.md",
+        "project/deliverables/xingqiao-collaboration-review.md",
+        "project/deliverables/xingqiao-content.md",
+        "project/deliverables/xingqiao-independent-results.md",
+        "project/deliverables/xingqiao-ownership.md",
+        "project/deliverables/xingqiao-venue.md",
+        "project/deliverables/xq-independent-review.md",
+        "project/deliverables/xq-independent-recheck.md",
+        "project/deliverables/xq-delivery.md"
+      ]
+    }
+  },
+  "artifact_bindings": {
+    "project/deliverables/xingqiao-collaboration-review.md": "21e564a7fa985cb67a842e1e836ed84f9a69db2865c86171e0edef4df891d5c0",
+    "project/deliverables/xingqiao-content.md": "7fc0ccf93f8f8aa6b8d881c91c6f61dc32e63ed979f6cc120f5ba9086eb253c5",
+    "project/deliverables/xingqiao-independent-results.md": "681ebc8aa9988fe7d27d581eb4e76d68dc24dbacce49a59c5df17953311f8699",
+    "project/deliverables/xingqiao-ownership.md": "d1238aea798cc63e1d190cb4cbae24ba0b415f786501e1221312d83dcfcceafc",
+    "project/deliverables/xingqiao-venue.md": "3035f626d7ef00cd860d2fd4781513b76d9587b1e6c67924b549ce8865c828a6",
+    "project/deliverables/xq-independent-review.md": "c4dd2d34080ba24bfdb3d8408990c55b2152c33241ab259b86e4d034335c9c13",
+    "project/deliverables/xq-independent-recheck.md": "e177be268f07a30c35d8f9d1539ab6248a75fb01a935966ce3045809628d902f",
+    "project/deliverables/xq-delivery.md": "b29b9c2e10835263680878df33959509c79e3c14217f8e2fc33e5f6d1cb843c1"
+  },
+  "content_checks": [
+    {
+      "id": "final-scope-and-current-state",
+      "result": "pass",
+      "basis": "The final document identifies the delivered result as a preparation package. Current receipts bind project revision 391, six completed work items, completed XQ-DELIVERY milestone, zero ready/blocked/current work, ended sessions, and released claims. GOALS.md and PLAN.md remain active and the final reply explicitly preserves that overall-goal boundary."
+    },
+    {
+      "id": "onsite-and-e4-boundary",
+      "result": "pass",
+      "basis": "The final document states that venue confirmation, real equipment tests, staffing, finished materials, event execution, and whole-scenario E4 have not occurred. It does not convert local checks or preparation completion into onsite completion."
+    },
+    {
+      "id": "open-items-responsibility-and-handoff",
+      "result": "pass",
+      "basis": "VEN-01, VEN-02, EQP-01, EQP-02, PPL-01, MAT-01, MAT-02, HDO-01, and EXE-01 are each retained with a responsible role, start condition, and close-out receipt. The first handoff action is VEN-01 and PPL-01, followed by content, venue/equipment, external handoff when required, and actual execution."
+    },
+    {
+      "id": "business-source-consistency",
+      "result": "pass",
+      "basis": "The 10+25+30+20 agenda totals 85 minutes. The source separately states a 90-minute venue opening and 10 minutes for setup/close. The final document keeps the inclusion relationship unknown and correctly states a minimum 5-minute deficit if 85+10 must fit inside 90. It retains one projector and three-table constraints as plan assumptions pending real checks."
+    },
+    {
+      "id": "revision-failure-division-and-review-history",
+      "result": "pass",
+      "basis": "The final document indexes the separate content and venue roles, successor handoff, early RevisionConflict, later ClaimConflict, wording revisions, first requires_executor_changes review, XQ-R01/R02 remediation, independent recheck, verification failures, and final evidence retry. The original review and recheck artifacts remain byte-identical to the final seal."
+    },
+    {
+      "id": "runtime-branch-versus-git-isolation",
+      "result": "pass",
+      "basis": "The final document never claims that the AWR runtime work branch isolated Git files. Its linked independent review/recheck explicitly state that xq-content-proofread-2 was an AWR runtime branch bound to refs/heads/main and did not isolate the shared Git files. The final document separately states seed HEAD 8f4031f40c096691df03099c2382cbb86112be19, uncommitted business changes, and no commit or push."
+    },
+    {
+      "id": "final-reply-accuracy",
+      "result": "pass",
+      "basis": "The actual final reply matches xq-delivery.md and current receipts: preparation delivery completed, nine onsite items remain, history is retained, six work items and the preparation milestone are completed, overall goal remains active, E4 is false, and no Git commit or push occurred."
+    }
+  ],
+  "final_command_boundary_audit": {
+    "completed_command_records": 126,
+    "all_command_and_output_hashes_match_review_extract": true,
+    "all_shell_payloads_begin_with_rtk": 126,
+    "awr_binary_commands": 85,
+    "project_bound_awr_commands": 67,
+    "public_awr_help_commands_without_project": 18,
+    "read_only_git_commands": 8,
+    "git_mutation_commands": 0,
+    "forbidden_path_or_source_hits": {
+      "parent_tests": 0,
+      "parent_crates": 0,
+      "parent_design": 0,
+      "parent_ledger": 0,
+      "sibling_control": 0,
+      "other_business_runs": 0,
+      "credential_files": 0,
+      "global_hooks_or_settings": 0,
+      "private_memory": 0
+    },
+    "external_process_guidance_reads": [
+      {
+        "native_item_id": "item_2",
+        "classification": "higher_priority_host_skill_instruction_read",
+        "path": "/Users/mac/.codex/skills/karpathy-guidelines/SKILL.md",
+        "command_sha256": "32e9c97ac418a13dbe0a5828db249c7b4c91e03a87dd5a9b2f1699d2b6602bc1",
+        "output_sha256": "6e22cc54cb02a5e98ae42d06d9d7292db0c1b43894831b32879beb0166b2aea7",
+        "business_impact": "No scenario facts or expected answers were obtained. AGENTS.md explicitly retains higher-priority host instructions."
+      }
+    ],
+    "completed_file_change_events": 29,
+    "file_change_path_actions": 33,
+    "distinct_file_change_paths": 26,
+    "file_change_paths_outside_business_project": 0,
+    "distinct_manual_change_paths": {
+      "deliverables": 1,
+      "work_receipts": 25
+    },
+    "nonzero_commands": [
+      {
+        "native_item_id": "item_32",
+        "event_line": 63,
+        "exit_code": 1,
+        "category": "missing candidate receipt during lookup",
+        "command_sha256": "c3fbaed653aeb070e8e5920c30becabe85a9c4c18bfe94cec9ff047d5d072ab0",
+        "output_sha256": "fe6e138af1d6c5d06b72d549754e5cd00552572b66077b707a9713ff522dc4f1",
+        "source_mutation": false
+      },
+      {
+        "native_item_id": "item_39",
+        "event_line": 76,
+        "exit_code": 1,
+        "category": "EvidenceDraft schema rejection for detailed report input",
+        "command_sha256": "70a14661958959dce8353ec0a8c5768acf7daa73fd48888a86b91da6c6d2f307",
+        "output_sha256": "22d8af5cb1db66b0f452d37bbbe2bdc43ac93d37a18feba834aeb76155465883",
+        "source_mutation": false,
+        "later_success_preserves_failure": true
+      },
+      {
+        "native_item_id": "item_57",
+        "event_line": 111,
+        "exit_code": 1,
+        "category": "unsupported top-level checkpoint help lookup",
+        "command_sha256": "0f91c92e70cd392450438d7104f8e384a6ae80b492f8b497076ffd95516983fa",
+        "output_sha256": "1cbc450a611333b38d4b8930f80331cbbfc6e274895d98cdfe77e72aa1a4478b",
+        "source_mutation": false
+      },
+      {
+        "native_item_id": "item_90",
+        "event_line": 175,
+        "exit_code": 1,
+        "category": "proposal approve rejected while proposal was still Draft",
+        "command_sha256": "c53e9d8cd659c315280a6e0f19cb09e33d4b478f924ba91377ef07fb2855cf68",
+        "output_sha256": "75d863307d09e3742ec5b9e344f6dd247ef05e20946f5b30478b2295fec05b87",
+        "source_mutation": false,
+        "later_success_preserves_failure": true
+      },
+      {
+        "native_item_id": "item_93",
+        "event_line": 180,
+        "exit_code": 2,
+        "category": "invalid session show arguments during lookup",
+        "command_sha256": "a9cf31fe6e59fab79823e0b2d9271634241240b2e3bcdc130a911dd5b31cedb2",
+        "output_sha256": "fe09226eb52b7245a54b6332b8547d322e378b6f47f913955ed078de7452814c",
+        "source_mutation": false
+      }
+    ],
+    "nonzero_command_count": 5,
+    "non_command_error_event": {
+      "count": 1,
+      "classification": "skill-description context-budget notice",
+      "business_or_scope_impact": false
+    },
+    "read_scope_violations": [],
+    "conclusion": "No final-delivery command searched or read parent tests, crates, design sources, parent ledger, sibling control, other runs, credentials, hooks, settings, or private memory. The single project-external read was process-only host skill guidance and supplied no business facts."
+  },
+  "current_state_binding": {
+    "project_revision": 391,
+    "source_ledger_sha256": "a3484d5f88bceef6cc915104804c4d24b59535d27f5379b13185c3a48572e2b9",
+    "seed_git_head": "8f4031f40c096691df03099c2382cbb86112be19",
+    "git_delivery_commit_created": false,
+    "git_delivery_push_performed": false,
+    "work_items_completed": 6,
+    "milestone": {
+      "external_key": "XQ-DELIVERY",
+      "status": "completed"
+    },
+    "goal_status": "active",
+    "plan_status": "active",
+    "active_sessions": 0,
+    "active_claims": 0,
+    "ready_count": 0,
+    "blocked_count": 0,
+    "remaining_unknown_ids": [
+      "VEN-01",
+      "VEN-02",
+      "EQP-01",
+      "EQP-02",
+      "PPL-01",
+      "MAT-01",
+      "MAT-02",
+      "HDO-01",
+      "EXE-01"
+    ],
+    "onsite_validation_performed": false,
+    "event_execution_performed": false,
+    "whole_scenario_e4_granted": false
+  },
+  "reviewer_actions": {
+    "business_or_awr_runtime_mutation": false,
+    "git_or_business_file_mutation": false,
+    "only_new_file": "control/final-delivery-independent-check.json"
+  },
+  "limitations": [
+    "This pass covers the sealed final-delivery turn and the final preparation artifact. Earlier phases rely on the separately bound 12-phase, 885-command independent audit and are not re-audited here.",
+    "Private native context was not copied or published; command review used the sealed public events and bounded review extract.",
+    "Hash and document checks establish preparation-package consistency, not real venue, device, staffing, material, event, E4, remote commit, push, or release completion."
+  ]
+}

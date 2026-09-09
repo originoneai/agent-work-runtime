@@ -1,0 +1,16 @@
+{
+  "external_key": "XQ-CONTENT-VENUE-SUCCESSOR-HANDOFF-20260909",
+  "work_item_key": "XQ-CONTENT",
+  "evidence_type": "report",
+  "level": "locally_verified",
+  "summary": "现场接续者已核对原设备方案并实际接收内容侧四项交接回复，保留现场实测和外部协调缺口。",
+  "locator": ".work-receipts/xq-venue-successor-evidence-report.json",
+  "sha256": "3ad28b5006e638685ca1d1591a3aa015440c3c85799101803ba76f54f6a79e10",
+  "source_sha": "8f4031f40c096691df03099c2382cbb86112be19",
+  "command": "rtk proxy sh .work-receipts/verify-xq-venue-successor.sh",
+  "scope": [
+    "XQ-CONTENT"
+  ],
+  "branch_id": null,
+  "verified_at": 1788927800000
+}

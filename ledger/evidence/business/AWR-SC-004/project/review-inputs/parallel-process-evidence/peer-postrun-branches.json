@@ -1,0 +1,15 @@
+{
+  "branches": [],
+  "current_branch_id": null,
+  "has_more": false,
+  "limit": 50,
+  "main": {
+    "branch_id": null,
+    "name": "main",
+    "selected": true
+  },
+  "offset": 0,
+  "project_id": "01M21W3H8XNKD8AKP4N1JNQQTM",
+  "project_revision": 60,
+  "total": 0
+}

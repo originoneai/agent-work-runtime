@@ -1,0 +1,36 @@
+{
+  "event": {
+    "branch_id": null,
+    "created_at": 1788921769809,
+    "event_type": "branch.switched",
+    "id": "01M220QVTHN2D6F5K9W6ZH49FV",
+    "importance": "normal",
+    "payload": {
+      "actor": "xq-content-reviewer-2",
+      "git_write_performed": false,
+      "reason": "第二内容校对增量记录与回执已固化，归还默认工作面给原内容负责人",
+      "selection": {
+        "current_branch_id": null,
+        "previous_branch_id": "01M21Z7CBNFNN0B7HVMY9WTVTC",
+        "retained_active_claims": 0,
+        "retained_active_sessions": 0
+      },
+      "source_write_performed": false
+    },
+    "project_id": "01M21W3H8XNKD8AKP4N1JNQQTM",
+    "project_revision": 84,
+    "session_id": null,
+    "summary": "Changed current work branch",
+    "work_item_id": null
+  },
+  "git_write_performed": false,
+  "project_id": "01M21W3H8XNKD8AKP4N1JNQQTM",
+  "project_revision": 84,
+  "selection": {
+    "current_branch_id": null,
+    "previous_branch_id": "01M21Z7CBNFNN0B7HVMY9WTVTC",
+    "retained_active_claims": 0,
+    "retained_active_sessions": 0
+  },
+  "source_write_performed": false
+}

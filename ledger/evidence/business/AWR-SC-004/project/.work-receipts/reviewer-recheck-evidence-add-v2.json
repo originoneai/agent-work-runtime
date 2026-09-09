@@ -1,0 +1,28 @@
+{
+  "event_id": "01M22FZ8TQ1JG69YHPX0EXPTHM",
+  "evidence": {
+    "branch_id": null,
+    "command": "rtk proxy python3 .work-receipts/reviewer-recheck-verify.py",
+    "evidence_type": "completion_report",
+    "external_key": "XQ-INDEPENDENT-RECHECK-20260909-V2",
+    "id": "01M22FZ8TQWBB8650H8ZSN689J",
+    "level": "locally_verified",
+    "locator": ".work-receipts/reviewer-recheck-completion-report.json",
+    "project_id": "01M21W3H8XNKD8AKP4N1JNQQTM",
+    "revision": 1,
+    "scope": [
+      "XQ-REVIEW"
+    ],
+    "sha256": "f7e17fa8c6a85456469d71be14160de0d05bf657560f70b1070751ee9e6bba6f",
+    "source_ref": null,
+    "source_sha": "8f4031f40c096691df03099c2382cbb86112be19",
+    "summary": "An independent reviewer rechecked the fixed 202-file correction package, verified XQ-R01 and XQ-R02 are closed, preserved the original 147-file and 10-file process packages, distinguished the real RevisionConflict and ClaimConflict, confirmed the three actual producer/successor roles and retained all site, equipment, people and final-material unknowns. Version 2 supersedes the first evidence record whose report lacked the required version field.",
+    "verified_at": 1788937520000,
+    "work_item_id": "01M21W3H924SNZ0DV020S3BM69"
+  },
+  "freshness_basis": "source_refresh",
+  "ok": true,
+  "project_revision": 300,
+  "source_refresh_performed": true,
+  "validation_basis": "caller_supplied_bindings"
+}

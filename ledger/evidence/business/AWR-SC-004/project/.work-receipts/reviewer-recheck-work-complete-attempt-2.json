@@ -1,0 +1,14 @@
+{
+  "kind": "awr_work_complete_failed_attempt",
+  "attempted_at": "2026-09-09T15:07:00+08:00",
+  "work": "XQ-REVIEW",
+  "session_id": "01M22EXK425XHY2N02VFPN7T6K",
+  "expected_project_revision": 300,
+  "input": ".work-receipts/reviewer-recheck-completion-input.json",
+  "exit_code": 1,
+  "error": {
+    "code": "EvidenceMissing",
+    "message": "required evidence missing: evidence 01M22FZ8TQWBB8650H8ZSN689J has no valid completion report: missing field `work_item` at line 76 column 1"
+  },
+  "resolution": "Preserve the second invalid report bytes, align the report with the project completion-report schema, register a new evidence key bound to the corrected hash, and retry at the latest observed revision."
+}

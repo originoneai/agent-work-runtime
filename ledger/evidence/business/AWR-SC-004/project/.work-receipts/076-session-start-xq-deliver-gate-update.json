@@ -1,0 +1,37 @@
+{
+  "claim": null,
+  "event": {
+    "artifact_id": null,
+    "branch_id": null,
+    "checkpoint_id": null,
+    "created_at": 1788935759892,
+    "id": "01M22E2T0MSDBRS1ACJS4JVBCG",
+    "importance": "normal",
+    "project_revision": 271,
+    "session_id": "01M22E2T0MNSH5DCQKW43DR8M6",
+    "source_id": null,
+    "summary": "Started agent work session",
+    "type": "session.started",
+    "work_item_id": "01M21W3H92ETY0KG090P5SCSBC"
+  },
+  "freshness_basis": "source_refresh",
+  "ok": true,
+  "project_revision": 271,
+  "session": {
+    "agent_id": "xq-final-delivery-gate-coordinator",
+    "branch_id": null,
+    "end_project_revision": null,
+    "ended_at": null,
+    "id": "01M22E2T0MNSH5DCQKW43DR8M6",
+    "last_checkpoint_id": null,
+    "model": "gpt-5",
+    "project_id": "01M21W3H8XNKD8AKP4N1JNQQTM",
+    "provider": "codex",
+    "revision": 1,
+    "start_project_revision": 270,
+    "started_at": 1788935759892,
+    "status": "active",
+    "work_item_id": "01M21W3H92ETY0KG090P5SCSBC"
+  },
+  "source_refresh_performed": true
+}

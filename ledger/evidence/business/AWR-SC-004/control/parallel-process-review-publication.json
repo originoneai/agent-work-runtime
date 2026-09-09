@@ -1,0 +1,21 @@
+{
+  "kind": "additional_actual_parallel_process_evidence_publication",
+  "published_at": "2026-09-09T13:23:09.289034+08:00",
+  "target": "review-inputs/parallel-process-evidence",
+  "files_sha256": {
+    "receipt-followthrough-ownership-observation.json": "fb96155c879185fe790a0e703c7cc4f9ae25cdd36484335faabbf5ebac96f238",
+    "peer-postrun-session.json": "bbde74b8397d31e749034a668d97b2699b8ea87d054034718a25caa393b79aa8",
+    "peer-postrun-status.json": "f9804d9c898d6881e9d99e6c121f5237a3ddd059180469574f22119f96086c92",
+    "peer-postrun-branches.json": "1ba3d8480c6bea7f2ee595acf039d333145b3fe71ef6cf5f7c32fa01e4dcad38",
+    "peer-operator-verification.json": "65ac44fda0afa656053640c0c30cc5cf5797a3d0f8c8bbde8e2ddcc8affab072",
+    "artifact-authorship-correction.json": "8f266679f4fa8cf63de4698f50dd18387a7a8cdec6a8250362649dc1a101b6f8",
+    "peer-initial-sealed.json": "0cb4af31f665beee96aab94edf9e7f4576557837aa1aa72fafbb1aa5a81e921e",
+    "parallel-branch-ownership-observation.json": "ad4b1941130b15c27f4ff7325080c95875f02068316717cb3500f581e5b66006",
+    "peer-initial-final.md": "eba1f3d25313ea6fe684c925af4c139e2aff998b96f6448ca91a9cdf0f8aa857",
+    "actual-parallel-conflict-binding.json": "f8be71015503c776048b389f90540c980711254b1d3ab095c5e19671d3b5823c"
+  },
+  "scope": "Actual initial peer authorship and concurrency, later genuine claim conflict, and bookkeeping attribution correction. Historical caveats are time-specific; initial revision conflict is not relabeled as claim conflict.",
+  "private_native_transcripts_published": false,
+  "runtime_mutation_performed": false,
+  "independent_review_completed": false
+}

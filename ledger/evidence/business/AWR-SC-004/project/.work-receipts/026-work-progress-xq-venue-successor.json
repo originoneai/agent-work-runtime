@@ -1,0 +1,108 @@
+{
+  "ok": true,
+  "code": "proposal_recorded",
+  "project_revision": 124,
+  "proposal": {
+    "id": "01M226JGC4B476ET3Q2GTJ6R66",
+    "project_id": "01M21W3H8XNKD8AKP4N1JNQQTM",
+    "work_item_id": "01M21W3H924XZK5JAZCTWTQPJH",
+    "source_id": "01M21W3H91TRWQ6G4NPD4BJPHC",
+    "base_fingerprint": "sha256:38f89ffb6ca7fd1275e345587787d54e2aa41234c07765b8a52153773a22e2ec",
+    "expected_revision": 117,
+    "mutation_type": "work.progress",
+    "patch": {
+      "changes": {
+        "next_action": "协调者安排场地方确认 90+10 边界、绝对时间和实际现场核验；内容执行者补齐信号源、接口、操作人、人数及物料需求后，由后续现场执行者复核并回执。",
+        "status": "in_progress",
+        "summary": "现场接续者已核对原现场方案并通过共享交接稿确认收到 C→V-01 至 C→V-04；单投影与三组桌面在计划层面对齐，时间边界、实机、场地、人员和资源仍待闭合，内容工作继续进行。"
+      },
+      "intent": "现场接续者核对原设备方案和内容交接稿，逐项确认项目内接收并保留实测与外部协调缺口",
+      "source_config": {
+        "adapter_options": {},
+        "adapter_version": 1,
+        "mapping_key": "ledger|work-ledger.yaml"
+      },
+      "target": {
+        "kind": "work_item",
+        "meta": {
+          "external_key": "XQ-CONTENT",
+          "id": "01M21W3H924XZK5JAZCTWTQPJH",
+          "revision": 5,
+          "source_ref": {
+            "end_line": null,
+            "locator": "file:///Users/mac/Documents/originone/agent-work-running/.local/business-live-20260909-v1/parallel-ownership/project/work-ledger.yaml",
+            "pointer": "/work_items/1",
+            "section_fingerprint": null,
+            "source_fingerprint": "sha256:38f89ffb6ca7fd1275e345587787d54e2aa41234c07765b8a52153773a22e2ec",
+            "source_id": "01M21W3H91TRWQ6G4NPD4BJPHC",
+            "source_revision": 9,
+            "start_line": null
+          }
+        }
+      },
+      "version": 1,
+      "work_action": {
+        "action": "progress",
+        "from": "in_progress",
+        "to": "in_progress"
+      }
+    },
+    "status": "applied",
+    "created_by_session": "01M22688HDB0K4K691RF9CB8TC",
+    "revision": 5
+  },
+  "event": {
+    "id": "01M226JGDK347NEARX2P71BN3E",
+    "project_id": "01M21W3H8XNKD8AKP4N1JNQQTM",
+    "work_item_id": "01M21W3H924XZK5JAZCTWTQPJH",
+    "session_id": null,
+    "branch_id": null,
+    "event_type": "work.progressed",
+    "importance": "normal",
+    "summary": "Verified source work action Progress",
+    "payload": {
+      "action_reason": "现场接续者核对原设备方案和内容交接稿，逐项确认项目内接收并保留实测与外部协调缺口",
+      "actor": "xq-venue-successor",
+      "after_fingerprint": "sha256:e31265cdcf08d8462141fdc314aa28c16d3b4f6e6a6510b18210d0b239b1b73c",
+      "attempt_event_id": "01M226JGCYZEN6HER7HPR194YM",
+      "before_fingerprint": "sha256:38f89ffb6ca7fd1275e345587787d54e2aa41234c07765b8a52153773a22e2ec",
+      "creating_session_id": "01M22688HDB0K4K691RF9CB8TC",
+      "proposal_id": "01M226JGC4B476ET3Q2GTJ6R66",
+      "reason": "现场接续者核对原设备方案和内容交接稿，逐项确认项目内接收并保留实测与外部协调缺口",
+      "released_claim_ids": [],
+      "source_id": "01M21W3H91TRWQ6G4NPD4BJPHC",
+      "source_revision": 10,
+      "target_after_hash": "4e06dca4e4bc99e140824fda24ab8408297c564a8a0bdd3a8b0688403f74ddc2",
+      "target_revision": 6,
+      "work_action": {
+        "action": "progress",
+        "from": "in_progress",
+        "to": "in_progress"
+      },
+      "write_plan_id": "01M226JGCCP2P815GC6HJXS47T"
+    },
+    "project_revision": 124,
+    "created_at": 1788927885747
+  },
+  "source_refresh_performed": true,
+  "source_write_performed": true,
+  "write_outcome": "applied",
+  "apply_attempt": {
+    "event_id": "01M226JGCYZEN6HER7HPR194YM",
+    "proposal_id": "01M226JGC4B476ET3Q2GTJ6R66",
+    "source_id": "01M21W3H91TRWQ6G4NPD4BJPHC",
+    "project_revision": 121,
+    "plan": {
+      "id": "01M226JGCCP2P815GC6HJXS47T",
+      "before_fingerprint": "sha256:38f89ffb6ca7fd1275e345587787d54e2aa41234c07765b8a52153773a22e2ec",
+      "after_fingerprint": "sha256:e31265cdcf08d8462141fdc314aa28c16d3b4f6e6a6510b18210d0b239b1b73c",
+      "before_size": 3604,
+      "after_size": 3690,
+      "target_after_hash": "4e06dca4e4bc99e140824fda24ab8408297c564a8a0bdd3a8b0688403f74ddc2"
+    },
+    "resolved_event_id": "01M226JGDK347NEARX2P71BN3E"
+  },
+  "recovery_directory": ".awr/mutations/01M226JGCCP2P815GC6HJXS47T",
+  "source_check": null,
+  "error": null
+}

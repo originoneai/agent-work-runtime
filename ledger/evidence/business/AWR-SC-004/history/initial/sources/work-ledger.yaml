@@ -1,0 +1,57 @@
+milestones:
+- id: XQ-DELIVERY
+  title: 星桥活动筹备交付
+  status: in_progress
+work_items:
+- {"acceptance":["明确时长、布置收场和设备共享约束。","保留实际产物与来源引用，无法确认的内容显式说明。"],"depends_on":[],"evidence":[".work-receipts/004-xq-input-evidence-report.json"],"goal":"goal#xq","id":"XQ-INPUT","milestone":"XQ-DELIVERY","next_action":"验证共同约束与分工记录，注册证据后完成 XQ-INPUT。","owner":null,"priority":"P0","status":"completed","summary":"已核对 85 分钟议程、90 分钟场地、额外 10 分钟、单投影和三组桌面约束。","title":"核对活动共同约束","verification":{"evidence_level":"locally_verified"}}
+- {"acceptance":["交付各环节安排及现场需要配合的事项。","保留实际产物与来源引用，无法确认的内容显式说明。"],"depends_on":["XQ-INPUT"],"evidence":[],"goal":"goal#xq","id":"XQ-CONTENT","milestone":"XQ-DELIVERY","next_action":"由内容执行者完成 C→V-01 至 C→V-04 的实际发送并取得现场接收确认，同时继续补齐案例材料、人员设备信息和场地方条件。","owner":null,"priority":"P0","status":"in_progress","summary":"分工与交接基线已明确；现场保障独立产物已完成，内容安排已结合其回执修订，C→V 回复仍待实际发送和现场接收确认。","title":"整理活动内容安排","verification":{"evidence_level":"none"}}
+- {"acceptance":["交付设备、桌面和时间安排，并与内容工作交接。","保留实际产物与来源引用，无法确认的内容显式说明。"],"depends_on":["XQ-INPUT"],"evidence":[".work-receipts/xq-venue-evidence-report.json"],"goal":"goal#xq","id":"XQ-VENUE","milestone":"XQ-DELIVERY","next_action":"完成时间、投影和桌面保障方案与本地验证，并保留需内容负责人确认的设备占用和环节需求。","owner":null,"priority":"P0","status":"completed","summary":"已核验 85 分钟议程、90 分钟场地、额外 10 分钟、单投影和三组桌面约束，正在形成现场保障方案。","title":"整理现场保障方案","verification":{"evidence_level":"locally_verified"}}
+- id: XQ-MERGE
+  title: 协调内容与现场结果
+  status: planned
+  owner: null
+  priority: P0
+  milestone: XQ-DELIVERY
+  goal: goal#xq
+  acceptance:
+  - 处理共有约束和执行者离开后的接续事项。
+  - 保留实际产物与来源引用，无法确认的内容显式说明。
+  depends_on:
+  - XQ-CONTENT
+  - XQ-VENUE
+  next_action: 协调内容与现场结果，先核对当前来源和负责范围。
+  evidence: []
+  verification:
+    evidence_level: none
+- id: XQ-REVIEW
+  title: 独立复核两项结果
+  status: planned
+  owner: null
+  priority: P0
+  milestone: XQ-DELIVERY
+  goal: goal#xq
+  acceptance:
+  - 分别复核两个产物和合并后的时间设备约束。
+  - 保留实际产物与来源引用，无法确认的内容显式说明。
+  depends_on:
+  - XQ-MERGE
+  next_action: 独立复核两项结果，先核对当前来源和负责范围。
+  evidence: []
+  verification:
+    evidence_level: none
+- id: XQ-DELIVER
+  title: 交付活动筹备包
+  status: planned
+  owner: null
+  priority: P0
+  milestone: XQ-DELIVERY
+  goal: goal#xq
+  acceptance:
+  - 整合已复核结果和仍待共同处理的问题。
+  - 保留实际产物与来源引用，无法确认的内容显式说明。
+  depends_on:
+  - XQ-REVIEW
+  next_action: 交付活动筹备包，先核对当前来源和负责范围。
+  evidence: []
+  verification:
+    evidence_level: none

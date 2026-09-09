@@ -1,0 +1,38 @@
+{
+  "blocked_count": 0,
+  "branch_id": null,
+  "counts": {
+    "completed": 5,
+    "planned": 1
+  },
+  "current": [],
+  "current_total": 0,
+  "freshness_basis": "source_refresh",
+  "next_action": "等待不同独立参与者返检通过并再次完成 XQ-REVIEW；此前不认领、不生成最终交付。条件满足后，由最终交付角色核对返检回执、固定版本和未闭合事项，再整理活动筹备交付包。",
+  "ok": true,
+  "project": "星桥活动筹备",
+  "project_id": "01M21W3H8XNKD8AKP4N1JNQQTM",
+  "project_revision": 311,
+  "read_only": false,
+  "ready_count": 1,
+  "source_issues": [],
+  "source_refresh_performed": true,
+  "source_warnings": 0,
+  "suggested_work": {
+    "blocker": null,
+    "external_key": "XQ-DELIVER",
+    "freshness": "fresh",
+    "id": "01M21W3H92ETY0KG090P5SCSBC",
+    "milestone": "XQ-DELIVERY",
+    "next_action": "等待不同独立参与者返检通过并再次完成 XQ-REVIEW；此前不认领、不生成最终交付。条件满足后，由最终交付角色核对返检回执、固定版本和未闭合事项，再整理活动筹备交付包。",
+    "owner": null,
+    "priority": "P0",
+    "raw_status": "planned",
+    "revision": 2,
+    "source_revision": 29,
+    "status": "planned",
+    "summary": "尚未开始；最终交付受 XQ-REVIEW 独立返检门禁阻断。",
+    "title": "交付活动筹备包"
+  },
+  "total": 6
+}

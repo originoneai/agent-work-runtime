@@ -1,0 +1,38 @@
+{
+  "version": 1,
+  "work_item": "XQ-CONTENT",
+  "branch": "xq-content-proofread-2",
+  "branch_id": "01M21Z7CBNFNN0B7HVMY9WTVTC",
+  "source_sha": "8f4031f40c096691df03099c2382cbb86112be19",
+  "command": "rtk proxy sh .work-receipts/verify-proofread2.sh",
+  "scope": [
+    "XQ-CONTENT"
+  ],
+  "verified_at": 1788920548000,
+  "checks": [
+    {
+      "name": "来源与快照一致性",
+      "passed": true,
+      "details": "验证脚本确认议程合计 85 分钟；内容安排快照 SHA256 为 a26b032ba3c1171b3056d46a4a2aab3d1d0a81167c7bfb31abe6645082cccd20，现场保障快照 SHA256 为 3035f626d7ef00cd860d2fd4781513b76d9587b1e6c67924b549ce8865c828a6。",
+      "criteria": [
+        "基于可追溯快照核对当前活动内容安排与现场保障回执。"
+      ]
+    },
+    {
+      "name": "跨产物校对结论",
+      "passed": true,
+      "details": "deliverables/xingqiao-collaboration-review.md（SHA256:18a2ad0de886bb13e83fa45f44dda317e1cbab5b333b4dde8f730a8640502b87）记录八项对照，确认基础内容一致，并识别内容稿尚未消费条件性现场回执。",
+      "criteria": [
+        "形成第二内容校对负责人的独立核对记录。"
+      ]
+    },
+    {
+      "name": "归属、重叠与复核边界",
+      "passed": true,
+      "details": "记录将 COORD-01 至 COORD-05 留给原内容负责人处理，未修改原内容或现场产物，并明确本记录不替代受 XQ-MERGE 依赖约束的正式 XQ-REVIEW。",
+      "criteria": [
+        "重叠事项仅记录待协调，不覆盖现有负责人产物或预填正式复核。"
+      ]
+    }
+  ]
+}

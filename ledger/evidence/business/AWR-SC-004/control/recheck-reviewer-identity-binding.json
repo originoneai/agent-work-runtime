@@ -1,0 +1,140 @@
+{
+  "kind": "actual_independent_recheck_identity_and_result_binding",
+  "recorded_at": "2026-09-09T15:25:54.258110+08:00",
+  "actual_agent_task": "/root/client_handoff_setup",
+  "actual_agent_type": "luna_worker",
+  "actual_task_completed": true,
+  "reviewer_identity": "luna_worker:/root/client_handoff_setup",
+  "caller_model_and_agent_labels_are_not_actual_client_identity_proof": true,
+  "control_report_sha256": "4230bcbf31787e3dfb02fee245424f6dbf8a683b0e1cccd7ac0f2b066c9bfc8d",
+  "session": {
+    "id": "01M22EXK425XHY2N02VFPN7T6K",
+    "status": "ended",
+    "last_checkpoint_id": "01M22G6AZ11CSDHDXQ1EF3GQPZ"
+  },
+  "claim": {
+    "id": "01M22EXVYZ7TNS1ZD3Y7BSC2N2",
+    "session_id": "01M22EXK425XHY2N02VFPN7T6K",
+    "status": "released"
+  },
+  "completion_event": "01M22G4BZKRYRX60MQZTGHXQK9",
+  "evidence": {
+    "id": "01M22G3V7QMZB78H4KGKFD40MG",
+    "external_key": "XQ-INDEPENDENT-RECHECK-20260909-V3",
+    "locator": ".work-receipts/reviewer-recheck-completion-report.json",
+    "sha256": "81cb64388692c1f5c94e9404c212b624854f14309eb53434a3016cf861e86405",
+    "source_sha": "8f4031f40c096691df03099c2382cbb86112be19"
+  },
+  "packet_files_verified": {
+    "review-input-publication.json": 147,
+    "parallel-process-review-publication.json": 10,
+    "review-correction-publication.json": 202
+  },
+  "producer_artifacts_unchanged": {
+    "deliverables/xingqiao-collaboration-review.md": "21e564a7fa985cb67a842e1e836ed84f9a69db2865c86171e0edef4df891d5c0",
+    "deliverables/xingqiao-content.md": "7fc0ccf93f8f8aa6b8d881c91c6f61dc32e63ed979f6cc120f5ba9086eb253c5",
+    "deliverables/xingqiao-independent-results.md": "681ebc8aa9988fe7d27d581eb4e76d68dc24dbacce49a59c5df17953311f8699",
+    "deliverables/xingqiao-ownership.md": "d1238aea798cc63e1d190cb4cbae24ba0b415f786501e1221312d83dcfcceafc",
+    "deliverables/xingqiao-venue.md": "3035f626d7ef00cd860d2fd4781513b76d9587b1e6c67924b549ce8865c828a6",
+    "deliverables/xq-independent-review.md": "c4dd2d34080ba24bfdb3d8408990c55b2152c33241ab259b86e4d034335c9c13"
+  },
+  "producer_receipts_unchanged": 186,
+  "retained_review_files_sha256": {
+    ".work-receipts/reviewer-recheck-branches.json": "b57a287f68f69235f51024b319de46c32be7aa775948cb368fce6639231c251b",
+    ".work-receipts/reviewer-recheck-checkpoint.json": "19947f9956bb4d71d6d6f7dff8e581dd2dde5a752cc253186a100d8f5cf7f89c",
+    ".work-receipts/reviewer-recheck-claim.json": "97c515ba1d67235e2f03d375753523244d942ff0aa812e9a02dc0bb769d66d44",
+    ".work-receipts/reviewer-recheck-completion-input.json": "67ebad30b34a1b2518bfb1cb2ca980f2279e2a4ed1ccb6250bca891dac372408",
+    ".work-receipts/reviewer-recheck-completion-report-missing-version.json": "7b3b4d74d324ed1ff66fd7ecfe4529b840a200f4c359132c1b4dd3025abb098f",
+    ".work-receipts/reviewer-recheck-completion-report-missing-work-item.json": "f7e17fa8c6a85456469d71be14160de0d05bf657560f70b1070751ee9e6bba6f",
+    ".work-receipts/reviewer-recheck-completion-report.json": "81cb64388692c1f5c94e9404c212b624854f14309eb53434a3016cf861e86405",
+    ".work-receipts/reviewer-recheck-context-bootstrap.json": "be0d1f5c933e700efb1089f35ddd038babb53e035ce12facb95d08e2f17fcf84",
+    ".work-receipts/reviewer-recheck-context-compile.json": "56123b29aa5e099c4c926b423ffcd73e8e8e414ce4588fafc96eeb09950bc0b9",
+    ".work-receipts/reviewer-recheck-context-final.json": "a515c724a82d9b41b2d0b94480a8af65dcce920d75bdd3b962fbec2f8e692723",
+    ".work-receipts/reviewer-recheck-evidence-add-v2.json": "0425719960330f5cf382a886085799d322ca0bdda2c0c03e42ddbb946e1b5c29",
+    ".work-receipts/reviewer-recheck-evidence-add-v3.json": "73977e897deda2d9dbda009adcbc5f20a398d3edd8e8bb520ab470fe3c9885fc",
+    ".work-receipts/reviewer-recheck-evidence-add.json": "481ace94270f8bfc493c2caf66f1f119c5ec94e9bff37a02f7380e65c4188f99",
+    ".work-receipts/reviewer-recheck-evidence-draft-v2.json": "ac88887462e50f152ced0c36aabf81defcea220ffca3c68b9ef2ae2e0922ac8c",
+    ".work-receipts/reviewer-recheck-evidence-draft-v3.json": "c5eda2a120709ca333f9f61c15c0f1442fa45135dfbef3a094bafb8c7072e1a5",
+    ".work-receipts/reviewer-recheck-evidence-draft.json": "59748528af7eadbfe9e48d8b0a1bb8efb0ff41fe35c6e96a03f64bd04d089353",
+    ".work-receipts/reviewer-recheck-final-doctor.json": "6c1f6b7dfa163fba64240a3557575d7e0b99cf616d5443e27f34c6c9d983e617",
+    ".work-receipts/reviewer-recheck-final-ready.json": "ddabbf89f3b1e528b541ac5836741b8b2bf8b471c37177d525e08c6281843cbe",
+    ".work-receipts/reviewer-recheck-final-session.json": "8d9ddc8d9eb253d00bcda4b73a73695deab52c817cb927b00fdc78efe6b22e2c",
+    ".work-receipts/reviewer-recheck-final-status.json": "3a664674df6237ee878181b022f1b6105d3810475b0e381a66afbed364a3759e",
+    ".work-receipts/reviewer-recheck-final-verification.json": "4245b11c3fc9d641e38603a6958330a894faac502438706f16de48faca76914f",
+    ".work-receipts/reviewer-recheck-final-verify.py": "a2134a02fd5816b63717a47fbf2628b2e5b798422eeca15aa6373cc183dcc148",
+    ".work-receipts/reviewer-recheck-final-work-deliver.json": "d273857fe370939cbb160711fbd06345959051d29b5458895f4f89b2b44d51f6",
+    ".work-receipts/reviewer-recheck-final-work-review.json": "df2a31d63cae5ae8a68f1fca51b5802e3621a14a6673f29cf66dda5f7168b4fd",
+    ".work-receipts/reviewer-recheck-progress-final.json": "8fa51654ec3e1dbf073174303f6c61d8ab7003a61b1fbdf941c0fdafcf79dc45",
+    ".work-receipts/reviewer-recheck-progress.json": "7ed00c4d2dfc6a38d456e899f2abfe8088afd94514bb9fbc7285501b7f82e7a3",
+    ".work-receipts/reviewer-recheck-ready-before.json": "47e08991ec52d21187e9437d098c43171504e650e3f918299f0b17ae163c45d8",
+    ".work-receipts/reviewer-recheck-session-current.json": "33c4fa555e7b22d722aacf8d45ca12d0226650f34fa5dd82a0814b20b146d760",
+    ".work-receipts/reviewer-recheck-session-end.json": "7a41466d4fada1a0b828b152df6ba048d04249b65be2ec6bc0471af9c938d8ff",
+    ".work-receipts/reviewer-recheck-session-original-content.json": "be3c5417bed750094dad6d8a1f7b1fa66e51b29e9d0e8d95babdfcda0c642217",
+    ".work-receipts/reviewer-recheck-session-start.json": "571c60718060b114b4ea1746889dfab7dec0dc5aa0b5218ad8a28b92ca210529",
+    ".work-receipts/reviewer-recheck-session-successor.json": "ad4392b3005546e6205567a9063882be4150c4911a053cddca8453492b2447da",
+    ".work-receipts/reviewer-recheck-status-after-attempt1.json": "bb925527f951a685a8cd53591649d95622a631a60f444e98a23c7d03d38b762a",
+    ".work-receipts/reviewer-recheck-status-before.json": "a30a4cbbf1e29961029d8cbb6b85d3bd2c11f5a2930a0b4131dcadba385e2949",
+    ".work-receipts/reviewer-recheck-verification-before.json": "67c7c061b4781e5c6fc6758f5cbad59b0441ab49befe7ef04d5104c97d845305",
+    ".work-receipts/reviewer-recheck-verification.json": "2bdee2ae42fbcb257273f94aa3487e50d13b2dd63c83ee9f7cae88c299aae69b",
+    ".work-receipts/reviewer-recheck-verify.py": "4a872cb3e10a7cb430cbb3feeb89c44de3850d51975291b11ad3ecc5068c4644",
+    ".work-receipts/reviewer-recheck-work-complete-attempt-1.json": "67ca5113f997e056b1384c1418c207d13e75a2e9edb9e9c5b272ab68c58ebf04",
+    ".work-receipts/reviewer-recheck-work-complete-attempt-2.json": "84a8f665193c41c375cab64c0200f3848a3aebb15a638502c676904c6f89988d",
+    ".work-receipts/reviewer-recheck-work-complete.json": "9b10cf513c13aec4783b7d521774dc1bf385b4b29891af2df1acc2a0e67e0745",
+    ".work-receipts/reviewer-recheck-work-review-in-progress.json": "14ea7af4fad8197bad0df28273aa23b36af8f01fc538de4a7f4677adfaa9309a",
+    ".work-receipts/reviewer-recheck-work-xq-content.json": "2dab08d66df20ea59dcbed1575302bcd2a400e325d8102cf0185ce58be7f7e39",
+    ".work-receipts/reviewer-recheck-work-xq-deliver.json": "b34fa0a0bbbb5a47b0e1e5501736b22a27bb30eb229187156c403b15275f1f8b",
+    ".work-receipts/reviewer-recheck-work-xq-input.json": "bca405d8527128b14af2d73ef89e1796a00776fab461bec00f331945369fd9f8",
+    ".work-receipts/reviewer-recheck-work-xq-merge.json": "61fd85aea40befd5df8aa4141748ab81d9571993f52a9f4e5590f8e64aa1d16b",
+    ".work-receipts/reviewer-recheck-work-xq-review.json": "047a3ed9574f2556f2363d12948b7c39b9220c23b0ad57eacd505f0c1b8392a8",
+    ".work-receipts/reviewer-recheck-work-xq-venue.json": "65deedcc05c99aa2f289635af8706884d813cfe8ffec4540919c1c409f44cb1f",
+    "deliverables/xq-independent-recheck.md": "e177be268f07a30c35d8f9d1539ab6248a75fb01a935966ce3045809628d902f"
+  },
+  "runtime_observation": {
+    "project_revision": 311,
+    "active_claims": 0,
+    "active_sessions": 0,
+    "work_items": [
+      {
+        "external_key": "XQ-INPUT",
+        "status": "completed",
+        "summary": "已核对 85 分钟议程、90 分钟场地、额外 10 分钟、单投影和三组桌面约束。",
+        "next_action": "本工作已完成；85/90/10 分钟、单投影和三组桌面约束继续作为返检与后续现场确认的来源，不再重复执行本工作。"
+      },
+      {
+        "external_key": "XQ-CONTENT",
+        "status": "completed",
+        "summary": "已将 C→V-01 至 C→V-04 校正为接续者项目内已接收，保留外部发送、场地、设备、人员和成品材料缺口；修改前原稿已完整快照，原现场方案未改动，本地验证通过。",
+        "next_action": "本工作已完成；现行内容安排提交独立返检。后续收到场地、设备或人员确认并触发内容变更时，由内容执行者或明确接续者补齐成品材料和受影响安排。"
+      },
+      {
+        "external_key": "XQ-VENUE",
+        "status": "completed",
+        "summary": "已形成并本地验证现场保障方案，明确 85/90/10 分钟边界、单投影与三组桌面条件及进场门槛；原执行会话已结束，实际场地和设备事实仍未确认。",
+        "next_action": "本工作已完成；原现场执行者不再继续处理。由协调者另行指派后续现场核验人，在活动日期、人数和内容材料明确后取得时间、场地、设备与现场人员回执，并把结果交给独立返检。"
+      },
+      {
+        "external_key": "XQ-MERGE",
+        "status": "completed",
+        "summary": "已完成首次汇总；本轮已按独立复核修正分工现行状态及 XQ-INPUT、XQ-CONTENT、XQ-VENUE、XQ-MERGE 的摘要或下一步，保留原稿、历次分工与失败记录并形成返检包。",
+        "next_action": "本工作及本轮整改均已完成，认领已释放；固定整改版本已交回独立返检。由运营方另派不同独立参与者返检 XQ-R01/XQ-R02；仅在其再次完成 XQ-REVIEW 后才认领 XQ-DELIVER。"
+      },
+      {
+        "external_key": "XQ-REVIEW",
+        "status": "completed",
+        "summary": "独立返检已完成：XQ-R01/XQ-R02 均已闭合；两个产物、合并后的时间设备约束、真实角色与冲突链、原稿失败和未知事项均已核对，结论通过本次 XQ-REVIEW 范围。",
+        "next_action": "本工作完成后不再重复返检。由最终交付角色核对固定整改包、本返检报告和未闭合事项，再认领 XQ-DELIVER；现场验证、最终交付和整场 E4 仍未发生。"
+      },
+      {
+        "external_key": "XQ-DELIVER",
+        "status": "planned",
+        "summary": "尚未开始；最终交付受 XQ-REVIEW 独立返检门禁阻断。",
+        "next_action": "等待不同独立参与者返检通过并再次完成 XQ-REVIEW；此前不认领、不生成最终交付。条件满足后，由最终交付角色核对返检回执、固定版本和未闭合事项，再整理活动筹备交付包。"
+      }
+    ]
+  },
+  "source_ledger_sha256": "e68a404d8933c93103cb22ba2aa67ad620b055c2a16a36ef8214826b26d76b96",
+  "verdict": "passed_for_xq_review_scope",
+  "final_delivery_not_started": true,
+  "runtime_mutation_performed": false,
+  "e4_credit": false
+}

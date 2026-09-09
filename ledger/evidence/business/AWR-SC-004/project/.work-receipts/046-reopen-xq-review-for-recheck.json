@@ -1,0 +1,108 @@
+{
+  "ok": true,
+  "code": "proposal_recorded",
+  "project_revision": 201,
+  "proposal": {
+    "id": "01M22BTRFHS01MYM7NQ1ENG978",
+    "project_id": "01M21W3H8XNKD8AKP4N1JNQQTM",
+    "work_item_id": "01M21W3H924SNZ0DV020S3BM69",
+    "source_id": "01M21W3H91TRWQ6G4NPD4BJPHC",
+    "base_fingerprint": "sha256:c3348a5b8c7110fafaeed476b248ff8e5cc53a7990b4342a96505cf8e50e9921",
+    "expected_revision": 194,
+    "mutation_type": "work.reopen",
+    "patch": {
+      "changes": {
+        "blocker": null,
+        "next_action": "等待 XQ-MERGE 完成 XQ-R01/XQ-R02 整改并提交固定版本；随后由不同独立参与者认领，逐项返检分工现行状态、四个 completed 工作项文字、原稿/失败保留和现场未知边界。",
+        "status": "planned"
+      },
+      "intent": "首次独立复核结论为 requires_executor_changes；按用户要求在生产者整改后由另一独立参与者返检，返检通过前阻断最终交付",
+      "source_config": {
+        "adapter_options": {},
+        "adapter_version": 1,
+        "mapping_key": "ledger|work-ledger.yaml"
+      },
+      "target": {
+        "kind": "work_item",
+        "meta": {
+          "external_key": "XQ-REVIEW",
+          "id": "01M21W3H924SNZ0DV020S3BM69",
+          "revision": 3,
+          "source_ref": {
+            "end_line": null,
+            "locator": "file:///Users/mac/Documents/originone/agent-work-running/.local/business-live-20260909-v1/parallel-ownership/project/work-ledger.yaml",
+            "pointer": "/work_items/4",
+            "section_fingerprint": null,
+            "source_fingerprint": "sha256:c3348a5b8c7110fafaeed476b248ff8e5cc53a7990b4342a96505cf8e50e9921",
+            "source_id": "01M21W3H91TRWQ6G4NPD4BJPHC",
+            "source_revision": 17,
+            "start_line": null
+          }
+        }
+      },
+      "version": 1,
+      "work_action": {
+        "action": "reopen",
+        "from": "completed",
+        "to": "planned"
+      }
+    },
+    "status": "applied",
+    "created_by_session": "01M22BTBNZATWC5JG2J8XY1VQ5",
+    "revision": 5
+  },
+  "event": {
+    "id": "01M22BTRGZX4SAZEV13SNKEA3N",
+    "project_id": "01M21W3H8XNKD8AKP4N1JNQQTM",
+    "work_item_id": "01M21W3H924SNZ0DV020S3BM69",
+    "session_id": null,
+    "branch_id": null,
+    "event_type": "work.reopened",
+    "importance": "normal",
+    "summary": "Verified source work action Reopen",
+    "payload": {
+      "action_reason": "首次独立复核结论为 requires_executor_changes；按用户要求在生产者整改后由另一独立参与者返检，返检通过前阻断最终交付",
+      "actor": "xq-review-recheck-dispatch",
+      "after_fingerprint": "sha256:763ff83539c20879ed708bd77927dee15f13930134ba0fc21f8424d96bd09df2",
+      "attempt_event_id": "01M22BTRGD515E5V3Z9F0Q9G2W",
+      "before_fingerprint": "sha256:c3348a5b8c7110fafaeed476b248ff8e5cc53a7990b4342a96505cf8e50e9921",
+      "creating_session_id": "01M22BTBNZATWC5JG2J8XY1VQ5",
+      "proposal_id": "01M22BTRFHS01MYM7NQ1ENG978",
+      "reason": "首次独立复核结论为 requires_executor_changes；按用户要求在生产者整改后由另一独立参与者返检，返检通过前阻断最终交付",
+      "released_claim_ids": [],
+      "source_id": "01M21W3H91TRWQ6G4NPD4BJPHC",
+      "source_revision": 18,
+      "target_after_hash": "b50bb86027ebe6b72479083301f258b0b1904d33c82737f711f5cd157652ecbf",
+      "target_revision": 4,
+      "work_action": {
+        "action": "reopen",
+        "from": "completed",
+        "to": "planned"
+      },
+      "write_plan_id": "01M22BTRFTSFBXQTYHBYB37Z4F"
+    },
+    "project_revision": 201,
+    "created_at": 1788933399071
+  },
+  "source_refresh_performed": true,
+  "source_write_performed": true,
+  "write_outcome": "applied",
+  "apply_attempt": {
+    "event_id": "01M22BTRGD515E5V3Z9F0Q9G2W",
+    "proposal_id": "01M22BTRFHS01MYM7NQ1ENG978",
+    "source_id": "01M21W3H91TRWQ6G4NPD4BJPHC",
+    "project_revision": 198,
+    "plan": {
+      "id": "01M22BTRFTSFBXQTYHBYB37Z4F",
+      "before_fingerprint": "sha256:c3348a5b8c7110fafaeed476b248ff8e5cc53a7990b4342a96505cf8e50e9921",
+      "after_fingerprint": "sha256:763ff83539c20879ed708bd77927dee15f13930134ba0fc21f8424d96bd09df2",
+      "before_size": 4540,
+      "after_size": 4541,
+      "target_after_hash": "b50bb86027ebe6b72479083301f258b0b1904d33c82737f711f5cd157652ecbf"
+    },
+    "resolved_event_id": "01M22BTRGZX4SAZEV13SNKEA3N"
+  },
+  "recovery_directory": ".awr/mutations/01M22BTRFTSFBXQTYHBYB37Z4F",
+  "source_check": null,
+  "error": null
+}

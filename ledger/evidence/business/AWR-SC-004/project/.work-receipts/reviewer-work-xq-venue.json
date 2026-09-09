@@ -1,0 +1,95 @@
+{
+  "acceptance": [
+    "交付设备、桌面和时间安排，并与内容工作交接。",
+    "保留实际产物与来源引用，无法确认的内容显式说明。"
+  ],
+  "decisions": [],
+  "dependency_cycles": [],
+  "evidence": [
+    {
+      "currency": "unknown",
+      "external_key": "XQ-VENUE-PLAN-20260909",
+      "level": "locally_verified",
+      "locator": ".work-receipts/xq-venue-evidence-report.json",
+      "missing_bindings": [],
+      "reasons": [
+        "both recorded and requested source SHA are needed to determine currency"
+      ],
+      "source_sha": "8f4031f40c096691df03099c2382cbb86112be19",
+      "summary": "现场时间、单投影、三组桌面和内容交接方案已通过本地结构化核对。"
+    },
+    {
+      "currency": "unknown",
+      "external_key": "XQ-VENUE/evidence/.work-receipts/xq-venue-evidence-report.json",
+      "level": "unknown",
+      "locator": ".work-receipts/xq-venue-evidence-report.json",
+      "missing_bindings": [
+        "sha256",
+        "source_sha",
+        "command",
+        "verified_at"
+      ],
+      "reasons": [
+        "both recorded and requested source SHA are needed to determine currency"
+      ],
+      "source_sha": null,
+      "summary": "Evidence reference; not yet verified by AWR"
+    }
+  ],
+  "evidence_currency_basis": {
+    "branch_id": null,
+    "requested_source_sha": null
+  },
+  "freshness_basis": "source_refresh",
+  "missing_dependencies": [],
+  "ok": true,
+  "project_revision": 166,
+  "read_only": false,
+  "required_dependencies": [
+    {
+      "external_key": "XQ-INPUT",
+      "freshness": "fresh",
+      "revision": 3,
+      "source_revision": 14,
+      "status": "completed"
+    }
+  ],
+  "source_issues": [],
+  "source_ref": {
+    "end_line": null,
+    "locator": "file:///Users/mac/Documents/originone/agent-work-running/.local/business-live-20260909-v1/parallel-ownership/project/work-ledger.yaml",
+    "pointer": "/work_items/2",
+    "section_fingerprint": null,
+    "source_fingerprint": "sha256:a5dfe2640461483aac4dabced4a4e27f144d5b70e23b80fba40b35f5a36b13ac",
+    "source_id": "01M21W3H91TRWQ6G4NPD4BJPHC",
+    "source_revision": 14,
+    "start_line": null
+  },
+  "source_refresh_performed": true,
+  "source_warnings": 0,
+  "work": {
+    "active_claims": [],
+    "blocker": null,
+    "diagnostics": [
+      {
+        "code": "status_not_selectable",
+        "detail": "source status is completed",
+        "work_item_key": "XQ-VENUE"
+      }
+    ],
+    "external_key": "XQ-VENUE",
+    "freshness": "fresh",
+    "id": "01M21W3H92418GRK38VA4D0RD7",
+    "milestone": "XQ-DELIVERY",
+    "next_action": "完成时间、投影和桌面保障方案与本地验证，并保留需内容负责人确认的设备占用和环节需求。",
+    "owner": null,
+    "priority": "P0",
+    "raw_status": "completed",
+    "ready": false,
+    "revision": 3,
+    "source_revision": 14,
+    "status": "completed",
+    "summary": "已核验 85 分钟议程、90 分钟场地、额外 10 分钟、单投影和三组桌面约束，正在形成现场保障方案。",
+    "title": "整理现场保障方案"
+  }
+}

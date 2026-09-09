@@ -1,0 +1,54 @@
+{
+  "checkpoint": {
+    "changed_entities": [
+      "work_items:01M21W3H924XZK5JAZCTWTQPJH"
+    ],
+    "context_hash": "3cf048ca55eee22a668c7789d8f3bc267e5b850bd425481801ed8f7eab08fcd3",
+    "created_at": 1788929962590,
+    "digest": "已依据真实接续记录校正内容稿状态：四项 C→V 回复为项目内已接收；原稿快照与原现场方案均保留，内容安排本地验证通过。",
+    "id": "01M228HWJYC5RQZVC3M336VXAV",
+    "next_action": "以已登记证据完成 XQ-CONTENT，随后由协调者认领 XQ-MERGE 并形成两项结果的可交接筹备方案。",
+    "open_loops": [
+      "场地方仍未确认 90+10 包含关系、绝对开放时间和 7/3 条件性拆分。",
+      "投影实机、接口、线材、信号源、操作人及三组桌面容量、视线和通道仍待现场核验。",
+      "参会人数、角色名单、开场与讨论材料、案例演示文件、PDF、无投影提纲、纸笔、扩声和供电需求仍待补齐。",
+      "外部发送留痕与实际执行确认尚无；正式独立复核必须由另一位参与者在汇总材料完善后执行。"
+    ],
+    "project_revision": 136,
+    "revision": 1,
+    "session_id": "01M21WYFWXQHZNK0BJTYVD8N1K"
+  },
+  "checkpoint_save": {
+    "after_revision": 113,
+    "attempt_id": "01M228HWJXYXEEN10M444M6BH1",
+    "delta_bytes": 5934,
+    "delta_recorded": true,
+    "event_id": "01M228HWJYVHPGPT2D6Q37NHME",
+    "observed_changed_entity_count": 1,
+    "reported_changed_entity_count": 1,
+    "session_event_count": 2,
+    "source_observation_count": 4,
+    "through_revision": 136
+  },
+  "context_hash_basis": "caller_supplied_last_used_context",
+  "context_hash_verified": false,
+  "event": {
+    "artifact_id": null,
+    "branch_id": null,
+    "checkpoint_id": "01M228HWJYC5RQZVC3M336VXAV",
+    "created_at": 1788929962590,
+    "id": "01M228HWJYVHPGPT2D6Q37NHME",
+    "importance": "normal",
+    "project_revision": 138,
+    "session_id": "01M21WYFWXQHZNK0BJTYVD8N1K",
+    "source_id": null,
+    "summary": "Saved session checkpoint and observed delta",
+    "type": "checkpoint.created",
+    "work_item_id": "01M21W3H924XZK5JAZCTWTQPJH"
+  },
+  "freshness_basis": "source_refresh",
+  "ok": true,
+  "project_revision": 138,
+  "save_status": "completed",
+  "source_refresh_performed": true
+}

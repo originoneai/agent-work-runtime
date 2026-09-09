@@ -1,0 +1,108 @@
+{
+  "ok": true,
+  "code": "proposal_recorded",
+  "project_revision": 39,
+  "proposal": {
+    "id": "01M21WXYH9MC2B8QCMGFHQ6E6W",
+    "project_id": "01M21W3H8XNKD8AKP4N1JNQQTM",
+    "work_item_id": "01M21W3H92418GRK38VA4D0RD7",
+    "source_id": "01M21W3H91TRWQ6G4NPD4BJPHC",
+    "base_fingerprint": "sha256:59433c317c60858c43f145416eb0ba4e12f197a31d796596287873319008e574",
+    "expected_revision": 32,
+    "mutation_type": "work.progress",
+    "patch": {
+      "changes": {
+        "next_action": "完成时间、投影和桌面保障方案与本地验证，并保留需内容负责人确认的设备占用和环节需求。",
+        "status": "in_progress",
+        "summary": "已核验 85 分钟议程、90 分钟场地、额外 10 分钟、单投影和三组桌面约束，正在形成现场保障方案。"
+      },
+      "intent": "已按既定分工接手现场保障并核验共同约束",
+      "source_config": {
+        "adapter_options": {},
+        "adapter_version": 1,
+        "mapping_key": "ledger|work-ledger.yaml"
+      },
+      "target": {
+        "kind": "work_item",
+        "meta": {
+          "external_key": "XQ-VENUE",
+          "id": "01M21W3H92418GRK38VA4D0RD7",
+          "revision": 1,
+          "source_ref": {
+            "end_line": null,
+            "locator": "file:///Users/mac/Documents/originone/agent-work-running/.local/business-live-20260909-v1/parallel-ownership/project/work-ledger.yaml",
+            "pointer": "/work_items/2",
+            "section_fingerprint": null,
+            "source_fingerprint": "sha256:59433c317c60858c43f145416eb0ba4e12f197a31d796596287873319008e574",
+            "source_id": "01M21W3H91TRWQ6G4NPD4BJPHC",
+            "source_revision": 3,
+            "start_line": null
+          }
+        }
+      },
+      "version": 1,
+      "work_action": {
+        "action": "progress",
+        "from": "planned",
+        "to": "in_progress"
+      }
+    },
+    "status": "applied",
+    "created_by_session": "01M21WRV810RJX1PTMZK4Z5D09",
+    "revision": 5
+  },
+  "event": {
+    "id": "01M21WXYJY2YDH04CX2C5A2STC",
+    "project_id": "01M21W3H8XNKD8AKP4N1JNQQTM",
+    "work_item_id": "01M21W3H92418GRK38VA4D0RD7",
+    "session_id": null,
+    "branch_id": null,
+    "event_type": "work.progressed",
+    "importance": "normal",
+    "summary": "Verified source work action Progress",
+    "payload": {
+      "action_reason": "已按既定分工接手现场保障并核验共同约束",
+      "actor": "xq-venue-executor",
+      "after_fingerprint": "sha256:bc04dbf947ae4bed1bf4d32f1600f6d62f360eaf488682de15025654eb354c73",
+      "attempt_event_id": "01M21WXYJ21T6R9557BT3PNQ2P",
+      "before_fingerprint": "sha256:59433c317c60858c43f145416eb0ba4e12f197a31d796596287873319008e574",
+      "creating_session_id": "01M21WRV810RJX1PTMZK4Z5D09",
+      "proposal_id": "01M21WXYH9MC2B8QCMGFHQ6E6W",
+      "reason": "已按既定分工接手现场保障并核验共同约束",
+      "released_claim_ids": [],
+      "source_id": "01M21W3H91TRWQ6G4NPD4BJPHC",
+      "source_revision": 4,
+      "target_after_hash": "303436d3a775240f10f9eacdc033290fa6db8843b6619d94e249b89d1bb0bf8f",
+      "target_revision": 2,
+      "work_action": {
+        "action": "progress",
+        "from": "planned",
+        "to": "in_progress"
+      },
+      "write_plan_id": "01M21WXYHHVKEYF1838ZM3DT0S"
+    },
+    "project_revision": 39,
+    "created_at": 1788917774942
+  },
+  "source_refresh_performed": true,
+  "source_write_performed": true,
+  "write_outcome": "applied",
+  "apply_attempt": {
+    "event_id": "01M21WXYJ21T6R9557BT3PNQ2P",
+    "proposal_id": "01M21WXYH9MC2B8QCMGFHQ6E6W",
+    "source_id": "01M21W3H91TRWQ6G4NPD4BJPHC",
+    "project_revision": 36,
+    "plan": {
+      "id": "01M21WXYHHVKEYF1838ZM3DT0S",
+      "before_fingerprint": "sha256:59433c317c60858c43f145416eb0ba4e12f197a31d796596287873319008e574",
+      "after_fingerprint": "sha256:bc04dbf947ae4bed1bf4d32f1600f6d62f360eaf488682de15025654eb354c73",
+      "before_size": 3022,
+      "after_size": 3235,
+      "target_after_hash": "303436d3a775240f10f9eacdc033290fa6db8843b6619d94e249b89d1bb0bf8f"
+    },
+    "resolved_event_id": "01M21WXYJY2YDH04CX2C5A2STC"
+  },
+  "recovery_directory": ".awr/mutations/01M21WXYHHVKEYF1838ZM3DT0S",
+  "source_check": null,
+  "error": null
+}

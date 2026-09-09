@@ -1,0 +1,16 @@
+{
+  "external_key": "XQ-MERGE-REVIEW-REMEDIATION-FINAL-20260909",
+  "work_item_key": "XQ-MERGE",
+  "evidence_type": "report",
+  "level": "locally_verified",
+  "summary": "完成后复验已消除 XQ-MERGE 最后一处过时 next_action；四项 completed 工作现行文字、历史保留、现场未知项和独立返检门禁均已最终核对。",
+  "locator": ".work-receipts/xq-review-remediation-final-evidence-report.json",
+  "sha256": "269bd0dde5599096930e014217533c67c751f8ad96a2fb0f9dbca41f09f37b11",
+  "source_sha": "8f4031f40c096691df03099c2382cbb86112be19",
+  "command": "rtk proxy sh .work-receipts/verify-xq-review-remediation-final.sh",
+  "scope": [
+    "XQ-MERGE"
+  ],
+  "branch_id": null,
+  "verified_at": 1788935460115
+}

@@ -1,0 +1,810 @@
+{
+  "kind": "sealed_native_client_turn_review_extract",
+  "phase": "venue-continuation",
+  "client": "Codex CLI",
+  "client_task_id": "01a08460-5417-75c3-8ee2-7249153e9c67",
+  "actual_user_turn": {
+    "timestamp": "2026-09-09T04:15:04.593Z",
+    "text": "请接续暂离同事负责的现场保障工作，核对现有设备安排和内容同事的交接记录，确认你实际接手的范围并继续推进。保留原始方案和未决事项，把接收结果、仍需协调的问题及后续安排留在可追溯记录中。完成本轮接续后先交回协调者。"
+  },
+  "original_input_sha256": "1252644aeeef6556873ba7d14bd68add01b36b80c6748cd521d47196fd513307",
+  "native_transcript_snapshot_sha256": "b34f27b1df6fc325f1bb9a6148a6cea8d90219704d7cdc563fba3f888cdc2269",
+  "events_sha256": "ffcbe5a055e73b50de5446e7e18764d65dd85268ae686cc737a6ae560a1de72d",
+  "final_message": "已完成本轮现场保障接续，并交回协调者。\n\n- 已实际读取并确认收到 `C→V-01` 至 `C→V-04`；单投影 `T+10—T+35` 与三组桌面贯穿全程在计划层面无冲突。\n- 已明确接手时间边界、设备、桌面和现场资源核验；未接手内容稿、合并及独立复核。\n- 原现场方案保持不变，SHA256 仍为 `3035f626...c828a6`。\n- 接收结果、范围、未决事项和后续安排已写入[接续记录](/Users/mac/Documents/originone/agent-work-running/.local/business-live-20260909-v1/parallel-ownership/project/deliverables/xingqiao-ownership.md:59)。\n- AWR 已登记本地核对证据，保存检查点 `01M226KV47XENA1P03FR5D1QG7`，并完成[交回回执](/Users/mac/Documents/originone/agent-work-running/.local/business-live-20260909-v1/parallel-ownership/project/.work-receipts/028-handoff-xq-venue-successor-to-coordinator.json:1)；认领已释放，项目 revision 为 `127`。\n- `XQ-CONTENT` 保持进行中。仍需协调 90+10 时间边界、绝对开放时间、投影实机与操作人、桌面容量/通道，以及人数、扩声、供电和物料信息。\n\n本地核对脚本、JSON 校验和 `git diff --check` 均通过。AWR 将无目标接续标为 `incomplete`，表示未完事项已交回待后续领取，并非本轮核对失败。按 `karpathy-guidelines` 的范围控制，本轮只追加接续记录和必要状态，没有改写原现场方案或内容稿。",
+  "final_message_sha256": "54794670a3672b19e103fdeae5d802a541ec31b6ef98f0fef5208eae7971c1e7",
+  "project_sources_sha256": {
+    "project.toml": "d52670ea0470cd5d8ee1290f6fc5802ae5caadaea5a99d1641471fff8189238a",
+    "GOALS.md": "b4c7d4b82ee317c7fdd4186bed1abb78ba366ef98ac0866b09f85844e22fbf15",
+    "PLAN.md": "729e1a14fe3b11ed869252e5b8aa85d8a3854719865d1cb7b3602ef91aa90ed9",
+    "RULES.md": "31ac59aa580dc3f29f17cd1f532eebbaa0152a041ccd8e00ca74e6d4cd914e19",
+    "work-ledger.yaml": "e31265cdcf08d8462141fdc314aa28c16d3b4f6e6a6510b18210d0b239b1b73c",
+    "AGENTS.md": "d0ca28ca18c438aefdada6a14cb847a0664e261f9e8e48abbfd8701720eb66a2",
+    "DELIVERABLES.md": "b81c90585753fd7d52390d4dd5fb338c4a4d71c4b7cc0bcfb17222be50a34766"
+  },
+  "artifacts_sha256": {
+    "deliverables/xingqiao-collaboration-review.md": "21e564a7fa985cb67a842e1e836ed84f9a69db2865c86171e0edef4df891d5c0",
+    "deliverables/xingqiao-content.md": "7fc9fc339952ecccfa71b2602810e0657191247c7b64346c071f5ae4a75d8eff",
+    "deliverables/xingqiao-ownership.md": "2658295d0430fd4d63104c74e46e4f1c86a9b1d94c4e322d004c4932bcc0dbad",
+    "deliverables/xingqiao-venue.md": "3035f626d7ef00cd860d2fd4781513b76d9587b1e6c67924b549ce8865c828a6"
+  },
+  "receipt_files": {
+    ".work-receipts/001-init.json": {
+      "sha256": "5ea97afd18f9f27fafa99df30d9312c361dd936a8d5d1dbf80360c5dcab8eeb4",
+      "bytes": 2499
+    },
+    ".work-receipts/002-session-start-xq-input.json": {
+      "sha256": "1409c06add2740a39c4f3c61ed07609b87e7cbd7c9e1308dafce2f0a8b78f4b6",
+      "bytes": 1402
+    },
+    ".work-receipts/003-work-progress-xq-input.json": {
+      "sha256": "f1dce74ae73ee79307d012b704dd02c7d04da9acee1f08e9580005828d9345ba",
+      "bytes": 4155
+    },
+    ".work-receipts/004-xq-input-evidence-report.json": {
+      "sha256": "4349c25259e4cde74df15cea5cf03eb13807a49b85b3da3cfc1e07b402986853",
+      "bytes": 1046
+    },
+    ".work-receipts/005-xq-input-evidence-draft.json": {
+      "sha256": "6e059836d3674851627f9b9322e37a042faba1712d30ae6d4c48a7b9e62d9e79",
+      "bytes": 588
+    },
+    ".work-receipts/006-evidence-add-xq-input.json": {
+      "sha256": "38fb2aa8ee4e8d01bf835b34959d1ffac8cb221ef1ca5f9c1066a657bf0a4352",
+      "bytes": 993
+    },
+    ".work-receipts/007-xq-input-completion.json": {
+      "sha256": "55193410c5356a6a6304f928ce1e3326d66a1adf9d65e20f6985e816f3190c00",
+      "bytes": 498
+    },
+    ".work-receipts/008-session-start-xq-venue.json": {
+      "sha256": "a3522eb31241a6039221abc8fcef8ff1a2d0f36e61bec3d2d722aa321463e8ba",
+      "bytes": 1387
+    },
+    ".work-receipts/008-work-complete-xq-input.json": {
+      "sha256": "42135861fb0f8f39fc4511765df6e5206eeb411f01a4cec51139c03dbb6c9c12",
+      "bytes": 7484
+    },
+    ".work-receipts/009-checkpoint-dispatch-coordinator.json": {
+      "sha256": "ed01e6b9a26e9612458975476ffdfee4307a16f682490c155cf1c0fdac6a8b10",
+      "bytes": 2076
+    },
+    ".work-receipts/010-session-end-dispatch-coordinator.json": {
+      "sha256": "7d01fde396148c54a14fc18aa27f37b3a87e1ca4b9fece6717f9d208e5dd977f",
+      "bytes": 1056
+    },
+    ".work-receipts/011-session-start-xq-content.json": {
+      "sha256": "7f143a9112d19dbfa1a10c579480b463a08545775453cdf0349a9137596d0e4d",
+      "bytes": 1400
+    },
+    ".work-receipts/012-work-progress-xq-content.json": {
+      "sha256": "aacd43c8d80108609f515de908d2733eeee3675d3ed84dbd2822f940c1ac1372",
+      "bytes": 4249
+    },
+    ".work-receipts/013-checkpoint-xq-content.json": {
+      "sha256": "aa09086546d5eb01d5b94e8572798860a7398b8c81493e9d3cd689cf0b39760f",
+      "bytes": 2164
+    },
+    ".work-receipts/014-work-progress-xq-content-after-venue.json": {
+      "sha256": "3f8deda93404f50d08c6f3c23950cf08a2c540f96e6ff98488587f9c9e4ed9df",
+      "bytes": 4387
+    },
+    ".work-receipts/015-checkpoint-xq-content-after-venue.json": {
+      "sha256": "64055a7f2835c63ad313fe1b434f086bf71cc1da9a305e254fe8d740520ebdaa",
+      "bytes": 2581
+    },
+    ".work-receipts/016-expire-content-claim.json": {
+      "sha256": "01a8d14411d64280773526cb62e0c808dae78deed44b7770b32ec0a7f116a65b",
+      "bytes": 1195
+    },
+    ".work-receipts/017-reclaim-xq-content.json": {
+      "sha256": "064e0c223a8444989622f72d42dda1506abc8a882c1a3cec8390ed15f34f9d45",
+      "bytes": 934
+    },
+    ".work-receipts/018-work-progress-xq-content-handoff-wording-conflict.json": {
+      "sha256": "d9d01e9a41934057f3a39dc1f871f6ce57751107a565267ba6b5b5ad61febbea",
+      "bytes": 140
+    },
+    ".work-receipts/019-checkpoint-xq-content-handoff-wording.json": {
+      "sha256": "632794bfc94a75ebb16358f2e913e9628fdaed10c3b682af6d0aba0624ac85d6",
+      "bytes": 2269
+    },
+    ".work-receipts/020-work-progress-xq-content-parallel-handoff.json": {
+      "sha256": "256be9e20c95226f979ec83c7405e889618cb7b91c197ec90489fb750d9b934e",
+      "bytes": 4429
+    },
+    ".work-receipts/021-checkpoint-xq-content-parallel-handoff.json": {
+      "sha256": "431b8776f1cb1320977edfa7008d36b6910501d29ebf6dce87f6c91303f6d729",
+      "bytes": 2400
+    },
+    ".work-receipts/022-work-progress-xq-content-venue-handoff.json": {
+      "sha256": "6c4703018dc80a2262504f0f08f00bc41fae2d317195e61fb81b4c360cee7063",
+      "bytes": 4551
+    },
+    ".work-receipts/023-checkpoint-xq-content-venue-handoff.json": {
+      "sha256": "75226f9591b7818dd9fe8715b5f63cd7e1a59b79246253726abc4e09db10da30",
+      "bytes": 2433
+    },
+    ".work-receipts/024-session-start-xq-venue-successor.json": {
+      "sha256": "29c7a4a74a78cb301cde0ba354f1c6c8f491eba8498ea8ddb7f0be2de60e2c56",
+      "bytes": 1401
+    },
+    ".work-receipts/025-evidence-add-xq-venue-successor.json": {
+      "sha256": "9e83564652d9fe9a6448cff5cba8e2cfd96685a0be038c65efd3bb871fb886a4",
+      "bytes": 1080
+    },
+    ".work-receipts/026-work-progress-xq-venue-successor.json": {
+      "sha256": "d323ff721a68c18b0785383b08d7645283a5b676cc6529b1fb5ee43d73879723",
+      "bytes": 4664
+    },
+    ".work-receipts/027-checkpoint-xq-venue-successor.json": {
+      "sha256": "59371af2f09e3eb8a55e9458fbb4a6007650505a9affaa79dd61f698c8201d65",
+      "bytes": 2497
+    },
+    ".work-receipts/028-handoff-xq-venue-successor-to-coordinator.json": {
+      "sha256": "43661ed8903a34ce3a41d6bdb658d7f6c1bfdcd2a9a0c531e340574a0c8ea75f",
+      "bytes": 2730
+    },
+    ".work-receipts/proofread2-branch-create.json": {
+      "sha256": "368acbd8d6780780e053eab047afddae5b2415e7a559597fa00288b7cde9fffe",
+      "bytes": 1925
+    },
+    ".work-receipts/proofread2-branch-switch.json": {
+      "sha256": "38e80e68f04a39fc56f52e067c423b41299d38d6d84765d6fcfe759b6bc629b4",
+      "bytes": 1092
+    },
+    ".work-receipts/proofread2-checkpoint.json": {
+      "sha256": "4104abcd686e738a3630d95095544e0389c51362dd21113b3197826f5302cf61",
+      "bytes": 2177
+    },
+    ".work-receipts/proofread2-evidence-add.json": {
+      "sha256": "8493b631775abd55de885d488522875f26fdeddceca35a56f0df7267d93b34a4",
+      "bytes": 1051
+    },
+    ".work-receipts/proofread2-evidence-draft.json": {
+      "sha256": "9826858613e0774625dd4f0c3409d4ac44892d25529c4f0f3f79a58e37d1e15a",
+      "bytes": 648
+    },
+    ".work-receipts/proofread2-evidence-report.json": {
+      "sha256": "a9400042f7a49768c93e50292cb000a775702fb6aeea221edb4302560f636fc9",
+      "bytes": 1610
+    },
+    ".work-receipts/proofread2-followup-branch-switch.json": {
+      "sha256": "f028fc6b9be33f74d8875d2eed41347e4fa1f0c6f9b28ec424c1daa781e9e3a6",
+      "bytes": 1125
+    },
+    ".work-receipts/proofread2-followup-checkpoint.json": {
+      "sha256": "d75ee760ac3397dd970300822e4170006dd681c85cdd7c50bcd220d182a2ce32",
+      "bytes": 2262
+    },
+    ".work-receipts/proofread2-followup-evidence-add.json": {
+      "sha256": "60df03f73763dd29aa79efaa6f3b9056f69b367b84ac3a1763b6dce63e8fe6aa",
+      "bytes": 1080
+    },
+    ".work-receipts/proofread2-followup-evidence-draft.json": {
+      "sha256": "935fcad2487d6173e7fcdb2931318ba190e8440720742539d237d061f5c020cf",
+      "bytes": 689
+    },
+    ".work-receipts/proofread2-followup-evidence-report.json": {
+      "sha256": "8c1bb6630dd4127df516f48344d0e928589203ccc6162d05c4290cc0ccd973d7",
+      "bytes": 2105
+    },
+    ".work-receipts/proofread2-followup-final-checkpoint.json": {
+      "sha256": "71d4badd53a3558c381417a3aee7a71ae8510ec24fdd413b6a8ed6a814171f4b",
+      "bytes": 1752
+    },
+    ".work-receipts/proofread2-followup-session-end.json": {
+      "sha256": "50281057c4e43b689e32e423715090077109a85621c0d3ada6381acfe0b84fe5",
+      "bytes": 1133
+    },
+    ".work-receipts/proofread2-followup-session-resume.json": {
+      "sha256": "d26db102574157378615b95d6aa677ea988ad6e842257faffb685d456df3be60",
+      "bytes": 465
+    },
+    ".work-receipts/proofread2-followup-switch-main.json": {
+      "sha256": "c6b7418c1aa09306cea4bbb37d6e0d8f1a46af74cafbba534b18ad575c59cc83",
+      "bytes": 1137
+    },
+    ".work-receipts/proofread2-r2-branch-switch.json": {
+      "sha256": "c296cb906fd8d6ddb5a9960fc244965153f312382d605c2f61d989921162f4d9",
+      "bytes": 274
+    },
+    ".work-receipts/proofread2-r2-checkpoint.json": {
+      "sha256": "c14ac4a8af7f6fbef89e0cb0a90b37f50f2d65856389d37aef3643ae099225bb",
+      "bytes": 2366
+    },
+    ".work-receipts/proofread2-r2-evidence-add.json": {
+      "sha256": "8db789fa18ec695342f71b4965ebd1226f86492c4802a9363eb154a0d9edb582",
+      "bytes": 1119
+    },
+    ".work-receipts/proofread2-r2-evidence-draft.json": {
+      "sha256": "7236ee6c1c5f459d1b69e7ece1490408380e093272003828090862eb54822520",
+      "bytes": 716
+    },
+    ".work-receipts/proofread2-r2-evidence-report.json": {
+      "sha256": "b394b4ad7f760ac16f182346f1c21187b9c782131ae7b0f4864dd7b07d1ca824",
+      "bytes": 2006
+    },
+    ".work-receipts/proofread2-r2-session-end.json": {
+      "sha256": "a9e6cbb7c271210b5ba96be1777d25d7c76a9f94d33f5fbcc7b6eeabd7272cea",
+      "bytes": 1141
+    },
+    ".work-receipts/proofread2-r2-session-resume.json": {
+      "sha256": "35d4e57b837b5a8fc8482c46bf04daccb88e7dfa6781f289b42d2920892b504a",
+      "bytes": 421
+    },
+    ".work-receipts/proofread2-r2-switch-main.json": {
+      "sha256": "24907d2d39a38fdad27098c894ad7cddb560bbd805a15f1f8c464c5395f8f044",
+      "bytes": 1119
+    },
+    ".work-receipts/proofread2-session-end.json": {
+      "sha256": "c8d80c9157c876a73578642d178f7ed2205efde313123f2a7676d84e956cfacf",
+      "bytes": 1141
+    },
+    ".work-receipts/proofread2-session-start.json": {
+      "sha256": "2ac374518df0a093e4d825f4131358a26d0e0d3f159d355dae49a39bd79dad28",
+      "bytes": 1467
+    },
+    ".work-receipts/proofread2-switch-main.json": {
+      "sha256": "d1995e24c4aa6439bbc5a66b654702937eed6b525e206bca1d28d973c27ebfa5",
+      "bytes": 1116
+    },
+    ".work-receipts/verify-proofread2-followup.sh": {
+      "sha256": "cb03757af9988f861d4de6a04be9936fd2cf7ad2cf63df1303b1b2328ce11da2",
+      "bytes": 2195
+    },
+    ".work-receipts/verify-proofread2-r2.sh": {
+      "sha256": "881bc1938f32299235fa08dae35b24bd0fd7142ba0eccc56518e56b8bb753b78",
+      "bytes": 1454
+    },
+    ".work-receipts/verify-proofread2.sh": {
+      "sha256": "8a3f6622e51a9bcb977f599d640387a0bdea32083aebcb8afde027f61d3437fa",
+      "bytes": 1468
+    },
+    ".work-receipts/verify-xq-input.sh": {
+      "sha256": "c502f200c1c01fc8b76314a3b50579ff13fafe36ae8580fe50cb6198d08aa027",
+      "bytes": 939
+    },
+    ".work-receipts/verify-xq-venue-successor.sh": {
+      "sha256": "2a5a32dcd3fb839f928d43a9f0aa89d52b6fc70d224ff386631bf2c87b1f6773",
+      "bytes": 1478
+    },
+    ".work-receipts/verify-xq-venue.sh": {
+      "sha256": "e843ee3a731b085a32e2d0fedd2a80a1295a908bf7ebf6c87ec87943eb6ead87",
+      "bytes": 1372
+    },
+    ".work-receipts/watch-content-receipt.sh": {
+      "sha256": "1956f3cb1dbb3807186db6714600a78900aa716d4135099653f1ddf9dfd5a684",
+      "bytes": 1925
+    },
+    ".work-receipts/xq-venue-checkpoint.json": {
+      "sha256": "8a507f402caee23ccff0e027cc268ad63f3bb62e9a425cef9a99ac636212457e",
+      "bytes": 2240
+    },
+    ".work-receipts/xq-venue-completion.json": {
+      "sha256": "9bef4f5df2d7451026c93a38001c3ea9658864a7f4350c917870f39733f4ccde",
+      "bytes": 499
+    },
+    ".work-receipts/xq-venue-evidence-add.json": {
+      "sha256": "dafb7091a9b88972e7271ef6b8e3295be5599722f04be4d9bf7f81e030926eeb",
+      "bytes": 1003
+    },
+    ".work-receipts/xq-venue-evidence-draft.json": {
+      "sha256": "b7a778d039dcb250f8914c6834520d6a01eeda5c3c6a5f7f9aae516903d67eef",
+      "bytes": 598
+    },
+    ".work-receipts/xq-venue-evidence-report.json": {
+      "sha256": "8137b243c28f2d894247d19d8d0585f0e0cdcf71d531cf97bbe34103bed889c4",
+      "bytes": 1446
+    },
+    ".work-receipts/xq-venue-progress-conflict-r29.json": {
+      "sha256": "b933a12b7d7575bf87bd54fd014c04df0ebc4e6dbef7d6131d8f9e1ca3d55181",
+      "bytes": 120
+    },
+    ".work-receipts/xq-venue-session-end.json": {
+      "sha256": "8654d353c4d4ec6b13095688d70e2f53e635c538c90d07d631e1895ba56fef31",
+      "bytes": 1053
+    },
+    ".work-receipts/xq-venue-successor-evidence-draft.json": {
+      "sha256": "33de94f4e622498e95ec8034531a896e8e83ca689c38174f399388fea7316040",
+      "bytes": 676
+    },
+    ".work-receipts/xq-venue-successor-evidence-report.json": {
+      "sha256": "3ad28b5006e638685ca1d1591a3aa015440c3c85799101803ba76f54f6a79e10",
+      "bytes": 1487
+    },
+    ".work-receipts/xq-venue-work-complete.json": {
+      "sha256": "29bb90f219d9a91a909c1a4e2555b9188ec3bce6ec9bf71b3850e78837033aa9",
+      "bytes": 7671
+    },
+    ".work-receipts/xq-venue-work-progress.json": {
+      "sha256": "911bcc597b6c340608061a6d7ffcf7af72a3b3cf8fce9b29f65228aeb15c3d23",
+      "bytes": 4273
+    }
+  },
+  "commands": [
+    {
+      "event_line": 6,
+      "native_item_id": "item_2",
+      "exit_code": 0,
+      "command_sha256": "c469aa75778b0559d5fd25150bd7fb7f1bebbebae378739d6c4d5ccb778bb3df",
+      "output_sha256": "c9bf07cb12b4745abe1bda917942ccedb01317a540290468b67dd9473ec7dc29"
+    },
+    {
+      "event_line": 8,
+      "native_item_id": "item_3",
+      "exit_code": 1,
+      "command_sha256": "361bfde000bc321dd26175fd16a2246206dfab0d7425ea0c036e0a604c9d3b4d",
+      "output_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "event_line": 10,
+      "native_item_id": "item_4",
+      "exit_code": 0,
+      "command_sha256": "a10db09d848dc46a5b81e9783d5bacbd61540980905ce62a1b770853efcb9479",
+      "output_sha256": "14cb389a23d32288826fb82666efb41d72df9bed147401717a42b3f0ae5f97e1"
+    },
+    {
+      "event_line": 13,
+      "native_item_id": "item_6",
+      "exit_code": 0,
+      "command_sha256": "32e9c97ac418a13dbe0a5828db249c7b4c91e03a87dd5a9b2f1699d2b6602bc1",
+      "output_sha256": "6e22cc54cb02a5e98ae42d06d9d7292db0c1b43894831b32879beb0166b2aea7"
+    },
+    {
+      "event_line": 16,
+      "native_item_id": "item_8",
+      "exit_code": 0,
+      "command_sha256": "599857ba2fafa123a94a4237981a568a3e423d84c48a04f4a26bcfafab00af0d",
+      "output_sha256": "ecbe41e515e0baf53724e9fc1c396c7ba9f54ce476d1342b622e461b36025142"
+    },
+    {
+      "event_line": 18,
+      "native_item_id": "item_9",
+      "exit_code": 0,
+      "command_sha256": "a57fd67e2dbef52b72f84f3b9688a9d62ca8fcd8880df9eeb9f4e74f644e5927",
+      "output_sha256": "efce9ff791b4f03eb1dac0e1caaea0e7c997f405d39c788c57644d10dc45c687"
+    },
+    {
+      "event_line": 20,
+      "native_item_id": "item_10",
+      "exit_code": 0,
+      "command_sha256": "bedcfc0dd318ff829a0e02559c0464ece65f9998a05f7d5dd8eebbab3e833531",
+      "output_sha256": "d993de562cae6af55f66e2a753095542f89d823ec1c39288274877c71a156dd5"
+    },
+    {
+      "event_line": 22,
+      "native_item_id": "item_11",
+      "exit_code": 0,
+      "command_sha256": "66b8336aaef8e0b94602f98559b1b3f74ed0f1a154dfb1d41b0f98e5c6aaab1c",
+      "output_sha256": "9fb800edbebaa03a65cac5ed3bf82c15efde46f7193a635282c8821b1ed6e709"
+    },
+    {
+      "event_line": 24,
+      "native_item_id": "item_12",
+      "exit_code": 0,
+      "command_sha256": "9bd4216d454f6b32e75bd469161fd7fd711ef331b004e49709099b7c5ea887fc",
+      "output_sha256": "d2a7ba5810925d2f78a8aec4f0d3176db472b4ddc8386f08a7de0d03adb12e92"
+    },
+    {
+      "event_line": 26,
+      "native_item_id": "item_13",
+      "exit_code": 0,
+      "command_sha256": "7e7335b0b416dc6b5d1d5a39f5f211ac83d93070f967875700b4c26b66a4a305",
+      "output_sha256": "6629afa8f2f9e8a1714e3aef452753763663e27239919279734db1333d1451b1"
+    },
+    {
+      "event_line": 28,
+      "native_item_id": "item_14",
+      "exit_code": 0,
+      "command_sha256": "c980e22b99c72b4eba788b6c271147c3c94719277421eaa1a52534beb53da77e",
+      "output_sha256": "2e945271d93934bd461a54d65d4e827f7e65866865bf18ef7e7a5ac6923d6e85",
+      "business_tool_command": "/bin/zsh -lc 'rtk proxy <awr> --project <business-project> --json status'"
+    },
+    {
+      "event_line": 30,
+      "native_item_id": "item_15",
+      "exit_code": 0,
+      "command_sha256": "14bd33e104d89e8e6d919b137f2a3028ddf84e0cb5de0790336ad967545e6d93",
+      "output_sha256": "57bd0eb4de26041e3d5a1e1d0571c8bde1d63d9356df2891f298725e22166eb5"
+    },
+    {
+      "event_line": 32,
+      "native_item_id": "item_16",
+      "exit_code": 0,
+      "command_sha256": "76b3a3e9fc7cd88618fa00775660305af273bd503499be2645e8b377c1feef0c",
+      "output_sha256": "9514e5d2646b9c6abbcac09086bd31841d602042d36696a509d4d0bcedbf967e",
+      "business_tool_command": "/bin/zsh -lc 'rtk proxy <awr> --project <business-project> --json ready'"
+    },
+    {
+      "event_line": 34,
+      "native_item_id": "item_17",
+      "exit_code": 0,
+      "command_sha256": "06a94b4494e45c7cd88abfea7a0bafc16a691bcf1821be4381953b5a05f1e791",
+      "output_sha256": "b9984b8ed7c0fe22b7f8ae506576a99a7787c1765f9c813cc9e74ddd0968d5fb"
+    },
+    {
+      "event_line": 36,
+      "native_item_id": "item_18",
+      "exit_code": 0,
+      "command_sha256": "8faed22960ffb9d31caeb6e24d55afa04da34e387d798f714aefcdc1c5fc223a",
+      "output_sha256": "5967f584fddab98abdc02093bbca4e36c7324b26967e1d18978c128282c5b6b8"
+    },
+    {
+      "event_line": 38,
+      "native_item_id": "item_19",
+      "exit_code": 0,
+      "command_sha256": "7bbb804c9023ac42d4c3dea24bec6f314d7756b9ccdd9a72048e03a2f92c3ef0",
+      "output_sha256": "29d23c6af1023229addb0c25db84091061e79fd8e926f9111792cad7cee8237d"
+    },
+    {
+      "event_line": 40,
+      "native_item_id": "item_20",
+      "exit_code": 0,
+      "command_sha256": "d20c3266b79349bcc87ec183901ad369fc4da4734b1dfaca5b47b4ec1f58d58c",
+      "output_sha256": "7530837543d2c1a2a8b06d5b9118bf3dd508e093a83a3a53f79b021bea9425cf",
+      "business_tool_command": "/bin/zsh -lc 'rtk proxy <awr> --project <business-project> --json session list'"
+    },
+    {
+      "event_line": 42,
+      "native_item_id": "item_21",
+      "exit_code": 0,
+      "command_sha256": "c148b2c67b2dd7b7de00b8f12ede0ef0a29c50292eea217d41644af342c3b3a4",
+      "output_sha256": "88dbb34e024833b1b891beefbbd6a40e66432c09caaeb76bae3e25c422d1eccb"
+    },
+    {
+      "event_line": 44,
+      "native_item_id": "item_22",
+      "exit_code": 0,
+      "command_sha256": "c2d3c8bcf9219042daffabe866bcdc526a0a38fc137c158e8a8bd4d957eb7b37",
+      "output_sha256": "9fafbe76617fae06aff71041abfa84dfd6ddbb2818d449281f5fd0a7c9d74bb3"
+    },
+    {
+      "event_line": 46,
+      "native_item_id": "item_23",
+      "exit_code": 0,
+      "command_sha256": "1aa71b4adee1cba7b261f2a8c48c0617c2245c380ce18f874eb02c743a438f4c",
+      "output_sha256": "8f9e94222c5dd73cb1338f8ed62450a26be30754badd0d11abe0b4fff7f37422"
+    },
+    {
+      "event_line": 48,
+      "native_item_id": "item_24",
+      "exit_code": 0,
+      "command_sha256": "4f8896ec21c0e2bc2a270e80bb5abc5c5749c990c8c6fe67e3d02525ef959777",
+      "output_sha256": "c2e4b3ed37f0f34bdd469575e30a6dd22b55b1bdcd8e1f0550a60f0d0c283d17"
+    },
+    {
+      "event_line": 50,
+      "native_item_id": "item_25",
+      "exit_code": 0,
+      "command_sha256": "dca9a4ef9e539dc2a89fbc5cd1ed4eb65e2b98d8008460b3432f1e04586dc4f3",
+      "output_sha256": "b6c8779caaadd25ec9cb053b23ce693e6debb36ed3839b2fe45b54570c6eeb76"
+    },
+    {
+      "event_line": 52,
+      "native_item_id": "item_26",
+      "exit_code": 0,
+      "command_sha256": "c93157a589f9da831107f214937ec553640f74bd419ee211258e3dea20a56e13",
+      "output_sha256": "64544fbb199575177cb934070831472c0e7770529e823ac86fb35744a2f1d8df",
+      "business_tool_command": "/bin/zsh -lc 'rtk proxy <awr> --project <business-project> --json context bootstrap'"
+    },
+    {
+      "event_line": 55,
+      "native_item_id": "item_28",
+      "exit_code": 0,
+      "command_sha256": "91513d07978090b327d52bed525c325331adb4c0da9bc612c75e57c48bea2004",
+      "output_sha256": "007850809d0bba5d8ccd78216535948bc315238cffa262f7c36abeb211c2cfa5"
+    },
+    {
+      "event_line": 57,
+      "native_item_id": "item_29",
+      "exit_code": 0,
+      "command_sha256": "8ca7edb44f1da2b58c700f603b3a3f64dd5ad4fd96e1da8403647a7c2a07a43f",
+      "output_sha256": "ac1cf16d1ffd3a711de46e4ee66b503e7cbe1936efcbc34fcfa3e6a9f523808d",
+      "business_tool_command": "/bin/zsh -lc 'rtk proxy <awr> --project <business-project> --json work show XQ-CONTENT'"
+    },
+    {
+      "event_line": 59,
+      "native_item_id": "item_30",
+      "exit_code": 0,
+      "command_sha256": "1b935176880c19015622fdf6eab697c6fcb43ceeb7160c8abe95e299c3a2a093",
+      "output_sha256": "96d881002c7454e725c57042c047036fd2bea27918f10a8a43410ba501acab7d",
+      "business_tool_command": "/bin/zsh -lc 'rtk proxy <awr> --project <business-project> --json work history XQ-CONTENT'"
+    },
+    {
+      "event_line": 61,
+      "native_item_id": "item_31",
+      "exit_code": 0,
+      "command_sha256": "1bc12d093c0ea6b2ad60b32cb01c966dc4ec1a9639c4fb3d7da8e6a81a819724",
+      "output_sha256": "5ee38724c98c9dd10f0c0849838621b038884d39154e61d56e4140d5b44eb9bb",
+      "business_tool_command": "/bin/zsh -lc 'rtk proxy <awr> context compile --project <business-project> --work XQ-CONTENT --detached --intent \"take over venue support, verify content handoff, preserve originals and open issues\" --budget 8000 --json'"
+    },
+    {
+      "event_line": 63,
+      "native_item_id": "item_32",
+      "exit_code": 0,
+      "command_sha256": "c272222cfdf0928ebca76a70c8ccd1e7a7a88aed2416976c314b70b87e19f3d0",
+      "output_sha256": "2dbe1a7169b5d641265fdc9a0cfd492e39e8ddbecb60416361da4d6aeb32761c"
+    },
+    {
+      "event_line": 65,
+      "native_item_id": "item_33",
+      "exit_code": 0,
+      "command_sha256": "82c781320cee6e996e085d18f057feb357b1902808abb99a82abc59b7b983b59",
+      "output_sha256": "3035f626d7ef00cd860d2fd4781513b76d9587b1e6c67924b549ce8865c828a6"
+    },
+    {
+      "event_line": 67,
+      "native_item_id": "item_34",
+      "exit_code": 0,
+      "command_sha256": "c89eceed01af234fd42902129c3f566c773f41508b1ff3f50b69c4654c8e03bc",
+      "output_sha256": "7fc9fc339952ecccfa71b2602810e0657191247c7b64346c071f5ae4a75d8eff"
+    },
+    {
+      "event_line": 69,
+      "native_item_id": "item_35",
+      "exit_code": 0,
+      "command_sha256": "136180f8f709c84e2c9ed2f66bfb652fa0e3f01cd716d0fcffda91e1aa29ceff",
+      "output_sha256": "ebb225a24f9aef9e9a5d07b8cc96f98a7eb3a754b7d503cfdf97b9ff465844ba"
+    },
+    {
+      "event_line": 71,
+      "native_item_id": "item_36",
+      "exit_code": 0,
+      "command_sha256": "ec349373d80c3594737ba3e1768d0a0accf023828aef0e0167dce059f65a82b7",
+      "output_sha256": "e490efaa7ccea697496c762a323c66552e23c4adaba731e48b60977ef791c482"
+    },
+    {
+      "event_line": 73,
+      "native_item_id": "item_37",
+      "exit_code": 0,
+      "command_sha256": "e4f59c2c1a1c9f8bd7a8cdb9f96429ed64bd7c2a9f27445cd2b976111e46fe08",
+      "output_sha256": "439c312b3feb208c923659bb6b212a6d8975c65dc35ddb12c436c832eb4c8c2e"
+    },
+    {
+      "event_line": 76,
+      "native_item_id": "item_38",
+      "exit_code": 0,
+      "command_sha256": "63adbc554eb3d7326f13aaefa377bac373c16742bdca30cf6dd879aec6a36752",
+      "output_sha256": "6f314c2c9e34252bab294f46a12895ea3e933af7076a6680bc1a2912b9c701b0"
+    },
+    {
+      "event_line": 77,
+      "native_item_id": "item_39",
+      "exit_code": 0,
+      "command_sha256": "2fd597ddfc8c8e95a99f06ea221bfd2897ed3a52c435f428fe34ad89e4c0bdc7",
+      "output_sha256": "7156034ea7eff4c182714d47433ed3f63a6311f98ff9ee4ee21d46ff5c67d921"
+    },
+    {
+      "event_line": 79,
+      "native_item_id": "item_40",
+      "exit_code": 0,
+      "command_sha256": "b46d16fdcc71976a2d7111cd6f350de46e97e0cba24e187eb346d7e13d89b2b0",
+      "output_sha256": "5b309c83314ce30ae190c537ba12bc849b8908245cd1acfb895fbb78a81e28a5"
+    },
+    {
+      "event_line": 82,
+      "native_item_id": "item_42",
+      "exit_code": 0,
+      "command_sha256": "3ee4154fac20d66d763dffd604a479b6e6d447049b758c796ea3637c65b323b5",
+      "output_sha256": "fa912aa7c5e5f2732d2bed28056c66f50167bda519bd8ab09400dcdf6f4823ed"
+    },
+    {
+      "event_line": 84,
+      "native_item_id": "item_43",
+      "exit_code": 0,
+      "command_sha256": "946b2c34147df7527e375463a9b48ffb69de3510b8c465ff5bd7cfdf6467a143",
+      "output_sha256": "2942d39564099caedeb2c2f57309352b5f537df92a33c67ddc40dd75313dcb84"
+    },
+    {
+      "event_line": 86,
+      "native_item_id": "item_44",
+      "exit_code": 0,
+      "command_sha256": "9fd39e91fffb65520745b7700c5879c55077f2367cfafde44d0a363c40114244",
+      "output_sha256": "1f47d97deb922aea6e5ae3b6495a6701cde0c1874542620b1269afd93b3f8dd7"
+    },
+    {
+      "event_line": 89,
+      "native_item_id": "item_46",
+      "exit_code": 0,
+      "command_sha256": "bd6952febf83a19252149ee2ac2990874769e543bd2a2f4d37102ab2acdd8f31",
+      "output_sha256": "29c7a4a74a78cb301cde0ba354f1c6c8f491eba8498ea8ddb7f0be2de60e2c56",
+      "business_tool_command": "/bin/zsh -lc 'rtk proxy <awr> session start --project <business-project> --work XQ-CONTENT --agent xq-venue-successor --provider codex --model gpt-5 --claim --ttl-ms 3600000 --expected-revision 115 --json'"
+    },
+    {
+      "event_line": 93,
+      "native_item_id": "item_48",
+      "exit_code": 0,
+      "command_sha256": "635fadd55d388046a5ca88acbb43bc39205a213339e4ba64ef510bd8946dd2c1",
+      "output_sha256": "2edadc87c312319b552568d9ff029eb2b2938cc27fd0ac817a855b1f287d4b57",
+      "business_tool_command": "/bin/zsh -lc 'rtk proxy <awr> context compile --project <business-project> --session 01M22688HDB0K4K691RF9CB8TC --intent \"receive venue handoff, reconcile equipment plan with content replies, preserve originals and open issues, hand back to coordinator\" --budget 8000 --json'"
+    },
+    {
+      "event_line": 95,
+      "native_item_id": "item_49",
+      "exit_code": 0,
+      "command_sha256": "a343992639c9ca906d55a1ac8a751ded34a6188fce5822a22ac19abc652460b4",
+      "output_sha256": "25672dc0ddf6d91ed8bdd13530f16dd29fde2d99bc6b0e93cf08e6600dd0bc94"
+    },
+    {
+      "event_line": 97,
+      "native_item_id": "item_50",
+      "exit_code": 0,
+      "command_sha256": "4ca41927bfe19a34d27150924da9c293e84c71834d6e88b1ab3c03015020cabe",
+      "output_sha256": "f8a52c041adacdcc94b4fed3e0d207c67352a90020a70e0a55a0f290def34ba4"
+    },
+    {
+      "event_line": 99,
+      "native_item_id": "item_51",
+      "exit_code": 0,
+      "command_sha256": "cbf98eacc115987452c4e4eb36bc353ebefef19176ea1b1b082c18a54f1b80bd",
+      "output_sha256": "40bc9f101415b3224579facd46e34b889b6d9405decc28bf689207ece7eeb401"
+    },
+    {
+      "event_line": 104,
+      "native_item_id": "item_54",
+      "exit_code": 0,
+      "command_sha256": "0441c7072b87a222306e1365fecb984f36912142ec8a2582161277db1d63a0c6",
+      "output_sha256": "4c28f5ed1d67bd283c3c056e690d8a640a8ce5f81acb60deaec6a8f702588737"
+    },
+    {
+      "event_line": 106,
+      "native_item_id": "item_55",
+      "exit_code": 0,
+      "command_sha256": "ae559451f37dfb1c0a110787219cc8bde8bb1a19daac5b30b0496b6649f669ab",
+      "output_sha256": "b391beada127dd5db3bbf7b79c3ac00a3e04ce7fc03ea61987486f772efce666"
+    },
+    {
+      "event_line": 108,
+      "native_item_id": "item_56",
+      "exit_code": 0,
+      "command_sha256": "4bab55bf685a8341198901bb60b5e9b7be3accf35654dde7d7d07b2198677cd2",
+      "output_sha256": "c777037117ddcebd9dab66d351a21a0d7f057afea46d96202a1269464e52723e"
+    },
+    {
+      "event_line": 112,
+      "native_item_id": "item_58",
+      "exit_code": 0,
+      "command_sha256": "17db3f7ce461e0b996ea0cce34ad0e02b6a6c71c9f0d8fdc7c477d311ed05909",
+      "output_sha256": "4bdd437d9f9c8ae2184b95a4271f2096716860c0e246b9c2e2900edb99cf3509"
+    },
+    {
+      "event_line": 114,
+      "native_item_id": "item_59",
+      "exit_code": 0,
+      "command_sha256": "76197cb80a19f745fef31be0cd90c8d5b01d045d44f96f3dea8cc10907a70d69",
+      "output_sha256": "ad41411b2546bda76e03930c7def8e6746998352a86388a1349b22210aee274c"
+    },
+    {
+      "event_line": 116,
+      "native_item_id": "item_60",
+      "exit_code": 0,
+      "command_sha256": "33fa76eecee791eb781fbc453687ff622e74f88cbd5a893d95bca369f62dc20c",
+      "output_sha256": "d08448696ecfc7d33b80c06057b67f82c3456289be91aa9f3fd1a486378a682e"
+    },
+    {
+      "event_line": 118,
+      "native_item_id": "item_61",
+      "exit_code": 0,
+      "command_sha256": "675d92d28e96a928978db54a610633698a2fa8ee433b3458c8ca7f37cd3fd49b",
+      "output_sha256": "5e626bfe141ddaa41460faf5bc65e6ee525f69ea8fd8a9f80a7a585e2ef384ac"
+    },
+    {
+      "event_line": 122,
+      "native_item_id": "item_63",
+      "exit_code": 0,
+      "command_sha256": "6e5c18d0f1023120eacc656f9692f93b22c833c53dd5705b24347af8977c5f3c",
+      "output_sha256": "e301799a7f6ea44d95ffc724c4778c18f5b2b56c654dcdb0a627ba19dd60a85a"
+    },
+    {
+      "event_line": 127,
+      "native_item_id": "item_66",
+      "exit_code": 0,
+      "command_sha256": "8b299e000e182cb3b19f83eaa4349c2ce52331f281254cac2cd7075310d26664",
+      "output_sha256": "9e83564652d9fe9a6448cff5cba8e2cfd96685a0be038c65efd3bb871fb886a4",
+      "business_tool_command": "/bin/zsh -lc 'rtk proxy <awr> evidence add --project <business-project> --input <business-project>/.work-receipts/xq-venue-successor-evidence-draft.json --expected-revision 116 --json'"
+    },
+    {
+      "event_line": 131,
+      "native_item_id": "item_68",
+      "exit_code": 0,
+      "command_sha256": "5d223d91e51924c57eebf6e56b395b4bae02e73aca53650f71beb8143c2032e4",
+      "output_sha256": "f3922e2b7953e00e8a6918a8c2843c6c9ca76320d3a666507739a91e5c7aefa9"
+    },
+    {
+      "event_line": 133,
+      "native_item_id": "item_69",
+      "exit_code": 0,
+      "command_sha256": "41a054d8dc2b5b3327ae90a36782a4236965f88592341a105655cab0c2e8a07c",
+      "output_sha256": "d323ff721a68c18b0785383b08d7645283a5b676cc6529b1fb5ee43d73879723",
+      "business_tool_command": "/bin/zsh -lc 'rtk proxy <awr> work progress --project <business-project> --session 01M22688HDB0K4K691RF9CB8TC --reason \"现场接续者核对原设备方案和内容交接稿，逐项确认项目内接收并保留实测与外部协调缺口\" --summary \"现场接续者已核对原现场方案并通过共享交接稿确认收到 C→V-01 至 C→V-04；单投影与三组桌面在计划层面对齐，时间边界、实机、场地、人员和资源仍待闭合，内容工作继续进行。\" --next-action \"协调者安排场地方确认 90+10 边界、绝对时间和实际现场核验；内容执行者补齐信号源、接口、操作人、人数及物料需求后，由后续现场执行者复核并回执。\" --expected-revision 117 XQ-CONTENT --json'"
+    },
+    {
+      "event_line": 137,
+      "native_item_id": "item_71",
+      "exit_code": 0,
+      "command_sha256": "4dc7e19077067a6950aa88c37d17a99e7dd09ad0b75131dca2862fa9cf347641",
+      "output_sha256": "59371af2f09e3eb8a55e9458fbb4a6007650505a9affaa79dd61f698c8201d65",
+      "business_tool_command": "/bin/zsh -lc 'rtk proxy <awr> session checkpoint --project <business-project> --session 01M22688HDB0K4K691RF9CB8TC --work XQ-CONTENT --context-hash 60af99141e5d5cdcb052c77a91a2304461d560ed58c20da03b1ffea2ba03d022 --digest \"已实际接续现场保障范围，核对原现场方案和当前内容交接稿，确认项目内收到 C→V-01 至 C→V-04；单投影与三组桌面在计划层面对齐，原方案保持不变，本地核对证据已登记。\" --next-action \"交回协调者：安排场地方确认 90+10 时间边界和绝对时间，催收内容侧人员设备物料信息，并指派后续现场核验人完成实机与场地检查。\" --open-loop \"额外 10 分钟与 90 分钟的包含关系、绝对开放时间和 7/3 条件性拆分仍待场地方确认。\" --open-loop \"投影实机、接口、线材、信号源、操作人、成品文件和测试结果仍未闭合。\" --open-loop \"三组桌面贯穿全程仍待按人数、容量、场地尺寸、视线和安全通道完成实际核验。\" --open-loop \"参会人数、人员角色、纸笔数量、扩声、供电和其他物料需求仍待内容负责人补齐。\" --open-loop \"XQ-CONTENT 继续进行中；XQ-MERGE 和正式 XQ-REVIEW 尚未发生且不得提前认定完成。\" --changed-entity \"deliverables/xingqiao-ownership.md\" --changed-entity \"evidence:01M226HN5VMP4PK7AGPGN1DB0S\" --expected-revision 124 --json'"
+    },
+    {
+      "event_line": 142,
+      "native_item_id": "item_74",
+      "exit_code": 0,
+      "command_sha256": "0c3a33c332723d9abba365d889768b1add4405de66e50ac663746fc67325a56a",
+      "output_sha256": "43661ed8903a34ce3a41d6bdb658d7f6c1bfdcd2a9a0c531e340574a0c8ea75f",
+      "business_tool_command": "/bin/zsh -lc 'rtk proxy <awr> work handoff --project <business-project> --session 01M22688HDB0K4K691RF9CB8TC --expected-revision 126 XQ-CONTENT --json'"
+    },
+    {
+      "event_line": 146,
+      "native_item_id": "item_76",
+      "exit_code": 0,
+      "command_sha256": "c980e22b99c72b4eba788b6c271147c3c94719277421eaa1a52534beb53da77e",
+      "output_sha256": "936e7cd525573514b8b095fb9ed49d1514dafc04a787ff68bd69f21c0da5d41d",
+      "business_tool_command": "/bin/zsh -lc 'rtk proxy <awr> --project <business-project> --json status'"
+    },
+    {
+      "event_line": 148,
+      "native_item_id": "item_77",
+      "exit_code": 0,
+      "command_sha256": "8ca7edb44f1da2b58c700f603b3a3f64dd5ad4fd96e1da8403647a7c2a07a43f",
+      "output_sha256": "d7ea8bee5e4988f723e2125e4704eede93c5b912b68bdc5f436541e3edd7a14d",
+      "business_tool_command": "/bin/zsh -lc 'rtk proxy <awr> --project <business-project> --json work show XQ-CONTENT'"
+    },
+    {
+      "event_line": 150,
+      "native_item_id": "item_78",
+      "exit_code": 0,
+      "command_sha256": "b1f13190eede6e1b771383ee861cffb2cc15106b36d5c577fadbada3d723c8b6",
+      "output_sha256": "93cf620c52624805df31e719cb1a136b67e13fec160f0aa40599718f2aa11268",
+      "business_tool_command": "/bin/zsh -lc 'rtk proxy <awr> --project <business-project> --json session show 01M22688HDB0K4K691RF9CB8TC'"
+    },
+    {
+      "event_line": 152,
+      "native_item_id": "item_79",
+      "exit_code": 0,
+      "command_sha256": "509987d0124d57e30dd93e926cedca6ec280887b73e4207b7dada572948b191d",
+      "output_sha256": "01ba4719c80b6fe911b091a7c05124b64eeece964e09c058ef8f9805daca546b"
+    },
+    {
+      "event_line": 154,
+      "native_item_id": "item_80",
+      "exit_code": 0,
+      "command_sha256": "599857ba2fafa123a94a4237981a568a3e423d84c48a04f4a26bcfafab00af0d",
+      "output_sha256": "ecbe41e515e0baf53724e9fc1c396c7ba9f54ce476d1342b622e461b36025142"
+    },
+    {
+      "event_line": 156,
+      "native_item_id": "item_81",
+      "exit_code": 0,
+      "command_sha256": "f930a8e4574ff84df1b60860ac1041058cd18fcc3037993d343caead45c27a93",
+      "output_sha256": "01ba4719c80b6fe911b091a7c05124b64eeece964e09c058ef8f9805daca546b"
+    },
+    {
+      "event_line": 158,
+      "native_item_id": "item_82",
+      "exit_code": 0,
+      "command_sha256": "e55c2b67c43a601c3bbde2b732514de60ad8f32698a48431db0103fc45beb041",
+      "output_sha256": "cf93110bb99654569c1b8737a674b00807885e2ad02e5cb4430e0636f14d916b"
+    },
+    {
+      "event_line": 160,
+      "native_item_id": "item_83",
+      "exit_code": 0,
+      "command_sha256": "9329ebc80b0b563d7251d57d7fe9c2881008585854ed0dd34a30d01d04a1f581",
+      "output_sha256": "3e8f50586af614df3af2740ebca438c732aadd155302ffdae57e937f05964f22"
+    },
+    {
+      "event_line": 162,
+      "native_item_id": "item_84",
+      "exit_code": 0,
+      "command_sha256": "17db3f7ce461e0b996ea0cce34ad0e02b6a6c71c9f0d8fdc7c477d311ed05909",
+      "output_sha256": "4bdd437d9f9c8ae2184b95a4271f2096716860c0e246b9c2e2900edb99cf3509"
+    }
+  ],
+  "original_recorded_at": "2026-09-09T12:32:44+08:00",
+  "all_snapshot_hashes_verified": true,
+  "limitations": [
+    "Extract only. Raw native context remains private. Independent review, later business revisions, final delivery and remote verification are separate requirements."
+  ],
+  "e4_completion_claim": false
+}

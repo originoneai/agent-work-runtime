@@ -1,0 +1,64 @@
+{
+  "blocked_sample": [
+    {
+      "active_claims": [],
+      "blocker": null,
+      "diagnostics": [
+        {
+          "code": "dependency_not_completed",
+          "detail": "required dependency has source status planned",
+          "work_item_key": "XQ-REVIEW"
+        }
+      ],
+      "external_key": "XQ-DELIVER",
+      "freshness": "fresh",
+      "id": "01M21W3H92ETY0KG090P5SCSBC",
+      "milestone": "XQ-DELIVERY",
+      "next_action": "交付活动筹备包，先核对当前来源和负责范围。",
+      "owner": null,
+      "priority": "P0",
+      "raw_status": "planned",
+      "ready": false,
+      "revision": 1,
+      "source_revision": 14,
+      "status": "planned",
+      "summary": "交付活动筹备包",
+      "title": "交付活动筹备包"
+    }
+  ],
+  "blocked_total": 1,
+  "branch_id": null,
+  "diagnostic_counts": {
+    "dependency_not_completed": 1
+  },
+  "freshness_basis": "source_refresh",
+  "ok": true,
+  "project_revision": 165,
+  "read_only": false,
+  "ready": [
+    {
+      "active_claims": [],
+      "blocker": null,
+      "diagnostics": [],
+      "external_key": "XQ-REVIEW",
+      "freshness": "fresh",
+      "id": "01M21W3H924SNZ0DV020S3BM69",
+      "milestone": "XQ-DELIVERY",
+      "next_action": "独立复核两项结果，先核对当前来源和负责范围。",
+      "owner": null,
+      "priority": "P0",
+      "raw_status": "planned",
+      "ready": true,
+      "revision": 1,
+      "source_revision": 14,
+      "status": "planned",
+      "summary": "独立复核两项结果",
+      "title": "独立复核两项结果"
+    }
+  ],
+  "ready_total": 1,
+  "source_issues": [],
+  "source_refresh_performed": true,
+  "source_warnings": 0,
+  "truncated": false
+}

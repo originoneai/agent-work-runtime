@@ -1,0 +1,55 @@
+{
+  "checkpoint": {
+    "changed_entities": [
+      "evidence:01M21XH646BRK50Z47DV54YRAC",
+      "work_items:01M21W3H92418GRK38VA4D0RD7",
+      "work_items:01M21W3H924XZK5JAZCTWTQPJH"
+    ],
+    "context_hash": "60efc1c47da21d3f335a12c473c7f4d6266a8c3a51730490e4321192e2426ec6",
+    "created_at": 1788918554805,
+    "digest": "XQ-VENUE 已完成本地验证；现场方案逐项回应内容草稿的时间、投影和桌面请求，并保持内容产物归属不变。",
+    "id": "01M21XNR5NP8J6HC5B7HTWPQMC",
+    "next_action": "由内容负责人依据 V→C 回执修订 XQ-CONTENT；后续 XQ-MERGE 处理共同未决项，独立复核由其他执行者承担。",
+    "open_loops": [
+      "内容负责人仍需提供全部投影时段、布局选择，以及音响、供电、物料、人数、接口和降级要求。",
+      "场地方仍需确认额外 10 分钟是否在 90 分钟之外、7/3 条件性拆分是否可行、绝对开放时间和实际设备条件。",
+      "独立复核尚未发生；xq-venue-executor 不得兼任复核者。"
+    ],
+    "project_revision": 57,
+    "revision": 1,
+    "session_id": "01M21WRV810RJX1PTMZK4Z5D09"
+  },
+  "checkpoint_save": {
+    "after_revision": 28,
+    "attempt_id": "01M21XNR5MP1PNNXWWGC29N1WY",
+    "delta_bytes": 8686,
+    "delta_recorded": true,
+    "event_id": "01M21XNR5NHPGSATGPRCG99D50",
+    "observed_changed_entity_count": 3,
+    "reported_changed_entity_count": 2,
+    "session_event_count": 3,
+    "source_observation_count": 6,
+    "through_revision": 57
+  },
+  "context_hash_basis": "caller_supplied_last_used_context",
+  "context_hash_verified": false,
+  "event": {
+    "artifact_id": null,
+    "branch_id": null,
+    "checkpoint_id": "01M21XNR5NP8J6HC5B7HTWPQMC",
+    "created_at": 1788918554805,
+    "id": "01M21XNR5NHPGSATGPRCG99D50",
+    "importance": "normal",
+    "project_revision": 59,
+    "session_id": "01M21WRV810RJX1PTMZK4Z5D09",
+    "source_id": null,
+    "summary": "Saved session checkpoint and observed delta",
+    "type": "checkpoint.created",
+    "work_item_id": "01M21W3H92418GRK38VA4D0RD7"
+  },
+  "freshness_basis": "source_refresh",
+  "ok": true,
+  "project_revision": 59,
+  "save_status": "completed",
+  "source_refresh_performed": true
+}
