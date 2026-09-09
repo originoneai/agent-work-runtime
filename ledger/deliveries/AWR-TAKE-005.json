@@ -1,0 +1,91 @@
+{
+  "kind": "implementation",
+  "repository": "https://github.com/originoneai/agent-work-runtime",
+  "source_commit": "16f47e8a2a3d75b1a613b3b808d3857f554fc58f",
+  "checked_at": "2026-09-09T07:51:49.492137+00:00",
+  "remote_receipt": {
+    "commit": "16f47e8a2a3d75b1a613b3b808d3857f554fc58f",
+    "url": "https://github.com/originoneai/agent-work-runtime/commit/16f47e8a2a3d75b1a613b3b808d3857f554fc58f",
+    "verified_at": "2026-09-09T07:51:49.492137+00:00"
+  },
+  "checks": [
+    {
+      "name": "project_organization_cli",
+      "passed": true,
+      "result": "13 local CLI cases cover minimal intake, source repair, goal links, readiness, actual completion reports, hard rules, profile revision binding and real task progress writeback."
+    },
+    {
+      "name": "mcp_organization_integration",
+      "passed": true,
+      "result": "12 MCP stdio tests passed, including uninitialized project guidance and readonly organization/reindex cycles."
+    },
+    {
+      "name": "source_context_and_mutation_regression",
+      "passed": true,
+      "result": "40 source/context checks passed; final source adapter/mutation rerun passed 25. Final organization/work-action/proposal batch passed 37. Counts overlap; exact commands and prior continuity regression are in checks.json."
+    },
+    {
+      "name": "workspace_build_and_format",
+      "passed": true,
+      "result": "cargo check --workspace, cargo fmt --all --check and git diff --check passed on Darwin arm64 / Rust 1.93.1."
+    },
+    {
+      "name": "source_and_remote_binding",
+      "passed": true,
+      "result": "Remote branch and GitHub commit API both returned the recorded source SHA; main QA/current/scenarios/metrics were preserved when integrating main."
+    }
+  ],
+  "artifacts": [
+    "ledger/evidence/AWR-TAKE-005/checks.json",
+    "crates/awr-runtime/src/organization.rs",
+    "crates/awr-cli/tests/organization_cli.rs",
+    "crates/awr-mcp/tests/stdio.rs",
+    "crates/awr-source/src/mutation.rs",
+    "docs/TAKEOVER.md"
+  ],
+  "work_items": {
+    "AWR-TAKE-005": {
+      "acceptance": [
+        {
+          "criterion": "区分未初始化、来源不可读、待整理、可执行、受阻、待验收和已结束；空台账及取消任务不能推导为项目完成。",
+          "passed": true
+        },
+        {
+          "criterion": "CLI 和 MCP 返回结构化缺项、来源引用、有序整理动作、最小字段与明确复检入口；异常不伪装就绪。",
+          "passed": true
+        },
+        {
+          "criterion": "简单项目仅需目标和任务，已有方案及权威材料复用；生成占位目标和接入任务不自动表示业务可开工。",
+          "passed": true
+        },
+        {
+          "criterion": "复检核实目标关联、验收、下一步与依赖；候选目标、源声明完成与验证证据分开表达，语义判断边界明确。",
+          "passed": true
+        }
+      ]
+    },
+    "AWR-TAKE-001": {
+      "acceptance": [
+        {
+          "criterion": "空目录、仅代码、仅方案、已有 YAML/Markdown 台账均可得到有来源依据的接入预览与明确缺口。",
+          "passed": true
+        },
+        {
+          "criterion": "接受后保留现有资料，生成缺失的目标与工作入口，必要方案复用；原始完成状态与推测状态明确区分。",
+          "passed": true
+        },
+        {
+          "criterion": "预览指纹绑定实际输入；重复初始化不覆盖资料，来源冲突显式失败。",
+          "passed": true
+        }
+      ]
+    }
+  },
+  "scope_change": "AWR-TAKE-001 minimal intake acceptance is updated by contract 1.2.0; prior receipts are preserved as historical evidence. New intake no longer always creates four document domains.",
+  "limitations": [
+    "Local programmatic integration evidence, not new E4 or release acceptance.",
+    "Current native CI is separate from the previously verified four-feature baseline.",
+    "AWR checks declared structure and report bindings; semantic intent remains the Coding Agent/user responsibility.",
+    "Not merged and not published to npm or PyPI."
+  ]
+}
