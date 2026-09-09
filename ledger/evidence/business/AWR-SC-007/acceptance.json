@@ -1,0 +1,190 @@
+{
+  "kind": "business_acceptance",
+  "scenario_id": "AWR-SC-007",
+  "repository": "https://github.com/originoneai/agent-work-runtime",
+  "source_commit": "0269d462c3173c9ca15920d23a4472a4fc234315",
+  "runtime_source_commit": "4f6fd11c5283a4ddb52e6cb6fe8ef5a5fd8931aa",
+  "runtime_binary_sha256": "df3aee795905f87fe8bc0747a33b6e73c8a25cef0a072d0b2467e226d0d10217",
+  "business_fixture_setup_commit": "ac17b38d944eb3ec219ec7053db179cbd3c818b1",
+  "checked_at": "2026-09-09T17:58:54.282033+08:00",
+  "executor": "codex-cli:01a084e7-f762-77e2-8018-ecee36da6ff7",
+  "reviewer": "luna_worker:/root/source_change_client_run",
+  "final_delivery_checker": "luna_worker:/root/client_handoff_setup",
+  "scope": "实际 Codex 客户端在隔离的公开合成业务项目内完成资料边界核对、超大公开日志分析、两轮自然业务变化、不同执行者独立复核及最终公开周报交付；受限原件保持未读，业务未知项保留。",
+  "remote_receipt": {
+    "commit": "0269d462c3173c9ca15920d23a4472a4fc234315",
+    "url": "https://github.com/originoneai/agent-work-runtime/commit/0269d462c3173c9ca15920d23a4472a4fc234315",
+    "verified_at": "2026-09-09T09:55:42+00:00",
+    "git_ls_remote": {
+      "ref": "refs/heads/main",
+      "sha": "0269d462c3173c9ca15920d23a4472a4fc234315",
+      "actual_result": "0269d462c3173c9ca15920d23a4472a4fc234315\trefs/heads/main",
+      "exit_code": 0,
+      "tool_chunk": "076478"
+    },
+    "github_api": {
+      "endpoint": "repos/originoneai/agent-work-runtime/commits/main",
+      "sha": "0269d462c3173c9ca15920d23a4472a4fc234315",
+      "html_url": "https://github.com/originoneai/agent-work-runtime/commit/0269d462c3173c9ca15920d23a4472a4fc234315",
+      "exit_code": 0,
+      "tool_chunk": "739b1f"
+    },
+    "scope": "Actual Git transport and GitHub API independently matched after terminal push handle93034 exit0. Artifact commit contains only 238 SC007 files."
+  },
+  "gates": {
+    "natural_client_initiation": true,
+    "tool_or_role_execution": true,
+    "real_artifact": true,
+    "business_followup_1": true,
+    "business_followup_2": true,
+    "independent_review": true,
+    "final_delivery": true,
+    "traceable_receipt": true,
+    "fixture_isolation": true,
+    "independent_commit_and_remote_sha": true
+  },
+  "checks": [
+    {
+      "name": "natural_client_initiation",
+      "passed": true,
+      "result": "One canonical natural request and the two business followups plus final-delivery request were each submitted once to the actual Codex native; the retrospective four-input audit accounts for every actual business input.",
+      "artifacts": [
+        "control/initial-sealed.json"
+      ]
+    },
+    {
+      "name": "tool_or_role_execution",
+      "passed": true,
+      "result": "The actual native producer used AWR sessions, claims, source refresh, evidence, completion and checkpoints. A different luna_worker executed independent business review; another performed the final read-only check.",
+      "artifacts": [
+        "control/initial-review-extract.json",
+        "control/round-1-review-extract.json",
+        "control/round-2-review-extract.json"
+      ]
+    },
+    {
+      "name": "real_artifact",
+      "passed": true,
+      "result": "Ten sealed business, verification, review and delivery files retain exact hashes. The final four-member ZIP is byte-identical to its named project files.",
+      "artifacts": [
+        "control/round-2-sealed.json"
+      ]
+    },
+    {
+      "name": "business_followup_1",
+      "passed": true,
+      "result": "The first natural followup introduced the authored large public log. The producer streamed and aggregated it, compared it with the public summary and preserved unverified causes and dispositions.",
+      "artifacts": [
+        "round-1-inputs.json",
+        "control/round-1-sealed.json"
+      ]
+    },
+    {
+      "name": "business_followup_2",
+      "passed": true,
+      "result": "The second natural followup published the revised disclosure rule. The producer created a public report with scoped facts, source citations and explicit unknowns, and retained the earlier analysis.",
+      "artifacts": [
+        "round-2-inputs.json",
+        "control/round-2-sealed.json"
+      ]
+    },
+    {
+      "name": "independent_review",
+      "passed": true,
+      "result": "Distinct luna_worker business review independently recomputed the permitted public records, checked citations/disclosure and three production revisions, and passed without requiring producer rework. Forty-five fixed inputs and six producer artifacts remained unchanged.",
+      "artifacts": [
+        "control/independent-review.json",
+        "control/independent-review-root-binding.json",
+        "project/deliverables/cc-independent-review.md"
+      ]
+    },
+    {
+      "name": "final_delivery",
+      "passed": true,
+      "result": "The original actual producer delivered the reviewed public report and four-file archive with allowed usage, unresolved facts, responsibilities and review references. Root and a different final checker agreed on the qualified archive citation boundary.",
+      "artifacts": [
+        "control/final-delivery-sealed.json",
+        "control/final-delivery-root-binding.json",
+        "control/final-delivery-independent-check.json",
+        "project/deliverables/cc-delivery.md",
+        "project/deliverables/chengchuan-public-delivery.zip"
+      ]
+    },
+    {
+      "name": "traceable_receipt",
+      "passed": true,
+      "result": "Four native phase seals bind 256 completed commands and nine retained nonzero executions. Thirty final command receipts, 32 current receipt files, 32 archived review files, source/artifact hashes and exact native input bindings remain available without private native context.",
+      "artifacts": [
+        "control/initial-sealed.json",
+        "control/round-1-sealed.json",
+        "control/round-2-sealed.json",
+        "control/initial-client-boundary-verification.json",
+        "control/round-1-client-boundary-verification.json",
+        "control/round-2-client-boundary-verification.json",
+        "control/native-input-audit-final.json",
+        "control/final-delivery-bounded-command-receipts.json"
+      ]
+    },
+    {
+      "name": "fixture_isolation",
+      "passed": true,
+      "result": "The fresh r2 namespace, independent business Git seed/setup and published fixture inputs are bound to this run; the earlier withdrawn/failed material-boundary history is not recredited.",
+      "artifacts": [
+        "run.json",
+        "control/client-boundary.json",
+        "control/preparation-verification.json"
+      ]
+    },
+    {
+      "name": "independent_commit_and_remote_sha",
+      "passed": true,
+      "result": "Case-only artifact commit 0269d462c3173c9ca15920d23a4472a4fc234315 was pushed successfully and independently matched through actual Git transport and GitHub API.",
+      "artifacts": []
+    }
+  ],
+  "artifacts": [
+    "ledger/evidence/business/AWR-SC-007/control/client-boundary.json",
+    "ledger/evidence/business/AWR-SC-007/control/final-delivery-bounded-command-receipts.json",
+    "ledger/evidence/business/AWR-SC-007/control/final-delivery-independent-check.json",
+    "ledger/evidence/business/AWR-SC-007/control/final-delivery-root-binding.json",
+    "ledger/evidence/business/AWR-SC-007/control/final-delivery-sealed.json",
+    "ledger/evidence/business/AWR-SC-007/control/independent-review-root-binding.json",
+    "ledger/evidence/business/AWR-SC-007/control/independent-review.json",
+    "ledger/evidence/business/AWR-SC-007/control/initial-client-boundary-verification.json",
+    "ledger/evidence/business/AWR-SC-007/control/initial-review-extract.json",
+    "ledger/evidence/business/AWR-SC-007/control/initial-sealed.json",
+    "ledger/evidence/business/AWR-SC-007/control/large-log-publication-policy.json",
+    "ledger/evidence/business/AWR-SC-007/control/native-input-audit-final.json",
+    "ledger/evidence/business/AWR-SC-007/control/preparation-verification.json",
+    "ledger/evidence/business/AWR-SC-007/control/reproduce-large-public-log.py",
+    "ledger/evidence/business/AWR-SC-007/control/round-1-client-boundary-verification.json",
+    "ledger/evidence/business/AWR-SC-007/control/round-1-review-extract.json",
+    "ledger/evidence/business/AWR-SC-007/control/round-1-sealed.json",
+    "ledger/evidence/business/AWR-SC-007/control/round-2-client-boundary-verification.json",
+    "ledger/evidence/business/AWR-SC-007/control/round-2-review-extract.json",
+    "ledger/evidence/business/AWR-SC-007/control/round-2-sealed.json",
+    "ledger/evidence/business/AWR-SC-007/execution-record.json",
+    "ledger/evidence/business/AWR-SC-007/gate-review.json",
+    "ledger/evidence/business/AWR-SC-007/manifest.json",
+    "ledger/evidence/business/AWR-SC-007/omitted-materials.json",
+    "ledger/evidence/business/AWR-SC-007/project/deliverables/cc-delivery.md",
+    "ledger/evidence/business/AWR-SC-007/project/deliverables/cc-independent-review.md",
+    "ledger/evidence/business/AWR-SC-007/project/deliverables/chengchuan-public-delivery.zip",
+    "ledger/evidence/business/AWR-SC-007/receipt-storage.json",
+    "ledger/evidence/business/AWR-SC-007/round-1-inputs.json",
+    "ledger/evidence/business/AWR-SC-007/round-2-inputs.json",
+    "ledger/evidence/business/AWR-SC-007/run.json"
+  ],
+  "artifact_package_manifest_sha256": "1f38bc27d35259e1e876e6aa45c93e15d200ea49f5b6ffa66b01e7f83a1b1b99",
+  "limitations": [
+    "This proves the actual-client isolated synthetic business loop, not customer UAT, production acceptance, external dissemination or a released product.",
+    "The primary report has two archive-resolving citations. The delivery note has ten project-local citations but only three are inside the ZIP; the seven excluded log/audit references are explicitly outside the minimal external package.",
+    "The exact 3,145,837-byte generated public log has four omitted public copies, with unchanged source seals, explicit omission receipts and a byte-identical portable reproducer. Restricted originals, private native context and runtime DBs are not published.",
+    "AWR caller model/agent/provider labels do not establish actual native identity. Producer native identity and distinct luna_worker roles are separately bound.",
+    "Nine nonzero client commands and operator failures remain historical evidence. The final local verifier was corrected by the actual producer in the same turn.",
+    "Twenty-six staged diff whitespace notices were limited to original sealed source/artifact EOF blank lines; these bytes were preserved. Operator metadata diff checks and the planning checker passed.",
+    "Historical summary, next_action and milestone wording is retained. Actual completion events and the final checkpoint establish the delivered work; no global goal or release status is inferred.",
+    "The artifact gate-review and execution record retain their pre-remote false flags. This later acceptance binds the immutable artifact commit without rewriting those historical bytes."
+  ],
+  "completion_claim": true
+}
