@@ -1,34 +1,30 @@
 [project]
-name = "Agent Work Runtime"
-external_key = "agent-work-runtime"
+name = "AWR example"
+external_key = "awr-example"
 authority_mode = "source_first"
 
 [[sources]]
 domain = "goal"
 role = "primary"
-path = "docs/GOALS.md"
+path = "examples/basic/GOALS.md"
 adapter = "markdown-heading-v1"
+[sources.options]
+key_prefix = "goal"
 
 [[sources]]
 domain = "plan"
 role = "primary"
-path = "docs/PLAN.md"
+path = "examples/basic/PLAN.md"
 adapter = "markdown-heading-v1"
 
 [[sources]]
 domain = "rules"
 role = "primary"
-path = "docs/RULES.md"
+path = "examples/basic/RULES.md"
 adapter = "markdown-rules-v1"
 
 [[sources]]
 domain = "ledger"
 role = "primary"
-path = "ledger/work-ledger.yaml"
+path = "examples/basic/work-ledger.yaml"
 adapter = "yaml-ledger-v1"
-
-[[sources]]
-domain = "decisions"
-role = "supporting"
-path = "docs/decisions"
-adapter = "markdown-directory-v1"

@@ -1,35 +1,338 @@
 {
   "contract_id": "awr-concentrated-regression",
-  "version": "1.1.0",
+  "version": "1.2.0",
   "work_item": "AWR-QA-001",
   "evidence_level": "local_workspace_cli_mcp_and_process_fixtures",
-  "workspace_members": ["awr-cli", "awr-context", "awr-core", "awr-mcp", "awr-runtime", "awr-source", "awr-store"],
+  "workspace_members": [
+    "awr-cli",
+    "awr-context",
+    "awr-core",
+    "awr-mcp",
+    "awr-runtime",
+    "awr-source",
+    "awr-store"
+  ],
   "target_gates": 17,
   "ignored_tests": [
-    {"name": "fixture_contender", "covered_by": "concurrency", "role": "Parent tests launch the isolated live contender."},
-    {"name": "fixture_wal_writer", "covered_by": "database_recovery", "role": "Parent tests launch and terminate the isolated WAL writer."},
-    {"name": "mutation_apply::recovery_tests::fixture_worker", "covered_by": "mutation_recovery", "role": "Parent tests launch and terminate the isolated mutation worker."},
-    {"name": "mutation_apply::recovery_tests::cli_recovery_after_process_death_binds_original_attempt_and_resolves_once", "covered_by": "mutation_recovery", "role": "The recovery runner builds and supplies AWR_RECOVERY_CLI, then explicitly executes this ignored test."}
+    {
+      "name": "fixture_contender",
+      "covered_by": "concurrency",
+      "role": "Parent tests launch the isolated live contender."
+    },
+    {
+      "name": "fixture_wal_writer",
+      "covered_by": "database_recovery",
+      "role": "Parent tests launch and terminate the isolated WAL writer."
+    },
+    {
+      "name": "mutation_apply::recovery_tests::fixture_worker",
+      "covered_by": "mutation_recovery",
+      "role": "Parent tests launch and terminate the isolated mutation worker."
+    },
+    {
+      "name": "mutation_apply::recovery_tests::cli_recovery_after_process_death_binds_original_attempt_and_resolves_once",
+      "covered_by": "mutation_recovery",
+      "role": "The recovery runner builds and supplies AWR_RECOVERY_CLI, then explicitly executes this ignored test."
+    },
+    {
+      "name": "successful_child",
+      "covered_by": "workspace",
+      "role": "execution_registry parents explicitly launch the native test binary to observe a successful managed command, logs and persistent result"
+    },
+    {
+      "name": "failed_child",
+      "covered_by": "workspace",
+      "role": "execution_registry parents explicitly launch the native test binary to observe a managed exit code 7 and stderr"
+    },
+    {
+      "name": "slow_child",
+      "covered_by": "workspace",
+      "role": "execution_registry parents explicitly launch the native test binary for live recovery, supervisor interruption and final receipt recovery"
+    }
   ],
   "gates": [
-    {"id": "build", "kind": "command", "command": ["cargo", "build", "--workspace", "--all-targets", "--locked"], "covers": ["All libraries, CLI, MCP, test targets and developer examples compile"]},
-    {"id": "ignored_inventory", "kind": "ignored_inventory", "requires_build": true, "command": ["cargo", "test", "--workspace", "--all-targets", "--locked", "--", "--ignored", "--list"], "covers": ["Every ignored test has an explicit execution route; listing does not invoke private fixtures"]},
-    {"id": "workspace", "kind": "rust_tests", "requires_build": true, "command": ["cargo", "test", "--workspace", "--all-targets", "--no-fail-fast", "--locked"], "covers": ["Every current unit and integration target", "Source projection and authority", "Sessions, claims, branches, context, artifacts and source mutations", "Normal, boundary, failure and recovery behavior"]},
-    {"id": "doctests", "kind": "rust_tests", "requires_build": true, "command": ["cargo", "test", "--workspace", "--doc", "--no-fail-fast", "--locked"], "covers": ["Documentation examples and compile-fail storage API contracts"]},
-    {"id": "paths", "kind": "contract", "requires_build": true, "contract": "tests/security/paths/contract.json", "version": "1.0.0", "target_conditions": 26, "command": ["{python}", "tests/security/paths/verify.py", "--report", "{output}/paths.json"], "covers": ["Path traversal, containment, links and write races"]},
-    {"id": "payloads", "kind": "contract", "requires_build": true, "contract": "tests/security/payloads/contract.json", "version": "1.4.0", "target_conditions": 32, "command": ["{python}", "tests/security/payloads/verify_all.py", "--report", "{output}/payloads.json"], "covers": ["Source, event and artifact bounds", "Secret sanitization through CLI and MCP"]},
-    {"id": "mutation_recovery", "kind": "contract", "requires_build": true, "contract": "tests/recovery/mutations/contract.json", "version": "1.0.0", "target_conditions": 20, "command": ["{python}", "tests/recovery/mutations/verify.py", "--report", "{output}/mutation_recovery.json"], "covers": ["Source mutation crashes, retries and durable receipts", "Explicit ignored CLI recovery after process death"]},
-    {"id": "concurrency", "kind": "contract", "requires_build": true, "contract": "tests/concurrency/contract.json", "version": "1.1.0", "target_conditions": 20, "command": ["{python}", "tests/concurrency/verify.py", "--report", "{output}/concurrency.json"], "covers": ["Immutable events, competing claims, sessions and branch isolation", "Explicit main-branch CLI/MCP selectors"]},
-    {"id": "database_recovery", "kind": "contract", "requires_build": true, "contract": "tests/recovery/doctor/contract.json", "version": "1.0.0", "target_conditions": 24, "command": ["{python}", "tests/recovery/doctor/verify.py", "--report", "{output}/database_recovery.json"], "covers": ["Schema, migrations and Doctor", "Live-writer WAL recovery", "Source projection, database backup and artifact restoration boundaries"]},
-    {"id": "cli_mcp_parity", "kind": "parity", "requires_build": true, "expected_tests": 8, "expected_tools": ["awr_context_compile", "awr_event_append", "awr_evidence_record", "awr_project_status", "awr_search", "awr_work_get", "awr_work_ready", "awr_work_transition"], "command": ["{python}", "crates/awr-mcp/tests/cli_parity.py", "--awr", "{awr}", "--mcp", "{mcp}", "--report", "{output}/cli_mcp_parity.json"], "covers": ["All eight MCP tools match CLI results and error contracts on identical disposable state"]},
-    {"id": "yaml_intake", "kind": "yaml_intake", "requires_build": true, "command": ["{python}", "tests/fixtures/yaml-ledger/verify.py"], "covers": ["Legacy YAML fixture and the current project ledger indexed into temporary databases", "Idempotence, stable identity, unknown statuses, malformed sources and unchanged source bytes"]},
-    {"id": "manual_lifecycle", "kind": "lifecycle", "requires_build": true, "command": ["{python}", "examples/codex/lifecycle.py", "--awr", "{awr}", "--output", "{output}/lifecycle"], "covers": ["Manual start, L0/L1, checkpoint, successor resume and claim settlement on a copied example", "No model invocation or native-hook activation claim"]},
-    {"id": "legacy_doctor", "kind": "command", "requires_build": true, "command": ["{python}", "ledger/evidence/AWR-P5-003/check_dangling_fixture.py"], "covers": ["Legacy dangling-work diagnosis and repair refusal in a disposable database"]},
-    {"id": "example_smoke", "kind": "examples", "requires_build": true, "command": ["{python}", "tests/regression/example_smoke.py", "--output", "{output}/examples"], "covers": ["Store creation, catalog idempotence, transaction rollback and source lifecycle developer entrypoints"]},
-    {"id": "format", "kind": "command", "command": ["cargo", "fmt", "--all", "--check"], "covers": ["Rust formatting"]},
-    {"id": "planning", "kind": "command", "command": ["{python}", "scripts/check_ledger.py"], "covers": ["Current planning contract, source ledger, derived index and evidence metadata"]},
-    {"id": "diff", "kind": "command", "command": ["git", "diff", "--check"], "covers": ["Patch whitespace"]}
+    {
+      "id": "build",
+      "kind": "command",
+      "command": [
+        "cargo",
+        "build",
+        "--workspace",
+        "--all-targets",
+        "--locked"
+      ],
+      "covers": [
+        "All libraries, CLI, MCP, test targets and developer examples compile"
+      ]
+    },
+    {
+      "id": "ignored_inventory",
+      "kind": "ignored_inventory",
+      "requires_build": true,
+      "command": [
+        "cargo",
+        "test",
+        "--workspace",
+        "--all-targets",
+        "--locked",
+        "--",
+        "--ignored",
+        "--list"
+      ],
+      "covers": [
+        "Every ignored test has an explicit execution route; listing does not invoke private fixtures"
+      ]
+    },
+    {
+      "id": "workspace",
+      "kind": "rust_tests",
+      "requires_build": true,
+      "command": [
+        "cargo",
+        "test",
+        "--workspace",
+        "--all-targets",
+        "--no-fail-fast",
+        "--locked"
+      ],
+      "covers": [
+        "Every current unit and integration target",
+        "Source projection and authority",
+        "Sessions, claims, branches, context, artifacts and source mutations",
+        "Normal, boundary, failure and recovery behavior"
+      ]
+    },
+    {
+      "id": "doctests",
+      "kind": "rust_tests",
+      "requires_build": true,
+      "command": [
+        "cargo",
+        "test",
+        "--workspace",
+        "--doc",
+        "--no-fail-fast",
+        "--locked"
+      ],
+      "covers": [
+        "Documentation examples and compile-fail storage API contracts"
+      ]
+    },
+    {
+      "id": "paths",
+      "kind": "contract",
+      "requires_build": true,
+      "contract": "tests/security/paths/contract.json",
+      "version": "1.0.0",
+      "target_conditions": 26,
+      "command": [
+        "{python}",
+        "tests/security/paths/verify.py",
+        "--report",
+        "{output}/paths.json"
+      ],
+      "covers": [
+        "Path traversal, containment, links and write races"
+      ]
+    },
+    {
+      "id": "payloads",
+      "kind": "contract",
+      "requires_build": true,
+      "contract": "tests/security/payloads/contract.json",
+      "version": "1.5.0",
+      "target_conditions": 32,
+      "command": [
+        "{python}",
+        "tests/security/payloads/verify_all.py",
+        "--report",
+        "{output}/payloads.json"
+      ],
+      "covers": [
+        "Source, event and artifact bounds",
+        "Secret sanitization through CLI and MCP"
+      ]
+    },
+    {
+      "id": "mutation_recovery",
+      "kind": "contract",
+      "requires_build": true,
+      "contract": "tests/recovery/mutations/contract.json",
+      "version": "1.0.0",
+      "target_conditions": 20,
+      "command": [
+        "{python}",
+        "tests/recovery/mutations/verify.py",
+        "--report",
+        "{output}/mutation_recovery.json"
+      ],
+      "covers": [
+        "Source mutation crashes, retries and durable receipts",
+        "Explicit ignored CLI recovery after process death"
+      ]
+    },
+    {
+      "id": "concurrency",
+      "kind": "contract",
+      "requires_build": true,
+      "contract": "tests/concurrency/contract.json",
+      "version": "1.1.0",
+      "target_conditions": 20,
+      "command": [
+        "{python}",
+        "tests/concurrency/verify.py",
+        "--report",
+        "{output}/concurrency.json"
+      ],
+      "covers": [
+        "Immutable events, competing claims, sessions and branch isolation",
+        "Explicit main-branch CLI/MCP selectors"
+      ]
+    },
+    {
+      "id": "database_recovery",
+      "kind": "contract",
+      "requires_build": true,
+      "contract": "tests/recovery/doctor/contract.json",
+      "version": "1.0.0",
+      "target_conditions": 24,
+      "command": [
+        "{python}",
+        "tests/recovery/doctor/verify.py",
+        "--report",
+        "{output}/database_recovery.json"
+      ],
+      "covers": [
+        "Schema, migrations and Doctor",
+        "Live-writer WAL recovery",
+        "Source projection, database backup and artifact restoration boundaries"
+      ]
+    },
+    {
+      "id": "cli_mcp_parity",
+      "kind": "parity",
+      "requires_build": true,
+      "expected_tests": 8,
+      "expected_tools": [
+        "awr_context_compile",
+        "awr_event_append",
+        "awr_evidence_record",
+        "awr_project_status",
+        "awr_search",
+        "awr_work_get",
+        "awr_work_ready",
+        "awr_work_transition"
+      ],
+      "command": [
+        "{python}",
+        "crates/awr-mcp/tests/cli_parity.py",
+        "--awr",
+        "{awr}",
+        "--mcp",
+        "{mcp}",
+        "--report",
+        "{output}/cli_mcp_parity.json"
+      ],
+      "covers": [
+        "All eight MCP tools match CLI results and error contracts on identical disposable state"
+      ]
+    },
+    {
+      "id": "yaml_intake",
+      "kind": "yaml_intake",
+      "requires_build": true,
+      "command": [
+        "{python}",
+        "tests/fixtures/yaml-ledger/verify.py"
+      ],
+      "covers": [
+        "Two public YAML fixtures indexed into temporary databases",
+        "Idempotence, stable identity, unknown statuses, malformed sources and unchanged source bytes"
+      ]
+    },
+    {
+      "id": "manual_lifecycle",
+      "kind": "lifecycle",
+      "requires_build": true,
+      "command": [
+        "{python}",
+        "examples/codex/lifecycle.py",
+        "--awr",
+        "{awr}",
+        "--output",
+        "{output}/lifecycle"
+      ],
+      "covers": [
+        "Manual start, L0/L1, checkpoint, successor resume and claim settlement on a copied example",
+        "No model invocation or native-hook activation claim"
+      ]
+    },
+    {
+      "id": "legacy_doctor",
+      "kind": "command",
+      "requires_build": true,
+      "command": [
+        "{python}",
+        "tests/recovery/doctor/dangling.py"
+      ],
+      "covers": [
+        "Legacy dangling-work diagnosis and repair refusal in a disposable database"
+      ]
+    },
+    {
+      "id": "example_smoke",
+      "kind": "examples",
+      "requires_build": true,
+      "command": [
+        "{python}",
+        "tests/regression/example_smoke.py",
+        "--output",
+        "{output}/examples"
+      ],
+      "covers": [
+        "Store creation, catalog idempotence, transaction rollback and source lifecycle developer entrypoints"
+      ]
+    },
+    {
+      "id": "format",
+      "kind": "command",
+      "command": [
+        "cargo",
+        "fmt",
+        "--all",
+        "--check"
+      ],
+      "covers": [
+        "Rust formatting"
+      ]
+    },
+    {
+      "id": "public_tree",
+      "kind": "command",
+      "command": [
+        "{python}",
+        "scripts/check_public_tree.py"
+      ],
+      "covers": [
+        "Internal development paths are absent from the Git index"
+      ]
+    },
+    {
+      "id": "diff",
+      "kind": "command",
+      "command": [
+        "git",
+        "diff",
+        "--check"
+      ],
+      "covers": [
+        "Patch whitespace"
+      ]
+    }
   ],
   "counting": "Workspace and doctest function counts are reported separately. The five specialist contracts have 122 namespaced conditions; their repeated Rust executions are not added to the workspace count. Listing or compiling a target is not executing a test. Private fixture children are not separate completed business scenarios.",
-  "limitations": ["This gate establishes local regression only. Other operating systems, performance metrics, native agent clients, eight E4 business scenarios and release readiness have their own ledger items.", "All Cargo examples are compiled. Four isolated developer entrypoints, YAML intake and the manual lifecycle are executed; other historical examples receive compile coverage and their corresponding current CLI/domain tests."]
+  "limitations": [
+    "This runner verifies local regression. Native platforms, performance and actual client/business acceptance require their own measurements.",
+    "All Cargo examples are compiled. Four isolated developer entrypoints, YAML intake and the manual lifecycle are executed; other historical examples receive compile coverage and their corresponding current CLI/domain tests."
+  ]
 }

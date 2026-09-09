@@ -71,8 +71,11 @@ pub fn tools() -> Vec<Tool> {
     vec![
         tool(
             TOOL_NAMES[0],
-            "Read compact project progress and the next work suggestion; never refresh persistent state.",
-            object(json!({"branch":branch()}), &[]),
+            "Read project progress, organization gaps, ordered repair actions and business readiness. Optional source_sha verifies completion reports. Never refresh persistent state; after source edits run awr source reindex before rechecking.",
+            object(
+                json!({"branch":branch(),"source_sha":optional(text())}),
+                &[],
+            ),
             true,
             false,
         ),

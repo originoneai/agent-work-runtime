@@ -6,7 +6,7 @@ use std::path::PathBuf;
 #[command(
     name = "awr-mcp",
     version,
-    about = "Serve eight AWR tools over MCP stdio for one initialized project"
+    about = "Serve eight AWR tools over MCP stdio for one project directory"
 )]
 struct Args {
     #[arg(long, default_value = ".")]

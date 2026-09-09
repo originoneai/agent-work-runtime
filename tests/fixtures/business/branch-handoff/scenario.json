@@ -106,7 +106,7 @@
     "branch_merge",
     "mcp"
   ],
-  "artifact_directory": "ledger/evidence/business/AWR-SC-008",
+  "artifact_directory": ".local/business/AWR-SC-008",
   "minimum_real_clients": 2,
   "native_mcp_required": true,
   "runtime_seed_policy": "Never seed sessions, claims, events, checkpoints, completed source work or E4 receipts. Prelude state must come from actual client execution.",

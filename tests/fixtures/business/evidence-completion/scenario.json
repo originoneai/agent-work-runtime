@@ -95,7 +95,7 @@
     "missing_evidence",
     "source_mutation"
   ],
-  "artifact_directory": "ledger/evidence/business/AWR-SC-005",
+  "artifact_directory": ".local/business/AWR-SC-005",
   "minimum_real_clients": 1,
   "native_mcp_required": false,
   "runtime_seed_policy": "Never seed sessions, claims, events, checkpoints, completed source work or E4 receipts. Prelude state must come from actual client execution.",

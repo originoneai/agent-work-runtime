@@ -1,0 +1,466 @@
+{
+  "benchmark": "public-synthetic-context-v1",
+  "measured_at": "2026-09-09T09:40:44+00:00",
+  "source_commit": "6743d306197385c7d3a8a31601adfe92916a845a",
+  "clean_checkout": true,
+  "binary_sha256": "ba1eec833e349c72bfdbf829c873f90922efe61a147aab37806149b6874f5358",
+  "benchmark_input_sha256": {
+    "tests/benchmarks/public/fixture.py": "056b744d56c7942906794f0485eec0a91a1d888559ca985e889b2a77d3586c1e",
+    "tests/benchmarks/public/run.py": "e911c5b7badc1e7295a37dc2a39e9519c581efd76484bc97c0f2dd6a11786419",
+    "tests/benchmarks/public/requirements.txt": "8028132c193814fcc902ce7cb7652cd8d4cb4135398cc31e0943c1f5bda311c9",
+    "tests/benchmarks/context/oracle.py": "2977247702c3e7428111c20f13a88590e0ee2f1d56d5eb2fe7ea8db8a02a1ec9"
+  },
+  "environment": {
+    "os": "macOS-26.5.2-arm64-arm-64bit",
+    "architecture": "arm64",
+    "python": "3.12.11",
+    "tiktoken": "0.14.0",
+    "rustc": "rustc 1.93.1 (01f6ddf75 2026-02-11) (Homebrew)",
+    "cpu": "Apple M3 Max"
+  },
+  "sample": {
+    "synthetic": true,
+    "work_items": 150,
+    "active_work_items": 39,
+    "completed_work_items": 111,
+    "milestones": 6,
+    "goals": 6,
+    "hard_rules": 2,
+    "source_files": {
+      "GOALS.md": "3bd1649be876e6a1c17cf02871cc0ca53726f7b18233b1311335f1945be0f755",
+      "RULES.md": "76d1313500010e0502ff84561d9e04980819c8190cd66e1b44c044622fc1a0b3",
+      "work-ledger.yaml": "c64698f4ee5209459804b91f7bdaec73047c7d4809d2927201d84e9b93a9fc81"
+    },
+    "source_bytes": 80912
+  },
+  "tokenizer": "o200k_base / encode_ordinary",
+  "baseline_tokens": 18955,
+  "maximum_tokens": {
+    "l0": 227,
+    "l1": 4998,
+    "l0_cli_json": 1623,
+    "l1_cli_json": 12748
+  },
+  "minimum_l1_input_reduction_percent": 73.63,
+  "minimum_l1_cli_json_reduction_percent": 32.75,
+  "facts": {
+    "passed": 676,
+    "assertions": 676,
+    "cases_with_unresolved_dependencies": 13
+  },
+  "latency": {
+    "status": {
+      "samples": 30,
+      "p95_ms": 34.927
+    },
+    "work show": {
+      "samples": 30,
+      "p95_ms": 38.079
+    },
+    "context compile": {
+      "samples": 30,
+      "p95_ms": 108.065
+    }
+  },
+  "cases": [
+    {
+      "work": "TASK-001",
+      "l0": 223,
+      "l1": 4925,
+      "l0_cli_json": 1613,
+      "l1_cli_json": 12537,
+      "fact_assertions": 16,
+      "facts_passed": 16,
+      "unresolved_dependencies": 0
+    },
+    {
+      "work": "TASK-002",
+      "l0": 218,
+      "l1": 4917,
+      "l0_cli_json": 1598,
+      "l1_cli_json": 12643,
+      "fact_assertions": 20,
+      "facts_passed": 20,
+      "unresolved_dependencies": 1
+    },
+    {
+      "work": "TASK-003",
+      "l0": 217,
+      "l1": 4926,
+      "l0_cli_json": 1596,
+      "l1_cli_json": 12553,
+      "fact_assertions": 16,
+      "facts_passed": 16,
+      "unresolved_dependencies": 0
+    },
+    {
+      "work": "TASK-004",
+      "l0": 225,
+      "l1": 4930,
+      "l0_cli_json": 1617,
+      "l1_cli_json": 12553,
+      "fact_assertions": 16,
+      "facts_passed": 16,
+      "unresolved_dependencies": 0
+    },
+    {
+      "work": "TASK-005",
+      "l0": 219,
+      "l1": 4916,
+      "l0_cli_json": 1602,
+      "l1_cli_json": 12642,
+      "fact_assertions": 20,
+      "facts_passed": 20,
+      "unresolved_dependencies": 1
+    },
+    {
+      "work": "TASK-006",
+      "l0": 219,
+      "l1": 4934,
+      "l0_cli_json": 1603,
+      "l1_cli_json": 12571,
+      "fact_assertions": 16,
+      "facts_passed": 16,
+      "unresolved_dependencies": 0
+    },
+    {
+      "work": "TASK-007",
+      "l0": 224,
+      "l1": 4927,
+      "l0_cli_json": 1610,
+      "l1_cli_json": 12544,
+      "fact_assertions": 16,
+      "facts_passed": 16,
+      "unresolved_dependencies": 0
+    },
+    {
+      "work": "TASK-008",
+      "l0": 217,
+      "l1": 4913,
+      "l0_cli_json": 1594,
+      "l1_cli_json": 12634,
+      "fact_assertions": 20,
+      "facts_passed": 20,
+      "unresolved_dependencies": 1
+    },
+    {
+      "work": "TASK-009",
+      "l0": 218,
+      "l1": 4933,
+      "l0_cli_json": 1599,
+      "l1_cli_json": 12567,
+      "fact_assertions": 16,
+      "facts_passed": 16,
+      "unresolved_dependencies": 0
+    },
+    {
+      "work": "TASK-010",
+      "l0": 223,
+      "l1": 4921,
+      "l0_cli_json": 1612,
+      "l1_cli_json": 12527,
+      "fact_assertions": 16,
+      "facts_passed": 16,
+      "unresolved_dependencies": 0
+    },
+    {
+      "work": "TASK-011",
+      "l0": 213,
+      "l1": 4997,
+      "l0_cli_json": 1588,
+      "l1_cli_json": 12744,
+      "fact_assertions": 20,
+      "facts_passed": 20,
+      "unresolved_dependencies": 1
+    },
+    {
+      "work": "TASK-012",
+      "l0": 215,
+      "l1": 4919,
+      "l0_cli_json": 1592,
+      "l1_cli_json": 12542,
+      "fact_assertions": 16,
+      "facts_passed": 16,
+      "unresolved_dependencies": 0
+    },
+    {
+      "work": "TASK-013",
+      "l0": 223,
+      "l1": 4926,
+      "l0_cli_json": 1612,
+      "l1_cli_json": 12545,
+      "fact_assertions": 16,
+      "facts_passed": 16,
+      "unresolved_dependencies": 0
+    },
+    {
+      "work": "TASK-014",
+      "l0": 214,
+      "l1": 4998,
+      "l0_cli_json": 1591,
+      "l1_cli_json": 12747,
+      "fact_assertions": 20,
+      "facts_passed": 20,
+      "unresolved_dependencies": 1
+    },
+    {
+      "work": "TASK-015",
+      "l0": 218,
+      "l1": 4924,
+      "l0_cli_json": 1603,
+      "l1_cli_json": 12550,
+      "fact_assertions": 16,
+      "facts_passed": 16,
+      "unresolved_dependencies": 0
+    },
+    {
+      "work": "TASK-016",
+      "l0": 223,
+      "l1": 4926,
+      "l0_cli_json": 1612,
+      "l1_cli_json": 12542,
+      "fact_assertions": 16,
+      "facts_passed": 16,
+      "unresolved_dependencies": 0
+    },
+    {
+      "work": "TASK-017",
+      "l0": 216,
+      "l1": 4911,
+      "l0_cli_json": 1597,
+      "l1_cli_json": 12637,
+      "fact_assertions": 20,
+      "facts_passed": 20,
+      "unresolved_dependencies": 1
+    },
+    {
+      "work": "TASK-018",
+      "l0": 215,
+      "l1": 4918,
+      "l0_cli_json": 1595,
+      "l1_cli_json": 12547,
+      "fact_assertions": 16,
+      "facts_passed": 16,
+      "unresolved_dependencies": 0
+    },
+    {
+      "work": "TASK-019",
+      "l0": 226,
+      "l1": 4941,
+      "l0_cli_json": 1620,
+      "l1_cli_json": 12572,
+      "fact_assertions": 16,
+      "facts_passed": 16,
+      "unresolved_dependencies": 0
+    },
+    {
+      "work": "TASK-020",
+      "l0": 213,
+      "l1": 4996,
+      "l0_cli_json": 1588,
+      "l1_cli_json": 12748,
+      "fact_assertions": 20,
+      "facts_passed": 20,
+      "unresolved_dependencies": 1
+    },
+    {
+      "work": "TASK-021",
+      "l0": 216,
+      "l1": 4923,
+      "l0_cli_json": 1595,
+      "l1_cli_json": 12550,
+      "fact_assertions": 16,
+      "facts_passed": 16,
+      "unresolved_dependencies": 0
+    },
+    {
+      "work": "TASK-022",
+      "l0": 226,
+      "l1": 4935,
+      "l0_cli_json": 1616,
+      "l1_cli_json": 12562,
+      "fact_assertions": 16,
+      "facts_passed": 16,
+      "unresolved_dependencies": 0
+    },
+    {
+      "work": "TASK-023",
+      "l0": 217,
+      "l1": 4917,
+      "l0_cli_json": 1598,
+      "l1_cli_json": 12644,
+      "fact_assertions": 20,
+      "facts_passed": 20,
+      "unresolved_dependencies": 1
+    },
+    {
+      "work": "TASK-024",
+      "l0": 216,
+      "l1": 4920,
+      "l0_cli_json": 1596,
+      "l1_cli_json": 12544,
+      "fact_assertions": 16,
+      "facts_passed": 16,
+      "unresolved_dependencies": 0
+    },
+    {
+      "work": "TASK-025",
+      "l0": 227,
+      "l1": 4929,
+      "l0_cli_json": 1612,
+      "l1_cli_json": 12546,
+      "fact_assertions": 16,
+      "facts_passed": 16,
+      "unresolved_dependencies": 0
+    },
+    {
+      "work": "TASK-026",
+      "l0": 216,
+      "l1": 4914,
+      "l0_cli_json": 1591,
+      "l1_cli_json": 12627,
+      "fact_assertions": 20,
+      "facts_passed": 20,
+      "unresolved_dependencies": 1
+    },
+    {
+      "work": "TASK-027",
+      "l0": 215,
+      "l1": 4917,
+      "l0_cli_json": 1597,
+      "l1_cli_json": 12534,
+      "fact_assertions": 16,
+      "facts_passed": 16,
+      "unresolved_dependencies": 0
+    },
+    {
+      "work": "TASK-028",
+      "l0": 224,
+      "l1": 4926,
+      "l0_cli_json": 1614,
+      "l1_cli_json": 12546,
+      "fact_assertions": 16,
+      "facts_passed": 16,
+      "unresolved_dependencies": 0
+    },
+    {
+      "work": "TASK-029",
+      "l0": 214,
+      "l1": 4906,
+      "l0_cli_json": 1593,
+      "l1_cli_json": 12616,
+      "fact_assertions": 20,
+      "facts_passed": 20,
+      "unresolved_dependencies": 1
+    },
+    {
+      "work": "TASK-030",
+      "l0": 215,
+      "l1": 4915,
+      "l0_cli_json": 1598,
+      "l1_cli_json": 12532,
+      "fact_assertions": 16,
+      "facts_passed": 16,
+      "unresolved_dependencies": 0
+    },
+    {
+      "work": "TASK-031",
+      "l0": 224,
+      "l1": 4929,
+      "l0_cli_json": 1614,
+      "l1_cli_json": 12549,
+      "fact_assertions": 16,
+      "facts_passed": 16,
+      "unresolved_dependencies": 0
+    },
+    {
+      "work": "TASK-032",
+      "l0": 217,
+      "l1": 4914,
+      "l0_cli_json": 1596,
+      "l1_cli_json": 12635,
+      "fact_assertions": 20,
+      "facts_passed": 20,
+      "unresolved_dependencies": 1
+    },
+    {
+      "work": "TASK-033",
+      "l0": 216,
+      "l1": 4922,
+      "l0_cli_json": 1597,
+      "l1_cli_json": 12547,
+      "fact_assertions": 16,
+      "facts_passed": 16,
+      "unresolved_dependencies": 0
+    },
+    {
+      "work": "TASK-034",
+      "l0": 223,
+      "l1": 4922,
+      "l0_cli_json": 1613,
+      "l1_cli_json": 12533,
+      "fact_assertions": 16,
+      "facts_passed": 16,
+      "unresolved_dependencies": 0
+    },
+    {
+      "work": "TASK-035",
+      "l0": 221,
+      "l1": 4922,
+      "l0_cli_json": 1607,
+      "l1_cli_json": 12650,
+      "fact_assertions": 20,
+      "facts_passed": 20,
+      "unresolved_dependencies": 1
+    },
+    {
+      "work": "TASK-036",
+      "l0": 215,
+      "l1": 4918,
+      "l0_cli_json": 1589,
+      "l1_cli_json": 12536,
+      "fact_assertions": 16,
+      "facts_passed": 16,
+      "unresolved_dependencies": 0
+    },
+    {
+      "work": "TASK-037",
+      "l0": 226,
+      "l1": 4935,
+      "l0_cli_json": 1623,
+      "l1_cli_json": 12565,
+      "fact_assertions": 16,
+      "facts_passed": 16,
+      "unresolved_dependencies": 0
+    },
+    {
+      "work": "TASK-038",
+      "l0": 216,
+      "l1": 4911,
+      "l0_cli_json": 1592,
+      "l1_cli_json": 12637,
+      "fact_assertions": 20,
+      "facts_passed": 20,
+      "unresolved_dependencies": 1
+    },
+    {
+      "work": "TASK-039",
+      "l0": 217,
+      "l1": 4929,
+      "l0_cli_json": 1599,
+      "l1_cli_json": 12559,
+      "fact_assertions": 16,
+      "facts_passed": 16,
+      "unresolved_dependencies": 0
+    }
+  ],
+  "model_calls": 0,
+  "source_files_unchanged": true,
+  "limitations": [
+    "Full-source read is a simple baseline, not an optimized search or another product.",
+    "Headline reduction counts only rendered L1 input; full native CLI JSON is reported separately. MCP framing, chat history and model output are excluded.",
+    "Synthetic workload, fixed tokenizer and exact source-fact assertions do not measure model quality, billed tokens or real-client task success.",
+    "Latency includes fresh native CLI processes and source refresh with warm filesystem/SQLite pages, 3 warmups then 30 sequential samples, nearest-rank p95. No concurrent-agent capacity claim.",
+    "AWR generates runtime IDs; reruns can differ slightly in encoded token counts. Every active task is measured and the largest packet is reported."
+  ]
+}

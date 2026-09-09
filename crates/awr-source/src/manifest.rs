@@ -20,6 +20,28 @@ pub struct ProjectConfig {
     pub authority_mode: AuthorityMode,
     #[serde(default)]
     pub authorized_roots: Vec<PathBuf>,
+    /// Minimal projects can omit separate rules/milestone sources. Configured rules still apply.
+    #[serde(default, skip_serializing_if = "ContextProfile::is_standard")]
+    pub context_profile: ContextProfile,
+}
+#[derive(Debug, Clone, Copy, Default, PartialEq, Eq, Serialize, Deserialize)]
+#[serde(rename_all = "snake_case")]
+pub enum ContextProfile {
+    #[default]
+    Standard,
+    Minimal,
+}
+impl ContextProfile {
+    fn is_standard(&self) -> bool {
+        *self == Self::Standard
+    }
+}
+/// The explicit manifest profile is bound to every indexed source configuration/revision.
+pub fn minimal_context(sources: &[awr_core::Source]) -> bool {
+    !sources.is_empty()
+        && sources
+            .iter()
+            .all(|s| s.config["context_profile"] == "minimal")
 }
 fn source_first() -> AuthorityMode {
     AuthorityMode::SourceFirst
@@ -90,6 +112,7 @@ impl Manifest {
             }
             if ![
                 "yaml-ledger-v1",
+                "markdown-ledger-v1",
                 "markdown-heading-v1",
                 "markdown-rules-v1",
                 "markdown-directory-v1",
@@ -105,6 +128,12 @@ impl Manifest {
                 return Err(Error::InvalidInput(
                     "each source needs exactly one path or locator".into(),
                 ));
+            }
+            if matches!(
+                source.adapter.as_str(),
+                "yaml-ledger-v1" | "markdown-ledger-v1"
+            ) {
+                crate::LedgerMapping::from_spec(source)?;
             }
             if source
                 .path

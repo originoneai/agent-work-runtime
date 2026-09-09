@@ -1,9 +1,0 @@
-{
-  "kind": "reviewer_verification_failure",
-  "command": "rtk python3 .work-receipts/re-review-post-verify.py",
-  "exit_code": 1,
-  "error": "KeyError: sources",
-  "cause": "The script looked for source entries at context.sources, but the compiled AWR context uses a different field layout.",
-  "verification_conclusion_generated": false,
-  "producer_files_changed": false
-}

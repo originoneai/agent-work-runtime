@@ -1,4 +1,0 @@
-{
-  "code": "EvidenceMissing",
-  "message": "required evidence missing: evidence 01M226D584F22B3WKKJR69NZSY has no valid completion report: invalid type: map, expected a sequence at line 38 column 12"
-}

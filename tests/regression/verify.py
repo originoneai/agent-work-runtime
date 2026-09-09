@@ -49,7 +49,7 @@ def main():
     output = parser.parse_args().output.resolve()
     output.relative_to(ROOT / ".local")
     require(not read_command("git", "status", "--porcelain"), "Commit reviewed changes before running; the report must bind an exact source commit.")
-    import yaml  # Required by the existing source-intake and planning gates.
+    import yaml  # Required by the existing source-intake fixtures.
     contract = json.loads(CONTRACT.read_text())
     gates = contract["gates"]
     require(len(gates) == len({g["id"] for g in gates}) == contract["target_gates"], "Invalid gate inventory")

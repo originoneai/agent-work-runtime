@@ -1,18 +1,118 @@
 {
   "contract_id": "awr-business-evidence-gates",
   "version": "1.0.0",
-  "status_authority": "ledger/work-ledger.yaml",
-  "decision_rule": "Every required gate needs actual traceable evidence under the current V1 contract. Missing, blocked, skipped and unreviewed gates remain incomplete; no average score or preparation count can compensate.",
+  "status_authority": "Local execution reports; public fixtures contain definitions only.",
+  "decision_rule": "Every required gate needs actual traceable evidence under the versioned scenario catalog. Missing, blocked, skipped and unreviewed gates remain incomplete; no average score or preparation count can compensate.",
   "gates": {
-    "natural_client_initiation": {"required_evidence": ["Actual client product/version and task identity", "Original user turn with natural business input", "Turn timestamp and immutable transcript reference"], "not_sufficient": ["A terminal fixture runner", "Provider/model labels", "An API probe"]},
-    "tool_or_role_execution": {"required_evidence": ["Actual participant bindings", "Client tool calls and their receipts", "Work/session/branch identities and role handoffs"], "not_sufficient": ["A role name in a fixture", "An unexecuted command list"]},
-    "real_artifact": {"required_evidence": ["Nonempty business artifacts created during this run", "Paths, hashes and producing client turns", "Traceable sources used to produce each artifact"], "not_sufficient": ["A prefilled output", "An input fixture copied as a result"]},
-    "business_followup_1": {"required_evidence": ["Actual first user followup", "Published source changes and their before/after hashes", "Substantive revised artifact and explanation"], "not_sufficient": ["A scripted user message never submitted", "A cosmetic rewrite"]},
-    "business_followup_2": {"required_evidence": ["Actual second user followup", "Additional business requirement or correction", "Further substantive revision and traceable response"], "not_sufficient": ["The same revision reused for both rounds"]},
-    "independent_review": {"required_evidence": ["Actual reviewer identity distinct from every producer", "Independent client/human review record", "Per-criterion verdicts, deficiencies and any subsequent resolution"], "not_sufficient": ["The executor renaming its role", "A generated reviewer signature", "A prepared review rubric"]},
-    "final_delivery": {"required_evidence": ["Final delivered artifacts", "Resolved or explicitly transferred open loops", "Delivery message in the actual client"], "not_sufficient": ["An intermediate local file", "A claimed completion without review"]},
-    "traceable_receipt": {"required_evidence": ["Current source and artifact hashes", "Session/event/checkpoint and mutation receipts as applicable", "Client turns linked to the final delivery"], "not_sufficient": ["Boolean pass fields without underlying records"]},
-    "fixture_isolation": {"required_evidence": ["A new run namespace and canonical root", "Distinct work graph, runtime identities and artifact paths", "Evidence that prior tasks, outputs and responses were not reused"], "not_sufficient": ["Changing a scenario label on an old result"]},
-    "independent_commit_and_remote_sha": {"required_evidence": ["One independent reviewed delivery commit for this scenario", "Verified remote SHA and canonical commit URL", "Source, artifact and transcript evidence bound to that commit"], "not_sufficient": ["A fixture seed commit", "An unpushed local commit", "One aggregate commit substituted for eight deliveries"]}
+    "natural_client_initiation": {
+      "required_evidence": [
+        "Actual client product/version and task identity",
+        "Original user turn with natural business input",
+        "Turn timestamp and immutable transcript reference"
+      ],
+      "not_sufficient": [
+        "A terminal fixture runner",
+        "Provider/model labels",
+        "An API probe"
+      ]
+    },
+    "tool_or_role_execution": {
+      "required_evidence": [
+        "Actual participant bindings",
+        "Client tool calls and their receipts",
+        "Work/session/branch identities and role handoffs"
+      ],
+      "not_sufficient": [
+        "A role name in a fixture",
+        "An unexecuted command list"
+      ]
+    },
+    "real_artifact": {
+      "required_evidence": [
+        "Nonempty business artifacts created during this run",
+        "Paths, hashes and producing client turns",
+        "Traceable sources used to produce each artifact"
+      ],
+      "not_sufficient": [
+        "A prefilled output",
+        "An input fixture copied as a result"
+      ]
+    },
+    "business_followup_1": {
+      "required_evidence": [
+        "Actual first user followup",
+        "Published source changes and their before/after hashes",
+        "Substantive revised artifact and explanation"
+      ],
+      "not_sufficient": [
+        "A scripted user message never submitted",
+        "A cosmetic rewrite"
+      ]
+    },
+    "business_followup_2": {
+      "required_evidence": [
+        "Actual second user followup",
+        "Additional business requirement or correction",
+        "Further substantive revision and traceable response"
+      ],
+      "not_sufficient": [
+        "The same revision reused for both rounds"
+      ]
+    },
+    "independent_review": {
+      "required_evidence": [
+        "Actual reviewer identity distinct from every producer",
+        "Independent client/human review record",
+        "Per-criterion verdicts, deficiencies and any subsequent resolution"
+      ],
+      "not_sufficient": [
+        "The executor renaming its role",
+        "A generated reviewer signature",
+        "A prepared review rubric"
+      ]
+    },
+    "final_delivery": {
+      "required_evidence": [
+        "Final delivered artifacts",
+        "Resolved or explicitly transferred open loops",
+        "Delivery message in the actual client"
+      ],
+      "not_sufficient": [
+        "An intermediate local file",
+        "A claimed completion without review"
+      ]
+    },
+    "traceable_receipt": {
+      "required_evidence": [
+        "Current source and artifact hashes",
+        "Session/event/checkpoint and mutation receipts as applicable",
+        "Client turns linked to the final delivery"
+      ],
+      "not_sufficient": [
+        "Boolean pass fields without underlying records"
+      ]
+    },
+    "fixture_isolation": {
+      "required_evidence": [
+        "A new run namespace and canonical root",
+        "Distinct work graph, runtime identities and artifact paths",
+        "Evidence that prior tasks, outputs and responses were not reused"
+      ],
+      "not_sufficient": [
+        "Changing a scenario label on an old result"
+      ]
+    },
+    "independent_commit_and_remote_sha": {
+      "required_evidence": [
+        "One independent reviewed delivery commit for this scenario",
+        "Verified remote SHA and canonical commit URL",
+        "Source, artifact and transcript evidence bound to that commit"
+      ],
+      "not_sufficient": [
+        "A fixture seed commit",
+        "An unpushed local commit",
+        "One aggregate commit substituted for eight deliveries"
+      ]
+    }
   }
 }

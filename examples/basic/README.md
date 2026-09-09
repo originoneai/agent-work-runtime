@@ -1,17 +1,21 @@
 # A small AWR source project
 
-Copy this directory to a scratch project and point `awr --project` at the copy. The following commands are implemented:
+Copy this directory to a scratch project. The Markdown goals and rules plus the
+YAML work item are synthetic inputs; initialization leaves their bytes unchanged.
 
 ```sh
 awr --project /path/to/copy init --manifest project.toml
 awr --project /path/to/copy init --manifest project.toml --accept
-awr --project /path/to/copy source list
-awr --project /path/to/copy source scan
-awr --project /path/to/copy source reindex
+awr --project /path/to/copy status
+awr --project /path/to/copy ready
+awr --project /path/to/copy context compile --work EXAMPLE-001 --goal 'goal#demo'
 ```
 
-The first command previews the explicit authority mapping without changing files. Acceptance creates `.awr/project.toml`, initializes `.awr/state.db`, indexes the sources and adds missing runtime ignore entries. An existing matching manifest is reused without rewriting it. A conflicting manifest is rejected.
+The first command previews the source mapping. Acceptance creates the local
+manifest and SQLite database, indexes sources and adds runtime ignore entries.
+Edit the copied work ledger, then use `source scan` to inspect changes and
+`source reindex` to refresh them. Reindexing unchanged sources preserves revisions.
+CLI reads also check source freshness. `--json` returns structured reports.
 
-Edit the copied work ledger, then scan: the changed source becomes stale/pending while its old projection remains available for diagnosis. Reindex to commit new facts. Repeating reindex with no changes leaves revisions unchanged. `--json` returns structured reports; incomplete source operations exit nonzero.
-
-Only source intake and diagnostics are implemented at this milestone. Work/session/context actions are tracked in the remaining V1 ledger. This example is a demonstration fixture and does not constitute real business acceptance.
+Try [checkpoint and resume](../codex/README.md) for session continuity. This is a
+local demonstration fixture, not a completed real-client business scenario.

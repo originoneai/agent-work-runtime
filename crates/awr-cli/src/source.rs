@@ -140,6 +140,8 @@ pub fn initialize(
         ".awr/artifacts/",
         ".awr/mutations/",
         ".awr/cache/",
+        ".awr/clients/",
+        ".awr/executions/",
     ];
     let missing: Vec<_> = needed
         .iter()
@@ -171,12 +173,28 @@ pub fn initialize(
     }
     let mut store = Store::open(&runtime.join("state.db"))?;
     let report = index_project(&mut store, &root, &manifest, false)?;
+    let project = store.project(report.project_id)?;
+    let works = store.work_items(project.id)?;
+    let ready = store.ready_work(
+        project.id,
+        project.current_branch_id,
+        awr_core::now_millis()?,
+    )?;
+    let organization = awr_runtime::inspect_organization(
+        &store,
+        &project,
+        project.current_branch_id,
+        None,
+        report.ok,
+        &works,
+        &ready,
+    )?;
     if json_output {
         println!(
             "{}",
             serde_json::to_string_pretty(
                 &json!({"initialized":true,"configuration_created":existing.is_none(),
-        "manifest":runtime.join("project.toml"),"authority_mapping":manifest.sources,"index":report})
+        "manifest":runtime.join("project.toml"),"authority_mapping":manifest.sources,"index":report,"organization":organization,"next_action":organization.next_action})
             )?
         );
     } else {
@@ -186,6 +204,7 @@ pub fn initialize(
             runtime.join("project.toml").display()
         );
         print_report(&report);
+        println!("{}", organization.rendered());
     }
     if !report.ok {
         return Err(Error::SourceStale(
@@ -195,7 +214,7 @@ pub fn initialize(
     Ok(())
 }
 
-fn discover(root: &Path) -> Result<(Option<Manifest>, Vec<Value>, Vec<String>)> {
+pub(crate) fn discover(root: &Path) -> Result<(Option<Manifest>, Vec<Value>, Vec<String>)> {
     let locations: &[(&str, &str, &[&str])] = &[
         (
             "goal",
@@ -269,6 +288,7 @@ fn discover(root: &Path) -> Result<(Option<Manifest>, Vec<Value>, Vec<String>)> 
                 external_key: None,
                 authority_mode: AuthorityMode::SourceFirst,
                 authorized_roots: vec![],
+                context_profile: awr_source::ContextProfile::Standard,
             },
             sources,
         })

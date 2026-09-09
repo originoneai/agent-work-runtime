@@ -4,6 +4,7 @@ mod branch_close;
 mod completion;
 mod error;
 mod event_payload;
+mod execution;
 mod model;
 mod mutation;
 mod query;
@@ -16,6 +17,7 @@ pub use branch_close::*;
 pub use completion::*;
 pub use error::{Error, ErrorReport, Result};
 pub use event_payload::*;
+pub use execution::*;
 pub use model::*;
 pub use mutation::*;
 pub use query::*;
@@ -30,3 +32,6 @@ pub fn now_millis() -> Result<i64> {
         .map_err(|e| Error::InvalidInput(e.to_string()))?;
     i64::try_from(elapsed.as_millis()).map_err(|_| Error::InvalidInput("timestamp overflow".into()))
 }
+
+mod client;
+pub use client::ClientBinding;

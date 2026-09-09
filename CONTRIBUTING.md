@@ -1,18 +1,31 @@
 # Contributing
 
-AWR is at the planning baseline. Begin with the [V1 contract](contracts/awr-v1.json), [work ledger](ledger/work-ledger.yaml), [rules](docs/RULES.md), and [kickoff](docs/KICKOFF.md).
-
-Choose a dependency-ready item, record ownership, and keep changes scoped to its acceptance criteria. Include the concrete behavior, applicable checks and remaining limitations in the change description. Broad security and regression work is scheduled after the feature and integration milestones.
-
-Update the authoritative YAML ledger and regenerate its readable index:
+Build with the Rust toolchain pinned in `rust-toolchain.toml`:
 
 ```sh
-.venv/bin/python scripts/check_ledger.py --render
-.venv/bin/python scripts/check_ledger.py
+cargo build --workspace --all-targets --locked
+cargo test --workspace --all-targets --locked
+cargo test --workspace --doc --locked
+cargo fmt --all --check
+python3 scripts/check_public_tree.py
 ```
 
-Do not mark runtime functionality complete based on planning validation. Completion evidence records acceptance outcomes, artifacts, the source commit and a verified remote receipt. Full business scenarios additionally require a distinguishable independent reviewer and their own delivery commit.
+Use Python 3.11+ and `pip install -r requirements-dev.txt` for Python fixture checks.
+The concentrated runner also requires `rtk` and is `python3 tests/regression/verify.py --output .local/regression-001`.
+Use a new output directory for each run. Test specifications under `tests/` describe
+checks; they do not claim that any release or real-client acceptance has passed.
 
-Keep secrets, local runtime databases, private source material and large logs out of commits. Use synthetic or authorized, anonymized fixtures.
+Send a focused PR describing the behavior change and relevant verification.
+Use synthetic inputs for reproductions. Preserve original source files unless a
+source mutation was explicitly requested, and cover stale revisions and interrupted
+writes when changing persistence behavior.
 
-Contributions are licensed under [Apache License 2.0](LICENSE).
+Internal development plans, work ledgers, review notes, transcripts and raw run
+records stay local in `.local/` or the ignored root directories. Public test data,
+user documentation and reproducible aggregate results are welcome. The public-tree
+check prevents known internal paths from entering the Git index, including files
+added with `git add -f`; review still needs to catch private material under new names.
+
+Use [GitHub issues](https://github.com/originoneai/agent-work-runtime/issues) for
+bugs and proposals. Never include credentials or private project sources. By
+contributing, you agree to license your contributions under Apache-2.0.

@@ -37,4 +37,4 @@ MCP 的 `tools/list` 使用同一字段定义生成 JSON Schema。JSON Schema �
 
 未知字段或错误值的诊断不会回显字段名称或内容。默认搜索和 Context 不读取事件正文；显式读取仍可取得原始正文。历史事件保持不可变，这项变更不修改既有记录。
 
-所有允许字段也受[秘密策略](secret-boundaries.md)约束。CLI/MCP 在解析结构前拒绝可识别的敏感输入，返回固定 `RuleViolation`；普通字段和类型错误返回不回显内容的 `InvalidInput`。SEC-002 的当前组件合同统一验证字段、大小及秘密数据边界；任务完成状态见台账，组件检查不代表 E4 或发布。
+所有允许字段也受[秘密策略](secret-boundaries.md)约束。CLI/MCP 在解析结构前拒绝可识别的敏感输入，返回固定 `RuleViolation`；普通字段和类型错误返回不回显内容的 `InvalidInput`。组件合同统一验证字段、大小及秘密数据边界；这些检查不代表真实客户端验收或发布。

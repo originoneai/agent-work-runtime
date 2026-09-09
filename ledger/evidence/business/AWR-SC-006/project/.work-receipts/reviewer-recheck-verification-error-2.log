@@ -1,6 +1,0 @@
-Traceback (most recent call last):
-  File "/Users/mac/Documents/originone/agent-work-running/.local/business-live-20260909-v1/interrupted-write/project/.work-receipts/reviewer-recheck-verify.py", line 160, in <module>
-    check(f"consistency-retains:{phrase}", phrase in consistency, True)
-  File "/Users/mac/Documents/originone/agent-work-running/.local/business-live-20260909-v1/interrupted-write/project/.work-receipts/reviewer-recheck-verify.py", line 34, in check
-    raise AssertionError(f"{name}: {actual!r} != {expected!r}")
-AssertionError: consistency-retains:旧 patch 应用 0 次: False != True

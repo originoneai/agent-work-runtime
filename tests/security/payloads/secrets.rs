@@ -468,13 +468,20 @@ fn labelled_unicode_environment_private_prompt_and_recognizable_tokens_reach_rea
 }
 
 #[test]
-fn policy_three_basic_cache_is_rebuilt_without_rewriting_authority() {
-    for (authority, cached, expected) in [
-        ("Basic YTpi", "Basic YTpi", "[redacted]"),
+fn prior_authentication_caches_are_rebuilt_without_rewriting_authority() {
+    for (policy, authority, cached, expected) in [
+        (3, "Basic YTpi", "Basic YTpi", "[redacted]"),
         (
+            3,
             "Review basic source-intake requirements",
             "[redacted]",
             "Review basic source-intake requirements",
+        ),
+        (
+            4,
+            "Review Bearer authentication requirements",
+            "[redacted]",
+            "Review Bearer authentication requirements",
         ),
     ] {
         let mut f = Fixture::new();
@@ -496,7 +503,7 @@ fn policy_three_basic_cache_is_rebuilt_without_rewriting_authority() {
         .unwrap();
         conn.execute("INSERT INTO search_fts(search_fts) VALUES('rebuild')", [])
             .unwrap();
-        conn.execute("UPDATE search_state SET policy_version=3", [])
+        conn.execute("UPDATE search_state SET policy_version=?1", [policy])
             .unwrap();
         let revision = f.revision();
         let report = f.store.search(f.project, &query).unwrap();
@@ -567,7 +574,7 @@ fn legacy_search_redacts_summaries_omits_sensitive_identity_and_rebuilds_the_old
             },
         )
         .unwrap();
-    assert_eq!(report.index_policy_version, 4);
+    assert_eq!(report.index_policy_version, 5);
     let hit = report.hits.iter().find(|h| h.external_key == "W").unwrap();
     assert_eq!(hit.summary, "[redacted]");
     assert!(!serde_json::to_string(&report).unwrap().contains(SENTINEL));
@@ -719,10 +726,10 @@ fn legacy_required_facts_withhold_l0_l1_and_checkpoint_delta_without_false_compl
 fn ordinary_security_discussion_stays_writable_searchable_and_context_complete() {
     let mut f = Fixture::new();
     let session = f.session();
-    let text = "Review password protection and token budgets; discuss API keys and environment variables. The basic source-intake example covers basic authentication concepts.";
+    let text = "Review password protection and token budgets; discuss API keys and environment variables. The basic source-intake example covers basic authentication and Bearer authentication concepts. Schema: {\"token\":{\"type\":\"string\"},\"authorization\":{\"type\":\"http\",\"scheme\":\"bearer\"}}";
     fs::write(
         f.root.join("work.yaml"),
-        WORK.replace("Draft the analysis", text),
+        WORK.replace("Draft the analysis", &serde_json::to_string(text).unwrap()),
     )
     .unwrap();
     let report = index_project(
@@ -732,7 +739,7 @@ fn ordinary_security_discussion_stays_writable_searchable_and_context_complete()
         false,
     )
     .unwrap();
-    assert!(report.ok);
+    assert!(report.ok, "{:?}", report.issues);
     f.event(
         text,
         json!({"body":"API_KEY=${EXAMPLE_API_KEY}","metrics":{"pending_secret_conditions":16}}),

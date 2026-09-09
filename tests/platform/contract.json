@@ -1,6 +1,6 @@
 {
   "contract_id": "awr-native-platforms",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "work_item": "AWR-QA-004",
   "rust_version": "1.93.1",
   "platforms": [
@@ -14,13 +14,19 @@
     "fixture_contender",
     "fixture_wal_writer",
     "mutation_apply::recovery_tests::fixture_worker",
-    "mutation_apply::recovery_tests::cli_recovery_after_process_death_binds_original_attempt_and_resolves_once"
+    "mutation_apply::recovery_tests::cli_recovery_after_process_death_binds_original_attempt_and_resolves_once",
+    "successful_child",
+    "failed_child",
+    "slow_child"
   ],
   "ignored_routes": {
     "fixture_contender": "workspace parents launch isolated claim contenders",
     "fixture_wal_writer": "workspace parents launch and kill isolated committed/uncommitted WAL writers",
     "mutation_apply::recovery_tests::fixture_worker": "workspace and crash_recovery parents launch isolated mutation writers",
-    "mutation_apply::recovery_tests::cli_recovery_after_process_death_binds_original_attempt_and_resolves_once": "crash_recovery explicitly executes this test with the native AWR_RECOVERY_CLI"
+    "mutation_apply::recovery_tests::cli_recovery_after_process_death_binds_original_attempt_and_resolves_once": "crash_recovery explicitly executes this test with the native AWR_RECOVERY_CLI",
+    "successful_child": "execution_registry parents explicitly launch the native test binary to observe a successful managed command, logs and persistent result",
+    "failed_child": "execution_registry parents explicitly launch the native test binary to observe a managed exit code 7 and stderr",
+    "slow_child": "execution_registry parents explicitly launch the native test binary for live recovery, supervisor interruption and final receipt recovery"
   },
   "native_cli_conditions": ["unicode_space_path", "crlf_source_intake", "wal_schema_integrity", "persisted_session", "source_write_and_receipt", "stale_write_preserved", "updated_hard_rule", "outside_source_rejected", "closed_session_health"],
   "counting": "Each platform requires its own native execution of every gate on the recorded source commit. Report actual Rust counts per target; Unix-only tests omitted by cfg on Windows are not credited there. Repeated tests and fixture processes are not additional business scenarios. A workflow definition, cross compilation, or another platform's pass cannot supply a native result.",

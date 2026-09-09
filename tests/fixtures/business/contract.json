@@ -1,14 +1,14 @@
 {
   "contract_id": "awr-business-fixtures",
-  "version": "1.0.1",
+  "version": "1.1.0",
   "work_item": "AWR-QA-002",
   "target_fixtures": 8,
   "authority": {
-    "contract": "contracts/awr-v1.json",
-    "version": "1.0.1",
-    "sha256": "3ed22c45aa3fda0964fbcdd089a2d51d9779aee3c21d846f4c1b9d2a863666d9"
+    "contract": "tests/fixtures/business/scenarios.json",
+    "version": "1.0.0",
+    "sha256": "9c07d4c6fba9c39bbc2dc359d5ffd3f9356bb9ade50ba893e5fe2bb9f5487773"
   },
-  "status_authority": "ledger/work-ledger.yaml",
+  "status_authority": "Local execution reports; public fixtures contain definitions only.",
   "required_gates": [
     "natural_client_initiation",
     "tool_or_role_execution",
@@ -21,7 +21,7 @@
     "fixture_isolation",
     "independent_commit_and_remote_sha"
   ],
-  "counting": "Prepared fixtures and intake checks are not completed business scenarios. E4 completion requires actual client execution, both followups, independent review and remote delivery evidence under the V1 ledger.",
+  "counting": "Prepared fixtures and intake checks are not completed business scenarios. Actual client execution, both followups, independent review and delivery evidence are required.",
   "scenarios": [
     {
       "id": "AWR-SC-001",

@@ -34,12 +34,8 @@ fn branch(store: &Store, project: &Project, reference: Option<&str>) -> Result<O
     }
 }
 fn short(text: &str) -> String {
-    let text = text.split_whitespace().collect::<Vec<_>>().join(" ");
-    if text.chars().count() > 240 {
-        format!("{}…", text.chars().take(240).collect::<String>())
-    } else {
-        text
-    }
+    awr_core::public_summary(text, 240)
+        .unwrap_or_else(|_| awr_core::SENSITIVE_CONTENT_WITHHELD.into())
 }
 fn brief(work: &Projected<WorkItem>) -> Value {
     json!({"id":work.item.meta.id,"external_key":work.item.meta.external_key,"title":work.item.title,
@@ -66,7 +62,23 @@ pub(crate) fn call(root: &Path, name: &str, args: JsonObject) -> Result<CallTool
         "awr_evidence_record" => return evidence(root, parse(args)?),
         _ => (),
     }
-    let mut view = ReadProject::open(root)?;
+    if name == "awr_project_status" {
+        let status: StatusArgs = parse(args.clone())?;
+        check_sha(status.source_sha.as_deref())?;
+    }
+    let mut view = match ReadProject::open(root) {
+        Ok(view) => view,
+        Err(error) if name == "awr_project_status" => {
+            let initialized =
+                root.join(".awr/project.toml").exists() || root.join(".awr/state.db").exists();
+            let organization =
+                awr_runtime::OrganizationReport::unavailable(initialized, &error.report().message);
+            let value = json!({"ok":false,"read_only":true,"source_refresh_performed":false,"error":error.report(),"organization":organization,"total":null,"next_action":organization.next_action});
+            ensure_public_value(&value)?;
+            return Ok(CallToolResult::structured_error(value));
+        }
+        Err(error) => return Err(error),
+    };
     let mut value = match name {
         "awr_project_status" => status(&view, parse(args)?)?,
         "awr_work_ready" => ready(&view, parse(args)?)?,
@@ -107,6 +119,15 @@ fn status(view: &ReadProject, args: StatusArgs) -> Result<Value> {
     let ready = view
         .store
         .ready_work(view.project.id, branch, now_millis()?)?;
+    let organization = awr_runtime::inspect_organization(
+        &view.store,
+        &view.project,
+        branch,
+        args.source_sha.as_deref(),
+        true,
+        &works,
+        &ready,
+    )?;
     let mut counts = BTreeMap::<String, usize>::new();
     for work in &works {
         *counts
@@ -124,24 +145,38 @@ fn status(view: &ReadProject, args: StatusArgs) -> Result<Value> {
         .collect::<Vec<_>>();
     current.sort_by_key(|w| (&w.item.priority, &w.item.meta.external_key));
     let focus = current
-        .first()
+        .iter()
+        .find(|w| {
+            organization
+                .executable_work
+                .contains(&w.item.meta.external_key)
+        })
         .copied()
-        .or_else(|| ready.ready.first().map(|w| &w.work));
-    let next = focus
+        .or_else(|| {
+            ready
+                .ready
+                .iter()
+                .find(|w| {
+                    organization
+                        .executable_work
+                        .contains(&w.work.item.meta.external_key)
+                })
+                .map(|w| &w.work)
+        });
+    let work_next = focus
         .map(|w| w.item.next_action.clone())
         .filter(|s| !s.trim().is_empty())
-        .unwrap_or_else(|| {
-            if ready.blocked.is_empty() {
-                "No nonterminal work remains in current source projections.".into()
-            } else {
-                "Inspect readiness diagnostics and resolve the blocking prerequisite.".into()
-            }
-        });
+        .unwrap_or_else(|| organization.next_action.clone());
+    let next = if organization.business_execution_ready {
+        work_next
+    } else {
+        organization.next_action.clone()
+    };
     Ok(
         json!({"project":view.project.name,"project_id":view.project.id,"branch_id":branch,
         "counts":counts,"total":works.len(),"current":current.iter().take(5).map(|w| brief(w)).collect::<Vec<_>>(),
         "current_total":current.len(),"ready_count":ready.ready.len(),"blocked_count":ready.blocked.len(),
-        "next_action":next,"suggested_work":focus.map(brief)}),
+        "next_action":next,"suggested_work":focus.map(brief),"organization":organization}),
     )
 }
 fn ready(view: &ReadProject, args: ReadyArgs) -> Result<Value> {
@@ -152,6 +187,15 @@ fn ready(view: &ReadProject, args: ReadyArgs) -> Result<Value> {
     let report = view
         .store
         .ready_work(view.project.id, branch, now_millis()?)?;
+    let organization = awr_runtime::inspect_organization(
+        &view.store,
+        &view.project,
+        branch,
+        None,
+        true,
+        &view.store.work_items(view.project.id)?,
+        &report,
+    )?;
     let mut counts = BTreeMap::<String, usize>::new();
     for work in &report.blocked {
         for code in work
@@ -166,7 +210,7 @@ fn ready(view: &ReadProject, args: ReadyArgs) -> Result<Value> {
     Ok(
         json!({"branch_id":branch,"ready":report.ready.iter().take(args.limit).map(ready_brief).collect::<Vec<_>>(),
         "ready_total":report.ready.len(),"truncated":report.ready.len()>args.limit,"blocked_total":report.blocked.len(),
-        "diagnostic_counts":counts,"blocked_sample":report.blocked.iter().take(3).map(ready_brief).collect::<Vec<_>>()}),
+        "diagnostic_counts":counts,"blocked_sample":report.blocked.iter().take(3).map(ready_brief).collect::<Vec<_>>(),"organization":organization}),
     )
 }
 fn work(view: &ReadProject, args: WorkArgs) -> Result<Value> {

@@ -2,13 +2,17 @@ use awr_core::{Error, Result};
 use clap::{CommandFactory, Parser, Subcommand};
 use std::path::PathBuf;
 mod branch;
+mod client;
 mod context;
 mod doctor;
 mod drill;
 mod event_append;
+mod execution;
 mod mutation;
+mod onboarding;
 mod query;
 mod records;
+mod recovery;
 mod resume;
 mod search;
 mod session;
@@ -33,11 +37,26 @@ struct Cli {
 #[derive(Debug, Subcommand)]
 enum Command {
     /// Preview source authority mapping; --accept initializes using the reviewed mapping.
-    Init {
-        #[arg(long)]
-        manifest: Option<PathBuf>,
-        #[arg(long)]
-        accept: bool,
+    Init(onboarding::InitArgs),
+    /// Diagnose project organization and recheck readiness after source edits.
+    Intake {
+        #[command(subcommand)]
+        command: onboarding::IntakeCommand,
+    },
+    /// Bind client conversations and persist lifecycle checkpoints.
+    Client {
+        #[command(subcommand)]
+        command: client::ClientCommand,
+    },
+    /// Register, run and inspect executions that can outlive the calling session.
+    Execution {
+        #[command(subcommand)]
+        command: execution::ExecutionCommand,
+    },
+    /// Inspect saved work and verify execution evidence before resuming.
+    Recovery {
+        #[command(subcommand)]
+        command: recovery::RecoveryCommand,
     },
     /// List, scan or index authoritative project sources.
     Source {
@@ -48,6 +67,9 @@ enum Command {
     Status {
         #[arg(long)]
         branch: Option<String>,
+        /// Verify completion reports against this explicit full source SHA.
+        #[arg(long)]
+        source_sha: Option<String>,
     },
     /// List dependency-ready work with explicit reasons for excluded work.
     Ready {
@@ -116,13 +138,18 @@ enum Command {
 
 fn run(cli: &Cli) -> Result<()> {
     match &cli.command {
-        Some(Command::Init { manifest, accept }) => {
-            source::initialize(&cli.project, manifest.as_deref(), *accept, cli.json)
-        }
+        Some(Command::Init(args)) => onboarding::run(&cli.project, args, cli.json),
+        Some(Command::Intake { command }) => onboarding::inspect(&cli.project, command, cli.json),
+        Some(Command::Client { command }) => client::run(&cli.project, command, cli.json),
+        Some(Command::Execution { command }) => execution::run(&cli.project, command, cli.json),
+        Some(Command::Recovery { command }) => recovery::run(&cli.project, command, cli.json),
         Some(Command::Source { command }) => source::run(&cli.project, command, cli.json),
-        Some(Command::Status { branch }) => {
-            query::status(&cli.project, branch.as_deref(), cli.json)
-        }
+        Some(Command::Status { branch, source_sha }) => query::status(
+            &cli.project,
+            branch.as_deref(),
+            source_sha.as_deref(),
+            cli.json,
+        ),
         Some(Command::Ready { limit, branch }) => {
             query::ready(&cli.project, *limit, branch.as_deref(), cli.json)
         }

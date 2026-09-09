@@ -1,1 +1,0 @@
-SG-REVIEW independent verification passed: report complete, sealed inputs matched, stale comparison and process deviation retained, no final delivery

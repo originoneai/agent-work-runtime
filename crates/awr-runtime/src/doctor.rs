@@ -226,7 +226,10 @@ fn inspect_sources(
             }
             let source = indexed.get(&key).copied();
             if let Some(source) = source {
-                let expected_config = serde_json::json!({"mapping_key":mapping,"adapter_options":spec.options,"adapter_version":1});
+                let expected_config = awr_source::source_configuration(
+                    spec,
+                    manifest.project.context_profile == awr_source::ContextProfile::Minimal,
+                );
                 if source.config != expected_config
                     || source.role != spec.role
                     || source.adapter != spec.adapter

@@ -86,6 +86,9 @@ class SecretTransports(unittest.TestCase):
         print("AWR_PAYLOAD_CASE untrusted_field_diagnostic_no_echo", flush=True)
 
     def test_cli_and_all_mcp_tools_refuse_recognizable_or_labelled_secrets_without_writes(self):
+        for field in ["default", "example", "value"]:
+            self.tool_error("awr_event_append", {"expected_revision": self.revision(), "event_type": "work.observed",
+                            "summary": "Review a schema example", "payload": {"body": json.dumps({"token": {"type": "string", field: SENTINEL}})}})
         for name in TOOLS:
             result = self.tool_error(name, {"pa\u0073sword": SENTINEL})
             self.assertEqual(result["code"], "RuleViolation")
@@ -110,7 +113,7 @@ class SecretTransports(unittest.TestCase):
     def test_read_tools_withhold_legacy_required_content_and_safe_data_remains_usable(self):
         response = self.client.rpc("tools/call", {"name": "awr_event_append", "arguments": {
             "expected_revision": self.revision(), "event_type": "work.observed",
-            "summary": "Review password protection and token budgets", "payload": {"body": "API_KEY=${EXAMPLE_API_KEY}"}}})
+            "summary": "Review password protection and Bearer authentication", "payload": {"body": 'Schema: {"token":{"type":"string"},"authorization":{"type":"http","scheme":"bearer"}}'}}})
         self.assertFalse(response["result"].get("isError", False))
         self.no_leak(json.dumps(response))
         with sqlite3.connect(self.root / ".awr/state.db") as db:

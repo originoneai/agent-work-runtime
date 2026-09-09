@@ -57,6 +57,7 @@ pub struct BootstrapContext {
     pub session: Option<Session>,
     pub checkpoint: Option<Checkpoint>,
     pub checkpoint_origin: &'static str,
+    pub executions: Vec<Execution>,
     pub critical_rules: Vec<Rule>,
     pub source_revisions: Vec<SourceVersion>,
     pub gaps: Vec<BootstrapGap>,
@@ -170,6 +171,14 @@ fn render(context: &BootstrapContext) -> String {
         }
     } else {
         text.push_str("Checkpoint: none for selected work\n");
+    }
+    for execution in &context.executions {
+        text.push_str(
+            &execution
+                .continuity_text()
+                .expect("execution text serializes"),
+        );
+        text.push('\n');
     }
     // L1 carries the source revision inventory. Keep that complete inventory in
     // the structured L0 envelope and hash binding without repeating it in the
@@ -338,11 +347,12 @@ fn bootstrap_selected(
                 "next action is not declared",
             );
         }
-        if work
-            .item
-            .milestone
-            .as_deref()
-            .is_none_or(|s| s.trim().is_empty())
+        if !awr_source::minimal_context(&sources)
+            && work
+                .item
+                .milestone
+                .as_deref()
+                .is_none_or(|s| s.trim().is_empty())
         {
             gap(
                 &mut gaps,
@@ -366,7 +376,7 @@ fn bootstrap_selected(
             );
         }
     }
-    if !sources.iter().any(|s| s.domain == "rules") {
+    if !sources.iter().any(|s| s.domain == "rules") && !awr_source::minimal_context(&sources) {
         gap(
             &mut gaps,
             "rules_source_missing",
@@ -449,6 +459,15 @@ fn bootstrap_selected(
             locator: s.locator,
         })
         .collect();
+    let executions = if let Some(work) = &selected {
+        store
+            .executions(project.id, Some(work.item.meta.id))?
+            .into_iter()
+            .filter(|e| e.branch_id == branch)
+            .collect()
+    } else {
+        Vec::new()
+    };
     let context = BootstrapContext {
         project_id: project.id,
         project_key: project.external_key,
@@ -471,6 +490,7 @@ fn bootstrap_selected(
         session,
         checkpoint,
         checkpoint_origin,
+        executions,
         critical_rules,
         source_revisions,
         complete: gaps.is_empty(),

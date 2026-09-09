@@ -3,6 +3,7 @@ work_items:
     title: Exercise source intake
     status: ready
     goal: goal#demo
+    milestone: plan#intake
     required: true
     priority: P0
     acceptance:

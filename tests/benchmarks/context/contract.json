@@ -2,7 +2,7 @@
   "contract_id": "awr-context-tokens-and-recall",
   "version": "1.0.0",
   "work_item": "AWR-P9-004",
-  "status_authority": "ledger/work-ledger.yaml",
+  "status_authority": "Local execution report; this specification does not record project completion.",
   "sample": {
     "admission_contract": "tests/long-ledger/contract.json",
     "preparation_sha256": "6c0719587da118643980867f9fc8cc28ca91c6c458465921f4e14ef5fdb893bb",

@@ -89,8 +89,7 @@ def client_input_policy():
     identifiers = {
         'scenario_ids': set(),
         'namespaces': set(),
-        'contract_work_keys': set(authority['scope']['required_work_item_ids']) |
-                              set(authority['scope']['preparation_work_item_ids']),
+        'contract_work_keys': {scenario['id'] for scenario in authority['scenarios']},
         'graph_work_keys': set(),
         'gate_ids': set(authority['completion']['scenario_required_gates']),
     }
@@ -110,9 +109,8 @@ def client_input_policy():
         key: sorted(values) for key, values in identifiers.items()
     }
     rule_sources = [
-        {'path': 'docs/RULES.md', 'sha256': digest(ROOT/'docs/RULES.md')},
-        {'path': 'docs/acceptance/README.md',
-         'sha256': digest(ROOT/'docs/acceptance/README.md')},
+        {'path': 'tests/fixtures/business/protocol.md', 'sha256': digest(BASE/'protocol.md')},
+        {'path': 'tests/fixtures/business/gate-contract.json', 'sha256': digest(BASE/'gate-contract.json')},
     ]
     implementation = {
         'path': str(Path(__file__).resolve().relative_to(ROOT)),
@@ -326,10 +324,10 @@ def validate_spec(spec, canonical, directory):
 def load_bundle():
     contract = read_json(BASE/'contract.json')
     authority = read_json(ROOT/contract['authority']['contract'])
-    require(contract['authority']['version'] == authority['version'] and contract['authority']['sha256'] == digest(ROOT/contract['authority']['contract']), 'V1 authority changed; update this fixture contract explicitly')
+    require(contract['authority']['version'] == authority['version'] and contract['authority']['sha256'] == digest(ROOT/contract['authority']['contract']), 'Scenario authority changed; update this fixture contract explicitly')
     canonical = {s['id']:s for s in authority['scenarios']}
     require(len(contract['scenarios']) == len(canonical) == contract['target_fixtures'] == 8, 'Fixture scope changed')
-    require(all(s['required_gates'] == contract['required_gates'] for s in canonical.values()), 'Catalog gate scope differs from V1')
+    require(all(s['required_gates'] == contract['required_gates'] for s in canonical.values()), 'Catalog gate scope differs from the catalog')
     gate_contract = read_json(BASE/'gate-contract.json')
     require(gate_contract['version'] == '1.0.0' and gate_contract['status_authority'] == contract['status_authority'], 'Evidence contract version/authority changed')
     require(set(gate_contract['gates']) == set(contract['required_gates']), 'Evidence gate contract differs')
@@ -339,7 +337,7 @@ def load_bundle():
         key = row['id']
         require(key in canonical and key not in specs, 'Unknown or duplicate scenario')
         path = local_path(ROOT, row['specification'])
-        require(path.parent == ROOT/canonical[key]['fixture'], 'Fixture directory differs from V1')
+        require(path.parent == ROOT/canonical[key]['fixture'], 'Fixture directory differs from the catalog')
         spec = read_json(path)
         result = validate_spec(spec, canonical[key], path.parent)
         require(row['namespace'] == spec['namespace'] and row['dimensions'] == spec['dimensions'], 'Catalog entry mismatch')

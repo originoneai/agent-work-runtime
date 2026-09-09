@@ -1,6 +1,6 @@
 # Mutation concurrency and recovery checks
 
-`contract.json` version 1.0.0 fixes 20 conditions for AWR-SEC-003. Run every condition
+`contract.json` version 1.0.0 fixes 20 conditions for its isolated fixtures. Run every condition
 from the repository root, using a new report path to preserve prior failures:
 
 ```sh

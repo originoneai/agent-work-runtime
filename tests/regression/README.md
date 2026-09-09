@@ -1,6 +1,6 @@
 # Concentrated regression
 
-`contract.json` fixes the complete local gate for AWR-QA-001. It executes all
+`contract.json` fixes the complete local gate for the workspace. It executes all
 seven Cargo workspace members, all targets and doctests, five current specialist
 contracts, all eight CLI/MCP tool parity checks, YAML intake, the copied manual
 Codex lifecycle, the legacy Doctor fixture and four developer entrypoints.
@@ -25,9 +25,9 @@ and unchanged-input check. Never use a report produced on different inputs as a
 current pass. A new specialist contract version or ignored test requires updating
 the regression contract and its execution route.
 
-The four ignored entries have specific roles: three are private processes invoked
-by their owning tests; the fourth is an explicit crash-to-CLI recovery check whose
-runner supplies the real executable. `--ignored --list` audits their inventory
+The seven ignored entries have explicit routes: six are child fixtures invoked
+by their owning tests; one is a crash-to-CLI recovery check whose runner supplies
+the real executable. `--ignored --list` audits their inventory
 without accidentally launching unconfigured private fixtures.
 
 Workspace test functions, doctests, parity functions and the 122 namespaced
@@ -39,5 +39,5 @@ compile coverage and the corresponding current CLI/domain tests.
 
 This is local regression evidence. Cross-platform execution, performance metrics,
 native client use, independent business review and the eight complete E4 scenarios
-remain separate ledger work. The lifecycle script does not invoke a model or
+require separate measurements and actual-client evidence. The lifecycle script does not invoke a model or
 activate automatic hooks. A passing regression report does not release V1.

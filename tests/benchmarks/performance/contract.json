@@ -2,7 +2,7 @@
   "contract_id": "awr-local-cli-latency",
   "version": "1.0.1",
   "work_item": "AWR-P9-005",
-  "status_authority": "ledger/work-ledger.yaml",
+  "status_authority": "Local execution report; this specification does not record project completion.",
   "sample_contract": "tests/benchmarks/context/contract.json",
   "build": "cargo build --locked --release --workspace --bins",
   "transport": "Fresh CLI process per invocation; include the installed rtk proxy wrapper, process startup, source freshness checks, command execution, stdout capture and process exit. JSON parsing/verification and source preparation occur outside the timed interval. No overhead is subtracted.",
@@ -58,7 +58,5 @@
     "real_incremental_changes",
     "originals_and_inputs_unchanged"
   ],
-  "boundary": "The measured capacity is the admitted historical real-source sample, not every dataset below 10k work items, 100k objects or 1M events. Record actual rows, ready count, event growth and bytes. These CLI measurements do not grant MCP, model/API, cross-platform latency, E4 or release credit. Keep original text and raw receipts local.",
-  "acceptance_contract_version": "1.0.1",
-  "threshold_change_basis": "User accepted the measured millisecond-scale latency on 2026-09-09. Six p95 <1000 ms gates replace the original strict release gates; original numbers remain optimization targets. Timing, sample size, workload and retained failures are unchanged."
+  "boundary": "The measured capacity is the admitted historical real-source sample, not every dataset below 10k work items, 100k objects or 1M events. Record actual rows, ready count, event growth and bytes. These CLI measurements do not grant MCP, model/API, cross-platform latency, E4 or release credit. Keep original text and raw receipts local."
 }

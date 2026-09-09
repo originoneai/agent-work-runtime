@@ -96,22 +96,27 @@ checksum = "f2032f911046de80f0a198e0901378627c33f59ea0ac00e363d481118bd70a53"
 
 [[package]]
 name = "awr-cli"
-version = "0.1.0-dev"
+version = "0.2.0"
 dependencies = [
  "awr-context",
  "awr-core",
  "awr-runtime",
  "awr-source",
  "awr-store",
+ "cap-std",
  "clap",
  "rusqlite",
+ "serde",
  "serde_json",
+ "serde_yaml_ng",
+ "sha2",
  "toml",
+ "windows-sys 0.61.2",
 ]
 
 [[package]]
 name = "awr-context"
-version = "0.1.0-dev"
+version = "0.2.0"
 dependencies = [
  "awr-core",
  "awr-source",
@@ -124,13 +129,14 @@ dependencies = [
 
 [[package]]
 name = "awr-core"
-version = "0.1.0-dev"
+version = "0.2.0"
 dependencies = [
  "base64",
  "globset",
  "regex",
  "serde",
  "serde_json",
+ "serde_yaml_ng",
  "sha2",
  "thiserror",
  "ulid",
@@ -138,7 +144,7 @@ dependencies = [
 
 [[package]]
 name = "awr-mcp"
-version = "0.1.0-dev"
+version = "0.2.0"
 dependencies = [
  "awr-context",
  "awr-core",
@@ -156,7 +162,7 @@ dependencies = [
 
 [[package]]
 name = "awr-runtime"
-version = "0.1.0-dev"
+version = "0.2.0"
 dependencies = [
  "awr-context",
  "awr-core",
@@ -172,7 +178,7 @@ dependencies = [
 
 [[package]]
 name = "awr-source"
-version = "0.1.0-dev"
+version = "0.2.0"
 dependencies = [
  "awr-core",
  "awr-store",
@@ -190,7 +196,7 @@ dependencies = [
 
 [[package]]
 name = "awr-store"
-version = "0.1.0-dev"
+version = "0.2.0"
 dependencies = [
  "awr-core",
  "rusqlite",

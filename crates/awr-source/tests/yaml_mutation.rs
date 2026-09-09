@@ -11,10 +11,13 @@ struct Fixture {
 }
 impl Fixture {
     fn new(text: &str) -> Self {
+        Self::with_options(text, "")
+    }
+    fn with_options(text: &str, options: &str) -> Self {
         let root = std::env::temp_dir().join(format!("awr-yaml-mutation-{}", Id::new()));
         fs::create_dir_all(&root).unwrap();
         fs::write(root.join("ledger.yaml"), text).unwrap();
-        let manifest:Manifest=toml::from_str("[project]\nname='Mutation source'\n[[sources]]\ndomain='ledger'\nrole='primary'\npath='ledger.yaml'\nadapter='yaml-ledger-v1'\n").unwrap();
+        let manifest:Manifest=Manifest::parse(&format!("[project]\nname='Mutation source'\n[[sources]]\ndomain='ledger'\nrole='primary'\npath='ledger.yaml'\nadapter='yaml-ledger-v1'\n{options}")).unwrap();
         fs::create_dir(root.join(".awr")).unwrap();
         fs::write(
             root.join(".awr/project.toml"),
@@ -76,6 +79,31 @@ impl Drop for Fixture {
 }
 fn parsed(text: &str) -> Value {
     serde_json::to_value(serde_yaml_ng::from_str::<serde_yaml_ng::Value>(text).unwrap()).unwrap()
+}
+
+#[test]
+fn mapped_yaml_writer_retains_original_keys_and_other_records() {
+    let text = "# retained\nwork_items:\n- ticket: W\n  name: Report\n  phase: Pending\n  next: Before\n- ticket: OTHER\n  name: Unrelated\n  phase: Pending\n";
+    let f = Fixture::with_options(
+        text,
+        "[sources.options.field_map]\nid='ticket'\ntitle='name'\nstatus='phase'\nnext_action='next'\n[sources.options.status_map]\nPending='planned'\nComplete='completed'\n",
+    );
+    let plan = f
+        .plan(EntityKind::WorkItem, "W", json!({"next_action":"After"}))
+        .unwrap();
+    let after = parsed(plan.after.text().unwrap());
+    assert_eq!(after["work_items"][0]["next"], "After");
+    assert!(after["work_items"][0].get("next_action").is_none());
+    assert_eq!(after["work_items"][0]["phase"], "Pending");
+    assert_eq!(after["work_items"][1], parsed(text)["work_items"][1]);
+    assert_eq!(
+        fs::read_to_string(f.root.join("ledger.yaml")).unwrap(),
+        text
+    );
+    assert!(matches!(
+        f.plan(EntityKind::WorkItem, "W", json!({"status":"completed"})),
+        Err(Error::MutationUnsupported(_))
+    ));
 }
 
 #[test]

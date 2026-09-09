@@ -266,7 +266,7 @@ fn goals(
         // Project-level goal sources are explicitly primary. Supporting/unrelated bodies are not read.
         for source in sources
             .iter()
-            .filter(|s| s.domain == "goal" && s.role == "primary")
+            .filter(|s| matches!(s.domain.as_str(), "goal" | "ledger") && s.role == "primary")
         {
             for payload in store.source_projection_payloads(source, EntityKind::Goal)? {
                 let goal: Goal = serde_json::from_value(payload)?;
@@ -399,7 +399,7 @@ fn compile_context_selected(
         completeness.branch_context = Some(branch_context);
         completeness.goal_context_complete = Some(false);
         let text = format!(
-            "CONTEXT INCOMPLETE\nProject: {} [{}] r{}\nRequested work: {}\nNo unambiguous active work projection was resolved. Specify a current --work key.\n",
+            "CONTEXT INCOMPLETE\nProject: {} [{}] r{}\nRequested work: {}\nNo unambiguous active work projection was resolved. Run awr intake inspect --json for source-backed organization actions, then specify a current --work key.\n",
             project.external_key, project.id, project.project_revision, key
         );
         let count = token_count(&text);
@@ -467,7 +467,7 @@ fn compile_context_selected(
             "goal_context_complete",
             "goal_context_missing",
             key,
-            "No current primary project goal was found; select a goal explicitly or provide a primary goal source",
+            "No current primary project goal was found. Run awr intake inspect --json; reuse goal material or add goals to the primary YAML ledger, link work with goal/goals, and recheck. Keep uncertain intent draft rather than inventing a goal",
         );
     }
     for requested in request.goal_keys.iter().collect::<BTreeSet<_>>() {
@@ -486,6 +486,27 @@ fn compile_context_selected(
         }
     }
     let mut required = hard_chunks(&hard)?;
+    if awr_source::minimal_context(&sources) {
+        required.push(chunk("context-profile", ContextSection::Metadata, "Context profile: minimal. Separate plan/rule sources are optional; every configured hard rule still applies. Check project organization before business execution.", vec![]));
+    }
+    // Every execution on this work/branch is mandatory, including completed results and
+    // unverified nonterminal records. Budget overflow is explicit, never silent omission.
+    for execution in store
+        .executions(project.id, Some(work.item.meta.id))?
+        .iter()
+        .filter(|e| e.branch_id == branch)
+    {
+        required.push(chunk(
+            format!("execution:{}", execution.id),
+            ContextSection::Executions,
+            execution.continuity_text()?,
+            vec![SelectedEntity {
+                kind: "execution".into(),
+                id: execution.id,
+                revision: execution.revision,
+            }],
+        ));
+    }
     required.push(chunk(
         "branch-context", ContextSection::Metadata,
         format!("Work branch: {} | revision: {:?} | fork: {} | parent: {}\nGit ref at creation: {}; recorded commit: {}\nSource basis: {}\nRuntime scope: {}",
@@ -518,7 +539,16 @@ fn compile_context_selected(
     for goal in &selected_goals {
         if goal.source.freshness != Freshness::Fresh
             || goal.item.status.trim().is_empty()
-            || goal.item.status.trim().eq_ignore_ascii_case("unknown")
+            || matches!(
+                goal.item.status.trim().to_ascii_lowercase().as_str(),
+                "unknown" | "draft" | "candidate" | "pending" | "needs_confirmation"
+            )
+            || (goal
+                .source
+                .locator
+                .replace('\\', "/")
+                .contains(".awr/intake/")
+                && goal.item.title == "Establish a verified project baseline")
             || goal.item.title.trim().is_empty()
         {
             goal_complete = false;
@@ -527,7 +557,7 @@ fn compile_context_selected(
                 "goal_context_complete",
                 "goal_state_incomplete",
                 goal.item.meta.external_key.clone(),
-                "Goal title/status must be declared and its source current",
+                "Goal title/status must be declared and its source current; drafts and intake placeholders do not establish business intent. Run awr intake inspect --json and record source-backed goal confirmation before business execution",
             );
         }
         required.push(chunk(

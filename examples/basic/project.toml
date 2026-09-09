@@ -16,6 +16,8 @@ domain = "plan"
 role = "primary"
 path = "PLAN.md"
 adapter = "markdown-heading-v1"
+[sources.options]
+key_prefix = "plan"
 
 [[sources]]
 domain = "rules"

@@ -7,9 +7,11 @@ mod branch;
 mod branch_close;
 mod completion;
 mod doctor;
+mod execution;
 mod fs_sync;
 mod mutation;
 mod mutation_apply;
+mod organization;
 mod read;
 mod resume;
 mod work_action;
@@ -20,10 +22,12 @@ pub use branch::{CreateBranchRequest, create_branch, observe_git_ref, switch_bra
 pub use branch_close::{CloseBranchRequest, close_branch};
 pub use completion::{CompleteWorkRequest, complete_work};
 pub use doctor::{ProjectDoctorReport, diagnose_project};
+pub use execution::{inspect_execution, inspect_work_executions, render_execution_observations};
 pub use mutation::{
     CreateProposalRequest, ProposalReport, ReviewProposalAction, ReviewProposalRequest,
     create_proposal, review_proposal,
 };
+pub use organization::{OrganizationReport, OrganizationState, inspect_organization};
 pub use resume::{ResumeReport, ResumeRequest, resume_session};
 pub use work_action::{WorkActionRequest, perform_work_action};
 

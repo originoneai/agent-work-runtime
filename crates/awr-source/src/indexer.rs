@@ -64,6 +64,7 @@ impl IndexReport {
 pub fn source_adapter(name: &str) -> Result<Box<dyn SourceAdapter>> {
     match name {
         "yaml-ledger-v1" => Ok(Box::new(YamlLedgerAdapter)),
+        "markdown-ledger-v1" => Ok(Box::new(crate::MarkdownLedgerAdapter)),
         "markdown-heading-v1" => Ok(Box::new(MarkdownHeadingAdapter)),
         "markdown-rules-v1" => Ok(Box::new(MarkdownRulesAdapter)),
         "markdown-directory-v1" => Ok(Box::new(MarkdownDirectoryAdapter)),
@@ -80,6 +81,15 @@ fn mapping_key(spec: &SourceSpec) -> String {
             .map(|path| path.to_string_lossy().into_owned())
             .unwrap_or_default())
     )
+}
+/// Configuration identity shared by indexing, source mutations and read-only diagnosis.
+pub fn source_configuration(spec: &SourceSpec, minimal_context: bool) -> serde_json::Value {
+    let mut config =
+        json!({"mapping_key":mapping_key(spec),"adapter_options":spec.options,"adapter_version":2});
+    if minimal_context {
+        config["context_profile"] = json!("minimal");
+    }
+    config
 }
 fn source_mapping(source: &Source) -> Option<&str> {
     source.config.get("mapping_key").and_then(|v| v.as_str())
@@ -195,10 +205,10 @@ fn process_project(
                 root,
                 spec,
                 adapter.as_ref(),
-                &key,
                 &locator,
                 &identity,
                 mode,
+                manifest.project.context_profile == crate::ContextProfile::Minimal,
             );
             match outcome {
                 Ok((source, indexed, warnings)) => {
@@ -264,10 +274,10 @@ fn index_one(
     root: &Path,
     spec: &SourceSpec,
     adapter: &dyn SourceAdapter,
-    key: &str,
     locator: &Locator,
     identity: &str,
     mode: Option<bool>,
+    minimal_context: bool,
 ) -> Result<(Source, Option<bool>, Vec<String>)> {
     let project = store.project_by_root(root)?;
     let source = store.register_source(
@@ -284,10 +294,7 @@ fn index_one(
             adapter: &spec.adapter,
         },
     )?;
-    let source = store.configure_source(
-        &source,
-        json!({"mapping_key":key,"adapter_options":spec.options,"adapter_version":1}),
-    )?;
+    let source = store.configure_source(&source, source_configuration(spec, minimal_context))?;
     let cap = crate::source_read_cap(&spec.adapter)?;
     let observed = observe_source(store, &source, root, locator, cap)?;
     if let Some(error) = observed.error {

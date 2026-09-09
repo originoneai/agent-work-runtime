@@ -14,4 +14,4 @@ Supported severity values are `hard`, `soft`, `info`; scope types are `project`,
 
 Missing or unsupported metadata yields `None` and an `unresolved` diagnostic, also reported in batch warnings. No fallback silently weakens a rule to soft/info or broadens its scope. Natural-language wording alone does not determine severity. Heading-only rule text remains present rather than being discarded.
 
-The current project's unannotated RULES.md intentionally produces unresolved metadata until an explicit authority mapping is configured for runtime use. Complete rule selection and context completeness checks are tracked in later ledger items.
+Configure missing metadata explicitly before compiling work context. Unresolved required rule semantics remain a context-completeness error.

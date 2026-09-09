@@ -1,0 +1,18 @@
+[
+  {
+    "crate": "rmcp",
+    "version": "3.2.0",
+    "file": "rmcp-3.2.0.txt",
+    "url": "https://raw.githubusercontent.com/modelcontextprotocol/rust-sdk/51ccb42993d6eb5075399672ce7a0c21a0e55eea/LICENSE",
+    "upstream_commit": "51ccb42993d6eb5075399672ce7a0c21a0e55eea",
+    "sha256": "0382b0057770ca05e9c350a50aa3b1c1fea84da0bc81d723bf00b9aa841be58a"
+  },
+  {
+    "crate": "tiktoken-rs",
+    "version": "0.12.0",
+    "file": "tiktoken-rs-0.12.0.txt",
+    "url": "https://raw.githubusercontent.com/zurawiki/tiktoken-rs/32de8dc0526d67f2c266c4e5e7c6a8ec5a0ce3d7/LICENSE",
+    "upstream_commit": "32de8dc0526d67f2c266c4e5e7c6a8ec5a0ce3d7",
+    "sha256": "f7c6ddf9d84fd7b8ad5917e4074d4c05e4c1dfb752a28a0058f06bd0f5e2edcc"
+  }
+]
