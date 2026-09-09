@@ -1,0 +1,341 @@
+{
+  "checkpoint_id": null,
+  "completeness": {
+    "acceptance_complete": true,
+    "assessment_scope": "Completeness of current required context facts and associations. Known unresolved dependencies and evidence gaps are retained; this does not certify task completion, verification execution or release readiness.",
+    "branch_context": {
+      "branch_id": null,
+      "branch_revision": null,
+      "creation_event_id": null,
+      "fork_project_revision": 0,
+      "git_binding": null,
+      "git_ref": null,
+      "name": "main",
+      "parent_branch_id": null,
+      "runtime_scope": "exact_branch; no parent or sibling runtime inheritance; delta never precedes fork",
+      "source_basis": "shared_current_sources; git_ref is a creation observation, not a frozen source snapshot"
+    },
+    "branch_id": null,
+    "complete": true,
+    "decision_context_complete": true,
+    "dependencies_complete": true,
+    "evidence_gaps": [
+      {
+        "code": "no_evidence",
+        "reason": "no evidence is associated with this work",
+        "reference": "WH-REVIEW"
+      }
+    ],
+    "freshness_basis": "source_refresh_at_project_revision",
+    "goal_context_complete": true,
+    "issues": [],
+    "project_id": "01M21S7N6RNH8JE1KAP73K5576",
+    "project_revision": 198,
+    "rules_complete": true,
+    "source_fresh": true,
+    "source_refresh_performed": true,
+    "source_versions": [
+      {
+        "fingerprint": "sha256:d8b2a093f141e286467618caa7fc1a97ce49decc08c1b99302c901aeef41e94b",
+        "freshness": "fresh",
+        "id": "01M21S7N6SJ93T131JVHPP6KW7",
+        "locator": "file:///Users/mac/Documents/originone/agent-work-running/.local/business-live-20260909-v1/long-task-resume/project/GOALS.md",
+        "revision": 1
+      },
+      {
+        "fingerprint": "sha256:9e11cb63739d64842aa61ab2a75c170eecb2f5c2d2914841aa35df91470bd280",
+        "freshness": "fresh",
+        "id": "01M21S7N6TJXDAHBF57V7XZBC9",
+        "locator": "file:///Users/mac/Documents/originone/agent-work-running/.local/business-live-20260909-v1/long-task-resume/project/PLAN.md",
+        "revision": 1
+      },
+      {
+        "fingerprint": "sha256:f1562e163d17cbbcd5f43af3356c2d4e9076063712c010a9495c54f17466876e",
+        "freshness": "fresh",
+        "id": "01M21S7N6VC41KZQEE4P920RRP",
+        "locator": "file:///Users/mac/Documents/originone/agent-work-running/.local/business-live-20260909-v1/long-task-resume/project/RULES.md",
+        "revision": 2
+      },
+      {
+        "fingerprint": "sha256:220cdcdc179fb4e88e0952bd7b657f27cde7e34a1e9274007c519a164f3e1bd3",
+        "freshness": "fresh",
+        "id": "01M21S7N6XEZK9D9F0CRFZYEMJ",
+        "locator": "file:///Users/mac/Documents/originone/agent-work-running/.local/business-live-20260909-v1/long-task-resume/project/work-ledger.yaml",
+        "revision": 20
+      }
+    ],
+    "status": "CONTEXT COMPLETE",
+    "unresolved_required_dependencies": [],
+    "work_item_found": true,
+    "work_item_key": "WH-REVIEW",
+    "work_state_complete": true
+  },
+  "delta_after_revision": 197,
+  "diagnostic_text": null,
+  "freshness_basis": "source_refresh",
+  "goal_selection_basis": "project_primary_goal_sources",
+  "level": "L1",
+  "ok": true,
+  "omitted_refs": [],
+  "project_revision": 198,
+  "read_only": false,
+  "selection_basis": "explicit_work",
+  "session_id": "01M223E7S897SM2ADAAQ1AX25Q",
+  "source_refresh_performed": true,
+  "work_context": {
+    "context_hash": "52759342ed902efc6cdd8fc83c5c05be10326cdec65c47c5d6cbb40ea6eaaf25",
+    "identity": {
+      "branch_id": null,
+      "project_id": "01M21S7N6RNH8JE1KAP73K5576",
+      "project_key": "awr-v1/long-task-resume/awr-live-20260909-002",
+      "project_revision": 198,
+      "source_versions": [
+        {
+          "fingerprint": "sha256:d8b2a093f141e286467618caa7fc1a97ce49decc08c1b99302c901aeef41e94b",
+          "freshness": "fresh",
+          "id": "01M21S7N6SJ93T131JVHPP6KW7",
+          "locator": "file:///Users/mac/Documents/originone/agent-work-running/.local/business-live-20260909-v1/long-task-resume/project/GOALS.md",
+          "revision": 1
+        },
+        {
+          "fingerprint": "sha256:9e11cb63739d64842aa61ab2a75c170eecb2f5c2d2914841aa35df91470bd280",
+          "freshness": "fresh",
+          "id": "01M21S7N6TJXDAHBF57V7XZBC9",
+          "locator": "file:///Users/mac/Documents/originone/agent-work-running/.local/business-live-20260909-v1/long-task-resume/project/PLAN.md",
+          "revision": 1
+        },
+        {
+          "fingerprint": "sha256:f1562e163d17cbbcd5f43af3356c2d4e9076063712c010a9495c54f17466876e",
+          "freshness": "fresh",
+          "id": "01M21S7N6VC41KZQEE4P920RRP",
+          "locator": "file:///Users/mac/Documents/originone/agent-work-running/.local/business-live-20260909-v1/long-task-resume/project/RULES.md",
+          "revision": 2
+        },
+        {
+          "fingerprint": "sha256:220cdcdc179fb4e88e0952bd7b657f27cde7e34a1e9274007c519a164f3e1bd3",
+          "freshness": "fresh",
+          "id": "01M21S7N6XEZK9D9F0CRFZYEMJ",
+          "locator": "file:///Users/mac/Documents/originone/agent-work-running/.local/business-live-20260909-v1/long-task-resume/project/work-ledger.yaml",
+          "revision": 20
+        }
+      ],
+      "work_item_id": "01M21S7N6Y4AC19Z03M6G1K5TW",
+      "work_item_key": "WH-REVIEW",
+      "work_item_revision": 2
+    },
+    "omitted_chunks": [],
+    "policy": "awr.whole_chunks.v1",
+    "rendered_context": "Project: awr-v1/long-task-resume/awr-live-20260909-002 [01M21S7N6RNH8JE1KAP73K5576] r198\nWork: WH-REVIEW [01M21S7N6Y4AC19Z03M6G1K5TW] r2\nBranch: main\nSources:\n01M21S7N6SJ93T131JVHPP6KW7 r1 sha256:d8b2a093f141e286467618caa7fc1a97ce49decc08c1b99302c901aeef41e94b Fresh file:///Users/mac/Documents/originone/agent-work-running/.local/business-live-20260909-v1/long-task-resume/project/GOALS.md\n01M21S7N6TJXDAHBF57V7XZBC9 r1 sha256:9e11cb63739d64842aa61ab2a75c170eecb2f5c2d2914841aa35df91470bd280 Fresh file:///Users/mac/Documents/originone/agent-work-running/.local/business-live-20260909-v1/long-task-resume/project/PLAN.md\n01M21S7N6VC41KZQEE4P920RRP r2 sha256:f1562e163d17cbbcd5f43af3356c2d4e9076063712c010a9495c54f17466876e Fresh file:///Users/mac/Documents/originone/agent-work-running/.local/business-live-20260909-v1/long-task-resume/project/RULES.md\n01M21S7N6XEZK9D9F0CRFZYEMJ r20 sha256:220cdcdc179fb4e88e0952bd7b657f27cde7e34a1e9274007c519a164f3e1bd3 Fresh file:///Users/mac/Documents/originone/agent-work-running/.local/business-live-20260909-v1/long-task-resume/project/work-ledger.yaml\n\n## Goal\n[goal-body:goal#wh]\ngoal:01M21S7N6SFPG54D97P9EE89SH@r1\n持续整理运营手册，在接续工作后保留未决问题、材料来源和最终交付说明。\n[goal:goal#wh]\ngoal:01M21S7N6SFPG54D97P9EE89SH@r1\n望海运营手册更新\nStatus: active\nSuccess criteria:\n\n\n## Current Work\n[WH-REVIEW]\nwork_item:01M21S7N6Y4AC19Z03M6G1K5TW@r2\nStatus: \"planned\"\nRaw status: \"planned\"\nBlocker present: false\nBlocker:\n\nNext Action:\n由不同参与者独立核对v2至v3差异、六章逐章出处、三个未确认项责任影响矩阵及最终说明中的材料核对记录，并将真实发现写入deliverables/wh-independent-review.md。\n\n## Acceptance\n[acceptance]\nwork_item:01M21S7N6Y4AC19Z03M6G1K5TW@r2\n1. 独立检查恢复前后未决事项、补充要求和来源保持情况。\n2. 保留实际产物与来源引用，无法确认的内容显式说明。\n\n## Rules\n[file:///Users/mac/Documents/originone/agent-work-running/.local/business-live-20260909-v1/long-task-resume/project/RULES.md#authority]\nrule:01M21S7N6WFJ7SPRP6K5592A38@r1\nSeverity: hard\nScope: {\"type\":\"project\",\"value\":\"*\"}\n来源与交付\n\n以当前项目来源为准。未知或缺证据的内容显式保留，不将计划、样例或文件存在当作真实验收通过。\n[file:///Users/mac/Documents/originone/agent-work-running/.local/business-live-20260909-v1/long-task-resume/project/RULES.md#business]\nrule:01M21S7N6W5X4AYST0EYNMQ4KE@r1\nSeverity: hard\nScope: {\"type\":\"project\",\"value\":\"*\"}\n业务要求\n\n恢复工作前核对上次保留的交接信息；无法确认的问题保留负责人和恢复条件，不凭旧摘要宣布完成。\n[file:///Users/mac/Documents/originone/agent-work-running/.local/business-live-20260909-v1/long-task-resume/project/RULES.md#revision]\nrule:01M21YCJJ1Q8BBRE8K8CM0PD6S@r1\nSeverity: hard\nScope: {\"type\":\"project\",\"value\":\"*\"}\n追加业务要求\n\n手册每个章节必须附资料出处；仍未确认的内容要写明影响范围和负责角色；最终说明需包含一次材料核对记录。\n\n## Dependencies\n[dependency-summary]\nRequired dependencies: 0 unresolved, 3 resolved; 0 missing, 0 cycle members.\n[resolved:WH-DRAFT]\nwork_item:01M21S7N6YYPKRACNR0J5S9B3K@r9\n续做运营手册\nStatus: \"completed\"\nRaw status: \"completed\"\n[resolved:WH-LINKS]\nwork_item:01M21S7N6YMF7KH8Y9XSY0MZPG@r9\n核对手册材料来源\nStatus: \"completed\"\nRaw status: \"completed\"\n[resolved:WH-OPEN]\nwork_item:01M21S7N6YG23H4MN5NFNMRWES@r3\n整理手册未决事项\nStatus: \"completed\"\nRaw status: \"completed\"\n\n## Recent Delta\n[delta-baseline]\nAfter project revision 197 (session_start) through 198. Checkpoint: none. Important events: 0; omitted by event limit: 0.\n[folded-process-history]\nproposal.applied normal: 1 at/before baseline, 0 after\nproposal.apply_started normal: 1 at/before baseline, 0 after\nproposal.approved normal: 1 at/before baseline, 0 after\nproposal.created normal: 1 at/before baseline, 0 after\nproposal.ready normal: 1 at/before baseline, 0 after\nsession.started normal: 0 at/before baseline, 1 after\n\n## Evidence\n[evidence-gaps]\nno_evidence [WH-REVIEW]: no evidence is associated with this work\n\n## Metadata\n[branch-context]\nWork branch: main | revision: None | fork: 0 | parent: main\nGit ref at creation: unbound; recorded commit: unverified\nSource basis: shared_current_sources; git_ref is a creation observation, not a frozen source snapshot\nRuntime scope: exact_branch; no parent or sibling runtime inheritance; delta never precedes fork\n[completeness]\nCONTEXT COMPLETE\n\nCompleteness of current required context facts and associations. Known unresolved dependencies and evidence gaps are retained; this does not certify task completion, verification execution or release readiness.\n[identity]\nIntent: independent review of long-task resume, six-section draft, source matrices and sealed history\nSelection: explicit_work\nSession: 01M223E7S897SM2ADAAQ1AX25Q\nPhase: WH-DELIVERY\nTitle: 独立复核运营手册\n\nOptional chunks omitted: 0. Full details remain available through explicit queries.\n",
+    "required_tokens": 1316,
+    "selected_chunks": [
+      {
+        "entities": [
+          {
+            "id": "01M21S7N6SFPG54D97P9EE89SH",
+            "kind": "goal",
+            "revision": 1
+          }
+        ],
+        "key": "goal-body:goal#wh",
+        "required": false,
+        "section": "goal"
+      },
+      {
+        "entities": [
+          {
+            "id": "01M21S7N6SFPG54D97P9EE89SH",
+            "kind": "goal",
+            "revision": 1
+          }
+        ],
+        "key": "goal:goal#wh",
+        "required": true,
+        "section": "goal"
+      },
+      {
+        "entities": [
+          {
+            "id": "01M21S7N6Y4AC19Z03M6G1K5TW",
+            "kind": "work_item",
+            "revision": 2
+          }
+        ],
+        "key": "WH-REVIEW",
+        "required": true,
+        "section": "work"
+      },
+      {
+        "entities": [
+          {
+            "id": "01M21S7N6Y4AC19Z03M6G1K5TW",
+            "kind": "work_item",
+            "revision": 2
+          }
+        ],
+        "key": "acceptance",
+        "required": true,
+        "section": "acceptance"
+      },
+      {
+        "entities": [
+          {
+            "id": "01M21S7N6WFJ7SPRP6K5592A38",
+            "kind": "rule",
+            "revision": 1
+          }
+        ],
+        "key": "file:///Users/mac/Documents/originone/agent-work-running/.local/business-live-20260909-v1/long-task-resume/project/RULES.md#authority",
+        "required": true,
+        "section": "rules"
+      },
+      {
+        "entities": [
+          {
+            "id": "01M21S7N6W5X4AYST0EYNMQ4KE",
+            "kind": "rule",
+            "revision": 1
+          }
+        ],
+        "key": "file:///Users/mac/Documents/originone/agent-work-running/.local/business-live-20260909-v1/long-task-resume/project/RULES.md#business",
+        "required": true,
+        "section": "rules"
+      },
+      {
+        "entities": [
+          {
+            "id": "01M21YCJJ1Q8BBRE8K8CM0PD6S",
+            "kind": "rule",
+            "revision": 1
+          }
+        ],
+        "key": "file:///Users/mac/Documents/originone/agent-work-running/.local/business-live-20260909-v1/long-task-resume/project/RULES.md#revision",
+        "required": true,
+        "section": "rules"
+      },
+      {
+        "entities": [],
+        "key": "dependency-summary",
+        "required": true,
+        "section": "dependencies"
+      },
+      {
+        "entities": [
+          {
+            "id": "01M21S7N6YYPKRACNR0J5S9B3K",
+            "kind": "work_item",
+            "revision": 9
+          }
+        ],
+        "key": "resolved:WH-DRAFT",
+        "required": false,
+        "section": "dependencies"
+      },
+      {
+        "entities": [
+          {
+            "id": "01M21S7N6YMF7KH8Y9XSY0MZPG",
+            "kind": "work_item",
+            "revision": 9
+          }
+        ],
+        "key": "resolved:WH-LINKS",
+        "required": false,
+        "section": "dependencies"
+      },
+      {
+        "entities": [
+          {
+            "id": "01M21S7N6YG23H4MN5NFNMRWES",
+            "kind": "work_item",
+            "revision": 3
+          }
+        ],
+        "key": "resolved:WH-OPEN",
+        "required": false,
+        "section": "dependencies"
+      },
+      {
+        "entities": [],
+        "key": "delta-baseline",
+        "required": true,
+        "section": "delta"
+      },
+      {
+        "entities": [],
+        "key": "folded-process-history",
+        "required": false,
+        "section": "delta"
+      },
+      {
+        "entities": [],
+        "key": "evidence-gaps",
+        "required": true,
+        "section": "evidence"
+      },
+      {
+        "entities": [],
+        "key": "branch-context",
+        "required": true,
+        "section": "metadata"
+      },
+      {
+        "entities": [],
+        "key": "completeness",
+        "required": true,
+        "section": "metadata"
+      },
+      {
+        "entities": [],
+        "key": "identity",
+        "required": true,
+        "section": "metadata"
+      }
+    ],
+    "selected_entities": [
+      {
+        "id": "01M21S7N6SFPG54D97P9EE89SH",
+        "kind": "goal",
+        "revision": 1
+      },
+      {
+        "id": "01M21S7N6W5X4AYST0EYNMQ4KE",
+        "kind": "rule",
+        "revision": 1
+      },
+      {
+        "id": "01M21S7N6WFJ7SPRP6K5592A38",
+        "kind": "rule",
+        "revision": 1
+      },
+      {
+        "id": "01M21YCJJ1Q8BBRE8K8CM0PD6S",
+        "kind": "rule",
+        "revision": 1
+      },
+      {
+        "id": "01M21S7N6Y4AC19Z03M6G1K5TW",
+        "kind": "work_item",
+        "revision": 2
+      },
+      {
+        "id": "01M21S7N6YG23H4MN5NFNMRWES",
+        "kind": "work_item",
+        "revision": 3
+      },
+      {
+        "id": "01M21S7N6YMF7KH8Y9XSY0MZPG",
+        "kind": "work_item",
+        "revision": 9
+      },
+      {
+        "id": "01M21S7N6YYPKRACNR0J5S9B3K",
+        "kind": "work_item",
+        "revision": 9
+      }
+    ],
+    "token_budget": 8000,
+    "token_count_scope": "Exact o200k_base ordinary-text token count of rendered_context, including headings, references and omission footer. JSON transport/envelope, tool framing and surrounding conversation are excluded. Counts for other model tokenizers may differ; no cross-tokenizer error bound is claimed.",
+    "token_estimate": 1624,
+    "tokenizer": "o200k_base"
+  }
+}

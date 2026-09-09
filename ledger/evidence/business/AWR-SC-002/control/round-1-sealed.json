@@ -1,0 +1,52 @@
+{
+  "kind": "actual_client_turn_snapshot",
+  "recorded_at": "2026-09-09T09:58:34+08:00",
+  "phase": "round-1",
+  "client": "Codex CLI",
+  "client_task_id": "01a083b2-ae71-77a3-9cc9-977b6c656d5a",
+  "actual_user_turn": {
+    "timestamp": "2026-09-09T01:33:11.577Z",
+    "text": "先补齐上次遗留的问题，并解释现在的推进顺序。"
+  },
+  "input_sha256": "7d54b6f36ad87498c668e21a07cdb8e4bbf38774f6632c4047c3821b1b045949",
+  "events_local": ".local/business-live-20260909-v1/long-task-resume/control/round-1-events.jsonl",
+  "events_sha256": "4d43aa87aaadcda3a29a373d15002c8c5b11b8d18a246464948548c70074d907",
+  "native_transcript_snapshot_local": ".local/business-live-20260909-v1/long-task-resume/control/round-1-snapshot/native-transcript.jsonl",
+  "native_transcript_snapshot_sha256": "432ab6cec077d312df0a6baae52cd0bdf8f2f4dd61c38d8513529b24f6d2f225",
+  "final_message_sha256": "4cd0bf162c7a1dd6066b1706ef8fd36f88782d032d1464efb0ea410e92f02635",
+  "project_sources_sha256": {
+    "project.toml": "02d22a76b106eef5c6b752142c15f711d3aae88e6a863fe49e765eb684a86550",
+    "GOALS.md": "d8b2a093f141e286467618caa7fc1a97ce49decc08c1b99302c901aeef41e94b",
+    "PLAN.md": "9e11cb63739d64842aa61ab2a75c170eecb2f5c2d2914841aa35df91470bd280",
+    "RULES.md": "13834a21aea934aa9f64cca6c104d8c043b1d7eb200887cb383907b4388519cb",
+    "work-ledger.yaml": "4a0a6ffd8d870d3068c1f1d9af9259602bb79053c9a1e32da86a701b6da970ed",
+    "AGENTS.md": "d0ca28ca18c438aefdada6a14cb847a0664e261f9e8e48abbfd8701720eb66a2",
+    "DELIVERABLES.md": "4de563d6b69d87d778a9d0a3f42b344dc9451660a04e255291f52ad9f6426070"
+  },
+  "artifacts_sha256": {
+    "deliverables/wanghai-before-handoff.md": "f4c58c9422f8452f3c0bd148859be94d2ecceebe670fe7c62c21401292773efc",
+    "deliverables/wanghai-operations-manual-draft-v2.md": "16011e71b8d4bb2b0f588c93b325f07491b3d33bea4052c89ad6c751bbe65438",
+    "deliverables/wanghai-operations-manual-draft.md": "813bd164add4ed663223d083e56b76a9f57a2c372906236bcad713712c2b0545",
+    "deliverables/wanghai-progress-handoff-v2.md": "9ed1028c36b4fa525424f79bb17aa61157384582961dd34ad7743ee9cd93d341",
+    "deliverables/wanghai-progress-handoff.md": "b4b606c662296ebd99c4d695395f4a0d26f73a773bc5c848749324945c70add6",
+    "deliverables/wanghai-resumed-work.md": "c143afbe7e3c32d61c1e31587407cfb42b322b8fab483a29efea719996dd1576",
+    "deliverables/wanghai-source-verification-v2.md": "9019b11cf6558543b2741a63870556a166dfc2daac8abebdf75f2427f8857892",
+    "deliverables/wanghai-source-verification.md": "9a34cdefb4a0aa684a70f7d79d958680f9512ca2a4b79ce1371536e95dcf2e19",
+    "deliverables/wh-draft-verification-v2.json": "37ee738b5a56e89b78c29815b17c240eeef8d60e719bc84d838260bd1963bbd0",
+    "deliverables/wh-draft-verification-v3.json": "e7bbe796454248849ee1a93b6750c0d8ac1cf861a3d68c88d131c3c972c7567a",
+    "deliverables/wh-draft-verification.json": "ebef64ab02af1e8672ce2eec3be33c22579016a539fa6ddfc24e562025d94b81",
+    "deliverables/wh-links-verification-v2.json": "e5aa76db0afeb13b126a0a0904cf8936d29382b63a099456c54dc7818cd08648",
+    "deliverables/wh-links-verification.json": "a665ab6df2836b6f4698b865b5a9577a171c7f84f058ed3e138d3ffb08ea09ec",
+    "deliverables/wh-open-verification.json": "ae6caa1ef895209bc5a1468cb7379da5f29d810f3d78f66a076160531e8c43a6"
+  },
+  "tool_event_counts": {
+    "agent_message": 11,
+    "command_execution": 73,
+    "file_change": 26,
+    "error": 1
+  },
+  "command_executions": 73,
+  "nonzero_commands": 1,
+  "snapshot_local": ".local/business-live-20260909-v1/long-task-resume/control/round-1-snapshot",
+  "e4_completion_claim": false
+}

@@ -1,0 +1,35 @@
+{
+  "event_id": "01M224CZRNNZ4PFMASM142472W",
+  "evidence": {
+    "branch_id": null,
+    "command": "rtk python3 .work-receipts/reviewer-final-verify.py",
+    "evidence_type": "report",
+    "external_key": "WH-REVIEW-INDEPENDENT-VERIFY-20260909",
+    "id": "01M224CZRN5JYB3K02ECQCYS2Q",
+    "level": "locally_verified",
+    "locator": ".work-receipts/reviewer-final-verification.json",
+    "project_id": "01M21S7N6RNH8JE1KAP73K5576",
+    "revision": 1,
+    "scope": [
+      "WH-REVIEW",
+      "deliverables/wh-independent-review.md",
+      "review-inputs/",
+      ".work-receipts/WH-DRAFT-session-resume-r36.json",
+      "deliverables/wanghai-operations-manual-draft-v3.md",
+      "deliverables/wanghai-source-verification-v3.md",
+      "deliverables/wanghai-progress-handoff-v3.md",
+      "deliverables/wanghai-final-delivery.md"
+    ],
+    "sha256": "04268459d7cf253d65a4c589844329c95eaeb784aae732de375194a5f183ecbe",
+    "source_ref": null,
+    "source_sha": "f9c654a16e66079e1e47558860dbc411b622c3fd",
+    "summary": "独立复核已核验真实恢复链、三轮修订、六章出处、责任影响矩阵和交付候选边界；业务范围有条件通过，范围偏离和工具失败继续披露",
+    "verified_at": 1788925584792,
+    "work_item_id": "01M21S7N6Y4AC19Z03M6G1K5TW"
+  },
+  "freshness_basis": "source_refresh",
+  "ok": true,
+  "project_revision": 206,
+  "source_refresh_performed": true,
+  "validation_basis": "caller_supplied_bindings"
+}

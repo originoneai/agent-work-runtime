@@ -1,0 +1,22 @@
+{
+  "event": {
+    "artifact_id": null,
+    "branch_id": null,
+    "checkpoint_id": null,
+    "created_at": 1788919989445,
+    "id": "01M21Z1H65RKYQASN51M4HB3GC",
+    "importance": "normal",
+    "project_id": "01M21S7N6RNH8JE1KAP73K5576",
+    "project_revision": 170,
+    "session_id": null,
+    "source_id": "01M21S7N6XEZK9D9F0CRFZYEMJ",
+    "summary": "Verified source work action Complete",
+    "type": "work.completed",
+    "work_item_id": "01M21S7N6YYPKRACNR0J5S9B3K"
+  },
+  "freshness_basis": "runtime_database",
+  "ok": true,
+  "payload_included": false,
+  "project_revision": 197,
+  "source_refresh_performed": false
+}

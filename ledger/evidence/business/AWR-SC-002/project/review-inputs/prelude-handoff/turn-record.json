@@ -1,0 +1,28 @@
+{
+  "kind": "actual_prior_business_turn",
+  "phase": "prelude-handoff",
+  "client_task_id": "01a08392-3f62-74a0-b844-087b9ef0b1c1",
+  "actual_user_turn": {
+    "timestamp": "2026-09-09T00:51:01.221Z",
+    "text": "先在这里暂停。请把这一轮已经完成的内容、尚未确认的问题和下一位接手时的推进顺序整理成正式交接记录，留给下一次工作接续。"
+  },
+  "source_sha256": {
+    "project.toml": "02d22a76b106eef5c6b752142c15f711d3aae88e6a863fe49e765eb684a86550",
+    "GOALS.md": "d8b2a093f141e286467618caa7fc1a97ce49decc08c1b99302c901aeef41e94b",
+    "PLAN.md": "9e11cb63739d64842aa61ab2a75c170eecb2f5c2d2914841aa35df91470bd280",
+    "RULES.md": "13834a21aea934aa9f64cca6c104d8c043b1d7eb200887cb383907b4388519cb",
+    "work-ledger.yaml": "2a02c10d466982930bf6ba138f31f53a08cca612da03d7818382ece4f5787768",
+    "AGENTS.md": "d0ca28ca18c438aefdada6a14cb847a0664e261f9e8e48abbfd8701720eb66a2",
+    "DELIVERABLES.md": "5ca2e306f5c683830d4df4408fec979d25cb2b1dac69e71619e06c450e4f1d7a"
+  },
+  "artifact_sha256": {
+    "deliverables/wanghai-before-handoff.md": "f4c58c9422f8452f3c0bd148859be94d2ecceebe670fe7c62c21401292773efc",
+    "deliverables/wanghai-resumed-work.md": "c143afbe7e3c32d61c1e31587407cfb42b322b8fab483a29efea719996dd1576",
+    "deliverables/wh-open-verification.json": "ae6caa1ef895209bc5a1468cb7379da5f29d810f3d78f66a076160531e8c43a6"
+  },
+  "native_transcript_sha256": "73d3d30657aa5862f8aa6d6b972241018d88a0daad7bdb605bb0d73f6b916922",
+  "events_sha256": "f995bcf542df450cfad91e4e99c9008e0a70351f67dbe7032b410caeec7bef43",
+  "sealed_at": "2026-09-09T09:05:19+08:00",
+  "final_message": "已正式暂停并完成交接。\n\n正式记录在 [wanghai-before-handoff.md](/Users/mac/Documents/originone/agent-work-running/.local/business-live-20260909-v1/long-task-resume/project/deliverables/wanghai-before-handoff.md:1)，包含：\n\n- 本轮已完成内容及证据边界\n- 6 类尚未确认的问题与恢复条件\n- 下一位接手后的四阶段推进顺序\n- 工作区、独立复核和最终交付边界\n\nAWR 检查点为 `01M21TKFJDEA7YW3E0E4ST7ASA`，[交接回执](/Users/mac/Documents/originone/agent-work-running/.local/business-live-20260909-v1/long-task-resume/project/.work-receipts/WH-DRAFT-handoff.json:1) 已保存。当前 revision 为 `35`，认领已释放，`WH-DRAFT` 保持 `planned` 且可接续。Doctor 检查无异常，改动尚未提交。",
+  "note": "Copied historical evidence, not newly authored business output or a review conclusion."
+}

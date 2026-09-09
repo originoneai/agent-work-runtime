@@ -1,0 +1,49 @@
+{
+  "claim": {
+    "acquired_at": 1788915126472,
+    "agent_id": "codex-root",
+    "branch_id": null,
+    "expires_at": 1788918726472,
+    "id": "01M21TD469AZSYZJRHJ0VRET4Y",
+    "project_id": "01M21S7N6RNH8JE1KAP73K5576",
+    "released_at": null,
+    "revision": 1,
+    "session_id": "01M21TD468G8SZDJTQ2WT287TA",
+    "status": "active",
+    "work_item_id": "01M21S7N6YYPKRACNR0J5S9B3K"
+  },
+  "event": {
+    "artifact_id": null,
+    "branch_id": null,
+    "checkpoint_id": null,
+    "created_at": 1788915126473,
+    "id": "01M21TD469WTR75PE1W27A04A8",
+    "importance": "normal",
+    "project_revision": 32,
+    "session_id": "01M21TD468G8SZDJTQ2WT287TA",
+    "source_id": null,
+    "summary": "Started agent work session",
+    "type": "session.started",
+    "work_item_id": "01M21S7N6YYPKRACNR0J5S9B3K"
+  },
+  "freshness_basis": "source_refresh",
+  "ok": true,
+  "project_revision": 32,
+  "session": {
+    "agent_id": "codex-root",
+    "branch_id": null,
+    "end_project_revision": null,
+    "ended_at": null,
+    "id": "01M21TD468G8SZDJTQ2WT287TA",
+    "last_checkpoint_id": null,
+    "model": "gpt-5",
+    "project_id": "01M21S7N6RNH8JE1KAP73K5576",
+    "provider": "openai",
+    "revision": 1,
+    "start_project_revision": 31,
+    "started_at": 1788915126472,
+    "status": "active",
+    "work_item_id": "01M21S7N6YYPKRACNR0J5S9B3K"
+  },
+  "source_refresh_performed": true
+}

@@ -1,0 +1,22 @@
+{
+  "blocked_count": 0,
+  "branch_id": null,
+  "counts": {
+    "completed": 5
+  },
+  "current": [],
+  "current_total": 0,
+  "freshness_basis": "source_refresh",
+  "next_action": "No nonterminal work remains in current source projections.",
+  "ok": true,
+  "project": "望海运营手册更新",
+  "project_id": "01M21S7N6RNH8JE1KAP73K5576",
+  "project_revision": 238,
+  "read_only": false,
+  "ready_count": 0,
+  "source_issues": [],
+  "source_refresh_performed": true,
+  "source_warnings": 0,
+  "suggested_work": null,
+  "total": 5
+}

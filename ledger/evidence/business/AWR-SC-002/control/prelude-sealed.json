@@ -1,0 +1,40 @@
+{
+  "kind": "actual_client_turn_snapshot",
+  "recorded_at": "2026-09-09T08:50:57+08:00",
+  "phase": "prelude",
+  "client": "Codex CLI",
+  "client_task_id": "01a08392-3f62-74a0-b844-087b9ef0b1c1",
+  "actual_user_turn": {
+    "timestamp": "2026-09-09T00:30:01.250Z",
+    "text": "请先梳理这份运营手册的缺口，做一轮整理，并把当前进展、未决问题和下次可以继续的事情留下来。"
+  },
+  "input_sha256": "033ba198ad0595221462c6b2697bfbbe20f62a429638771ec29712f6c72ccf59",
+  "events_local": ".local/business-live-20260909-v1/long-task-resume/control/prelude-events.jsonl",
+  "events_sha256": "42f760d6840ba5c1b16e1b4594d604e63585432a0dfaec9dc79c0a371e0f5c2a",
+  "native_transcript_snapshot_local": ".local/business-live-20260909-v1/long-task-resume/control/prelude-snapshot/native-transcript.jsonl",
+  "native_transcript_snapshot_sha256": "eddc44a43741b5b4c32e561add27dfcc44c6841f367dccab1fd340cf34822e69",
+  "final_message_sha256": "bd190d8584aa8ad8da7da3fc9e7ef28f459a909270c72e9fbd161b6a6e76e021",
+  "project_sources_sha256": {
+    "project.toml": "02d22a76b106eef5c6b752142c15f711d3aae88e6a863fe49e765eb684a86550",
+    "GOALS.md": "d8b2a093f141e286467618caa7fc1a97ce49decc08c1b99302c901aeef41e94b",
+    "PLAN.md": "9e11cb63739d64842aa61ab2a75c170eecb2f5c2d2914841aa35df91470bd280",
+    "RULES.md": "13834a21aea934aa9f64cca6c104d8c043b1d7eb200887cb383907b4388519cb",
+    "work-ledger.yaml": "2a02c10d466982930bf6ba138f31f53a08cca612da03d7818382ece4f5787768",
+    "AGENTS.md": "d0ca28ca18c438aefdada6a14cb847a0664e261f9e8e48abbfd8701720eb66a2",
+    "DELIVERABLES.md": "5ca2e306f5c683830d4df4408fec979d25cb2b1dac69e71619e06c450e4f1d7a"
+  },
+  "artifacts_sha256": {
+    "deliverables/wanghai-resumed-work.md": "c143afbe7e3c32d61c1e31587407cfb42b322b8fab483a29efea719996dd1576",
+    "deliverables/wh-open-verification.json": "ae6caa1ef895209bc5a1468cb7379da5f29d810f3d78f66a076160531e8c43a6"
+  },
+  "tool_event_counts": {
+    "error": 1,
+    "agent_message": 10,
+    "command_execution": 69,
+    "file_change": 10
+  },
+  "command_executions": 69,
+  "nonzero_commands": 1,
+  "snapshot_local": ".local/business-live-20260909-v1/long-task-resume/control/prelude-snapshot",
+  "e4_completion_claim": false
+}

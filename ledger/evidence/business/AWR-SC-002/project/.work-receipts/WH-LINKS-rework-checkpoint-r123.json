@@ -1,0 +1,54 @@
+{
+  "checkpoint": {
+    "changed_entities": [
+      "work_items:01M21S7N6YMF7KH8Y9XSY0MZPG"
+    ],
+    "context_hash": "64922f1a12bc6219156a32c49663565c7df68a5b8823eaba43284c47413be8af",
+    "created_at": 1788918665971,
+    "digest": "已按duty-notes.md重核三个章节：GAP-01、03、04部分补充，GAP-02、05、06、07未补充，七项均未完全关闭。",
+    "id": "01M21XS4QKXQNCXWYY517GWB9K",
+    "next_action": "依据新登记证据重新完成WH-LINKS，形成v2阶段交接后移交不同参与者执行WH-REVIEW。",
+    "open_loops": [
+      "当班协调者和资料管理员的具体人员、联系渠道与替代安排仍缺失。",
+      "启动检查草稿、早班记录、四条FAQ和实际操作说明入口仍缺失。",
+      "完整异常升级和晚班剩余规则仍未确认。",
+      "手册维护、批准与独立复核角色仍未指定。"
+    ],
+    "project_revision": 121,
+    "revision": 1,
+    "session_id": "01M21XCT13A17284ERY23TT4NP"
+  },
+  "checkpoint_save": {
+    "after_revision": 112,
+    "attempt_id": "01M21XS4QJZZ6FXC3R5FF7JQ68",
+    "delta_bytes": 3784,
+    "delta_recorded": true,
+    "event_id": "01M21XS4QKNW0EZP7ZRT60S843",
+    "observed_changed_entity_count": 1,
+    "reported_changed_entity_count": 3,
+    "session_event_count": 2,
+    "source_observation_count": 2,
+    "through_revision": 121
+  },
+  "context_hash_basis": "caller_supplied_last_used_context",
+  "context_hash_verified": false,
+  "event": {
+    "artifact_id": null,
+    "branch_id": null,
+    "checkpoint_id": "01M21XS4QKXQNCXWYY517GWB9K",
+    "created_at": 1788918665971,
+    "id": "01M21XS4QKNW0EZP7ZRT60S843",
+    "importance": "normal",
+    "project_revision": 123,
+    "session_id": "01M21XCT13A17284ERY23TT4NP",
+    "source_id": null,
+    "summary": "Saved session checkpoint and observed delta",
+    "type": "checkpoint.created",
+    "work_item_id": "01M21S7N6YMF7KH8Y9XSY0MZPG"
+  },
+  "freshness_basis": "source_refresh",
+  "ok": true,
+  "project_revision": 123,
+  "save_status": "completed",
+  "source_refresh_performed": true
+}

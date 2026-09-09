@@ -1,0 +1,23 @@
+{
+  "external_key": "WH-REVIEW-INDEPENDENT-VERIFY-V3-20260909",
+  "work_item_key": "WH-REVIEW",
+  "evidence_type": "report",
+  "level": "locally_verified",
+  "summary": "独立复核验证报告逐条映射WH-REVIEW验收；恢复链、三轮修订、六章出处、责任影响矩阵和候选边界通过，过程偏离与失败继续披露",
+  "locator": ".work-receipts/reviewer-final-verification.json",
+  "sha256": "1b573e2d59670b697440f077a0753bc1012ae10a67466da63dd4eaac34483bc8",
+  "source_sha": "f9c654a16e66079e1e47558860dbc411b622c3fd",
+  "command": "rtk python3 .work-receipts/reviewer-final-verify.py",
+  "scope": [
+    "WH-REVIEW",
+    "deliverables/wh-independent-review.md",
+    "review-inputs/",
+    ".work-receipts/WH-DRAFT-session-resume-r36.json",
+    "deliverables/wanghai-operations-manual-draft-v3.md",
+    "deliverables/wanghai-source-verification-v3.md",
+    "deliverables/wanghai-progress-handoff-v3.md",
+    "deliverables/wanghai-final-delivery.md"
+  ],
+  "branch_id": null,
+  "verified_at": 1788925785886
+}

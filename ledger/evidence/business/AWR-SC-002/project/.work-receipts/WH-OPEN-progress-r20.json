@@ -1,0 +1,108 @@
+{
+  "ok": true,
+  "code": "proposal_recorded",
+  "project_revision": 20,
+  "proposal": {
+    "id": "01M21SD9A1ET5141TGHPF71CVA",
+    "project_id": "01M21S7N6RNH8JE1KAP73K5576",
+    "work_item_id": "01M21S7N6YG23H4MN5NFNMRWES",
+    "source_id": "01M21S7N6XEZK9D9F0CRFZYEMJ",
+    "base_fingerprint": "sha256:d60e43069991e62f422a96ef628f05265c87942ece508147a273ef2a2c459e6e",
+    "expected_revision": 13,
+    "mutation_type": "work.progress",
+    "patch": {
+      "changes": {
+        "next_action": "形成恢复工作记录，列明职责、资料链接、晚班交接缺口及恢复条件。",
+        "status": "in_progress",
+        "summary": "权威来源已核对，缺口整理已开始"
+      },
+      "intent": "已核对权威来源，开始整理缺口与接续记录",
+      "source_config": {
+        "adapter_options": {},
+        "adapter_version": 1,
+        "mapping_key": "ledger|work-ledger.yaml"
+      },
+      "target": {
+        "kind": "work_item",
+        "meta": {
+          "external_key": "WH-OPEN",
+          "id": "01M21S7N6YG23H4MN5NFNMRWES",
+          "revision": 1,
+          "source_ref": {
+            "end_line": null,
+            "locator": "file:///Users/mac/Documents/originone/agent-work-running/.local/business-live-20260909-v1/long-task-resume/project/work-ledger.yaml",
+            "pointer": "/work_items/0",
+            "section_fingerprint": null,
+            "source_fingerprint": "sha256:d60e43069991e62f422a96ef628f05265c87942ece508147a273ef2a2c459e6e",
+            "source_id": "01M21S7N6XEZK9D9F0CRFZYEMJ",
+            "source_revision": 1,
+            "start_line": null
+          }
+        }
+      },
+      "version": 1,
+      "work_action": {
+        "action": "progress",
+        "from": "ready",
+        "to": "in_progress"
+      }
+    },
+    "status": "applied",
+    "created_by_session": "01M21SAM5MZM97M6E98E9JH2E8",
+    "revision": 5
+  },
+  "event": {
+    "id": "01M21SD9B819S2JD8WR45XMWSM",
+    "project_id": "01M21S7N6RNH8JE1KAP73K5576",
+    "work_item_id": "01M21S7N6YG23H4MN5NFNMRWES",
+    "session_id": null,
+    "branch_id": null,
+    "event_type": "work.progressed",
+    "importance": "normal",
+    "summary": "Verified source work action Progress",
+    "payload": {
+      "action_reason": "已核对权威来源，开始整理缺口与接续记录",
+      "actor": "codex-root",
+      "after_fingerprint": "sha256:0d7b7f59cfc4e513b7bfbd661778bdd373d0c8f92cf3050ae83cc2838f2c8123",
+      "attempt_event_id": "01M21SD9AQZ8Q9GD7RB637PBPT",
+      "before_fingerprint": "sha256:d60e43069991e62f422a96ef628f05265c87942ece508147a273ef2a2c459e6e",
+      "creating_session_id": "01M21SAM5MZM97M6E98E9JH2E8",
+      "proposal_id": "01M21SD9A1ET5141TGHPF71CVA",
+      "reason": "已核对权威来源，开始整理缺口与接续记录",
+      "released_claim_ids": [],
+      "source_id": "01M21S7N6XEZK9D9F0CRFZYEMJ",
+      "source_revision": 2,
+      "target_after_hash": "287ec56fa1aef2c0788a4e668429cf377f9bc852544eee39a6519dbef8eaecee",
+      "target_revision": 2,
+      "work_action": {
+        "action": "progress",
+        "from": "ready",
+        "to": "in_progress"
+      },
+      "write_plan_id": "01M21SD9A8JM4F1N61YTPEGXVG"
+    },
+    "project_revision": 20,
+    "created_at": 1788914083176
+  },
+  "source_refresh_performed": true,
+  "source_write_performed": true,
+  "write_outcome": "applied",
+  "apply_attempt": {
+    "event_id": "01M21SD9AQZ8Q9GD7RB637PBPT",
+    "proposal_id": "01M21SD9A1ET5141TGHPF71CVA",
+    "source_id": "01M21S7N6XEZK9D9F0CRFZYEMJ",
+    "project_revision": 17,
+    "plan": {
+      "id": "01M21SD9A8JM4F1N61YTPEGXVG",
+      "before_fingerprint": "sha256:d60e43069991e62f422a96ef628f05265c87942ece508147a273ef2a2c459e6e",
+      "after_fingerprint": "sha256:0d7b7f59cfc4e513b7bfbd661778bdd373d0c8f92cf3050ae83cc2838f2c8123",
+      "before_size": 2411,
+      "after_size": 2507,
+      "target_after_hash": "287ec56fa1aef2c0788a4e668429cf377f9bc852544eee39a6519dbef8eaecee"
+    },
+    "resolved_event_id": "01M21SD9B819S2JD8WR45XMWSM"
+  },
+  "recovery_directory": ".awr/mutations/01M21SD9A8JM4F1N61YTPEGXVG",
+  "source_check": null,
+  "error": null
+}

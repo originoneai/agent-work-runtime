@@ -1,0 +1,40 @@
+{
+  "version": 1,
+  "work_item": "WH-LINKS",
+  "source_sha": "f9c654a16e66079e1e47558860dbc411b622c3fd",
+  "command": "rtk rg -n 'duty-notes|新增材料对遗留问题的影响|GAP-0[1-7].*部分补充|GAP-0[1-7/].*未补充|七项缺口|仍需确认' deliverables/wanghai-source-verification-v2.md",
+  "scope": [
+    "WH-LINKS",
+    "deliverables/wanghai-source-verification-v2.md",
+    "deliverables/wanghai-operations-manual-draft-v2.md",
+    "materials/duty-notes.md"
+  ],
+  "verified_at": 1788918558000,
+  "artifact": {
+    "locator": "deliverables/wanghai-source-verification-v2.md",
+    "sha256": "9019b11cf6558543b2741a63870556a166dfc2daac8abebdf75f2427f8857892"
+  },
+  "checks": [
+    {
+      "name": "新增材料与三章来源重核",
+      "passed": true,
+      "details": "新版核对记录覆盖每日启动检查、值班交接和常见问题处理。duty-notes.md对每日启动检查无新增内容；对值班交接支持当班协调者职责和晚班影响范围字段；对FAQ支持资料管理员职责。",
+      "criteria": [
+        "检查三个章节的材料引用和仍需确认的问题。"
+      ]
+    },
+    {
+      "name": "新旧产物、引用和未知项",
+      "passed": true,
+      "details": "三份materials文件、新旧工作稿及旧核对记录哈希均已绑定并匹配；本地Markdown引用均可定位。GAP-01、GAP-03、GAP-04只标为部分补充，GAP-02、GAP-05、GAP-06、GAP-07仍未补充。",
+      "criteria": [
+        "保留实际产物与来源引用，无法确认的内容显式说明。"
+      ]
+    },
+    {
+      "name": "完成边界和独立性",
+      "passed": true,
+      "details": "核对记录明确七项缺口均未完全关闭，WH-LINKS完成不代表材料齐全、链接有效或手册可执行；未生成独立复核文件，旧核对记录哈希保持不变，git diff --check无输出。"
+    }
+  ]
+}

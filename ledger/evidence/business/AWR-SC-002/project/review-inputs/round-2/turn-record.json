@@ -1,0 +1,45 @@
+{
+  "kind": "actual_prior_business_turn",
+  "phase": "round-2",
+  "client_task_id": "01a083b2-ae71-77a3-9cc9-977b6c656d5a",
+  "actual_user_turn": {
+    "timestamp": "2026-09-09T02:00:40.691Z",
+    "text": "我补充了验收要求，请据此调整下一步并给出最终交付说明。"
+  },
+  "source_sha256": {
+    "project.toml": "02d22a76b106eef5c6b752142c15f711d3aae88e6a863fe49e765eb684a86550",
+    "GOALS.md": "d8b2a093f141e286467618caa7fc1a97ce49decc08c1b99302c901aeef41e94b",
+    "PLAN.md": "9e11cb63739d64842aa61ab2a75c170eecb2f5c2d2914841aa35df91470bd280",
+    "RULES.md": "f1562e163d17cbbcd5f43af3356c2d4e9076063712c010a9495c54f17466876e",
+    "work-ledger.yaml": "220cdcdc179fb4e88e0952bd7b657f27cde7e34a1e9274007c519a164f3e1bd3",
+    "AGENTS.md": "d0ca28ca18c438aefdada6a14cb847a0664e261f9e8e48abbfd8701720eb66a2",
+    "DELIVERABLES.md": "7a13bfc34d17ca7151b7f05a4925b2c24b4d8aa82eacb81e2ee3bf35cd875ffa"
+  },
+  "artifact_sha256": {
+    "deliverables/wanghai-before-handoff.md": "f4c58c9422f8452f3c0bd148859be94d2ecceebe670fe7c62c21401292773efc",
+    "deliverables/wanghai-final-delivery.md": "ad31de837d2d7be3d2cb22fb6cc8acf2de55b3ddc7ae4cb1a1c5c4765bec48f0",
+    "deliverables/wanghai-operations-manual-draft-v2.md": "16011e71b8d4bb2b0f588c93b325f07491b3d33bea4052c89ad6c751bbe65438",
+    "deliverables/wanghai-operations-manual-draft-v3.md": "b09950015623422d6ae287dd6295abbd83b6ea47970f7da64835d3957f222e68",
+    "deliverables/wanghai-operations-manual-draft.md": "813bd164add4ed663223d083e56b76a9f57a2c372906236bcad713712c2b0545",
+    "deliverables/wanghai-progress-handoff-v2.md": "9ed1028c36b4fa525424f79bb17aa61157384582961dd34ad7743ee9cd93d341",
+    "deliverables/wanghai-progress-handoff-v3.md": "526fe9513c657c927ff71a6d887f353508612ab0b29b2afe32ba7f8d2feb3bff",
+    "deliverables/wanghai-progress-handoff.md": "b4b606c662296ebd99c4d695395f4a0d26f73a773bc5c848749324945c70add6",
+    "deliverables/wanghai-resumed-work.md": "c143afbe7e3c32d61c1e31587407cfb42b322b8fab483a29efea719996dd1576",
+    "deliverables/wanghai-source-verification-v2.md": "9019b11cf6558543b2741a63870556a166dfc2daac8abebdf75f2427f8857892",
+    "deliverables/wanghai-source-verification-v3.md": "267dae9476a283a3bdaeb2539a9912e1849294e22db5bb16d300ae3f5459dbba",
+    "deliverables/wanghai-source-verification.md": "9a34cdefb4a0aa684a70f7d79d958680f9512ca2a4b79ce1371536e95dcf2e19",
+    "deliverables/wh-draft-verification-v2.json": "37ee738b5a56e89b78c29815b17c240eeef8d60e719bc84d838260bd1963bbd0",
+    "deliverables/wh-draft-verification-v3.json": "e7bbe796454248849ee1a93b6750c0d8ac1cf861a3d68c88d131c3c972c7567a",
+    "deliverables/wh-draft-verification-v4.json": "65dae1927fad7215977afe3a8edff2a0f660c2aabacfee9740643db6f4b7ec4e",
+    "deliverables/wh-draft-verification.json": "ebef64ab02af1e8672ce2eec3be33c22579016a539fa6ddfc24e562025d94b81",
+    "deliverables/wh-links-verification-v2.json": "e5aa76db0afeb13b126a0a0904cf8936d29382b63a099456c54dc7818cd08648",
+    "deliverables/wh-links-verification-v3.json": "4838dac3de5c53bb1ff0158904d0b7830c2731eaf5984e2606f9a2e60c57df1e",
+    "deliverables/wh-links-verification.json": "a665ab6df2836b6f4698b865b5a9577a171c7f84f058ed3e138d3ffb08ea09ec",
+    "deliverables/wh-open-verification.json": "ae6caa1ef895209bc5a1468cb7379da5f29d810f3d78f66a076160531e8c43a6"
+  },
+  "native_transcript_sha256": "c24905c2a6e484e0aa37e8f08f133c6d2d44c78382cceffeaff15fe29ae03119",
+  "events_sha256": "06a7dce047ad40206a5b136e0e73093f95cee96e32754de8a871cb74d2aed897",
+  "sealed_at": "2026-09-09T10:32:46+08:00",
+  "final_message": "已按新增验收要求完成调整。当前最终判定是：**交付候选已准备，最终交付仍待独立复核及意见处理。**\n\n本轮完成了：\n\n- 六个手册章节均紧邻附有资料出处。\n- 三个业务章节均增加“未确认内容—影响范围—负责角色—恢复条件”矩阵。\n- 最终交付说明内已包含材料核对记录。\n- 保留 v2 不变，新增 v3 并单独绑定证据，避免覆盖历史成果。\n- AWR 已将下一步精确调整为独立复核。\n\n主要交付物：\n\n- [运营手册工作稿 v3](/Users/mac/Documents/originone/agent-work-running/.local/business-live-20260909-v1/long-task-resume/project/deliverables/wanghai-operations-manual-draft-v3.md:1)\n- [材料来源核对 v3](/Users/mac/Documents/originone/agent-work-running/.local/business-live-20260909-v1/long-task-resume/project/deliverables/wanghai-source-verification-v3.md:1)\n- [最终交付说明](/Users/mac/Documents/originone/agent-work-running/.local/business-live-20260909-v1/long-task-resume/project/deliverables/wanghai-final-delivery.md:1)\n- [验收调整交接记录 v3](/Users/mac/Documents/originone/agent-work-running/.local/business-live-20260909-v1/long-task-resume/project/deliverables/wanghai-progress-handoff-v3.md:1)\n- [AWR 最终状态回执](/Users/mac/Documents/originone/agent-work-running/.local/business-live-20260909-v1/long-task-resume/project/.work-receipts/WH-ACCEPTANCE-final-status-r197.json:1)\n\n下一步已调整为：由另一位参与者认领 `WH-REVIEW`，独立检查 v2→v3 差异、六章出处、三个责任影响矩阵及最终说明中的材料核对记录，并形成 `wh-independent-review.md`。复核发现需先处理；复核完成后才能启动 `WH-DELIVER`。\n\n当前 AWR revision 为 `197`，完成 `3/5`；`WH-REVIEW` 是唯一就绪项且无人认领，`WH-DELIVER` 仍被它阻塞。七项业务缺口仍无一完全关闭，证据等级仍为 `locally_verified`，尚不能宣称正式生效或最终验收通过。",
+  "note": "Copied historical evidence, not newly authored business output or a review conclusion."
+}

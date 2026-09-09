@@ -1,0 +1,203 @@
+{
+  "ok": true,
+  "code": "proposal_recorded",
+  "project_revision": 130,
+  "proposal": {
+    "id": "01M21XSJCNZ4HGH071PXRV4SK1",
+    "project_id": "01M21S7N6RNH8JE1KAP73K5576",
+    "work_item_id": "01M21S7N6YMF7KH8Y9XSY0MZPG",
+    "source_id": "01M21S7N6XEZK9D9F0CRFZYEMJ",
+    "base_fingerprint": "sha256:d48be1390dcf9e50e86eac092a910db64d45793f14175c4d7276b8e343bc8633",
+    "expected_revision": 123,
+    "mutation_type": "work.complete",
+    "patch": {
+      "changes": {
+        "evidence": [
+          "deliverables/wh-links-verification.json",
+          "deliverables/wh-links-verification-v2.json"
+        ],
+        "status": "completed",
+        "verification": {
+          "evidence_level": "locally_verified"
+        }
+      },
+      "intent": "新增职责材料已在三章中重核，部分补充与未补充项均绑定实际来源和恢复条件",
+      "source_config": {
+        "adapter_options": {},
+        "adapter_version": 1,
+        "mapping_key": "ledger|work-ledger.yaml"
+      },
+      "target": {
+        "kind": "work_item",
+        "meta": {
+          "external_key": "WH-LINKS",
+          "id": "01M21S7N6YMF7KH8Y9XSY0MZPG",
+          "revision": 5,
+          "source_ref": {
+            "end_line": null,
+            "locator": "file:///Users/mac/Documents/originone/agent-work-running/.local/business-live-20260909-v1/long-task-resume/project/work-ledger.yaml",
+            "pointer": "/work_items/2",
+            "section_fingerprint": null,
+            "source_fingerprint": "sha256:d48be1390dcf9e50e86eac092a910db64d45793f14175c4d7276b8e343bc8633",
+            "source_id": "01M21S7N6XEZK9D9F0CRFZYEMJ",
+            "source_revision": 12,
+            "start_line": null
+          }
+        }
+      },
+      "version": 1,
+      "work_action": {
+        "action": "complete",
+        "completion": {
+          "acceptance": [
+            {
+              "criterion": "检查三个章节的材料引用和仍需确认的问题。",
+              "evidence": [
+                "01M21XRAJP4BAVMZK29766S3QS"
+              ]
+            },
+            {
+              "criterion": "保留实际产物与来源引用，无法确认的内容显式说明。",
+              "evidence": [
+                "01M21XRAJP4BAVMZK29766S3QS"
+              ]
+            }
+          ],
+          "evidence": [
+            {
+              "branch_id": null,
+              "command": "rtk rg -n 'duty-notes|新增材料对遗留问题的影响|GAP-0[1-7].*部分补充|GAP-0[1-7/].*未补充|七项缺口|仍需确认' deliverables/wanghai-source-verification-v2.md",
+              "evidence_type": "report",
+              "external_key": "WH-LINKS-DUTY-NOTES-AUDIT-VERIFY-20260909",
+              "id": "01M21XRAJP4BAVMZK29766S3QS",
+              "level": "locally_verified",
+              "locator": "deliverables/wh-links-verification-v2.json",
+              "project_id": "01M21S7N6RNH8JE1KAP73K5576",
+              "revision": 1,
+              "scope": [
+                "WH-LINKS",
+                "deliverables/wanghai-source-verification-v2.md",
+                "deliverables/wanghai-operations-manual-draft-v2.md",
+                "materials/duty-notes.md"
+              ],
+              "sha256": "e5aa76db0afeb13b126a0a0904cf8936d29382b63a099456c54dc7818cd08648",
+              "source_ref": null,
+              "source_sha": "f9c654a16e66079e1e47558860dbc411b622c3fd",
+              "summary": "新增值班职责材料已在三个章节中重新核对，三项部分补充和四项未补充均有来源与恢复边界",
+              "verified_at": 1788918558000,
+              "work_item_id": "01M21S7N6YMF7KH8Y9XSY0MZPG"
+            }
+          ],
+          "minimum_level": "locally_verified",
+          "source_sha": "f9c654a16e66079e1e47558860dbc411b622c3fd",
+          "version": 1
+        },
+        "from": "in_progress",
+        "to": "completed"
+      }
+    },
+    "status": "applied",
+    "created_by_session": "01M21XCT13A17284ERY23TT4NP",
+    "revision": 5
+  },
+  "event": {
+    "id": "01M21XSJEFJ5GPVG5HC3MYS1XX",
+    "project_id": "01M21S7N6RNH8JE1KAP73K5576",
+    "work_item_id": "01M21S7N6YMF7KH8Y9XSY0MZPG",
+    "session_id": null,
+    "branch_id": null,
+    "event_type": "work.completed",
+    "importance": "normal",
+    "summary": "Verified source work action Complete",
+    "payload": {
+      "action_reason": "新增职责材料已在三章中重核，部分补充与未补充项均绑定实际来源和恢复条件",
+      "actor": "codex-root",
+      "after_fingerprint": "sha256:4a0a6ffd8d870d3068c1f1d9af9259602bb79053c9a1e32da86a701b6da970ed",
+      "attempt_event_id": "01M21XSJDPSDDAGWXWJV9BZJBP",
+      "before_fingerprint": "sha256:d48be1390dcf9e50e86eac092a910db64d45793f14175c4d7276b8e343bc8633",
+      "creating_session_id": "01M21XCT13A17284ERY23TT4NP",
+      "proposal_id": "01M21XSJCNZ4HGH071PXRV4SK1",
+      "reason": "新增职责材料已在三章中重核，部分补充与未补充项均绑定实际来源和恢复条件",
+      "released_claim_ids": [
+        "01M21XCT14F8ZYMXYRR68VFGGF"
+      ],
+      "source_id": "01M21S7N6XEZK9D9F0CRFZYEMJ",
+      "source_revision": 13,
+      "target_after_hash": "cc6398647e49f0d7d576604dbb7da738c1ec783040db712441ac813ab431093d",
+      "target_revision": 6,
+      "work_action": {
+        "action": "complete",
+        "completion": {
+          "acceptance": [
+            {
+              "criterion": "检查三个章节的材料引用和仍需确认的问题。",
+              "evidence": [
+                "01M21XRAJP4BAVMZK29766S3QS"
+              ]
+            },
+            {
+              "criterion": "保留实际产物与来源引用，无法确认的内容显式说明。",
+              "evidence": [
+                "01M21XRAJP4BAVMZK29766S3QS"
+              ]
+            }
+          ],
+          "evidence": [
+            {
+              "branch_id": null,
+              "command": "rtk rg -n 'duty-notes|新增材料对遗留问题的影响|GAP-0[1-7].*部分补充|GAP-0[1-7/].*未补充|七项缺口|仍需确认' deliverables/wanghai-source-verification-v2.md",
+              "evidence_type": "report",
+              "external_key": "WH-LINKS-DUTY-NOTES-AUDIT-VERIFY-20260909",
+              "id": "01M21XRAJP4BAVMZK29766S3QS",
+              "level": "locally_verified",
+              "locator": "deliverables/wh-links-verification-v2.json",
+              "project_id": "01M21S7N6RNH8JE1KAP73K5576",
+              "revision": 1,
+              "scope": [
+                "WH-LINKS",
+                "deliverables/wanghai-source-verification-v2.md",
+                "deliverables/wanghai-operations-manual-draft-v2.md",
+                "materials/duty-notes.md"
+              ],
+              "sha256": "e5aa76db0afeb13b126a0a0904cf8936d29382b63a099456c54dc7818cd08648",
+              "source_ref": null,
+              "source_sha": "f9c654a16e66079e1e47558860dbc411b622c3fd",
+              "summary": "新增值班职责材料已在三个章节中重新核对，三项部分补充和四项未补充均有来源与恢复边界",
+              "verified_at": 1788918558000,
+              "work_item_id": "01M21S7N6YMF7KH8Y9XSY0MZPG"
+            }
+          ],
+          "minimum_level": "locally_verified",
+          "source_sha": "f9c654a16e66079e1e47558860dbc411b622c3fd",
+          "version": 1
+        },
+        "from": "in_progress",
+        "to": "completed"
+      },
+      "write_plan_id": "01M21XSJD43FZ93MRMRPBZZKDN"
+    },
+    "project_revision": 130,
+    "created_at": 1788918680015
+  },
+  "source_refresh_performed": true,
+  "source_write_performed": true,
+  "write_outcome": "applied",
+  "apply_attempt": {
+    "event_id": "01M21XSJDPSDDAGWXWJV9BZJBP",
+    "proposal_id": "01M21XSJCNZ4HGH071PXRV4SK1",
+    "source_id": "01M21S7N6XEZK9D9F0CRFZYEMJ",
+    "project_revision": 127,
+    "plan": {
+      "id": "01M21XSJD43FZ93MRMRPBZZKDN",
+      "before_fingerprint": "sha256:d48be1390dcf9e50e86eac092a910db64d45793f14175c4d7276b8e343bc8633",
+      "after_fingerprint": "sha256:4a0a6ffd8d870d3068c1f1d9af9259602bb79053c9a1e32da86a701b6da970ed",
+      "before_size": 2959,
+      "after_size": 3002,
+      "target_after_hash": "cc6398647e49f0d7d576604dbb7da738c1ec783040db712441ac813ab431093d"
+    },
+    "resolved_event_id": "01M21XSJEFJ5GPVG5HC3MYS1XX"
+  },
+  "recovery_directory": ".awr/mutations/01M21XSJD43FZ93MRMRPBZZKDN",
+  "source_check": null,
+  "error": null
+}

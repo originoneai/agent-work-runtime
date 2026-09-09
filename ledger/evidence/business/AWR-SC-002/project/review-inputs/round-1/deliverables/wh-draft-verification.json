@@ -1,0 +1,55 @@
+{
+  "version": 1,
+  "work_item": "WH-DRAFT",
+  "source_sha": "f9c654a16e66079e1e47558860dbc411b622c3fd",
+  "verified_at": 1788916435000,
+  "evidence_level": "locally_verified",
+  "scope": [
+    "WH-DRAFT",
+    "deliverables/wanghai-operations-manual-draft.md"
+  ],
+  "artifact": {
+    "locator": "deliverables/wanghai-operations-manual-draft.md",
+    "sha256": "813bd164add4ed663223d083e56b76a9f57a2c372906236bcad713712c2b0545"
+  },
+  "commands": [
+    "rtk rg -n '^#|^##|GAP-0[1-7]|SRC-0[1-4]|待确认|恢复条件|WH-LINKS|WH-REVIEW|WH-DELIVER' deliverables/wanghai-operations-manual-draft.md",
+    "rtk proxy ruby -rjson -rpathname -e '<required section, GAP id and local Markdown link check>' deliverables/wanghai-operations-manual-draft.md",
+    "rtk git diff --check"
+  ],
+  "checks": [
+    {
+      "name": "三章工作稿与推进顺序",
+      "passed": true,
+      "details": "工作稿包含每日启动检查、值班交接和常见问题处理三章，并说明了启动基线、状态承接和FAQ来源核对之间的编辑顺序；该顺序明确标为未获业务批准的整理顺序。",
+      "criteria": [
+        "依据保留的工作记录推进手册，解释当前推进顺序。"
+      ]
+    },
+    {
+      "name": "来源、未知项与恢复条件",
+      "passed": true,
+      "details": "工作稿引用SRC-01至SRC-04，保留GAP-01至GAP-07的责任状态和恢复条件；本地链接检查无缺失，关键业务输入仍明确标为待确认。",
+      "criteria": [
+        "保留实际产物与来源引用，无法确认的内容显式说明。"
+      ]
+    },
+    {
+      "name": "交付边界",
+      "passed": true,
+      "details": "工作稿明确不是已生效制度，没有声称真实运营演练、链接内容核对、业务批准、独立复核或最终交付已经完成。"
+    },
+    {
+      "name": "Markdown结构与本地引用",
+      "passed": true,
+      "details": "必需章节、GAP-01至GAP-07均存在；7个去重后的本地Markdown引用均可在当前项目中定位；git diff --check无输出。"
+    }
+  ],
+  "remaining_gates": [
+    "取得启动检查草稿和早班记录的可读取定位、版本及适用范围。",
+    "确认值班与升级角色、触发条件、渠道、顺序、时限及无人响应路径。",
+    "取得四条FAQ和操作说明目录并逐条核对来源链接。",
+    "确认晚班交接、夜间异常和次日回传规则。",
+    "由不同参与者完成独立复核，再由责任方处理意见并最终交付。"
+  ]
+}
