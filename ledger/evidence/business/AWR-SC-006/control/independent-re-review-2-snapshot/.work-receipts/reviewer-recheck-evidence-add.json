@@ -1,0 +1,28 @@
+{
+  "event_id": "01M228E30KJEQ59KB0QKA27E86",
+  "evidence": {
+    "branch_id": null,
+    "command": "rtk /Users/mac/Documents/originone/agent-work-running/.venv/bin/python .work-receipts/reviewer-recheck-verify.py",
+    "evidence_type": "verification_report",
+    "external_key": "zs-independent-re-review-20260909-v1",
+    "id": "01M228E30K2ZZYZ2T9AKEP1JQ1",
+    "level": "locally_verified",
+    "locator": ".work-receipts/reviewer-recheck-completion-report.json",
+    "project_id": "01M21VJFYF7E75EQ55DEH3D5TS",
+    "revision": 1,
+    "scope": [
+      "ZS-REVIEW"
+    ],
+    "sha256": "17756ba75905fa9757e8d73ec42c697304083e3b7cf7b66ec19de81f650a43c0",
+    "source_ref": null,
+    "source_sha": "8218b29c348b7eda3e57b541c3489e41b87b6679",
+    "summary": "独立返检逐项核对固定整改包、当前权威 acceptance、旧提案零应用、新合并提案一次应用、后续元数据写回及中断边界；ZS-R04/R06 和 ZS-F01 至 F03 已关闭，未知项继续保留。",
+    "verified_at": 1788929830208,
+    "work_item_id": "01M21VJFYMSXG6YEVAE8TW7WHA"
+  },
+  "freshness_basis": "source_refresh",
+  "ok": true,
+  "project_revision": 190,
+  "source_refresh_performed": true,
+  "validation_basis": "caller_supplied_bindings"
+}

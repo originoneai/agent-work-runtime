@@ -1,0 +1,26 @@
+{
+  "kind": "actual_prior_business_turn",
+  "phase": "prelude",
+  "client_task_id": "01a083b6-aa5f-7ba0-9135-c128ada421a2",
+  "actual_user_turn": {
+    "timestamp": "2026-09-09T01:09:45.896Z",
+    "text": "请先整理维护交接中需要补充的事项，保留改动建议和已经整理好的内容，暂时不要把建议直接写入权威台账。"
+  },
+  "source_sha256": {
+    "project.toml": "15caf8be661c1b9dd77c8474d449e5e5e2f019bcaecb51602a62f14366e2a008",
+    "GOALS.md": "254aec11ac1dd7abe79a2b6f8c3dd45be84633765af2ebd74ecbeeaea1ef4152",
+    "PLAN.md": "eda91c43584652bed15afb4d61f2598d379641610db0883a1b0435fa66185995",
+    "RULES.md": "4c28d3a308958136b8449d9c61c59da81e0d5f7dcbfd9075b32c87d61a0cb606",
+    "work-ledger.yaml": "d4ef78cc104c91ecf5bd52801e9adf6d649c7ca12becaff042da5f239cd43925",
+    "AGENTS.md": "d0ca28ca18c438aefdada6a14cb847a0664e261f9e8e48abbfd8701720eb66a2",
+    "DELIVERABLES.md": "4781518d79092e826bb9d506b39afa3f828e1f6aeefd150dc783a03b3a5e71bd"
+  },
+  "artifact_sha256": {
+    "deliverables/zhusheng-interruption-diagnosis.md": "a7feebb26b5f65e7da1eb34b0774393fb06b9835c4b4537b64028b247920a196"
+  },
+  "native_transcript_sha256": "c6aa90324ccfd589ae9c428b42de588a75d1a60e9431f76471f2c8144af3eb4d",
+  "events_sha256": "de2207439ae61f618c93aaf70b776c0c35c144abe2d6e540bfd63eeaf07c5a5d",
+  "sealed_at": "2026-09-09T09:32:11+08:00",
+  "final_message": "已完成维护交接的首轮整理，见 [中断诊断与待补清单](/Users/mac/Documents/originone/agent-work-running/.local/business-live-20260909-v1/interrupted-write/project/deliverables/zhusheng-interruption-diagnosis.md:1)。\n\n核心待补项：\n\n- 三个归档目录的具体名称、位置及资料类型，由资料管理员确认。\n- 值班职责与资料职责的角色分工，由协调者确认。\n- 未结束问题清单、已知影响和下一步，由执行者核对。\n\n原交接草案和三条改动建议均保持不变。建议文本未写入权威台账；台账只由 AWR 登记了 `ZS-DIAG` 已完成及本地证据路径。\n\n本地验证已通过，AWR 会话已留存检查点并正常结束。证据等级仅为 `locally_verified`，尚无独立复核；下一项 `ZS-COMPARE` 已就绪但未启动。",
+  "note": "Copied historical evidence, not newly authored business output or a review conclusion."
+}

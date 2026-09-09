@@ -1,0 +1,39 @@
+{
+  "kind": "actual_client_turn_snapshot",
+  "recorded_at": "2026-09-09T09:32:11+08:00",
+  "phase": "prelude",
+  "client": "Codex CLI",
+  "client_task_id": "01a083b6-aa5f-7ba0-9135-c128ada421a2",
+  "actual_user_turn": {
+    "timestamp": "2026-09-09T01:09:45.896Z",
+    "text": "请先整理维护交接中需要补充的事项，保留改动建议和已经整理好的内容，暂时不要把建议直接写入权威台账。"
+  },
+  "input_sha256": "6e97e308e6fec6cbcd165f6a45bb417fc53d753e5aa57fa0a91926b24c50dd97",
+  "events_local": ".local/business-live-20260909-v1/interrupted-write/control/prelude-events.jsonl",
+  "events_sha256": "de2207439ae61f618c93aaf70b776c0c35c144abe2d6e540bfd63eeaf07c5a5d",
+  "native_transcript_snapshot_local": ".local/business-live-20260909-v1/interrupted-write/control/prelude-snapshot/native-transcript.jsonl",
+  "native_transcript_snapshot_sha256": "c6aa90324ccfd589ae9c428b42de588a75d1a60e9431f76471f2c8144af3eb4d",
+  "final_message_sha256": "2ba261f08da18f8e802070b8b93e53db07f4e8303fb43cfd9cea3fb969551741",
+  "project_sources_sha256": {
+    "project.toml": "15caf8be661c1b9dd77c8474d449e5e5e2f019bcaecb51602a62f14366e2a008",
+    "GOALS.md": "254aec11ac1dd7abe79a2b6f8c3dd45be84633765af2ebd74ecbeeaea1ef4152",
+    "PLAN.md": "eda91c43584652bed15afb4d61f2598d379641610db0883a1b0435fa66185995",
+    "RULES.md": "4c28d3a308958136b8449d9c61c59da81e0d5f7dcbfd9075b32c87d61a0cb606",
+    "work-ledger.yaml": "d4ef78cc104c91ecf5bd52801e9adf6d649c7ca12becaff042da5f239cd43925",
+    "AGENTS.md": "d0ca28ca18c438aefdada6a14cb847a0664e261f9e8e48abbfd8701720eb66a2",
+    "DELIVERABLES.md": "4781518d79092e826bb9d506b39afa3f828e1f6aeefd150dc783a03b3a5e71bd"
+  },
+  "artifacts_sha256": {
+    "deliverables/zhusheng-interruption-diagnosis.md": "a7feebb26b5f65e7da1eb34b0774393fb06b9835c4b4537b64028b247920a196"
+  },
+  "tool_event_counts": {
+    "error": 1,
+    "agent_message": 8,
+    "command_execution": 99,
+    "file_change": 11
+  },
+  "command_executions": 99,
+  "nonzero_commands": 7,
+  "snapshot_local": ".local/business-live-20260909-v1/interrupted-write/control/prelude-snapshot",
+  "e4_completion_claim": false
+}

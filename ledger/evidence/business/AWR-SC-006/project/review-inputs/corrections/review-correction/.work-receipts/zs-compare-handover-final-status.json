@@ -1,0 +1,56 @@
+{
+  "blocked_count": 4,
+  "branch_id": null,
+  "counts": {
+    "completed": 1,
+    "in_progress": 1,
+    "planned": 3
+  },
+  "current": [
+    {
+      "blocker": null,
+      "external_key": "ZS-COMPARE",
+      "freshness": "fresh",
+      "id": "01M21VJFYMCA78QW9DEWGQ4ZV6",
+      "milestone": "ZS-DELIVERY",
+      "next_action": "创建并提交逐项可审阅的待审核提案，核对提案状态和权威源未被应用。",
+      "owner": null,
+      "priority": "P0",
+      "raw_status": "in_progress",
+      "revision": 2,
+      "source_revision": 4,
+      "status": "in_progress",
+      "summary": "比对已保存与未生效内容",
+      "title": "比对已保存与未生效内容"
+    }
+  ],
+  "current_total": 1,
+  "freshness_basis": "source_refresh",
+  "next_action": "创建并提交逐项可审阅的待审核提案，核对提案状态和权威源未被应用。",
+  "ok": true,
+  "project": "竹声维护交接",
+  "project_id": "01M21VJFYF7E75EQ55DEH3D5TS",
+  "project_revision": 51,
+  "read_only": false,
+  "ready_count": 0,
+  "source_issues": [],
+  "source_refresh_performed": true,
+  "source_warnings": 0,
+  "suggested_work": {
+    "blocker": null,
+    "external_key": "ZS-COMPARE",
+    "freshness": "fresh",
+    "id": "01M21VJFYMCA78QW9DEWGQ4ZV6",
+    "milestone": "ZS-DELIVERY",
+    "next_action": "创建并提交逐项可审阅的待审核提案，核对提案状态和权威源未被应用。",
+    "owner": null,
+    "priority": "P0",
+    "raw_status": "in_progress",
+    "revision": 2,
+    "source_revision": 4,
+    "status": "in_progress",
+    "summary": "比对已保存与未生效内容",
+    "title": "比对已保存与未生效内容"
+  },
+  "total": 5
+}

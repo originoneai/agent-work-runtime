@@ -1,0 +1,17 @@
+{
+  "version": 1,
+  "verified_at": 1788928552697,
+  "command": "rtk proxy /Users/mac/Documents/originone/agent-work-running/.venv/bin/python .work-receipts/verify-zs-remediation-recheck-inputs.py",
+  "project_revision": 178,
+  "source_revision": 17,
+  "source_fingerprint": "sha256:910155627fdf6131e7aed88c5297cc9c61a97c60aa4beec9a7c08475de8e4a37",
+  "core_files_verified": 17,
+  "bundle_files_verified": 4,
+  "producer_checks_passed": 8,
+  "recover_status": "completed",
+  "review_status": "planned",
+  "review_ready": true,
+  "deliver_dependency_blocked_count": 1,
+  "final_delivery_artifact_absent": true,
+  "independent_recheck_performed": false
+}

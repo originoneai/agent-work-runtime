@@ -1,0 +1,103 @@
+{
+  "checkpoint": {
+    "changed_entities": [
+      "evidence:01M220936HZB0B015W4YSHH21M",
+      "work_items:01M21VJFYMCA78QW9DEWGQ4ZV6"
+    ],
+    "context_hash": "2689441347f4a9723e039ac6b5f317fd99f9c5501c6a993ab218ba6d2d214a20",
+    "created_at": 1788921339670,
+    "digest": "已纳入归档及角色确认，完成最新本地验证并注册证据；ZS-COMPARE 已通过 AWR 完成，完成回执已保存，认领已释放。三份原子业务提案仍各保留一份且尚未应用。",
+    "id": "01M220AQRPBPB93E347XTH6HRR",
+    "next_action": "结束当前 ZS-COMPARE 会话，启动并认领 ZS-RECOVER；先保留三份旧提案内容，再以最新来源合并去重，CR-03 在具体问题清单到位前不得应用。",
+    "open_loops": [
+      "具体遗留问题清单、影响、负责人和下一步尚未提供。",
+      "三份旧提案仍为 ready；不得连续应用覆盖式 acceptance patch，应在 ZS-RECOVER 中合并或明确处置。",
+      "独立复核和最终交付尚未发生。"
+    ],
+    "project_revision": 59,
+    "revision": 1,
+    "session_id": "01M21XP8VZ1YJRNSS6BJH2V4HB"
+  },
+  "checkpoint_save": {
+    "after_revision": 49,
+    "attempt_id": "01M220AQRPPH9MR35FCBJ92GSJ",
+    "delta_bytes": 3816,
+    "delta_recorded": true,
+    "event_id": "01M220AQRPYE5NJGH7FC20NYAF",
+    "observed_changed_entity_count": 2,
+    "reported_changed_entity_count": 4,
+    "session_event_count": 1,
+    "source_observation_count": 2,
+    "through_revision": 59
+  },
+  "checkpoint_saves": {
+    "attempts": [
+      {
+        "base_project_revision": 59,
+        "checkpoint_id": "01M220AQRPBPB93E347XTH6HRR",
+        "created_at": 1788921339670,
+        "id": "01M220AQRPPH9MR35FCBJ92GSJ",
+        "started_project_revision": 60,
+        "status": "completed"
+      },
+      {
+        "base_project_revision": 49,
+        "checkpoint_id": "01M21ZKG6BHDJKBSNTN4SVB466",
+        "created_at": 1788920578250,
+        "id": "01M21ZKG6A1SKSEPBYDDMTAFG9",
+        "started_project_revision": 50,
+        "status": "completed"
+      },
+      {
+        "base_project_revision": 46,
+        "checkpoint_id": "01M21Y1W5N3N6VEEC0AQGGT2N9",
+        "created_at": 1788918952116,
+        "id": "01M21Y1W5M5WQAJQVRVBAMV2ME",
+        "started_project_revision": 47,
+        "status": "completed"
+      }
+    ],
+    "incomplete_count": 0,
+    "limit": 20,
+    "may_have_more": false
+  },
+  "claims": [
+    {
+      "acquired_at": 1788918571903,
+      "agent_id": "codex-primary",
+      "branch_id": null,
+      "expires_at": 1788922171903,
+      "id": "01M21XP8VZ19C36AM6A0HG2QRW",
+      "project_id": "01M21VJFYF7E75EQ55DEH3D5TS",
+      "released_at": 1788921285846,
+      "revision": 2,
+      "session_id": "01M21XP8VZ1YJRNSS6BJH2V4HB",
+      "status": "released",
+      "work_item_id": "01M21VJFYMCA78QW9DEWGQ4ZV6"
+    }
+  ],
+  "context_requires_refresh": true,
+  "freshness_basis": "runtime_database",
+  "inherited_checkpoint": null,
+  "inherited_checkpoint_save": null,
+  "ok": true,
+  "project_revision": 85,
+  "resumed_successor": null,
+  "session": {
+    "agent_id": "codex-primary",
+    "branch_id": null,
+    "end_project_revision": 62,
+    "ended_at": 1788921353080,
+    "id": "01M21XP8VZ1YJRNSS6BJH2V4HB",
+    "last_checkpoint_id": "01M220AQRPBPB93E347XTH6HRR",
+    "model": "gpt-5",
+    "project_id": "01M21VJFYF7E75EQ55DEH3D5TS",
+    "provider": "openai",
+    "revision": 5,
+    "start_project_revision": 45,
+    "started_at": 1788918571903,
+    "status": "ended",
+    "work_item_id": "01M21VJFYMCA78QW9DEWGQ4ZV6"
+  },
+  "source_refresh_performed": false
+}

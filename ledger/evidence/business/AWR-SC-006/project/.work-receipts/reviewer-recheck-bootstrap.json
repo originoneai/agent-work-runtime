@@ -1,0 +1,135 @@
+{
+  "level": "L0",
+  "context": {
+    "project_id": "01M21VJFYF7E75EQ55DEH3D5TS",
+    "project_key": "awr-v1/interrupted-write/awr-live-20260909-006",
+    "project_name": "竹声维护交接",
+    "project_revision": 182,
+    "branch_id": null,
+    "work": {
+      "id": "01M21VJFYMSXG6YEVAE8TW7WHA",
+      "external_key": "ZS-REVIEW",
+      "title": "独立复核恢复一致性",
+      "phase": "ZS-DELIVERY",
+      "status": "planned",
+      "raw_status": "planned",
+      "next_action": "由不同参与者认领 ZS-REVIEW，固定整改后生产者文件和 AWR 来源哈希，逐项返检 ZS-F01 至 ZS-F03；保留原复核报告，仅追加返检结论。返检通过前不得推进 ZS-DELIVER。",
+      "blocker": null,
+      "revision": 5,
+      "source_ref": {
+        "source_id": "01M21VJFYKQHY3PPK3TBPPYNPT",
+        "locator": "file:///Users/mac/Documents/originone/agent-work-running/.local/business-live-20260909-v1/interrupted-write/project/work-ledger.yaml",
+        "source_revision": 17,
+        "source_fingerprint": "sha256:910155627fdf6131e7aed88c5297cc9c61a97c60aa4beec9a7c08475de8e4a37",
+        "pointer": "/work_items/3",
+        "start_line": null,
+        "end_line": null,
+        "section_fingerprint": null
+      }
+    },
+    "selection_basis": "session",
+    "session": {
+      "id": "01M227QGYJ3BWHQBQWTX6GBAMW",
+      "project_id": "01M21VJFYF7E75EQ55DEH3D5TS",
+      "work_item_id": "01M21VJFYMSXG6YEVAE8TW7WHA",
+      "branch_id": null,
+      "agent_id": "luna_worker",
+      "provider": "openai",
+      "model": "gpt-5.6-sol",
+      "status": "active",
+      "started_at": 1788929098706,
+      "ended_at": null,
+      "start_project_revision": 181,
+      "end_project_revision": null,
+      "last_checkpoint_id": null,
+      "revision": 1
+    },
+    "checkpoint": {
+      "id": "01M2277MX1HWVTRSBMV009PPYP",
+      "session_id": "01M2272PWQBQW37JFNMASNJDGM",
+      "project_revision": 178,
+      "context_hash": "c4af49f1e4e9e059f7f6dcf7fbcae6fae31181ab9a21c416b194c67db654f81a",
+      "digest": "已保护验证证据的版本边界：注册报告使用的 verify-zs-remediation.py 已恢复为证据生成时口径；当前状态检查独立在返检预检脚本中。v2 包现固定 17 个核心文件与两个脚本并通过。",
+      "next_action": "由不同参与者认领 ZS-REVIEW，运行 v2 返检预检并独立返检；生产者不再修改已固定输入。",
+      "open_loops": [
+        "独立返检尚未发生，最终交付继续阻断。",
+        "CR-03 和其他未知事实继续保留。"
+      ],
+      "changed_entities": [],
+      "revision": 1,
+      "created_at": 1788928578465
+    },
+    "checkpoint_origin": "previous_closed_session",
+    "critical_rules": [
+      {
+        "id": "01M21VJFYJ0B34143SS3FQS21W",
+        "external_key": "file:///Users/mac/Documents/originone/agent-work-running/.local/business-live-20260909-v1/interrupted-write/project/RULES.md#business",
+        "revision": 1,
+        "source_ref": {
+          "source_id": "01M21VJFYH59710E3HQ4619BZB",
+          "locator": "file:///Users/mac/Documents/originone/agent-work-running/.local/business-live-20260909-v1/interrupted-write/project/RULES.md",
+          "source_revision": 1,
+          "source_fingerprint": "sha256:4c28d3a308958136b8449d9c61c59da81e0d5f7dcbfd9075b32c87d61a0cb606",
+          "pointer": "#business",
+          "start_line": 5,
+          "end_line": 7,
+          "section_fingerprint": "sha256:ad6dcdf9e4d523ab53b178abffb8db56c4774873e44c4b5ff276dd10fc67ec9c"
+        },
+        "text": "业务要求\n\n恢复前区分已保存产物与尚未应用的源文件变更；未经核实不得重放写入，也不得抹去原失败记录。",
+        "severity": "hard",
+        "scope": {
+          "type": "project",
+          "value": "*"
+        },
+        "unresolved": []
+      },
+      {
+        "id": "01M21VJFYJ3AZ2E793BS3A655F",
+        "external_key": "file:///Users/mac/Documents/originone/agent-work-running/.local/business-live-20260909-v1/interrupted-write/project/RULES.md#authority",
+        "revision": 1,
+        "source_ref": {
+          "source_id": "01M21VJFYH59710E3HQ4619BZB",
+          "locator": "file:///Users/mac/Documents/originone/agent-work-running/.local/business-live-20260909-v1/interrupted-write/project/RULES.md",
+          "source_revision": 1,
+          "source_fingerprint": "sha256:4c28d3a308958136b8449d9c61c59da81e0d5f7dcbfd9075b32c87d61a0cb606",
+          "pointer": "#authority",
+          "start_line": 1,
+          "end_line": 4,
+          "section_fingerprint": "sha256:91475bbc52075362a75e6bd9d3fe1de18d834c4995ef382330d752680e95bc0e"
+        },
+        "text": "来源与交付\n\n以当前项目来源为准。未知或缺证据的内容显式保留，不将计划、样例或文件存在当作真实验收通过。",
+        "severity": "hard",
+        "scope": {
+          "type": "project",
+          "value": "*"
+        },
+        "unresolved": []
+      }
+    ],
+    "source_revisions": [
+      {
+        "id": "01M21VJFYKQHY3PPK3TBPPYNPT",
+        "revision": 17,
+        "fingerprint": "sha256:910155627fdf6131e7aed88c5297cc9c61a97c60aa4beec9a7c08475de8e4a37",
+        "freshness": "fresh",
+        "locator": "file:///Users/mac/Documents/originone/agent-work-running/.local/business-live-20260909-v1/interrupted-write/project/work-ledger.yaml"
+      },
+      {
+        "id": "01M21VJFYH59710E3HQ4619BZB",
+        "revision": 1,
+        "fingerprint": "sha256:4c28d3a308958136b8449d9c61c59da81e0d5f7dcbfd9075b32c87d61a0cb606",
+        "freshness": "fresh",
+        "locator": "file:///Users/mac/Documents/originone/agent-work-running/.local/business-live-20260909-v1/interrupted-write/project/RULES.md"
+      }
+    ],
+    "gaps": [],
+    "complete": true,
+    "execution_context_complete": false
+  },
+  "rendered_context": "AWR L0 Bootstrap\nProject: 竹声维护交接 [awr-v1/interrupted-write/awr-live-20260909-006] 01M21VJFYF7E75EQ55DEH3D5TS\nRevision: 182 | Branch: main\nWork: ZS-REVIEW [01M21VJFYMSXG6YEVAE8TW7WHA] r5 — 独立复核恢复一致性\nPhase: ZS-DELIVERY | Status: planned (Planned)\nNext: 由不同参与者认领 ZS-REVIEW，固定整改后生产者文件和 AWR 来源哈希，逐项返检 ZS-F01 至 ZS-F03；保留原复核报告，仅追加返检结论。返检通过前不得推进 ZS-DELIVER。\nBlocker: none\nWork source: 01M21VJFYKQHY3PPK3TBPPYNPT/work_items/3@r17\nSession: 01M227QGYJ3BWHQBQWTX6GBAMW r1 active agent=luna_worker provider=openai model=gpt-5.6-sol\nHard rules [01M21VJFYH59710E3HQ4619BZB@r1]:\n[#business]\n业务要求\n\n恢复前区分已保存产物与尚未应用的源文件变更；未经核实不得重放写入，也不得抹去原失败记录。\n[#authority]\n来源与交付\n\n以当前项目来源为准。未知或缺证据的内容显式保留，不将计划、样例或文件存在当作真实验收通过。\nCheckpoint origin: previous_closed_session\nCheckpoint: 01M2277MX1HWVTRSBMV009PPYP session=01M2272PWQBQW37JFNMASNJDGM r1 base=178 hash=c4af49f1e4e9e059f7f6dcf7fbcae6fae31181ab9a21c416b194c67db654f81a\nDigest: 已保护验证证据的版本边界：注册报告使用的 verify-zs-remediation.py 已恢复为证据生成时口径；当前状态检查独立在返检预检脚本中。v2 包现固定 17 个核心文件与两个脚本并通过。\nCheckpoint next: 由不同参与者认领 ZS-REVIEW，运行 v2 返检预检并独立返检；生产者不再修改已固定输入。\nOpen loop: 独立返检尚未发生，最终交付继续阻断。\nOpen loop: CR-03 和其他未知事实继续保留。\nBootstrap: complete\nCompile L1 before execution.\n",
+  "context_hash": "93a6a9ba021574d7ca693caa9748750a0981ff9115d44a6c6609903022086c80",
+  "token_estimate": 593,
+  "token_budget": 1000,
+  "tokenizer": "o200k_base",
+  "token_scope": "rendered_context; excludes transport envelope and surrounding conversation"
+}

@@ -1,0 +1,87 @@
+{
+  "checkpoint": {
+    "changed_entities": [
+      "evidence:01M228NMMXZYED7MH16PCJ743R",
+      "work_items:01M21VJFYMSXG6YEVAE8TW7WHA"
+    ],
+    "context_hash": "a93cd3ccdf930daa14fd6e721ff3fd9908b6428c8cab5482933157b38ad10f72",
+    "created_at": 1788930123952,
+    "digest": "Independent remediation recheck passed ZS-R04, ZS-R06, and ZS-F01 through ZS-F03 using fixed hashes, full proposal records, and current source; ZS-REVIEW is completed while final delivery remains separate.",
+    "id": "01M228PT5GJAEMARV4ZT77K6V7",
+    "next_action": "Return ZS-DELIVER to the original production chain to prepare final delivery from current sources while preserving all unresolved facts and historical failures.",
+    "open_loops": [
+      "CR-03 still lacks a sourced concrete issue list, per-item impact, owner, next action, and completion condition.",
+      "Archive root, permissions, migration and integrity, plus named people, duty schedule, proxy or escalation path, and handoff timing remain unconfirmed.",
+      "No Git delivery, publication, final zs-delivery.md, or E4 completion has occurred."
+    ],
+    "project_revision": 199,
+    "revision": 1,
+    "session_id": "01M227QGYJ3BWHQBQWTX6GBAMW"
+  },
+  "checkpoint_save": {
+    "after_revision": 181,
+    "attempt_id": "01M228PT5FZKKYG8DFVCSJYQTX",
+    "delta_bytes": 6499,
+    "delta_recorded": true,
+    "event_id": "01M228PT5GH20G5J9DCREAF4P9",
+    "observed_changed_entity_count": 2,
+    "reported_changed_entity_count": 2,
+    "session_event_count": 3,
+    "source_observation_count": 4,
+    "through_revision": 199
+  },
+  "checkpoint_saves": {
+    "attempts": [
+      {
+        "base_project_revision": 199,
+        "checkpoint_id": "01M228PT5GJAEMARV4ZT77K6V7",
+        "created_at": 1788930123951,
+        "id": "01M228PT5FZKKYG8DFVCSJYQTX",
+        "started_project_revision": 200,
+        "status": "completed"
+      }
+    ],
+    "incomplete_count": 0,
+    "limit": 20,
+    "may_have_more": false
+  },
+  "claims": [
+    {
+      "acquired_at": 1788929098706,
+      "agent_id": "luna_worker",
+      "branch_id": null,
+      "expires_at": 1788932698706,
+      "id": "01M227QGYK1C8M9HMNMWBCWH23",
+      "project_id": "01M21VJFYF7E75EQ55DEH3D5TS",
+      "released_at": 1788930085539,
+      "revision": 2,
+      "session_id": "01M227QGYJ3BWHQBQWTX6GBAMW",
+      "status": "released",
+      "work_item_id": "01M21VJFYMSXG6YEVAE8TW7WHA"
+    }
+  ],
+  "context_requires_refresh": true,
+  "freshness_basis": "runtime_database",
+  "inherited_checkpoint": null,
+  "inherited_checkpoint_save": null,
+  "ok": true,
+  "project_revision": 202,
+  "resumed_successor": null,
+  "session": {
+    "agent_id": "luna_worker",
+    "branch_id": null,
+    "end_project_revision": 202,
+    "ended_at": 1788930134594,
+    "id": "01M227QGYJ3BWHQBQWTX6GBAMW",
+    "last_checkpoint_id": "01M228PT5GJAEMARV4ZT77K6V7",
+    "model": "gpt-5.6-sol",
+    "project_id": "01M21VJFYF7E75EQ55DEH3D5TS",
+    "provider": "openai",
+    "revision": 3,
+    "start_project_revision": 181,
+    "started_at": 1788929098706,
+    "status": "ended",
+    "work_item_id": "01M21VJFYMSXG6YEVAE8TW7WHA"
+  },
+  "source_refresh_performed": false
+}

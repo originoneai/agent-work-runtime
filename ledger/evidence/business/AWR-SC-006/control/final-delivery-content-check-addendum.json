@@ -1,0 +1,116 @@
+{
+  "version": 1,
+  "kind": "final_delivery_content_check_addendum",
+  "recorded_at": "2026-09-09T06:00:21.710310Z",
+  "scope": {
+    "prior_check": "../control/final-delivery-content-check.json",
+    "expanded_actual_delivery_parts": [
+      "deliverables/zs-delivery.md",
+      "../control/final-delivery-final.md",
+      "../control/final-delivery-sealed.json",
+      "../control/final-delivery-review-extract.json"
+    ],
+    "other_six_topics_rechecked": false,
+    "read_only_business_and_awr": true,
+    "client_or_subagent_started": false,
+    "approval_or_counting_performed": false
+  },
+  "determination": {
+    "expanded_scope_verdict": "pass_no_content_blocker",
+    "producer_correction_required": false,
+    "prior_finding_disposition": "nonblocking_optional_body_redundancy",
+    "standards_changed": false,
+    "reason": "The complete actual delivery, not merely the standalone artifact body, contains the exact 5/5-work-items versus in_progress-milestone distinction in the native final reply; the sealed record and review extract bind that reply byte-for-byte, while zs-delivery.md itself delegates final dynamic status to the persisted receipts and never claims the milestone is closed."
+  },
+  "facts": [
+    {
+      "finding": "The native final reply states AWR project revision 235, 5/5 work items completed, and no active sessions.",
+      "source": "../control/final-delivery-final.md:3"
+    },
+    {
+      "finding": "The same reply explicitly states that ZS-DELIVERY remains in_progress, that no supported milestone transition command exists, and that work-item scope has no nonterminal work.",
+      "source": "../control/final-delivery-final.md:11"
+    },
+    {
+      "finding": "The final reply SHA-256 is 1a868e501ded7b96e358ce79d6564865db8bc2bf1222f66af61a9c8ae8912551 in the file, the seal, and the review extract, and the extracted final_message equals the file content.",
+      "source": "../control/final-delivery-sealed.json and ../control/final-delivery-review-extract.json"
+    },
+    {
+      "finding": "zs-delivery.md points final dynamic AWR state to the persisted completion receipts at lines 10 and 101 and contains no claim that the milestone is completed.",
+      "source": "deliverables/zs-delivery.md:10 and deliverables/zs-delivery.md:101"
+    },
+    {
+      "finding": "The status receipt reports completed=5 and total=5, while work-ledger.yaml records ZS-DELIVERY status in_progress.",
+      "source": ".work-receipts/zs-deliver-final-status.json and work-ledger.yaml:1-4"
+    }
+  ],
+  "hard_gate_assessment": {
+    "fact_error": false,
+    "missing_hard_gate": false,
+    "causal_contradiction": false,
+    "optional_body_clarity_suggestion": "Repeating the 5/5 versus in_progress split inside zs-delivery.md could improve standalone readability, but the current contract does not require the same dynamic status sentence in both the artifact and the bound final reply, and the actual delivery already states the boundary explicitly."
+  },
+  "binding_checks": {
+    "final_file_sha256": "1a868e501ded7b96e358ce79d6564865db8bc2bf1222f66af61a9c8ae8912551",
+    "sealed_final_message_sha256": "1a868e501ded7b96e358ce79d6564865db8bc2bf1222f66af61a9c8ae8912551",
+    "extract_final_message_sha256": "1a868e501ded7b96e358ce79d6564865db8bc2bf1222f66af61a9c8ae8912551",
+    "extract_message_equals_final_file": true,
+    "sealed_delivery_artifact_sha256": "d2bb0d5bf582eecadf4282239c2e6e1a1077bbb0d4bae0e2e3fa57646d3d9ee7",
+    "actual_delivery_artifact_sha256": "d2bb0d5bf582eecadf4282239c2e6e1a1077bbb0d4bae0e2e3fa57646d3d9ee7",
+    "final_mentions_5_of_5": true,
+    "final_mentions_milestone_in_progress": true,
+    "body_claims_milestone_completed": false
+  },
+  "sources": [
+    {
+      "locator": "../control/final-delivery-content-check.json",
+      "sha256": "5c7a28d164d9219f2579839596eb673c73ea2f255c7ba6e591907e01365dc23d",
+      "bytes": 8338
+    },
+    {
+      "locator": "../control/final-delivery-final.md",
+      "sha256": "1a868e501ded7b96e358ce79d6564865db8bc2bf1222f66af61a9c8ae8912551",
+      "bytes": 2240
+    },
+    {
+      "locator": "../control/final-delivery-sealed.json",
+      "sha256": "3fe22c0b598cd3e9cfc095f5d6185f53c472d8bc90ac09faa14652932a2b84d8",
+      "bytes": 3170
+    },
+    {
+      "locator": "../control/final-delivery-review-extract.json",
+      "sha256": "2f9a7f81f6450e92352ba57ecc311e1ef5e18c9bfebf14329aef1a3beadce6b4",
+      "bytes": 91280
+    },
+    {
+      "locator": "deliverables/zs-delivery.md",
+      "sha256": "d2bb0d5bf582eecadf4282239c2e6e1a1077bbb0d4bae0e2e3fa57646d3d9ee7",
+      "bytes": 12943
+    },
+    {
+      "locator": "work-ledger.yaml",
+      "sha256": "d27d51cfc9c3f733a3db94b13c12b668afe22ab1d28b0728c4df8e331f9f31fa",
+      "bytes": 4397
+    },
+    {
+      "locator": ".work-receipts/zs-deliver-final-status.json",
+      "sha256": "48140c35467af6987a9a278a809e3690bc0a64e6fb739aa6da2b0cad08db6b1d",
+      "bytes": 529
+    },
+    {
+      "locator": "RULES.md",
+      "sha256": "4c28d3a308958136b8449d9c61c59da81e0d5f7dcbfd9075b32c87d61a0cb606",
+      "bytes": 402
+    },
+    {
+      "locator": "DELIVERABLES.md",
+      "sha256": "4781518d79092e826bb9d506b39afa3f828e1f6aeefd150dc783a03b3a5e71bd",
+      "bytes": 615
+    }
+  ],
+  "non_mutation_boundary": [
+    "The prior check is preserved unchanged.",
+    "No business artifact, source ledger, AWR state, runtime record, or Git state was modified.",
+    "This addendum does not approve publication, counting, or E4."
+  ]
+}

@@ -1,0 +1,56 @@
+{
+  "checkpoint": {
+    "changed_entities": [
+      "evidence:01M22AR706FRHZDZMT0D7K5E2E",
+      "work_items:01M21VJFYMX50ZQZKG1A17EYVP"
+    ],
+    "context_hash": "16fa3fcf837304b8ed3d03d26e0c412b272f5ad0d93cdb725fc406b21544a327",
+    "created_at": 1788932294204,
+    "digest": "竹声中断恢复最终交接已形成并完成：独立返检通过，确认要求一次生效，旧提案零次应用，原版本、失败、无 checkpoint 缺口和未知事项均保留。",
+    "id": "01M22AS1HW41MK9HVYD59WTD70",
+    "next_action": "后续另行取得 CR-03 具体问题事实、归档实施证据及具体人员、值班、代理、升级与时限安排；如需 Git 提交、发布或 E4，须走相应授权和验收。",
+    "open_loops": [
+      "CR-03 具体问题、逐项影响、具体负责人、下一步和完成条件仍无明确来源；如无遗留问题也需明确确认。",
+      "归档目录根路径、访问权限、实际建目录、资料迁移和完整性仍未确认。",
+      "具体人员、值班表、代理或替补、升级路径与触发条件、交接时限仍未确认。",
+      "Git 提交或推送、发布和整场 E4 未执行。"
+    ],
+    "project_revision": 232,
+    "revision": 1,
+    "session_id": "01M229PEPFG7KC962FP55GCRMX"
+  },
+  "checkpoint_save": {
+    "after_revision": 209,
+    "attempt_id": "01M22AS1HVDT1X361TTZJB4AND",
+    "delta_bytes": 8893,
+    "delta_recorded": true,
+    "event_id": "01M22AS1HW1KEENFZEDFBP32T1",
+    "observed_changed_entity_count": 2,
+    "reported_changed_entity_count": 0,
+    "session_event_count": 4,
+    "source_observation_count": 6,
+    "through_revision": 232
+  },
+  "context_hash_basis": "caller_supplied_last_used_context",
+  "context_hash_verified": false,
+  "event": {
+    "artifact_id": null,
+    "branch_id": null,
+    "checkpoint_id": "01M22AS1HW41MK9HVYD59WTD70",
+    "created_at": 1788932294204,
+    "id": "01M22AS1HW1KEENFZEDFBP32T1",
+    "importance": "normal",
+    "project_revision": 234,
+    "session_id": "01M229PEPFG7KC962FP55GCRMX",
+    "source_id": null,
+    "summary": "Saved session checkpoint and observed delta",
+    "type": "checkpoint.created",
+    "work_item_id": "01M21VJFYMX50ZQZKG1A17EYVP"
+  },
+  "freshness_basis": "source_refresh",
+  "ok": true,
+  "project_revision": 234,
+  "save_status": "completed",
+  "source_refresh_performed": true
+}
+

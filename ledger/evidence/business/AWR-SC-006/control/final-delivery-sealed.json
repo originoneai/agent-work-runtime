@@ -1,0 +1,45 @@
+{
+  "kind": "actual_client_turn_snapshot",
+  "recorded_at": "2026-09-09T13:52:14+08:00",
+  "phase": "final-delivery",
+  "client": "Codex CLI",
+  "client_task_id": "01a083d7-4073-7150-89cd-993a9899dcad",
+  "actual_user_turn": {
+    "timestamp": "2026-09-09T05:15:10.689Z",
+    "text": "请依据独立返检通过的结论完成竹声这次中断恢复交付，整理实际中断与恢复过程、已应用的确认要求、原提案的处理结果，以及归档和责任移交的当前安排。保留原始版本、失败和未持久化信息的缺口；具体问题事实、归档实施、人员及升级安排尚未确认的部分继续列明。更新最终工作记录并附可追溯回执，清楚区分已完成的恢复工作与后续待办。"
+  },
+  "input_sha256": "b68a7bbb3f97caa03381a345c7bf3b35f542dd4ea130e5f41dc48f49ff847c8f",
+  "events_local": ".local/business-live-20260909-v1/interrupted-write/control/final-delivery-events.jsonl",
+  "events_sha256": "72a2fe5e8337758d9db98f84c6ed78183ad5efa81672af5b2c6dbec5000b3a4d",
+  "native_transcript_snapshot_local": ".local/business-live-20260909-v1/interrupted-write/control/final-delivery-snapshot/native-transcript.jsonl",
+  "native_transcript_snapshot_sha256": "1c835fe21d6db950bfe108f9f611a15f9a23d5ead07e0ff79881c13623bdcff9",
+  "final_message_sha256": "1a868e501ded7b96e358ce79d6564865db8bc2bf1222f66af61a9c8ae8912551",
+  "project_sources_sha256": {
+    "project.toml": "15caf8be661c1b9dd77c8474d449e5e5e2f019bcaecb51602a62f14366e2a008",
+    "GOALS.md": "254aec11ac1dd7abe79a2b6f8c3dd45be84633765af2ebd74ecbeeaea1ef4152",
+    "PLAN.md": "eda91c43584652bed15afb4d61f2598d379641610db0883a1b0435fa66185995",
+    "RULES.md": "4c28d3a308958136b8449d9c61c59da81e0d5f7dcbfd9075b32c87d61a0cb606",
+    "work-ledger.yaml": "d27d51cfc9c3f733a3db94b13c12b668afe22ab1d28b0728c4df8e331f9f31fa",
+    "AGENTS.md": "d0ca28ca18c438aefdada6a14cb847a0664e261f9e8e48abbfd8701720eb66a2",
+    "DELIVERABLES.md": "4781518d79092e826bb9d506b39afa3f828e1f6aeefd150dc783a03b3a5e71bd"
+  },
+  "artifacts_sha256": {
+    "deliverables/zhusheng-change-proposals.md": "e00e5e4e98db2476d0321fc86af82e93aa0a218edfab66c1b568f64335304a05",
+    "deliverables/zhusheng-consistency.md": "ddb10a828a04059aea355186b98a685167ac738aee77902d587b6506b585260e",
+    "deliverables/zhusheng-interruption-diagnosis.md": "a7feebb26b5f65e7da1eb34b0774393fb06b9835c4b4537b64028b247920a196",
+    "deliverables/zhusheng-recovery-work.md": "46bfc0ea1ac8396b10280e06b3ed55a72a69242555010218974f8b4ece64fb31",
+    "deliverables/zs-delivery.md": "d2bb0d5bf582eecadf4282239c2e6e1a1077bbb0d4bae0e2e3fa57646d3d9ee7",
+    "deliverables/zs-independent-re-review.md": "5f8d595f33ce5fd48503d12e1076aab409b6f54605d36351ddf343e457d50173",
+    "deliverables/zs-independent-review.md": "c580b03404518ac99436ef3f7f3ccfdb78315a7a493b3c53c18448bd685072b5"
+  },
+  "tool_event_counts": {
+    "agent_message": 15,
+    "command_execution": 118,
+    "error": 1,
+    "file_change": 41
+  },
+  "command_executions": 118,
+  "nonzero_commands": 3,
+  "snapshot_local": ".local/business-live-20260909-v1/interrupted-write/control/final-delivery-snapshot",
+  "e4_completion_claim": false
+}

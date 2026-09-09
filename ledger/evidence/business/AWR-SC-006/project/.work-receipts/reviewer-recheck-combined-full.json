@@ -1,0 +1,69 @@
+{
+  "apply_attempt": {
+    "event_id": "01M225BCXTY18AWZSRG0B9WT1P",
+    "plan": {
+      "after_fingerprint": "sha256:83f9e1a0a4cb7b598e5ac0e60b712273b4c85f8e75a246ad59b11225c8ba17a0",
+      "after_size": 3841,
+      "before_fingerprint": "sha256:6ac1624435b6b626e32af360e94acb9bbcd406e9a2dfe0e3bf3926474fac612a",
+      "before_size": 3285,
+      "id": "01M225BCX4SJHSYG6Q8PYGZS12",
+      "target_after_hash": "7418ae9a142bb3e4771d715a976b1d503dee4b778a82e796db2a26bb2b1b2cad"
+    },
+    "project_revision": 123,
+    "proposal_id": "01M225AVE1BFYY0W4T2EKRV88C",
+    "resolved_event_id": "01M225BCYBY571X8FPBY8TGME8",
+    "source_id": "01M21VJFYKQHY3PPK3TBPPYNPT"
+  },
+  "ok": true,
+  "patch_included": true,
+  "project_revision": 182,
+  "proposal": {
+    "base_fingerprint": "sha256:6ac1624435b6b626e32af360e94acb9bbcd406e9a2dfe0e3bf3926474fac612a",
+    "created_by_session": "01M2256DZSHRFJ7SH8JQ1X0PFK",
+    "expected_revision": 119,
+    "id": "01M225AVE1BFYY0W4T2EKRV88C",
+    "mutation_type": "update_fields",
+    "patch": {
+      "changes": {
+        "acceptance": [
+          "处理待应用改动，保留重试或恢复的证据，避免重复写入。",
+          "保留实际产物与来源引用，无法确认的内容显式说明。",
+          "资料归档按“使用说明、交接记录、问题跟踪”三个内容类型目录执行，并保留资料管理员确认来源（materials/archive-confirmation.md）；目录根路径、权限、迁移与完整性未明确时继续列为未决。",
+          "角色职责按协调者确认执行：值班人员维护交接记录、资料管理员维护使用说明、问题负责人维护问题跟踪，并保留确认来源（materials/role-confirmation.md）；具体人员、值班表、代理/升级路径和交接时限未明确时继续列为未决。"
+        ]
+      },
+      "intent": "依据独立复核 ZS-F01，将 materials/archive-confirmation.md 与 materials/role-confirmation.md 已确认的归档和角色要求合并为当前验收要求；保留所有未知边界，CR-03 不纳入，三个旧 patch 不重放。",
+      "source_config": {
+        "adapter_options": {},
+        "adapter_version": 1,
+        "mapping_key": "ledger|work-ledger.yaml"
+      },
+      "target": {
+        "kind": "work_item",
+        "meta": {
+          "external_key": "ZS-RECOVER",
+          "id": "01M21VJFYMD4Q7P3HFNFATQBCZ",
+          "revision": 5,
+          "source_ref": {
+            "end_line": null,
+            "locator": "file:///Users/mac/Documents/originone/agent-work-running/.local/business-live-20260909-v1/interrupted-write/project/work-ledger.yaml",
+            "pointer": "/work_items/2",
+            "section_fingerprint": null,
+            "source_fingerprint": "sha256:6ac1624435b6b626e32af360e94acb9bbcd406e9a2dfe0e3bf3926474fac612a",
+            "source_id": "01M21VJFYKQHY3PPK3TBPPYNPT",
+            "source_revision": 11,
+            "start_line": null
+          }
+        }
+      },
+      "version": 1
+    },
+    "project_id": "01M21VJFYF7E75EQ55DEH3D5TS",
+    "revision": 5,
+    "source_id": "01M21VJFYKQHY3PPK3TBPPYNPT",
+    "status": "applied",
+    "work_item_id": "01M21VJFYMD4Q7P3HFNFATQBCZ"
+  },
+  "read_only": true,
+  "source_refresh_performed": false
+}

@@ -1,0 +1,9 @@
+Traceback (most recent call last):
+  File "/Users/mac/Documents/originone/agent-work-running/.local/business-live-20260909-v1/interrupted-write/project/.work-receipts/verify-zs-delivery-post.py", line 69, in <module>
+    proposals = awr("proposal", "list", "--limit", "1000")
+                ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/mac/Documents/originone/agent-work-running/.local/business-live-20260909-v1/interrupted-write/project/.work-receipts/verify-zs-delivery-post.py", line 25, in awr
+    raise RuntimeError(result.stderr or result.stdout)
+RuntimeError: {"code":"InvalidInput","message":"invalid input: proposal limit must be 1..100"}
+
+

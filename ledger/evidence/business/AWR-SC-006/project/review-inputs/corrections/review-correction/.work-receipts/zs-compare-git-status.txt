@@ -1,0 +1,8 @@
+## main
+ M .gitignore
+ M work-ledger.yaml
+?? .awr/
+?? AGENTS.md
+?? DELIVERABLES.md
+?? deliverables/
+?? materials/archive-confirmation.md

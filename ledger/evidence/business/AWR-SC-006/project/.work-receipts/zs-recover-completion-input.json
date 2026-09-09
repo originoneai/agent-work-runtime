@@ -1,0 +1,20 @@
+{
+  "version": 1,
+  "source_sha": "8218b29c348b7eda3e57b541c3489e41b87b6679",
+  "minimum_level": "locally_verified",
+  "acceptance": [
+    {
+      "criterion": "处理待应用改动，保留重试或恢复的证据，避免重复写入。",
+      "evidence": [
+        "zs-recover-no-duplicate-20260909"
+      ]
+    },
+    {
+      "criterion": "保留实际产物与来源引用，无法确认的内容显式说明。",
+      "evidence": [
+        "zs-recover-no-duplicate-20260909"
+      ]
+    }
+  ],
+  "required_evidence": []
+}

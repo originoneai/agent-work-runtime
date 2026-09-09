@@ -1,0 +1,162 @@
+{
+  "acceptance": [
+    "核对来源前后与事件回执，确认未丢失结果或重复交付。",
+    "保留实际产物与来源引用，无法确认的内容显式说明。"
+  ],
+  "decisions": [],
+  "dependency_cycles": [],
+  "evidence": [
+    {
+      "currency": "unknown",
+      "external_key": "ZS-REVIEW/evidence/.work-receipts/reviewer-completion-report.json",
+      "level": "unknown",
+      "locator": ".work-receipts/reviewer-completion-report.json",
+      "missing_bindings": [
+        "sha256",
+        "source_sha",
+        "command",
+        "verified_at"
+      ],
+      "reasons": [
+        "both recorded and requested source SHA are needed to determine currency"
+      ],
+      "source_sha": null,
+      "summary": "Evidence reference; not yet verified by AWR"
+    },
+    {
+      "currency": "unknown",
+      "external_key": "ZS-REVIEW/evidence/.work-receipts/reviewer-recheck-completion-report-v3.json",
+      "level": "unknown",
+      "locator": ".work-receipts/reviewer-recheck-completion-report-v3.json",
+      "missing_bindings": [
+        "sha256",
+        "source_sha",
+        "command",
+        "verified_at"
+      ],
+      "reasons": [
+        "both recorded and requested source SHA are needed to determine currency"
+      ],
+      "source_sha": null,
+      "summary": "Evidence reference; not yet verified by AWR"
+    },
+    {
+      "currency": "unknown",
+      "external_key": "zs-independent-re-review-20260909-v1",
+      "level": "locally_verified",
+      "locator": ".work-receipts/reviewer-recheck-completion-report.json",
+      "missing_bindings": [],
+      "reasons": [
+        "both recorded and requested source SHA are needed to determine currency"
+      ],
+      "source_sha": "8218b29c348b7eda3e57b541c3489e41b87b6679",
+      "summary": "独立返检逐项核对固定整改包、当前权威 acceptance、旧提案零应用、新合并提案一次应用、后续元数据写回及中断边界；ZS-R04/R06 和 ZS-F01 至 F03 已关闭，未知项继续保留。"
+    },
+    {
+      "currency": "unknown",
+      "external_key": "zs-independent-re-review-20260909-v2",
+      "level": "locally_verified",
+      "locator": ".work-receipts/reviewer-recheck-completion-report-v2.json",
+      "missing_bindings": [],
+      "reasons": [
+        "both recorded and requested source SHA are needed to determine currency"
+      ],
+      "source_sha": "8218b29c348b7eda3e57b541c3489e41b87b6679",
+      "summary": "独立返检逐项核对固定整改包、权威 acceptance、旧提案零应用、新合并提案一次应用、元数据写回及中断边界；五项整改关闭，未知项保留。"
+    },
+    {
+      "currency": "unknown",
+      "external_key": "zs-independent-re-review-20260909-v3",
+      "level": "locally_verified",
+      "locator": ".work-receipts/reviewer-recheck-completion-report-v3.json",
+      "missing_bindings": [],
+      "reasons": [
+        "both recorded and requested source SHA are needed to determine currency"
+      ],
+      "source_sha": "8218b29c348b7eda3e57b541c3489e41b87b6679",
+      "summary": "独立返检逐项核对固定整改包、权威 acceptance、旧提案零应用、新合并提案一次应用、元数据写回及中断边界；五项整改关闭，未知项保留。"
+    },
+    {
+      "currency": "unknown",
+      "external_key": "zs-independent-review-20260909-v1",
+      "level": "locally_verified",
+      "locator": ".work-receipts/reviewer-completion-report.json",
+      "missing_bindings": [],
+      "reasons": [
+        "both recorded and requested source SHA are needed to determine currency"
+      ],
+      "source_sha": "8218b29c348b7eda3e57b541c3489e41b87b6679",
+      "summary": "独立复核已核对中断恢复、来源前后、提案处置和保存结果；报告记录需原生产者整改的业务生效缺口并保留未知项。"
+    }
+  ],
+  "evidence_currency_basis": {
+    "branch_id": null,
+    "requested_source_sha": null
+  },
+  "freshness_basis": "source_refresh",
+  "missing_dependencies": [],
+  "ok": true,
+  "project_revision": 209,
+  "read_only": false,
+  "required_dependencies": [
+    {
+      "external_key": "ZS-COMPARE",
+      "freshness": "fresh",
+      "revision": 3,
+      "source_revision": 20,
+      "status": "completed"
+    },
+    {
+      "external_key": "ZS-DIAG",
+      "freshness": "fresh",
+      "revision": 3,
+      "source_revision": 20,
+      "status": "completed"
+    },
+    {
+      "external_key": "ZS-RECOVER",
+      "freshness": "fresh",
+      "revision": 9,
+      "source_revision": 20,
+      "status": "completed"
+    }
+  ],
+  "source_issues": [],
+  "source_ref": {
+    "end_line": null,
+    "locator": "file:///Users/mac/Documents/originone/agent-work-running/.local/business-live-20260909-v1/interrupted-write/project/work-ledger.yaml",
+    "pointer": "/work_items/3",
+    "section_fingerprint": null,
+    "source_fingerprint": "sha256:c1ae9edabad4bcb9ec0cd7d2c6143b61817bfe4db880065fd5b430d3855111e5",
+    "source_id": "01M21VJFYKQHY3PPK3TBPPYNPT",
+    "source_revision": 20,
+    "start_line": null
+  },
+  "source_refresh_performed": true,
+  "source_warnings": 0,
+  "work": {
+    "active_claims": [],
+    "blocker": null,
+    "diagnostics": [
+      {
+        "code": "status_not_selectable",
+        "detail": "source status is completed",
+        "work_item_key": "ZS-REVIEW"
+      }
+    ],
+    "external_key": "ZS-REVIEW",
+    "freshness": "fresh",
+    "id": "01M21VJFYMSXG6YEVAE8TW7WHA",
+    "milestone": "ZS-DELIVERY",
+    "next_action": "由原生产链认领 ZS-DELIVER，依据当前来源形成最终交付与未决事项；不得把本地返检扩大为 Git 交付、发布或 E4。",
+    "owner": null,
+    "priority": "P0",
+    "raw_status": "completed",
+    "ready": false,
+    "revision": 8,
+    "source_revision": 20,
+    "status": "completed",
+    "summary": "独立整改返检已完成：ZS-R04、ZS-R06 与 ZS-F01 至 ZS-F03 均已关闭；原复核、旧提案、中断证据、失败历史和未知事项保持不变。",
+    "title": "独立复核恢复一致性"
+  }
+}

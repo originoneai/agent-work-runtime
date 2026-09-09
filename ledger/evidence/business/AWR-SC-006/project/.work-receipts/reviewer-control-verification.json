@@ -1,0 +1,34 @@
+{
+  "version": 1,
+  "verified_at": "2026-09-09T11:53:10.945748+08:00",
+  "control_path": "../control/independent-review.json",
+  "control_sha256": "599adccfd39a849475548f7913baf438651c8945b9c31067be74962c0fa58b2d",
+  "checks": [
+    {
+      "name": "control-json",
+      "passed": true
+    },
+    {
+      "name": "reviewed-file-hashes",
+      "passed": true
+    },
+    {
+      "name": "reviewer-receipt-hashes",
+      "passed": true
+    },
+    {
+      "name": "producer-preservation",
+      "passed": true
+    },
+    {
+      "name": "review-closed",
+      "passed": true
+    },
+    {
+      "name": "delivery-boundary",
+      "passed": true
+    }
+  ],
+  "hash_failures": [],
+  "passed": true
+}

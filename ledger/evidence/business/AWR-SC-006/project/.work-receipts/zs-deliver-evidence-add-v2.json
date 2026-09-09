@@ -1,0 +1,29 @@
+{
+  "event_id": "01M22ANMPAPPZ05F194840V9Q3",
+  "evidence": {
+    "branch_id": null,
+    "command": "rtk proxy /Users/mac/Documents/originone/agent-work-running/.venv/bin/python .work-receipts/verify-zs-delivery.py --phase pre",
+    "evidence_type": "verification_report",
+    "external_key": "zs-final-recovery-delivery-20260909-v2",
+    "id": "01M22ANMPA7J6GTMRMDN0Z8MPS",
+    "level": "locally_verified",
+    "locator": ".work-receipts/zs-deliver-completion-report-v2.json",
+    "project_id": "01M21VJFYF7E75EQ55DEH3D5TS",
+    "revision": 1,
+    "scope": [
+      "ZS-DELIVER"
+    ],
+    "sha256": "746610addd54f1f3e5e6d21b055a184baaec79b57c65c091df11e820d411d340",
+    "source_ref": null,
+    "source_sha": "8218b29c348b7eda3e57b541c3489e41b87b6679",
+    "summary": "最终交接说明已形成并经 70 项本地核验：中断恢复、确认要求、新旧提案、归档和角色级安排、失败及未知项均已分层；首次登记失败已保留，不扩展为 Git、发布或 E4。",
+    "verified_at": 1788932066021,
+    "work_item_id": "01M21VJFYMX50ZQZKG1A17EYVP"
+  },
+  "freshness_basis": "source_refresh",
+  "ok": true,
+  "project_revision": 225,
+  "source_refresh_performed": true,
+  "validation_basis": "caller_supplied_bindings"
+}
+

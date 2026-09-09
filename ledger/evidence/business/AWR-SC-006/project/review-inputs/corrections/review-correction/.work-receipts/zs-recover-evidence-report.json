@@ -1,0 +1,38 @@
+{
+  "version": 1,
+  "work_item": "ZS-RECOVER",
+  "source_sha": "8218b29c348b7eda3e57b541c3489e41b87b6679",
+  "command": "rtk proxy sh .work-receipts/verify-zs-recover.sh",
+  "scope": [
+    "ZS-RECOVER"
+  ],
+  "verified_at": 1788921815000,
+  "artifact": {
+    "locator": "deliverables/zhusheng-recovery-work.md",
+    "sha256": "365af74d286ae37c080b689f8f54904ad98468a5051b9939ae544567010cab03"
+  },
+  "checks": [
+    {
+      "name": "pending-changes-recovered-without-duplicate",
+      "passed": true,
+      "details": "三份覆盖式旧提案各只有一条库存记录，均保留 immutable patch、创建/提交与拒绝回执，状态为 rejected 且无 apply attempt；比较完成和恢复推进事件均恰好一条。",
+      "criteria": [
+        "处理待应用改动，保留重试或恢复的证据，避免重复写入。"
+      ]
+    },
+    {
+      "name": "artifacts-provenance-and-gaps",
+      "passed": true,
+      "details": "恢复记录保留原材料、归档及角色确认的路径和哈希、AWR 提案/事件 ID 与失败现场；具体遗留问题、实际归档执行、独立复核和最终交付仍明确为未知或未发生。",
+      "criteria": [
+        "保留实际产物与来源引用，无法确认的内容显式说明。"
+      ]
+    },
+    {
+      "name": "source-write-boundary",
+      "passed": true,
+      "details": "权威台账只记录 ZS-COMPARE 完成和 ZS-RECOVER 进行中，仍保留原两条 ZS-RECOVER 验收条件；三条旧建议没有被重复追加或重放。",
+      "criteria": []
+    }
+  ]
+}

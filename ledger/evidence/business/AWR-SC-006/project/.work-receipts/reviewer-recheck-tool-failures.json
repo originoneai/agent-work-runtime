@@ -1,0 +1,96 @@
+{
+  "version": 1,
+  "reviewer": "luna_worker",
+  "session_id": "01M227QGYJ3BWHQBQWTX6GBAMW",
+  "recorded_at": "2026-09-09T12:57:10+08:00",
+  "failures": [
+    {
+      "stage": "memory preflight",
+      "command": "rtk rg -n \"interrupted-write|ZS-R04|ZS-R06|ZS-F01|ZS-F02|ZS-F03|01M225AVE1BFYY0W4T2EKRV88C\" /Users/mac/.codex/memories/MEMORY.md",
+      "exit_code": 1,
+      "output": "",
+      "effect": "No memory hit; no project mutation."
+    },
+    {
+      "stage": "CodeGraph presence probe",
+      "command": "rtk test -d .codegraph",
+      "exit_code": 2,
+      "output": "rtk test treated test as a shell invocation and printed shell option usage.",
+      "effect": "No mutation; targeted file inventory showed no .codegraph entry, so normal rg/file reads were used."
+    },
+    {
+      "stage": "proposal JSON inspection",
+      "command": "jq filter expecting an events array in proposal show --full output",
+      "exit_code": 5,
+      "output": "Cannot iterate over null (null).",
+      "effect": "Read-only inspection filter error; proposal files were re-read with their actual proposal/apply_attempt shape."
+    },
+    {
+      "stage": "proposal metadata JSON inspection",
+      "command": "jq filter expecting an events array in metadata proposal outputs",
+      "exit_code": 5,
+      "output": "Cannot iterate over null (null).",
+      "effect": "Read-only inspection filter error; proposal patches and apply attempts were re-read successfully."
+    },
+    {
+      "stage": "independent verifier attempt 1",
+      "command": "rtk /Users/mac/Documents/originone/agent-work-running/.venv/bin/python .work-receipts/reviewer-recheck-verify.py",
+      "exit_code": 1,
+      "output": "KeyError: acceptance",
+      "raw_log": ".work-receipts/reviewer-recheck-verification-first-failure.log",
+      "raw_log_sha256": "948d7dbae89b859f6e16f30a8816f1795bfbb60b07cbcb400e2d3cafc56856d8",
+      "effect": "Verifier parsed work show acceptance at the wrong nesting level; no business or AWR mutation."
+    },
+    {
+      "stage": "independent verifier attempt 2",
+      "command": "rtk /Users/mac/Documents/originone/agent-work-running/.venv/bin/python .work-receipts/reviewer-recheck-verify.py",
+      "exit_code": 1,
+      "output": "AssertionError while matching a phrase that is split across two producer documents.",
+      "raw_log": ".work-receipts/reviewer-recheck-verification-error-2.log",
+      "raw_log_sha256": "2334c160591cf5b50e6713434f497c4956e771f8b0ad4beff7c7561a7f9e99da",
+      "effect": "Read-only verifier scope error; the check was corrected to inspect both documents. No business or AWR mutation."
+    },
+    {
+      "stage": "AWR progress attempt 1",
+      "command": "rtk /Users/mac/Documents/originone/agent-work-running/target/release/awr --project <project> --json work progress ZS-REVIEW --session 01M227QGYJ3BWHQBQWTX6GBAMW --summary <summary> --next-action <next-action> --expected-revision 182",
+      "exit_code": 2,
+      "output": "InvalidInput: required argument --reason was not provided.",
+      "effect": "No project revision or source write; retry with --reason succeeded at expected revision 182."
+    },
+    {
+      "stage": "AWR completion attempt 1",
+      "command": "rtk /Users/mac/Documents/originone/agent-work-running/target/release/awr --project <project> --json work complete ZS-REVIEW --session 01M227QGYJ3BWHQBQWTX6GBAMW --reason <reason> --input .work-receipts/reviewer-recheck-completion-input.json --expected-revision 190",
+      "exit_code": 1,
+      "output": "EvidenceMissing: evidence 01M228E30K2ZZYZ2T9AKEP1JQ1 has no valid completion report: missing field source_sha at line 43 column 1",
+      "effect": "No source write and project revision stayed 190. The original evidence/completion files and the exact first report snapshot are retained; corrected v2 files use a new external evidence key."
+    },
+    {
+      "stage": "AWR completion attempt 2",
+      "command": "rtk /Users/mac/Documents/originone/agent-work-running/target/release/awr --project <project> --json work complete ZS-REVIEW --session 01M227QGYJ3BWHQBQWTX6GBAMW --reason <reason> --input .work-receipts/reviewer-recheck-completion-input-v2.json --expected-revision 191",
+      "exit_code": 1,
+      "output": "InvalidInput: completion requires version 1, a full source SHA and at least locally_verified evidence",
+      "effect": "No source write and project revision stayed 191. The v2 evidence remains historical; final v3 evidence uses completion-report/input schema version 1."
+    }
+  ],
+  "successful_recovery": {
+    "verifier_attempt": 3,
+    "checks_passed": 247,
+    "verification": ".work-receipts/reviewer-recheck-verification.json",
+    "progress_receipt": ".work-receipts/reviewer-recheck-work-progress.json"
+  },
+  "business_state_fabricated": false,
+  "first_completion_attempt": {
+    "evidence_external_key": "zs-independent-re-review-20260909-v1",
+    "evidence_id": "01M228E30K2ZZYZ2T9AKEP1JQ1",
+    "completion_report": ".work-receipts/reviewer-recheck-completion-report.json",
+    "report_snapshot": ".work-receipts/reviewer-recheck-report-at-first-completion.md",
+    "report_snapshot_sha256": "3c4fed5490acbca1219382439f9fbfd88d7efc202b94b1be5c8f61240a34cd9f",
+    "accepted_for_completion": false
+  },
+  "second_completion_attempt": {
+    "evidence_external_key": "zs-independent-re-review-20260909-v2",
+    "evidence_id": "01M228JR3R1FP8KTSF95Y1MR6B",
+    "completion_input": ".work-receipts/reviewer-recheck-completion-input-v2.json",
+    "accepted_for_completion": false
+  }
+}

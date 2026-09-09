@@ -1,0 +1,83 @@
+{"code":"Storage","message":"storage error: doctor found unresolved problems; inspect findings (no repairs applied)"}
+{
+  "ok": false,
+  "application_id": 1096241713,
+  "schema_version": 3,
+  "sqlite_version": "3.53.2",
+  "journal_mode": "wal",
+  "foreign_keys": true,
+  "busy_timeout_ms": 5000,
+  "migrations": [
+    {
+      "version": 1,
+      "name": "catalog",
+      "applied_at": 1788916350923
+    },
+    {
+      "version": 2,
+      "name": "domain",
+      "applied_at": 1788916350924
+    },
+    {
+      "version": 3,
+      "name": "search",
+      "applied_at": 1788916350924
+    }
+  ],
+  "integrity": [
+    "ok"
+  ],
+  "foreign_key_violations": 0,
+  "schema_issues": [],
+  "database_ok": true,
+  "read_only": true,
+  "source_refresh_performed": false,
+  "project_id": "01M21VJFYF7E75EQ55DEH3D5TS",
+  "project_revision": 48,
+  "observed_final_revision": 48,
+  "checked_at": 1788919019001,
+  "findings": [
+    {
+      "code": "active_session",
+      "severity": "info",
+      "object_kind": "session",
+      "object_id": "01M21XP8VZ1YJRNSS6BJH2V4HB",
+      "message": "Session is active in the database; process liveness was not inspected, so death cannot be inferred",
+      "repair": {
+        "kind": "interrupt_session",
+        "session_id": "01M21XP8VZ1YJRNSS6BJH2V4HB"
+      }
+    },
+    {
+      "code": "pending_mutation",
+      "severity": "warning",
+      "object_kind": "mutation_proposal",
+      "object_id": "01M21X4H7GSP7DY19MTHYDBXST",
+      "message": "Mutation proposal is ready; it remains pending and was not applied automatically",
+      "repair": null
+    },
+    {
+      "code": "pending_mutation",
+      "severity": "warning",
+      "object_kind": "mutation_proposal",
+      "object_id": "01M21X5MHW7RFN8PBE4J86GACM",
+      "message": "Mutation proposal is ready; it remains pending and was not applied automatically",
+      "repair": null
+    },
+    {
+      "code": "pending_mutation",
+      "severity": "warning",
+      "object_kind": "mutation_proposal",
+      "object_id": "01M21X67QFPQ55YSMJEX96HYV7",
+      "message": "Mutation proposal is ready; it remains pending and was not applied automatically",
+      "repair": null
+    }
+  ],
+  "sources_checked": 4,
+  "artifacts_checked": 0,
+  "limitations": [
+    "Active status and age do not prove process liveness; explicit interruption requires selecting a session.",
+    "Pending operations and unregistered artifact files may belong to a live writer. Diagnosis does not complete, delete or repair them.",
+    "Source reads are capped at 16 MiB each. Registered artifact content is hashed within the requested cap and never emitted."
+  ]
+}

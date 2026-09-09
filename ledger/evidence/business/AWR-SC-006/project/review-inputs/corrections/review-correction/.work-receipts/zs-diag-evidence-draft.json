@@ -1,0 +1,16 @@
+{
+  "work_item_key": "ZS-DIAG",
+  "branch_id": null,
+  "external_key": "zs-diag-local-20260909",
+  "evidence_type": "verification_report",
+  "level": "locally_verified",
+  "summary": "本地核对确认诊断稿列清已保存材料、未应用建议、当前来源状态和未知项，且建议未进入权威台账。",
+  "locator": ".work-receipts/zs-diag-evidence-report.json",
+  "sha256": "1daefa254cd85b8a1e502693abcfa82817b1649bc7b0dd28b4d8543bff5a0b6c",
+  "source_sha": "8218b29c348b7eda3e57b541c3489e41b87b6679",
+  "command": "rtk proxy sh .work-receipts/verify-zs-diag.sh",
+  "scope": [
+    "ZS-DIAG"
+  ],
+  "verified_at": 1788916969000
+}

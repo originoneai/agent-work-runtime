@@ -1,0 +1,24 @@
+{
+  "kind": "normalized_actual_interrupted_input_binding_for_audit",
+  "phase": "prelude-proposals",
+  "client_task_id": "01a083b6-aa5f-7ba0-9135-c128ada421a2",
+  "actual_user_turn": {
+    "timestamp": "2026-09-09T01:33:56.213Z",
+    "text": "请把已经整理的改动建议提交为可审阅的变更提案，便于后续逐项确认与接续。已经保存的整理稿要保留；这些建议先停留在待审核状态，不要直接改动权威台账。"
+  },
+  "native_transcript_snapshot_local": ".local/business-live-20260909-v1/interrupted-write/control/operator-crash-snapshot/native-transcript.jsonl",
+  "native_transcript_snapshot_sha256": "6cf3d5d69e7acf71e7d4ea3dce4542dc8c38b112486cdc66b3cb5aa8b7cc5773",
+  "source_bindings": [
+    {
+      "path": ".local/business-live-20260909-v1/interrupted-write/control/prelude-proposals-business-extract.json",
+      "sha256": "645728efb5aa5368835fd2f88fe58c49ab3ca22874dce1d2673ee366814ba955"
+    },
+    {
+      "path": ".local/business-live-20260909-v1/interrupted-write/control/actual-operator-interruption-v1.json",
+      "sha256": "565b4640dffad67014c1e30a9807f6d89aad57daa38a5c87bb65da42364e38a9"
+    }
+  ],
+  "completed_client_turn": false,
+  "native_returncode": -9,
+  "e4_credit": false
+}

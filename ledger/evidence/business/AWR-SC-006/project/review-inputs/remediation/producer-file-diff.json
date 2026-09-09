@@ -1,0 +1,36 @@
+{
+  "version": 1,
+  "basis": "SHA-256 fixed before independent review versus producer remediation state at AWR project revision 152",
+  "files": [
+    {
+      "path": "deliverables/zhusheng-interruption-diagnosis.md",
+      "before": "a7feebb26b5f65e7da1eb34b0774393fb06b9835c4b4537b64028b247920a196",
+      "after": "a7feebb26b5f65e7da1eb34b0774393fb06b9835c4b4537b64028b247920a196",
+      "changed": false
+    },
+    {
+      "path": "deliverables/zhusheng-change-proposals.md",
+      "before": "576da8467d953ae91a4652460410375b53becdacf46507480b14351987b5ba39",
+      "after": "6f9cf90495fb05f5cf68fcdc6c742a230e6daab7fcd681eda5c24bd459b05577",
+      "changed": true
+    },
+    {
+      "path": "deliverables/zhusheng-recovery-work.md",
+      "before": "365af74d286ae37c080b689f8f54904ad98468a5051b9939ae544567010cab03",
+      "after": "66c8798a779304f8a3b3349e2e4e5763d3c76b08f23d432752b4d7d5f4900b77",
+      "changed": true
+    },
+    {
+      "path": "deliverables/zhusheng-consistency.md",
+      "before": "a4b0e68ba92833cade1877458a7e029fd1b9ecca9035080d9d0358b096ca19fa",
+      "after": "0e5a9d3a872305ed3e8117c22193a6834d92f6101289fe02febf28ffff79d873",
+      "changed": true
+    },
+    {
+      "path": "deliverables/zs-independent-review.md",
+      "before": "c580b03404518ac99436ef3f7f3ccfdb78315a7a493b3c53c18448bd685072b5",
+      "after": "c580b03404518ac99436ef3f7f3ccfdb78315a7a493b3c53c18448bd685072b5",
+      "changed": false
+    }
+  ]
+}

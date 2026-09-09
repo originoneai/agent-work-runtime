@@ -1,0 +1,20 @@
+{
+  "version": 1,
+  "source_sha": "8218b29c348b7eda3e57b541c3489e41b87b6679",
+  "minimum_level": "locally_verified",
+  "acceptance": [
+    {
+      "criterion": "列清真实保存的产物、待应用变更及当前来源状态。",
+      "evidence": [
+        "zs-diag-local-20260909"
+      ]
+    },
+    {
+      "criterion": "保留实际产物与来源引用，无法确认的内容显式说明。",
+      "evidence": [
+        "zs-diag-local-20260909"
+      ]
+    }
+  ],
+  "required_evidence": []
+}

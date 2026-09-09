@@ -1,0 +1,66 @@
+{
+  "version": 2,
+  "work_item": "ZS-REVIEW",
+  "source_sha": "8218b29c348b7eda3e57b541c3489e41b87b6679",
+  "command": "rtk /Users/mac/Documents/originone/agent-work-running/.venv/bin/python .work-receipts/reviewer-recheck-verify.py",
+  "scope": [
+    "ZS-REVIEW"
+  ],
+  "verified_at": 1788929968625,
+  "reviewer": "luna_worker",
+  "session_id": "01M227QGYJ3BWHQBQWTX6GBAMW",
+  "claim_id": "01M227QGYK1C8M9HMNMWBCWH23",
+  "verdict": "remediation_recheck_passed",
+  "source_revision_reviewed": 17,
+  "source_sha256_reviewed": "910155627fdf6131e7aed88c5297cc9c61a97c60aa4beec9a7c08475de8e4a37",
+  "artifact": {
+    "locator": "deliverables/zs-independent-re-review.md",
+    "sha256": "8df7d97ccf55168d8c4eb99fc51eade97a8da039fa24f406906955c12296e890",
+    "size": 6795
+  },
+  "independent_verification": {
+    "locator": ".work-receipts/reviewer-recheck-verification.json",
+    "sha256": "4fa906e8c75fe7be0ec550344328b86013a5bdbafd86b7ce5a1e54d4128be710",
+    "checks_passed": 247
+  },
+  "producer_files_before": {
+    "locator": ".work-receipts/reviewer-recheck-producer-files-before.sha256",
+    "sha256": "8b08f3e0112a2aad124db49a80beff6c31a89d8d4da6b71411584d71603c47a7"
+  },
+  "tool_failures": {
+    "locator": ".work-receipts/reviewer-recheck-tool-failures.json",
+    "sha256": "10d472d367242527709444047149d1d63e84629c7df766005d66d08efd9c1cc5"
+  },
+  "checks": [
+    {
+      "name": "fixed-remediation-and-current-source",
+      "passed": true,
+      "details": "167 published files and the current v2 inputs match their SHA-256 manifests; current source revision 17 contains the exact four-entry recovery acceptance.",
+      "criteria": [
+        "核对来源前后与事件回执，确认未丢失结果或重复交付。"
+      ]
+    },
+    {
+      "name": "proposal-application-counts",
+      "passed": true,
+      "details": "Three old proposals are unique rejected records with null apply attempts; one new combined proposal has one resolved apply attempt, and later metadata proposals do not contain acceptance.",
+      "criteria": [
+        "核对来源前后与事件回执，确认未丢失结果或重复交付。"
+      ]
+    },
+    {
+      "name": "unknowns-and-failure-history-preserved",
+      "passed": true,
+      "details": "CR-03 and unsourced operational facts remain unresolved; normal exit, SIGKILL/-9, missing checkpoint, producer failures, original review, and no-final-delivery boundaries remain explicit.",
+      "criteria": [
+        "保留实际产物与来源引用，无法确认的内容显式说明。"
+      ]
+    },
+    {
+      "name": "verdict-boundary",
+      "passed": true,
+      "details": "This passes only the remediation recheck and does not claim final delivery, Git delivery, publication, or E4.",
+      "criteria": []
+    }
+  ]
+}

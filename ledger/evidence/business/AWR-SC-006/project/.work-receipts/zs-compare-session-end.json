@@ -1,0 +1,37 @@
+{
+  "closed_claim_ids": [],
+  "event": {
+    "artifact_id": null,
+    "branch_id": null,
+    "checkpoint_id": null,
+    "created_at": 1788921353080,
+    "id": "01M220B4VR55WMAMKJ4BZW23FQ",
+    "importance": "normal",
+    "project_revision": 62,
+    "session_id": "01M21XP8VZ1YJRNSS6BJH2V4HB",
+    "source_id": null,
+    "summary": "Ended agent work session",
+    "type": "session.ended",
+    "work_item_id": "01M21VJFYMCA78QW9DEWGQ4ZV6"
+  },
+  "freshness_basis": "runtime_database",
+  "ok": true,
+  "project_revision": 62,
+  "session": {
+    "agent_id": "codex-primary",
+    "branch_id": null,
+    "end_project_revision": 62,
+    "ended_at": 1788921353080,
+    "id": "01M21XP8VZ1YJRNSS6BJH2V4HB",
+    "last_checkpoint_id": "01M220AQRPBPB93E347XTH6HRR",
+    "model": "gpt-5",
+    "project_id": "01M21VJFYF7E75EQ55DEH3D5TS",
+    "provider": "openai",
+    "revision": 5,
+    "start_project_revision": 45,
+    "started_at": 1788918571903,
+    "status": "ended",
+    "work_item_id": "01M21VJFYMCA78QW9DEWGQ4ZV6"
+  },
+  "source_refresh_performed": false
+}

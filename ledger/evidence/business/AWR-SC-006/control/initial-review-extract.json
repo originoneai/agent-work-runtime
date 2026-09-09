@@ -1,0 +1,742 @@
+{
+  "kind": "sealed_native_client_turn_review_extract",
+  "phase": "initial",
+  "client": "Codex CLI",
+  "client_task_id": "01a083d7-4073-7150-89cd-993a9899dcad",
+  "actual_user_turn": {
+    "timestamp": "2026-09-09T01:45:21.295Z",
+    "text": "刚才工作意外中断了，请核实保留下来的结果，恢复到可以继续推进的状态。"
+  },
+  "original_input_sha256": "fc97e65c3c31721f4f8ca1316076e8b96740ee57ccc3f2a6bd4d00f678d04cc4",
+  "native_transcript_snapshot_sha256": "e6dc40ced2cb769998cbc90cb410bc6d95852f96bb6a175c9b80c26a980de0be",
+  "events_sha256": "604d24b3c29adf4e986206bf8ac2bb1ef2309d8d79e9a701e8c6d82bfc4ad47f",
+  "final_message": "已恢复到可安全续做的状态。\n\n- 旧会话已标记为 `interrupted`；新会话 `01M21XP8VZ1YJRNSS6BJH2V4HB` 已激活并重新认领 `ZS-COMPARE`。\n- AWR 当前 revision 为 `48`，bootstrap 与执行上下文均完整；checkpoint `01M21Y1W5N3N6VEEC0AQGGT2N9` 已保存下一步及三个开放事项。\n- 原材料和诊断稿哈希校验通过；3 个提案仍为 `ready`、绑定有效、没有 apply attempt。本次未批准或应用提案，也未直接编辑权威来源。\n- 数据库完整性为 `ok`，无外键或 schema 问题。Doctor 非零仅因当前活动会话及三个有意保留的待审核提案。\n- 恢复校验脚本通过，`git diff --check` 通过。\n- 工作树仍保留原有未提交现场，没有清理、暂存或提交。旧会话从未 checkpoint，因此未落盘的主观摘要无法恢复，已明确记录为缺口。\n\n主要文件：\n\n- [恢复及续做记录](/Users/mac/Documents/originone/agent-work-running/.local/business-live-20260909-v1/interrupted-write/project/deliverables/zhusheng-recovery-work.md)\n- [恢复 checkpoint 回执](/Users/mac/Documents/originone/agent-work-running/.local/business-live-20260909-v1/interrupted-write/project/.work-receipts/zs-compare-recovery-checkpoint.json)\n- [最终会话状态](/Users/mac/Documents/originone/agent-work-running/.local/business-live-20260909-v1/interrupted-write/project/.work-receipts/zs-compare-recovery-final-session.json)\n- [恢复校验脚本](/Users/mac/Documents/originone/agent-work-running/.local/business-live-20260909-v1/interrupted-write/project/.work-receipts/verify-zs-recovery-state.sh)\n\n下一步是先复查认领和来源指纹，再为 `ZS-COMPARE` 绑定恢复证据；三类责任人确认事实前，不应应用现有提案。",
+  "final_message_sha256": "df4fcbc4f437b32a503c99e2b163619feb7a4d2b31eef1dd425dcb67f1b17f10",
+  "project_sources_sha256": {
+    "project.toml": "15caf8be661c1b9dd77c8474d449e5e5e2f019bcaecb51602a62f14366e2a008",
+    "GOALS.md": "254aec11ac1dd7abe79a2b6f8c3dd45be84633765af2ebd74ecbeeaea1ef4152",
+    "PLAN.md": "eda91c43584652bed15afb4d61f2598d379641610db0883a1b0435fa66185995",
+    "RULES.md": "4c28d3a308958136b8449d9c61c59da81e0d5f7dcbfd9075b32c87d61a0cb606",
+    "work-ledger.yaml": "83d49fc17c8d12f487c59687df314093e8d3c360bf55847b9b5a98cfb8d0abf8",
+    "AGENTS.md": "d0ca28ca18c438aefdada6a14cb847a0664e261f9e8e48abbfd8701720eb66a2",
+    "DELIVERABLES.md": "4781518d79092e826bb9d506b39afa3f828e1f6aeefd150dc783a03b3a5e71bd"
+  },
+  "artifacts_sha256": {
+    "deliverables/zhusheng-change-proposals.md": "5ac0267420fe2c3702226ab13779dd05849821d156724d1aa7c69d93342f3bfb",
+    "deliverables/zhusheng-interruption-diagnosis.md": "a7feebb26b5f65e7da1eb34b0774393fb06b9835c4b4537b64028b247920a196",
+    "deliverables/zhusheng-recovery-work.md": "99762c10f442ce1d4eba5939b773246c701cdf84b57c404b396996970cc2b6e5"
+  },
+  "receipt_files": {
+    ".work-receipts/cr-01-archive.patch.json": {
+      "sha256": "8ca0ba1a9ba9e990061898e4fdb22de4f486757b1cb57937e35cbb9c242e0c07",
+      "bytes": 346
+    },
+    ".work-receipts/cr-01-create-session-mismatch-error.json": {
+      "sha256": "2da5594bb5f7d0bafd90676da4102ae106bf4407949fdd39dd1adb65cde10310",
+      "bytes": 99
+    },
+    ".work-receipts/cr-01-create.json": {
+      "sha256": "e4fa3abc2482d7d680cfb8c10c86dce66facd5aaa74605bab302f4032e5f5edb",
+      "bytes": 3527
+    },
+    ".work-receipts/cr-01-show-full.json": {
+      "sha256": "60de99410ed521c7fc7b21b7b92c897f1a8c75a1d7d0e54fee8dba376bb1e1a8",
+      "bytes": 2093
+    },
+    ".work-receipts/cr-01-submit.json": {
+      "sha256": "3a2138ba49871d5febf75d16a8c18b8970801abcf4bf39baffd53acb3caff06c",
+      "bytes": 3632
+    },
+    ".work-receipts/cr-02-create.json": {
+      "sha256": "5ad8ebf756801339101dca6b71a8b752d6c54601e141911cb76d0862442b5378",
+      "bytes": 3455
+    },
+    ".work-receipts/cr-02-roles.patch.json": {
+      "sha256": "083f18691c6fb16a78a8a5c77f7b85771aaa11c9638b7ecf778d2c578660abbc",
+      "bytes": 304
+    },
+    ".work-receipts/cr-02-show-full.json": {
+      "sha256": "47fbb15bd9bbe9f5864b5ff7699834b9f302f7333dfd5d90b217f08dce05b100",
+      "bytes": 2036
+    },
+    ".work-receipts/cr-02-submit.json": {
+      "sha256": "640366a734bb6caca6b5e40b4df051aa59e0639958a00316d3ce7c63d667e0cb",
+      "bytes": 3554
+    },
+    ".work-receipts/cr-03-create.json": {
+      "sha256": "9d5b4930a2869855e8dfcd850b4ed2929b2655c8e9eecff9af597e1d668fcfcb",
+      "bytes": 3446
+    },
+    ".work-receipts/cr-03-open-issues.patch.json": {
+      "sha256": "48e101f9c20678475845b39f3f68a39bc18fbf514db269b2ad60607ec7e05068",
+      "bytes": 301
+    },
+    ".work-receipts/cr-03-show-full.json": {
+      "sha256": "c749a2179ee73f1851e79a7b4b9da5617b223edb66ae2bceec9c64dc94a59aab",
+      "bytes": 2030
+    },
+    ".work-receipts/cr-03-submit.json": {
+      "sha256": "7ceed948359afafb89cb938040300a1beeea5cde649d1c3202962067cdb628dd",
+      "bytes": 3545
+    },
+    ".work-receipts/preserved-handover-inputs.sha256": {
+      "sha256": "0fe5a3ca16660ebc0b09b7fbe2c80fe9c97051dc538cbb6bbd705acafa4600b3",
+      "bytes": 304
+    },
+    ".work-receipts/proposal-ready-list.json": {
+      "sha256": "bca5f2509aee402bf737d5017b9c6070e4ea83941d264d4b7c8b65b19dd9739c",
+      "bytes": 4558
+    },
+    ".work-receipts/verify-zs-change-proposals.sh": {
+      "sha256": "3c714f61427a1aa8c4c57a554d02b23872c984555ec14f29e8b3dec828ef0876",
+      "bytes": 1027
+    },
+    ".work-receipts/verify-zs-diag.sh": {
+      "sha256": "8acf61b1de608009e84a4e906da82aba10211e53f6c0493603f8069146eca901",
+      "bytes": 921
+    },
+    ".work-receipts/verify-zs-recovery-state.sh": {
+      "sha256": "f27dfa22d7f2433e1bc960e8fd53b4541b90df5568e7331af5af7665f26c3c6a",
+      "bytes": 2331
+    },
+    ".work-receipts/zs-compare-interrupted-session-after-resume.json": {
+      "sha256": "6a3fb15e157da7092e2150b36469ecd0b843a69bdbab575525f49c5f17f5657e",
+      "bytes": 1775
+    },
+    ".work-receipts/zs-compare-ready-proposals-after-resume.json": {
+      "sha256": "2fdefba09c38d26a9f262eba825a47df630e4b62bf91139c47fc269668b49498",
+      "bytes": 4558
+    },
+    ".work-receipts/zs-compare-recovered-session.json": {
+      "sha256": "c3ef7d7b4d7583834daa784469453a058c806d5cd602bb25838106601e7352c4",
+      "bytes": 1312
+    },
+    ".work-receipts/zs-compare-recovery-bootstrap.json": {
+      "sha256": "028fd2f3e8c610bbf96a6ce4fbd430d7ea1458840cf1c7142a5a8bb4e37b5c12",
+      "bytes": 6163
+    },
+    ".work-receipts/zs-compare-recovery-checkpoint.json": {
+      "sha256": "57e6205fafeabc44e94e213498bb88b8730768b1c3e4c99f3e92d68ce4cfda57",
+      "bytes": 2243
+    },
+    ".work-receipts/zs-compare-recovery-context.json": {
+      "sha256": "4ef2c97fcc1389a2e7ed7aea6b00c35c5733899570f57500f21a49f42d755f91",
+      "bytes": 16367
+    },
+    ".work-receipts/zs-compare-recovery-final-bootstrap.json": {
+      "sha256": "f8e1a9b7710a2f0860f34b75616de58e17559590121a5b0d3ed1b70f2fc81ff4",
+      "bytes": 8341
+    },
+    ".work-receipts/zs-compare-recovery-final-proposals.json": {
+      "sha256": "0ff71330b5e114d1399df61f9f2236d7a987859765b67fca619d9d68a12fb80f",
+      "bytes": 4558
+    },
+    ".work-receipts/zs-compare-recovery-final-session.json": {
+      "sha256": "bf272689d2ca1aefeddb4e764239d94cfb6fbbef08f3cd3fa4210a762a76ef6e",
+      "bytes": 3089
+    },
+    ".work-receipts/zs-compare-recovery-final-status.json": {
+      "sha256": "5052395e5d8d7e68603acd4aac46ff5fbdfbe08a2d573c9217c45ee2be5462bc",
+      "bytes": 1691
+    },
+    ".work-receipts/zs-compare-status-after-resume.json": {
+      "sha256": "611924f8ea53740547c9a98645b8e0bb74250793dcf506446de8ce0e0938727c",
+      "bytes": 1691
+    },
+    ".work-receipts/zs-diag-checkpoint-show.json": {
+      "sha256": "d189d92e85f550d248e1c0c021fd1ee86a403b5627166ef4d38a1c5c85b75b84",
+      "bytes": 10328
+    },
+    ".work-receipts/zs-diag-completion.json": {
+      "sha256": "9b445f7ec2629a2e904492931fb1b7c002e3efe926290a9f22dfd8654f6cf1e4",
+      "bytes": 502
+    },
+    ".work-receipts/zs-diag-evidence-draft.json": {
+      "sha256": "89fab3d5e804ae3ad4add930ded2305c69bacac32241f5aed0a68e41294d5e4a",
+      "bytes": 649
+    },
+    ".work-receipts/zs-diag-evidence-report.json": {
+      "sha256": "1daefa254cd85b8a1e502693abcfa82817b1649bc7b0dd28b4d8543bff5a0b6c",
+      "bytes": 1422
+    },
+    ".work-receipts/zs-diag-evidence-show.json": {
+      "sha256": "44ba188ca5a7dc911ae71405bca66fd3b072d4c9cdf36e780e021536223f7a5e",
+      "bytes": 2680
+    },
+    ".work-receipts/zs-diag-final-status.json": {
+      "sha256": "7df881fdf2a8fe8e45684a55c9f4ba1152e8a7b95d508e926ffc215832725357",
+      "bytes": 1055
+    },
+    ".work-receipts/zs-diag-session-show.json": {
+      "sha256": "d2793f83bca2a9e1f194581402b1846b3e3ff91004d2ab30fdc346f1daec4b6b",
+      "bytes": 2886
+    },
+    ".work-receipts/zs-diag-work-history.json": {
+      "sha256": "eeff9c46abcd16c8d349a07c60f5324219e664f543efdf4e8a49527fd4e6bd1c",
+      "bytes": 6942
+    },
+    ".work-receipts/zs-recover-after-proposals.json": {
+      "sha256": "34e825fb044b9fe0f7a931668e573c7ef0ef272825c4da6b596929e756ad7748",
+      "bytes": 2092
+    },
+    ".work-receipts/zs-recovery-final-doctor.log": {
+      "sha256": "43dc792d961dbc93a5f2a2a0b9316e922dfe3309ccc4a57ecb0294a2a4dcbdef",
+      "bytes": 2620
+    }
+  },
+  "commands": [
+    {
+      "event_line": 6,
+      "native_item_id": "item_2",
+      "exit_code": 0,
+      "command_sha256": "c469aa75778b0559d5fd25150bd7fb7f1bebbebae378739d6c4d5ccb778bb3df",
+      "output_sha256": "c9bf07cb12b4745abe1bda917942ccedb01317a540290468b67dd9473ec7dc29"
+    },
+    {
+      "event_line": 9,
+      "native_item_id": "item_4",
+      "exit_code": 0,
+      "command_sha256": "32e9c97ac418a13dbe0a5828db249c7b4c91e03a87dd5a9b2f1699d2b6602bc1",
+      "output_sha256": "6e22cc54cb02a5e98ae42d06d9d7292db0c1b43894831b32879beb0166b2aea7"
+    },
+    {
+      "event_line": 11,
+      "native_item_id": "item_5",
+      "exit_code": 1,
+      "command_sha256": "66e92f75f279dcd2d2e4ca9b6864f919e1f470a10704ff39047c6abb3f082fda",
+      "output_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "event_line": 14,
+      "native_item_id": "item_7",
+      "exit_code": 0,
+      "command_sha256": "599857ba2fafa123a94a4237981a568a3e423d84c48a04f4a26bcfafab00af0d",
+      "output_sha256": "8593ea31be57ab538832c1e368ae1df342e38f05c904911f2eba4a4cb7339cfa"
+    },
+    {
+      "event_line": 16,
+      "native_item_id": "item_8",
+      "exit_code": 0,
+      "command_sha256": "a10db09d848dc46a5b81e9783d5bacbd61540980905ce62a1b770853efcb9479",
+      "output_sha256": "bc64a6575d8971448ac7b5ce5d62801b62f468a6b72d4c5475b2619bb743ddfb"
+    },
+    {
+      "event_line": 18,
+      "native_item_id": "item_9",
+      "exit_code": 0,
+      "command_sha256": "7e7335b0b416dc6b5d1d5a39f5f211ac83d93070f967875700b4c26b66a4a305",
+      "output_sha256": "6629afa8f2f9e8a1714e3aef452753763663e27239919279734db1333d1451b1"
+    },
+    {
+      "event_line": 20,
+      "native_item_id": "item_10",
+      "exit_code": 0,
+      "command_sha256": "a705ab30b2e6a62eeb7c2bf3deb1a4c54d186db86255976d33f75709124745cf",
+      "output_sha256": "254aec11ac1dd7abe79a2b6f8c3dd45be84633765af2ebd74ecbeeaea1ef4152"
+    },
+    {
+      "event_line": 22,
+      "native_item_id": "item_11",
+      "exit_code": 0,
+      "command_sha256": "a2dce8a9613e74f6b1faf9095b045eb3092dcb718b2c7daf66c9b37b5782cc91",
+      "output_sha256": "15caf8be661c1b9dd77c8474d449e5e5e2f019bcaecb51602a62f14366e2a008"
+    },
+    {
+      "event_line": 24,
+      "native_item_id": "item_12",
+      "exit_code": 0,
+      "command_sha256": "87ba826eff3a9fb6ab12093c83acd07cc119bea609c55fbfd0c37aa8093dba9a",
+      "output_sha256": "eda91c43584652bed15afb4d61f2598d379641610db0883a1b0435fa66185995"
+    },
+    {
+      "event_line": 26,
+      "native_item_id": "item_13",
+      "exit_code": 0,
+      "command_sha256": "e00042d27dbb573f98b0cb9bda479b4aadd9f1fffb988e8b1774a5ed5f471cf9",
+      "output_sha256": "4c28d3a308958136b8449d9c61c59da81e0d5f7dcbfd9075b32c87d61a0cb606"
+    },
+    {
+      "event_line": 28,
+      "native_item_id": "item_14",
+      "exit_code": 0,
+      "command_sha256": "5175317882da1974e167fceb4db31f3b4dc0ef52c765e426ed0a16fc028a7dc4",
+      "output_sha256": "83d49fc17c8d12f487c59687df314093e8d3c360bf55847b9b5a98cfb8d0abf8"
+    },
+    {
+      "event_line": 30,
+      "native_item_id": "item_15",
+      "exit_code": 0,
+      "command_sha256": "5650032048223396d4e8a6b5160e249524cd69d7929794ca1dae9778ac2c9d2b",
+      "output_sha256": "4781518d79092e826bb9d506b39afa3f828e1f6aeefd150dc783a03b3a5e71bd"
+    },
+    {
+      "event_line": 32,
+      "native_item_id": "item_16",
+      "exit_code": 0,
+      "command_sha256": "c625e5e7ed335f00fd0be91ae77b83005d7dc6be34ab4b552da9f81ac7c0c8ac",
+      "output_sha256": "fc1b2386d842d4f701a3550589e85dea22b14cefb9393e66ecdf131a13a2fac1"
+    },
+    {
+      "event_line": 34,
+      "native_item_id": "item_17",
+      "exit_code": 0,
+      "command_sha256": "a0a7f8fcf8f5c49d174ce11d5c7be9e46c1b0a8dc36f3c888b5171caecf45692",
+      "output_sha256": "d0ca28ca18c438aefdada6a14cb847a0664e261f9e8e48abbfd8701720eb66a2"
+    },
+    {
+      "event_line": 36,
+      "native_item_id": "item_18",
+      "exit_code": 0,
+      "command_sha256": "b61a99512d83f1789b02935eb6a8a11f95a8239219c227126c9306e2019de2ed",
+      "output_sha256": "bb8927f0cb160e41e36c1091f62a8b4d14831ce6145de70563890a9a53552185"
+    },
+    {
+      "event_line": 38,
+      "native_item_id": "item_19",
+      "exit_code": 0,
+      "command_sha256": "a328cfd4959389885ab3283f9bc8872a5331fb5bed0e2ee8b44b31632efca473",
+      "output_sha256": "eb67c318bb45615e797f63901d96ca88197acbd033d56460e9a529b46a16008c"
+    },
+    {
+      "event_line": 40,
+      "native_item_id": "item_20",
+      "exit_code": 0,
+      "command_sha256": "1febd16ba2515660367ef19826816cf8a3873b6fcf74d32d9b97f4ab5872b1ba",
+      "output_sha256": "0974f83b371df904912d737f2c9c63f0cd2393ca14b71ebea4cc9b445c5bd352"
+    },
+    {
+      "event_line": 42,
+      "native_item_id": "item_21",
+      "exit_code": 0,
+      "command_sha256": "8d6230e06519234e7a4237942497a8f5d67572f266328573324e5b006f337bcd",
+      "output_sha256": "a80e73686513d67ab7decaa18fcc044396588bbcaabc30da860b79ccfd7e68da"
+    },
+    {
+      "event_line": 44,
+      "native_item_id": "item_22",
+      "exit_code": 0,
+      "command_sha256": "e6f271262c1cec67fd0033fee990f976d2608f0f2057209285d4f3439ad88756",
+      "output_sha256": "8c9fbbc973df20f7c59009ae4f9ba2241f6b0fb06ef0d7c7631b51fe1c542a2a"
+    },
+    {
+      "event_line": 46,
+      "native_item_id": "item_23",
+      "exit_code": 0,
+      "command_sha256": "6eff84b8b2338a1a7394c1e8aef268bc9b10673e29226b3ddba128c70e353c9f",
+      "output_sha256": "054ad878994e56d63566259b5181e8fa25fcf9272f48de555e60eff37b6a465f",
+      "business_tool_command": "/bin/zsh -lc 'rtk proxy <awr> --project <business-project> --json status'"
+    },
+    {
+      "event_line": 48,
+      "native_item_id": "item_24",
+      "exit_code": 0,
+      "command_sha256": "a71a3c9da7bd4e8b3ccc0edcde49432bd485f7b69f51a9af4df5ef121367c622",
+      "output_sha256": "b68dc2cf43a1239309f3004f0972733b6ab00e73f16b5d1df8f4870e0dbc6bc0",
+      "business_tool_command": "/bin/zsh -lc 'rtk proxy <awr> --project <business-project> --json doctor --help'"
+    },
+    {
+      "event_line": 50,
+      "native_item_id": "item_25",
+      "exit_code": 0,
+      "command_sha256": "cb16463cf95e16caa4a85e5e83734f4f7ec6db1eb72e297f067e52954368da5d",
+      "output_sha256": "77796bf7e0da02a65db2cc9c51376c1be2999c1c826cde48280dfbc43fd58b71",
+      "business_tool_command": "/bin/zsh -lc 'rtk proxy <awr> --project <business-project> --json ready'"
+    },
+    {
+      "event_line": 52,
+      "native_item_id": "item_26",
+      "exit_code": 0,
+      "command_sha256": "a9ac93f7352e8bdcdd47532a13fcc29110a2430287cba042f4bdeab1e72627a5",
+      "output_sha256": "57bd0eb4de26041e3d5a1e1d0571c8bde1d63d9356df2891f298725e22166eb5",
+      "business_tool_command": "/bin/zsh -lc 'rtk proxy <awr> --project <business-project> --json session --help'"
+    },
+    {
+      "event_line": 54,
+      "native_item_id": "item_27",
+      "exit_code": 0,
+      "command_sha256": "f7112819acf419dec25e5fbf605d9ce41eb4bf2d4c9dc71c64394196aab1dfb1",
+      "output_sha256": "e468d96d0a113bd564d97a92c71c0283709bbc96f246c510efc4c8a47717bd70"
+    },
+    {
+      "event_line": 56,
+      "native_item_id": "item_28",
+      "exit_code": 0,
+      "command_sha256": "01601e62bd290bea56d1d4922c99e0d18d7a2ed0d01f1d521d51d591ef0716c4",
+      "output_sha256": "c8c9837cecee0415d4e294e7d96154ab570a0463ff660899e66fe6c821e7a881",
+      "business_tool_command": "/bin/zsh -lc 'rtk proxy <awr> --project <business-project> --json session list'"
+    },
+    {
+      "event_line": 58,
+      "native_item_id": "item_29",
+      "exit_code": 1,
+      "command_sha256": "2dcc49152321c72b47d8ae60dd2351c6e3cedb877b43874cd1e610e373433415",
+      "output_sha256": "12cbb0b92d0db163a82bf0a8646bcc019e7249b4be3fa33cada6e13bd0d24c7c",
+      "business_tool_command": "/bin/zsh -lc 'rtk proxy <awr> --project <business-project> --json doctor'"
+    },
+    {
+      "event_line": 61,
+      "native_item_id": "item_31",
+      "exit_code": 0,
+      "command_sha256": "d18fa24975a4d981e1ab7a9c6fbf9d5b7c119116a9f8f381f57cbb45bce1ccfc",
+      "output_sha256": "0872b48bc80817d733fd80b799d50e850406949f805db81b83aaa54eba433ee2"
+    },
+    {
+      "event_line": 63,
+      "native_item_id": "item_32",
+      "exit_code": 0,
+      "command_sha256": "e5f710f2adb45c25cf8cd597f51f75c67a22ec3071fe2406962587a67c0d4fdc",
+      "output_sha256": "4cbac09bd7a59e47e245a2d5f76e6c18a694680be26c411f97c503972df62361"
+    },
+    {
+      "event_line": 65,
+      "native_item_id": "item_33",
+      "exit_code": 0,
+      "command_sha256": "393378943177fe4a6c8e088766d22af7c694df34f3e2d845e5f48807e0bf33cd",
+      "output_sha256": "a7feebb26b5f65e7da1eb34b0774393fb06b9835c4b4537b64028b247920a196"
+    },
+    {
+      "event_line": 67,
+      "native_item_id": "item_34",
+      "exit_code": 0,
+      "command_sha256": "181721632322d58f45b7eefcdbeb6bfc96fd6946f1f902ba180adfaaa0dbcf01",
+      "output_sha256": "5ac0267420fe2c3702226ab13779dd05849821d156724d1aa7c69d93342f3bfb"
+    },
+    {
+      "event_line": 69,
+      "native_item_id": "item_35",
+      "exit_code": 0,
+      "command_sha256": "df2d14aedae0072a82bffe395ec13189ed83b15c93995e309a7c28f629ea397a",
+      "output_sha256": "34e825fb044b9fe0f7a931668e573c7ef0ef272825c4da6b596929e756ad7748"
+    },
+    {
+      "event_line": 71,
+      "native_item_id": "item_36",
+      "exit_code": 0,
+      "command_sha256": "b9e12064e0a07503c9410277c0e02c0d95423b237951ab4ba763731cbffd0739",
+      "output_sha256": "bca5f2509aee402bf737d5017b9c6070e4ea83941d264d4b7c8b65b19dd9739c"
+    },
+    {
+      "event_line": 73,
+      "native_item_id": "item_37",
+      "exit_code": 0,
+      "command_sha256": "78e1d1eda57f6edef69270ff334fd15bceb4397d37d471797193d87a2cc6e3c0",
+      "output_sha256": "2da5594bb5f7d0bafd90676da4102ae106bf4407949fdd39dd1adb65cde10310"
+    },
+    {
+      "event_line": 75,
+      "native_item_id": "item_38",
+      "exit_code": 0,
+      "command_sha256": "a666d8624de6f95239362f3fbe08f07c874ad57db90efcf593d72edc3be6d02e",
+      "output_sha256": "0fe5a3ca16660ebc0b09b7fbe2c80fe9c97051dc538cbb6bbd705acafa4600b3"
+    },
+    {
+      "event_line": 77,
+      "native_item_id": "item_39",
+      "exit_code": 0,
+      "command_sha256": "fb968e605937376ac86c3d3cd35b726c71c0b58111983b7a44b7febbecd908bd",
+      "output_sha256": "8acf61b1de608009e84a4e906da82aba10211e53f6c0493603f8069146eca901"
+    },
+    {
+      "event_line": 79,
+      "native_item_id": "item_40",
+      "exit_code": 0,
+      "command_sha256": "d6d05948fb3216fb04f3585923d5650e5e4ea1df53f63b0f18c166aeab36d112",
+      "output_sha256": "3c714f61427a1aa8c4c57a554d02b23872c984555ec14f29e8b3dec828ef0876"
+    },
+    {
+      "event_line": 81,
+      "native_item_id": "item_41",
+      "exit_code": 0,
+      "command_sha256": "3075cb9c8328e223d795457f0a777eb5a3b9364d76ddfff40b999bf9829ddf87",
+      "output_sha256": "9fafbe76617fae06aff71041abfa84dfd6ddbb2818d449281f5fd0a7c9d74bb3",
+      "business_tool_command": "/bin/zsh -lc 'rtk proxy <awr> --project <business-project> --json session resume --help'"
+    },
+    {
+      "event_line": 83,
+      "native_item_id": "item_42",
+      "exit_code": 0,
+      "command_sha256": "0ff83c38dea52992af3938f1c991eb4d509ae1b584c0238db6b8b21f7e1c6efd",
+      "output_sha256": "60e05b1d253e5f2a833d1a0f40ba0e96a87b155166cb4b38fa6f3330ee65ab09",
+      "business_tool_command": "/bin/zsh -lc 'rtk proxy <awr> --project <business-project> --json session show --help'"
+    },
+    {
+      "event_line": 85,
+      "native_item_id": "item_43",
+      "exit_code": 0,
+      "command_sha256": "046cbc6a9d1be0a70a7e45f7f2d35a72388a499d5bcdee81217f79bb43a2dfcd",
+      "output_sha256": "b6c8779caaadd25ec9cb053b23ce693e6debb36ed3839b2fe45b54570c6eeb76",
+      "business_tool_command": "/bin/zsh -lc 'rtk proxy <awr> --project <business-project> --json session checkpoint --help'"
+    },
+    {
+      "event_line": 87,
+      "native_item_id": "item_44",
+      "exit_code": 0,
+      "command_sha256": "d47a7e2527cbb671ad8abc8674a1c95f50fd77c60c5e57703025ed4c43856f4a",
+      "output_sha256": "b9984b8ed7c0fe22b7f8ae506576a99a7787c1765f9c813cc9e74ddd0968d5fb",
+      "business_tool_command": "/bin/zsh -lc 'rtk proxy <awr> --project <business-project> --json context --help'"
+    },
+    {
+      "event_line": 89,
+      "native_item_id": "item_45",
+      "exit_code": 0,
+      "command_sha256": "70e1b55157711e2461e2d8707d30af6135a17c08fe6f4696f925cc68cdf459b1",
+      "output_sha256": "8555281796af0b0ef79d156bd8239f63845390ebfeb0784a870a3a41353d045a"
+    },
+    {
+      "event_line": 91,
+      "native_item_id": "item_46",
+      "exit_code": 0,
+      "command_sha256": "59e3eb0eea184997753ff1d8586d5ceac9f0d359120b453522088e2b97f4edf9",
+      "output_sha256": "832cbc32affa344772b63c07dd6ebb18f23b548d32efa6501e48a8a4cc0f904a"
+    },
+    {
+      "event_line": 94,
+      "native_item_id": "item_47",
+      "exit_code": 0,
+      "command_sha256": "dc410e449620894111e2e473f206f7e17bf256b3d447bcf6f7b0b162584cfefa",
+      "output_sha256": "2b229ff701873cc4dc79502a54c2f7f487db5812b3a22a7da46fbda2d8504fc5",
+      "business_tool_command": "/bin/zsh -lc 'rtk proxy <awr> --project <business-project> --json session show 01M21WZXPSGZ77369CSGXCB8CX'"
+    },
+    {
+      "event_line": 95,
+      "native_item_id": "item_48",
+      "exit_code": 0,
+      "command_sha256": "bbe0991e865fdeaf10b1f93f27df8b66b1a0773cc9fc3e97e7932f52291c2c86",
+      "output_sha256": "2d89550fa7a0e037ab21a19e7e2bebb6806e6eef2c609682129f322e1fac2b05",
+      "business_tool_command": "/bin/zsh -lc 'rtk proxy <awr> --project <business-project> --json proposal --help'"
+    },
+    {
+      "event_line": 97,
+      "native_item_id": "item_49",
+      "exit_code": 0,
+      "command_sha256": "ad804dd0bf5a326316b1521f6519c7a159f1dc2e3a8490148b671de7fcc2aced",
+      "output_sha256": "3735627d68db7bdaf0ff82c2bc9e3e2344f10d3177d1c95062a556a574414efc"
+    },
+    {
+      "event_line": 99,
+      "native_item_id": "item_50",
+      "exit_code": 0,
+      "command_sha256": "8fbf858189b461c1274764236f155f61bbf7a3e9d8f882c960c64ed0615abf72",
+      "output_sha256": "aecd949ad9f9fbc3eb1e67739c8e0b65579779f191d979d7e4c5e7e6617a2210"
+    },
+    {
+      "event_line": 101,
+      "native_item_id": "item_51",
+      "exit_code": 0,
+      "command_sha256": "aca53f94aba477c1b13080b434501dc0cb4714c3f285eeeefaf83e15763522a8",
+      "output_sha256": "60de99410ed521c7fc7b21b7b92c897f1a8c75a1d7d0e54fee8dba376bb1e1a8",
+      "business_tool_command": "/bin/zsh -lc 'rtk proxy <awr> --project <business-project> --json proposal show 01M21X4H7GSP7DY19MTHYDBXST --full'"
+    },
+    {
+      "event_line": 103,
+      "native_item_id": "item_52",
+      "exit_code": 0,
+      "command_sha256": "bc5ad1ad608b58d5bf0650550d138589c72edb68fd881b6cf05e7dc82fb984af",
+      "output_sha256": "47fbb15bd9bbe9f5864b5ff7699834b9f302f7333dfd5d90b217f08dce05b100",
+      "business_tool_command": "/bin/zsh -lc 'rtk proxy <awr> --project <business-project> --json proposal show 01M21X5MHW7RFN8PBE4J86GACM --full'"
+    },
+    {
+      "event_line": 105,
+      "native_item_id": "item_53",
+      "exit_code": 0,
+      "command_sha256": "37cd383dd254650944e8857349a184562f3d69e5d447776f95502a8b6ad1e3f5",
+      "output_sha256": "c749a2179ee73f1851e79a7b4b9da5617b223edb66ae2bceec9c64dc94a59aab",
+      "business_tool_command": "/bin/zsh -lc 'rtk proxy <awr> --project <business-project> --json proposal show 01M21X67QFPQ55YSMJEX96HYV7 --full'"
+    },
+    {
+      "event_line": 108,
+      "native_item_id": "item_55",
+      "exit_code": 0,
+      "command_sha256": "da4092fa87553f92be5d09a5f241666d28d1279bf2ca5909a85c6e033dafb0b8",
+      "output_sha256": "7649d1c5d5ca5d060dcbc4881deb3450dc5b4a49952a38df1bb6559f8521321b",
+      "business_tool_command": "/bin/zsh -lc 'rtk proxy <awr> --project <business-project> --json session resume --from-session 01M21WZXPSGZ77369CSGXCB8CX --agent codex-primary --provider openai --model gpt-5 --claim --ttl-ms 3600000 --budget 5000 --expected-revision 45'"
+    },
+    {
+      "event_line": 111,
+      "native_item_id": "item_57",
+      "exit_code": 0,
+      "command_sha256": "cb4e104e201058b6629da6a04cbb388bceaf4fb5cf58cb099b72f8218cdfd921",
+      "output_sha256": "c3ef7d7b4d7583834daa784469453a058c806d5cd602bb25838106601e7352c4",
+      "business_tool_command": "/bin/zsh -lc 'rtk proxy <awr> --project <business-project> --json session show 01M21XP8VZ1YJRNSS6BJH2V4HB'"
+    },
+    {
+      "event_line": 113,
+      "native_item_id": "item_58",
+      "exit_code": 0,
+      "command_sha256": "51dabdeeb7bea786f80ff856ac735fe65ce08c52f39ab5cd80721ef00d02d249",
+      "output_sha256": "028fd2f3e8c610bbf96a6ce4fbd430d7ea1458840cf1c7142a5a8bb4e37b5c12",
+      "business_tool_command": "/bin/zsh -lc 'rtk proxy <awr> --project <business-project> --json context bootstrap --session 01M21XP8VZ1YJRNSS6BJH2V4HB --budget 2000'"
+    },
+    {
+      "event_line": 115,
+      "native_item_id": "item_59",
+      "exit_code": 0,
+      "command_sha256": "9c850e58a1976c5463d26a0020d5c98ac66562b55a1d1ad5115eca97417b340a",
+      "output_sha256": "4ef2c97fcc1389a2e7ed7aea6b00c35c5733899570f57500f21a49f42d755f91",
+      "business_tool_command": "/bin/zsh -lc 'rtk proxy <awr> --project <business-project> --json context compile --session 01M21XP8VZ1YJRNSS6BJH2V4HB --budget 5000'"
+    },
+    {
+      "event_line": 119,
+      "native_item_id": "item_61",
+      "exit_code": 0,
+      "command_sha256": "acc0141b95fc44d82e9a2894b8a40fb6425de6ce424d1e8802c50bb68f2a0faa",
+      "output_sha256": "68182856b66e0726ba49cd9c467d6250540b861b090dc62f2e6e206809ac6a6e"
+    },
+    {
+      "event_line": 121,
+      "native_item_id": "item_62",
+      "exit_code": 0,
+      "command_sha256": "5adcbc0d90a057a2d8236acdd74a7e5890fd34b5630a1702589b85e48a4df69b",
+      "output_sha256": "8adcd8fc5dc3f0c5f932d6c5763be98da91ce0f9f74e41c103ac99c083fea549",
+      "business_tool_command": "/bin/zsh -lc 'rtk proxy <awr> --project <business-project> --json proposal list --help'"
+    },
+    {
+      "event_line": 123,
+      "native_item_id": "item_63",
+      "exit_code": 0,
+      "command_sha256": "33fa76eecee791eb781fbc453687ff622e74f88cbd5a893d95bca369f62dc20c",
+      "output_sha256": "8d8e133bf427abc8a9cff676b51e80cd86127a008d764871e1c104c054d620e4"
+    },
+    {
+      "event_line": 125,
+      "native_item_id": "item_64",
+      "exit_code": 0,
+      "command_sha256": "9dfdde73bacc7bd4b5717603f076650823f5a91520d869d22ca8b4a9ddcd802f",
+      "output_sha256": "17442bc083cf01d91286d42213fdd2d8196c207d778d16261fe42358fe596ad5"
+    },
+    {
+      "event_line": 127,
+      "native_item_id": "item_65",
+      "exit_code": 0,
+      "command_sha256": "11cdf013556ca6798ecaddb4aabb3abd3cfe2b00989c1495a53a0e92ff7dbad7",
+      "output_sha256": "2a409d62fbb3b43b7ac5853b628a7397d6b0f1744d9a49819047c10d41a69ac0"
+    },
+    {
+      "event_line": 129,
+      "native_item_id": "item_66",
+      "exit_code": 0,
+      "command_sha256": "dc410e449620894111e2e473f206f7e17bf256b3d447bcf6f7b0b162584cfefa",
+      "output_sha256": "6a3fb15e157da7092e2150b36469ecd0b843a69bdbab575525f49c5f17f5657e",
+      "business_tool_command": "/bin/zsh -lc 'rtk proxy <awr> --project <business-project> --json session show 01M21WZXPSGZ77369CSGXCB8CX'"
+    },
+    {
+      "event_line": 131,
+      "native_item_id": "item_67",
+      "exit_code": 0,
+      "command_sha256": "67047a2bb457ede416a9b3d750eebc508fdf72eea7af692e7df56581d6592136",
+      "output_sha256": "2fdefba09c38d26a9f262eba825a47df630e4b62bf91139c47fc269668b49498",
+      "business_tool_command": "/bin/zsh -lc 'rtk proxy <awr> --project <business-project> --json proposal list --status ready'"
+    },
+    {
+      "event_line": 133,
+      "native_item_id": "item_68",
+      "exit_code": 0,
+      "command_sha256": "6eff84b8b2338a1a7394c1e8aef268bc9b10673e29226b3ddba128c70e353c9f",
+      "output_sha256": "611924f8ea53740547c9a98645b8e0bb74250793dcf506446de8ce0e0938727c",
+      "business_tool_command": "/bin/zsh -lc 'rtk proxy <awr> --project <business-project> --json status'"
+    },
+    {
+      "event_line": 137,
+      "native_item_id": "item_70",
+      "exit_code": 0,
+      "command_sha256": "599857ba2fafa123a94a4237981a568a3e423d84c48a04f4a26bcfafab00af0d",
+      "output_sha256": "8593ea31be57ab538832c1e368ae1df342e38f05c904911f2eba4a4cb7339cfa"
+    },
+    {
+      "event_line": 139,
+      "native_item_id": "item_71",
+      "exit_code": 0,
+      "command_sha256": "52ee30539f625b90caeb160a8e096d62355fe854fc5b5ae0a570b13827680227",
+      "output_sha256": "8c45bd23d326854d80bb7fda9c26d3f158a98abb4d162619263c4518c7010811"
+    },
+    {
+      "event_line": 141,
+      "native_item_id": "item_72",
+      "exit_code": 0,
+      "command_sha256": "f930a8e4574ff84df1b60860ac1041058cd18fcc3037993d343caead45c27a93",
+      "output_sha256": "01ba4719c80b6fe911b091a7c05124b64eeece964e09c058ef8f9805daca546b"
+    },
+    {
+      "event_line": 146,
+      "native_item_id": "item_75",
+      "exit_code": 0,
+      "command_sha256": "33d585dc7e614243d9d7b4bd5fd34f7578535a578338d5fd3ab835b615fd6cd3",
+      "output_sha256": "a17e76afa0fe68f703dbdef49f874165e923b8a5c8c2eccbead9e71557030136"
+    },
+    {
+      "event_line": 149,
+      "native_item_id": "item_77",
+      "exit_code": 0,
+      "command_sha256": "380262acf4e16f87eea8ce759841ed710f20b2929fa7b8dd5cdd27a465d9ba60",
+      "output_sha256": "57e6205fafeabc44e94e213498bb88b8730768b1c3e4c99f3e92d68ce4cfda57",
+      "business_tool_command": "/bin/zsh -lc \"rtk proxy <awr> --project <business-project> --json session checkpoint --session 01M21XP8VZ1YJRNSS6BJH2V4HB --context-hash ab4beb6621addd2f7e510eefea145ea90b86d4c19b0c6cd138d7600c8acae841 --digest '已复核原始材料、诊断稿、失败回执和三份待审核提案；哈希与来源未漂移，提案均为 ready、绑定有效且无 apply attempt。已将旧会话标记为 interrupted，续接新会话并保存完整上下文、恢复记录和通过的本地校验。' --next-action '读取本 checkpoint 并复查认领与来源指纹；为 ZS-COMPARE 绑定当前恢复证据并决定完成后，再在三类责任人确认事实后推进 ZS-RECOVER。' --open-loop '旧会话无成功 checkpoint，未记录的摘要、下一动作或开放循环无法还原。' --open-loop '三个目录具体值、角色与职责边界、遗留问题明细及影响和下一步仍待相应责任人确认；三份提案不得提前批准或应用。' --open-loop '独立复核尚未发生，必须由不同执行者完成。' --changed-entity deliverables/zhusheng-recovery-work.md --changed-entity .work-receipts/verify-zs-recovery-state.sh --expected-revision 46\""
+    },
+    {
+      "event_line": 153,
+      "native_item_id": "item_79",
+      "exit_code": 0,
+      "command_sha256": "cb4e104e201058b6629da6a04cbb388bceaf4fb5cf58cb099b72f8218cdfd921",
+      "output_sha256": "bf272689d2ca1aefeddb4e764239d94cfb6fbbef08f3cd3fa4210a762a76ef6e",
+      "business_tool_command": "/bin/zsh -lc 'rtk proxy <awr> --project <business-project> --json session show 01M21XP8VZ1YJRNSS6BJH2V4HB'"
+    },
+    {
+      "event_line": 155,
+      "native_item_id": "item_80",
+      "exit_code": 0,
+      "command_sha256": "6eff84b8b2338a1a7394c1e8aef268bc9b10673e29226b3ddba128c70e353c9f",
+      "output_sha256": "5052395e5d8d7e68603acd4aac46ff5fbdfbe08a2d573c9217c45ee2be5462bc",
+      "business_tool_command": "/bin/zsh -lc 'rtk proxy <awr> --project <business-project> --json status'"
+    },
+    {
+      "event_line": 157,
+      "native_item_id": "item_81",
+      "exit_code": 0,
+      "command_sha256": "67047a2bb457ede416a9b3d750eebc508fdf72eea7af692e7df56581d6592136",
+      "output_sha256": "0ff71330b5e114d1399df61f9f2236d7a987859765b67fca619d9d68a12fb80f",
+      "business_tool_command": "/bin/zsh -lc 'rtk proxy <awr> --project <business-project> --json proposal list --status ready'"
+    },
+    {
+      "event_line": 159,
+      "native_item_id": "item_82",
+      "exit_code": 0,
+      "command_sha256": "51dabdeeb7bea786f80ff856ac735fe65ce08c52f39ab5cd80721ef00d02d249",
+      "output_sha256": "f8e1a9b7710a2f0860f34b75616de58e17559590121a5b0d3ed1b70f2fc81ff4",
+      "business_tool_command": "/bin/zsh -lc 'rtk proxy <awr> --project <business-project> --json context bootstrap --session 01M21XP8VZ1YJRNSS6BJH2V4HB --budget 2000'"
+    },
+    {
+      "event_line": 163,
+      "native_item_id": "item_84",
+      "exit_code": 1,
+      "command_sha256": "2dcc49152321c72b47d8ae60dd2351c6e3cedb877b43874cd1e610e373433415",
+      "output_sha256": "43dc792d961dbc93a5f2a2a0b9316e922dfe3309ccc4a57ecb0294a2a4dcbdef",
+      "business_tool_command": "/bin/zsh -lc 'rtk proxy <awr> --project <business-project> --json doctor'"
+    },
+    {
+      "event_line": 169,
+      "native_item_id": "item_87",
+      "exit_code": 0,
+      "command_sha256": "599857ba2fafa123a94a4237981a568a3e423d84c48a04f4a26bcfafab00af0d",
+      "output_sha256": "8593ea31be57ab538832c1e368ae1df342e38f05c904911f2eba4a4cb7339cfa"
+    },
+    {
+      "event_line": 171,
+      "native_item_id": "item_88",
+      "exit_code": 0,
+      "command_sha256": "f930a8e4574ff84df1b60860ac1041058cd18fcc3037993d343caead45c27a93",
+      "output_sha256": "01ba4719c80b6fe911b091a7c05124b64eeece964e09c058ef8f9805daca546b"
+    },
+    {
+      "event_line": 173,
+      "native_item_id": "item_89",
+      "exit_code": 0,
+      "command_sha256": "33d585dc7e614243d9d7b4bd5fd34f7578535a578338d5fd3ab835b615fd6cd3",
+      "output_sha256": "4a938072e5af065b1c74df1665a8efd431b57e89ef9ed5a2e98631e7cc284fb3"
+    }
+  ],
+  "original_recorded_at": "2026-09-09T10:07:49+08:00",
+  "all_snapshot_hashes_verified": true,
+  "limitations": [
+    "Extract only. Raw native context remains private. Independent review, later business revisions, final delivery and remote verification are separate requirements."
+  ],
+  "e4_completion_claim": false
+}

@@ -1,0 +1,351 @@
+{
+  "version": 1,
+  "kind": "independent_remediation_re_review_record",
+  "recorded_at": "2026-09-09T13:11:32+08:00",
+  "scenario": "interrupted-write",
+  "status": "recheck_complete_waiting_for_original_delivery_chain",
+  "independent_verdict": "remediation_recheck_passed",
+  "reviewer": {
+    "actual_identity": "luna_worker",
+    "role": "original independent reviewer returning for remediation recheck",
+    "provider": "openai",
+    "model_metadata": "gpt-5.6-sol",
+    "different_from_producer": true,
+    "producer_native_task_id": "01a083d7-4073-7150-89cd-993a9899dcad"
+  },
+  "scope": {
+    "work_item": "ZS-REVIEW",
+    "closed_findings": [
+      "ZS-R04",
+      "ZS-R06",
+      "ZS-F01",
+      "ZS-F02",
+      "ZS-F03"
+    ],
+    "final_delivery_performed": false,
+    "git_delivery_performed": false,
+    "publication_performed": false,
+    "e4_credit": false
+  },
+  "fixed_input": {
+    "publication": "control/review-correction-publication.json",
+    "publication_sha256": "5f55b000828d090cf32204dc19a28f649fe88b94bb0ac69a92aa136cc84cac3a",
+    "target": "review-inputs/corrections/review-correction",
+    "files_verified": 167,
+    "actual_client_task_id": "01a083d7-4073-7150-89cd-993a9899dcad",
+    "private_native_transcript_published": false,
+    "producer_selfcheck_pointer": "project/review-inputs/remediation/LATEST.md",
+    "producer_selfcheck_is_verdict_authority": false
+  },
+  "source_before_recheck": {
+    "project_revision": 181,
+    "source_revision": 17,
+    "work_ledger_sha256": "910155627fdf6131e7aed88c5297cc9c61a97c60aa4beec9a7c08475de8e4a37",
+    "review_status": "planned",
+    "review_ready": true,
+    "recover_status": "completed",
+    "deliver_dependency_blocked": true,
+    "active_sessions": 0
+  },
+  "verdicts": {
+    "ZS-R04": {
+      "verdict": "pass",
+      "basis": "Current recovery acceptance exactly contains the two original and two confirmed requirements; combined proposal has one resolved apply attempt."
+    },
+    "ZS-R06": {
+      "verdict": "pass",
+      "basis": "At producer handoff, completed recovery pointed to independent recheck, review was ready, and delivery was dependency blocked."
+    },
+    "ZS-F01": {
+      "verdict": "closed",
+      "basis": "Three old proposals are unique rejected records with null apply attempts; new combined proposal 01M225AVE1BFYY0W4T2EKRV88C applied once."
+    },
+    "ZS-F02": {
+      "verdict": "closed",
+      "basis": "Recovery status and handoff next action were consistent at independent recheck start."
+    },
+    "ZS-F03": {
+      "verdict": "closed",
+      "basis": "Producer narrative separates old patch apply count 0 from new combined proposal apply count 1; two later metadata patches contain no acceptance field."
+    }
+  },
+  "proposal_evidence": {
+    "old": [
+      {
+        "id": "01M21X4H7GSP7DY19MTHYDBXST",
+        "status": "rejected",
+        "apply_attempt": null
+      },
+      {
+        "id": "01M21X5MHW7RFN8PBE4J86GACM",
+        "status": "rejected",
+        "apply_attempt": null
+      },
+      {
+        "id": "01M21X67QFPQ55YSMJEX96HYV7",
+        "status": "rejected",
+        "apply_attempt": null
+      }
+    ],
+    "combined": {
+      "id": "01M225AVE1BFYY0W4T2EKRV88C",
+      "status": "applied",
+      "apply_attempt_event_id": "01M225BCXTY18AWZSRG0B9WT1P",
+      "resolved_event_id": "01M225BCYBY571X8FPBY8TGME8"
+    },
+    "later_metadata_only": [
+      "01M226DVJZNTTSTGZ20CHGQDWD",
+      "01M226HF1GX6P579T58HV384G8"
+    ]
+  },
+  "preserved_boundaries": [
+    "CR-03 concrete issue facts remain unresolved.",
+    "Archive root, access, migration and integrity remain unresolved.",
+    "Named people, duty schedule, proxy/escalation path and handoff timing remain unresolved.",
+    "Initial prelude remains a normal exit 0; later SIGKILL/native -9 remains the actual interruption.",
+    "Automatic observer non-trigger and old checkpoint absence remain recorded.",
+    "Historical producer/reviewer failures and original independent review are unchanged.",
+    "deliverables/zs-delivery.md is absent."
+  ],
+  "reviewer_awr": {
+    "session_id": "01M227QGYJ3BWHQBQWTX6GBAMW",
+    "session_status": "ended",
+    "start_project_revision": 181,
+    "end_project_revision": 202,
+    "claim_id": "01M227QGYK1C8M9HMNMWBCWH23",
+    "claim_status": "released",
+    "checkpoint_id": "01M228PT5GJAEMARV4ZT77K6V7",
+    "completion_proposal_id": "01M228NMKCZ30MT9SH043WEC17",
+    "completion_apply_attempt_event_id": "01M228NMMDWEKW3CDRE9343JH7",
+    "completion_resolved_event_id": "01M228NMN3P9A0PJB3VA8RJENN",
+    "evidence_external_key": "zs-independent-re-review-20260909-v3",
+    "evidence_id": "01M228NMCF08HZZ2WJY5TX1EYV",
+    "evidence_level": "locally_verified",
+    "final_handoff_proposal_id": "01M228VHNTEF3J3RXB6YPQYDNS",
+    "final_handoff_fields": [
+      "next_action",
+      "summary"
+    ]
+  },
+  "producer_files": {
+    "before_manifest": "project/.work-receipts/reviewer-recheck-producer-files-before.sha256",
+    "before_manifest_sha256": "8b08f3e0112a2aad124db49a80beff6c31a89d8d4da6b71411584d71603c47a7",
+    "final_manifest": "project/.work-receipts/reviewer-recheck-producer-files-final.sha256",
+    "final_manifest_sha256": "7961043d4a0ed4c4d972ce18b00defca7a313ea3b4b346a077af889cd5f7a675",
+    "before": {
+      "work-ledger.yaml": "910155627fdf6131e7aed88c5297cc9c61a97c60aa4beec9a7c08475de8e4a37",
+      "materials/archive-confirmation.md": "03fd800c15f3571df42ec52f69073f9230425e0eb1aaa6019ec5fdfa5b60cf5c",
+      "materials/role-confirmation.md": "8117dffe9cf6088adf357e9d0c404d1f4f547c430dd520cf1095d8cb27bf1da5",
+      "deliverables/zhusheng-interruption-diagnosis.md": "a7feebb26b5f65e7da1eb34b0774393fb06b9835c4b4537b64028b247920a196",
+      "deliverables/zhusheng-change-proposals.md": "e00e5e4e98db2476d0321fc86af82e93aa0a218edfab66c1b568f64335304a05",
+      "deliverables/zhusheng-recovery-work.md": "46bfc0ea1ac8396b10280e06b3ed55a72a69242555010218974f8b4ece64fb31",
+      "deliverables/zhusheng-consistency.md": "ddb10a828a04059aea355186b98a685167ac738aee77902d587b6506b585260e",
+      "deliverables/zs-independent-review.md": "c580b03404518ac99436ef3f7f3ccfdb78315a7a493b3c53c18448bd685072b5"
+    },
+    "final": {
+      "work-ledger.yaml": "c1ae9edabad4bcb9ec0cd7d2c6143b61817bfe4db880065fd5b430d3855111e5",
+      "materials/archive-confirmation.md": "03fd800c15f3571df42ec52f69073f9230425e0eb1aaa6019ec5fdfa5b60cf5c",
+      "materials/role-confirmation.md": "8117dffe9cf6088adf357e9d0c404d1f4f547c430dd520cf1095d8cb27bf1da5",
+      "deliverables/zhusheng-interruption-diagnosis.md": "a7feebb26b5f65e7da1eb34b0774393fb06b9835c4b4537b64028b247920a196",
+      "deliverables/zhusheng-change-proposals.md": "e00e5e4e98db2476d0321fc86af82e93aa0a218edfab66c1b568f64335304a05",
+      "deliverables/zhusheng-recovery-work.md": "46bfc0ea1ac8396b10280e06b3ed55a72a69242555010218974f8b4ece64fb31",
+      "deliverables/zhusheng-consistency.md": "ddb10a828a04059aea355186b98a685167ac738aee77902d587b6506b585260e",
+      "deliverables/zs-independent-review.md": "c580b03404518ac99436ef3f7f3ccfdb78315a7a493b3c53c18448bd685072b5"
+    },
+    "unchanged_nonledger": true,
+    "original_review_unchanged": true
+  },
+  "report": {
+    "path": "project/deliverables/zs-independent-re-review.md",
+    "sha256": "5f8d595f33ce5fd48503d12e1076aab409b6f54605d36351ddf343e457d50173",
+    "completion_report": "project/.work-receipts/reviewer-recheck-completion-report-v3.json",
+    "completion_report_sha256": "c973140be6fbaefcab4075a56f8e27cd5d55b6ae4b0f5f23b91a31b140f21475"
+  },
+  "verification": {
+    "pre_mutation_checks_passed": 247,
+    "pre_mutation_checks_failed": 0,
+    "pre_mutation_receipt": "project/.work-receipts/reviewer-recheck-verification.json",
+    "pre_mutation_receipt_sha256": "4fa906e8c75fe7be0ec550344328b86013a5bdbafd86b7ce5a1e54d4128be710",
+    "final_checks_passed": 51,
+    "final_checks_failed": 0,
+    "final_receipt": "project/.work-receipts/reviewer-recheck-final-verification.json",
+    "final_receipt_sha256": "2622893cdde7c35e434816b3e54855cf6ad5cbad63f758da6da7dd04146037ea"
+  },
+  "actual_failures": {
+    "before_completion": [
+      {
+        "stage": "memory preflight",
+        "command": "rtk rg -n \"interrupted-write|ZS-R04|ZS-R06|ZS-F01|ZS-F02|ZS-F03|01M225AVE1BFYY0W4T2EKRV88C\" /Users/mac/.codex/memories/MEMORY.md",
+        "exit_code": 1,
+        "output": "",
+        "effect": "No memory hit; no project mutation."
+      },
+      {
+        "stage": "CodeGraph presence probe",
+        "command": "rtk test -d .codegraph",
+        "exit_code": 2,
+        "output": "rtk test treated test as a shell invocation and printed shell option usage.",
+        "effect": "No mutation; targeted file inventory showed no .codegraph entry, so normal rg/file reads were used."
+      },
+      {
+        "stage": "proposal JSON inspection",
+        "command": "jq filter expecting an events array in proposal show --full output",
+        "exit_code": 5,
+        "output": "Cannot iterate over null (null).",
+        "effect": "Read-only inspection filter error; proposal files were re-read with their actual proposal/apply_attempt shape."
+      },
+      {
+        "stage": "proposal metadata JSON inspection",
+        "command": "jq filter expecting an events array in metadata proposal outputs",
+        "exit_code": 5,
+        "output": "Cannot iterate over null (null).",
+        "effect": "Read-only inspection filter error; proposal patches and apply attempts were re-read successfully."
+      },
+      {
+        "stage": "independent verifier attempt 1",
+        "command": "rtk /Users/mac/Documents/originone/agent-work-running/.venv/bin/python .work-receipts/reviewer-recheck-verify.py",
+        "exit_code": 1,
+        "output": "KeyError: acceptance",
+        "raw_log": ".work-receipts/reviewer-recheck-verification-first-failure.log",
+        "raw_log_sha256": "948d7dbae89b859f6e16f30a8816f1795bfbb60b07cbcb400e2d3cafc56856d8",
+        "effect": "Verifier parsed work show acceptance at the wrong nesting level; no business or AWR mutation."
+      },
+      {
+        "stage": "independent verifier attempt 2",
+        "command": "rtk /Users/mac/Documents/originone/agent-work-running/.venv/bin/python .work-receipts/reviewer-recheck-verify.py",
+        "exit_code": 1,
+        "output": "AssertionError while matching a phrase that is split across two producer documents.",
+        "raw_log": ".work-receipts/reviewer-recheck-verification-error-2.log",
+        "raw_log_sha256": "2334c160591cf5b50e6713434f497c4956e771f8b0ad4beff7c7561a7f9e99da",
+        "effect": "Read-only verifier scope error; the check was corrected to inspect both documents. No business or AWR mutation."
+      },
+      {
+        "stage": "AWR progress attempt 1",
+        "command": "rtk /Users/mac/Documents/originone/agent-work-running/target/release/awr --project <project> --json work progress ZS-REVIEW --session 01M227QGYJ3BWHQBQWTX6GBAMW --summary <summary> --next-action <next-action> --expected-revision 182",
+        "exit_code": 2,
+        "output": "InvalidInput: required argument --reason was not provided.",
+        "effect": "No project revision or source write; retry with --reason succeeded at expected revision 182."
+      },
+      {
+        "stage": "AWR completion attempt 1",
+        "command": "rtk /Users/mac/Documents/originone/agent-work-running/target/release/awr --project <project> --json work complete ZS-REVIEW --session 01M227QGYJ3BWHQBQWTX6GBAMW --reason <reason> --input .work-receipts/reviewer-recheck-completion-input.json --expected-revision 190",
+        "exit_code": 1,
+        "output": "EvidenceMissing: evidence 01M228E30K2ZZYZ2T9AKEP1JQ1 has no valid completion report: missing field source_sha at line 43 column 1",
+        "effect": "No source write and project revision stayed 190. The original evidence/completion files and the exact first report snapshot are retained; corrected v2 files use a new external evidence key."
+      },
+      {
+        "stage": "AWR completion attempt 2",
+        "command": "rtk /Users/mac/Documents/originone/agent-work-running/target/release/awr --project <project> --json work complete ZS-REVIEW --session 01M227QGYJ3BWHQBQWTX6GBAMW --reason <reason> --input .work-receipts/reviewer-recheck-completion-input-v2.json --expected-revision 191",
+        "exit_code": 1,
+        "output": "InvalidInput: completion requires version 1, a full source SHA and at least locally_verified evidence",
+        "effect": "No source write and project revision stayed 191. The v2 evidence remains historical; final v3 evidence uses completion-report/input schema version 1."
+      }
+    ],
+    "post_completion": [
+      {
+        "stage": "post-completion final verifier attempt 1",
+        "exit_code": 1,
+        "output": "JSONDecodeError: Expecting value at line 1 column 1",
+        "effect": "The verifier glob included two zero-byte stdout placeholders from the two rejected AWR completion calls. No business, source, AWR, report, or evidence mutation occurred. The final verifier explicitly checks those empty files as retained failure placeholders and parses only nonempty JSON.",
+        "empty_failure_placeholders": [
+          ".work-receipts/reviewer-recheck-work-complete.json",
+          ".work-receipts/reviewer-recheck-work-complete-v2.json"
+        ],
+        "raw_log": ".work-receipts/reviewer-recheck-final-verification-first-failure.log"
+      }
+    ],
+    "first_two_evidence_attempts_not_used_for_completion": true,
+    "accepted_completion_evidence": "zs-independent-re-review-20260909-v3"
+  },
+  "final_state": {
+    "project_revision": 209,
+    "source_revision": 20,
+    "source_fingerprint": "sha256:c1ae9edabad4bcb9ec0cd7d2c6143b61817bfe4db880065fd5b430d3855111e5",
+    "work_ledger_sha256": "c1ae9edabad4bcb9ec0cd7d2c6143b61817bfe4db880065fd5b430d3855111e5",
+    "review_status": "completed",
+    "active_sessions": 0,
+    "active_claims": 0,
+    "next_ready_work": "ZS-DELIVER",
+    "zs_delivery_exists": false,
+    "e4_credit": false
+  },
+  "receipt_sha256": {
+    ".work-receipts/reviewer-recheck-active-sessions-before.json": "c22a6f08f63ccc1059a526ef8ec42ebd92072792a48345166a07f4751251765e",
+    ".work-receipts/reviewer-recheck-bootstrap.json": "124a23e71c2a9f7dd6f4e9ac0d3136d5b2e495cd56944185f81aab79a6a73dec",
+    ".work-receipts/reviewer-recheck-checkpoint.json": "b3f007a814276c150a146273880caea9535e76e192339575a1dd270e87ef1212",
+    ".work-receipts/reviewer-recheck-combined-full.json": "0e8a0570766373b627dd1217b37e99c6319233394acf0cf4d0fa241f9c032f1b",
+    ".work-receipts/reviewer-recheck-completion-input-v2.json": "d70ebf7544a54a7ec36ff83561a26b30fb1631053c8767580b1bf1f31e6b26e5",
+    ".work-receipts/reviewer-recheck-completion-input-v3.json": "5915a706839cb320bc4213dc4e601a5441831d9c17991115a2cc1ae37e70e8ab",
+    ".work-receipts/reviewer-recheck-completion-input.json": "c57b98e634b81b4ca3fe09f44044940e085afb18ef96ac2722fd90b3061c5f5d",
+    ".work-receipts/reviewer-recheck-completion-report-v2.json": "e531f0afb7a61c79772785056d1418b6a5718652ec9235e317b26e0d3c07a5a9",
+    ".work-receipts/reviewer-recheck-completion-report-v3.json": "c973140be6fbaefcab4075a56f8e27cd5d55b6ae4b0f5f23b91a31b140f21475",
+    ".work-receipts/reviewer-recheck-completion-report.json": "17756ba75905fa9757e8d73ec42c697304083e3b7cf7b66ec19de81f650a43c0",
+    ".work-receipts/reviewer-recheck-context.json": "ca95a385696d8072fa79d79241963ef95deb8d32a7fd8fd2083e20d340badbcf",
+    ".work-receipts/reviewer-recheck-cr-01-full.json": "1fd64fc38215f600a05e7b6972343c610f4d15ca5ab0802254ce5dcabdbe3d5d",
+    ".work-receipts/reviewer-recheck-cr-02-full.json": "6a0bd5548db287b4691752f2bedea0911c608487733eeef3950a7b98af31b932",
+    ".work-receipts/reviewer-recheck-cr-03-full.json": "afd44081bf868b9ffafd4182e43cf064b0106fda0e57eaa68bf56daf7d52a519",
+    ".work-receipts/reviewer-recheck-evidence-add-v2.json": "b64a65d59023fa82932063c1ff1ab94b3bdf8073bfd970d2f71948a7f52bcc6f",
+    ".work-receipts/reviewer-recheck-evidence-add-v3.json": "58832b51148ebeda00033c9e0af9896d244a9625e1fbba02d8a1b53529c8b2fd",
+    ".work-receipts/reviewer-recheck-evidence-add.json": "52684fac2c6e10e3c94e6fa0c1cd4726b4917d271eab778f1b15c70971e14cd3",
+    ".work-receipts/reviewer-recheck-evidence-draft-v2.json": "50deac81ac9e866970ca2258cad80fc3b6e7b3af6a5d4261ed09db84eb7eb385",
+    ".work-receipts/reviewer-recheck-evidence-draft-v3.json": "c03ec277af260c7ab50b9aca8989e5578166175fce9d4d823ad4cb960cc2658d",
+    ".work-receipts/reviewer-recheck-evidence-draft.json": "f4dd7808a6e12667888da8f163eea0debe7392baef90f29812710ce9c96e9505",
+    ".work-receipts/reviewer-recheck-final-active-sessions.json": "f87c4d370eef44a77a29eac5631b93fb8f33d92d120e0eb60ba6de641e1f7756",
+    ".work-receipts/reviewer-recheck-final-evidence.json": "46bcb5a390441e433af151ae5c013977c7e747dc789876d9f7cf19309ef24c95",
+    ".work-receipts/reviewer-recheck-final-git-status.txt": "3250b7d37efe32027aa117bcbfe958c9ade108f709d6ab19c5ef8f0d2a169215",
+    ".work-receipts/reviewer-recheck-final-handoff-apply.json": "08c3caedf907fd224c1612fa2beabed2a9231377c4a8512fe3e84f2873928a1c",
+    ".work-receipts/reviewer-recheck-final-handoff-approve.json": "844b7a51ccfa62c1c81ff124958762394728dc7cd3f9a62e3ccd206b52bab049",
+    ".work-receipts/reviewer-recheck-final-handoff-create.json": "33fd0990850aa5ed7b02dc926b6071135d7b8edb26bf9cfc2723db33cffe7bfa",
+    ".work-receipts/reviewer-recheck-final-handoff-full.json": "ba903e47cc39168e6f31d77477fb2f6e943d35cce22b694e9072e83bf3de8a4d",
+    ".work-receipts/reviewer-recheck-final-handoff-patch.json": "da504711ca7f89c60ae5377e4e65d36788e3d6c1430a44aea417ebc68d6b73e9",
+    ".work-receipts/reviewer-recheck-final-handoff-submit.json": "a9c94c646de7d72073476fe807cacdf1c9a6015552e249366241b0d841b61bed",
+    ".work-receipts/reviewer-recheck-final-ready.json": "2a2873a2663cb7616860d63d538eede1335c4f39e8b28d6091397f31cfd097b6",
+    ".work-receipts/reviewer-recheck-final-session.json": "3f1b846fd83d940a5aca3a34a6a0969524c2e639c617fb845b342214df86829e",
+    ".work-receipts/reviewer-recheck-final-status.json": "6bdbe1b412a15c2f0c42be84008e0ab991c30b5351a4ae357711a393711e1a4c",
+    ".work-receipts/reviewer-recheck-final-verification-first-failure.log": "a833600571623f6ac973ee4357c65ffd07da51d331ca2e7e465e2a5295cd1ff4",
+    ".work-receipts/reviewer-recheck-final-verification.json": "2622893cdde7c35e434816b3e54855cf6ad5cbad63f758da6da7dd04146037ea",
+    ".work-receipts/reviewer-recheck-final-work.json": "5a67b6a91db9d71107e9db025665025f2c602f07512b3fe7c0eab8d4293a2072",
+    ".work-receipts/reviewer-recheck-git-head.txt": "8d8e133bf427abc8a9cff676b51e80cd86127a008d764871e1c104c054d620e4",
+    ".work-receipts/reviewer-recheck-git-status-before.txt": "3250b7d37efe32027aa117bcbfe958c9ade108f709d6ab19c5ef8f0d2a169215",
+    ".work-receipts/reviewer-recheck-post-completion-tool-failures.json": "6704b1407df5819b79c75d4995c423d4fec6aab2d12a402ab5f4cb4fd3c93565",
+    ".work-receipts/reviewer-recheck-post-handoff-active-sessions.json": "98f6c923f8895bb7a6b2e5107d9d588bd6e8d012c68f468bfae42d2eda3527a5",
+    ".work-receipts/reviewer-recheck-post-handoff-deliver.json": "e999a73a28af6f6563344455c70d9005c79eca67efac7fa81947224754badb47",
+    ".work-receipts/reviewer-recheck-post-handoff-git-status.txt": "3250b7d37efe32027aa117bcbfe958c9ade108f709d6ab19c5ef8f0d2a169215",
+    ".work-receipts/reviewer-recheck-post-handoff-ready.json": "79a8a5be7c16fd73f3d32c0affaa0c8e990dec5b42618fb82bf36182d8bc5233",
+    ".work-receipts/reviewer-recheck-post-handoff-recover.json": "6b13ab89c4d9eca7412ddc89c4cbfafc359c9ec5f172213d6c19b9b33ef9a885",
+    ".work-receipts/reviewer-recheck-post-handoff-review.json": "a72c1127b2a090351b27cd8de2e999159b50731c01097fc83494398a0959e9ab",
+    ".work-receipts/reviewer-recheck-post-handoff-session.json": "05626eae5575f70e59bf722f62d44f8da5d48c165adcf0c5d8f1aafef82e8eef",
+    ".work-receipts/reviewer-recheck-post-handoff-status.json": "1a1e4112b9d265cd5e006ccf77a845547cb08de791c3b837b5ad0ff6ffd7addc",
+    ".work-receipts/reviewer-recheck-producer-files-after.sha256": "c9c8fa9f9f6f21d294eb1a189eadbdaf29648fb63d63ffcaabf177bdb9b2004e",
+    ".work-receipts/reviewer-recheck-producer-files-before.sha256": "8b08f3e0112a2aad124db49a80beff6c31a89d8d4da6b71411584d71603c47a7",
+    ".work-receipts/reviewer-recheck-producer-files-final.sha256": "7961043d4a0ed4c4d972ce18b00defca7a313ea3b4b346a077af889cd5f7a675",
+    ".work-receipts/reviewer-recheck-proposals-before.json": "bcc6e25b61eb1cdfd2e030bc1599f61fca4dda2d99dd6b3783ecbe5413e44ca7",
+    ".work-receipts/reviewer-recheck-ready-before.json": "3f2f7ba84f15d47f3b21e0ffe58097c55b5ae5dd3462647bf7060ccef7ba6309",
+    ".work-receipts/reviewer-recheck-recover-current.json": "efd0736f18e6cbc2fb5d0dd4d43ad7f195f3d7c2b12433aacb575f36dd8e636c",
+    ".work-receipts/reviewer-recheck-recover-metadata-full.json": "0f8cb01473b3806d17ad8f67bd1b0c88bb52bd4a2baffe741d7bb7f79b639854",
+    ".work-receipts/reviewer-recheck-report-at-first-completion.md": "3c4fed5490acbca1219382439f9fbfd88d7efc202b94b1be5c8f61240a34cd9f",
+    ".work-receipts/reviewer-recheck-review-metadata-full.json": "dd805f63756f2eb4909ece2850fdef162693f160b8aec2825f6baafba237eeef",
+    ".work-receipts/reviewer-recheck-session-active.json": "a5801c94a6bc7d3b4eddb2cb846cefa05bcdba42a3a85496f9121a7b9a30aa21",
+    ".work-receipts/reviewer-recheck-session-end.json": "51dd92769424c4e5fffb9628b8552250ac96528c896ae1efcd59cd744874cf3b",
+    ".work-receipts/reviewer-recheck-session-start.json": "c609b8f1357f97245539b51be3d0ccf4c64ac9fed774da67cfad9361c9b19929",
+    ".work-receipts/reviewer-recheck-status-after-completion-failure.json": "48c267482446c820b0f407360594039a5204a6093abf7591e63dc824bb20154b",
+    ".work-receipts/reviewer-recheck-status-before.json": "83f60a0bccbf395dfa2203fe49336387c08dd1225c9f4b787d8a8d7db3f51e22",
+    ".work-receipts/reviewer-recheck-tool-failures.json": "f0eecc7230b8bbe63b54dd8068d0254fa141fea21227b267ed4f2d5ff7529a7f",
+    ".work-receipts/reviewer-recheck-v2-bundle-manifest.log": "9d0d7bfa5d9a66373e81fb817b2c27620cf73cdad12800977751f5fd21e07db7",
+    ".work-receipts/reviewer-recheck-v2-input-manifest.log": "13379b7bdad1f2efbc0154d6140e6bbb07b4a9b3b5fc084268f1e9a01ee084e1",
+    ".work-receipts/reviewer-recheck-verification-error-2.log": "2334c160591cf5b50e6713434f497c4956e771f8b0ad4beff7c7561a7f9e99da",
+    ".work-receipts/reviewer-recheck-verification-error-3.log": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    ".work-receipts/reviewer-recheck-verification-error.log": "948d7dbae89b859f6e16f30a8816f1795bfbb60b07cbcb400e2d3cafc56856d8",
+    ".work-receipts/reviewer-recheck-verification-first-failure.log": "948d7dbae89b859f6e16f30a8816f1795bfbb60b07cbcb400e2d3cafc56856d8",
+    ".work-receipts/reviewer-recheck-verification-run-2.log": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    ".work-receipts/reviewer-recheck-verification-run-3.log": "2ed3d36f52b0fa57c541950921af1eddbc0931556cc9dad5225b9478209dc1d2",
+    ".work-receipts/reviewer-recheck-verification-run.log": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    ".work-receipts/reviewer-recheck-verification.json": "4fa906e8c75fe7be0ec550344328b86013a5bdbafd86b7ce5a1e54d4128be710",
+    ".work-receipts/reviewer-recheck-verify.py": "901b3ec3710d82474c0571761559a9823ed3e517e676cd54ff0e34873dd7de15",
+    ".work-receipts/reviewer-recheck-work-before.json": "523677509221dd4adb55ad4f5c4e2cb1151c9fd139b022955534834dd70d1201",
+    ".work-receipts/reviewer-recheck-work-complete-v2.json": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    ".work-receipts/reviewer-recheck-work-complete-v3.json": "23371458ee210bca97dd8fae5f427851dd4c8e3e27fefe791c2783de5a348a37",
+    ".work-receipts/reviewer-recheck-work-complete.json": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    ".work-receipts/reviewer-recheck-work-progress.json": "1a4c460f50b8f5591d6c8efd262ca9cb4a6e4354007c3ccdaa57ebdd81d1a110"
+  }
+}

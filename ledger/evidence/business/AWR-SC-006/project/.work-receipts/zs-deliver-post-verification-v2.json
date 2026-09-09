@@ -1,0 +1,624 @@
+{
+  "version": 1,
+  "kind": "zs_delivery_post_completion_verification",
+  "verified_at": 1788932749916,
+  "ok": true,
+  "checks_passed": 72,
+  "checks_failed": 0,
+  "project_revision": 235,
+  "source_revision": 23,
+  "source_fingerprint": "sha256:d27d51cfc9c3f733a3db94b13c12b668afe22ab1d28b0728c4df8e331f9f31fa",
+  "work_counts": {
+    "completed": 5
+  },
+  "active_sessions": [],
+  "milestone_header_status": "in_progress",
+  "milestone_note": "The source grouping marker remains in_progress; AWR exposes no milestone transition command. All five source work items are completed and no nonterminal work remains; no direct source bypass was used.",
+  "evidence_projection_note": "The same locator appears once as registered runtime evidence and once as a source-projected evidence reference after work completion; this is two projections of one report, not two evidence registrations or two business applications.",
+  "git_status": [
+    " M .gitignore",
+    " M work-ledger.yaml",
+    "?? .awr/",
+    "?? AGENTS.md",
+    "?? DELIVERABLES.md",
+    "?? deliverables/",
+    "?? materials/archive-confirmation.md",
+    "?? materials/role-confirmation.md",
+    "?? review-inputs/"
+  ],
+  "checks": [
+    {
+      "name": "fixed-hash:materials/handover-draft.md",
+      "passed": true,
+      "actual": "4cbac09bd7a59e47e245a2d5f76e6c18a694680be26c411f97c503972df62361",
+      "expected": "4cbac09bd7a59e47e245a2d5f76e6c18a694680be26c411f97c503972df62361"
+    },
+    {
+      "name": "fixed-hash:materials/change-requests.csv",
+      "passed": true,
+      "actual": "0872b48bc80817d733fd80b799d50e850406949f805db81b83aaa54eba433ee2",
+      "expected": "0872b48bc80817d733fd80b799d50e850406949f805db81b83aaa54eba433ee2"
+    },
+    {
+      "name": "fixed-hash:materials/archive-confirmation.md",
+      "passed": true,
+      "actual": "03fd800c15f3571df42ec52f69073f9230425e0eb1aaa6019ec5fdfa5b60cf5c",
+      "expected": "03fd800c15f3571df42ec52f69073f9230425e0eb1aaa6019ec5fdfa5b60cf5c"
+    },
+    {
+      "name": "fixed-hash:materials/role-confirmation.md",
+      "passed": true,
+      "actual": "8117dffe9cf6088adf357e9d0c404d1f4f547c430dd520cf1095d8cb27bf1da5",
+      "expected": "8117dffe9cf6088adf357e9d0c404d1f4f547c430dd520cf1095d8cb27bf1da5"
+    },
+    {
+      "name": "fixed-hash:deliverables/zhusheng-interruption-diagnosis.md",
+      "passed": true,
+      "actual": "a7feebb26b5f65e7da1eb34b0774393fb06b9835c4b4537b64028b247920a196",
+      "expected": "a7feebb26b5f65e7da1eb34b0774393fb06b9835c4b4537b64028b247920a196"
+    },
+    {
+      "name": "fixed-hash:deliverables/zhusheng-change-proposals.md",
+      "passed": true,
+      "actual": "e00e5e4e98db2476d0321fc86af82e93aa0a218edfab66c1b568f64335304a05",
+      "expected": "e00e5e4e98db2476d0321fc86af82e93aa0a218edfab66c1b568f64335304a05"
+    },
+    {
+      "name": "fixed-hash:deliverables/zhusheng-recovery-work.md",
+      "passed": true,
+      "actual": "46bfc0ea1ac8396b10280e06b3ed55a72a69242555010218974f8b4ece64fb31",
+      "expected": "46bfc0ea1ac8396b10280e06b3ed55a72a69242555010218974f8b4ece64fb31"
+    },
+    {
+      "name": "fixed-hash:deliverables/zhusheng-consistency.md",
+      "passed": true,
+      "actual": "ddb10a828a04059aea355186b98a685167ac738aee77902d587b6506b585260e",
+      "expected": "ddb10a828a04059aea355186b98a685167ac738aee77902d587b6506b585260e"
+    },
+    {
+      "name": "fixed-hash:deliverables/zs-independent-review.md",
+      "passed": true,
+      "actual": "c580b03404518ac99436ef3f7f3ccfdb78315a7a493b3c53c18448bd685072b5",
+      "expected": "c580b03404518ac99436ef3f7f3ccfdb78315a7a493b3c53c18448bd685072b5"
+    },
+    {
+      "name": "fixed-hash:deliverables/zs-independent-re-review.md",
+      "passed": true,
+      "actual": "5f8d595f33ce5fd48503d12e1076aab409b6f54605d36351ddf343e457d50173",
+      "expected": "5f8d595f33ce5fd48503d12e1076aab409b6f54605d36351ddf343e457d50173"
+    },
+    {
+      "name": "fixed-hash:deliverables/zs-delivery.md",
+      "passed": true,
+      "actual": "d2bb0d5bf582eecadf4282239c2e6e1a1077bbb0d4bae0e2e3fa57646d3d9ee7",
+      "expected": "d2bb0d5bf582eecadf4282239c2e6e1a1077bbb0d4bae0e2e3fa57646d3d9ee7"
+    },
+    {
+      "name": "fixed-hash:.work-receipts/verify-zs-delivery.py",
+      "passed": true,
+      "actual": "587a9ad17433636e2acf7d92410249c1633f8e6c010f56055b5cf4d4677a13b6",
+      "expected": "587a9ad17433636e2acf7d92410249c1633f8e6c010f56055b5cf4d4677a13b6"
+    },
+    {
+      "name": "fixed-hash:.work-receipts/zs-deliver-verification-v2.json",
+      "passed": true,
+      "actual": "52c4aa7089c65dbb86b0f1f148e3124f0f0f0764fc48e226853c95aafe522a08",
+      "expected": "52c4aa7089c65dbb86b0f1f148e3124f0f0f0764fc48e226853c95aafe522a08"
+    },
+    {
+      "name": "fixed-hash:.work-receipts/zs-deliver-completion-report-v2.json",
+      "passed": true,
+      "actual": "746610addd54f1f3e5e6d21b055a184baaec79b57c65c091df11e820d411d340",
+      "expected": "746610addd54f1f3e5e6d21b055a184baaec79b57c65c091df11e820d411d340"
+    },
+    {
+      "name": "fixed-hash:.work-receipts/zs-deliver-evidence-add-failure.log",
+      "passed": true,
+      "actual": "0f6f7156a247eb3592d56e87fa08a60e3e1bbce44f3764dfc5d0c6b81d9c539b",
+      "expected": "0f6f7156a247eb3592d56e87fa08a60e3e1bbce44f3764dfc5d0c6b81d9c539b"
+    },
+    {
+      "name": "fixed-hash:.work-receipts/zs-deliver-evidence-draft.json",
+      "passed": true,
+      "actual": "791611d7a2965023d319d8f0791d4a6eb8881e136905caf2e7ee5531f6467ece",
+      "expected": "791611d7a2965023d319d8f0791d4a6eb8881e136905caf2e7ee5531f6467ece"
+    },
+    {
+      "name": "fixed-hash:.work-receipts/zs-deliver-completion-report.json",
+      "passed": true,
+      "actual": "b187f3499f5bf0992f882b3a9a3740c98b825e18cdeade4ff91d1a9b41559ede",
+      "expected": "b187f3499f5bf0992f882b3a9a3740c98b825e18cdeade4ff91d1a9b41559ede"
+    },
+    {
+      "name": "all-work-completed",
+      "passed": true,
+      "actual": {
+        "completed": 5
+      },
+      "expected": {
+        "completed": 5
+      }
+    },
+    {
+      "name": "no-current-work",
+      "passed": true,
+      "actual": [],
+      "expected": []
+    },
+    {
+      "name": "no-ready-work",
+      "passed": true,
+      "actual": 0,
+      "expected": 0
+    },
+    {
+      "name": "status-next-action-terminal",
+      "passed": true,
+      "actual": "No nonterminal work remains in current source projections.",
+      "expected": "No nonterminal work remains in current source projections."
+    },
+    {
+      "name": "source-issues-empty",
+      "passed": true,
+      "actual": [],
+      "expected": []
+    },
+    {
+      "name": "final-project-revision",
+      "passed": true,
+      "actual": 235,
+      "expected": 235
+    },
+    {
+      "name": "delivery-completed",
+      "passed": true,
+      "actual": "completed",
+      "expected": "completed"
+    },
+    {
+      "name": "delivery-source-revision",
+      "passed": true,
+      "actual": 23,
+      "expected": 23
+    },
+    {
+      "name": "delivery-source-fingerprint",
+      "passed": true,
+      "actual": "sha256:d27d51cfc9c3f733a3db94b13c12b668afe22ab1d28b0728c4df8e331f9f31fa",
+      "expected": "sha256:d27d51cfc9c3f733a3db94b13c12b668afe22ab1d28b0728c4df8e331f9f31fa"
+    },
+    {
+      "name": "delivery-summary",
+      "passed": true,
+      "actual": "最终交接说明已形成：中断与恢复、确认要求、新旧提案、归档和角色安排、失败历史、未持久化缺口及未知事项已分层记录。",
+      "expected": "contains final handoff formed"
+    },
+    {
+      "name": "next-action-retains:CR-03",
+      "passed": true,
+      "actual": true,
+      "expected": true
+    },
+    {
+      "name": "next-action-retains:归档实施证据",
+      "passed": true,
+      "actual": true,
+      "expected": true
+    },
+    {
+      "name": "next-action-retains:具体人员",
+      "passed": true,
+      "actual": true,
+      "expected": true
+    },
+    {
+      "name": "next-action-retains:值班",
+      "passed": true,
+      "actual": true,
+      "expected": true
+    },
+    {
+      "name": "next-action-retains:代理",
+      "passed": true,
+      "actual": true,
+      "expected": true
+    },
+    {
+      "name": "next-action-retains:升级",
+      "passed": true,
+      "actual": true,
+      "expected": true
+    },
+    {
+      "name": "next-action-retains:Git 提交",
+      "passed": true,
+      "actual": true,
+      "expected": true
+    },
+    {
+      "name": "next-action-retains:发布",
+      "passed": true,
+      "actual": true,
+      "expected": true
+    },
+    {
+      "name": "next-action-retains:E4",
+      "passed": true,
+      "actual": true,
+      "expected": true
+    },
+    {
+      "name": "one-runtime-evidence",
+      "passed": true,
+      "actual": 1,
+      "expected": 1
+    },
+    {
+      "name": "one-source-projected-evidence",
+      "passed": true,
+      "actual": 1,
+      "expected": 1
+    },
+    {
+      "name": "same-evidence-locator-two-projections",
+      "passed": true,
+      "actual": [
+        ".work-receipts/zs-deliver-completion-report-v2.json",
+        ".work-receipts/zs-deliver-completion-report-v2.json"
+      ],
+      "expected": "one runtime registration plus one source projection of same locator"
+    },
+    {
+      "name": "runtime-evidence-level",
+      "passed": true,
+      "actual": "locally_verified",
+      "expected": "locally_verified"
+    },
+    {
+      "name": "recover-still-completed",
+      "passed": true,
+      "actual": "completed",
+      "expected": "completed"
+    },
+    {
+      "name": "recover-acceptance-still-exact",
+      "passed": true,
+      "actual": [
+        "处理待应用改动，保留重试或恢复的证据，避免重复写入。",
+        "保留实际产物与来源引用，无法确认的内容显式说明。",
+        "资料归档按“使用说明、交接记录、问题跟踪”三个内容类型目录执行，并保留资料管理员确认来源（materials/archive-confirmation.md）；目录根路径、权限、迁移与完整性未明确时继续列为未决。",
+        "角色职责按协调者确认执行：值班人员维护交接记录、资料管理员维护使用说明、问题负责人维护问题跟踪，并保留确认来源（materials/role-confirmation.md）；具体人员、值班表、代理/升级路径和交接时限未明确时继续列为未决。"
+      ],
+      "expected": [
+        "处理待应用改动，保留重试或恢复的证据，避免重复写入。",
+        "保留实际产物与来源引用，无法确认的内容显式说明。",
+        "资料归档按“使用说明、交接记录、问题跟踪”三个内容类型目录执行，并保留资料管理员确认来源（materials/archive-confirmation.md）；目录根路径、权限、迁移与完整性未明确时继续列为未决。",
+        "角色职责按协调者确认执行：值班人员维护交接记录、资料管理员维护使用说明、问题负责人维护问题跟踪，并保留确认来源（materials/role-confirmation.md）；具体人员、值班表、代理/升级路径和交接时限未明确时继续列为未决。"
+      ]
+    },
+    {
+      "name": "recover-acceptance-still-unique",
+      "passed": true,
+      "actual": 4,
+      "expected": 4
+    },
+    {
+      "name": "review-still-completed",
+      "passed": true,
+      "actual": "completed",
+      "expected": "completed"
+    },
+    {
+      "name": "no-active-sessions",
+      "passed": true,
+      "actual": [],
+      "expected": []
+    },
+    {
+      "name": "delivery-session-ended",
+      "passed": true,
+      "actual": [
+        {
+          "agent_id": "codex-primary",
+          "branch_id": null,
+          "end_project_revision": 235,
+          "ended_at": 1788932308832,
+          "id": "01M229PEPFG7KC962FP55GCRMX",
+          "last_checkpoint_id": "01M22AS1HW41MK9HVYD59WTD70",
+          "model": "gpt-5",
+          "project_id": "01M21VJFYF7E75EQ55DEH3D5TS",
+          "provider": "openai",
+          "revision": 3,
+          "start_project_revision": 209,
+          "started_at": 1788931160783,
+          "status": "ended",
+          "work_item_id": "01M21VJFYMX50ZQZKG1A17EYVP"
+        }
+      ],
+      "expected": "one ended session"
+    },
+    {
+      "name": "delivery-session-checkpoint",
+      "passed": true,
+      "actual": "01M22AS1HW41MK9HVYD59WTD70",
+      "expected": "01M22AS1HW41MK9HVYD59WTD70"
+    },
+    {
+      "name": "doctor-clean",
+      "passed": true,
+      "actual": {
+        "ok": true,
+        "findings": [],
+        "integrity": [
+          "ok"
+        ]
+      },
+      "expected": {
+        "ok": true,
+        "findings": [],
+        "integrity": [
+          "ok"
+        ]
+      }
+    },
+    {
+      "name": "proposal-inventory-complete",
+      "passed": true,
+      "actual": false,
+      "expected": false
+    },
+    {
+      "name": "no-unresolved-proposals",
+      "passed": true,
+      "actual": [],
+      "expected": []
+    },
+    {
+      "name": "old-proposal-unique:01M21X4H7GSP7DY19MTHYDBXST",
+      "passed": true,
+      "actual": 1,
+      "expected": 1
+    },
+    {
+      "name": "old-proposal-rejected:01M21X4H7GSP7DY19MTHYDBXST",
+      "passed": true,
+      "actual": "rejected",
+      "expected": "rejected"
+    },
+    {
+      "name": "old-proposal-zero-apply:01M21X4H7GSP7DY19MTHYDBXST",
+      "passed": true,
+      "actual": null,
+      "expected": null
+    },
+    {
+      "name": "old-proposal-unique:01M21X5MHW7RFN8PBE4J86GACM",
+      "passed": true,
+      "actual": 1,
+      "expected": 1
+    },
+    {
+      "name": "old-proposal-rejected:01M21X5MHW7RFN8PBE4J86GACM",
+      "passed": true,
+      "actual": "rejected",
+      "expected": "rejected"
+    },
+    {
+      "name": "old-proposal-zero-apply:01M21X5MHW7RFN8PBE4J86GACM",
+      "passed": true,
+      "actual": null,
+      "expected": null
+    },
+    {
+      "name": "old-proposal-unique:01M21X67QFPQ55YSMJEX96HYV7",
+      "passed": true,
+      "actual": 1,
+      "expected": 1
+    },
+    {
+      "name": "old-proposal-rejected:01M21X67QFPQ55YSMJEX96HYV7",
+      "passed": true,
+      "actual": "rejected",
+      "expected": "rejected"
+    },
+    {
+      "name": "old-proposal-zero-apply:01M21X67QFPQ55YSMJEX96HYV7",
+      "passed": true,
+      "actual": null,
+      "expected": null
+    },
+    {
+      "name": "combined-proposal-unique",
+      "passed": true,
+      "actual": 1,
+      "expected": 1
+    },
+    {
+      "name": "combined-proposal-one-apply",
+      "passed": true,
+      "actual": {
+        "event_id": "01M225BCXTY18AWZSRG0B9WT1P",
+        "plan": {
+          "after_fingerprint": "sha256:83f9e1a0a4cb7b598e5ac0e60b712273b4c85f8e75a246ad59b11225c8ba17a0",
+          "after_size": 3841,
+          "before_fingerprint": "sha256:6ac1624435b6b626e32af360e94acb9bbcd406e9a2dfe0e3bf3926474fac612a",
+          "before_size": 3285,
+          "id": "01M225BCX4SJHSYG6Q8PYGZS12",
+          "target_after_hash": "7418ae9a142bb3e4771d715a976b1d503dee4b778a82e796db2a26bb2b1b2cad"
+        },
+        "project_revision": 123,
+        "proposal_id": "01M225AVE1BFYY0W4T2EKRV88C",
+        "resolved_event_id": "01M225BCYBY571X8FPBY8TGME8",
+        "source_id": "01M21VJFYKQHY3PPK3TBPPYNPT"
+      },
+      "expected": "one resolved apply attempt"
+    },
+    {
+      "name": "delivery-completion-proposal-applied",
+      "passed": true,
+      "actual": "applied",
+      "expected": "applied"
+    },
+    {
+      "name": "delivery-completion-no-acceptance",
+      "passed": true,
+      "actual": [
+        "evidence",
+        "status",
+        "verification"
+      ],
+      "expected": "acceptance absent"
+    },
+    {
+      "name": "delivery-completion-event",
+      "passed": true,
+      "actual": "01M22AR70DZQ28FM465Z8V0ZGX",
+      "expected": "01M22AR70DZQ28FM465Z8V0ZGX"
+    },
+    {
+      "name": "evidence-add-receipt",
+      "passed": true,
+      "actual": {
+        "id": "01M22ANMPA7J6GTMRMDN0Z8MPS",
+        "revision": 225
+      },
+      "expected": {
+        "id": "01M22ANMPA7J6GTMRMDN0Z8MPS",
+        "revision": 225
+      }
+    },
+    {
+      "name": "completion-receipt",
+      "passed": true,
+      "actual": {
+        "event": "01M22AR70DZQ28FM465Z8V0ZGX",
+        "revision": 232
+      },
+      "expected": {
+        "event": "01M22AR70DZQ28FM465Z8V0ZGX",
+        "revision": 232
+      }
+    },
+    {
+      "name": "checkpoint-receipt",
+      "passed": true,
+      "actual": {
+        "id": "01M22AS1HW41MK9HVYD59WTD70",
+        "open_loops": [
+          "CR-03 具体问题、逐项影响、具体负责人、下一步和完成条件仍无明确来源；如无遗留问题也需明确确认。",
+          "归档目录根路径、访问权限、实际建目录、资料迁移和完整性仍未确认。",
+          "具体人员、值班表、代理或替补、升级路径与触发条件、交接时限仍未确认。",
+          "Git 提交或推送、发布和整场 E4 未执行。"
+        ]
+      },
+      "expected": "checkpoint plus four open loops"
+    },
+    {
+      "name": "session-end-receipt",
+      "passed": true,
+      "actual": {
+        "status": "ended",
+        "revision": 235
+      },
+      "expected": {
+        "status": "ended",
+        "revision": 235
+      }
+    },
+    {
+      "name": "failed-evidence-input-preserved",
+      "passed": true,
+      "actual": {
+        "version": 1,
+        "scope": "ZS-DELIVER final handoff",
+        "session_id": "01M229PEPFG7KC962FP55GCRMX",
+        "failures": [
+          {
+            "stage": "AWR evidence registration attempt 1",
+            "command": "rtk proxy /Users/mac/Documents/originone/agent-work-running/target/release/awr --project <project> --json evidence add --input <project>/.work-receipts/zs-deliver-evidence-draft.json --expected-revision 224",
+            "exit_code": 1,
+            "output": "InvalidInput: unknown evidence input field",
+            "cause": "The draft contained an unsupported top-level version field.",
+            "effect": "No evidence or source write occurred; a status and work-show recheck confirmed project revision 224 and an empty ZS-DELIVER evidence list.",
+            "raw_receipt": ".work-receipts/zs-deliver-evidence-add-failure.log",
+            "raw_receipt_sha256": "0f6f7156a247eb3592d56e87fa08a60e3e1bbce44f3764dfc5d0c6b81d9c539b",
+            "original_draft": ".work-receipts/zs-deliver-evidence-draft.json",
+            "original_draft_sha256": "791611d7a2965023d319d8f0791d4a6eb8881e136905caf2e7ee5531f6467ece",
+            "original_report": ".work-receipts/zs-deliver-completion-report.json",
+            "original_report_sha256": "b187f3499f5bf0992f882b3a9a3740c98b825e18cdeade4ff91d1a9b41559ede"
+          }
+        ],
+        "successful_recovery": {
+          "corrected_draft": ".work-receipts/zs-deliver-evidence-draft-v2.json",
+          "corrected_report": ".work-receipts/zs-deliver-completion-report-v2.json",
+          "receipt": ".work-receipts/zs-deliver-evidence-add-v2.json",
+          "external_key": "zs-final-recovery-delivery-20260909-v2",
+          "evidence_id": "01M22ANMPA7J6GTMRMDN0Z8MPS",
+          "event_id": "01M22ANMPAPPZ05F194840V9Q3",
+          "project_revision": 225
+        },
+        "business_source_mutated_by_failed_attempt": false,
+        "failed_input_overwritten": false
+      },
+      "expected": "one preserved failed input and successful v2 recovery"
+    },
+    {
+      "name": "post-failures-preserved",
+      "passed": true,
+      "actual": {
+        "version": 1,
+        "scope": "ZS-DELIVER post-completion checks",
+        "supersedes_for_current_summary": ".work-receipts/zs-deliver-post-completion-tool-failures.json",
+        "superseded_file_preserved": true,
+        "failures": [
+          {
+            "stage": "milestone command capability probe",
+            "command": "rtk proxy /Users/mac/Documents/originone/agent-work-running/target/release/awr --project <project> milestone --help",
+            "exit_code": 1,
+            "output": "Unsupported: operation is not implemented: milestone --help",
+            "effect": "Read-only capability probe only. AWR status immediately afterward remained project revision 235 with five completed work items and no nonterminal work; Doctor was clean. No source or runtime mutation occurred."
+          },
+          {
+            "stage": "post-completion verifier attempt 1",
+            "command": "rtk proxy /Users/mac/Documents/originone/agent-work-running/.venv/bin/python .work-receipts/verify-zs-delivery-post.py",
+            "exit_code": 1,
+            "output": "InvalidInput: proposal limit must be 1..100",
+            "effect": "The read-only verifier requested proposal list limit 1000 and exited before evaluating the terminal assertions. Project revision remained 235; no source or runtime mutation occurred. The verifier was corrected to use limit 100.",
+            "raw_log": ".work-receipts/zs-deliver-post-verification-failure.log",
+            "raw_log_sha256": "5ecaa67845eb9624be0a024be3637641fce24206f803e594e6ca6a0b58cb2961"
+          }
+        ],
+        "prior_summary": {
+          "locator": ".work-receipts/zs-deliver-post-completion-tool-failures.json",
+          "sha256": "962756885c655c6724555bf8fe26ad84cb52139d8c43b486c78948bd0acf43a2"
+        },
+        "source_or_runtime_mutated": false,
+        "work_item_completion_unchanged": true
+      },
+      "expected": "two read-only post-completion failures"
+    },
+    {
+      "name": "git-head-unchanged",
+      "passed": true,
+      "actual": "8218b29c348b7eda3e57b541c3489e41b87b6679",
+      "expected": "8218b29c348b7eda3e57b541c3489e41b87b6679"
+    },
+    {
+      "name": "git-not-delivered",
+      "passed": true,
+      "actual": [
+        " M .gitignore",
+        " M work-ledger.yaml",
+        "?? .awr/",
+        "?? AGENTS.md",
+        "?? DELIVERABLES.md",
+        "?? deliverables/",
+        "?? materials/archive-confirmation.md",
+        "?? materials/role-confirmation.md",
+        "?? review-inputs/"
+      ],
+      "expected": "dirty worktree retained; no Git delivery"
+    }
+  ]
+}
+

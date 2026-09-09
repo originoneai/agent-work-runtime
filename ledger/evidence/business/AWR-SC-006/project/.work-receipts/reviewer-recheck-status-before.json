@@ -1,0 +1,38 @@
+{
+  "blocked_count": 1,
+  "branch_id": null,
+  "counts": {
+    "completed": 3,
+    "planned": 2
+  },
+  "current": [],
+  "current_total": 0,
+  "freshness_basis": "source_refresh",
+  "next_action": "由不同参与者认领 ZS-REVIEW，固定整改后生产者文件和 AWR 来源哈希，逐项返检 ZS-F01 至 ZS-F03；保留原复核报告，仅追加返检结论。返检通过前不得推进 ZS-DELIVER。",
+  "ok": true,
+  "project": "竹声维护交接",
+  "project_id": "01M21VJFYF7E75EQ55DEH3D5TS",
+  "project_revision": 181,
+  "read_only": false,
+  "ready_count": 1,
+  "source_issues": [],
+  "source_refresh_performed": true,
+  "source_warnings": 0,
+  "suggested_work": {
+    "blocker": null,
+    "external_key": "ZS-REVIEW",
+    "freshness": "fresh",
+    "id": "01M21VJFYMSXG6YEVAE8TW7WHA",
+    "milestone": "ZS-DELIVERY",
+    "next_action": "由不同参与者认领 ZS-REVIEW，固定整改后生产者文件和 AWR 来源哈希，逐项返检 ZS-F01 至 ZS-F03；保留原复核报告，仅追加返检结论。返检通过前不得推进 ZS-DELIVER。",
+    "owner": null,
+    "priority": "P0",
+    "raw_status": "planned",
+    "revision": 5,
+    "source_revision": 17,
+    "status": "planned",
+    "summary": "旧独立复核已确认需整改；生产者现已提交并固定整改后快照。ZS-REVIEW 等待不同参与者返检，原报告保留，返检尚未发生。",
+    "title": "独立复核恢复一致性"
+  },
+  "total": 5
+}

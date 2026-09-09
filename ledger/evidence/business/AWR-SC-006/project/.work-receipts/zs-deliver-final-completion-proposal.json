@@ -1,0 +1,117 @@
+{
+  "apply_attempt": {
+    "event_id": "01M22AR6ZM8WTZC6PVWGSVY1G1",
+    "plan": {
+      "after_fingerprint": "sha256:d27d51cfc9c3f733a3db94b13c12b668afe22ab1d28b0728c4df8e331f9f31fa",
+      "after_size": 4397,
+      "before_fingerprint": "sha256:d3b5c1afee5019211e177a2450ebcfe6e9f07c1d6344f7b753e3dc7ba9f90d95",
+      "before_size": 4334,
+      "id": "01M22AR6Z1KGZ3F156VB3SGRV7",
+      "target_after_hash": "db59ac6b218d42d15fc52caf5497aaa80514a19fed46d2e8c050e7c759e0f33c"
+    },
+    "project_revision": 229,
+    "proposal_id": "01M22AR6YG28VEMAZZZ8ME9QNW",
+    "resolved_event_id": "01M22AR70DZQ28FM465Z8V0ZGX",
+    "source_id": "01M21VJFYKQHY3PPK3TBPPYNPT"
+  },
+  "ok": true,
+  "patch_included": true,
+  "project_revision": 235,
+  "proposal": {
+    "base_fingerprint": "sha256:d3b5c1afee5019211e177a2450ebcfe6e9f07c1d6344f7b753e3dc7ba9f90d95",
+    "created_by_session": "01M229PEPFG7KC962FP55GCRMX",
+    "expected_revision": 225,
+    "id": "01M22AR6YG28VEMAZZZ8ME9QNW",
+    "mutation_type": "work.complete",
+    "patch": {
+      "changes": {
+        "evidence": [
+          ".work-receipts/zs-deliver-completion-report-v2.json"
+        ],
+        "status": "completed",
+        "verification": {
+          "evidence_level": "locally_verified"
+        }
+      },
+      "intent": "依据独立返检通过结论和 70 项本地核验，完成竹声中断恢复最终交接；未知事项与交付边界继续保留。",
+      "source_config": {
+        "adapter_options": {},
+        "adapter_version": 1,
+        "mapping_key": "ledger|work-ledger.yaml"
+      },
+      "target": {
+        "kind": "work_item",
+        "meta": {
+          "external_key": "ZS-DELIVER",
+          "id": "01M21VJFYMX50ZQZKG1A17EYVP",
+          "revision": 3,
+          "source_ref": {
+            "end_line": null,
+            "locator": "file:///Users/mac/Documents/originone/agent-work-running/.local/business-live-20260909-v1/interrupted-write/project/work-ledger.yaml",
+            "pointer": "/work_items/4",
+            "section_fingerprint": null,
+            "source_fingerprint": "sha256:d3b5c1afee5019211e177a2450ebcfe6e9f07c1d6344f7b753e3dc7ba9f90d95",
+            "source_id": "01M21VJFYKQHY3PPK3TBPPYNPT",
+            "source_revision": 22,
+            "start_line": null
+          }
+        }
+      },
+      "version": 1,
+      "work_action": {
+        "action": "complete",
+        "completion": {
+          "acceptance": [
+            {
+              "criterion": "交付最终交接说明及未决事项。",
+              "evidence": [
+                "01M22ANMPA7J6GTMRMDN0Z8MPS"
+              ]
+            },
+            {
+              "criterion": "保留实际产物与来源引用，无法确认的内容显式说明。",
+              "evidence": [
+                "01M22ANMPA7J6GTMRMDN0Z8MPS"
+              ]
+            }
+          ],
+          "evidence": [
+            {
+              "branch_id": null,
+              "command": "rtk proxy /Users/mac/Documents/originone/agent-work-running/.venv/bin/python .work-receipts/verify-zs-delivery.py --phase pre",
+              "evidence_type": "verification_report",
+              "external_key": "zs-final-recovery-delivery-20260909-v2",
+              "id": "01M22ANMPA7J6GTMRMDN0Z8MPS",
+              "level": "locally_verified",
+              "locator": ".work-receipts/zs-deliver-completion-report-v2.json",
+              "project_id": "01M21VJFYF7E75EQ55DEH3D5TS",
+              "revision": 1,
+              "scope": [
+                "ZS-DELIVER"
+              ],
+              "sha256": "746610addd54f1f3e5e6d21b055a184baaec79b57c65c091df11e820d411d340",
+              "source_ref": null,
+              "source_sha": "8218b29c348b7eda3e57b541c3489e41b87b6679",
+              "summary": "最终交接说明已形成并经 70 项本地核验：中断恢复、确认要求、新旧提案、归档和角色级安排、失败及未知项均已分层；首次登记失败已保留，不扩展为 Git、发布或 E4。",
+              "verified_at": 1788932066021,
+              "work_item_id": "01M21VJFYMX50ZQZKG1A17EYVP"
+            }
+          ],
+          "minimum_level": "locally_verified",
+          "source_sha": "8218b29c348b7eda3e57b541c3489e41b87b6679",
+          "version": 1
+        },
+        "from": "in_progress",
+        "to": "completed"
+      }
+    },
+    "project_id": "01M21VJFYF7E75EQ55DEH3D5TS",
+    "revision": 5,
+    "source_id": "01M21VJFYKQHY3PPK3TBPPYNPT",
+    "status": "applied",
+    "work_item_id": "01M21VJFYMX50ZQZKG1A17EYVP"
+  },
+  "read_only": true,
+  "source_refresh_performed": false
+}
+

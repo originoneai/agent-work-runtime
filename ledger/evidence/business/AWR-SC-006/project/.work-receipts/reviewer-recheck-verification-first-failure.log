@@ -1,0 +1,5 @@
+Traceback (most recent call last):
+  File "/Users/mac/Documents/originone/agent-work-running/.local/business-live-20260909-v1/interrupted-write/project/.work-receipts/reviewer-recheck-verify.py", line 142, in <module>
+    check("awr-recover-acceptance", recover_current["acceptance"], expected_acceptance)
+                                    ~~~~~~~~~~~~~~~^^^^^^^^^^^^^^
+KeyError: 'acceptance'

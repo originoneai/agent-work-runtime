@@ -1,0 +1,87 @@
+{
+  "checkpoint": {
+    "changed_entities": [
+      "evidence:01M224BCH5MEXFER7RHBG3R2NN",
+      "work_items:01M21VJFYMSXG6YEVAE8TW7WHA"
+    ],
+    "context_hash": "de27d925b2ba67a183b65ac41294f06c6fb8a0feee519ea4be0f7b94fd809dba",
+    "created_at": 1788925593778,
+    "digest": "已完成独立复核并验证固定历史、中断恢复、来源前后及提案生命周期；结论为需原生产者整改，复核工作本身已完成。",
+    "id": "01M224CJ5J56S2WV8MPDNWGQVM",
+    "next_action": "原生产者补齐已确认业务修订的一次性生效证据并修复 ZS-RECOVER 状态一致性，随后由本独立复核者返检。",
+    "open_loops": [
+      "CR-01 与 CR-02 已获确认但没有新的合并业务提案或一次成功应用回执。",
+      "ZS-RECOVER 已 completed，但 next_action 仍明确要求提交并应用变更。",
+      "CR-03 具体遗留问题事实仍缺失；最终交付与 E4 尚未发生。"
+    ],
+    "project_revision": 100,
+    "revision": 1,
+    "session_id": "01M223JC0DGNZACGCB1GK9FWQR"
+  },
+  "checkpoint_save": {
+    "after_revision": 84,
+    "attempt_id": "01M224CJ5JT7MW48ZR9BDGBYDA",
+    "delta_bytes": 6465,
+    "delta_recorded": true,
+    "event_id": "01M224CJ5K1AJY9XHAQR0AK4RX",
+    "observed_changed_entity_count": 2,
+    "reported_changed_entity_count": 2,
+    "session_event_count": 3,
+    "source_observation_count": 4,
+    "through_revision": 100
+  },
+  "checkpoint_saves": {
+    "attempts": [
+      {
+        "base_project_revision": 100,
+        "checkpoint_id": "01M224CJ5J56S2WV8MPDNWGQVM",
+        "created_at": 1788925593778,
+        "id": "01M224CJ5JT7MW48ZR9BDGBYDA",
+        "started_project_revision": 101,
+        "status": "completed"
+      }
+    ],
+    "incomplete_count": 0,
+    "limit": 20,
+    "may_have_more": false
+  },
+  "claims": [
+    {
+      "acquired_at": 1788924735501,
+      "agent_id": "luna_worker",
+      "branch_id": null,
+      "expires_at": 1788928335501,
+      "id": "01M223JC0DMZEZAF591R4QH2BC",
+      "project_id": "01M21VJFYF7E75EQ55DEH3D5TS",
+      "released_at": 1788925555243,
+      "revision": 2,
+      "session_id": "01M223JC0DGNZACGCB1GK9FWQR",
+      "status": "released",
+      "work_item_id": "01M21VJFYMSXG6YEVAE8TW7WHA"
+    }
+  ],
+  "context_requires_refresh": true,
+  "freshness_basis": "runtime_database",
+  "inherited_checkpoint": null,
+  "inherited_checkpoint_save": null,
+  "ok": true,
+  "project_revision": 103,
+  "resumed_successor": null,
+  "session": {
+    "agent_id": "luna_worker",
+    "branch_id": null,
+    "end_project_revision": 103,
+    "ended_at": 1788925613766,
+    "id": "01M223JC0DGNZACGCB1GK9FWQR",
+    "last_checkpoint_id": "01M224CJ5J56S2WV8MPDNWGQVM",
+    "model": "gpt-5.6-sol",
+    "project_id": "01M21VJFYF7E75EQ55DEH3D5TS",
+    "provider": "openai",
+    "revision": 3,
+    "start_project_revision": 84,
+    "started_at": 1788924735501,
+    "status": "ended",
+    "work_item_id": "01M21VJFYMSXG6YEVAE8TW7WHA"
+  },
+  "source_refresh_performed": false
+}
