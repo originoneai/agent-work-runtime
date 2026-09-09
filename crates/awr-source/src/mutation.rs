@@ -3,7 +3,6 @@ use crate::{
 };
 use awr_core::{Error, Freshness, MutationPatch, Result, Source};
 use serde::Serialize;
-use serde_json::json;
 use std::path::Path;
 
 #[derive(Debug, Clone, Serialize)]
@@ -12,18 +11,6 @@ pub struct MutationSourceCheck {
     pub fingerprint: String,
     pub adapter: String,
     pub checked_at: i64,
-}
-
-fn mapping_key(spec: &SourceSpec) -> String {
-    format!(
-        "{}|{}",
-        spec.domain,
-        spec.locator.clone().unwrap_or_else(|| spec
-            .path
-            .as_ref()
-            .map(|p| p.to_string_lossy().into_owned())
-            .unwrap_or_default())
-    )
 }
 
 /// Read-only observation of the actual current manifest mapping and source bytes. This is
@@ -100,7 +87,10 @@ pub fn inspect_mutation_source(
             if identity != source.locator {
                 continue;
             }
-            let config = json!({"mapping_key":mapping_key(spec),"adapter_options":spec.options,"adapter_version":1});
+            let config = crate::indexer::source_configuration(
+                spec,
+                manifest.project.context_profile == crate::ContextProfile::Minimal,
+            );
             if source.adapter != spec.adapter
                 || source.role != spec.role
                 || config != patch.source_config

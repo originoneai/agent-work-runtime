@@ -440,3 +440,71 @@ fn finished_goal_with_open_work_and_completed_intake_cannot_imply_project_comple
     assert_eq!(report["organization"]["state"], "needs_organization");
     assert!(gap(&report["organization"], "business_work_missing"));
 }
+
+#[test]
+fn organized_minimal_project_can_claim_and_write_progress_with_profile_checks() {
+    let f = Fixture::new();
+    f.init(&format!("{GOAL}{WORK}"));
+    let revision = f.ok(&["status"])["project_revision"].to_string();
+    let started = f.ok(&[
+        "session",
+        "start",
+        "--work",
+        "W",
+        "--agent",
+        "intake-worker",
+        "--provider",
+        "generic",
+        "--model",
+        "local",
+        "--claim",
+        "--expected-revision",
+        &revision,
+    ]);
+    let session = started["session"]["id"].as_str().unwrap();
+    let revision = f.ok(&["status"])["project_revision"].to_string();
+    f.ok(&[
+        "work",
+        "progress",
+        "W",
+        "--session",
+        session,
+        "--expected-revision",
+        &revision,
+        "--reason",
+        "The goal and delivery structure are established",
+        "--next-action",
+        "Review the implemented handler",
+    ]);
+    let work = f.ok(&["work", "show", "W"]);
+    assert_eq!(work["work"]["status"], "in_progress");
+    assert_eq!(
+        work["work"]["next_action"],
+        "Review the implemented handler"
+    );
+    let revision = work["project_revision"].to_string();
+    let manifest = fs::read_to_string(f.0.join(".awr/project.toml")).unwrap();
+    f.write(
+        ".awr/project.toml",
+        &manifest.replace(
+            "context_profile = \"minimal\"",
+            "context_profile = \"standard\"",
+        ),
+    );
+    let before = fs::read(f.0.join("work-ledger.yaml")).unwrap();
+    let stale = f.run(&[
+        "work",
+        "progress",
+        "W",
+        "--session",
+        session,
+        "--expected-revision",
+        &revision,
+        "--reason",
+        "Try stale profile",
+        "--next-action",
+        "This must not be written",
+    ]);
+    assert!(!stale.status.success());
+    assert_eq!(fs::read(f.0.join("work-ledger.yaml")).unwrap(), before);
+}

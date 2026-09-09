@@ -1,7 +1,7 @@
 {
   "schema_version": 1,
   "work_item": "AWR-TAKE-005",
-  "checked_at": "2026-09-09T07:42:06.467503+00:00",
+  "checked_at": "2026-09-09T07:48:49.179664+00:00",
   "platform": "Darwin arm64",
   "rustc": "1.93.1",
   "evidence_level": "locally_verified",
@@ -27,6 +27,26 @@
     {
       "command": "cargo check --workspace",
       "passed": true
+    },
+    {
+      "command": "cargo test -p awr-cli --test organization_cli --test work_action_cli --test proposal_cli",
+      "passed": 37,
+      "suites": 3,
+      "note": "Final 13 organization CLI cases include a real session claim and source progress write; profile drift is rejected before source changes. Overlaps earlier organization coverage."
+    },
+    {
+      "command": "cargo test -p awr-source",
+      "passed": 25,
+      "suites": 8,
+      "note": "Final source-configuration/mutation implementation; overlaps the earlier source/context batch."
+    },
+    {
+      "command": "cargo fmt --all --check",
+      "passed": true
+    },
+    {
+      "command": "git diff --check",
+      "passed": true
     }
   ],
   "coverage": [
@@ -42,7 +62,8 @@
     "Uncertain future goals permit unrelated work but block full completion",
     "Completed intake work is not business completion",
     "Bounded diagnostics never imply all missing tasks are ready",
-    "MCP readonly repair loop preserves DB state"
+    "MCP readonly repair loop preserves DB state",
+    "After organization, a real session can claim and write progress; mutation and indexing share profile identity and reject stale configuration"
   ],
   "limitations": [
     "Local integration evidence only; no new E4 or release claim.",

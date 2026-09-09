@@ -82,6 +82,14 @@ fn mapping_key(spec: &SourceSpec) -> String {
             .unwrap_or_default())
     )
 }
+pub(crate) fn source_configuration(spec: &SourceSpec, minimal_context: bool) -> serde_json::Value {
+    let mut config =
+        json!({"mapping_key":mapping_key(spec),"adapter_options":spec.options,"adapter_version":1});
+    if minimal_context {
+        config["context_profile"] = json!("minimal");
+    }
+    config
+}
 fn source_mapping(source: &Source) -> Option<&str> {
     source.config.get("mapping_key").and_then(|v| v.as_str())
 }
@@ -196,7 +204,6 @@ fn process_project(
                 root,
                 spec,
                 adapter.as_ref(),
-                &key,
                 &locator,
                 &identity,
                 mode,
@@ -266,7 +273,6 @@ fn index_one(
     root: &Path,
     spec: &SourceSpec,
     adapter: &dyn SourceAdapter,
-    key: &str,
     locator: &Locator,
     identity: &str,
     mode: Option<bool>,
@@ -287,11 +293,7 @@ fn index_one(
             adapter: &spec.adapter,
         },
     )?;
-    let mut config = json!({"mapping_key":key,"adapter_options":spec.options,"adapter_version":1});
-    if minimal_context {
-        config["context_profile"] = json!("minimal");
-    }
-    let source = store.configure_source(&source, config)?;
+    let source = store.configure_source(&source, source_configuration(spec, minimal_context))?;
     let cap = crate::source_read_cap(&spec.adapter)?;
     let observed = observe_source(store, &source, root, locator, cap)?;
     if let Some(error) = observed.error {
