@@ -1,0 +1,222 @@
+{
+  "kind": "business_acceptance",
+  "scenario_id": "AWR-SC-004",
+  "repository": "https://github.com/originoneai/agent-work-runtime",
+  "source_commit": "df85063e99454b66eae218ecb1c4a75ba10d763f",
+  "runtime_source_commit": "4f6fd11c5283a4ddb52e6cb6fe8ef5a5fd8931aa",
+  "runtime_binary_sha256": "df3aee795905f87fe8bc0747a33b6e73c8a25cef0a072d0b2467e226d0d10217",
+  "business_fixture_setup_commit": "8f4031f40c096691df03099c2382cbb86112be19",
+  "checked_at": "2026-09-09T17:15:32.859652+08:00",
+  "executor": "codex-cli:01a083c0-2c0b-7fc1-ba7d-0b0721dfeb0f",
+  "reviewer": "luna_worker:/root/client_handoff_setup",
+  "final_delivery_checker": "luna_worker:/root/restricted_material_client_run",
+  "scope": "三条实际 Codex native 会话完成活动内容和现场保障的筹备分工、两轮自然追问、接续、独立复核、整改返检与最终筹备交付；场地、设备、人员、材料和活动执行的现场事实仍待确认。",
+  "remote_receipt": {
+    "commit": "df85063e99454b66eae218ecb1c4a75ba10d763f",
+    "url": "https://github.com/originoneai/agent-work-runtime/commit/df85063e99454b66eae218ecb1c4a75ba10d763f",
+    "verified_at": "2026-09-09T17:15:32.859652+08:00",
+    "git_ls_remote": {
+      "ref": "refs/heads/main",
+      "sha": "df85063e99454b66eae218ecb1c4a75ba10d763f",
+      "actual_result": "df85063e99454b66eae218ecb1c4a75ba10d763f\trefs/heads/main",
+      "exit_code": 0,
+      "tool_chunk": "45bbe2"
+    },
+    "github_api": {
+      "endpoint": "repos/originoneai/agent-work-runtime/commits/main",
+      "sha": "df85063e99454b66eae218ecb1c4a75ba10d763f",
+      "html_url": "https://github.com/originoneai/agent-work-runtime/commit/df85063e99454b66eae218ecb1c4a75ba10d763f",
+      "exit_code": 0,
+      "tool_chunk": "727297"
+    },
+    "scope": "Actual Git transport and GitHub API independently matched after successful terminal push handle67897; artifact commit contains only 859 SC004 files."
+  },
+  "gates": {
+    "natural_client_initiation": true,
+    "tool_or_role_execution": true,
+    "real_artifact": true,
+    "business_followup_1": true,
+    "business_followup_2": true,
+    "independent_review": true,
+    "final_delivery": true,
+    "traceable_receipt": true,
+    "fixture_isolation": true,
+    "independent_commit_and_remote_sha": true
+  },
+  "checks": [
+    {
+      "name": "natural_client_initiation",
+      "passed": true,
+      "result": "Canonical initial business request occurred once in the actual coordinator native thread; the 13-input retrospective audit distinguishes natural business inputs from three host setup envelopes.",
+      "artifacts": [
+        "control/initial-sealed.json",
+        "control/initial-review-extract.json",
+        "control/native-input-audit-final.json"
+      ]
+    },
+    {
+      "name": "tool_or_role_execution",
+      "passed": true,
+      "result": "Three distinct Codex native threads performed coordinator/content, peer/venue and successor/venue work. Public evidence binds actual authorship, AWR sessions/claims/branches, RevisionConflict and later ClaimConflict without equating runtime branches to isolated Git worktrees.",
+      "artifacts": [
+        "control/prelude-sealed.json",
+        "control/peer-branch-check-sealed.json",
+        "control/venue-continuation-sealed.json",
+        "control/parallel-process-review-publication.json",
+        "project/review-inputs/parallel-process-evidence/peer-initial-sealed.json",
+        "project/review-inputs/parallel-process-evidence/actual-parallel-conflict-binding.json",
+        "project/review-inputs/parallel-process-evidence/artifact-authorship-correction.json"
+      ]
+    },
+    {
+      "name": "real_artifact",
+      "passed": true,
+      "result": "The final sealed snapshot contains eight hash-bound business/review/delivery artifacts with authorship attributed to actual producing turns rather than shared snapshot membership.",
+      "artifacts": [
+        "control/final-delivery-sealed.json",
+        "project/deliverables/xingqiao-content.md",
+        "project/deliverables/xingqiao-venue.md",
+        "project/deliverables/xingqiao-ownership.md",
+        "project/deliverables/xingqiao-collaboration-review.md",
+        "project/deliverables/xingqiao-independent-results.md"
+      ]
+    },
+    {
+      "name": "business_followup_1",
+      "passed": true,
+      "result": "The first canonical followup introduced the temporary absence, was sent once to the actual coordinator, and led to a separately executed successor handoff that preserved unresolved venue matters.",
+      "artifacts": [
+        "round-1-inputs.json",
+        "control/round-1-sealed.json",
+        "control/round-1-review-extract.json",
+        "control/venue-continuation-sealed.json",
+        "control/venue-continuation-review-extract.json"
+      ]
+    },
+    {
+      "name": "business_followup_2",
+      "passed": true,
+      "result": "The second canonical followup requested separate result checks and common actions; the coordinator then corrected the stale handoff wording and formed the combined preparation plan.",
+      "artifacts": [
+        "round-2-inputs.json",
+        "control/round-2-sealed.json",
+        "control/round-2-review-extract.json",
+        "control/coordination-correction-sealed.json",
+        "control/coordination-correction-review-extract.json"
+      ]
+    },
+    {
+      "name": "independent_review",
+      "passed": true,
+      "result": "A distinct luna_worker reviewer raised XQ-R01/R02, the original producer remediated them, and the same reviewer independently rechecked and closed both findings with ended sessions and released claims.",
+      "artifacts": [
+        "control/independent-review.json",
+        "control/reviewer-identity-binding.json",
+        "project/deliverables/xq-independent-review.md",
+        "control/review-correction-sealed.json",
+        "control/review-correction-publication.json",
+        "control/independent-recheck.json",
+        "control/recheck-reviewer-identity-binding.json",
+        "project/deliverables/xq-independent-recheck.md"
+      ]
+    },
+    {
+      "name": "final_delivery",
+      "passed": true,
+      "result": "After recheck, the original coordinator produced the final preparation delivery. Root and a distinct read-only reviewer verified the sealed final turn and its scope; onsite readiness, execution and release remain outside this gate.",
+      "artifacts": [
+        "control/final-delivery-sealed.json",
+        "control/final-delivery-review-extract.json",
+        "control/final-delivery-observation.json",
+        "control/final-delivery-independent-check.json",
+        "project/deliverables/xq-delivery.md"
+      ]
+    },
+    {
+      "name": "traceable_receipt",
+      "passed": true,
+      "result": "Twelve standard phase seals/extracts, the custom peer publication, 258 final receipt files, 359 fixed review inputs, retained prior/review files and all known failures remain hash-bound. Raw events and native transcripts are excluded from public copying.",
+      "artifacts": [
+        "execution-record.json",
+        "control/final-delivery-sealed.json",
+        "control/final-delivery-review-extract.json",
+        "control/final-delivery-observation.json",
+        "control/parallel-process-review-publication.json",
+        "control/native-input-audit-final.json"
+      ]
+    },
+    {
+      "name": "fixture_isolation",
+      "passed": true,
+      "result": "The run retains its independent fixture namespace and seed project. The final source/artifact snapshots are tied to this project, while the untouched run.json remains a historical preparation receipt and is not treated as proof of later execution.",
+      "artifacts": [
+        "run.json",
+        "control/prelude-sealed.json",
+        "control/final-delivery-sealed.json",
+        "project/project.toml"
+      ]
+    },
+    {
+      "name": "independent_commit_and_remote_sha",
+      "passed": true,
+      "result": "Case-only artifact commit df85063e99454b66eae218ecb1c4a75ba10d763f was independently verified through Git transport and GitHub API after successful push."
+    }
+  ],
+  "artifacts": [
+    "ledger/evidence/business/AWR-SC-004/control/coordination-correction-review-extract.json",
+    "ledger/evidence/business/AWR-SC-004/control/coordination-correction-sealed.json",
+    "ledger/evidence/business/AWR-SC-004/control/final-delivery-independent-check.json",
+    "ledger/evidence/business/AWR-SC-004/control/final-delivery-observation.json",
+    "ledger/evidence/business/AWR-SC-004/control/final-delivery-review-extract.json",
+    "ledger/evidence/business/AWR-SC-004/control/final-delivery-sealed.json",
+    "ledger/evidence/business/AWR-SC-004/control/independent-recheck.json",
+    "ledger/evidence/business/AWR-SC-004/control/independent-review.json",
+    "ledger/evidence/business/AWR-SC-004/control/initial-review-extract.json",
+    "ledger/evidence/business/AWR-SC-004/control/initial-sealed.json",
+    "ledger/evidence/business/AWR-SC-004/control/native-input-audit-final.json",
+    "ledger/evidence/business/AWR-SC-004/control/parallel-process-review-publication.json",
+    "ledger/evidence/business/AWR-SC-004/control/peer-branch-check-sealed.json",
+    "ledger/evidence/business/AWR-SC-004/control/prelude-sealed.json",
+    "ledger/evidence/business/AWR-SC-004/control/public-package-preparation-failures.json",
+    "ledger/evidence/business/AWR-SC-004/control/public-package-root-review.json",
+    "ledger/evidence/business/AWR-SC-004/control/recheck-reviewer-identity-binding.json",
+    "ledger/evidence/business/AWR-SC-004/control/review-correction-publication.json",
+    "ledger/evidence/business/AWR-SC-004/control/review-correction-sealed.json",
+    "ledger/evidence/business/AWR-SC-004/control/reviewer-identity-binding.json",
+    "ledger/evidence/business/AWR-SC-004/control/round-1-review-extract.json",
+    "ledger/evidence/business/AWR-SC-004/control/round-1-sealed.json",
+    "ledger/evidence/business/AWR-SC-004/control/round-2-review-extract.json",
+    "ledger/evidence/business/AWR-SC-004/control/round-2-sealed.json",
+    "ledger/evidence/business/AWR-SC-004/control/venue-continuation-review-extract.json",
+    "ledger/evidence/business/AWR-SC-004/control/venue-continuation-sealed.json",
+    "ledger/evidence/business/AWR-SC-004/execution-record.json",
+    "ledger/evidence/business/AWR-SC-004/gate-review.json",
+    "ledger/evidence/business/AWR-SC-004/manifest.json",
+    "ledger/evidence/business/AWR-SC-004/project/deliverables/xingqiao-collaboration-review.md",
+    "ledger/evidence/business/AWR-SC-004/project/deliverables/xingqiao-content.md",
+    "ledger/evidence/business/AWR-SC-004/project/deliverables/xingqiao-independent-results.md",
+    "ledger/evidence/business/AWR-SC-004/project/deliverables/xingqiao-ownership.md",
+    "ledger/evidence/business/AWR-SC-004/project/deliverables/xingqiao-venue.md",
+    "ledger/evidence/business/AWR-SC-004/project/deliverables/xq-delivery.md",
+    "ledger/evidence/business/AWR-SC-004/project/deliverables/xq-independent-recheck.md",
+    "ledger/evidence/business/AWR-SC-004/project/deliverables/xq-independent-review.md",
+    "ledger/evidence/business/AWR-SC-004/project/project.toml",
+    "ledger/evidence/business/AWR-SC-004/project/review-inputs/parallel-process-evidence/actual-parallel-conflict-binding.json",
+    "ledger/evidence/business/AWR-SC-004/project/review-inputs/parallel-process-evidence/artifact-authorship-correction.json",
+    "ledger/evidence/business/AWR-SC-004/project/review-inputs/parallel-process-evidence/peer-initial-sealed.json",
+    "ledger/evidence/business/AWR-SC-004/receipt-storage.json",
+    "ledger/evidence/business/AWR-SC-004/round-1-inputs.json",
+    "ledger/evidence/business/AWR-SC-004/round-2-inputs.json",
+    "ledger/evidence/business/AWR-SC-004/run.json"
+  ],
+  "artifact_package_manifest_sha256": "635607cfc30a1e17a0b0c6154d25c1d4cf04cb7932d754fb86e79dffe414e8e6",
+  "limitations": [
+    "This isolated synthetic business loop proves the preparation collaboration and delivery; it does not establish onsite readiness, event execution, customer UAT or a released product.",
+    "Actual identities are three native thread IDs and the distinct luna_worker reviewer. AWR caller agent/provider/model labels do not prove native identity.",
+    "The AWR runtime branch was bound to refs/heads/main in a shared directory; it did not create filesystem or Git worktree isolation.",
+    "Original scope wording, two review findings, failed commands, correction attempts and separate operator preparation failures remain retained and do not count as successful actions.",
+    "The historical gate-review and execution record describe the pre-remote stage. This later acceptance binds the immutable artifact commit without changing those bytes.",
+    "Private native context, memory/reasoning, raw events and runtime databases remain locally retained; published business extracts provide source, command and output hashes."
+  ],
+  "completion_claim": true
+}
