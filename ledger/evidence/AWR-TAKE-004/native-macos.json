@@ -1,0 +1,174 @@
+{
+  "contract_id": "awr-native-platforms",
+  "contract_version": "1.0.1",
+  "contract_sha256": "636a1e221103ee84bb46465b2ecea8bfa25095e5343bfe1be7c0058d4ffa5246",
+  "platform_id": "macos-arm64",
+  "source_commit": "a7c45dfd7749be1e2376e364abdb597431b54999",
+  "started_at": "2026-09-09T14:37:27+08:00",
+  "finished_at": "2026-09-09T14:39:02+08:00",
+  "passed": true,
+  "gates_passed": 11,
+  "target_gates": 11,
+  "e4_completed": 0,
+  "model_calls": 0,
+  "native_agent_client_invoked": false,
+  "gates": [
+    {
+      "id": "environment",
+      "passed": true,
+      "command": null,
+      "test_functions_passed": null
+    },
+    {
+      "id": "build",
+      "passed": true,
+      "command": [
+        "rtk",
+        "proxy",
+        "cargo",
+        "build",
+        "--workspace",
+        "--all-targets",
+        "--locked"
+      ],
+      "test_functions_passed": null
+    },
+    {
+      "id": "ignored_inventory",
+      "passed": true,
+      "command": [
+        "rtk",
+        "proxy",
+        "cargo",
+        "test",
+        "--workspace",
+        "--all-targets",
+        "--locked",
+        "--",
+        "--ignored",
+        "--list"
+      ],
+      "test_functions_passed": null
+    },
+    {
+      "id": "workspace",
+      "passed": true,
+      "command": [
+        "rtk",
+        "proxy",
+        "cargo",
+        "test",
+        "--workspace",
+        "--all-targets",
+        "--no-fail-fast",
+        "--locked"
+      ],
+      "test_functions_passed": 296
+    },
+    {
+      "id": "doctests",
+      "passed": true,
+      "command": [
+        "rtk",
+        "proxy",
+        "cargo",
+        "test",
+        "--workspace",
+        "--doc",
+        "--no-fail-fast",
+        "--locked"
+      ],
+      "test_functions_passed": 2
+    },
+    {
+      "id": "crash_recovery",
+      "passed": true,
+      "command": [
+        "rtk",
+        "proxy",
+        "cargo",
+        "test",
+        "-p",
+        "awr-runtime",
+        "--lib",
+        "--locked",
+        "mutation_apply::recovery_tests::cli_recovery_after_process_death_binds_original_attempt_and_resolves_once",
+        "--",
+        "--ignored",
+        "--exact",
+        "--test-threads=1"
+      ],
+      "test_functions_passed": 1
+    },
+    {
+      "id": "cli_mcp_parity",
+      "passed": true,
+      "command": [
+        "rtk",
+        "proxy",
+        "/opt/homebrew/opt/python@3.14/bin/python3.14",
+        "crates/awr-mcp/tests/cli_parity.py",
+        "--awr",
+        "/Users/mac/Documents/originone/agent-work-runtime-takeover/target/debug/awr",
+        "--mcp",
+        "/Users/mac/Documents/originone/agent-work-runtime-takeover/target/debug/awr-mcp",
+        "--report",
+        "/Users/mac/Documents/originone/agent-work-runtime-takeover/.local/takeover-native-20260909/evidence/cli_mcp_parity.json"
+      ],
+      "test_functions_passed": null
+    },
+    {
+      "id": "cli_lifecycle",
+      "passed": true,
+      "command": [
+        "rtk",
+        "proxy",
+        "/opt/homebrew/opt/python@3.14/bin/python3.14",
+        "examples/codex/lifecycle.py",
+        "--awr",
+        "/Users/mac/Documents/originone/agent-work-runtime-takeover/target/debug/awr",
+        "--output",
+        "/Users/mac/Documents/originone/agent-work-runtime-takeover/.local/takeover-native-20260909/fixtures/lifecycle"
+      ],
+      "test_functions_passed": null
+    },
+    {
+      "id": "native_cli",
+      "passed": true,
+      "command": [
+        "rtk",
+        "proxy",
+        "/opt/homebrew/opt/python@3.14/bin/python3.14",
+        "tests/platform/native_cli.py",
+        "--awr",
+        "/Users/mac/Documents/originone/agent-work-runtime-takeover/target/debug/awr",
+        "--output",
+        "/Users/mac/Documents/originone/agent-work-runtime-takeover/.local/takeover-native-20260909/fixtures/native",
+        "--report",
+        "/Users/mac/Documents/originone/agent-work-runtime-takeover/.local/takeover-native-20260909/evidence/native_cli/report.json"
+      ],
+      "test_functions_passed": null
+    },
+    {
+      "id": "format",
+      "passed": true,
+      "command": [
+        "rtk",
+        "proxy",
+        "cargo",
+        "fmt",
+        "--all",
+        "--check"
+      ],
+      "test_functions_passed": null
+    },
+    {
+      "id": "source_unchanged",
+      "passed": true,
+      "command": null,
+      "test_functions_passed": null
+    }
+  ],
+  "full_local_evidence": ".local/takeover-native-20260909/evidence/",
+  "scope": "All native macOS contract gates; no native agent activation or E4 acceptance."
+}
