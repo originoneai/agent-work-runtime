@@ -1,0 +1,87 @@
+{
+  "acceptance": [
+    "处理复核意见，交付最终简报与追溯记录。",
+    "保留实际产物与来源引用，无法确认的内容显式说明。"
+  ],
+  "decisions": [],
+  "dependency_cycles": [],
+  "evidence": [],
+  "evidence_currency_basis": {
+    "branch_id": null,
+    "requested_source_sha": "cd44a161471cee94fd4f797955327a4fd995cf3a"
+  },
+  "freshness_basis": "source_refresh",
+  "missing_dependencies": [],
+  "ok": true,
+  "project_revision": 109,
+  "read_only": false,
+  "required_dependencies": [
+    {
+      "external_key": "QH-BRIEF",
+      "freshness": "fresh",
+      "revision": 6,
+      "source_revision": 11,
+      "status": "completed"
+    },
+    {
+      "external_key": "QH-INPUT",
+      "freshness": "fresh",
+      "revision": 4,
+      "source_revision": 11,
+      "status": "completed"
+    },
+    {
+      "external_key": "QH-REVIEW",
+      "freshness": "fresh",
+      "revision": 3,
+      "source_revision": 11,
+      "status": "completed"
+    }
+  ],
+  "source_issues": [],
+  "source_ref": {
+    "end_line": null,
+    "locator": "file:///Users/mac/Documents/originone/agent-work-running/.local/business-live-20260909-v1/project-onboarding/project/work-ledger.yaml",
+    "pointer": "/work_items/3",
+    "section_fingerprint": null,
+    "source_fingerprint": "sha256:890104e78de53406fe3e7deb6a77fd2215fefc2ff25017b701e94f6d87a96bc4",
+    "source_id": "01M21QQH53JR8QW1W5K5VJRNS7",
+    "source_revision": 11,
+    "start_line": null
+  },
+  "source_refresh_performed": true,
+  "source_warnings": 0,
+  "work": {
+    "active_claims": [
+      {
+        "agent_id": "codex-primary",
+        "expires_at": null,
+        "id": "01M21WPF44KG3D7EH41EFXB0ND",
+        "session_id": "01M21WPF433PJ678X41F1TNGDS"
+      }
+    ],
+    "blocker": null,
+    "diagnostics": [
+      {
+        "code": "active_claim",
+        "detail": "claimed by codex-primary in session 01M21WPF433PJ678X41F1TNGDS",
+        "work_item_key": "QH-DELIVER"
+      }
+    ],
+    "external_key": "QH-DELIVER",
+    "freshness": "fresh",
+    "id": "01M21QQH54SAENARZ5SV55BX7X",
+    "milestone": "QH-DELIVERY",
+    "next_action": "交付更新后的上线说明，先核对当前来源和负责范围。",
+    "owner": null,
+    "priority": "P0",
+    "raw_status": "planned",
+    "ready": false,
+    "revision": 1,
+    "source_revision": 11,
+    "status": "planned",
+    "summary": "交付更新后的上线说明",
+    "title": "交付更新后的上线说明"
+  }
+}
+

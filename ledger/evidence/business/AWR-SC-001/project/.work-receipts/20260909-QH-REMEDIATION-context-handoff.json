@@ -1,0 +1,484 @@
+{
+  "checkpoint_id": "01M21W4TKDFVNDN6G42MW9TEJM",
+  "completeness": {
+    "acceptance_complete": true,
+    "assessment_scope": "Completeness of current required context facts and associations. Known unresolved dependencies and evidence gaps are retained; this does not certify task completion, verification execution or release readiness.",
+    "branch_context": {
+      "branch_id": null,
+      "branch_revision": null,
+      "creation_event_id": null,
+      "fork_project_revision": 0,
+      "git_binding": null,
+      "git_ref": null,
+      "name": "main",
+      "parent_branch_id": null,
+      "runtime_scope": "exact_branch; no parent or sibling runtime inheritance; delta never precedes fork",
+      "source_basis": "shared_current_sources; git_ref is a creation observation, not a frozen source snapshot"
+    },
+    "branch_id": null,
+    "complete": true,
+    "decision_context_complete": true,
+    "dependencies_complete": true,
+    "evidence_gaps": [
+      {
+        "code": "evidence_currency_unknown",
+        "reason": "both recorded and requested source SHA are needed to determine currency",
+        "reference": "QH-REVIEW/evidence/.work-receipts/reviewer-verification.json"
+      },
+      {
+        "code": "evidence_level_unverified",
+        "reason": "evidence level does not claim completed verification",
+        "reference": "QH-REVIEW/evidence/.work-receipts/reviewer-verification.json"
+      },
+      {
+        "code": "missing_evidence_bindings",
+        "reason": "sha256, source_sha, command, verified_at",
+        "reference": "QH-REVIEW/evidence/.work-receipts/reviewer-verification.json"
+      }
+    ],
+    "freshness_basis": "source_refresh_at_project_revision",
+    "goal_context_complete": true,
+    "issues": [],
+    "project_id": "01M21QQH4Z2YQCA7PQZDZ8STC9",
+    "project_revision": 146,
+    "rules_complete": true,
+    "source_fresh": true,
+    "source_refresh_performed": true,
+    "source_versions": [
+      {
+        "fingerprint": "sha256:575f650e4ff9b782bebdb8830f5b2670a3bdc447a41ff84e53eec7cf35c249a8",
+        "freshness": "fresh",
+        "id": "01M21QQH4ZHK6HS1ZFJCH81V0A",
+        "locator": "file:///Users/mac/Documents/originone/agent-work-running/.local/business-live-20260909-v1/project-onboarding/project/GOALS.md",
+        "revision": 1
+      },
+      {
+        "fingerprint": "sha256:2d726e0e77754a51f779b5eee59ac29c919a4e7ab87b2a43a53a74938b2ba053",
+        "freshness": "fresh",
+        "id": "01M21QQH51DTCP30K0NET4B8PC",
+        "locator": "file:///Users/mac/Documents/originone/agent-work-running/.local/business-live-20260909-v1/project-onboarding/project/PLAN.md",
+        "revision": 1
+      },
+      {
+        "fingerprint": "sha256:05c7d1e94f96e3f6bdaccfd8790895a07e11472fe95542c046eb570456ad218d",
+        "freshness": "fresh",
+        "id": "01M21QQH524J7FS6Y2S4A4EVCM",
+        "locator": "file:///Users/mac/Documents/originone/agent-work-running/.local/business-live-20260909-v1/project-onboarding/project/RULES.md",
+        "revision": 2
+      },
+      {
+        "fingerprint": "sha256:4db09cdb71fd2f9b6bf34ded6a9ea9e2fd5bf1567215881efa9c6a0ebe25985c",
+        "freshness": "fresh",
+        "id": "01M21QQH53JR8QW1W5K5VJRNS7",
+        "locator": "file:///Users/mac/Documents/originone/agent-work-running/.local/business-live-20260909-v1/project-onboarding/project/work-ledger.yaml",
+        "revision": 16
+      }
+    ],
+    "status": "CONTEXT COMPLETE",
+    "unresolved_required_dependencies": [],
+    "work_item_found": true,
+    "work_item_key": "QH-REVIEW",
+    "work_state_complete": true
+  },
+  "delta_after_revision": 105,
+  "diagnostic_text": null,
+  "freshness_basis": "source_refresh",
+  "goal_selection_basis": "project_primary_goal_sources",
+  "level": "L1",
+  "ok": true,
+  "omitted_refs": [],
+  "project_revision": 146,
+  "read_only": false,
+  "selection_basis": "explicit_work_detached_session",
+  "session_id": null,
+  "source_refresh_performed": true,
+  "work_context": {
+    "context_hash": "d6ec6b01493b6d2da31589646db617b69560854f9f25279bf078107d284510e3",
+    "identity": {
+      "branch_id": null,
+      "project_id": "01M21QQH4Z2YQCA7PQZDZ8STC9",
+      "project_key": "awr-v1/project-onboarding/awr-live-20260909-001",
+      "project_revision": 146,
+      "source_versions": [
+        {
+          "fingerprint": "sha256:575f650e4ff9b782bebdb8830f5b2670a3bdc447a41ff84e53eec7cf35c249a8",
+          "freshness": "fresh",
+          "id": "01M21QQH4ZHK6HS1ZFJCH81V0A",
+          "locator": "file:///Users/mac/Documents/originone/agent-work-running/.local/business-live-20260909-v1/project-onboarding/project/GOALS.md",
+          "revision": 1
+        },
+        {
+          "fingerprint": "sha256:2d726e0e77754a51f779b5eee59ac29c919a4e7ab87b2a43a53a74938b2ba053",
+          "freshness": "fresh",
+          "id": "01M21QQH51DTCP30K0NET4B8PC",
+          "locator": "file:///Users/mac/Documents/originone/agent-work-running/.local/business-live-20260909-v1/project-onboarding/project/PLAN.md",
+          "revision": 1
+        },
+        {
+          "fingerprint": "sha256:05c7d1e94f96e3f6bdaccfd8790895a07e11472fe95542c046eb570456ad218d",
+          "freshness": "fresh",
+          "id": "01M21QQH524J7FS6Y2S4A4EVCM",
+          "locator": "file:///Users/mac/Documents/originone/agent-work-running/.local/business-live-20260909-v1/project-onboarding/project/RULES.md",
+          "revision": 2
+        },
+        {
+          "fingerprint": "sha256:4db09cdb71fd2f9b6bf34ded6a9ea9e2fd5bf1567215881efa9c6a0ebe25985c",
+          "freshness": "fresh",
+          "id": "01M21QQH53JR8QW1W5K5VJRNS7",
+          "locator": "file:///Users/mac/Documents/originone/agent-work-running/.local/business-live-20260909-v1/project-onboarding/project/work-ledger.yaml",
+          "revision": 16
+        }
+      ],
+      "work_item_id": "01M21QQH54H74PB9525DPEKQ5Z",
+      "work_item_key": "QH-REVIEW",
+      "work_item_revision": 5
+    },
+    "omitted_chunks": [],
+    "policy": "awr.whole_chunks.v1",
+    "rendered_context": "Project: awr-v1/project-onboarding/awr-live-20260909-001 [01M21QQH4Z2YQCA7PQZDZ8STC9] r146\nWork: QH-REVIEW [01M21QQH54H74PB9525DPEKQ5Z] r5\nBranch: main\nSources:\n01M21QQH4ZHK6HS1ZFJCH81V0A r1 sha256:575f650e4ff9b782bebdb8830f5b2670a3bdc447a41ff84e53eec7cf35c249a8 Fresh file:///Users/mac/Documents/originone/agent-work-running/.local/business-live-20260909-v1/project-onboarding/project/GOALS.md\n01M21QQH51DTCP30K0NET4B8PC r1 sha256:2d726e0e77754a51f779b5eee59ac29c919a4e7ab87b2a43a53a74938b2ba053 Fresh file:///Users/mac/Documents/originone/agent-work-running/.local/business-live-20260909-v1/project-onboarding/project/PLAN.md\n01M21QQH524J7FS6Y2S4A4EVCM r2 sha256:05c7d1e94f96e3f6bdaccfd8790895a07e11472fe95542c046eb570456ad218d Fresh file:///Users/mac/Documents/originone/agent-work-running/.local/business-live-20260909-v1/project-onboarding/project/RULES.md\n01M21QQH53JR8QW1W5K5VJRNS7 r16 sha256:4db09cdb71fd2f9b6bf34ded6a9ea9e2fd5bf1567215881efa9c6a0ebe25985c Fresh file:///Users/mac/Documents/originone/agent-work-running/.local/business-live-20260909-v1/project-onboarding/project/work-ledger.yaml\n\n## Goal\n[goal-body:goal#qh]\ngoal:01M21QQH5056FNEWYVKDEME0AJ@r1\n在周五评审前形成文档门户上线简报，明确本周可推进工作、依赖和生效要求。\n[goal:goal#qh]\ngoal:01M21QQH5056FNEWYVKDEME0AJ@r1\n青禾文档门户上线\nStatus: active\nSuccess criteria:\n\n\n## Current Work\n[QH-REVIEW]\nwork_item:01M21QQH54H74PB9525DPEKQ5Z@r5\nStatus: \"planned\"\nRaw status: \"planned\"\nBlocker present: false\nBlocker:\n\nNext Action:\n由不同参与者认领 QH-REVIEW，检查 deliverables/qh-review-response.md、qinghe-dependencies.md、qinghe-context-reference.md 及 AWR 回执；仅评价安排与证据边界，不签署最终交付。\n[work-summary]\nwork_item:01M21QQH54H74PB9525DPEKQ5Z@r5\nluna_worker 已完成安排级独立复核，结论为 requires_executor_changes，并记录 QH-R01 至 QH-R05；该结论未覆盖实际目录、标题、域名、停用日期或门户上线。\n\n## Acceptance\n[acceptance]\nwork_item:01M21QQH54H74PB9525DPEKQ5Z@r5\n1. 独立核对来源、依赖和生效规则，逐条记录修改要求。\n2. 保留实际产物与来源引用，无法确认的内容显式说明。\n\n## Rules\n[file:///Users/mac/Documents/originone/agent-work-running/.local/business-live-20260909-v1/project-onboarding/project/RULES.md#authority]\nrule:01M21QQH53D6MHVTB91Z62KFEQ@r1\nSeverity: hard\nScope: {\"type\":\"project\",\"value\":\"*\"}\n来源与交付\n\n以当前项目来源为准。未知或缺证据的内容显式保留，不将计划、样例或文件存在当作真实验收通过。\n[file:///Users/mac/Documents/originone/agent-work-running/.local/business-live-20260909-v1/project-onboarding/project/RULES.md#business]\nrule:01M21QQH53GGR3RE3EMRXRGB3C@r1\nSeverity: hard\nScope: {\"type\":\"project\",\"value\":\"*\"}\n业务要求\n\n内容目录经独立复核后才可列为已确认；外部域名接入尚待信息管理员确认，不能安排为已就绪。\n[file:///Users/mac/Documents/originone/agent-work-running/.local/business-live-20260909-v1/project-onboarding/project/RULES.md#revision]\nrule:01M21SRJ03QXV2F6SQA384W0VF@r1\nSeverity: hard\nScope: {\"type\":\"project\",\"value\":\"*\"}\n追加业务要求\n\n对外目录本周只允许列出已核实的文档标题，不展示个人联系人；没有域名确认不得承诺具体切换时间。\n\n## Dependencies\n[dependency-summary]\nRequired dependencies: 0 unresolved, 2 resolved; 0 missing, 0 cycle members.\n[resolved:QH-BRIEF]\nwork_item:01M21QQH5476WGWQAGW59RF4GM@r7\n编写本周上线简报\nStatus: \"completed\"\nRaw status: \"completed\"\n[resolved:QH-INPUT]\nwork_item:01M21QQH543P74VQK6J61C4T10@r5\n盘点需求和缺少材料\nStatus: \"completed\"\nRaw status: \"completed\"\n\n## Recent Delta\n[change:01M21QQH53JR8QW1W5K5VJRNS7:01M21QQH543P74VQK6J61C4T10]\ndelta:work_items:01M21QQH543P74VQK6J61C4T10@r5\nwork_items QH-INPUT: updated Some(4) -> Some(5), 1 changes; event 01M21X0KVDKDZZHVYD9S92E43T\n[change:01M21QQH53JR8QW1W5K5VJRNS7:01M21QQH5476WGWQAGW59RF4GM]\ndelta:work_items:01M21QQH5476WGWQAGW59RF4GM@r7\nwork_items QH-BRIEF: updated Some(6) -> Some(7), 1 changes; event 01M21X1NVZW7DQGCHNQZ4BWB2W\n[change:01M21QQH53JR8QW1W5K5VJRNS7:01M21QQH54H74PB9525DPEKQ5Z]\ndelta:work_items:01M21QQH54H74PB9525DPEKQ5Z@r5\nwork_items QH-REVIEW: updated Some(3) -> Some(5), 2 changes; event 01M21XM5KAV1WBTNKANWB64QFR\n[change:01M21QQH53JR8QW1W5K5VJRNS7:01M21QQH54SAENARZ5SV55BX7X]\ndelta:work_items:01M21QQH54SAENARZ5SV55BX7X@r2\nwork_items QH-DELIVER: updated Some(1) -> Some(2), 1 changes; event 01M21X1Q02E60JV8FKRJSHF1NC\n[checkpoint]\ncheckpoint:01M21W4TKDFVNDN6G42MW9TEJM@r1\nCheckpoint context hash: b93f62ab6796364279983c883f61964e4fcc10d109d04ce2506d660ee0b12445\nCheckpoint Next Action:\n原执行者处理 QH-R01 至 QH-R05，更新专用依赖清单和上下文引用，补充或明确保留目录与外部确认缺口，再形成 qh-delivery.md。\nCheckpoint Open Loops:\n三份说明的实际文件、版本、可访问性、可对外标题和责任信息未确认。\n外部域名接入和旧版页面停用日期未确认，不得承诺具体切换时间。\n当前没有内容目录草案，目录级标题、入口和联系人清理无法复核。\nQH-INPUT、QH-BRIEF 的 locator-only Unknown 重复证据需在最终交付前解释或处理。\n[checkpoint-digest]\ncheckpoint:01M21W4TKDFVNDN6G42MW9TEJM@r1\n独立复核已完成：简报对新增硬规则响应基本正确，但依赖清单和上下文引用停留在初始轮次，目录草案及实际输入缺失，另有证据重复 Unknown 和初始技术查找越界；交接包需整改后再最终交付。\n[delta-baseline]\nAfter project revision 105 (previous_closed_session) through 146. Checkpoint: 01M21W4TKDFVNDN6G42MW9TEJM. Important events: 0; omitted by event limit: 0.\n[folded-process-history]\nartifact.recorded normal: 1 at/before baseline, 0 after\ncheckpoint.created normal: 0 at/before baseline, 1 after\ncheckpoint.started normal: 0 at/before baseline, 1 after\nevidence.recorded normal: 1 at/before baseline, 0 after\nproposal.applied normal: 0 at/before baseline, 1 after\nproposal.apply_started normal: 2 at/before baseline, 2 after\nproposal.approved normal: 2 at/before baseline, 2 after\nproposal.created normal: 2 at/before baseline, 2 after\nproposal.ready normal: 2 at/before baseline, 2 after\nsession.ended normal: 0 at/before baseline, 2 after\nsession.started normal: 1 at/before baseline, 1 after\nwork.completed normal: 1 at/before baseline, 0 after\nwork.progressed normal: 1 at/before baseline, 0 after\nwork.reopened normal: 0 at/before baseline, 1 after\n[source:01M21QQH53JR8QW1W5K5VJRNS7]\n10 source events; latest source.projected. Before known: true\nBefore: r11 sha256:890104e78de53406fe3e7deb6a77fd2215fefc2ff25017b701e94f6d87a96bc4 Fresh active=true\nAfter: r16 sha256:4db09cdb71fd2f9b6bf34ded6a9ea9e2fd5bf1567215881efa9c6a0ebe25985c Fresh active=true\nChanged identities: 4; omitted identities: 0; legacy events without entity history: 0.\nHistory events: 01M21X0KVBTS23533VFXS7MFG5 .. 01M21XM5KAV1WBTNKANWB64QFR (r114..r144)\n\n## Evidence\n[evidence-gaps]\nmissing_evidence_bindings [QH-REVIEW/evidence/.work-receipts/reviewer-verification.json]: sha256, source_sha, command, verified_at\nevidence_currency_unknown [QH-REVIEW/evidence/.work-receipts/reviewer-verification.json]: both recorded and requested source SHA are needed to determine currency\nevidence_level_unverified [QH-REVIEW/evidence/.work-receipts/reviewer-verification.json]: evidence level does not claim completed verification\n[evidence:QH-INDEPENDENT-REVIEW-20260909]\nevidence:01M21W35HHB88BQF0D1GWBHT3N@r1\nluna_worker independently reviewed current sources, the briefing, dependency list, context reference, two revisions and retained process deviation; the package requires executor changes before final delivery.\nLevel: LocallyVerified; currency: Current\nReport: .work-receipts/reviewer-verification.json\nSource SHA: cd44a161471cee94fd4f797955327a4fd995cf3a\nScope: QH-REVIEW\n[evidence:QH-REVIEW/evidence/.work-receipts/reviewer-verification.json]\nevidence:01M21W4261T2JWBXMCR1X1C77B@r1\nEvidence reference; not yet verified by AWR\nLevel: Unknown; currency: Unknown\nReport: .work-receipts/reviewer-verification.json\nSource SHA: unknown\nScope: QH-REVIEW\n\n## Metadata\n[branch-context]\nWork branch: main | revision: None | fork: 0 | parent: main\nGit ref at creation: unbound; recorded commit: unverified\nSource basis: shared_current_sources; git_ref is a creation observation, not a frozen source snapshot\nRuntime scope: exact_branch; no parent or sibling runtime inheritance; delta never precedes fork\n[completeness]\nCONTEXT COMPLETE\n\nCompleteness of current required context facts and associations. Known unresolved dependencies and evidence gaps are retained; this does not certify task completion, verification execution or release readiness.\n[identity]\nIntent: review\nSelection: explicit_work_detached_session\nSession: none\nPhase: QH-DELIVERY\nTitle: 独立复核上线安排\n\nOptional chunks omitted: 0. Full details remain available through explicit queries.\n",
+    "required_tokens": 1787,
+    "selected_chunks": [
+      {
+        "entities": [
+          {
+            "id": "01M21QQH5056FNEWYVKDEME0AJ",
+            "kind": "goal",
+            "revision": 1
+          }
+        ],
+        "key": "goal-body:goal#qh",
+        "required": false,
+        "section": "goal"
+      },
+      {
+        "entities": [
+          {
+            "id": "01M21QQH5056FNEWYVKDEME0AJ",
+            "kind": "goal",
+            "revision": 1
+          }
+        ],
+        "key": "goal:goal#qh",
+        "required": true,
+        "section": "goal"
+      },
+      {
+        "entities": [
+          {
+            "id": "01M21QQH54H74PB9525DPEKQ5Z",
+            "kind": "work_item",
+            "revision": 5
+          }
+        ],
+        "key": "QH-REVIEW",
+        "required": true,
+        "section": "work"
+      },
+      {
+        "entities": [
+          {
+            "id": "01M21QQH54H74PB9525DPEKQ5Z",
+            "kind": "work_item",
+            "revision": 5
+          }
+        ],
+        "key": "work-summary",
+        "required": false,
+        "section": "work"
+      },
+      {
+        "entities": [
+          {
+            "id": "01M21QQH54H74PB9525DPEKQ5Z",
+            "kind": "work_item",
+            "revision": 5
+          }
+        ],
+        "key": "acceptance",
+        "required": true,
+        "section": "acceptance"
+      },
+      {
+        "entities": [
+          {
+            "id": "01M21QQH53D6MHVTB91Z62KFEQ",
+            "kind": "rule",
+            "revision": 1
+          }
+        ],
+        "key": "file:///Users/mac/Documents/originone/agent-work-running/.local/business-live-20260909-v1/project-onboarding/project/RULES.md#authority",
+        "required": true,
+        "section": "rules"
+      },
+      {
+        "entities": [
+          {
+            "id": "01M21QQH53GGR3RE3EMRXRGB3C",
+            "kind": "rule",
+            "revision": 1
+          }
+        ],
+        "key": "file:///Users/mac/Documents/originone/agent-work-running/.local/business-live-20260909-v1/project-onboarding/project/RULES.md#business",
+        "required": true,
+        "section": "rules"
+      },
+      {
+        "entities": [
+          {
+            "id": "01M21SRJ03QXV2F6SQA384W0VF",
+            "kind": "rule",
+            "revision": 1
+          }
+        ],
+        "key": "file:///Users/mac/Documents/originone/agent-work-running/.local/business-live-20260909-v1/project-onboarding/project/RULES.md#revision",
+        "required": true,
+        "section": "rules"
+      },
+      {
+        "entities": [],
+        "key": "dependency-summary",
+        "required": true,
+        "section": "dependencies"
+      },
+      {
+        "entities": [
+          {
+            "id": "01M21QQH5476WGWQAGW59RF4GM",
+            "kind": "work_item",
+            "revision": 7
+          }
+        ],
+        "key": "resolved:QH-BRIEF",
+        "required": false,
+        "section": "dependencies"
+      },
+      {
+        "entities": [
+          {
+            "id": "01M21QQH543P74VQK6J61C4T10",
+            "kind": "work_item",
+            "revision": 5
+          }
+        ],
+        "key": "resolved:QH-INPUT",
+        "required": false,
+        "section": "dependencies"
+      },
+      {
+        "entities": [
+          {
+            "id": "01M21QQH543P74VQK6J61C4T10",
+            "kind": "delta:work_items",
+            "revision": 5
+          }
+        ],
+        "key": "change:01M21QQH53JR8QW1W5K5VJRNS7:01M21QQH543P74VQK6J61C4T10",
+        "required": false,
+        "section": "delta"
+      },
+      {
+        "entities": [
+          {
+            "id": "01M21QQH5476WGWQAGW59RF4GM",
+            "kind": "delta:work_items",
+            "revision": 7
+          }
+        ],
+        "key": "change:01M21QQH53JR8QW1W5K5VJRNS7:01M21QQH5476WGWQAGW59RF4GM",
+        "required": false,
+        "section": "delta"
+      },
+      {
+        "entities": [
+          {
+            "id": "01M21QQH54H74PB9525DPEKQ5Z",
+            "kind": "delta:work_items",
+            "revision": 5
+          }
+        ],
+        "key": "change:01M21QQH53JR8QW1W5K5VJRNS7:01M21QQH54H74PB9525DPEKQ5Z",
+        "required": false,
+        "section": "delta"
+      },
+      {
+        "entities": [
+          {
+            "id": "01M21QQH54SAENARZ5SV55BX7X",
+            "kind": "delta:work_items",
+            "revision": 2
+          }
+        ],
+        "key": "change:01M21QQH53JR8QW1W5K5VJRNS7:01M21QQH54SAENARZ5SV55BX7X",
+        "required": false,
+        "section": "delta"
+      },
+      {
+        "entities": [
+          {
+            "id": "01M21W4TKDFVNDN6G42MW9TEJM",
+            "kind": "checkpoint",
+            "revision": 1
+          }
+        ],
+        "key": "checkpoint",
+        "required": true,
+        "section": "delta"
+      },
+      {
+        "entities": [
+          {
+            "id": "01M21W4TKDFVNDN6G42MW9TEJM",
+            "kind": "checkpoint",
+            "revision": 1
+          }
+        ],
+        "key": "checkpoint-digest",
+        "required": false,
+        "section": "delta"
+      },
+      {
+        "entities": [],
+        "key": "delta-baseline",
+        "required": true,
+        "section": "delta"
+      },
+      {
+        "entities": [],
+        "key": "folded-process-history",
+        "required": false,
+        "section": "delta"
+      },
+      {
+        "entities": [],
+        "key": "source:01M21QQH53JR8QW1W5K5VJRNS7",
+        "required": true,
+        "section": "delta"
+      },
+      {
+        "entities": [],
+        "key": "evidence-gaps",
+        "required": true,
+        "section": "evidence"
+      },
+      {
+        "entities": [
+          {
+            "id": "01M21W35HHB88BQF0D1GWBHT3N",
+            "kind": "evidence",
+            "revision": 1
+          }
+        ],
+        "key": "evidence:QH-INDEPENDENT-REVIEW-20260909",
+        "required": false,
+        "section": "evidence"
+      },
+      {
+        "entities": [
+          {
+            "id": "01M21W4261T2JWBXMCR1X1C77B",
+            "kind": "evidence",
+            "revision": 1
+          }
+        ],
+        "key": "evidence:QH-REVIEW/evidence/.work-receipts/reviewer-verification.json",
+        "required": false,
+        "section": "evidence"
+      },
+      {
+        "entities": [],
+        "key": "branch-context",
+        "required": true,
+        "section": "metadata"
+      },
+      {
+        "entities": [],
+        "key": "completeness",
+        "required": true,
+        "section": "metadata"
+      },
+      {
+        "entities": [],
+        "key": "identity",
+        "required": true,
+        "section": "metadata"
+      }
+    ],
+    "selected_entities": [
+      {
+        "id": "01M21W4TKDFVNDN6G42MW9TEJM",
+        "kind": "checkpoint",
+        "revision": 1
+      },
+      {
+        "id": "01M21QQH543P74VQK6J61C4T10",
+        "kind": "delta:work_items",
+        "revision": 5
+      },
+      {
+        "id": "01M21QQH5476WGWQAGW59RF4GM",
+        "kind": "delta:work_items",
+        "revision": 7
+      },
+      {
+        "id": "01M21QQH54H74PB9525DPEKQ5Z",
+        "kind": "delta:work_items",
+        "revision": 5
+      },
+      {
+        "id": "01M21QQH54SAENARZ5SV55BX7X",
+        "kind": "delta:work_items",
+        "revision": 2
+      },
+      {
+        "id": "01M21W35HHB88BQF0D1GWBHT3N",
+        "kind": "evidence",
+        "revision": 1
+      },
+      {
+        "id": "01M21W4261T2JWBXMCR1X1C77B",
+        "kind": "evidence",
+        "revision": 1
+      },
+      {
+        "id": "01M21QQH5056FNEWYVKDEME0AJ",
+        "kind": "goal",
+        "revision": 1
+      },
+      {
+        "id": "01M21QQH53D6MHVTB91Z62KFEQ",
+        "kind": "rule",
+        "revision": 1
+      },
+      {
+        "id": "01M21QQH53GGR3RE3EMRXRGB3C",
+        "kind": "rule",
+        "revision": 1
+      },
+      {
+        "id": "01M21SRJ03QXV2F6SQA384W0VF",
+        "kind": "rule",
+        "revision": 1
+      },
+      {
+        "id": "01M21QQH543P74VQK6J61C4T10",
+        "kind": "work_item",
+        "revision": 5
+      },
+      {
+        "id": "01M21QQH5476WGWQAGW59RF4GM",
+        "kind": "work_item",
+        "revision": 7
+      },
+      {
+        "id": "01M21QQH54H74PB9525DPEKQ5Z",
+        "kind": "work_item",
+        "revision": 5
+      }
+    ],
+    "token_budget": 8000,
+    "token_count_scope": "Exact o200k_base ordinary-text token count of rendered_context, including headings, references and omission footer. JSON transport/envelope, tool framing and surrounding conversation are excluded. Counts for other model tokenizers may differ; no cross-tokenizer error bound is claimed.",
+    "token_estimate": 2999,
+    "tokenizer": "o200k_base"
+  }
+}
+

@@ -1,0 +1,28 @@
+{
+  "event_id": "01M21ZJTBSPR0R647F2X67YT5T",
+  "evidence": {
+    "branch_id": null,
+    "command": "rtk proxy python3 .work-receipts/re-review-verify.py",
+    "evidence_type": "completion_report",
+    "external_key": "QH-INDEPENDENT-RE-REVIEW-20260909",
+    "id": "01M21ZJTBR75WBVHTYWQKJX4TR",
+    "level": "locally_verified",
+    "locator": ".work-receipts/re-review-verification.json",
+    "project_id": "01M21QQH4Z2YQCA7PQZDZ8STC9",
+    "revision": 1,
+    "scope": [
+      "QH-REVIEW"
+    ],
+    "sha256": "11bc93729c969fa77a93360c1d14d28dff2927bf16d67f6cea73657aed38c3e6",
+    "source_ref": null,
+    "source_sha": "cd44a161471cee94fd4f797955327a4fd995cf3a",
+    "summary": "luna_worker independently re-reviewed the fixed executor correction: QH-R01 through QH-R05 are accepted for arrangement-level handoff, while directory, domain, switch, launch and final delivery remain unconfirmed.",
+    "verified_at": 1788920519484,
+    "work_item_id": "01M21QQH54H74PB9525DPEKQ5Z"
+  },
+  "freshness_basis": "source_refresh",
+  "ok": true,
+  "project_revision": 160,
+  "source_refresh_performed": true,
+  "validation_basis": "caller_supplied_bindings"
+}

@@ -1,0 +1,109 @@
+{
+  "ok": true,
+  "code": "proposal_recorded",
+  "project_revision": 145,
+  "proposal": {
+    "id": "01M21XM5HZK5P82PRD3KS8EXYQ",
+    "project_id": "01M21QQH4Z2YQCA7PQZDZ8STC9",
+    "work_item_id": "01M21QQH54H74PB9525DPEKQ5Z",
+    "source_id": "01M21QQH53JR8QW1W5K5VJRNS7",
+    "base_fingerprint": "sha256:55b47f719e101e7017f0fc7f7e68f3293d89256434492c577abeda360dcc0f92",
+    "expected_revision": 138,
+    "mutation_type": "work.reopen",
+    "patch": {
+      "changes": {
+        "blocker": null,
+        "next_action": "由不同参与者认领 QH-REVIEW，检查 deliverables/qh-review-response.md、qinghe-dependencies.md、qinghe-context-reference.md 及 AWR 回执；仅评价安排与证据边界，不签署最终交付。",
+        "status": "planned"
+      },
+      "intent": "执行者已按 QH-R01 至 QH-R05 更新依赖清单、上下文引用、工作记录和逐条回执，需要由不同参与者独立返检；本次重开不代表返检通过。",
+      "source_config": {
+        "adapter_options": {},
+        "adapter_version": 1,
+        "mapping_key": "ledger|work-ledger.yaml"
+      },
+      "target": {
+        "kind": "work_item",
+        "meta": {
+          "external_key": "QH-REVIEW",
+          "id": "01M21QQH54H74PB9525DPEKQ5Z",
+          "revision": 4,
+          "source_ref": {
+            "end_line": null,
+            "locator": "file:///Users/mac/Documents/originone/agent-work-running/.local/business-live-20260909-v1/project-onboarding/project/work-ledger.yaml",
+            "pointer": "/work_items/2",
+            "section_fingerprint": null,
+            "source_fingerprint": "sha256:55b47f719e101e7017f0fc7f7e68f3293d89256434492c577abeda360dcc0f92",
+            "source_id": "01M21QQH53JR8QW1W5K5VJRNS7",
+            "source_revision": 15,
+            "start_line": null
+          }
+        }
+      },
+      "version": 1,
+      "work_action": {
+        "action": "reopen",
+        "from": "completed",
+        "to": "planned"
+      }
+    },
+    "status": "applied",
+    "created_by_session": "01M21XKGH0Z7X5ESRSF0DX8PQN",
+    "revision": 5
+  },
+  "event": {
+    "id": "01M21XM5KBHHKZ4GW76WHKDMK0",
+    "project_id": "01M21QQH4Z2YQCA7PQZDZ8STC9",
+    "work_item_id": "01M21QQH54H74PB9525DPEKQ5Z",
+    "session_id": null,
+    "branch_id": null,
+    "event_type": "work.reopened",
+    "importance": "normal",
+    "summary": "Verified source work action Reopen",
+    "payload": {
+      "action_reason": "执行者已按 QH-R01 至 QH-R05 更新依赖清单、上下文引用、工作记录和逐条回执，需要由不同参与者独立返检；本次重开不代表返检通过。",
+      "actor": "codex-primary",
+      "after_fingerprint": "sha256:4db09cdb71fd2f9b6bf34ded6a9ea9e2fd5bf1567215881efa9c6a0ebe25985c",
+      "attempt_event_id": "01M21XM5JR1CH7NHTBARVSAX66",
+      "before_fingerprint": "sha256:55b47f719e101e7017f0fc7f7e68f3293d89256434492c577abeda360dcc0f92",
+      "creating_session_id": "01M21XKGH0Z7X5ESRSF0DX8PQN",
+      "proposal_id": "01M21XM5HZK5P82PRD3KS8EXYQ",
+      "reason": "执行者已按 QH-R01 至 QH-R05 更新依赖清单、上下文引用、工作记录和逐条回执，需要由不同参与者独立返检；本次重开不代表返检通过。",
+      "released_claim_ids": [],
+      "source_id": "01M21QQH53JR8QW1W5K5VJRNS7",
+      "source_revision": 16,
+      "target_after_hash": "e6f52c6358b7fd641c5161380d60580b6d944428ba650b1a3c94769356bcc0e5",
+      "target_revision": 5,
+      "work_action": {
+        "action": "reopen",
+        "from": "completed",
+        "to": "planned"
+      },
+      "write_plan_id": "01M21XM5J7GQBTRYDZCDP666K5"
+    },
+    "project_revision": 145,
+    "created_at": 1788918503019
+  },
+  "source_refresh_performed": true,
+  "source_write_performed": true,
+  "write_outcome": "applied",
+  "apply_attempt": {
+    "event_id": "01M21XM5JR1CH7NHTBARVSAX66",
+    "proposal_id": "01M21XM5HZK5P82PRD3KS8EXYQ",
+    "source_id": "01M21QQH53JR8QW1W5K5VJRNS7",
+    "project_revision": 142,
+    "plan": {
+      "id": "01M21XM5J7GQBTRYDZCDP666K5",
+      "before_fingerprint": "sha256:55b47f719e101e7017f0fc7f7e68f3293d89256434492c577abeda360dcc0f92",
+      "after_fingerprint": "sha256:4db09cdb71fd2f9b6bf34ded6a9ea9e2fd5bf1567215881efa9c6a0ebe25985c",
+      "before_size": 3432,
+      "after_size": 3494,
+      "target_after_hash": "e6f52c6358b7fd641c5161380d60580b6d944428ba650b1a3c94769356bcc0e5"
+    },
+    "resolved_event_id": "01M21XM5KBHHKZ4GW76WHKDMK0"
+  },
+  "recovery_directory": ".awr/mutations/01M21XM5J7GQBTRYDZCDP666K5",
+  "source_check": null,
+  "error": null
+}
+

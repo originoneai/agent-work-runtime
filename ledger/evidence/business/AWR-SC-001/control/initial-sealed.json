@@ -1,0 +1,40 @@
+{
+  "kind": "actual_client_turn_snapshot",
+  "recorded_at": "2026-09-09T08:24:39+08:00",
+  "phase": "initial",
+  "client": "Codex CLI",
+  "client_task_id": "01a08379-ef89-7173-917d-274662891bcb",
+  "actual_user_turn": {
+    "timestamp": "2026-09-09T00:03:25.844Z",
+    "text": "帮我接手这个项目，整理当前目标、最先能推进的工作，以及开始前需要遵守的要求。"
+  },
+  "input_sha256": "ebffdaab17df9dbaeaa6ae6260dc0ea7070d2c6afc42b4acd2ac12e1683d8bfa",
+  "events_local": ".local/business-live-20260909-v1/project-onboarding/control/initial-events.jsonl",
+  "events_sha256": "372509ac563897b80959a30a3bb0a31d5a11c828d4f5de3e0829b2fb61142d12",
+  "native_transcript_snapshot_local": ".local/business-live-20260909-v1/project-onboarding/control/initial-snapshot/native-transcript.jsonl",
+  "native_transcript_snapshot_sha256": "ecc7c36200d24fdcc5525016153162c072257c06c032c70cd8b7c959bbaec4b3",
+  "final_message_sha256": "aefc4c57cbd6c0e2b9935ecdb134b59d449ba1644957de0a1247aeb2b42372df",
+  "project_sources_sha256": {
+    "project.toml": "9c45ae191289ed0a40883e2120e47eaaa8e3af301c350928b11629406d6c503f",
+    "GOALS.md": "575f650e4ff9b782bebdb8830f5b2670a3bdc447a41ff84e53eec7cf35c249a8",
+    "PLAN.md": "2d726e0e77754a51f779b5eee59ac29c919a4e7ab87b2a43a53a74938b2ba053",
+    "RULES.md": "14fb573ef193e475f1f6d6bf54cfcf59888646150cee3ea0719de39733327386",
+    "work-ledger.yaml": "0a54bde4e7586920e9e3e211d889b436f96a0e5cd49acdc746aeaa63c819150d",
+    "AGENTS.md": "9c50d24e34e314142c7e724290034d0aaeea768953c122f54fd9c3ee922c1b01",
+    "DELIVERABLES.md": "32a59caa8ca42ee5481b32777a40777af6ff36076bdd68355b669f44058c56f4"
+  },
+  "artifacts_sha256": {
+    "deliverables/qinghe-context-reference.md": "8b9508d2965a6d97fd6b76c6afc5f3acad15f52ac326c9819633ad7da19571d3",
+    "deliverables/qinghe-dependencies.md": "b3bbb599f1ef5e3f15ffe1b2e149bb1edc5d218c470eab30186744167071161c"
+  },
+  "tool_event_counts": {
+    "error": 1,
+    "agent_message": 10,
+    "command_execution": 80,
+    "file_change": 13
+  },
+  "command_executions": 80,
+  "nonzero_commands": 3,
+  "snapshot_local": ".local/business-live-20260909-v1/project-onboarding/control/initial-snapshot",
+  "e4_completion_claim": false
+}

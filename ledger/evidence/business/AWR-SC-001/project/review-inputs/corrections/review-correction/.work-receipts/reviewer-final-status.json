@@ -1,0 +1,38 @@
+{
+  "blocked_count": 0,
+  "branch_id": null,
+  "counts": {
+    "completed": 3,
+    "planned": 1
+  },
+  "current": [],
+  "current_total": 0,
+  "freshness_basis": "source_refresh",
+  "next_action": "交付更新后的上线说明，先核对当前来源和负责范围。",
+  "ok": true,
+  "project": "青禾文档门户上线",
+  "project_id": "01M21QQH4Z2YQCA7PQZDZ8STC9",
+  "project_revision": 108,
+  "read_only": false,
+  "ready_count": 1,
+  "source_issues": [],
+  "source_refresh_performed": true,
+  "source_warnings": 0,
+  "suggested_work": {
+    "blocker": null,
+    "external_key": "QH-DELIVER",
+    "freshness": "fresh",
+    "id": "01M21QQH54SAENARZ5SV55BX7X",
+    "milestone": "QH-DELIVERY",
+    "next_action": "交付更新后的上线说明，先核对当前来源和负责范围。",
+    "owner": null,
+    "priority": "P0",
+    "raw_status": "planned",
+    "revision": 1,
+    "source_revision": 11,
+    "status": "planned",
+    "summary": "交付更新后的上线说明",
+    "title": "交付更新后的上线说明"
+  },
+  "total": 4
+}

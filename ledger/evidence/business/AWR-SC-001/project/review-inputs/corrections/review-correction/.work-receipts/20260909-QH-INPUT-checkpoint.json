@@ -1,0 +1,51 @@
+{
+  "checkpoint": {
+    "changed_entities": [
+      "work_items:01M21QQH543P74VQK6J61C4T10"
+    ],
+    "context_hash": "25fbec2eb9bfb703465fb4da8d6ebf50e6c74dfe5de4624647911d3e1216f8ab",
+    "created_at": 1788913119499,
+    "digest": "已初始化 AWR 并认领 QH-INPUT；核对权威来源和项目文件，形成任务与依赖清单、上下文来源记录，并登记当前的本地核验证据。QH-INPUT 仍为进行中，未宣称独立复核、域名就绪或上线完成。",
+    "id": "01M21RFW8BSQ0G9BMJ8SS0Z52H",
+    "next_action": "取得三份说明的实际文件或链接、版本和负责人，并跟踪域名接入确认与旧版页面停用日期；证据齐备后完成 QH-INPUT。",
+    "open_loops": [
+      "三份说明正文、链接、版本和负责人未提供；外部域名接入确认与旧版页面停用日期未取得；内容目录尚未由不同参与者独立复核。"
+    ],
+    "project_revision": 28,
+    "revision": 1,
+    "session_id": "01M21QTD6SSY9DC6S502CKC3CJ"
+  },
+  "checkpoint_save": {
+    "after_revision": 12,
+    "attempt_id": "01M21RFW8AT6N1ZWYGMD27KVQ2",
+    "delta_bytes": 6153,
+    "delta_recorded": true,
+    "event_id": "01M21RFW8BDZZE9PHH94Z91CXJ",
+    "observed_changed_entity_count": 1,
+    "reported_changed_entity_count": 0,
+    "session_event_count": 3,
+    "source_observation_count": 4,
+    "through_revision": 28
+  },
+  "context_hash_basis": "caller_supplied_last_used_context",
+  "context_hash_verified": false,
+  "event": {
+    "artifact_id": null,
+    "branch_id": null,
+    "checkpoint_id": "01M21RFW8BSQ0G9BMJ8SS0Z52H",
+    "created_at": 1788913119499,
+    "id": "01M21RFW8BDZZE9PHH94Z91CXJ",
+    "importance": "normal",
+    "project_revision": 30,
+    "session_id": "01M21QTD6SSY9DC6S502CKC3CJ",
+    "source_id": null,
+    "summary": "Saved session checkpoint and observed delta",
+    "type": "checkpoint.created",
+    "work_item_id": "01M21QQH543P74VQK6J61C4T10"
+  },
+  "freshness_basis": "source_refresh",
+  "ok": true,
+  "project_revision": 30,
+  "save_status": "completed",
+  "source_refresh_performed": true
+}

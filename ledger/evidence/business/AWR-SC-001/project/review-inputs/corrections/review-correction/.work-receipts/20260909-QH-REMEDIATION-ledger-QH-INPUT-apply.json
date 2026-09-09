@@ -1,0 +1,95 @@
+{
+  "apply_attempt": {
+    "event_id": "01M21X0KTVRWY9FF0SK0DD0RB6",
+    "plan": {
+      "after_fingerprint": "sha256:8642a7310984d9a13c88a8a3c42686d264cb28df5ca310cf39f4baef0c832742",
+      "after_size": 2888,
+      "before_fingerprint": "sha256:890104e78de53406fe3e7deb6a77fd2215fefc2ff25017b701e94f6d87a96bc4",
+      "before_size": 2794,
+      "id": "01M21X0KSYP65TJE0CSMVKHCB5",
+      "target_after_hash": "2462b4c2f21416ce65389c05d48fc97a393b738a9d9df15fa6fb438f097831b0"
+    },
+    "project_revision": 113,
+    "proposal_id": "01M21X0KD707CV0BYZA3NM2X8W",
+    "resolved_event_id": "01M21X0KVETMD1Y7C6PN3BFDD8",
+    "source_id": "01M21QQH53JR8QW1W5K5VJRNS7"
+  },
+  "code": "proposal_recorded",
+  "error": null,
+  "event": {
+    "branch_id": null,
+    "created_at": 1788917862254,
+    "event_type": "proposal.applied",
+    "id": "01M21X0KVETMD1Y7C6PN3BFDD8",
+    "importance": "normal",
+    "payload": {
+      "actor": "codex-primary",
+      "after_fingerprint": "sha256:8642a7310984d9a13c88a8a3c42686d264cb28df5ca310cf39f4baef0c832742",
+      "attempt_event_id": "01M21X0KTVRWY9FF0SK0DD0RB6",
+      "before_fingerprint": "sha256:890104e78de53406fe3e7deb6a77fd2215fefc2ff25017b701e94f6d87a96bc4",
+      "proposal_id": "01M21X0KD707CV0BYZA3NM2X8W",
+      "reason": "应用已核对的 QH-INPUT 元数据修正。",
+      "source_id": "01M21QQH53JR8QW1W5K5VJRNS7",
+      "source_revision": 12,
+      "target_after_hash": "2462b4c2f21416ce65389c05d48fc97a393b738a9d9df15fa6fb438f097831b0",
+      "target_revision": 5,
+      "write_plan_id": "01M21X0KSYP65TJE0CSMVKHCB5"
+    },
+    "project_id": "01M21QQH4Z2YQCA7PQZDZ8STC9",
+    "project_revision": 116,
+    "session_id": null,
+    "summary": "Verified source mutation and projection",
+    "work_item_id": "01M21QQH543P74VQK6J61C4T10"
+  },
+  "ok": true,
+  "project_revision": 116,
+  "proposal": {
+    "base_fingerprint": "sha256:890104e78de53406fe3e7deb6a77fd2215fefc2ff25017b701e94f6d87a96bc4",
+    "created_by_session": null,
+    "expected_revision": 109,
+    "id": "01M21X0KD707CV0BYZA3NM2X8W",
+    "mutation_type": "update_fields",
+    "patch": {
+      "changes": {
+        "next_action": "由后续交付责任方在取得真实文档、标题依据、域名确认或停用安排后补充盘点；未取得前持续标记为未确认，不重开既有盘点结论。",
+        "summary": "QH-INPUT 的来源盘点与缺口登记已经完成；三份文档、可对外标题、域名确认和停用日期仍未取得，现作为后续移交事项，不再表述为 QH-INPUT 尚待完成。"
+      },
+      "intent": "纠正已完成盘点工作的过时摘要和下一步，将缺失材料改列为后续移交事项。",
+      "source_config": {
+        "adapter_options": {},
+        "adapter_version": 1,
+        "mapping_key": "ledger|work-ledger.yaml"
+      },
+      "target": {
+        "kind": "work_item",
+        "meta": {
+          "external_key": "QH-INPUT",
+          "id": "01M21QQH543P74VQK6J61C4T10",
+          "revision": 4,
+          "source_ref": {
+            "end_line": null,
+            "locator": "file:///Users/mac/Documents/originone/agent-work-running/.local/business-live-20260909-v1/project-onboarding/project/work-ledger.yaml",
+            "pointer": "/work_items/0",
+            "section_fingerprint": null,
+            "source_fingerprint": "sha256:890104e78de53406fe3e7deb6a77fd2215fefc2ff25017b701e94f6d87a96bc4",
+            "source_id": "01M21QQH53JR8QW1W5K5VJRNS7",
+            "source_revision": 11,
+            "start_line": null
+          }
+        }
+      },
+      "version": 1
+    },
+    "project_id": "01M21QQH4Z2YQCA7PQZDZ8STC9",
+    "revision": 5,
+    "source_id": "01M21QQH53JR8QW1W5K5VJRNS7",
+    "status": "applied",
+    "work_item_id": "01M21QQH543P74VQK6J61C4T10"
+  },
+  "recovery_directory": ".awr/mutations/01M21X0KSYP65TJE0CSMVKHCB5",
+  "source_check": null,
+  "source_refresh_performed": true,
+  "source_write_performed": true,
+  "write_outcome": "applied"
+}
+

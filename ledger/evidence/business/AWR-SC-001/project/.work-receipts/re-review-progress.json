@@ -1,0 +1,108 @@
+{
+  "ok": true,
+  "code": "proposal_recorded",
+  "project_revision": 159,
+  "proposal": {
+    "id": "01M21Z54RTAQCJ08WPKS9PRZHN",
+    "project_id": "01M21QQH4Z2YQCA7PQZDZ8STC9",
+    "work_item_id": "01M21QQH54H74PB9525DPEKQ5Z",
+    "source_id": "01M21QQH53JR8QW1W5K5VJRNS7",
+    "base_fingerprint": "sha256:4db09cdb71fd2f9b6bf34ded6a9ea9e2fd5bf1567215881efa9c6a0ebe25985c",
+    "expected_revision": 152,
+    "mutation_type": "work.progress",
+    "patch": {
+      "changes": {
+        "next_action": "完成逐条证据核对，形成 qh-independent-re-review.md；仅在整改充分且未知事项明确保留时完成 QH-REVIEW。",
+        "status": "in_progress",
+        "summary": "luna_worker 正在对执行者整改进行安排级独立返检；不覆盖目录、域名、停用日期、切换或上线结论。"
+      },
+      "intent": "原独立复核者开始对固定整改快照逐条返检 QH-R01 至 QH-R05，并核对当前来源、AWR 回执与未决边界。",
+      "source_config": {
+        "adapter_options": {},
+        "adapter_version": 1,
+        "mapping_key": "ledger|work-ledger.yaml"
+      },
+      "target": {
+        "kind": "work_item",
+        "meta": {
+          "external_key": "QH-REVIEW",
+          "id": "01M21QQH54H74PB9525DPEKQ5Z",
+          "revision": 5,
+          "source_ref": {
+            "end_line": null,
+            "locator": "file:///Users/mac/Documents/originone/agent-work-running/.local/business-live-20260909-v1/project-onboarding/project/work-ledger.yaml",
+            "pointer": "/work_items/2",
+            "section_fingerprint": null,
+            "source_fingerprint": "sha256:4db09cdb71fd2f9b6bf34ded6a9ea9e2fd5bf1567215881efa9c6a0ebe25985c",
+            "source_id": "01M21QQH53JR8QW1W5K5VJRNS7",
+            "source_revision": 16,
+            "start_line": null
+          }
+        }
+      },
+      "version": 1,
+      "work_action": {
+        "action": "progress",
+        "from": "planned",
+        "to": "in_progress"
+      }
+    },
+    "status": "applied",
+    "created_by_session": "01M21Z2F3HZ8EHTRYY5N7RMRVZ",
+    "revision": 5
+  },
+  "event": {
+    "id": "01M21Z54T9ZZ0FBE2777F3K2CZ",
+    "project_id": "01M21QQH4Z2YQCA7PQZDZ8STC9",
+    "work_item_id": "01M21QQH54H74PB9525DPEKQ5Z",
+    "session_id": null,
+    "branch_id": null,
+    "event_type": "work.progressed",
+    "importance": "normal",
+    "summary": "Verified source work action Progress",
+    "payload": {
+      "action_reason": "原独立复核者开始对固定整改快照逐条返检 QH-R01 至 QH-R05，并核对当前来源、AWR 回执与未决边界。",
+      "actor": "luna_worker",
+      "after_fingerprint": "sha256:5d32d35b33c9507a21f9daa9bdecd40a4f9b1b3d96a5f30400dc58bba00e2982",
+      "attempt_event_id": "01M21Z54SQ749SC96D2RPB14T6",
+      "before_fingerprint": "sha256:4db09cdb71fd2f9b6bf34ded6a9ea9e2fd5bf1567215881efa9c6a0ebe25985c",
+      "creating_session_id": "01M21Z2F3HZ8EHTRYY5N7RMRVZ",
+      "proposal_id": "01M21Z54RTAQCJ08WPKS9PRZHN",
+      "reason": "原独立复核者开始对固定整改快照逐条返检 QH-R01 至 QH-R05，并核对当前来源、AWR 回执与未决边界。",
+      "released_claim_ids": [],
+      "source_id": "01M21QQH53JR8QW1W5K5VJRNS7",
+      "source_revision": 17,
+      "target_after_hash": "f21c2d45dcfdcd45eab974ded6f876308fddbddcee079a9c93bd0b5acaf023ac",
+      "target_revision": 6,
+      "work_action": {
+        "action": "progress",
+        "from": "planned",
+        "to": "in_progress"
+      },
+      "write_plan_id": "01M21Z54S25Q0AFJB5SYPEW29D"
+    },
+    "project_revision": 159,
+    "created_at": 1788920107849
+  },
+  "source_refresh_performed": true,
+  "source_write_performed": true,
+  "write_outcome": "applied",
+  "apply_attempt": {
+    "event_id": "01M21Z54SQ749SC96D2RPB14T6",
+    "proposal_id": "01M21Z54RTAQCJ08WPKS9PRZHN",
+    "source_id": "01M21QQH53JR8QW1W5K5VJRNS7",
+    "project_revision": 156,
+    "plan": {
+      "id": "01M21Z54S25Q0AFJB5SYPEW29D",
+      "before_fingerprint": "sha256:4db09cdb71fd2f9b6bf34ded6a9ea9e2fd5bf1567215881efa9c6a0ebe25985c",
+      "after_fingerprint": "sha256:5d32d35b33c9507a21f9daa9bdecd40a4f9b1b3d96a5f30400dc58bba00e2982",
+      "before_size": 3494,
+      "after_size": 3359,
+      "target_after_hash": "f21c2d45dcfdcd45eab974ded6f876308fddbddcee079a9c93bd0b5acaf023ac"
+    },
+    "resolved_event_id": "01M21Z54T9ZZ0FBE2777F3K2CZ"
+  },
+  "recovery_directory": ".awr/mutations/01M21Z54S25Q0AFJB5SYPEW29D",
+  "source_check": null,
+  "error": null
+}

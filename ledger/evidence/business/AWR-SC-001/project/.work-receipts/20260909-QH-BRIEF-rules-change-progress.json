@@ -1,0 +1,109 @@
+{
+  "ok": true,
+  "code": "proposal_recorded",
+  "project_revision": 77,
+  "proposal": {
+    "id": "01M21T1V7X9TP4YVCT7Q301FXB",
+    "project_id": "01M21QQH4Z2YQCA7PQZDZ8STC9",
+    "work_item_id": "01M21QQH5476WGWQAGW59RF4GM",
+    "source_id": "01M21QQH53JR8QW1W5K5VJRNS7",
+    "base_fingerprint": "sha256:d71d2e4a027ee19ab9a6eb1ba9d846bde1653e2ec2ae4b22698e47ed39c462d3",
+    "expected_revision": 70,
+    "mutation_type": "work.progress",
+    "patch": {
+      "changes": {
+        "next_action": "完成简报定向修改并用当前来源与校验结果形成新的证据。",
+        "status": "in_progress",
+        "summary": "已重新打开并认领 QH-BRIEF，开始按新增硬规则修订。"
+      },
+      "intent": "当前硬规则新增了对外目录、个人联系人和切换时间的明确限制，需要同步修订本周执行简报。",
+      "source_config": {
+        "adapter_options": {},
+        "adapter_version": 1,
+        "mapping_key": "ledger|work-ledger.yaml"
+      },
+      "target": {
+        "kind": "work_item",
+        "meta": {
+          "external_key": "QH-BRIEF",
+          "id": "01M21QQH5476WGWQAGW59RF4GM",
+          "revision": 4,
+          "source_ref": {
+            "end_line": null,
+            "locator": "file:///Users/mac/Documents/originone/agent-work-running/.local/business-live-20260909-v1/project-onboarding/project/work-ledger.yaml",
+            "pointer": "/work_items/1",
+            "section_fingerprint": null,
+            "source_fingerprint": "sha256:d71d2e4a027ee19ab9a6eb1ba9d846bde1653e2ec2ae4b22698e47ed39c462d3",
+            "source_id": "01M21QQH53JR8QW1W5K5VJRNS7",
+            "source_revision": 7,
+            "start_line": null
+          }
+        }
+      },
+      "version": 1,
+      "work_action": {
+        "action": "progress",
+        "from": "planned",
+        "to": "in_progress"
+      }
+    },
+    "status": "applied",
+    "created_by_session": "01M21SVQVGGYD76YT3YFHPHH2D",
+    "revision": 5
+  },
+  "event": {
+    "id": "01M21T1V9BE7BXAHQF8599M1QF",
+    "project_id": "01M21QQH4Z2YQCA7PQZDZ8STC9",
+    "work_item_id": "01M21QQH5476WGWQAGW59RF4GM",
+    "session_id": null,
+    "branch_id": null,
+    "event_type": "work.progressed",
+    "importance": "normal",
+    "summary": "Verified source work action Progress",
+    "payload": {
+      "action_reason": "当前硬规则新增了对外目录、个人联系人和切换时间的明确限制，需要同步修订本周执行简报。",
+      "actor": "codex-primary",
+      "after_fingerprint": "sha256:705239ced357f63d7c6b3319bc5567c0dcaade8d008c9da2eff5a7213097442e",
+      "attempt_event_id": "01M21T1V8QXCEJA6NEJJ0WXCXE",
+      "before_fingerprint": "sha256:d71d2e4a027ee19ab9a6eb1ba9d846bde1653e2ec2ae4b22698e47ed39c462d3",
+      "creating_session_id": "01M21SVQVGGYD76YT3YFHPHH2D",
+      "proposal_id": "01M21T1V7X9TP4YVCT7Q301FXB",
+      "reason": "当前硬规则新增了对外目录、个人联系人和切换时间的明确限制，需要同步修订本周执行简报。",
+      "released_claim_ids": [],
+      "source_id": "01M21QQH53JR8QW1W5K5VJRNS7",
+      "source_revision": 8,
+      "target_after_hash": "0266bbfe467fc6838f6034756ce6ae187f77d742d1bdfc990b4a25e7e1cdf7d6",
+      "target_revision": 5,
+      "work_action": {
+        "action": "progress",
+        "from": "planned",
+        "to": "in_progress"
+      },
+      "write_plan_id": "01M21T1V85F19V8A5DJCC1VZZE"
+    },
+    "project_revision": 77,
+    "created_at": 1788914756907
+  },
+  "source_refresh_performed": true,
+  "source_write_performed": true,
+  "write_outcome": "applied",
+  "apply_attempt": {
+    "event_id": "01M21T1V8QXCEJA6NEJJ0WXCXE",
+    "proposal_id": "01M21T1V7X9TP4YVCT7Q301FXB",
+    "source_id": "01M21QQH53JR8QW1W5K5VJRNS7",
+    "project_revision": 74,
+    "plan": {
+      "id": "01M21T1V85F19V8A5DJCC1VZZE",
+      "before_fingerprint": "sha256:d71d2e4a027ee19ab9a6eb1ba9d846bde1653e2ec2ae4b22698e47ed39c462d3",
+      "after_fingerprint": "sha256:705239ced357f63d7c6b3319bc5567c0dcaade8d008c9da2eff5a7213097442e",
+      "before_size": 2563,
+      "after_size": 2484,
+      "target_after_hash": "0266bbfe467fc6838f6034756ce6ae187f77d742d1bdfc990b4a25e7e1cdf7d6"
+    },
+    "resolved_event_id": "01M21T1V9BE7BXAHQF8599M1QF"
+  },
+  "recovery_directory": ".awr/mutations/01M21T1V85F19V8A5DJCC1VZZE",
+  "source_check": null,
+  "error": null
+}
+

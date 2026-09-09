@@ -1,0 +1,16 @@
+{
+  "kind": "fixture_author_input_publication",
+  "scenario_id": "AWR-SC-001",
+  "round": 1,
+  "published_at": "2026-09-09T08:25:32+08:00",
+  "changes": [
+    {
+      "path": "materials/week-window.md",
+      "before_sha256": null,
+      "after_sha256": "df1bc8d6a0b3a51eabaefacbbebde71931840de029bc21a757e856ad6b04425b"
+    }
+  ],
+  "actual_user_followup_submitted": false,
+  "business_followup_completed": false,
+  "e4_completed": 0
+}

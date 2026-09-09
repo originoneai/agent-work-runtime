@@ -1,0 +1,16 @@
+{
+  "external_key": "QH-INDEPENDENT-RE-REVIEW-20260909",
+  "work_item_key": "QH-REVIEW",
+  "evidence_type": "completion_report",
+  "level": "locally_verified",
+  "summary": "luna_worker independently re-reviewed the fixed executor correction: QH-R01 through QH-R05 are accepted for arrangement-level handoff, while directory, domain, switch, launch and final delivery remain unconfirmed.",
+  "locator": ".work-receipts/re-review-verification.json",
+  "sha256": "11bc93729c969fa77a93360c1d14d28dff2927bf16d67f6cea73657aed38c3e6",
+  "source_sha": "cd44a161471cee94fd4f797955327a4fd995cf3a",
+  "command": "rtk proxy python3 .work-receipts/re-review-verify.py",
+  "scope": [
+    "QH-REVIEW"
+  ],
+  "branch_id": null,
+  "verified_at": 1788920519484
+}

@@ -1,0 +1,109 @@
+{
+  "ok": true,
+  "code": "proposal_recorded",
+  "project_revision": 69,
+  "proposal": {
+    "id": "01M21T0G3D49Q898WDF7SEXHSC",
+    "project_id": "01M21QQH4Z2YQCA7PQZDZ8STC9",
+    "work_item_id": "01M21QQH5476WGWQAGW59RF4GM",
+    "source_id": "01M21QQH53JR8QW1W5K5VJRNS7",
+    "base_fingerprint": "sha256:103b6989fb7c4ef00dd5191be0510b834733346362ba84dab4c440244d5bd67b",
+    "expected_revision": 62,
+    "mutation_type": "work.reopen",
+    "patch": {
+      "changes": {
+        "blocker": null,
+        "next_action": "更新 deliverables/qinghe-brief.md，明确仅发布已核实标题、不展示个人联系人、域名未确认前不承诺具体切换时间，并列出安排变化。",
+        "status": "planned"
+      },
+      "intent": "新增硬规则改变对外目录内容和切换时间承诺边界，原简报需按当前规则修订。",
+      "source_config": {
+        "adapter_options": {},
+        "adapter_version": 1,
+        "mapping_key": "ledger|work-ledger.yaml"
+      },
+      "target": {
+        "kind": "work_item",
+        "meta": {
+          "external_key": "QH-BRIEF",
+          "id": "01M21QQH5476WGWQAGW59RF4GM",
+          "revision": 3,
+          "source_ref": {
+            "end_line": null,
+            "locator": "file:///Users/mac/Documents/originone/agent-work-running/.local/business-live-20260909-v1/project-onboarding/project/work-ledger.yaml",
+            "pointer": "/work_items/1",
+            "section_fingerprint": null,
+            "source_fingerprint": "sha256:103b6989fb7c4ef00dd5191be0510b834733346362ba84dab4c440244d5bd67b",
+            "source_id": "01M21QQH53JR8QW1W5K5VJRNS7",
+            "source_revision": 6,
+            "start_line": null
+          }
+        }
+      },
+      "version": 1,
+      "work_action": {
+        "action": "reopen",
+        "from": "completed",
+        "to": "planned"
+      }
+    },
+    "status": "applied",
+    "created_by_session": "01M21SVQVGGYD76YT3YFHPHH2D",
+    "revision": 5
+  },
+  "event": {
+    "id": "01M21T0G5J0YH8WQC9P27X61JD",
+    "project_id": "01M21QQH4Z2YQCA7PQZDZ8STC9",
+    "work_item_id": "01M21QQH5476WGWQAGW59RF4GM",
+    "session_id": null,
+    "branch_id": null,
+    "event_type": "work.reopened",
+    "importance": "normal",
+    "summary": "Verified source work action Reopen",
+    "payload": {
+      "action_reason": "新增硬规则改变对外目录内容和切换时间承诺边界，原简报需按当前规则修订。",
+      "actor": "codex-primary",
+      "after_fingerprint": "sha256:d71d2e4a027ee19ab9a6eb1ba9d846bde1653e2ec2ae4b22698e47ed39c462d3",
+      "attempt_event_id": "01M21T0G4W3YDX0JT6YGHJ7X0X",
+      "before_fingerprint": "sha256:103b6989fb7c4ef00dd5191be0510b834733346362ba84dab4c440244d5bd67b",
+      "creating_session_id": "01M21SVQVGGYD76YT3YFHPHH2D",
+      "proposal_id": "01M21T0G3D49Q898WDF7SEXHSC",
+      "reason": "新增硬规则改变对外目录内容和切换时间承诺边界，原简报需按当前规则修订。",
+      "released_claim_ids": [],
+      "source_id": "01M21QQH53JR8QW1W5K5VJRNS7",
+      "source_revision": 7,
+      "target_after_hash": "bef49a6381b25701917f0368b1d794ec7f9d2ef55e1db4d8dd6ff856607343f0",
+      "target_revision": 4,
+      "work_action": {
+        "action": "reopen",
+        "from": "completed",
+        "to": "planned"
+      },
+      "write_plan_id": "01M21T0G3KVTJQVXGQ6NC66D93"
+    },
+    "project_revision": 69,
+    "created_at": 1788914712754
+  },
+  "source_refresh_performed": true,
+  "source_write_performed": true,
+  "write_outcome": "applied",
+  "apply_attempt": {
+    "event_id": "01M21T0G4W3YDX0JT6YGHJ7X0X",
+    "proposal_id": "01M21T0G3D49Q898WDF7SEXHSC",
+    "source_id": "01M21QQH53JR8QW1W5K5VJRNS7",
+    "project_revision": 66,
+    "plan": {
+      "id": "01M21T0G3KVTJQVXGQ6NC66D93",
+      "before_fingerprint": "sha256:103b6989fb7c4ef00dd5191be0510b834733346362ba84dab4c440244d5bd67b",
+      "after_fingerprint": "sha256:d71d2e4a027ee19ab9a6eb1ba9d846bde1653e2ec2ae4b22698e47ed39c462d3",
+      "before_size": 2487,
+      "after_size": 2563,
+      "target_after_hash": "bef49a6381b25701917f0368b1d794ec7f9d2ef55e1db4d8dd6ff856607343f0"
+    },
+    "resolved_event_id": "01M21T0G5J0YH8WQC9P27X61JD"
+  },
+  "recovery_directory": ".awr/mutations/01M21T0G3KVTJQVXGQ6NC66D93",
+  "source_check": null,
+  "error": null
+}
+

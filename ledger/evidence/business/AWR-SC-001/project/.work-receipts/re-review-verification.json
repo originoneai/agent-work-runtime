@@ -1,0 +1,110 @@
+{
+  "version": 1,
+  "work_item": "QH-REVIEW",
+  "report_kind": "independent_remediation_re_review",
+  "reviewer": {
+    "agent_id": "luna_worker",
+    "session_id": "01M21Z2F3HZ8EHTRYY5N7RMRVZ",
+    "claim_id": "01M21Z2F3JS2KK0S8K77D6MBTT"
+  },
+  "executor": {
+    "native_thread_id": "01a08379-ef89-7173-917d-274662891bcb"
+  },
+  "source_sha": "cd44a161471cee94fd4f797955327a4fd995cf3a",
+  "command": "rtk proxy python3 .work-receipts/re-review-verify.py",
+  "scope": [
+    "QH-REVIEW"
+  ],
+  "verified_at": 1788920660044,
+  "report": {
+    "locator": "deliverables/qh-independent-re-review.md",
+    "sha256": "adf4fc58abfc863a660913a912f5d57262bb4d6b0182cfdbe8ec16e0a5984d8d"
+  },
+  "reviewed_files": {
+    "locator": ".work-receipts/re-review-reviewed-files.json",
+    "sha256": "82da64ca008295b8cf4165455ecd89a46d4ba75a850b15fd78d1b771a06129bc"
+  },
+  "checks": [
+    {
+      "name": "fixed correction publication",
+      "passed": true,
+      "details": "Checked 136 published paths; missing=0, hash_mismatch=0; publication independent_verdict=pending, e4_credit=False.",
+      "criteria": [
+        "独立核对来源、依赖和生效规则，逐条记录修改要求。",
+        "保留实际产物与来源引用，无法确认的内容显式说明。"
+      ]
+    },
+    {
+      "name": "authoritative and retained file hashes",
+      "passed": true,
+      "details": "Checked 7 current or preserved files; mismatches={}.",
+      "criteria": [
+        "独立核对来源、依赖和生效规则，逐条记录修改要求。",
+        "保留实际产物与来源引用，无法确认的内容显式说明。"
+      ]
+    },
+    {
+      "name": "before and after executor hashes",
+      "passed": true,
+      "details": "Observed before/after hashes: {'brief_before': '31b843562c3918b531d774e1ab19b7b6912db627de6ce2dc4ba37515fa1cfccd', 'brief_after': '31b843562c3918b531d774e1ab19b7b6912db627de6ce2dc4ba37515fa1cfccd', 'dependencies_before': 'b3bbb599f1ef5e3f15ffe1b2e149bb1edc5d218c470eab30186744167071161c', 'dependencies_after': '42f98e5869ff2edc64b11a51a021b390e1586ea8ad7c1fcf09b1dc0c340385f5', 'context_before': '8b9508d2965a6d97fd6b76c6afc5f3acad15f52ac326c9819633ad7da19571d3', 'context_after': 'fde028a64afc2d1f8543aa28ee7c90375714aa583ea778b9de7d25e9d7f4124a', 'ledger_before': '5ca64a6962d2e318dab3c7bc97316eae71a4487248c0d674827b8c2e45ab603a', 'ledger_after': '4db09cdb71fd2f9b6bf34ded6a9ea9e2fd5bf1567215881efa9c6a0ebe25985c'}.",
+      "criteria": [
+        "独立核对来源、依赖和生效规则，逐条记录修改要求。",
+        "保留实际产物与来源引用，无法确认的内容显式说明。"
+      ]
+    },
+    {
+      "name": "independent reviewer identity and claim",
+      "passed": true,
+      "details": "session=01M21Z2F3HZ8EHTRYY5N7RMRVZ agent=luna_worker claim=01M21Z2F3JS2KK0S8K77D6MBTT work=QH-REVIEW.",
+      "criteria": [
+        "独立核对来源、依赖和生效规则，逐条记录修改要求。"
+      ]
+    },
+    {
+      "name": "current AWR work arrangement",
+      "passed": true,
+      "details": "QH-INPUT=completed; QH-BRIEF=completed; QH-REVIEW=in_progress; QH-DELIVER=planned.",
+      "criteria": [
+        "独立核对来源、依赖和生效规则，逐条记录修改要求。",
+        "保留实际产物与来源引用，无法确认的内容显式说明。"
+      ]
+    },
+    {
+      "name": "explicit versus locator-only evidence projection",
+      "passed": true,
+      "details": "QH-INPUT explicit=1, locator_unknown=1; QH-BRIEF explicit=2, locator_unknown=2. Unknown entries remain unpromoted.",
+      "criteria": [
+        "独立核对来源、依赖和生效规则，逐条记录修改要求。",
+        "保留实际产物与来源引用，无法确认的内容显式说明。"
+      ]
+    },
+    {
+      "name": "re-review report decisions and boundaries",
+      "passed": true,
+      "details": "Required report assertions absent=[].",
+      "criteria": [
+        "独立核对来源、依赖和生效规则，逐条记录修改要求。",
+        "保留实际产物与来源引用，无法确认的内容显式说明。"
+      ]
+    },
+    {
+      "name": "no final delivery created",
+      "passed": true,
+      "details": "deliverables/qh-delivery.md does not exist; re-review does not perform final delivery.",
+      "criteria": [
+        "保留实际产物与来源引用，无法确认的内容显式说明。"
+      ]
+    }
+  ],
+  "all_passed": true,
+  "verdict": "remediation_accepted_for_arrangement_level_handoff",
+  "limits": [
+    "No verification of actual document bodies, titles, links, access status or responsible contacts.",
+    "No verification of directory contents or personal-contact removal.",
+    "No confirmation of domain, legacy-page stop date, switch time, external readiness, portal launch or final delivery.",
+    "Locator-only Unknown evidence remains a visible gap.",
+    "The initial reference lookup remains a noncompliant process event with no observed future-business-result contamination."
+  ],
+  "missing_snapshot_paths": [],
+  "snapshot_hash_mismatches": []
+}

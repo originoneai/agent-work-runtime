@@ -1,0 +1,54 @@
+milestones:
+- id: QH-DELIVERY
+  title: 青禾文档门户上线交付
+  status: in_progress
+work_items:
+- {"acceptance":["核对现有三份说明与两个尚缺确认，不把待确认事项当作就绪。","保留实际产物与来源引用，无法确认的内容显式说明。"],"depends_on":[],"evidence":[],"goal":"goal#qh","id":"QH-INPUT","milestone":"QH-DELIVERY","next_action":"取得三份说明的实际文件或链接、版本和负责人，并跟踪域名接入确认与旧版页面停用日期；证据齐备后完成 QH-INPUT。","owner":null,"priority":"P0","status":"in_progress","summary":"已形成任务与依赖清单、上下文来源记录及本地核验证据；三份说明正文和两项确认仍未取得。","title":"盘点需求和缺少材料","verification":{"evidence_level":"none"}}
+- id: QH-BRIEF
+  title: 编写本周上线简报
+  status: planned
+  owner: null
+  priority: P0
+  milestone: QH-DELIVERY
+  goal: goal#qh
+  acceptance:
+  - 交付本周优先清单、依赖和开始前要求，并给出材料出处。
+  - 保留实际产物与来源引用，无法确认的内容显式说明。
+  depends_on:
+  - QH-INPUT
+  next_action: 编写本周上线简报，先核对当前来源和负责范围。
+  evidence: []
+  verification:
+    evidence_level: none
+- id: QH-REVIEW
+  title: 独立复核上线安排
+  status: planned
+  owner: null
+  priority: P0
+  milestone: QH-DELIVERY
+  goal: goal#qh
+  acceptance:
+  - 独立核对来源、依赖和生效规则，逐条记录修改要求。
+  - 保留实际产物与来源引用，无法确认的内容显式说明。
+  depends_on:
+  - QH-BRIEF
+  next_action: 独立复核上线安排，先核对当前来源和负责范围。
+  evidence: []
+  verification:
+    evidence_level: none
+- id: QH-DELIVER
+  title: 交付更新后的上线说明
+  status: planned
+  owner: null
+  priority: P0
+  milestone: QH-DELIVERY
+  goal: goal#qh
+  acceptance:
+  - 处理复核意见，交付最终简报与追溯记录。
+  - 保留实际产物与来源引用，无法确认的内容显式说明。
+  depends_on:
+  - QH-REVIEW
+  next_action: 交付更新后的上线说明，先核对当前来源和负责范围。
+  evidence: []
+  verification:
+    evidence_level: none

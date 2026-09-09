@@ -1,0 +1,197 @@
+{
+  "ok": true,
+  "code": "proposal_recorded",
+  "project_revision": 168,
+  "proposal": {
+    "id": "01M21ZQ2BC7J98G18NJPWQTYX9",
+    "project_id": "01M21QQH4Z2YQCA7PQZDZ8STC9",
+    "work_item_id": "01M21QQH54H74PB9525DPEKQ5Z",
+    "source_id": "01M21QQH53JR8QW1W5K5VJRNS7",
+    "base_fingerprint": "sha256:5d32d35b33c9507a21f9daa9bdecd40a4f9b1b3d96a5f30400dc58bba00e2982",
+    "expected_revision": 161,
+    "mutation_type": "work.complete",
+    "patch": {
+      "changes": {
+        "evidence": [
+          ".work-receipts/reviewer-verification.json",
+          ".work-receipts/re-review-verification.json"
+        ],
+        "status": "completed",
+        "verification": {
+          "evidence_level": "locally_verified"
+        }
+      },
+      "intent": "原独立复核者已逐条核对固定整改快照、当前来源、依赖、生效规则与 AWR 回执；QH-R01 至 QH-R05 的安排级整改通过，目录、域名、停用、切换、上线和最终交付仍未确认。",
+      "source_config": {
+        "adapter_options": {},
+        "adapter_version": 1,
+        "mapping_key": "ledger|work-ledger.yaml"
+      },
+      "target": {
+        "kind": "work_item",
+        "meta": {
+          "external_key": "QH-REVIEW",
+          "id": "01M21QQH54H74PB9525DPEKQ5Z",
+          "revision": 6,
+          "source_ref": {
+            "end_line": null,
+            "locator": "file:///Users/mac/Documents/originone/agent-work-running/.local/business-live-20260909-v1/project-onboarding/project/work-ledger.yaml",
+            "pointer": "/work_items/2",
+            "section_fingerprint": null,
+            "source_fingerprint": "sha256:5d32d35b33c9507a21f9daa9bdecd40a4f9b1b3d96a5f30400dc58bba00e2982",
+            "source_id": "01M21QQH53JR8QW1W5K5VJRNS7",
+            "source_revision": 17,
+            "start_line": null
+          }
+        }
+      },
+      "version": 1,
+      "work_action": {
+        "action": "complete",
+        "completion": {
+          "acceptance": [
+            {
+              "criterion": "独立核对来源、依赖和生效规则，逐条记录修改要求。",
+              "evidence": [
+                "01M21ZPNCH9E9MZQJ9902QBWRY"
+              ]
+            },
+            {
+              "criterion": "保留实际产物与来源引用，无法确认的内容显式说明。",
+              "evidence": [
+                "01M21ZPNCH9E9MZQJ9902QBWRY"
+              ]
+            }
+          ],
+          "evidence": [
+            {
+              "branch_id": null,
+              "command": "rtk proxy python3 .work-receipts/re-review-verify.py",
+              "evidence_type": "completion_report",
+              "external_key": "QH-INDEPENDENT-RE-REVIEW-20260909-V2",
+              "id": "01M21ZPNCH9E9MZQJ9902QBWRY",
+              "level": "locally_verified",
+              "locator": ".work-receipts/re-review-verification.json",
+              "project_id": "01M21QQH4Z2YQCA7PQZDZ8STC9",
+              "revision": 1,
+              "scope": [
+                "QH-REVIEW"
+              ],
+              "sha256": "f26764dc65a7759cfced25926756aab772e438f1797ad06354f58ac4263ca4d2",
+              "source_ref": null,
+              "source_sha": "cd44a161471cee94fd4f797955327a4fd995cf3a",
+              "summary": "luna_worker independently re-reviewed the fixed executor correction: QH-R01 through QH-R05 are accepted for arrangement-level handoff, while directory, domain, switch, launch and final delivery remain unconfirmed.",
+              "verified_at": 1788920660044,
+              "work_item_id": "01M21QQH54H74PB9525DPEKQ5Z"
+            }
+          ],
+          "minimum_level": "locally_verified",
+          "source_sha": "cd44a161471cee94fd4f797955327a4fd995cf3a",
+          "version": 1
+        },
+        "from": "in_progress",
+        "to": "completed"
+      }
+    },
+    "status": "applied",
+    "created_by_session": "01M21Z2F3HZ8EHTRYY5N7RMRVZ",
+    "revision": 5
+  },
+  "event": {
+    "id": "01M21ZQ2D8PCSAVRTTGENXJDNW",
+    "project_id": "01M21QQH4Z2YQCA7PQZDZ8STC9",
+    "work_item_id": "01M21QQH54H74PB9525DPEKQ5Z",
+    "session_id": null,
+    "branch_id": null,
+    "event_type": "work.completed",
+    "importance": "normal",
+    "summary": "Verified source work action Complete",
+    "payload": {
+      "action_reason": "原独立复核者已逐条核对固定整改快照、当前来源、依赖、生效规则与 AWR 回执；QH-R01 至 QH-R05 的安排级整改通过，目录、域名、停用、切换、上线和最终交付仍未确认。",
+      "actor": "luna_worker",
+      "after_fingerprint": "sha256:fde49cd4bf328aaab911c2f1eeed0fd986fbab532679dfb48cbba1a558e59221",
+      "attempt_event_id": "01M21ZQ2CG68Z8A4ZYBC8GABY3",
+      "before_fingerprint": "sha256:5d32d35b33c9507a21f9daa9bdecd40a4f9b1b3d96a5f30400dc58bba00e2982",
+      "creating_session_id": "01M21Z2F3HZ8EHTRYY5N7RMRVZ",
+      "proposal_id": "01M21ZQ2BC7J98G18NJPWQTYX9",
+      "reason": "原独立复核者已逐条核对固定整改快照、当前来源、依赖、生效规则与 AWR 回执；QH-R01 至 QH-R05 的安排级整改通过，目录、域名、停用、切换、上线和最终交付仍未确认。",
+      "released_claim_ids": [
+        "01M21Z2F3JS2KK0S8K77D6MBTT"
+      ],
+      "source_id": "01M21QQH53JR8QW1W5K5VJRNS7",
+      "source_revision": 18,
+      "target_after_hash": "ac99686ec01e4be63c89979c827d48ca39f2d876b3c5bb6a171a965fa2cbba3d",
+      "target_revision": 7,
+      "work_action": {
+        "action": "complete",
+        "completion": {
+          "acceptance": [
+            {
+              "criterion": "独立核对来源、依赖和生效规则，逐条记录修改要求。",
+              "evidence": [
+                "01M21ZPNCH9E9MZQJ9902QBWRY"
+              ]
+            },
+            {
+              "criterion": "保留实际产物与来源引用，无法确认的内容显式说明。",
+              "evidence": [
+                "01M21ZPNCH9E9MZQJ9902QBWRY"
+              ]
+            }
+          ],
+          "evidence": [
+            {
+              "branch_id": null,
+              "command": "rtk proxy python3 .work-receipts/re-review-verify.py",
+              "evidence_type": "completion_report",
+              "external_key": "QH-INDEPENDENT-RE-REVIEW-20260909-V2",
+              "id": "01M21ZPNCH9E9MZQJ9902QBWRY",
+              "level": "locally_verified",
+              "locator": ".work-receipts/re-review-verification.json",
+              "project_id": "01M21QQH4Z2YQCA7PQZDZ8STC9",
+              "revision": 1,
+              "scope": [
+                "QH-REVIEW"
+              ],
+              "sha256": "f26764dc65a7759cfced25926756aab772e438f1797ad06354f58ac4263ca4d2",
+              "source_ref": null,
+              "source_sha": "cd44a161471cee94fd4f797955327a4fd995cf3a",
+              "summary": "luna_worker independently re-reviewed the fixed executor correction: QH-R01 through QH-R05 are accepted for arrangement-level handoff, while directory, domain, switch, launch and final delivery remain unconfirmed.",
+              "verified_at": 1788920660044,
+              "work_item_id": "01M21QQH54H74PB9525DPEKQ5Z"
+            }
+          ],
+          "minimum_level": "locally_verified",
+          "source_sha": "cd44a161471cee94fd4f797955327a4fd995cf3a",
+          "version": 1
+        },
+        "from": "in_progress",
+        "to": "completed"
+      },
+      "write_plan_id": "01M21ZQ2BVEV4A9XKT2TXBASQW"
+    },
+    "project_revision": 168,
+    "created_at": 1788920695208
+  },
+  "source_refresh_performed": true,
+  "source_write_performed": true,
+  "write_outcome": "applied",
+  "apply_attempt": {
+    "event_id": "01M21ZQ2CG68Z8A4ZYBC8GABY3",
+    "proposal_id": "01M21ZQ2BC7J98G18NJPWQTYX9",
+    "source_id": "01M21QQH53JR8QW1W5K5VJRNS7",
+    "project_revision": 165,
+    "plan": {
+      "id": "01M21ZQ2BVEV4A9XKT2TXBASQW",
+      "before_fingerprint": "sha256:5d32d35b33c9507a21f9daa9bdecd40a4f9b1b3d96a5f30400dc58bba00e2982",
+      "after_fingerprint": "sha256:fde49cd4bf328aaab911c2f1eeed0fd986fbab532679dfb48cbba1a558e59221",
+      "before_size": 3359,
+      "after_size": 3402,
+      "target_after_hash": "ac99686ec01e4be63c89979c827d48ca39f2d876b3c5bb6a171a965fa2cbba3d"
+    },
+    "resolved_event_id": "01M21ZQ2D8PCSAVRTTGENXJDNW"
+  },
+  "recovery_directory": ".awr/mutations/01M21ZQ2BVEV4A9XKT2TXBASQW",
+  "source_check": null,
+  "error": null
+}

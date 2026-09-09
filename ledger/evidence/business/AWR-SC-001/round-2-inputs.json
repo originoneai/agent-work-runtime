@@ -1,0 +1,16 @@
+{
+  "kind": "fixture_author_input_publication",
+  "scenario_id": "AWR-SC-001",
+  "round": 2,
+  "published_at": "2026-09-09T08:40:14+08:00",
+  "changes": [
+    {
+      "path": "RULES.md",
+      "before_sha256": "14fb573ef193e475f1f6d6bf54cfcf59888646150cee3ea0719de39733327386",
+      "after_sha256": "05c7d1e94f96e3f6bdaccfd8790895a07e11472fe95542c046eb570456ad218d"
+    }
+  ],
+  "actual_user_followup_submitted": false,
+  "business_followup_completed": false,
+  "e4_completed": 0
+}

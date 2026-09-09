@@ -1,0 +1,55 @@
+{
+  "blocked_count": 4,
+  "branch_id": null,
+  "counts": {
+    "in_progress": 1,
+    "planned": 3
+  },
+  "current": [
+    {
+      "blocker": null,
+      "external_key": "QH-INPUT",
+      "freshness": "fresh",
+      "id": "01M21QQH543P74VQK6J61C4T10",
+      "milestone": "QH-DELIVERY",
+      "next_action": "取得三份说明的实际文件或链接、版本和负责人，并跟踪域名接入确认与旧版页面停用日期；证据齐备后完成 QH-INPUT。",
+      "owner": null,
+      "priority": "P0",
+      "raw_status": "in_progress",
+      "revision": 3,
+      "source_revision": 3,
+      "status": "in_progress",
+      "summary": "已形成任务与依赖清单、上下文来源记录及本地核验证据；三份说明正文和两项确认仍未取得。",
+      "title": "盘点需求和缺少材料"
+    }
+  ],
+  "current_total": 1,
+  "freshness_basis": "source_refresh",
+  "next_action": "取得三份说明的实际文件或链接、版本和负责人，并跟踪域名接入确认与旧版页面停用日期；证据齐备后完成 QH-INPUT。",
+  "ok": true,
+  "project": "青禾文档门户上线",
+  "project_id": "01M21QQH4Z2YQCA7PQZDZ8STC9",
+  "project_revision": 30,
+  "read_only": false,
+  "ready_count": 0,
+  "source_issues": [],
+  "source_refresh_performed": true,
+  "source_warnings": 0,
+  "suggested_work": {
+    "blocker": null,
+    "external_key": "QH-INPUT",
+    "freshness": "fresh",
+    "id": "01M21QQH543P74VQK6J61C4T10",
+    "milestone": "QH-DELIVERY",
+    "next_action": "取得三份说明的实际文件或链接、版本和负责人，并跟踪域名接入确认与旧版页面停用日期；证据齐备后完成 QH-INPUT。",
+    "owner": null,
+    "priority": "P0",
+    "raw_status": "in_progress",
+    "revision": 3,
+    "source_revision": 3,
+    "status": "in_progress",
+    "summary": "已形成任务与依赖清单、上下文来源记录及本地核验证据；三份说明正文和两项确认仍未取得。",
+    "title": "盘点需求和缺少材料"
+  },
+  "total": 4
+}

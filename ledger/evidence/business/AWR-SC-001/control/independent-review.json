@@ -1,0 +1,282 @@
+{
+  "kind": "actual_independent_review_run",
+  "scenario": "project-onboarding",
+  "work_item": "QH-REVIEW",
+  "recorded_at_ms": 1788917104596,
+  "reviewer": {
+    "actual_identity": "luna_worker",
+    "provider": "openai",
+    "model": "gpt-5.6-sol",
+    "awr_session_id": "01M21VK36SJ9KXRB3634VZ1FPS",
+    "awr_claim_id": "01M21VK36T1CAR0R0V4CNDDWZB",
+    "session_status": "ended",
+    "start_project_revision": 88,
+    "end_project_revision": 108,
+    "native_model_client_thread": null,
+    "identity_note": "Review executed by the current luna_worker task; no separate model client or invented reviewer signature was used."
+  },
+  "executor": {
+    "client": "Codex CLI",
+    "client_task_id": "01a08379-ef89-7173-917d-274662891bcb",
+    "reviewer_authorship_of_executor_artifacts": false
+  },
+  "result": {
+    "review_work_completed": true,
+    "reviewed_package_verdict": "requires_executor_changes",
+    "reviewed_package_approved_for_final_delivery": false,
+    "qh_delivery_created": false,
+    "scenario_completed": false,
+    "next_owner": "original executor",
+    "next_action": "Address QH-R01 through QH-R05, retain external unknowns, then prepare the final delivery and response-to-review trace."
+  },
+  "current_authority_sha256": {
+    "project.toml": "9c45ae191289ed0a40883e2120e47eaaa8e3af301c350928b11629406d6c503f",
+    "GOALS.md": "575f650e4ff9b782bebdb8830f5b2670a3bdc447a41ff84e53eec7cf35c249a8",
+    "PLAN.md": "2d726e0e77754a51f779b5eee59ac29c919a4e7ab87b2a43a53a74938b2ba053",
+    "RULES.md": "05c7d1e94f96e3f6bdaccfd8790895a07e11472fe95542c046eb570456ad218d",
+    "work-ledger.yaml": "890104e78de53406fe3e7deb6a77fd2215fefc2ff25017b701e94f6d87a96bc4"
+  },
+  "executor_handoff_work_ledger_sha256": "5ca64a6962d2e318dab3c7bc97316eae71a4487248c0d674827b8c2e45ab603a",
+  "review_snapshot_files_sha256": {
+    "project.toml": "9c45ae191289ed0a40883e2120e47eaaa8e3af301c350928b11629406d6c503f",
+    "GOALS.md": "575f650e4ff9b782bebdb8830f5b2670a3bdc447a41ff84e53eec7cf35c249a8",
+    "PLAN.md": "2d726e0e77754a51f779b5eee59ac29c919a4e7ab87b2a43a53a74938b2ba053",
+    "RULES.md": "05c7d1e94f96e3f6bdaccfd8790895a07e11472fe95542c046eb570456ad218d",
+    "work-ledger.yaml": "1f471488f57ac6eab3abbb4c16e6e57942c4c3997b9af12ce9a10b059e88791b",
+    "AGENTS.md": "581c28e430d08fc07fe5d98322b936c79018d654d1c5764eb7e7e7604fa11a39",
+    "DELIVERABLES.md": "32a59caa8ca42ee5481b32777a40777af6ff36076bdd68355b669f44058c56f4",
+    "README.md": "c04cc9f1bb9391f415be8f3aca0c133c442b0785396b4651b947c92e6b24d30b",
+    "materials/request.md": "97e6a3c7fa089071b15ebd6be40683c20d088b2cfa222d7c70ccce1fc1c85bca",
+    "materials/backlog.csv": "bf2e68415f5b4258e0c13fa70de3db8485904ebc0a228ae347fac1a7ad5e6ca6",
+    "materials/week-window.md": "df1bc8d6a0b3a51eabaefacbbebde71931840de029bc21a757e856ad6b04425b",
+    "deliverables/qinghe-brief.md": "31b843562c3918b531d774e1ab19b7b6912db627de6ce2dc4ba37515fa1cfccd",
+    "deliverables/qinghe-dependencies.md": "b3bbb599f1ef5e3f15ffe1b2e149bb1edc5d218c470eab30186744167071161c",
+    "deliverables/qinghe-context-reference.md": "8b9508d2965a6d97fd6b76c6afc5f3acad15f52ac326c9819633ad7da19571d3",
+    "review-inputs/README.md": "44d51646da46397a4c439827ef4777a8be0f7dccbcc91430a28e8bfec995c9e6",
+    "review-inputs/reference-lookup-process-record.json": "0aa782e30d7ac1f2f2b9ba65f9c2224a07404d3111ea5353f1ff0f3015722920",
+    "review-inputs/initial/turn-record.json": "1b3165cca558196c903eabf8e56e1ec0fffec8d0592b8a5896b82507df71b066",
+    "review-inputs/round-1/turn-record.json": "6c611669ab4742323067a085651643cb8508525909023cb5981e0523511207a3",
+    "review-inputs/round-2/turn-record.json": "7965f3a8d622470c9fd18a78481d280658880359e4ee90a00f260bb12c590b53",
+    ".work-receipts/20260909-QH-INPUT-evidence-report.json": "f960af00e8a4542aad91ba86064d2370505bda4170663a44a96647661bbf4a9c",
+    ".work-receipts/20260909-QH-INPUT-evidence-add.json": "848167dc353e70296c696dc60bcb217f06a62b795e821ca6b6747f9b5b35ac73",
+    ".work-receipts/20260909-QH-INPUT-completion.json": "77fcd36bb1cdafed4df8cf16735b36d268a53a9f2b698599dfd2ed6543557680",
+    ".work-receipts/20260909-QH-BRIEF-evidence-report.json": "9db47a081a7d431c2590eacffa4cfb3e20a8087152bd8b4d33099f31ec53b59c",
+    ".work-receipts/20260909-QH-BRIEF-evidence-add.json": "bfc01010feea0e4b72a9fb949e545e96720169b8dbbce81eb0acaa57edb3f017",
+    ".work-receipts/20260909-QH-BRIEF-completion.json": "b3516f0cad91acd61854ea9f101e4d0f0bdfff1e85138da9a4962dd42309b381",
+    ".work-receipts/20260909-QH-BRIEF-rules-change-evidence-report.json": "7fe4e64248e6bac2ae5aa874a94cac331f67a19bcd0e30da336caa1b584f85a6",
+    ".work-receipts/20260909-QH-BRIEF-rules-change-evidence-add.json": "d1c848f439ff34d6b56322f4c8014abf3f0ace8d0b33ffd8f0da834ab89eb917",
+    ".work-receipts/20260909-QH-BRIEF-rules-change-completion.json": "6ec3e3c9e777437e7fab166dc6cb7595fe195d390da8ead41e2b309f7851a4b3"
+  },
+  "historical_turns": [
+    {
+      "phase": "initial",
+      "record": "review-inputs/initial/turn-record.json",
+      "record_sha256": "1b3165cca558196c903eabf8e56e1ec0fffec8d0592b8a5896b82507df71b066",
+      "client_task_id": "01a08379-ef89-7173-917d-274662891bcb",
+      "actual_user_turn": {
+        "timestamp": "2026-09-09T00:03:25.844Z",
+        "text": "帮我接手这个项目，整理当前目标、最先能推进的工作，以及开始前需要遵守的要求。"
+      },
+      "source_sha256": {
+        "project.toml": "9c45ae191289ed0a40883e2120e47eaaa8e3af301c350928b11629406d6c503f",
+        "GOALS.md": "575f650e4ff9b782bebdb8830f5b2670a3bdc447a41ff84e53eec7cf35c249a8",
+        "PLAN.md": "2d726e0e77754a51f779b5eee59ac29c919a4e7ab87b2a43a53a74938b2ba053",
+        "RULES.md": "14fb573ef193e475f1f6d6bf54cfcf59888646150cee3ea0719de39733327386",
+        "work-ledger.yaml": "0a54bde4e7586920e9e3e211d889b436f96a0e5cd49acdc746aeaa63c819150d",
+        "AGENTS.md": "9c50d24e34e314142c7e724290034d0aaeea768953c122f54fd9c3ee922c1b01",
+        "DELIVERABLES.md": "32a59caa8ca42ee5481b32777a40777af6ff36076bdd68355b669f44058c56f4"
+      },
+      "artifact_sha256": {
+        "deliverables/qinghe-context-reference.md": "8b9508d2965a6d97fd6b76c6afc5f3acad15f52ac326c9819633ad7da19571d3",
+        "deliverables/qinghe-dependencies.md": "b3bbb599f1ef5e3f15ffe1b2e149bb1edc5d218c470eab30186744167071161c"
+      },
+      "native_transcript_sha256": "ecc7c36200d24fdcc5525016153162c072257c06c032c70cd8b7c959bbaec4b3",
+      "events_sha256": "372509ac563897b80959a30a3bb0a31d5a11c828d4f5de3e0829b2fb61142d12"
+    },
+    {
+      "phase": "round-1",
+      "record": "review-inputs/round-1/turn-record.json",
+      "record_sha256": "6c611669ab4742323067a085651643cb8508525909023cb5981e0523511207a3",
+      "client_task_id": "01a08379-ef89-7173-917d-274662891bcb",
+      "actual_user_turn": {
+        "timestamp": "2026-09-09T00:25:44.793Z",
+        "text": "把本周优先交付的内容收拢成一份可执行清单，并说明依赖。"
+      },
+      "source_sha256": {
+        "project.toml": "9c45ae191289ed0a40883e2120e47eaaa8e3af301c350928b11629406d6c503f",
+        "GOALS.md": "575f650e4ff9b782bebdb8830f5b2670a3bdc447a41ff84e53eec7cf35c249a8",
+        "PLAN.md": "2d726e0e77754a51f779b5eee59ac29c919a4e7ab87b2a43a53a74938b2ba053",
+        "RULES.md": "14fb573ef193e475f1f6d6bf54cfcf59888646150cee3ea0719de39733327386",
+        "work-ledger.yaml": "103b6989fb7c4ef00dd5191be0510b834733346362ba84dab4c440244d5bd67b",
+        "AGENTS.md": "581c28e430d08fc07fe5d98322b936c79018d654d1c5764eb7e7e7604fa11a39",
+        "DELIVERABLES.md": "32a59caa8ca42ee5481b32777a40777af6ff36076bdd68355b669f44058c56f4"
+      },
+      "artifact_sha256": {
+        "deliverables/qinghe-brief.md": "4ce7ed36f0f29c2a78c200ee876b4c7da812af5f89cc79387f20a1386274db06",
+        "deliverables/qinghe-context-reference.md": "8b9508d2965a6d97fd6b76c6afc5f3acad15f52ac326c9819633ad7da19571d3",
+        "deliverables/qinghe-dependencies.md": "b3bbb599f1ef5e3f15ffe1b2e149bb1edc5d218c470eab30186744167071161c"
+      },
+      "native_transcript_sha256": "f0c616720598a7f819c36f02c81ba4641eaf62dd62995236e429348c12d525dd",
+      "events_sha256": "8e197f614222ce715c455e17f6197b21ae9b8e290d80551ae118c8ebe8b69611"
+    },
+    {
+      "phase": "round-2",
+      "record": "review-inputs/round-2/turn-record.json",
+      "record_sha256": "7965f3a8d622470c9fd18a78481d280658880359e4ee90a00f260bb12c590b53",
+      "client_task_id": "01a08379-ef89-7173-917d-274662891bcb",
+      "actual_user_turn": {
+        "timestamp": "2026-09-09T00:40:20.800Z",
+        "text": "我调整了项目规则，请更新简报，说明哪些安排需要改变。"
+      },
+      "source_sha256": {
+        "project.toml": "9c45ae191289ed0a40883e2120e47eaaa8e3af301c350928b11629406d6c503f",
+        "GOALS.md": "575f650e4ff9b782bebdb8830f5b2670a3bdc447a41ff84e53eec7cf35c249a8",
+        "PLAN.md": "2d726e0e77754a51f779b5eee59ac29c919a4e7ab87b2a43a53a74938b2ba053",
+        "RULES.md": "05c7d1e94f96e3f6bdaccfd8790895a07e11472fe95542c046eb570456ad218d",
+        "work-ledger.yaml": "5ca64a6962d2e318dab3c7bc97316eae71a4487248c0d674827b8c2e45ab603a",
+        "AGENTS.md": "581c28e430d08fc07fe5d98322b936c79018d654d1c5764eb7e7e7604fa11a39",
+        "DELIVERABLES.md": "32a59caa8ca42ee5481b32777a40777af6ff36076bdd68355b669f44058c56f4"
+      },
+      "artifact_sha256": {
+        "deliverables/qinghe-brief.md": "31b843562c3918b531d774e1ab19b7b6912db627de6ce2dc4ba37515fa1cfccd",
+        "deliverables/qinghe-context-reference.md": "8b9508d2965a6d97fd6b76c6afc5f3acad15f52ac326c9819633ad7da19571d3",
+        "deliverables/qinghe-dependencies.md": "b3bbb599f1ef5e3f15ffe1b2e149bb1edc5d218c470eab30186744167071161c"
+      },
+      "native_transcript_sha256": "2d3ee626aa9d6e07e0f5ae33b511f29f3dfa27a7e3c77155b57fef838569c6c0",
+      "events_sha256": "688c6a9987e2d47254952f0fbeb9cab11a405155489605f4feeabc85b228bfba"
+    }
+  ],
+  "acceptance_conclusions": [
+    {
+      "id": "current_sources",
+      "conclusion": "pass",
+      "basis": "Current AWR context loaded RULES r2 and ledger r9 as fresh; completeness is not treated as business approval."
+    },
+    {
+      "id": "brief_rule_revision",
+      "conclusion": "pass",
+      "basis": "The current brief limits the external directory to verified titles, excludes personal contacts and makes domain confirmation a prerequisite for any specific switch time."
+    },
+    {
+      "id": "unknowns",
+      "conclusion": "pass",
+      "basis": "Document files, title confirmations, domain approval and legacy retirement date remain explicitly unconfirmed."
+    },
+    {
+      "id": "dependencies_currency",
+      "conclusion": "fail",
+      "basis": "The dedicated dependency list remains at QH-INPUT/project revision 20 and omits round-2 gates."
+    },
+    {
+      "id": "context_reference_currency",
+      "conclusion": "fail",
+      "basis": "The context reference contains only the initial QH-INPUT session and old RULES fingerprint."
+    },
+    {
+      "id": "ledger_state_consistency",
+      "conclusion": "fail",
+      "basis": "Completed QH-INPUT and QH-BRIEF retain pre-completion next actions and in-progress summaries."
+    },
+    {
+      "id": "directory_review_prerequisite",
+      "conclusion": "fail_for_final_delivery",
+      "basis": "No directory draft or actual source documents/title confirmations were observed."
+    },
+    {
+      "id": "history_trace",
+      "conclusion": "pass",
+      "basis": "Three sealed records share the executor thread and current artifact hashes match round-2."
+    },
+    {
+      "id": "evidence_projection",
+      "conclusion": "needs_explanation",
+      "basis": "Complete current locally_verified evidence is retained alongside locator-only Unknown projections; Unknown entries are not treated as satisfied."
+    },
+    {
+      "id": "review_independence",
+      "conclusion": "pass",
+      "basis": "The reviewer session identity differs from the executor and the executor artifacts were unchanged."
+    }
+  ],
+  "findings": [
+    {
+      "id": "QH-R01",
+      "disposition": "blocking"
+    },
+    {
+      "id": "QH-R02",
+      "disposition": "blocking"
+    },
+    {
+      "id": "QH-R03",
+      "disposition": "blocks_directory_and_final_delivery"
+    },
+    {
+      "id": "QH-R04",
+      "disposition": "must_explain_or_resolve_before_final_delivery"
+    },
+    {
+      "id": "QH-R05",
+      "disposition": "process_nonconformance_no_observed_business_contamination"
+    }
+  ],
+  "external_unknowns_retained": [
+    "Actual files or links, versions, access state, externally publishable titles and responsibility information for the three documents",
+    "Information administrator confirmation for the external domain",
+    "Legacy page retirement date, confirming role, switch conditions and rollback arrangement",
+    "Actual directory title, entry and personal-contact removal results",
+    "Specific switch time, external access readiness and portal go-live state"
+  ],
+  "process_deviation_assessment": {
+    "record": "review-inputs/reference-lookup-process-record.json",
+    "record_sha256": "0aa782e30d7ac1f2f2b9ba65f9c2224a07404d3111ea5353f1ff0f3015722920",
+    "observed_out_of_scope_commands": 7,
+    "conclusion": "process_nonconformance_no_observed_business_contamination",
+    "basis": "Returned material consists of generic CLI/schema examples, development verification dates and technical code excerpts. No future business prompt, rubric, expected answer or other scenario business result was observed in the retained output."
+  },
+  "review_artifact": {
+    "path": "deliverables/qh-independent-review.md",
+    "sha256": "cfd81dd8bbc85608a1d6210d9f482dd300b71af8687fb3efc3538b3a8ac19de1",
+    "awr_artifact_id": "01M21W2AMTRRXYVF3KBEK7YNWY"
+  },
+  "evidence": {
+    "verification_report": ".work-receipts/reviewer-verification.json",
+    "verification_sha256": "79f2d118934d201ee9ed928c283c6c7bc8602700d94ca6dd39027503f04a39c9",
+    "evidence_id": "01M21W35HHB88BQF0D1GWBHT3N",
+    "explicit_evidence_level": "locally_verified",
+    "explicit_evidence_currency": "current",
+    "locator_only_unknown_retained": true
+  },
+  "awr_final_state": {
+    "project_revision": 108,
+    "counts": {
+      "completed": 3,
+      "planned": 1
+    },
+    "suggested_work": "QH-DELIVER",
+    "suggested_work_status": "planned",
+    "review_status": "completed",
+    "active_review_claims": [
+
+    ],
+    "checkpoint_id": "01M21W4TKDFVNDN6G42MW9TEJM"
+  },
+  "receipts_sha256": {
+    ".work-receipts/reviewer-session-start.json": "a0a467df0f33940537721a5e0ac846a0aefb58de61083dc82648612010423c21",
+    ".work-receipts/reviewer-context-compile.json": "7e1038f5be25a452013e877dcef2aeec5bfa8eee1251bf35ba76385d2cf50424",
+    ".work-receipts/reviewer-progress.json": "4ce467385b7f885df27265b969998fe38f51ed9f566901d9415de0055acbaf6b",
+    ".work-receipts/reviewer-reviewed-files.json": "fa40e07d05f6d185578bcc171487e38876f67c6c8af9e5a9aecaa8f1e4c90351",
+    ".work-receipts/reviewer-verification.json": "79f2d118934d201ee9ed928c283c6c7bc8602700d94ca6dd39027503f04a39c9",
+    ".work-receipts/reviewer-artifact-add.json": "091cb5694b8c5c97518258bdf7600503f8d45b6841301aa5da50bca9634e823c",
+    ".work-receipts/reviewer-evidence-draft.json": "c99abf9f0bf87e0b5aff9a9bcff1dea06caafde769f8602c64b77227562527bb",
+    ".work-receipts/reviewer-evidence-add.json": "142a1b385e88944f797a67a7954a0c5f980771ab72c760f3652aa635d66f75dc",
+    ".work-receipts/reviewer-completion.json": "685bffc9c87dfb76b79ec00b7eed8f05f773cb932f473fc8a6de8b7438226dae",
+    ".work-receipts/reviewer-work-complete.json": "76146d2e93014d0f2a98984c9873bdda86eebac81226de6bd75e1ee273766710",
+    ".work-receipts/reviewer-checkpoint.json": "3e43eaae95793c6e8b96dec4ed69d272ff3f97a53b75004775bd66fd8a14fef5",
+    ".work-receipts/reviewer-session-end.json": "7f68eaad53154e624bc31f2c4db86a157010f83016119b43b0563e82459a4774",
+    ".work-receipts/reviewer-final-status.json": "5b6b0633595fc1cfbf00bb331a98e79fcc50cbfceeb0033209db66010c87c94f",
+    ".work-receipts/reviewer-final-work-show.json": "91a4e6703089e354e76f8d136a4e79ae76fab8a38071982c268e87ef74e2ccc5",
+    ".work-receipts/reviewer-work-qh-input.json": "2344990e05d2eeb3a064c61e47be309a6e5bd87637edc22d5587a847f9c16b69",
+    ".work-receipts/reviewer-work-qh-brief.json": "50cdcdaaa25d6c3522a3598c2c6fd0575c0836c105e4faea589a65eabbfc8cd4"
+  }
+}

@@ -1,0 +1,63 @@
+{
+  "version": 1,
+  "reviewer": {
+    "agent_id": "luna_worker",
+    "session_id": "01M21Z2F3HZ8EHTRYY5N7RMRVZ",
+    "claim_id": "01M21Z2F3JS2KK0S8K77D6MBTT"
+  },
+  "verified_at": 1788921054540,
+  "checks": [
+    {
+      "name": "final project shape",
+      "passed": true,
+      "details": "project_revision=178, counts={'completed': 3, 'planned': 1}, suggested=QH-DELIVER"
+    },
+    {
+      "name": "review completed and record finalized",
+      "passed": true,
+      "details": "status=completed; summary=luna_worker 已完成执行者整改的安排级独立返检：QH-R01 至 QH-R05 的整改均通过；该结论不覆盖实际文档、目录、标题、域名、停用日期、切换、上线或最终交付。; next_action=由原执行者接续 QH-DELIVER；取得适用的真实文档、标题依据、目录级复核、域名与停用安排后形成最终说明，未取得事项继续显式保留。"
+    },
+    {
+      "name": "final delivery remains pending",
+      "passed": true,
+      "details": "QH-DELIVER=planned; qh-delivery.md exists=False"
+    },
+    {
+      "name": "reviewer session closed",
+      "passed": true,
+      "details": "session=ended; claim=released"
+    },
+    {
+      "name": "completion bound accepted evidence",
+      "passed": true,
+      "details": "work-complete project_revision=168; accepted_v2=True"
+    },
+    {
+      "name": "report and evidence hashes stable",
+      "passed": true,
+      "details": "report=adf4fc58abfc863a660913a912f5d57262bb4d6b0182cfdbe8ec16e0a5984d8d; verification=f26764dc65a7759cfced25926756aab772e438f1797ad06354f58ac4263ca4d2"
+    },
+    {
+      "name": "final ledger proposal applied",
+      "passed": true,
+      "details": "source_revision=19; ledger=ae3ea0322eb2544fda39e47e56cef00ed9631645ee4dfa5e612e96c8d6989187"
+    },
+    {
+      "name": "no scenario completion claim",
+      "passed": true,
+      "details": "One planned work item remains and no final-delivery artifact exists."
+    }
+  ],
+  "all_passed": true,
+  "final_project_revision": 178,
+  "final_source_revision": 19,
+  "final_ledger_sha256": "ae3ea0322eb2544fda39e47e56cef00ed9631645ee4dfa5e612e96c8d6989187",
+  "report_sha256": "adf4fc58abfc863a660913a912f5d57262bb4d6b0182cfdbe8ec16e0a5984d8d",
+  "completion_evidence_sha256": "f26764dc65a7759cfced25926756aab772e438f1797ad06354f58ac4263ca4d2",
+  "caveats": [
+    "QH-DELIVER remains planned and no qh-delivery.md exists.",
+    "QH-DELIVER source next_action still uses its pre-re-review waiting wording; its readiness and status are current, and the finalized QH-REVIEW next_action assigns continuation to the original executor.",
+    "The first evidence binding was registered but rejected for completion because its report command differed; V2 is the accepted bound evidence.",
+    "A proposal submit attempt with stale project revision 171 was rejected; the successful sequence used current revisions and is retained."
+  ]
+}

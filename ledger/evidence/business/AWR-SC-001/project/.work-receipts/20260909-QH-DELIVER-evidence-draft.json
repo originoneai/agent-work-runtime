@@ -1,0 +1,16 @@
+{
+  "external_key": "QH-FINAL-HANDOFF-20260909",
+  "work_item_key": "QH-DELIVER",
+  "evidence_type": "completion_report",
+  "level": "locally_verified",
+  "summary": "最终项目接手包已收拢简报、依赖、来源、原复核、逐条整改、独立返检、历史偏离和未决移交，并通过38项本地一致性检查；不确认缺失文档、标题、实际目录、域名、停用、切换或上线。",
+  "locator": ".work-receipts/20260909-QH-DELIVER-evidence-report.json",
+  "sha256": "fd772adb8654499b7049694c4f473d388d590c4f35fd0b2b689ab1663d4eaf6d",
+  "source_sha": "cd44a161471cee94fd4f797955327a4fd995cf3a",
+  "command": "rtk proxy python3 .work-receipts/qh-deliver-verify.py",
+  "scope": [
+    "QH-DELIVER"
+  ],
+  "branch_id": null,
+  "verified_at": 1788922703591
+}

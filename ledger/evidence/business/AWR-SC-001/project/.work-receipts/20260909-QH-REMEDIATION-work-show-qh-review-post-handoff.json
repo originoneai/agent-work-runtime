@@ -1,0 +1,95 @@
+{
+  "acceptance": [
+    "独立核对来源、依赖和生效规则，逐条记录修改要求。",
+    "保留实际产物与来源引用，无法确认的内容显式说明。"
+  ],
+  "decisions": [],
+  "dependency_cycles": [],
+  "evidence": [
+    {
+      "currency": "current",
+      "external_key": "QH-INDEPENDENT-REVIEW-20260909",
+      "level": "locally_verified",
+      "locator": ".work-receipts/reviewer-verification.json",
+      "missing_bindings": [],
+      "reasons": [],
+      "source_sha": "cd44a161471cee94fd4f797955327a4fd995cf3a",
+      "summary": "luna_worker independently reviewed current sources, the briefing, dependency list, context reference, two revisions and retained process deviation; the package requires executor changes before final delivery."
+    },
+    {
+      "currency": "unknown",
+      "external_key": "QH-REVIEW/evidence/.work-receipts/reviewer-verification.json",
+      "level": "unknown",
+      "locator": ".work-receipts/reviewer-verification.json",
+      "missing_bindings": [
+        "sha256",
+        "source_sha",
+        "command",
+        "verified_at"
+      ],
+      "reasons": [
+        "both recorded and requested source SHA are needed to determine currency"
+      ],
+      "source_sha": null,
+      "summary": "Evidence reference; not yet verified by AWR"
+    }
+  ],
+  "evidence_currency_basis": {
+    "branch_id": null,
+    "requested_source_sha": "cd44a161471cee94fd4f797955327a4fd995cf3a"
+  },
+  "freshness_basis": "source_refresh",
+  "missing_dependencies": [],
+  "ok": true,
+  "project_revision": 151,
+  "read_only": false,
+  "required_dependencies": [
+    {
+      "external_key": "QH-BRIEF",
+      "freshness": "fresh",
+      "revision": 7,
+      "source_revision": 16,
+      "status": "completed"
+    },
+    {
+      "external_key": "QH-INPUT",
+      "freshness": "fresh",
+      "revision": 5,
+      "source_revision": 16,
+      "status": "completed"
+    }
+  ],
+  "source_issues": [],
+  "source_ref": {
+    "end_line": null,
+    "locator": "file:///Users/mac/Documents/originone/agent-work-running/.local/business-live-20260909-v1/project-onboarding/project/work-ledger.yaml",
+    "pointer": "/work_items/2",
+    "section_fingerprint": null,
+    "source_fingerprint": "sha256:4db09cdb71fd2f9b6bf34ded6a9ea9e2fd5bf1567215881efa9c6a0ebe25985c",
+    "source_id": "01M21QQH53JR8QW1W5K5VJRNS7",
+    "source_revision": 16,
+    "start_line": null
+  },
+  "source_refresh_performed": true,
+  "source_warnings": 0,
+  "work": {
+    "active_claims": [],
+    "blocker": null,
+    "diagnostics": [],
+    "external_key": "QH-REVIEW",
+    "freshness": "fresh",
+    "id": "01M21QQH54H74PB9525DPEKQ5Z",
+    "milestone": "QH-DELIVERY",
+    "next_action": "由不同参与者认领 QH-REVIEW，检查 deliverables/qh-review-response.md、qinghe-dependencies.md、qinghe-context-reference.md 及 AWR 回执；仅评价安排与证据边界，不签署最终交付。",
+    "owner": null,
+    "priority": "P0",
+    "raw_status": "planned",
+    "ready": true,
+    "revision": 5,
+    "source_revision": 16,
+    "status": "planned",
+    "summary": "luna_worker 已完成安排级独立复核，结论为 requires_executor_changes，并记录 QH-R01 至 QH-R05；该结论未覆盖实际目录、标题、域名、停用日期或门户上线。",
+    "title": "独立复核上线安排"
+  }
+}
+

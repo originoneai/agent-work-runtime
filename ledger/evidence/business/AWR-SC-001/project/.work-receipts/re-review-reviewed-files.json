@@ -1,0 +1,115 @@
+{
+  "version": 1,
+  "review_kind": "independent_remediation_re_review",
+  "reviewer": {
+    "agent_id": "luna_worker",
+    "session_id": "01M21Z2F3HZ8EHTRYY5N7RMRVZ",
+    "claim_id": "01M21Z2F3JS2KK0S8K77D6MBTT"
+  },
+  "executor": {
+    "native_thread_id": "01a08379-ef89-7173-917d-274662891bcb",
+    "source_sha": "cd44a161471cee94fd4f797955327a4fd995cf3a"
+  },
+  "fixed_publication": {
+    "path": "../control/review-correction-publication.json",
+    "sha256": "2b924699054e8f65dd57720567081d8124d060ecc3890b918994493de67fb24e",
+    "published_at": "2026-09-09T10:09:17+08:00",
+    "files_expected": 136,
+    "files_present": 136,
+    "missing": [],
+    "mismatches": [],
+    "all_match": true,
+    "private_native_transcript_published": false,
+    "independent_verdict_before_re_review": "pending",
+    "e4_credit": false
+  },
+  "reviewed_files": [
+    {
+      "role": "current_rule",
+      "path": "RULES.md",
+      "sha256": "05c7d1e94f96e3f6bdaccfd8790895a07e11472fe95542c046eb570456ad218d"
+    },
+    {
+      "role": "current_goal",
+      "path": "GOALS.md",
+      "sha256": "575f650e4ff9b782bebdb8830f5b2670a3bdc447a41ff84e53eec7cf35c249a8"
+    },
+    {
+      "role": "current_plan",
+      "path": "PLAN.md",
+      "sha256": "2d726e0e77754a51f779b5eee59ac29c919a4e7ab87b2a43a53a74938b2ba053"
+    },
+    {
+      "role": "original_review_preserved",
+      "path": "deliverables/qh-independent-review.md",
+      "sha256": "cfd81dd8bbc85608a1d6210d9f482dd300b71af8687fb3efc3538b3a8ac19de1"
+    },
+    {
+      "role": "executor_response_current",
+      "path": "deliverables/qh-review-response.md",
+      "sha256": "92bc899572eab62027c30ec143b75fd9c9c8971569888493a14e17e31d43398d"
+    },
+    {
+      "role": "brief_before_round2",
+      "path": "review-inputs/round-2/deliverables/qinghe-brief.md",
+      "sha256": "31b843562c3918b531d774e1ab19b7b6912db627de6ce2dc4ba37515fa1cfccd"
+    },
+    {
+      "role": "brief_after_correction",
+      "path": "review-inputs/corrections/review-correction/deliverables/qinghe-brief.md",
+      "sha256": "31b843562c3918b531d774e1ab19b7b6912db627de6ce2dc4ba37515fa1cfccd"
+    },
+    {
+      "role": "dependencies_before_correction",
+      "path": "review-inputs/round-2/deliverables/qinghe-dependencies.md",
+      "sha256": "b3bbb599f1ef5e3f15ffe1b2e149bb1edc5d218c470eab30186744167071161c"
+    },
+    {
+      "role": "dependencies_after_correction",
+      "path": "review-inputs/corrections/review-correction/deliverables/qinghe-dependencies.md",
+      "sha256": "42f98e5869ff2edc64b11a51a021b390e1586ea8ad7c1fcf09b1dc0c340385f5"
+    },
+    {
+      "role": "context_before_correction",
+      "path": "review-inputs/round-2/deliverables/qinghe-context-reference.md",
+      "sha256": "8b9508d2965a6d97fd6b76c6afc5f3acad15f52ac326c9819633ad7da19571d3"
+    },
+    {
+      "role": "context_after_correction",
+      "path": "review-inputs/corrections/review-correction/deliverables/qinghe-context-reference.md",
+      "sha256": "fde028a64afc2d1f8543aa28ee7c90375714aa583ea778b9de7d25e9d7f4124a"
+    },
+    {
+      "role": "ledger_before_correction",
+      "path": "review-inputs/round-2/sources/work-ledger.yaml",
+      "sha256": "5ca64a6962d2e318dab3c7bc97316eae71a4487248c0d674827b8c2e45ab603a"
+    },
+    {
+      "role": "ledger_after_correction_fixed",
+      "path": "review-inputs/corrections/review-correction/sources/work-ledger.yaml",
+      "sha256": "4db09cdb71fd2f9b6bf34ded6a9ea9e2fd5bf1567215881efa9c6a0ebe25985c"
+    },
+    {
+      "role": "ledger_current_after_reviewer_progress",
+      "path": "work-ledger.yaml",
+      "sha256": "5d32d35b33c9507a21f9daa9bdecd40a4f9b1b3d96a5f30400dc58bba00e2982"
+    },
+    {
+      "role": "lookup_deviation_preserved",
+      "path": "review-inputs/reference-lookup-process-record.json",
+      "sha256": "0aa782e30d7ac1f2f2b9ba65f9c2224a07404d3111ea5353f1ff0f3015722920"
+    },
+    {
+      "role": "correction_seal",
+      "path": "review-inputs/corrections/review-correction/review-correction-sealed.json",
+      "sha256": "319bff5dbd785f3a0e5999f9c8e16e6d4ad947674326d129ed0f9a88446bab2f"
+    },
+    {
+      "role": "correction_review_extract",
+      "path": "review-inputs/corrections/review-correction/review-correction-review-extract.json",
+      "sha256": "4c253b40cd3749455b13b2cad911951974dc3821ec2ab1bab0963cd93e8f05b0"
+    }
+  ],
+  "reviewed_at": "2026-09-09T10:18:28+08:00",
+  "boundary_note": "work-ledger.yaml changed after the fixed correction snapshot only because this reviewer used normal AWR progress to move QH-REVIEW planned to in_progress; the fixed r16 ledger remains preserved in the correction snapshot."
+}

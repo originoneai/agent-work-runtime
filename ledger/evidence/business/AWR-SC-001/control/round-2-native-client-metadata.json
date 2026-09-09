@@ -1,0 +1,20 @@
+{
+  "kind": "actual_native_client_metadata_extraction",
+  "recorded_at": "2026-09-09T10:01:33.542311+08:00",
+  "native_task_id": "01a08379-ef89-7173-917d-274662891bcb",
+  "canonical_cwd": "/Users/mac/Documents/originone/agent-work-running/.local/business-live-20260909-v1/project-onboarding/project",
+  "cli_version": "0.153.4",
+  "originator": "Codex Desktop",
+  "models_observed": [
+    "gpt-5.6-sol"
+  ],
+  "reasoning_efforts_observed": [
+    "max"
+  ],
+  "turn_context_cwds": [
+    "/Users/mac/Documents/originone/agent-work-running/.local/business-live-20260909-v1/project-onboarding/project"
+  ],
+  "snapshot_sha256": "2d3ee626aa9d6e07e0f5ae33b511f29f3dfa27a7e3c77155b57fef838569c6c0",
+  "snapshot_reference": ".local/business-live-20260909-v1/project-onboarding/control/round-2-snapshot/native-transcript.jsonl",
+  "not_a_model_call_or_gate": true
+}

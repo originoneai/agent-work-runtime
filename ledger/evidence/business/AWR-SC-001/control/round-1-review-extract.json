@@ -1,0 +1,542 @@
+{
+  "kind": "sealed_native_client_turn_review_extract",
+  "phase": "round-1",
+  "client": "Codex CLI",
+  "client_task_id": "01a08379-ef89-7173-917d-274662891bcb",
+  "actual_user_turn": {
+    "timestamp": "2026-09-09T00:25:44.793Z",
+    "text": "把本周优先交付的内容收拢成一份可执行清单，并说明依赖。"
+  },
+  "original_input_sha256": "de71f1913ba93df2414004b551a1868666adde266da430339167bb3db1a29075",
+  "native_transcript_snapshot_sha256": "f0c616720598a7f819c36f02c81ba4641eaf62dd62995236e429348c12d525dd",
+  "events_sha256": "8e197f614222ce715c455e17f6197b21ae9b8e290d80551ae118c8ebe8b69611",
+  "final_message": "已收拢为一份可执行清单：[青禾文档门户本周优先交付执行清单](/Users/mac/Documents/originone/agent-work-running/.local/business-live-20260909-v1/project-onboarding/project/deliverables/qinghe-brief.md:1)。\n\n核心顺序是：\n\n1. 登记三份说明的文件、版本、负责人和访问状态。\n2. 形成内容目录草案。\n3. 准备周三半天复核包，优先账号说明和 FAQ 入口。\n4. 并行追踪域名确认与旧页面停用日期。\n5. 由不同参与者独立复核。\n6. 处理复核意见并形成周五最终说明。\n7. 页面美化后置到下周。\n\n当前边界：\n\n- 域名确认前不能宣称外部访问就绪。\n- 旧页面停用日期未确认，最终切换安排不能落定。\n- 三份说明目前仍缺实际正文或链接。\n- `materials/week-window.md` 仅作为补充排期材料，不作为 AWR 权威来源。\n- 独立复核和最终交付尚未发生。\n\nAWR 中 `QH-INPUT`、`QH-BRIEF` 均已完成，完成证据为 `locally_verified/current`；project revision 为 59。下一项唯一可推进工作是 `QH-REVIEW`，必须由其他参与者认领。`git diff --check` 已通过，当前没有活动会话，也没有创建 Git 提交。",
+  "final_message_sha256": "cb39c37447acf5bab6a5de7e7272da4211f68dbeac9a8c2ab36798cc4aa89f7a",
+  "project_sources_sha256": {
+    "project.toml": "9c45ae191289ed0a40883e2120e47eaaa8e3af301c350928b11629406d6c503f",
+    "GOALS.md": "575f650e4ff9b782bebdb8830f5b2670a3bdc447a41ff84e53eec7cf35c249a8",
+    "PLAN.md": "2d726e0e77754a51f779b5eee59ac29c919a4e7ab87b2a43a53a74938b2ba053",
+    "RULES.md": "14fb573ef193e475f1f6d6bf54cfcf59888646150cee3ea0719de39733327386",
+    "work-ledger.yaml": "103b6989fb7c4ef00dd5191be0510b834733346362ba84dab4c440244d5bd67b",
+    "AGENTS.md": "581c28e430d08fc07fe5d98322b936c79018d654d1c5764eb7e7e7604fa11a39",
+    "DELIVERABLES.md": "32a59caa8ca42ee5481b32777a40777af6ff36076bdd68355b669f44058c56f4"
+  },
+  "artifacts_sha256": {
+    "deliverables/qinghe-brief.md": "4ce7ed36f0f29c2a78c200ee876b4c7da812af5f89cc79387f20a1386274db06",
+    "deliverables/qinghe-context-reference.md": "8b9508d2965a6d97fd6b76c6afc5f3acad15f52ac326c9819633ad7da19571d3",
+    "deliverables/qinghe-dependencies.md": "b3bbb599f1ef5e3f15ffe1b2e149bb1edc5d218c470eab30186744167071161c"
+  },
+  "receipt_files": {
+    ".work-receipts/20260909-QH-BRIEF-checkpoint.json": {
+      "sha256": "031b14a0a61c48069b3a14c5912e93b3d39542be4e590130eb3506bea9d70ce9",
+      "bytes": 2183
+    },
+    ".work-receipts/20260909-QH-BRIEF-complete.json": {
+      "sha256": "8fb34c02b832402a808b9c1a2725daf48196a0af9c4c21e2185993349781f375",
+      "bytes": 8124
+    },
+    ".work-receipts/20260909-QH-BRIEF-completion.json": {
+      "sha256": "b3516f0cad91acd61854ea9f101e4d0f0bdfff1e85138da9a4962dd42309b381",
+      "bytes": 455
+    },
+    ".work-receipts/20260909-QH-BRIEF-context-bootstrap.json": {
+      "sha256": "e6a4089bb797faad325831080e7752fbaf823321f9f9603f9188f16e90cee245",
+      "bytes": 6178
+    },
+    ".work-receipts/20260909-QH-BRIEF-context-compile.json": {
+      "sha256": "10402a9a5696bfef54d52b166eac373ea579d3cca7699a7ceb758884832acea4",
+      "bytes": 15565
+    },
+    ".work-receipts/20260909-QH-BRIEF-context-completed.json": {
+      "sha256": "98df67aae5551bd2d8ca3208f2327019301940ee0f1a6ff1055ed99083de5bad",
+      "bytes": 18872
+    },
+    ".work-receipts/20260909-QH-BRIEF-evidence-add.json": {
+      "sha256": "bfc01010feea0e4b72a9fb949e545e96720169b8dbbce81eb0acaa57edb3f017",
+      "bytes": 1143
+    },
+    ".work-receipts/20260909-QH-BRIEF-evidence-draft.json": {
+      "sha256": "8b824f925dca84c4bb367b50695d12c27a9450a8dec3d4d377485d070b07bf07",
+      "bytes": 738
+    },
+    ".work-receipts/20260909-QH-BRIEF-evidence-report.json": {
+      "sha256": "9db47a081a7d431c2590eacffa4cfb3e20a8087152bd8b4d33099f31ec53b59c",
+      "bytes": 1971
+    },
+    ".work-receipts/20260909-QH-BRIEF-final-ready.json": {
+      "sha256": "5d10d0ccd2709edf2843fc96c79155849def62ac2d5e3ba5bbee452a70164455",
+      "bytes": 1736
+    },
+    ".work-receipts/20260909-QH-BRIEF-final-status.json": {
+      "sha256": "6b94a6fce3ec5ccacdb513fdb738cf1df10080d164e2017e1234473d25583b1e",
+      "bytes": 1024
+    },
+    ".work-receipts/20260909-QH-BRIEF-progress.json": {
+      "sha256": "bb1edf2bfbb9a31656e22152892d31435606541f61c92c87d4d1eaeac63a4257",
+      "bytes": 4386
+    },
+    ".work-receipts/20260909-QH-BRIEF-session-end.json": {
+      "sha256": "f4fe7cd72e49db7fa309759736fbdea0ce0d57ce1c88f9b345f47e81e8fe4206",
+      "bytes": 1050
+    },
+    ".work-receipts/20260909-QH-BRIEF-session-start.json": {
+      "sha256": "f59f18171ce596aeb1aca9aaa5557ec27c017cb354abd121d3af9f9b6115df07",
+      "bytes": 1389
+    },
+    ".work-receipts/20260909-QH-INPUT-checkpoint-completed.json": {
+      "sha256": "c1395fc34e438fb542e495c8bb73746d17c8d5ea9d8b7308d9618fc719d56534",
+      "bytes": 2077
+    },
+    ".work-receipts/20260909-QH-INPUT-checkpoint.json": {
+      "sha256": "b9e530d9e6c9af883d7c1d265aa6ae11bfab2db491dbb335d06e603a50904b70",
+      "bytes": 2090
+    },
+    ".work-receipts/20260909-QH-INPUT-complete.json": {
+      "sha256": "d6972575d6161bd22e670300dc4abc1cbbe1f6d4168b43af63a4dc40f697a629",
+      "bytes": 8003
+    },
+    ".work-receipts/20260909-QH-INPUT-completion.json": {
+      "sha256": "77fcd36bb1cdafed4df8cf16735b36d268a53a9f2b698599dfd2ed6543557680",
+      "bytes": 461
+    },
+    ".work-receipts/20260909-QH-INPUT-context-bootstrap.json": {
+      "sha256": "3ea15e8ebcd64dda6f144352bf5dbf8032dcb6f64adaa0b57ccc0bef458579e6",
+      "bytes": 6132
+    },
+    ".work-receipts/20260909-QH-INPUT-context-compile.json": {
+      "sha256": "215e667763208ccdb5d0abe550d5a04a3537c1eb562d1b35c030c50878f193e8",
+      "bytes": 15014
+    },
+    ".work-receipts/20260909-QH-INPUT-context-completed.json": {
+      "sha256": "b1f63069d6a71c16d2fa250fe5ff785a83d8cfdb390a553be9cb6707174d4931",
+      "bytes": 21455
+    },
+    ".work-receipts/20260909-QH-INPUT-context-current.json": {
+      "sha256": "7fbbe77a651654dbcb3da459e7c6588fe36e42ecfc69cdc71a65c812c8fa281d",
+      "bytes": 15881
+    },
+    ".work-receipts/20260909-QH-INPUT-context-resumed.json": {
+      "sha256": "693a07e0c795764deef969f26923344e7af86319726778fc0f48e58adc063533",
+      "bytes": 16262
+    },
+    ".work-receipts/20260909-QH-INPUT-evidence-add.json": {
+      "sha256": "848167dc353e70296c696dc60bcb217f06a62b795e821ca6b6747f9b5b35ac73",
+      "bytes": 1081
+    },
+    ".work-receipts/20260909-QH-INPUT-evidence-draft.json": {
+      "sha256": "f6cff8195a73b3072d29f85fbbf65039d5eae2b811502eb677c86099a13c314a",
+      "bytes": 676
+    },
+    ".work-receipts/20260909-QH-INPUT-evidence-report.json": {
+      "sha256": "f960af00e8a4542aad91ba86064d2370505bda4170663a44a96647661bbf4a9c",
+      "bytes": 1403
+    },
+    ".work-receipts/20260909-QH-INPUT-progress-update.json": {
+      "sha256": "1bfd15c8d71e6fb84df8ccea49ed506078938a4d277b02a8f7ea993e6bd6b625",
+      "bytes": 4419
+    },
+    ".work-receipts/20260909-QH-INPUT-session-end.json": {
+      "sha256": "3a3a577f32691fa4db871ae39eecfe96d1a7d52e97dd5107c080e8392db9e6f8",
+      "bytes": 1050
+    },
+    ".work-receipts/20260909-QH-INPUT-session-start.json": {
+      "sha256": "9ef0f1754e6f15b739f072e7d50c22ffa1c8899a242b572843c7f72ae96e4aed",
+      "bytes": 1389
+    },
+    ".work-receipts/20260909-QH-INPUT-work-progress.json": {
+      "sha256": "6a6ca9c0a825cd39d8020121f50b4206d572d72e904089448330746f2ff6c1ad",
+      "bytes": 4191
+    },
+    ".work-receipts/20260909-project-status-after-checkpoint.json": {
+      "sha256": "4d63fa0d1842f88232841f88b62e19a7cc9bfc799a51bc64be3ccb8a30c04b7d",
+      "bytes": 2027
+    }
+  },
+  "commands": [
+    {
+      "event_line": 6,
+      "native_item_id": "item_2",
+      "exit_code": 0,
+      "command_sha256": "e1c79ba5ac376cc579b0c5e06cf7af1468beeb37f79b6d0877b218f01f228d8b",
+      "output_sha256": "6e22cc54cb02a5e98ae42d06d9d7292db0c1b43894831b32879beb0166b2aea7"
+    },
+    {
+      "event_line": 8,
+      "native_item_id": "item_3",
+      "exit_code": 0,
+      "command_sha256": "de497deac70c981241c86f9a0cfafc4bfd136868952341220d848ddac9f62a4d",
+      "output_sha256": "b11d101817f7783e44b06ab4728a74f867b66d633cdc985fad854b48ee33ff75",
+      "business_tool_command": "/bin/zsh -lc 'rtk proxy <awr> --project <business-project> --json session list --active'"
+    },
+    {
+      "event_line": 10,
+      "native_item_id": "item_4",
+      "exit_code": 0,
+      "command_sha256": "50409dd37c74dcc2eca9ee00b7efaba095c0e3a7119859fc820181b46a01f35e",
+      "output_sha256": "4d63fa0d1842f88232841f88b62e19a7cc9bfc799a51bc64be3ccb8a30c04b7d",
+      "business_tool_command": "/bin/zsh -lc 'rtk proxy <awr> --project <business-project> --json status'"
+    },
+    {
+      "event_line": 12,
+      "native_item_id": "item_5",
+      "exit_code": 0,
+      "command_sha256": "599857ba2fafa123a94a4237981a568a3e423d84c48a04f4a26bcfafab00af0d",
+      "output_sha256": "33b900cc885e212ba2f81d2cd8129e417cbe372e8c058973260c54991aa2e2d5"
+    },
+    {
+      "event_line": 14,
+      "native_item_id": "item_6",
+      "exit_code": 0,
+      "command_sha256": "ccdd7851daee3c59e5f4c7337852bf81a7f842c384ea73af95a4dddad7197f72",
+      "output_sha256": "4cd1e7c6814f750736df10d6c68b40cc22c9c94afed5f15b44a1fbbe35608682",
+      "business_tool_command": "/bin/zsh -lc 'rtk proxy <awr> --project <business-project> --json ready'"
+    },
+    {
+      "event_line": 16,
+      "native_item_id": "item_7",
+      "exit_code": 0,
+      "command_sha256": "5d26d4d7e95ec6d2e9b6db2cc67690b0d95dd46a3d281209a7e73340aa7ae080",
+      "output_sha256": "d46dd7fa83a015e1adabd72664d1f5d28ddd10eb9d309d88a9a6a6b008699f86",
+      "business_tool_command": "/bin/zsh -lc 'rtk proxy <awr> --project <business-project> --json work show QH-INPUT --source-sha cd44a161471cee94fd4f797955327a4fd995cf3a'"
+    },
+    {
+      "event_line": 18,
+      "native_item_id": "item_8",
+      "exit_code": 0,
+      "command_sha256": "33fa76eecee791eb781fbc453687ff622e74f88cbd5a893d95bca369f62dc20c",
+      "output_sha256": "427942d0eb5a200b11b891cab8c9c0da99c435eb1559ffab86db14e4435f1a39"
+    },
+    {
+      "event_line": 20,
+      "native_item_id": "item_9",
+      "exit_code": 0,
+      "command_sha256": "e4195ed0b5972eeb4394b9396ff42d53fb3ed795c9bab986212434b5be99131d",
+      "output_sha256": "96df19c474e35ab6ea7d8169f6817fb207ed213d3fbf0eb06163fb047ffefed5"
+    },
+    {
+      "event_line": 23,
+      "native_item_id": "item_11",
+      "exit_code": 0,
+      "command_sha256": "4c09fa47896046cbee56cdd95502eab65d812ae109ce686c6a9d1a57d6e74a90",
+      "output_sha256": "c9d917952bb24818a8dd38d687196e2f4fdc74389c1f8782d2e9e95c5259be44"
+    },
+    {
+      "event_line": 25,
+      "native_item_id": "item_12",
+      "exit_code": 0,
+      "command_sha256": "ab0a2de3f7a14193f67ed0a043304ee32841a14b3b89b90bb5d481a4f3903655",
+      "output_sha256": "b5c43bf72ef16d5a9c0b722839b95d9806506c44d9468e360e62a363942f1312"
+    },
+    {
+      "event_line": 27,
+      "native_item_id": "item_13",
+      "exit_code": 0,
+      "command_sha256": "1aababf94163d22dfbc1d7131412c17f542321850f03a9a06fad57ae81f179e9",
+      "output_sha256": "693a07e0c795764deef969f26923344e7af86319726778fc0f48e58adc063533",
+      "business_tool_command": "/bin/zsh -lc 'rtk proxy <awr> --project <business-project> --json context compile --work QH-INPUT --session 01M21QTD6SSY9DC6S502CKC3CJ --source-sha cd44a161471cee94fd4f797955327a4fd995cf3a --budget 5000'"
+    },
+    {
+      "event_line": 34,
+      "native_item_id": "item_17",
+      "exit_code": 0,
+      "command_sha256": "27ece122fd9c16c53d570787f6c7d8fc84651fb6eded4f823868e0417bf94408",
+      "output_sha256": "d6972575d6161bd22e670300dc4abc1cbbe1f6d4168b43af63a4dc40f697a629",
+      "business_tool_command": "/bin/zsh -lc 'rtk proxy <awr> --project <business-project> --json work complete QH-INPUT --session 01M21QTD6SSY9DC6S502CKC3CJ --reason \"已完成当前项目材料盘点，逐条保留三份说明的可用性缺口与两个待确认事项，并以当前本地核验证据绑定全部验收。\" --input <business-project>/.work-receipts/20260909-QH-INPUT-completion.json --expected-revision 30'"
+    },
+    {
+      "event_line": 38,
+      "native_item_id": "item_19",
+      "exit_code": 0,
+      "command_sha256": "ccdd7851daee3c59e5f4c7337852bf81a7f842c384ea73af95a4dddad7197f72",
+      "output_sha256": "6ecf335b863dc7dc61345d17e0ccabedab4ff5e9ca8538b65ae87d2b02d001cd",
+      "business_tool_command": "/bin/zsh -lc 'rtk proxy <awr> --project <business-project> --json ready'"
+    },
+    {
+      "event_line": 41,
+      "native_item_id": "item_21",
+      "exit_code": 0,
+      "command_sha256": "c5a0c5dabe2440944753caf16b01cc93d7faa4fee0b5151cf900287642669dc1",
+      "output_sha256": "f59f18171ce596aeb1aca9aaa5557ec27c017cb354abd121d3af9f9b6115df07",
+      "business_tool_command": "/bin/zsh -lc 'rtk proxy <awr> --project <business-project> --json session start --work QH-BRIEF --agent codex-primary --provider openai --model gpt-5 --claim --ttl-ms 3600000 --expected-revision 37'"
+    },
+    {
+      "event_line": 45,
+      "native_item_id": "item_23",
+      "exit_code": 0,
+      "command_sha256": "5d2ca8feb9aabef9a81ec34a6506b5c609ae820e301acefb19f7c51ea0d038f9",
+      "output_sha256": "bb1edf2bfbb9a31656e22152892d31435606541f61c92c87d4d1eaeac63a4257",
+      "business_tool_command": "/bin/zsh -lc 'rtk proxy <awr> --project <business-project> --json work progress QH-BRIEF --session 01M21S37GKRJVF5Q5VB6DEVP37 --reason \"根据已完成的材料盘点和新增本周窗口，开始收拢本周优先交付、执行动作、依赖和生效要求。\" --next-action \"生成 deliverables/qinghe-brief.md，逐项标注负责人、前置依赖、完成定义和未决事项。\" --summary \"已认领本周上线简报，正在形成可执行清单。\" --expected-revision 38'"
+    },
+    {
+      "event_line": 49,
+      "native_item_id": "item_25",
+      "exit_code": 0,
+      "command_sha256": "ff655efa8a123dc56564a5c012e68033ff12c1be7326c37193750c08ccea381d",
+      "output_sha256": "e6a4089bb797faad325831080e7752fbaf823321f9f9603f9188f16e90cee245",
+      "business_tool_command": "/bin/zsh -lc 'rtk proxy <awr> --project <business-project> --json context bootstrap --session 01M21S37GKRJVF5Q5VB6DEVP37 --budget 1000'"
+    },
+    {
+      "event_line": 53,
+      "native_item_id": "item_27",
+      "exit_code": 0,
+      "command_sha256": "2b60bd5f34cc8ba23e5d2e3820a460c651ec54d83ba9fec1ff93b7b053f8e790",
+      "output_sha256": "10402a9a5696bfef54d52b166eac373ea579d3cca7699a7ceb758884832acea4",
+      "business_tool_command": "/bin/zsh -lc 'rtk proxy <awr> --project <business-project> --json context compile --work QH-BRIEF --session 01M21S37GKRJVF5Q5VB6DEVP37 --source-sha cd44a161471cee94fd4f797955327a4fd995cf3a --budget 5000'"
+    },
+    {
+      "event_line": 60,
+      "native_item_id": "item_31",
+      "exit_code": 0,
+      "command_sha256": "e908e3ae803a6945cd4b51d172fc7f711def8ea48e892aa688d825646ed60ec6",
+      "output_sha256": "365f3c8af1cf1e869eafd6e316c5c444e50725d428642535d1cbfecf8d07aa00"
+    },
+    {
+      "event_line": 63,
+      "native_item_id": "item_32",
+      "exit_code": 0,
+      "command_sha256": "599857ba2fafa123a94a4237981a568a3e423d84c48a04f4a26bcfafab00af0d",
+      "output_sha256": "33b900cc885e212ba2f81d2cd8129e417cbe372e8c058973260c54991aa2e2d5"
+    },
+    {
+      "event_line": 64,
+      "native_item_id": "item_33",
+      "exit_code": 0,
+      "command_sha256": "f930a8e4574ff84df1b60860ac1041058cd18fcc3037993d343caead45c27a93",
+      "output_sha256": "01ba4719c80b6fe911b091a7c05124b64eeece964e09c058ef8f9805daca546b"
+    },
+    {
+      "event_line": 66,
+      "native_item_id": "item_34",
+      "exit_code": 0,
+      "command_sha256": "6f620651b2cde29bfd70559e6a4192d83af3076a836647c588bc4f5318b52956",
+      "output_sha256": "1e6ac6526cdac5ac09f70558dac1d2efc3d2915884311c1e6f26595c6b29624c"
+    },
+    {
+      "event_line": 68,
+      "native_item_id": "item_35",
+      "exit_code": 0,
+      "command_sha256": "fc62a35e1f642cdb1527dc98cb88fd1a80817346eb71468bcf9f3bbb3ada00d0",
+      "output_sha256": "191edbaf0812e3a602945d9e0b4d6fa2e7a69424255071f74d9f328dc9b15f5a"
+    },
+    {
+      "event_line": 70,
+      "native_item_id": "item_36",
+      "exit_code": 0,
+      "command_sha256": "ced7e413ed6117e6aef4624eac180878e163839db7c75cd787964e55783774e8",
+      "output_sha256": "9d2720638b186280cc528562851f0558717a8f5a58085f8189a11c073c0398fa"
+    },
+    {
+      "event_line": 72,
+      "native_item_id": "item_37",
+      "exit_code": 0,
+      "command_sha256": "a21bdccde71d76bb644cbfaa3372e33d482c5ed6511cfd28c109d6c908f7b56d",
+      "output_sha256": "3c545efaefadfdb059bcaba141ec4ad2cfbece494d1a6609adbbcd01a4d163b8"
+    },
+    {
+      "event_line": 74,
+      "native_item_id": "item_38",
+      "exit_code": 0,
+      "command_sha256": "ddb0999153b9c38dcec9926cd4c853f926a4ab2398fc46fcb78afd13d90b7890",
+      "output_sha256": "4dba10cbdfb8de20eea7ea95470f536c655deaa7bf56c575b668e97386e7d63e"
+    },
+    {
+      "event_line": 76,
+      "native_item_id": "item_39",
+      "exit_code": 0,
+      "command_sha256": "4ab42d54300c437cba63c6c7a98cd694a33cac682a5f26f8f75e5b43393afcf3",
+      "output_sha256": "bfda0d81fb12c7e51263b4da472c638cad4f5f183ffef7869f13f894b09305dd"
+    },
+    {
+      "event_line": 78,
+      "native_item_id": "item_40",
+      "exit_code": 0,
+      "command_sha256": "fc62a35e1f642cdb1527dc98cb88fd1a80817346eb71468bcf9f3bbb3ada00d0",
+      "output_sha256": "191edbaf0812e3a602945d9e0b4d6fa2e7a69424255071f74d9f328dc9b15f5a"
+    },
+    {
+      "event_line": 82,
+      "native_item_id": "item_42",
+      "exit_code": 0,
+      "command_sha256": "15fca072e60a7ea8ab78d89728a87610c66e182878820a048ce0e03256ff4560",
+      "output_sha256": "45729dc3d64f613c36bf5d45a05aca6df62e0e3cc650c63524aa179463335164"
+    },
+    {
+      "event_line": 87,
+      "native_item_id": "item_45",
+      "exit_code": 0,
+      "command_sha256": "b25853586833e75c5297294ee6cea0b418f8591a46d2d2f8a75a6017df5c0b35",
+      "output_sha256": "bfc01010feea0e4b72a9fb949e545e96720169b8dbbce81eb0acaa57edb3f017",
+      "business_tool_command": "/bin/zsh -lc 'rtk proxy <awr> --project <business-project> --json evidence add --input .work-receipts/20260909-QH-BRIEF-evidence-draft.json --expected-revision 45'"
+    },
+    {
+      "event_line": 91,
+      "native_item_id": "item_47",
+      "exit_code": 0,
+      "command_sha256": "bfc935ac721497bdfe371174163b26f404429ad94ca937a2cbeca1fd37e30708",
+      "output_sha256": "a4ebdaa61ba69c4187bdfb3cd361ce20ffb94fb4a8616516f45d2dfd83f3bb91",
+      "business_tool_command": "/bin/zsh -lc 'rtk proxy <awr> --project <business-project> --json work show QH-BRIEF --source-sha cd44a161471cee94fd4f797955327a4fd995cf3a'"
+    },
+    {
+      "event_line": 95,
+      "native_item_id": "item_49",
+      "exit_code": 0,
+      "command_sha256": "957462bf4250e993a9a5d37196a8875d6099dad24b9dde7dc8ce9e33a53ee7ab",
+      "output_sha256": "8fb34c02b832402a808b9c1a2725daf48196a0af9c4c21e2185993349781f375",
+      "business_tool_command": "/bin/zsh -lc 'rtk proxy <awr> --project <business-project> --json work complete QH-BRIEF --session 01M21S37GKRJVF5Q5VB6DEVP37 --reason \"已交付一份可执行的本周优先清单，逐项明确责任、依赖、完成定义、生效门槛、后置项和来源，并保留全部未知事项。\" --input <business-project>/.work-receipts/20260909-QH-BRIEF-completion.json --expected-revision 46'"
+    },
+    {
+      "event_line": 100,
+      "native_item_id": "item_52",
+      "exit_code": 0,
+      "command_sha256": "50409dd37c74dcc2eca9ee00b7efaba095c0e3a7119859fc820181b46a01f35e",
+      "output_sha256": "bbe43fa9c3ce92ea83d7b6689cde847995a89ba1a4c49349dac315ff4a1828f4",
+      "business_tool_command": "/bin/zsh -lc 'rtk proxy <awr> --project <business-project> --json status'"
+    },
+    {
+      "event_line": 102,
+      "native_item_id": "item_53",
+      "exit_code": 0,
+      "command_sha256": "ccdd7851daee3c59e5f4c7337852bf81a7f842c384ea73af95a4dddad7197f72",
+      "output_sha256": "1678ebd486c5d1a2aa89e5837b590abd1c9ad0b573de5b08631a9dc3d3938afa",
+      "business_tool_command": "/bin/zsh -lc 'rtk proxy <awr> --project <business-project> --json ready'"
+    },
+    {
+      "event_line": 104,
+      "native_item_id": "item_54",
+      "exit_code": 0,
+      "command_sha256": "bfc935ac721497bdfe371174163b26f404429ad94ca937a2cbeca1fd37e30708",
+      "output_sha256": "8782a93f72e7cc283e03a7f92123847213e742d3dffe19d61366b6ba1b1e26c2",
+      "business_tool_command": "/bin/zsh -lc 'rtk proxy <awr> --project <business-project> --json work show QH-BRIEF --source-sha cd44a161471cee94fd4f797955327a4fd995cf3a'"
+    },
+    {
+      "event_line": 106,
+      "native_item_id": "item_55",
+      "exit_code": 0,
+      "command_sha256": "073356924e9b00ba91f4f9a0de454fb5d617fdb1d1e411bff9addb0e83173b64",
+      "output_sha256": "2d6d321644a1b0c07716c94da4a8ea7e09ed3ed6d7c554701ca81176e0db8770",
+      "business_tool_command": "/bin/zsh -lc 'rtk proxy <awr> --project <business-project> session end --help'"
+    },
+    {
+      "event_line": 108,
+      "native_item_id": "item_56",
+      "exit_code": 0,
+      "command_sha256": "f930a8e4574ff84df1b60860ac1041058cd18fcc3037993d343caead45c27a93",
+      "output_sha256": "01ba4719c80b6fe911b091a7c05124b64eeece964e09c058ef8f9805daca546b"
+    },
+    {
+      "event_line": 110,
+      "native_item_id": "item_57",
+      "exit_code": 0,
+      "command_sha256": "2b60bd5f34cc8ba23e5d2e3820a460c651ec54d83ba9fec1ff93b7b053f8e790",
+      "output_sha256": "98df67aae5551bd2d8ca3208f2327019301940ee0f1a6ff1055ed99083de5bad",
+      "business_tool_command": "/bin/zsh -lc 'rtk proxy <awr> --project <business-project> --json context compile --work QH-BRIEF --session 01M21S37GKRJVF5Q5VB6DEVP37 --source-sha cd44a161471cee94fd4f797955327a4fd995cf3a --budget 5000'"
+    },
+    {
+      "event_line": 114,
+      "native_item_id": "item_59",
+      "exit_code": 0,
+      "command_sha256": "61876d90b5dd25e05c77ba6f4c284e6cb7c3685c2ea64020a44da811f0920c4f",
+      "output_sha256": "031b14a0a61c48069b3a14c5912e93b3d39542be4e590130eb3506bea9d70ce9",
+      "business_tool_command": "/bin/zsh -lc 'rtk proxy <awr> --project <business-project> --json session checkpoint --session 01M21S37GKRJVF5Q5VB6DEVP37 --context-hash 1a04ac88b465bfa1cd06fe25036ecbc4c1692a6acfca93c6e8f556275d38c990 --digest \"已完成 QH-BRIEF：交付 deliverables/qinghe-brief.md，包含本周 P0/P1 动作、责任、依赖、完成定义、生效门槛、未决事项与来源；当前本地证据 QH-BRIEF-CHECKLIST-20260909 已绑定两项验收。未执行或代签独立复核。\" --next-action \"由不同参与者认领 QH-REVIEW，独立核对来源、依赖和生效规则，并将逐条意见写入 deliverables/qh-independent-review.md。\" --open-loop \"三份说明正文及责任信息仍未提供；域名接入确认和旧版页面停用日期仍缺失；materials/week-window.md 是未纳入 AWR 权威源的补充材料；独立复核与最终交付尚未发生。\" --expected-revision 53'"
+    },
+    {
+      "event_line": 118,
+      "native_item_id": "item_61",
+      "exit_code": 0,
+      "command_sha256": "f39975461e1f6f14d9a5a8a1401bde71c856ffee08e49ad3cf4eaed257a0d1a3",
+      "output_sha256": "f4fe7cd72e49db7fa309759736fbdea0ce0d57ce1c88f9b345f47e81e8fe4206",
+      "business_tool_command": "/bin/zsh -lc 'rtk proxy <awr> --project <business-project> --json session end --session 01M21S37GKRJVF5Q5VB6DEVP37 --outcome ended --expected-revision 55'"
+    },
+    {
+      "event_line": 123,
+      "native_item_id": "item_64",
+      "exit_code": 0,
+      "command_sha256": "de497deac70c981241c86f9a0cfafc4bfd136868952341220d848ddac9f62a4d",
+      "output_sha256": "12e6b63f6ebcf37ac438010e204e4ade4bee30c30f17b5cae8f3be9644a96b4c",
+      "business_tool_command": "/bin/zsh -lc 'rtk proxy <awr> --project <business-project> --json session list --active'"
+    },
+    {
+      "event_line": 125,
+      "native_item_id": "item_65",
+      "exit_code": 0,
+      "command_sha256": "1aababf94163d22dfbc1d7131412c17f542321850f03a9a06fad57ae81f179e9",
+      "output_sha256": "b1f63069d6a71c16d2fa250fe5ff785a83d8cfdb390a553be9cb6707174d4931",
+      "business_tool_command": "/bin/zsh -lc 'rtk proxy <awr> --project <business-project> --json context compile --work QH-INPUT --session 01M21QTD6SSY9DC6S502CKC3CJ --source-sha cd44a161471cee94fd4f797955327a4fd995cf3a --budget 5000'"
+    },
+    {
+      "event_line": 129,
+      "native_item_id": "item_67",
+      "exit_code": 0,
+      "command_sha256": "9a2e649a422aa2130314a41b59fb456640bd0d4a297f78d550e8eb0b6386c16d",
+      "output_sha256": "c1395fc34e438fb542e495c8bb73746d17c8d5ea9d8b7308d9618fc719d56534",
+      "business_tool_command": "/bin/zsh -lc 'rtk proxy <awr> --project <business-project> --json session checkpoint --session 01M21QTD6SSY9DC6S502CKC3CJ --context-hash df0d78393582d930fb4ca81f3cb5e16112ad82933ad19a48a96127db8ca87ecc --digest \"QH-INPUT 已以当前本地证据完成，缺失材料仍作为依赖保留；其后续 QH-BRIEF 也已交付并完成，未将目录、域名或上线状态误标为已确认。\" --next-action \"由不同参与者认领 QH-REVIEW，对本周执行清单及来源、依赖、生效规则进行独立复核。\" --open-loop \"三份说明正文和责任信息未提供；域名确认及旧版页面停用日期未取得；独立复核和最终交付尚未发生。\" --expected-revision 56'"
+    },
+    {
+      "event_line": 133,
+      "native_item_id": "item_69",
+      "exit_code": 0,
+      "command_sha256": "33c23328489066cba8b4d66e524c08e908f61d514c8e38bb946af366e1f7cf84",
+      "output_sha256": "3a3a577f32691fa4db871ae39eecfe96d1a7d52e97dd5107c080e8392db9e6f8",
+      "business_tool_command": "/bin/zsh -lc 'rtk proxy <awr> --project <business-project> --json session end --session 01M21QTD6SSY9DC6S502CKC3CJ --outcome ended --expected-revision 58'"
+    },
+    {
+      "event_line": 137,
+      "native_item_id": "item_71",
+      "exit_code": 0,
+      "command_sha256": "50409dd37c74dcc2eca9ee00b7efaba095c0e3a7119859fc820181b46a01f35e",
+      "output_sha256": "6b94a6fce3ec5ccacdb513fdb738cf1df10080d164e2017e1234473d25583b1e",
+      "business_tool_command": "/bin/zsh -lc 'rtk proxy <awr> --project <business-project> --json status'"
+    },
+    {
+      "event_line": 139,
+      "native_item_id": "item_72",
+      "exit_code": 0,
+      "command_sha256": "ccdd7851daee3c59e5f4c7337852bf81a7f842c384ea73af95a4dddad7197f72",
+      "output_sha256": "5d10d0ccd2709edf2843fc96c79155849def62ac2d5e3ba5bbee452a70164455",
+      "business_tool_command": "/bin/zsh -lc 'rtk proxy <awr> --project <business-project> --json ready'"
+    },
+    {
+      "event_line": 141,
+      "native_item_id": "item_73",
+      "exit_code": 0,
+      "command_sha256": "de497deac70c981241c86f9a0cfafc4bfd136868952341220d848ddac9f62a4d",
+      "output_sha256": "93436dba2af3e605422c613b97094e22e22984a21ae0fd879bc1dd3bfa5865ed",
+      "business_tool_command": "/bin/zsh -lc 'rtk proxy <awr> --project <business-project> --json session list --active'"
+    },
+    {
+      "event_line": 144,
+      "native_item_id": "item_74",
+      "exit_code": 0,
+      "command_sha256": "599857ba2fafa123a94a4237981a568a3e423d84c48a04f4a26bcfafab00af0d",
+      "output_sha256": "33b900cc885e212ba2f81d2cd8129e417cbe372e8c058973260c54991aa2e2d5"
+    },
+    {
+      "event_line": 145,
+      "native_item_id": "item_75",
+      "exit_code": 0,
+      "command_sha256": "bfc935ac721497bdfe371174163b26f404429ad94ca937a2cbeca1fd37e30708",
+      "output_sha256": "c44c592053de0bc265cf520b61ad3436f8b329393c05d2ed71c208709868271d",
+      "business_tool_command": "/bin/zsh -lc 'rtk proxy <awr> --project <business-project> --json work show QH-BRIEF --source-sha cd44a161471cee94fd4f797955327a4fd995cf3a'"
+    },
+    {
+      "event_line": 147,
+      "native_item_id": "item_76",
+      "exit_code": 0,
+      "command_sha256": "f930a8e4574ff84df1b60860ac1041058cd18fcc3037993d343caead45c27a93",
+      "output_sha256": "01ba4719c80b6fe911b091a7c05124b64eeece964e09c058ef8f9805daca546b"
+    },
+    {
+      "event_line": 149,
+      "native_item_id": "item_77",
+      "exit_code": 0,
+      "command_sha256": "fc62a35e1f642cdb1527dc98cb88fd1a80817346eb71468bcf9f3bbb3ada00d0",
+      "output_sha256": "191edbaf0812e3a602945d9e0b4d6fa2e7a69424255071f74d9f328dc9b15f5a"
+    }
+  ],
+  "original_recorded_at": "2026-09-09T08:39:58+08:00",
+  "all_snapshot_hashes_verified": true,
+  "limitations": [
+    "Extract only. Raw native context remains private. Independent review, later business revisions, final delivery and remote verification are separate requirements."
+  ],
+  "e4_completion_claim": false
+}

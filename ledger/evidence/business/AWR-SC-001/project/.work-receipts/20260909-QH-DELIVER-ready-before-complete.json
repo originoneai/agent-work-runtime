@@ -1,0 +1,57 @@
+{
+  "blocked_sample": [
+    {
+      "active_claims": [
+        {
+          "agent_id": "codex-primary",
+          "expires_at": null,
+          "id": "01M220JTR0008DVD7P87YDMM3E",
+          "session_id": "01M220JTQZK86JR583B26FNNT8"
+        }
+      ],
+      "blocker": null,
+      "diagnostics": [
+        {
+          "code": "active_claim",
+          "detail": "claimed by codex-primary in session 01M220JTQZK86JR583B26FNNT8",
+          "work_item_key": "QH-DELIVER"
+        },
+        {
+          "code": "status_not_selectable",
+          "detail": "source status is in_progress",
+          "work_item_key": "QH-DELIVER"
+        }
+      ],
+      "external_key": "QH-DELIVER",
+      "freshness": "fresh",
+      "id": "01M21QQH54SAENARZ5SV55BX7X",
+      "milestone": "QH-DELIVERY",
+      "next_action": "更新简报、依赖清单和上下文来源，形成 deliverables/qh-delivery.md 与本地验证回执；所有尚未取得的文档、标题、目录、域名和停用/切换确认继续列为移交事项。",
+      "owner": null,
+      "priority": "P0",
+      "raw_status": "in_progress",
+      "ready": false,
+      "revision": 3,
+      "source_revision": 20,
+      "status": "in_progress",
+      "summary": "QH-DELIVER 已启动：依据独立返检结论整理最终简报、依赖、来源说明、复核结论、历史记录与未决事项移交；这不确认目录、域名、停用、切换或上线。",
+      "title": "交付更新后的上线说明"
+    }
+  ],
+  "blocked_total": 1,
+  "branch_id": null,
+  "diagnostic_counts": {
+    "active_claim": 1,
+    "status_not_selectable": 1
+  },
+  "freshness_basis": "source_refresh",
+  "ok": true,
+  "project_revision": 187,
+  "read_only": false,
+  "ready": [],
+  "ready_total": 0,
+  "source_issues": [],
+  "source_refresh_performed": true,
+  "source_warnings": 0,
+  "truncated": false
+}

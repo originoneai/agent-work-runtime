@@ -1,0 +1,34 @@
+{
+  "claim": {
+    "acquired_at": 1788914730596,
+    "agent_id": "codex-primary",
+    "branch_id": null,
+    "expires_at": 1788918330596,
+    "id": "01M21T11K5K9WD5F8CHKHVYQYS",
+    "project_id": "01M21QQH4Z2YQCA7PQZDZ8STC9",
+    "released_at": null,
+    "revision": 1,
+    "session_id": "01M21SVQVGGYD76YT3YFHPHH2D",
+    "status": "active",
+    "work_item_id": "01M21QQH5476WGWQAGW59RF4GM"
+  },
+  "event": {
+    "artifact_id": null,
+    "branch_id": null,
+    "checkpoint_id": null,
+    "created_at": 1788914730597,
+    "id": "01M21T11K54JAESYCGRMQRQXJR",
+    "importance": "normal",
+    "project_revision": 70,
+    "session_id": "01M21SVQVGGYD76YT3YFHPHH2D",
+    "source_id": null,
+    "summary": "Acquired runtime work claim",
+    "type": "work.claimed",
+    "work_item_id": "01M21QQH5476WGWQAGW59RF4GM"
+  },
+  "freshness_basis": "source_refresh",
+  "ok": true,
+  "project_revision": 70,
+  "source_refresh_performed": true
+}
+

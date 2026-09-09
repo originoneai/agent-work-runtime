@@ -1,0 +1,20 @@
+{
+  "event": {
+    "branch_id": null,
+    "created_at": 1788919023313,
+    "event_type": "review.remediation_ready",
+    "id": "01M21Y41PH9GF40NF6T2YQN2DZ",
+    "importance": "normal",
+    "payload": {},
+    "project_id": "01M21QQH4Z2YQCA7PQZDZ8STC9",
+    "project_revision": 148,
+    "session_id": null,
+    "summary": "QH-R01 至 QH-R05 整改包已形成并交回独立复核队列；详见 deliverables/qh-review-response.md，本轮未提交最终交付。",
+    "work_item_id": "01M21QQH54H74PB9525DPEKQ5Z"
+  },
+  "freshness_basis": "source_refresh",
+  "ok": true,
+  "project_revision": 148,
+  "source_refresh_performed": true
+}
+

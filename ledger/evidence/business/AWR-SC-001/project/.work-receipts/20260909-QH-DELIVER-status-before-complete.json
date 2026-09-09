@@ -1,0 +1,55 @@
+{
+  "blocked_count": 1,
+  "branch_id": null,
+  "counts": {
+    "completed": 3,
+    "in_progress": 1
+  },
+  "current": [
+    {
+      "blocker": null,
+      "external_key": "QH-DELIVER",
+      "freshness": "fresh",
+      "id": "01M21QQH54SAENARZ5SV55BX7X",
+      "milestone": "QH-DELIVERY",
+      "next_action": "更新简报、依赖清单和上下文来源，形成 deliverables/qh-delivery.md 与本地验证回执；所有尚未取得的文档、标题、目录、域名和停用/切换确认继续列为移交事项。",
+      "owner": null,
+      "priority": "P0",
+      "raw_status": "in_progress",
+      "revision": 3,
+      "source_revision": 20,
+      "status": "in_progress",
+      "summary": "QH-DELIVER 已启动：依据独立返检结论整理最终简报、依赖、来源说明、复核结论、历史记录与未决事项移交；这不确认目录、域名、停用、切换或上线。",
+      "title": "交付更新后的上线说明"
+    }
+  ],
+  "current_total": 1,
+  "freshness_basis": "source_refresh",
+  "next_action": "更新简报、依赖清单和上下文来源，形成 deliverables/qh-delivery.md 与本地验证回执；所有尚未取得的文档、标题、目录、域名和停用/切换确认继续列为移交事项。",
+  "ok": true,
+  "project": "青禾文档门户上线",
+  "project_id": "01M21QQH4Z2YQCA7PQZDZ8STC9",
+  "project_revision": 187,
+  "read_only": false,
+  "ready_count": 0,
+  "source_issues": [],
+  "source_refresh_performed": true,
+  "source_warnings": 0,
+  "suggested_work": {
+    "blocker": null,
+    "external_key": "QH-DELIVER",
+    "freshness": "fresh",
+    "id": "01M21QQH54SAENARZ5SV55BX7X",
+    "milestone": "QH-DELIVERY",
+    "next_action": "更新简报、依赖清单和上下文来源，形成 deliverables/qh-delivery.md 与本地验证回执；所有尚未取得的文档、标题、目录、域名和停用/切换确认继续列为移交事项。",
+    "owner": null,
+    "priority": "P0",
+    "raw_status": "in_progress",
+    "revision": 3,
+    "source_revision": 20,
+    "status": "in_progress",
+    "summary": "QH-DELIVER 已启动：依据独立返检结论整理最终简报、依赖、来源说明、复核结论、历史记录与未决事项移交；这不确认目录、域名、停用、切换或上线。",
+    "title": "交付更新后的上线说明"
+  },
+  "total": 4
+}

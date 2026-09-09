@@ -1,0 +1,108 @@
+{
+  "ok": true,
+  "code": "proposal_recorded",
+  "project_revision": 45,
+  "proposal": {
+    "id": "01M21S3RTH5NY4FRFWB9TD1JZR",
+    "project_id": "01M21QQH4Z2YQCA7PQZDZ8STC9",
+    "work_item_id": "01M21QQH5476WGWQAGW59RF4GM",
+    "source_id": "01M21QQH53JR8QW1W5K5VJRNS7",
+    "base_fingerprint": "sha256:adb7e7ff09b30d595adef45e73bff2ea822d4575e536a9c71fd44ceb9c8949e9",
+    "expected_revision": 38,
+    "mutation_type": "work.progress",
+    "patch": {
+      "changes": {
+        "next_action": "生成 deliverables/qinghe-brief.md，逐项标注负责人、前置依赖、完成定义和未决事项。",
+        "status": "in_progress",
+        "summary": "已认领本周上线简报，正在形成可执行清单。"
+      },
+      "intent": "根据已完成的材料盘点和新增本周窗口，开始收拢本周优先交付、执行动作、依赖和生效要求。",
+      "source_config": {
+        "adapter_options": {},
+        "adapter_version": 1,
+        "mapping_key": "ledger|work-ledger.yaml"
+      },
+      "target": {
+        "kind": "work_item",
+        "meta": {
+          "external_key": "QH-BRIEF",
+          "id": "01M21QQH5476WGWQAGW59RF4GM",
+          "revision": 1,
+          "source_ref": {
+            "end_line": null,
+            "locator": "file:///Users/mac/Documents/originone/agent-work-running/.local/business-live-20260909-v1/project-onboarding/project/work-ledger.yaml",
+            "pointer": "/work_items/1",
+            "section_fingerprint": null,
+            "source_fingerprint": "sha256:adb7e7ff09b30d595adef45e73bff2ea822d4575e536a9c71fd44ceb9c8949e9",
+            "source_id": "01M21QQH53JR8QW1W5K5VJRNS7",
+            "source_revision": 4,
+            "start_line": null
+          }
+        }
+      },
+      "version": 1,
+      "work_action": {
+        "action": "progress",
+        "from": "planned",
+        "to": "in_progress"
+      }
+    },
+    "status": "applied",
+    "created_by_session": "01M21S37GKRJVF5Q5VB6DEVP37",
+    "revision": 5
+  },
+  "event": {
+    "id": "01M21S3RVX2XT0ASSQ80318JZ9",
+    "project_id": "01M21QQH4Z2YQCA7PQZDZ8STC9",
+    "work_item_id": "01M21QQH5476WGWQAGW59RF4GM",
+    "session_id": null,
+    "branch_id": null,
+    "event_type": "work.progressed",
+    "importance": "normal",
+    "summary": "Verified source work action Progress",
+    "payload": {
+      "action_reason": "根据已完成的材料盘点和新增本周窗口，开始收拢本周优先交付、执行动作、依赖和生效要求。",
+      "actor": "codex-primary",
+      "after_fingerprint": "sha256:f8d4126837ef3ac2f6fb7804871021c5c35ce36419c01554b822a51f12007752",
+      "attempt_event_id": "01M21S3RVBVG1JRB8BH1YB93C7",
+      "before_fingerprint": "sha256:adb7e7ff09b30d595adef45e73bff2ea822d4575e536a9c71fd44ceb9c8949e9",
+      "creating_session_id": "01M21S37GKRJVF5Q5VB6DEVP37",
+      "proposal_id": "01M21S3RTH5NY4FRFWB9TD1JZR",
+      "reason": "根据已完成的材料盘点和新增本周窗口，开始收拢本周优先交付、执行动作、依赖和生效要求。",
+      "released_claim_ids": [],
+      "source_id": "01M21QQH53JR8QW1W5K5VJRNS7",
+      "source_revision": 5,
+      "target_after_hash": "ebbf03dfbfd76f94e18c703a91cd1363d30f2a24c9f90d6f218c2564038c1345",
+      "target_revision": 2,
+      "work_action": {
+        "action": "progress",
+        "from": "planned",
+        "to": "in_progress"
+      },
+      "write_plan_id": "01M21S3RTS295P3RR4TN474AW9"
+    },
+    "project_revision": 45,
+    "created_at": 1788913771389
+  },
+  "source_refresh_performed": true,
+  "source_write_performed": true,
+  "write_outcome": "applied",
+  "apply_attempt": {
+    "event_id": "01M21S3RVBVG1JRB8BH1YB93C7",
+    "proposal_id": "01M21S3RTH5NY4FRFWB9TD1JZR",
+    "source_id": "01M21QQH53JR8QW1W5K5VJRNS7",
+    "project_revision": 42,
+    "plan": {
+      "id": "01M21S3RTS295P3RR4TN474AW9",
+      "before_fingerprint": "sha256:adb7e7ff09b30d595adef45e73bff2ea822d4575e536a9c71fd44ceb9c8949e9",
+      "after_fingerprint": "sha256:f8d4126837ef3ac2f6fb7804871021c5c35ce36419c01554b822a51f12007752",
+      "before_size": 2299,
+      "after_size": 2422,
+      "target_after_hash": "ebbf03dfbfd76f94e18c703a91cd1363d30f2a24c9f90d6f218c2564038c1345"
+    },
+    "resolved_event_id": "01M21S3RVX2XT0ASSQ80318JZ9"
+  },
+  "recovery_directory": ".awr/mutations/01M21S3RTS295P3RR4TN474AW9",
+  "source_check": null,
+  "error": null
+}

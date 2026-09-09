@@ -1,0 +1,102 @@
+{
+  "acceptance": [
+    "处理复核意见，交付最终简报与追溯记录。",
+    "保留实际产物与来源引用，无法确认的内容显式说明。"
+  ],
+  "decisions": [],
+  "dependency_cycles": [],
+  "evidence": [
+    {
+      "currency": "current",
+      "external_key": "QH-REVIEW-REMEDIATION-HANDOFF-20260909",
+      "level": "locally_verified",
+      "locator": ".work-receipts/20260909-QH-REMEDIATION-evidence-report.json",
+      "missing_bindings": [],
+      "reasons": [],
+      "source_sha": "cd44a161471cee94fd4f797955327a4fd995cf3a",
+      "summary": "已处理独立复核 QH-R01 至 QH-R05，更新依赖、上下文和工作记录并形成返检包；证据仅覆盖本地一致性，不是独立返检或最终交付。"
+    }
+  ],
+  "evidence_currency_basis": {
+    "branch_id": null,
+    "requested_source_sha": "cd44a161471cee94fd4f797955327a4fd995cf3a"
+  },
+  "freshness_basis": "source_refresh",
+  "missing_dependencies": [],
+  "ok": true,
+  "project_revision": 187,
+  "read_only": false,
+  "required_dependencies": [
+    {
+      "external_key": "QH-BRIEF",
+      "freshness": "fresh",
+      "revision": 7,
+      "source_revision": 20,
+      "status": "completed"
+    },
+    {
+      "external_key": "QH-INPUT",
+      "freshness": "fresh",
+      "revision": 5,
+      "source_revision": 20,
+      "status": "completed"
+    },
+    {
+      "external_key": "QH-REVIEW",
+      "freshness": "fresh",
+      "revision": 8,
+      "source_revision": 20,
+      "status": "completed"
+    }
+  ],
+  "source_issues": [],
+  "source_ref": {
+    "end_line": null,
+    "locator": "file:///Users/mac/Documents/originone/agent-work-running/.local/business-live-20260909-v1/project-onboarding/project/work-ledger.yaml",
+    "pointer": "/work_items/3",
+    "section_fingerprint": null,
+    "source_fingerprint": "sha256:34c76120d8af8e89f46142108d9862d417effed58384552d2ca6c0344f2bc70f",
+    "source_id": "01M21QQH53JR8QW1W5K5VJRNS7",
+    "source_revision": 20,
+    "start_line": null
+  },
+  "source_refresh_performed": true,
+  "source_warnings": 0,
+  "work": {
+    "active_claims": [
+      {
+        "agent_id": "codex-primary",
+        "expires_at": null,
+        "id": "01M220JTR0008DVD7P87YDMM3E",
+        "session_id": "01M220JTQZK86JR583B26FNNT8"
+      }
+    ],
+    "blocker": null,
+    "diagnostics": [
+      {
+        "code": "active_claim",
+        "detail": "claimed by codex-primary in session 01M220JTQZK86JR583B26FNNT8",
+        "work_item_key": "QH-DELIVER"
+      },
+      {
+        "code": "status_not_selectable",
+        "detail": "source status is in_progress",
+        "work_item_key": "QH-DELIVER"
+      }
+    ],
+    "external_key": "QH-DELIVER",
+    "freshness": "fresh",
+    "id": "01M21QQH54SAENARZ5SV55BX7X",
+    "milestone": "QH-DELIVERY",
+    "next_action": "更新简报、依赖清单和上下文来源，形成 deliverables/qh-delivery.md 与本地验证回执；所有尚未取得的文档、标题、目录、域名和停用/切换确认继续列为移交事项。",
+    "owner": null,
+    "priority": "P0",
+    "raw_status": "in_progress",
+    "ready": false,
+    "revision": 3,
+    "source_revision": 20,
+    "status": "in_progress",
+    "summary": "QH-DELIVER 已启动：依据独立返检结论整理最终简报、依赖、来源说明、复核结论、历史记录与未决事项移交；这不确认目录、域名、停用、切换或上线。",
+    "title": "交付更新后的上线说明"
+  }
+}

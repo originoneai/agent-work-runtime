@@ -1,0 +1,736 @@
+{
+  "kind": "sealed_native_client_turn_review_extract",
+  "phase": "round-2",
+  "client": "Codex CLI",
+  "client_task_id": "01a08379-ef89-7173-917d-274662891bcb",
+  "actual_user_turn": {
+    "timestamp": "2026-09-09T00:40:20.800Z",
+    "text": "我调整了项目规则，请更新简报，说明哪些安排需要改变。"
+  },
+  "original_input_sha256": "4042b2ce7624b41a17911abc6dcb7ae311ca7b6fc404f376ea122ad52af53819",
+  "native_transcript_snapshot_sha256": "2d3ee626aa9d6e07e0f5ae33b511f29f3dfa27a7e3c77155b57fef838569c6c0",
+  "events_sha256": "688c6a9987e2d47254952f0fbeb9cab11a405155489605f4feeabc85b228bfba",
+  "final_message": "已更新[本周执行简报](</Users/mac/Documents/originone/agent-work-running/.local/business-live-20260909-v1/project-onboarding/project/deliverables/qinghe-brief.md:13>)。\n\n需要改变的安排：\n\n- 对外目录不再预设三项，先核实标题，仅发布已核实项。\n- 内部可记录责任角色和协调信息；对外目录必须移除个人联系人。\n- 域名确认成为具体切换时间的硬依赖；旧版停用日期不能单独形成切换承诺。\n- 周五仍交付简报，但不等同于承诺门户切换。\n- 独立复核新增三项检查：标题核实、联系人清理、切换时间表述。\n\nAWR 当前为 revision 88，`QH-BRIEF` 已按本地验证证据重新完成；下一项是由其他参与者认领 `QH-REVIEW`。域名确认、独立复核和最终上线仍未完成。按 `karpathy-guidelines` 采用了最小范围修订，并保留所有未确认事项。未创建 Git 提交。",
+  "final_message_sha256": "3734ae9a7834fd4d27c62fb0c8b0e996a589da0e89b2597d8b7678d9770fb3af",
+  "project_sources_sha256": {
+    "project.toml": "9c45ae191289ed0a40883e2120e47eaaa8e3af301c350928b11629406d6c503f",
+    "GOALS.md": "575f650e4ff9b782bebdb8830f5b2670a3bdc447a41ff84e53eec7cf35c249a8",
+    "PLAN.md": "2d726e0e77754a51f779b5eee59ac29c919a4e7ab87b2a43a53a74938b2ba053",
+    "RULES.md": "05c7d1e94f96e3f6bdaccfd8790895a07e11472fe95542c046eb570456ad218d",
+    "work-ledger.yaml": "5ca64a6962d2e318dab3c7bc97316eae71a4487248c0d674827b8c2e45ab603a",
+    "AGENTS.md": "581c28e430d08fc07fe5d98322b936c79018d654d1c5764eb7e7e7604fa11a39",
+    "DELIVERABLES.md": "32a59caa8ca42ee5481b32777a40777af6ff36076bdd68355b669f44058c56f4"
+  },
+  "artifacts_sha256": {
+    "deliverables/qinghe-brief.md": "31b843562c3918b531d774e1ab19b7b6912db627de6ce2dc4ba37515fa1cfccd",
+    "deliverables/qinghe-context-reference.md": "8b9508d2965a6d97fd6b76c6afc5f3acad15f52ac326c9819633ad7da19571d3",
+    "deliverables/qinghe-dependencies.md": "b3bbb599f1ef5e3f15ffe1b2e149bb1edc5d218c470eab30186744167071161c"
+  },
+  "receipt_files": {
+    ".work-receipts/20260909-QH-BRIEF-checkpoint.json": {
+      "sha256": "031b14a0a61c48069b3a14c5912e93b3d39542be4e590130eb3506bea9d70ce9",
+      "bytes": 2183
+    },
+    ".work-receipts/20260909-QH-BRIEF-complete.json": {
+      "sha256": "8fb34c02b832402a808b9c1a2725daf48196a0af9c4c21e2185993349781f375",
+      "bytes": 8124
+    },
+    ".work-receipts/20260909-QH-BRIEF-completion.json": {
+      "sha256": "b3516f0cad91acd61854ea9f101e4d0f0bdfff1e85138da9a4962dd42309b381",
+      "bytes": 455
+    },
+    ".work-receipts/20260909-QH-BRIEF-context-bootstrap.json": {
+      "sha256": "e6a4089bb797faad325831080e7752fbaf823321f9f9603f9188f16e90cee245",
+      "bytes": 6178
+    },
+    ".work-receipts/20260909-QH-BRIEF-context-compile.json": {
+      "sha256": "10402a9a5696bfef54d52b166eac373ea579d3cca7699a7ceb758884832acea4",
+      "bytes": 15565
+    },
+    ".work-receipts/20260909-QH-BRIEF-context-completed.json": {
+      "sha256": "98df67aae5551bd2d8ca3208f2327019301940ee0f1a6ff1055ed99083de5bad",
+      "bytes": 18872
+    },
+    ".work-receipts/20260909-QH-BRIEF-evidence-add.json": {
+      "sha256": "bfc01010feea0e4b72a9fb949e545e96720169b8dbbce81eb0acaa57edb3f017",
+      "bytes": 1143
+    },
+    ".work-receipts/20260909-QH-BRIEF-evidence-draft.json": {
+      "sha256": "8b824f925dca84c4bb367b50695d12c27a9450a8dec3d4d377485d070b07bf07",
+      "bytes": 738
+    },
+    ".work-receipts/20260909-QH-BRIEF-evidence-report.json": {
+      "sha256": "9db47a081a7d431c2590eacffa4cfb3e20a8087152bd8b4d33099f31ec53b59c",
+      "bytes": 1971
+    },
+    ".work-receipts/20260909-QH-BRIEF-final-ready.json": {
+      "sha256": "5d10d0ccd2709edf2843fc96c79155849def62ac2d5e3ba5bbee452a70164455",
+      "bytes": 1736
+    },
+    ".work-receipts/20260909-QH-BRIEF-final-status.json": {
+      "sha256": "6b94a6fce3ec5ccacdb513fdb738cf1df10080d164e2017e1234473d25583b1e",
+      "bytes": 1024
+    },
+    ".work-receipts/20260909-QH-BRIEF-progress.json": {
+      "sha256": "bb1edf2bfbb9a31656e22152892d31435606541f61c92c87d4d1eaeac63a4257",
+      "bytes": 4386
+    },
+    ".work-receipts/20260909-QH-BRIEF-rules-change-checkpoint.json": {
+      "sha256": "3295b7ea4ce3627504373b22d61299fbdbf3cc54056ce642ae38a556ffea867b",
+      "bytes": 2332
+    },
+    ".work-receipts/20260909-QH-BRIEF-rules-change-claim.json": {
+      "sha256": "6806d91f19b502f25889ee598dd45ae0c8adf00145f461432a2b300574334964",
+      "bytes": 929
+    },
+    ".work-receipts/20260909-QH-BRIEF-rules-change-complete.json": {
+      "sha256": "5707c88153eca354d9ed7aafd4865972cc16569ada78eb740b365a5b0c3f98c9",
+      "bytes": 8545
+    },
+    ".work-receipts/20260909-QH-BRIEF-rules-change-completion.json": {
+      "sha256": "6ec3e3c9e777437e7fab166dc6cb7595fe195d390da8ead41e2b309f7851a4b3",
+      "bytes": 465
+    },
+    ".work-receipts/20260909-QH-BRIEF-rules-change-context-bootstrap.json": {
+      "sha256": "95b69cefabc7a4b57e3f7fcee13a1e602591cb39c527975a8b03173f58d4ec52",
+      "bytes": 21060
+    },
+    ".work-receipts/20260909-QH-BRIEF-rules-change-context-compile.json": {
+      "sha256": "8328dacf5bfd024a7bcdef3580440f56773fc71f730bbb37fea286ca9527cd88",
+      "bytes": 22287
+    },
+    ".work-receipts/20260909-QH-BRIEF-rules-change-context-completed.json": {
+      "sha256": "de726e5e8b29d70e685dd205721a6ca9cf63379eb79aaab8df98586466a47472",
+      "bytes": 25865
+    },
+    ".work-receipts/20260909-QH-BRIEF-rules-change-detached-context.json": {
+      "sha256": "c19d0d6e6b470661b0bc0cd1a80c5571adfaf828c5b21c1f656a590351b3747a",
+      "bytes": 20918
+    },
+    ".work-receipts/20260909-QH-BRIEF-rules-change-evidence-add.json": {
+      "sha256": "d1c848f439ff34d6b56322f4c8014abf3f0ace8d0b33ffd8f0da834ab89eb917",
+      "bytes": 1242
+    },
+    ".work-receipts/20260909-QH-BRIEF-rules-change-evidence-draft.json": {
+      "sha256": "49797543f9a85b7a22a43a1a8c754278ca02595e25834731eb6e2d07fc2b0394",
+      "bytes": 836
+    },
+    ".work-receipts/20260909-QH-BRIEF-rules-change-evidence-report.json": {
+      "sha256": "7fe4e64248e6bac2ae5aa874a94cac331f67a19bcd0e30da336caa1b584f85a6",
+      "bytes": 3247
+    },
+    ".work-receipts/20260909-QH-BRIEF-rules-change-final-ready.json": {
+      "sha256": "a635de8098bb8980df1b002674b89443c1a2670955cc7bb1508030e4af43c343",
+      "bytes": 1737
+    },
+    ".work-receipts/20260909-QH-BRIEF-rules-change-final-status.json": {
+      "sha256": "fa615cdb30ba187d358b6885c0953f82a7996edf4eaa5ffc9cc88fe13c35a468",
+      "bytes": 1025
+    },
+    ".work-receipts/20260909-QH-BRIEF-rules-change-final-work-show.json": {
+      "sha256": "4c0bb869c10740b7e4e0f68013fc92e31af067428fad0b816bda77329a361506",
+      "bytes": 4108
+    },
+    ".work-receipts/20260909-QH-BRIEF-rules-change-progress.json": {
+      "sha256": "b1c9d868345166c1ea72bc65cc00eeeca9bfabacb4c0c55de21cedc0d10228d3",
+      "bytes": 4367
+    },
+    ".work-receipts/20260909-QH-BRIEF-rules-change-reopen-attempt-1.json": {
+      "sha256": "6b6c00003ebe164149bc1540a04d92d0f563503ee20989e5727814b15bb08d71",
+      "bytes": 104
+    },
+    ".work-receipts/20260909-QH-BRIEF-rules-change-reopen.json": {
+      "sha256": "fe0a4b79ab95ead7591c8ab5824942355b4011c777fdf4a2b5f70f4f3fe552f7",
+      "bytes": 4311
+    },
+    ".work-receipts/20260909-QH-BRIEF-rules-change-session-end.json": {
+      "sha256": "45d4f3320d88e1f007fc3be06bfcb8cdf5d138831b5d31298c2d57d33aead9bd",
+      "bytes": 1051
+    },
+    ".work-receipts/20260909-QH-BRIEF-rules-change-session-start.json": {
+      "sha256": "50606db8758851859a453615bbd1d2c4d94a35dd2fc00002a4d23a936fefd00a",
+      "bytes": 1013
+    },
+    ".work-receipts/20260909-QH-BRIEF-rules-change-work-show.json": {
+      "sha256": "f01b4c5add39899fcb9259787294a2147b8d420a3739d3d386b73fbfe0aa9808",
+      "bytes": 3891
+    },
+    ".work-receipts/20260909-QH-BRIEF-session-end.json": {
+      "sha256": "f4fe7cd72e49db7fa309759736fbdea0ce0d57ce1c88f9b345f47e81e8fe4206",
+      "bytes": 1050
+    },
+    ".work-receipts/20260909-QH-BRIEF-session-start.json": {
+      "sha256": "f59f18171ce596aeb1aca9aaa5557ec27c017cb354abd121d3af9f9b6115df07",
+      "bytes": 1389
+    },
+    ".work-receipts/20260909-QH-INPUT-checkpoint-completed.json": {
+      "sha256": "c1395fc34e438fb542e495c8bb73746d17c8d5ea9d8b7308d9618fc719d56534",
+      "bytes": 2077
+    },
+    ".work-receipts/20260909-QH-INPUT-checkpoint.json": {
+      "sha256": "b9e530d9e6c9af883d7c1d265aa6ae11bfab2db491dbb335d06e603a50904b70",
+      "bytes": 2090
+    },
+    ".work-receipts/20260909-QH-INPUT-complete.json": {
+      "sha256": "d6972575d6161bd22e670300dc4abc1cbbe1f6d4168b43af63a4dc40f697a629",
+      "bytes": 8003
+    },
+    ".work-receipts/20260909-QH-INPUT-completion.json": {
+      "sha256": "77fcd36bb1cdafed4df8cf16735b36d268a53a9f2b698599dfd2ed6543557680",
+      "bytes": 461
+    },
+    ".work-receipts/20260909-QH-INPUT-context-bootstrap.json": {
+      "sha256": "3ea15e8ebcd64dda6f144352bf5dbf8032dcb6f64adaa0b57ccc0bef458579e6",
+      "bytes": 6132
+    },
+    ".work-receipts/20260909-QH-INPUT-context-compile.json": {
+      "sha256": "215e667763208ccdb5d0abe550d5a04a3537c1eb562d1b35c030c50878f193e8",
+      "bytes": 15014
+    },
+    ".work-receipts/20260909-QH-INPUT-context-completed.json": {
+      "sha256": "b1f63069d6a71c16d2fa250fe5ff785a83d8cfdb390a553be9cb6707174d4931",
+      "bytes": 21455
+    },
+    ".work-receipts/20260909-QH-INPUT-context-current.json": {
+      "sha256": "7fbbe77a651654dbcb3da459e7c6588fe36e42ecfc69cdc71a65c812c8fa281d",
+      "bytes": 15881
+    },
+    ".work-receipts/20260909-QH-INPUT-context-resumed.json": {
+      "sha256": "693a07e0c795764deef969f26923344e7af86319726778fc0f48e58adc063533",
+      "bytes": 16262
+    },
+    ".work-receipts/20260909-QH-INPUT-evidence-add.json": {
+      "sha256": "848167dc353e70296c696dc60bcb217f06a62b795e821ca6b6747f9b5b35ac73",
+      "bytes": 1081
+    },
+    ".work-receipts/20260909-QH-INPUT-evidence-draft.json": {
+      "sha256": "f6cff8195a73b3072d29f85fbbf65039d5eae2b811502eb677c86099a13c314a",
+      "bytes": 676
+    },
+    ".work-receipts/20260909-QH-INPUT-evidence-report.json": {
+      "sha256": "f960af00e8a4542aad91ba86064d2370505bda4170663a44a96647661bbf4a9c",
+      "bytes": 1403
+    },
+    ".work-receipts/20260909-QH-INPUT-progress-update.json": {
+      "sha256": "1bfd15c8d71e6fb84df8ccea49ed506078938a4d277b02a8f7ea993e6bd6b625",
+      "bytes": 4419
+    },
+    ".work-receipts/20260909-QH-INPUT-session-end.json": {
+      "sha256": "3a3a577f32691fa4db871ae39eecfe96d1a7d52e97dd5107c080e8392db9e6f8",
+      "bytes": 1050
+    },
+    ".work-receipts/20260909-QH-INPUT-session-start.json": {
+      "sha256": "9ef0f1754e6f15b739f072e7d50c22ffa1c8899a242b572843c7f72ae96e4aed",
+      "bytes": 1389
+    },
+    ".work-receipts/20260909-QH-INPUT-work-progress.json": {
+      "sha256": "6a6ca9c0a825cd39d8020121f50b4206d572d72e904089448330746f2ff6c1ad",
+      "bytes": 4191
+    },
+    ".work-receipts/20260909-project-status-after-checkpoint.json": {
+      "sha256": "4d63fa0d1842f88232841f88b62e19a7cc9bfc799a51bc64be3ccb8a30c04b7d",
+      "bytes": 2027
+    }
+  },
+  "commands": [
+    {
+      "event_line": 5,
+      "native_item_id": "item_1",
+      "exit_code": 0,
+      "command_sha256": "e1c79ba5ac376cc579b0c5e06cf7af1468beeb37f79b6d0877b218f01f228d8b",
+      "output_sha256": "6e22cc54cb02a5e98ae42d06d9d7292db0c1b43894831b32879beb0166b2aea7"
+    },
+    {
+      "event_line": 7,
+      "native_item_id": "item_2",
+      "exit_code": 0,
+      "command_sha256": "50409dd37c74dcc2eca9ee00b7efaba095c0e3a7119859fc820181b46a01f35e",
+      "output_sha256": "df8edf6c576eee20a612e6085bec5e80b0d13f7966de763c7034bbd64e8a096b",
+      "business_tool_command": "/bin/zsh -lc 'rtk proxy <awr> --project <business-project> --json status'"
+    },
+    {
+      "event_line": 9,
+      "native_item_id": "item_3",
+      "exit_code": 0,
+      "command_sha256": "2400632e4bbc759c2e7d93b5aa88751bf63d5b7eacb18dcfaae8c8496877adc6",
+      "output_sha256": "be076c74081385060576550725cb99e58af62bfdde8fcc5b3b8fd5999a5571a2"
+    },
+    {
+      "event_line": 11,
+      "native_item_id": "item_4",
+      "exit_code": 0,
+      "command_sha256": "e908e3ae803a6945cd4b51d172fc7f711def8ea48e892aa688d825646ed60ec6",
+      "output_sha256": "365f3c8af1cf1e869eafd6e316c5c444e50725d428642535d1cbfecf8d07aa00"
+    },
+    {
+      "event_line": 13,
+      "native_item_id": "item_5",
+      "exit_code": 0,
+      "command_sha256": "599857ba2fafa123a94a4237981a568a3e423d84c48a04f4a26bcfafab00af0d",
+      "output_sha256": "8c16cded0bd7d56863ee4f8bc958ec70194c639e42f663c15fd44b3c753a6ace"
+    },
+    {
+      "event_line": 15,
+      "native_item_id": "item_6",
+      "exit_code": 0,
+      "command_sha256": "4856b6679e41d19065c79931634d2c30ff3b3beddf216202c421cf4069e5af6b",
+      "output_sha256": "35fa8b57f845755d728cdaa9f3f953e44055d5606f93242b6d35bf7731e5a753"
+    },
+    {
+      "event_line": 17,
+      "native_item_id": "item_7",
+      "exit_code": 0,
+      "command_sha256": "87896e506d9cb7594e7d15544db8714dc5df897196b38e830f360d89f7c31f0b",
+      "output_sha256": "07ea4c9513d179129e286280d2aff97d683aabd16013b46886342ade60fc1197"
+    },
+    {
+      "event_line": 19,
+      "native_item_id": "item_8",
+      "exit_code": 0,
+      "command_sha256": "4c09fa47896046cbee56cdd95502eab65d812ae109ce686c6a9d1a57d6e74a90",
+      "output_sha256": "c9d917952bb24818a8dd38d687196e2f4fdc74389c1f8782d2e9e95c5259be44"
+    },
+    {
+      "event_line": 21,
+      "native_item_id": "item_9",
+      "exit_code": 0,
+      "command_sha256": "e4195ed0b5972eeb4394b9396ff42d53fb3ed795c9bab986212434b5be99131d",
+      "output_sha256": "089dc7e492ae6b78acd4bb6b83298956736e3c7ebf15c3ff0b36593c403bd561"
+    },
+    {
+      "event_line": 24,
+      "native_item_id": "item_11",
+      "exit_code": 0,
+      "command_sha256": "e505c14ce24f1cd56feb3bd3c747174cd3939d75dfd701da9288b33415264cb4",
+      "output_sha256": "6042001e08f4aee2c330c79ac7c625a2c553e3029e73ad3f58d3cf792702a843",
+      "business_tool_command": "/bin/zsh -lc 'rtk proxy <awr> --project <business-project> work reopen --help'"
+    },
+    {
+      "event_line": 26,
+      "native_item_id": "item_12",
+      "exit_code": 0,
+      "command_sha256": "3055173d07274924c344f3cc801d4dc20107de9be70f21306463546efb1884eb",
+      "output_sha256": "8f9e94222c5dd73cb1338f8ed62450a26be30754badd0d11abe0b4fff7f37422",
+      "business_tool_command": "/bin/zsh -lc 'rtk proxy <awr> --project <business-project> work claim --help'"
+    },
+    {
+      "event_line": 28,
+      "native_item_id": "item_13",
+      "exit_code": 0,
+      "command_sha256": "2612d37df2bf633c8379d1dcda9a7e3112d41dbcd84d17086a1971f995e05ef9",
+      "output_sha256": "88dbb34e024833b1b891beefbbd6a40e66432c09caaeb76bae3e25c422d1eccb",
+      "business_tool_command": "/bin/zsh -lc 'rtk proxy <awr> --project <business-project> session start --help'"
+    },
+    {
+      "event_line": 30,
+      "native_item_id": "item_14",
+      "exit_code": 0,
+      "command_sha256": "de497deac70c981241c86f9a0cfafc4bfd136868952341220d848ddac9f62a4d",
+      "output_sha256": "c3d5cff15b531b60d1c8146b7368422511f4f9a732822e3d7ba62707f05d77ef",
+      "business_tool_command": "/bin/zsh -lc 'rtk proxy <awr> --project <business-project> --json session list --active'"
+    },
+    {
+      "event_line": 32,
+      "native_item_id": "item_15",
+      "exit_code": 0,
+      "command_sha256": "bfc935ac721497bdfe371174163b26f404429ad94ca937a2cbeca1fd37e30708",
+      "output_sha256": "bf54c96e1eee53a37afa8240c6a1aeeaf530a61dba4b656a913f69111c35bf82",
+      "business_tool_command": "/bin/zsh -lc 'rtk proxy <awr> --project <business-project> --json work show QH-BRIEF --source-sha cd44a161471cee94fd4f797955327a4fd995cf3a'"
+    },
+    {
+      "event_line": 34,
+      "native_item_id": "item_16",
+      "exit_code": 0,
+      "command_sha256": "820ed911ef6551bbb07b3174533e71da728dfa4e47efef232d504a33010b6764",
+      "output_sha256": "c19d0d6e6b470661b0bc0cd1a80c5571adfaf828c5b21c1f656a590351b3747a",
+      "business_tool_command": "/bin/zsh -lc 'rtk proxy <awr> --project <business-project> --json context compile --work QH-BRIEF --detached --source-sha cd44a161471cee94fd4f797955327a4fd995cf3a --budget 5000'"
+    },
+    {
+      "event_line": 38,
+      "native_item_id": "item_18",
+      "exit_code": 0,
+      "command_sha256": "4f5434b3af38033b0b3678a02dad66f7796e30e4e9ae9e6decda35f2fa73e544",
+      "output_sha256": "eeb46e42c54277b110d74d8235badc864f0ba0be0c53ae88cf68d6b198a8e2de",
+      "business_tool_command": "/bin/zsh -lc 'rtk proxy <awr> --project <business-project> --json session start --work QH-BRIEF --agent codex-primary --provider openai --model gpt-5 --expected-revision 61'"
+    },
+    {
+      "event_line": 44,
+      "native_item_id": "item_22",
+      "exit_code": 1,
+      "command_sha256": "0855fdbd38002bc7e46a688c6ed755c1aea7628168514737221715441ddd833b",
+      "output_sha256": "255f0d249f74afe235932e1ec34f6130005460c02c24292629a7cacda2f3485e",
+      "business_tool_command": "/bin/zsh -lc \"'rtk' 'proxy' '<awr>' '--project' '<business-project>' '--json' 'work' 'reopen' 'QH-BRIEF' '--session' '01M21SVQVGGYD76YT3YFHPHH2D' '--reason' '新增硬规则改变对外目录内容和切换时间承诺边界，原简报需按当前规则修订。' '--next-action' '更新 deliverables/qinghe-brief.md，明确仅发布已核实标题、不展示个人联系人、域名未确认前不承诺具体切换时间，并列出安排变化。' '--summary' '因项目硬规则更新，重新打开本周上线简报进行定向修订。' '--expected-revision' '62'\""
+    },
+    {
+      "event_line": 48,
+      "native_item_id": "item_24",
+      "exit_code": 0,
+      "command_sha256": "828949e870c0738da4b0f3cba35edbbc0045bf8b5a5fade42123d193ff0d8fe3",
+      "output_sha256": "36dbafebd712566b023a3e7035aede7bc8df7ba04bad46d8b1edd5af17eb73f6",
+      "business_tool_command": "/bin/zsh -lc \"'rtk' 'proxy' '<awr>' '--project' '<business-project>' '--json' 'work' 'reopen' 'QH-BRIEF' '--session' '01M21SVQVGGYD76YT3YFHPHH2D' '--reason' '新增硬规则改变对外目录内容和切换时间承诺边界，原简报需按当前规则修订。' '--next-action' '更新 deliverables/qinghe-brief.md，明确仅发布已核实标题、不展示个人联系人、域名未确认前不承诺具体切换时间，并列出安排变化。' '--expected-revision' '62'\""
+    },
+    {
+      "event_line": 52,
+      "native_item_id": "item_26",
+      "exit_code": 0,
+      "command_sha256": "e589bda1c9b1adcc7a7537ceeb772edf7f4d6cccc18f7816089b50f220e0c495",
+      "output_sha256": "a0e1d65abced8c884ec9a5a8e471002bfbd3731501ca850c3658e57784499151",
+      "business_tool_command": "/bin/zsh -lc \"'rtk' 'proxy' '<awr>' '--project' '<business-project>' '--json' 'work' 'claim' 'QH-BRIEF' '--session' '01M21SVQVGGYD76YT3YFHPHH2D' '--ttl-ms' '3600000' '--expected-revision' '69'\""
+    },
+    {
+      "event_line": 56,
+      "native_item_id": "item_28",
+      "exit_code": 0,
+      "command_sha256": "5d223d91e51924c57eebf6e56b395b4bae02e73aca53650f71beb8143c2032e4",
+      "output_sha256": "f3922e2b7953e00e8a6918a8c2843c6c9ca76320d3a666507739a91e5c7aefa9"
+    },
+    {
+      "event_line": 58,
+      "native_item_id": "item_29",
+      "exit_code": 0,
+      "command_sha256": "30358312d9fe34905aab345ad967c1f289245d4b911c03da1d44cbbcf7b57a42",
+      "output_sha256": "eb5171bb6ac6060933dfd9684ac10f9808b025cf27009967f2e1ffb25455bb8f",
+      "business_tool_command": "/bin/zsh -lc \"'rtk' 'proxy' '<awr>' '--project' '<business-project>' '--json' 'work' 'progress' 'QH-BRIEF' '--session' '01M21SVQVGGYD76YT3YFHPHH2D' '--reason' '当前硬规则新增了对外目录、个人联系人和切换时间的明确限制，需要同步修订本周执行简报。' '--next-action' '完成简报定向修改并用当前来源与校验结果形成新的证据。' '--summary' '已重新打开并认领 QH-BRIEF，开始按新增硬规则修订。' '--expected-revision' '70'\""
+    },
+    {
+      "event_line": 62,
+      "native_item_id": "item_31",
+      "exit_code": 1,
+      "command_sha256": "4141a0e1d6200849f495a5eb2e448870cefb7e8333f2c40d93bc0406060e0f78",
+      "output_sha256": "d531c89c436e89cc2c49a5970bb3c7d16c3e84782b26c4b952c8998ebf65633f"
+    },
+    {
+      "event_line": 64,
+      "native_item_id": "item_32",
+      "exit_code": 0,
+      "command_sha256": "91513d07978090b327d52bed525c325331adb4c0da9bc612c75e57c48bea2004",
+      "output_sha256": "007850809d0bba5d8ccd78216535948bc315238cffa262f7c36abeb211c2cfa5"
+    },
+    {
+      "event_line": 66,
+      "native_item_id": "item_33",
+      "exit_code": 0,
+      "command_sha256": "7e7335b0b416dc6b5d1d5a39f5f211ac83d93070f967875700b4c26b66a4a305",
+      "output_sha256": "6629afa8f2f9e8a1714e3aef452753763663e27239919279734db1333d1451b1"
+    },
+    {
+      "event_line": 68,
+      "native_item_id": "item_34",
+      "exit_code": 1,
+      "command_sha256": "899ad289e236cf7a837ac91542214bc89177ba97c711a8b5ae973f2cc2b505d5",
+      "output_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "event_line": 70,
+      "native_item_id": "item_35",
+      "exit_code": 0,
+      "command_sha256": "060c6d1af00cb9510aed70bb0197872ecd10bf3cad65f9d90885b14808d0eb80",
+      "output_sha256": "7823e0cce9765517ed56148efec4d111a0f60e9c843513a6fdc713b26747a7c6"
+    },
+    {
+      "event_line": 72,
+      "native_item_id": "item_36",
+      "exit_code": 0,
+      "command_sha256": "0f4b1b4d42101b2d567d77d9915de6574e1776478480e5893502a7f23990a10c",
+      "output_sha256": "e6a4089bb797faad325831080e7752fbaf823321f9f9603f9188f16e90cee245"
+    },
+    {
+      "event_line": 74,
+      "native_item_id": "item_37",
+      "exit_code": 1,
+      "command_sha256": "ccd40531c9672e63759a56cf6014ae1c983a3c59948a21bc0a137bcfd75dacc3",
+      "output_sha256": "2c5b1110423e77ae42f6942f461e7e673eb0df4487ed9ce048f1146eaf9e2a5d",
+      "business_tool_command": "/bin/zsh -lc \"'rtk' 'proxy' '<awr>' '--project' '<business-project>' '--json' 'context' 'compile' '--work' 'QH-BRIEF' '--session' '01M21SVQVGGYD76YT3YFHPHH2D' '--intent' 'bootstrap' '--budget' '1000'\""
+    },
+    {
+      "event_line": 76,
+      "native_item_id": "item_38",
+      "exit_code": 0,
+      "command_sha256": "e1b664b39d7c6ed62ad9e11b73f710e07fceef570768555f3262aee1437f7392",
+      "output_sha256": "36f6f90ec898183e4ded2046ea4131704fb800a0ff55719da2d43350463f248f",
+      "business_tool_command": "/bin/zsh -lc \"'rtk' 'proxy' '<awr>' '--project' '<business-project>' '--json' 'context' 'compile' '--work' 'QH-BRIEF' '--session' '01M21SVQVGGYD76YT3YFHPHH2D' '--intent' 'bootstrap' '--budget' '2500'\""
+    },
+    {
+      "event_line": 80,
+      "native_item_id": "item_40",
+      "exit_code": 0,
+      "command_sha256": "33fa76eecee791eb781fbc453687ff622e74f88cbd5a893d95bca369f62dc20c",
+      "output_sha256": "427942d0eb5a200b11b891cab8c9c0da99c435eb1559ffab86db14e4435f1a39"
+    },
+    {
+      "event_line": 82,
+      "native_item_id": "item_41",
+      "exit_code": 0,
+      "command_sha256": "88f3460ce6f04d3dea08183667838cc9f506f68c459056cb6e3a375261eb6992",
+      "output_sha256": "bd84d20bbea49b98be8c16e32913e70bdeb979f12fb9860ddb0052bdec0b9fcb"
+    },
+    {
+      "event_line": 84,
+      "native_item_id": "item_42",
+      "exit_code": 0,
+      "command_sha256": "d878d0ddaa2fdb66b71a1d87acc3fc78741a4faa26f4bb21aaa5faeef70db6e0",
+      "output_sha256": "0f4ab3422951562412a105ce87a187ba17888b450265bbed8d08c8c394695c30"
+    },
+    {
+      "event_line": 86,
+      "native_item_id": "item_43",
+      "exit_code": 0,
+      "command_sha256": "b890a3c33c5d4daa97acab25d3540d9e0b73ec9e3cecd1db245c2ba2c0c5588b",
+      "output_sha256": "955e16238b65f68f8a168074fd7be1c7535ca77dc98f6c1cc1376c81039a0f36",
+      "business_tool_command": "/bin/zsh -lc \"'rtk' 'proxy' '<awr>' '--project' '<business-project>' '--json' 'context' 'compile' '--work' 'QH-BRIEF' '--session' '01M21SVQVGGYD76YT3YFHPHH2D' '--source-sha' 'cd44a161471cee94fd4f797955327a4fd995cf3a' '--intent' 'work' '--budget' '5000'\""
+    },
+    {
+      "event_line": 90,
+      "native_item_id": "item_45",
+      "exit_code": 0,
+      "command_sha256": "6eb2f5926e71980e1cd61cadd71243732eb7abbf646e3dbbb4fcb3eff77999ed",
+      "output_sha256": "4ce7ed36f0f29c2a78c200ee876b4c7da812af5f89cc79387f20a1386274db06"
+    },
+    {
+      "event_line": 95,
+      "native_item_id": "item_48",
+      "exit_code": 0,
+      "command_sha256": "f930a8e4574ff84df1b60860ac1041058cd18fcc3037993d343caead45c27a93",
+      "output_sha256": "01ba4719c80b6fe911b091a7c05124b64eeece964e09c058ef8f9805daca546b"
+    },
+    {
+      "event_line": 97,
+      "native_item_id": "item_49",
+      "exit_code": 0,
+      "command_sha256": "03326d9543484acac98d51051e1621d2bcad4f94d3bcc1409efb9ccc8d85048f",
+      "output_sha256": "01ba4719c80b6fe911b091a7c05124b64eeece964e09c058ef8f9805daca546b"
+    },
+    {
+      "event_line": 100,
+      "native_item_id": "item_50",
+      "exit_code": 0,
+      "command_sha256": "e908e3ae803a6945cd4b51d172fc7f711def8ea48e892aa688d825646ed60ec6",
+      "output_sha256": "28b62f7aedd2d1c3dd58ac2db731ff99743d51739c8b3afd48c2608f39808019"
+    },
+    {
+      "event_line": 101,
+      "native_item_id": "item_51",
+      "exit_code": 0,
+      "command_sha256": "6ac5d6ad4d1eed2a454f3833e739fc7d901955af1a5e06a822693f6f2de3adb9",
+      "output_sha256": "a07ca5d6bc1fc0c921408055080823c1c69998448c644454c954085333a19e8e"
+    },
+    {
+      "event_line": 105,
+      "native_item_id": "item_53",
+      "exit_code": 0,
+      "command_sha256": "437003784ce60cbe6047237161718e3f6648eb8446dfe1374b9fbba46e3f1ed8",
+      "output_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "event_line": 107,
+      "native_item_id": "item_54",
+      "exit_code": 0,
+      "command_sha256": "f930a8e4574ff84df1b60860ac1041058cd18fcc3037993d343caead45c27a93",
+      "output_sha256": "01ba4719c80b6fe911b091a7c05124b64eeece964e09c058ef8f9805daca546b"
+    },
+    {
+      "event_line": 109,
+      "native_item_id": "item_55",
+      "exit_code": 0,
+      "command_sha256": "7f6227fbacb4d086804b711784dfe792c30b316fb70ecf99ab773fc65f90f057",
+      "output_sha256": "7d8b81a86bb15ffc9b383c318aed10e86ae5c52adb7448d0f5cc1ad34eea2cd4"
+    },
+    {
+      "event_line": 111,
+      "native_item_id": "item_56",
+      "exit_code": 0,
+      "command_sha256": "363b1aa5ed4c813e09b2bb0183cb2cfa87152ab92fdb921ce1abd2b834b877c6",
+      "output_sha256": "dce6c2acbcd9a9d97f126894bed57ee85a65cb60cb3c4238008e2ca95375028b"
+    },
+    {
+      "event_line": 113,
+      "native_item_id": "item_57",
+      "exit_code": 0,
+      "command_sha256": "2ca7c5ca6c3299085142b0568e249f92859b2ff1e7a808c17482a0064ce1bba4",
+      "output_sha256": "9db47a081a7d431c2590eacffa4cfb3e20a8087152bd8b4d33099f31ec53b59c"
+    },
+    {
+      "event_line": 117,
+      "native_item_id": "item_59",
+      "exit_code": 0,
+      "command_sha256": "98219c10eb2348ce7778ed9ab5e2b300b6d2263aebf8381f42095ea35b1ff443",
+      "output_sha256": "8b824f925dca84c4bb367b50695d12c27a9450a8dec3d4d377485d070b07bf07"
+    },
+    {
+      "event_line": 119,
+      "native_item_id": "item_60",
+      "exit_code": 0,
+      "command_sha256": "4bab55bf685a8341198901bb60b5e9b7be3accf35654dde7d7d07b2198677cd2",
+      "output_sha256": "c777037117ddcebd9dab66d351a21a0d7f057afea46d96202a1269464e52723e"
+    },
+    {
+      "event_line": 121,
+      "native_item_id": "item_61",
+      "exit_code": 0,
+      "command_sha256": "19ce8daccb215afa83fba6ef922ae50c3e6e1d7f241a676ccda8b05d0311fdb4",
+      "output_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "event_line": 123,
+      "native_item_id": "item_62",
+      "exit_code": 0,
+      "command_sha256": "f321b7124c5774885ebb3174294295a0056996307cd46f2bda2dad1a3ea6a373",
+      "output_sha256": "b8f5112b2021df094161073ace929b062a2f9d8964ed0002161a3ea2dc70390e"
+    },
+    {
+      "event_line": 127,
+      "native_item_id": "item_64",
+      "exit_code": 0,
+      "command_sha256": "de3beae96197516659890f512ffe267baa7973949e695b0ef6c8a921a811b29d",
+      "output_sha256": "8dcc3e8dc0585b84d698f418291a43c5d377dc3ca3fdf0fde7d85b20f14eb6ec",
+      "business_tool_command": "/bin/zsh -lc \"'rtk' 'proxy' '<awr>' '--project' '<business-project>' '--json' 'evidence' 'add' '--input' '.work-receipts/20260909-QH-BRIEF-rules-change-evidence-draft.json' '--expected-revision' '77'\""
+    },
+    {
+      "event_line": 131,
+      "native_item_id": "item_66",
+      "exit_code": 0,
+      "command_sha256": "21327aadc92394808ad148fc90011a1ac205cedfbffa1bd681e6c7efaf7aedad",
+      "output_sha256": "1b91412584667439b1c4664b5ac144b5784f68d25e133020e3b2c8c5196a49e9"
+    },
+    {
+      "event_line": 133,
+      "native_item_id": "item_67",
+      "exit_code": 0,
+      "command_sha256": "d7d56636f508b1952544bd1877ac7003bb199fd815b23b9f43bd2397552272f7",
+      "output_sha256": "82f4d4da2f8cddf793f534026dcd2c4d2028966dea644cf96a54a14835893b56",
+      "business_tool_command": "/bin/zsh -lc \"'rtk' 'proxy' '<awr>' '--project' '<business-project>' '--json' 'work' 'show' 'QH-BRIEF' '--source-sha' 'cd44a161471cee94fd4f797955327a4fd995cf3a'\""
+    },
+    {
+      "event_line": 138,
+      "native_item_id": "item_69",
+      "exit_code": 0,
+      "command_sha256": "b7e23366452229ce2ac9641d0dfe23779b398cfd2cf72224a0ced2534ae7903b",
+      "output_sha256": "6f26bcb768aba730efbc492af543f8a82077da23794c5aeb4dc399a588861632"
+    },
+    {
+      "event_line": 139,
+      "native_item_id": "item_70",
+      "exit_code": 0,
+      "command_sha256": "ce4e758f76fdd07df7c1d998ada9345b0abeb2df1cb4dbd5d48dffbbf4e04e53",
+      "output_sha256": "b3516f0cad91acd61854ea9f101e4d0f0bdfff1e85138da9a4962dd42309b381"
+    },
+    {
+      "event_line": 141,
+      "native_item_id": "item_71",
+      "exit_code": 0,
+      "command_sha256": "ffac3ec5808183dd6a4a5dbd5621b83a8f01a7e1b8c321ca5fd49054ebcdd1eb",
+      "output_sha256": "782f2d1abbc606e58998b31e742ad05f870d14425fb1ac461b3afe022fb79b06"
+    },
+    {
+      "event_line": 145,
+      "native_item_id": "item_73",
+      "exit_code": 0,
+      "command_sha256": "2f3c05b2701d416b1b50ce81caba69d4836c03386bf7cb24fad0293015d4bff7",
+      "output_sha256": "0018efa3906f2a46dd6a36b1bfc5a3488865cf90ed868cbd654fa368191d33f2",
+      "business_tool_command": "/bin/zsh -lc \"'rtk' 'proxy' '<awr>' '--project' '<business-project>' '--json' 'work' 'complete' 'QH-BRIEF' '--session' '01M21SVQVGGYD76YT3YFHPHH2D' '--reason' '已按新增硬规则更新执行简报：对外目录仅列已核实标题且不含个人联系人，域名未确认前不承诺具体切换时间，并同步调整依赖、复核项和周五交付边界。' '--input' '.work-receipts/20260909-QH-BRIEF-rules-change-completion.json' '--expected-revision' '78'\""
+    },
+    {
+      "event_line": 149,
+      "native_item_id": "item_75",
+      "exit_code": 0,
+      "command_sha256": "dca9a4ef9e539dc2a89fbc5cd1ed4eb65e2b98d8008460b3432f1e04586dc4f3",
+      "output_sha256": "b6c8779caaadd25ec9cb053b23ce693e6debb36ed3839b2fe45b54570c6eeb76"
+    },
+    {
+      "event_line": 151,
+      "native_item_id": "item_76",
+      "exit_code": 0,
+      "command_sha256": "332528396df9f1d902d7bff469092f2c7610ca7e83e254720f01cf03bbc7eaa2",
+      "output_sha256": "031b14a0a61c48069b3a14c5912e93b3d39542be4e590130eb3506bea9d70ce9"
+    },
+    {
+      "event_line": 153,
+      "native_item_id": "item_77",
+      "exit_code": 0,
+      "command_sha256": "b890a3c33c5d4daa97acab25d3540d9e0b73ec9e3cecd1db245c2ba2c0c5588b",
+      "output_sha256": "15e2e662e5e1510704978f1f65935f5fe7f8f9da0498e54945a760172b1f2649",
+      "business_tool_command": "/bin/zsh -lc \"'rtk' 'proxy' '<awr>' '--project' '<business-project>' '--json' 'context' 'compile' '--work' 'QH-BRIEF' '--session' '01M21SVQVGGYD76YT3YFHPHH2D' '--source-sha' 'cd44a161471cee94fd4f797955327a4fd995cf3a' '--intent' 'work' '--budget' '5000'\""
+    },
+    {
+      "event_line": 157,
+      "native_item_id": "item_79",
+      "exit_code": 0,
+      "command_sha256": "36552f67ecdd943aac8c0de31e81dd6e19970254ba94136c868db77566ca9572",
+      "output_sha256": "aac7df40492938971064f3310987d21148e38bee4b15f7584c3538c5327c9004",
+      "business_tool_command": "/bin/zsh -lc \"'rtk' 'proxy' '<awr>' '--project' '<business-project>' '--json' 'session' 'checkpoint' '--session' '01M21SVQVGGYD76YT3YFHPHH2D' '--work' 'QH-BRIEF' '--context-hash' '56f09241ae58add90dd7f3cd52115be1deb2f3c1dce4ca37592749fcd90f7542' '--digest' '已按新增硬规则修订 deliverables/qinghe-brief.md：新增安排变化对照、标题核实前置项、内外责任信息分离、域名确认对具体切换时间的门槛，并以当前本地证据 QH-BRIEF-RULES-REVISION-20260909 重新完成两项验收；未执行或代签独立复核。' '--next-action' '由不同参与者认领 QH-REVIEW，独立核对对外目录只含已核实标题、不含个人联系人，且域名未确认时不出现具体切换时间，并将逐条意见写入 deliverables/qh-independent-review.md。' '--open-loop' '三份说明正文及责任信息仍未提供，可对外标题尚未逐项核实；域名接入确认和旧版页面停用日期仍缺失；materials/week-window.md 仍是非 AWR 权威源的补充材料；独立复核与最终交付尚未发生。' '--expected-revision' '85'\""
+    },
+    {
+      "event_line": 161,
+      "native_item_id": "item_81",
+      "exit_code": 0,
+      "command_sha256": "b930692cb99c8805ce23f5bdd35fb9e9c8d6597b461b17e48fb419fbf9451e90",
+      "output_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "event_line": 163,
+      "native_item_id": "item_82",
+      "exit_code": 0,
+      "command_sha256": "28876a86c837f93d126ec27be017cc4785f269f2dba2a4400ced200e13ac3c1c",
+      "output_sha256": "2d6d321644a1b0c07716c94da4a8ea7e09ed3ed6d7c554701ca81176e0db8770"
+    },
+    {
+      "event_line": 165,
+      "native_item_id": "item_83",
+      "exit_code": 0,
+      "command_sha256": "e58c3282de5a4f46166a3d0842b768afe75c699b9051471e24bbe374c38646a8",
+      "output_sha256": "f27f3aa398fb542dbd775e27223cb0e33abdbbcc265e994730edd4b025286893",
+      "business_tool_command": "/bin/zsh -lc \"'rtk' 'proxy' '<awr>' '--project' '<business-project>' '--json' 'session' 'end' '--session' '01M21SVQVGGYD76YT3YFHPHH2D' '--work' 'QH-BRIEF' '--outcome' 'ended' '--expected-revision' '87'\""
+    },
+    {
+      "event_line": 170,
+      "native_item_id": "item_86",
+      "exit_code": 0,
+      "command_sha256": "50409dd37c74dcc2eca9ee00b7efaba095c0e3a7119859fc820181b46a01f35e",
+      "output_sha256": "4eed606c62f597a0ea08cd34eb2ef2ed788bd7ce213ce1af3a928a399d53c0bb",
+      "business_tool_command": "/bin/zsh -lc 'rtk proxy <awr> --project <business-project> --json status'"
+    },
+    {
+      "event_line": 174,
+      "native_item_id": "item_88",
+      "exit_code": 0,
+      "command_sha256": "ccdd7851daee3c59e5f4c7337852bf81a7f842c384ea73af95a4dddad7197f72",
+      "output_sha256": "47bcf70df2b6b1c598c0285a672d8c14360039d357049370c3c15a8f661defc3",
+      "business_tool_command": "/bin/zsh -lc 'rtk proxy <awr> --project <business-project> --json ready'"
+    },
+    {
+      "event_line": 178,
+      "native_item_id": "item_90",
+      "exit_code": 0,
+      "command_sha256": "a343992639c9ca906d55a1ac8a751ded34a6188fce5822a22ac19abc652460b4",
+      "output_sha256": "95e74e900f46b5c0fdf61786ca3a4191a7dcb4b1adbd98cd70a80b05c831db5c"
+    },
+    {
+      "event_line": 180,
+      "native_item_id": "item_91",
+      "exit_code": 0,
+      "command_sha256": "f930a8e4574ff84df1b60860ac1041058cd18fcc3037993d343caead45c27a93",
+      "output_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "event_line": 182,
+      "native_item_id": "item_92",
+      "exit_code": 0,
+      "command_sha256": "872537578f1ee9a401d7cffe45e7249c398a1d6a9579fdc77497441cbd404dbd",
+      "output_sha256": "95f28c5cae5bf744e2c1f9363f0ec101248ad6617fb675f30ab6a1bdba7cc051"
+    },
+    {
+      "event_line": 184,
+      "native_item_id": "item_93",
+      "exit_code": 0,
+      "command_sha256": "d7d56636f508b1952544bd1877ac7003bb199fd815b23b9f43bd2397552272f7",
+      "output_sha256": "4b963f3e425d3f27304ef151752f231aad0f2c83bf9037520a2db9d1fa304e03",
+      "business_tool_command": "/bin/zsh -lc \"'rtk' 'proxy' '<awr>' '--project' '<business-project>' '--json' 'work' 'show' 'QH-BRIEF' '--source-sha' 'cd44a161471cee94fd4f797955327a4fd995cf3a'\""
+    }
+  ],
+  "original_recorded_at": "2026-09-09T08:58:37+08:00",
+  "all_snapshot_hashes_verified": true,
+  "limitations": [
+    "Extract only. Raw native context remains private. Independent review, later business revisions, final delivery and remote verification are separate requirements."
+  ],
+  "e4_completion_claim": false
+}

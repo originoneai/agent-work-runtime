@@ -1,0 +1,457 @@
+{
+  "template_only": false,
+  "fixture_contract_version": "1.0.1",
+  "scenario_id": "AWR-SC-001",
+  "run_namespace": "awr-v1/project-onboarding/awr-live-20260909-001",
+  "source_commit": "4f6fd11c5283a4ddb52e6cb6fe8ef5a5fd8931aa",
+  "binary_sha256": "df3aee795905f87fe8bc0747a33b6e73c8a25cef0a072d0b2467e226d0d10217",
+  "fixture_preparation_receipt": ".local/business-live-20260909-v1/project-onboarding/run.json",
+  "participants": [
+    {
+      "role": "executor",
+      "identity": "codex-cli:01a08379-ef89-7173-917d-274662891bcb",
+      "client_task_id": "01a08379-ef89-7173-917d-274662891bcb"
+    },
+    {
+      "role": "reviewer",
+      "identity": "luna_worker:/root/source_change_client_run",
+      "awr_session_id": "01M21VK36SJ9KXRB3634VZ1FPS",
+      "actual_identity_binding": "control/reviewer-identity-binding.json"
+    }
+  ],
+  "actual_clients": [
+    {
+      "client": "Codex CLI",
+      "actual_native_task_id": "01a08379-ef89-7173-917d-274662891bcb",
+      "cli_version": "0.153.4",
+      "models_observed": [
+        "gpt-5.6-sol"
+      ],
+      "reasoning_efforts_observed": [
+        "max"
+      ],
+      "identity_evidence": "control/round-2-native-client-metadata.json",
+      "awr_model_field_is_not_native_configuration": true
+    }
+  ],
+  "live_prelude_evidence": [],
+  "initial_user_turn": {
+    "input_file": "tests/fixtures/business/project-onboarding/prompts/initial.md",
+    "text": "帮我接手这个项目，整理当前目标、最先能推进的工作，以及开始前需要遵守的要求。",
+    "input_sha256": "ebffdaab17df9dbaeaa6ae6260dc0ea7070d2c6afc42b4acd2ac12e1683d8bfa",
+    "client_task_id": "01a08379-ef89-7173-917d-274662891bcb",
+    "raw_events_local": ".local/business-live-20260909-v1/project-onboarding/control/initial-events.jsonl",
+    "status": "completed",
+    "actual_timestamp": "2026-09-09T00:03:25.844Z",
+    "snapshot": "control/initial-sealed.json"
+  },
+  "tool_and_role_execution_records": [
+    "control/initial-sealed.json",
+    "control/round-1-sealed.json",
+    "control/round-2-sealed.json",
+    "control/review-correction-sealed.json",
+    "control/independent-re-review.json",
+    "control/final-delivery-sealed.json"
+  ],
+  "artifacts": [
+    {
+      "path": "deliverables/qh-delivery.md",
+      "sha256": "2cbfd52859b4c5ca34cd803b18980aa2d0ec0505fe0403d9ed935ef4bd4d2fce",
+      "producing_turn": "final-delivery"
+    },
+    {
+      "path": "deliverables/qh-independent-re-review.md",
+      "sha256": "adf4fc58abfc863a660913a912f5d57262bb4d6b0182cfdbe8ec16e0a5984d8d",
+      "producing_turn": "independent-re-review",
+      "producer": "luna_worker:/root/source_change_client_run"
+    },
+    {
+      "path": "deliverables/qh-independent-review.md",
+      "sha256": "cfd81dd8bbc85608a1d6210d9f482dd300b71af8687fb3efc3538b3a8ac19de1",
+      "producing_turn": "independent-review-1"
+    },
+    {
+      "path": "deliverables/qh-review-response.md",
+      "sha256": "92bc899572eab62027c30ec143b75fd9c9c8971569888493a14e17e31d43398d",
+      "producing_turn": "review-correction"
+    },
+    {
+      "path": "deliverables/qinghe-brief.md",
+      "sha256": "cbfa8a49ab2b1f2ad071257dc85f6eac15e9d8783f7f379b6bf411f1a4e50576",
+      "producing_turn": "final-delivery"
+    },
+    {
+      "path": "deliverables/qinghe-context-reference.md",
+      "sha256": "60ab471924b12cbe1fd129b251c6e004c6b3fb0f2a5672a9bfcddffd3a2d3f17",
+      "producing_turn": "final-delivery"
+    },
+    {
+      "path": "deliverables/qinghe-dependencies.md",
+      "sha256": "39be620608391f4e05a1161766cd586f4971eb10efa28318b3aa80fcccd56167",
+      "producing_turn": "final-delivery"
+    }
+  ],
+  "followups": [
+    {
+      "number": 1,
+      "user_turn": {
+        "timestamp": "2026-09-09T00:25:44.793Z",
+        "text": "把本周优先交付的内容收拢成一份可执行清单，并说明依赖。",
+        "client_task_id": "01a08379-ef89-7173-917d-274662891bcb",
+        "input_sha256": "de71f1913ba93df2414004b551a1868666adde266da430339167bb3db1a29075"
+      },
+      "published_inputs": {
+        "receipt": "round-1-inputs.json",
+        "kind": "fixture_author_input_publication",
+        "scenario_id": "AWR-SC-001",
+        "round": 1,
+        "published_at": "2026-09-09T08:25:32+08:00",
+        "changes": [
+          {
+            "path": "materials/week-window.md",
+            "before_sha256": null,
+            "after_sha256": "df1bc8d6a0b3a51eabaefacbbebde71931840de029bc21a757e856ad6b04425b"
+          }
+        ],
+        "actual_user_followup_submitted": false,
+        "business_followup_completed": false,
+        "e4_completed": 0
+      },
+      "revised_artifacts": [
+        {
+          "path": "deliverables/qinghe-brief.md",
+          "before_sha256": null,
+          "after_sha256": "4ce7ed36f0f29c2a78c200ee876b4c7da812af5f89cc79387f20a1386274db06"
+        }
+      ],
+      "snapshot": "control/round-1-sealed.json",
+      "independent_substance_assessment": "Reviewed by the actual independent reviewer and its re-review; see both reports and gate-review.json."
+    },
+    {
+      "number": 2,
+      "user_turn": {
+        "timestamp": "2026-09-09T00:40:20.800Z",
+        "text": "我调整了项目规则，请更新简报，说明哪些安排需要改变。",
+        "client_task_id": "01a08379-ef89-7173-917d-274662891bcb",
+        "input_sha256": "4042b2ce7624b41a17911abc6dcb7ae311ca7b6fc404f376ea122ad52af53819"
+      },
+      "published_inputs": {
+        "receipt": "round-2-inputs.json",
+        "kind": "fixture_author_input_publication",
+        "scenario_id": "AWR-SC-001",
+        "round": 2,
+        "published_at": "2026-09-09T08:40:14+08:00",
+        "changes": [
+          {
+            "path": "RULES.md",
+            "before_sha256": "14fb573ef193e475f1f6d6bf54cfcf59888646150cee3ea0719de39733327386",
+            "after_sha256": "05c7d1e94f96e3f6bdaccfd8790895a07e11472fe95542c046eb570456ad218d"
+          }
+        ],
+        "actual_user_followup_submitted": false,
+        "business_followup_completed": false,
+        "e4_completed": 0
+      },
+      "revised_artifacts": [
+        {
+          "path": "deliverables/qinghe-brief.md",
+          "before_sha256": "4ce7ed36f0f29c2a78c200ee876b4c7da812af5f89cc79387f20a1386274db06",
+          "after_sha256": "31b843562c3918b531d774e1ab19b7b6912db627de6ce2dc4ba37515fa1cfccd"
+        }
+      ],
+      "snapshot": "control/round-2-sealed.json",
+      "independent_substance_assessment": "Reviewed by the actual independent reviewer and its re-review; see both reports and gate-review.json."
+    }
+  ],
+  "independent_review": {
+    "reviewer_identity": "luna_worker:/root/source_change_client_run",
+    "client_or_human_record": "control/independent-re-review.json",
+    "criteria": [
+      {
+        "id": "QH-R01",
+        "verdict": "remediation_pass",
+        "basis": "Context reference now covers QH-INPUT, both QH-BRIEF phases, rules revision, original review and remediation session with current source fingerprints.",
+        "remaining_risk": "Context completeness is not business acceptance."
+      },
+      {
+        "id": "QH-R02",
+        "verdict": "remediation_pass",
+        "basis": "Dependency list and AWR work records now reflect completed input/brief, completed re-review and planned delivery with title, contact, domain, switch and final-delivery dependencies explicit.",
+        "remaining_risk": "Work-record mutations do not prove external inputs."
+      },
+      {
+        "id": "QH-R03",
+        "verdict": "boundary_remediation_pass",
+        "basis": "Arrangement-level re-review is explicitly separated from directory-level review; no directory or final delivery was fabricated.",
+        "remaining_risk": "Directory-level review is still not performed."
+      },
+      {
+        "id": "QH-R04",
+        "verdict": "explanation_remediation_pass",
+        "basis": "Explicit current/locally_verified evidence remains distinct from locator-only unknown/unknown projections with four missing bindings; Unknown remains visible.",
+        "remaining_risk": "Evidence registration is caller-supplied and does not execute verification or prove business acceptance."
+      },
+      {
+        "id": "QH-R05",
+        "verdict": "preservation_remediation_pass_historical_defect_retained",
+        "basis": "The original reference lookup record and review hash are unchanged; the correction does not treat out-of-scope technical reads as business authority or retroactively compliant.",
+        "remaining_risk": "Initial technical lookup remains a noncompliant process event; evidence supports only that no future business result contamination was observed."
+      }
+    ],
+    "defects_and_revisions": [
+      {
+        "id": "QH-R01",
+        "verdict": "remediation_pass",
+        "basis": "Context reference now covers QH-INPUT, both QH-BRIEF phases, rules revision, original review and remediation session with current source fingerprints.",
+        "remaining_risk": "Context completeness is not business acceptance."
+      },
+      {
+        "id": "QH-R02",
+        "verdict": "remediation_pass",
+        "basis": "Dependency list and AWR work records now reflect completed input/brief, completed re-review and planned delivery with title, contact, domain, switch and final-delivery dependencies explicit.",
+        "remaining_risk": "Work-record mutations do not prove external inputs."
+      },
+      {
+        "id": "QH-R03",
+        "verdict": "boundary_remediation_pass",
+        "basis": "Arrangement-level re-review is explicitly separated from directory-level review; no directory or final delivery was fabricated.",
+        "remaining_risk": "Directory-level review is still not performed."
+      },
+      {
+        "id": "QH-R04",
+        "verdict": "explanation_remediation_pass",
+        "basis": "Explicit current/locally_verified evidence remains distinct from locator-only unknown/unknown projections with four missing bindings; Unknown remains visible.",
+        "remaining_risk": "Evidence registration is caller-supplied and does not execute verification or prove business acceptance."
+      },
+      {
+        "id": "QH-R05",
+        "verdict": "preservation_remediation_pass_historical_defect_retained",
+        "basis": "The original reference lookup record and review hash are unchanged; the correction does not treat out-of-scope technical reads as business authority or retroactively compliant.",
+        "remaining_risk": "Initial technical lookup remains a noncompliant process event; evidence supports only that no future business result contamination was observed."
+      }
+    ],
+    "verdict": "pass_for_arrangement_level_remediation_only",
+    "identity_binding": "control/re-reviewer-identity-binding.json",
+    "remaining_handoffs": [
+      "Actual files or links, versions, access status, responsibility information and externally usable titles for the three documents.",
+      "An actual directory containing only verified titles, without personal contacts, plus directory-level independent review.",
+      "Traceable information-administrator confirmation of the external domain.",
+      "Legacy-page stop date, confirming role, switch conditions and rollback arrangement.",
+      "Switch time, external readiness, portal launch and final-delivery conclusions.",
+      "Keep locator-only Unknown evidence visible and retain the original lookup-scope deviation.",
+      "QH-DELIVER source next_action still carries the pre-re-review waiting wording; the original executor should refresh it when starting delivery."
+    ]
+  },
+  "final_delivery": {
+    "actual_user_turn": {
+      "timestamp": "2026-09-09T02:36:57.087Z",
+      "text": "请依据最新独立返检结果，交付本次项目接手简报、依赖清单和来源说明，附上复核结论及明确的未决事项移交。把当前交付工作的进展和下一步同步到工作记录，不能把尚未取得的文档、标题、域名或切换确认写成已完成。保留原复核、整改和技术查找偏离的历史记录，并给出可追溯交付回执。"
+    },
+    "client_task_id": "01a08379-ef89-7173-917d-274662891bcb",
+    "snapshot": "control/final-delivery-sealed.json",
+    "artifact": "deliverables/qh-delivery.md",
+    "artifact_sha256": "2cbfd52859b4c5ca34cd803b18980aa2d0ec0505fe0403d9ed935ef4bd4d2fce",
+    "actual_exit_code": 0,
+    "scope": "Project takeover brief, dependencies, source context, review/remediation and explicit unknown transfers.",
+    "verified_observation": "control/final-delivery-observation.json"
+  },
+  "source_and_runtime_receipts": [
+    "control/final-delivery-observation.json"
+  ],
+  "gates": {
+    "natural_client_initiation": {
+      "evidence": [
+        "control/initial-sealed.json",
+        "control/initial-review-extract.json"
+      ],
+      "passed_before_remote": true,
+      "assessment": "Exact natural project-takeover request is present once in the actual native user transcript; original native task and default client configuration are bound."
+    },
+    "tool_or_role_execution": {
+      "evidence": [
+        "control/final-native-metadata.json",
+        "control/initial-review-extract.json",
+        "control/final-delivery-review-extract.json"
+      ],
+      "passed_before_remote": true,
+      "assessment": "Five actual Codex native business turns executed AWR commands and wrote business artifacts; two separate luna_worker review sessions are bound to the completed actual reviewer task."
+    },
+    "real_artifact": {
+      "evidence": [
+        "project/deliverables/qinghe-brief.md",
+        "project/deliverables/qinghe-dependencies.md",
+        "project/deliverables/qinghe-context-reference.md"
+      ],
+      "passed_before_remote": true,
+      "assessment": "Actual plan, dependency inventory and context/source-version explanation are retained as exact bytes, with historical versions and hashes."
+    },
+    "business_followup_1": {
+      "evidence": [
+        "round-1-inputs.json",
+        "control/round-1-review-extract.json",
+        "history/round-1/deliverables/qinghe-brief.md"
+      ],
+      "passed_before_remote": true,
+      "assessment": "The half-day Wednesday window was published before the actual user followup; the client created a substantive prioritized executable checklist and retained domain/input uncertainty."
+    },
+    "business_followup_2": {
+      "evidence": [
+        "round-2-inputs.json",
+        "control/round-2-review-extract.json",
+        "history/round-2/deliverables/qinghe-brief.md"
+      ],
+      "passed_before_remote": true,
+      "assessment": "The actual second followup consumed revised rules; the brief changed verified-title, personal-contact and domain-dependent switch-time treatment."
+    },
+    "independent_review": {
+      "evidence": [
+        "control/reviewer-identity-binding.json",
+        "control/re-reviewer-identity-binding.json",
+        "project/deliverables/qh-independent-review.md",
+        "project/deliverables/qh-review-response.md",
+        "project/deliverables/qh-independent-re-review.md"
+      ],
+      "passed_before_remote": true,
+      "assessment": "A distinct actual luna_worker found five defects, the original native producer corrected them, and the original independent reviewer accepted the corrected takeover arrangement scope. Initial technical lookup deviation remains a process defect."
+    },
+    "final_delivery": {
+      "evidence": [
+        "control/final-delivery-sealed.json",
+        "project/deliverables/qh-delivery.md",
+        "control/final-delivery-observation.json"
+      ],
+      "passed_before_remote": true,
+      "assessment": "After independent re-review, the original native client delivered the final brief package and explicit unresolved handoffs. Root read the final document and all post-review core-artifact diffs, preserving the original review scope."
+    },
+    "traceable_receipt": {
+      "evidence": [
+        "project/.work-receipts/20260909-QH-DELIVER-complete.json",
+        "project/.work-receipts/20260909-QH-DELIVER-evidence-report-v2.json",
+        "project/.work-receipts/20260909-QH-DELIVER-post-close-verification.json",
+        "receipt-storage.json"
+      ],
+      "passed_before_remote": true,
+      "assessment": "Actual completion/source-write receipts, 40 evidence mappings, 12 close-out checks and 191 retained final receipt files match the original sealed bytes; session ended and all claims released."
+    },
+    "fixture_isolation": {
+      "evidence": [
+        "run.json",
+        "control/final-delivery-observation.json",
+        "project/review-inputs/reference-lookup-process-record.json",
+        "project/deliverables/qh-independent-re-review.md"
+      ],
+      "passed_before_remote": true,
+      "assessment": "The fresh project, namespace, actual work graph and artifacts are distinct across all eight runtime databases. All outputs were produced in this case. Independent inspection of the retained out-of-allowlist technical lookup found no observed cross-case business task/answer/result reuse; the lookup itself remains noncompliant and is not credited as evidence."
+    },
+    "independent_commit_and_remote_sha": {
+      "evidence": [],
+      "passed_before_remote": false,
+      "assessment": "Pending this case-only artifact commit, verified Git remote and GitHub API receipt, then a separate acceptance/ledger binding commit."
+    }
+  },
+  "independent_delivery_commit": null,
+  "verified_remote_receipt": null,
+  "blockers": [
+    "Actual original-client final delivery and independent reviewed public commit with verified remote SHA remain."
+  ],
+  "status_authority": "ledger/work-ledger.yaml",
+  "completion_claim": false,
+  "process_findings": [
+    "control/technical-reference-correction.json"
+  ],
+  "additional_business_turns": [
+    {
+      "phase": "review-correction",
+      "snapshot": "control/review-correction-sealed.json",
+      "actual_user_turn": {
+        "timestamp": "2026-09-09T01:27:33.055Z",
+        "text": "请处理独立复核记录中的问题，更新依赖清单、上下文引用和工作记录，让它们与最新简报保持一致，并逐条保留处理回执。尚未取得的文档、标题、域名和停用日期继续列为明确的移交事项，不补造事实；交接包要清楚说明本次安排复核能覆盖的范围。保留技术参考查找偏离的历史记录，解释未验证来源引用与显式验证记录的区别。完成后把修订后的材料交回复核者检查，这一轮先不提交最终交付。"
+      },
+      "client_task_id": "01a08379-ef89-7173-917d-274662891bcb",
+      "publication": "control/review-correction-publication.json",
+      "independent_re_review": "pending"
+    }
+  ],
+  "independent_review_history": [
+    {
+      "reviewer_identity": "luna_worker:/root/source_change_client_run",
+      "client_or_human_record": "control/independent-review.json",
+      "criteria": [
+        {
+          "id": "current_sources",
+          "conclusion": "pass",
+          "basis": "Current AWR context loaded RULES r2 and ledger r9 as fresh; completeness is not treated as business approval."
+        },
+        {
+          "id": "brief_rule_revision",
+          "conclusion": "pass",
+          "basis": "The current brief limits the external directory to verified titles, excludes personal contacts and makes domain confirmation a prerequisite for any specific switch time."
+        },
+        {
+          "id": "unknowns",
+          "conclusion": "pass",
+          "basis": "Document files, title confirmations, domain approval and legacy retirement date remain explicitly unconfirmed."
+        },
+        {
+          "id": "dependencies_currency",
+          "conclusion": "fail",
+          "basis": "The dedicated dependency list remains at QH-INPUT/project revision 20 and omits round-2 gates."
+        },
+        {
+          "id": "context_reference_currency",
+          "conclusion": "fail",
+          "basis": "The context reference contains only the initial QH-INPUT session and old RULES fingerprint."
+        },
+        {
+          "id": "ledger_state_consistency",
+          "conclusion": "fail",
+          "basis": "Completed QH-INPUT and QH-BRIEF retain pre-completion next actions and in-progress summaries."
+        },
+        {
+          "id": "directory_review_prerequisite",
+          "conclusion": "fail_for_final_delivery",
+          "basis": "No directory draft or actual source documents/title confirmations were observed."
+        },
+        {
+          "id": "history_trace",
+          "conclusion": "pass",
+          "basis": "Three sealed records share the executor thread and current artifact hashes match round-2."
+        },
+        {
+          "id": "evidence_projection",
+          "conclusion": "needs_explanation",
+          "basis": "Complete current locally_verified evidence is retained alongside locator-only Unknown projections; Unknown entries are not treated as satisfied."
+        },
+        {
+          "id": "review_independence",
+          "conclusion": "pass",
+          "basis": "The reviewer session identity differs from the executor and the executor artifacts were unchanged."
+        }
+      ],
+      "defects_and_revisions": [
+        {
+          "id": "QH-R01",
+          "disposition": "blocking"
+        },
+        {
+          "id": "QH-R02",
+          "disposition": "blocking"
+        },
+        {
+          "id": "QH-R03",
+          "disposition": "blocks_directory_and_final_delivery"
+        },
+        {
+          "id": "QH-R04",
+          "disposition": "must_explain_or_resolve_before_final_delivery"
+        },
+        {
+          "id": "QH-R05",
+          "disposition": "process_nonconformance_no_observed_business_contamination"
+        }
+      ],
+      "verdict": "requires_executor_changes"
+    }
+  ],
+  "public_path_note": "project/ contains exact final business files; history/ contains actual phase snapshots; control/ contains immutable business extracts. Private .local paths in original records identify original observations, not public URLs. receipt-storage.json maps each phase receipt to retained public bytes."
+}

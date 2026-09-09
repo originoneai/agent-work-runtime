@@ -1,0 +1,18 @@
+{
+  "artifact": {
+    "artifact_type": "final_handoff",
+    "id": "01M22184TXWDQ8891QPBWHMZR8",
+    "locator": ".awr/artifacts/01M22184TQZV4D1K3B2VY2WGT1",
+    "mime": "text/markdown",
+    "project_id": "01M21QQH4Z2YQCA7PQZDZ8STC9",
+    "revision": 1,
+    "sha256": "2cbfd52859b4c5ca34cd803b18980aa2d0ec0505fe0403d9ed935ef4bd4d2fce",
+    "size": 12228,
+    "source_event_id": "01M220NCF5YQCJA4E2B13ZKQTJ"
+  },
+  "event_id": "01M22184TX235G3P9TV4FTJT4S",
+  "freshness_basis": "runtime_database",
+  "ok": true,
+  "project_revision": 187,
+  "source_refresh_performed": false
+}

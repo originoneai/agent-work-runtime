@@ -1,0 +1,108 @@
+{
+  "ok": true,
+  "code": "proposal_recorded",
+  "project_revision": 20,
+  "proposal": {
+    "id": "01M21QVP6CV4S76XC9QQGW5HY9",
+    "project_id": "01M21QQH4Z2YQCA7PQZDZ8STC9",
+    "work_item_id": "01M21QQH543P74VQK6J61C4T10",
+    "source_id": "01M21QQH53JR8QW1W5K5VJRNS7",
+    "base_fingerprint": "sha256:4baf77a2bd8ac2aa91d704dc586aebcb4c599faa4bc789d8e49a791d3880caa8",
+    "expected_revision": 13,
+    "mutation_type": "work.progress",
+    "patch": {
+      "changes": {
+        "next_action": "读取完整执行上下文，核对现有材料并形成任务与依赖清单。",
+        "status": "in_progress",
+        "summary": "已接管 QH-INPUT，开始盘点需求和缺少材料。"
+      },
+      "intent": "接手项目并开始盘点当前来源、现有说明与缺少确认。",
+      "source_config": {
+        "adapter_options": {},
+        "adapter_version": 1,
+        "mapping_key": "ledger|work-ledger.yaml"
+      },
+      "target": {
+        "kind": "work_item",
+        "meta": {
+          "external_key": "QH-INPUT",
+          "id": "01M21QQH543P74VQK6J61C4T10",
+          "revision": 1,
+          "source_ref": {
+            "end_line": null,
+            "locator": "file:///Users/mac/Documents/originone/agent-work-running/.local/business-live-20260909-v1/project-onboarding/project/work-ledger.yaml",
+            "pointer": "/work_items/0",
+            "section_fingerprint": null,
+            "source_fingerprint": "sha256:4baf77a2bd8ac2aa91d704dc586aebcb4c599faa4bc789d8e49a791d3880caa8",
+            "source_id": "01M21QQH53JR8QW1W5K5VJRNS7",
+            "source_revision": 1,
+            "start_line": null
+          }
+        }
+      },
+      "version": 1,
+      "work_action": {
+        "action": "progress",
+        "from": "ready",
+        "to": "in_progress"
+      }
+    },
+    "status": "applied",
+    "created_by_session": "01M21QTD6SSY9DC6S502CKC3CJ",
+    "revision": 5
+  },
+  "event": {
+    "id": "01M21QVP7TEH2DMEZ3J96Q9KC5",
+    "project_id": "01M21QQH4Z2YQCA7PQZDZ8STC9",
+    "work_item_id": "01M21QQH543P74VQK6J61C4T10",
+    "session_id": null,
+    "branch_id": null,
+    "event_type": "work.progressed",
+    "importance": "normal",
+    "summary": "Verified source work action Progress",
+    "payload": {
+      "action_reason": "接手项目并开始盘点当前来源、现有说明与缺少确认。",
+      "actor": "codex-primary",
+      "after_fingerprint": "sha256:7bd145ce47398189ca7af6c7a9a85b4092c80a8158166a23362be389528b9484",
+      "attempt_event_id": "01M21QVP76521MWCQSGW3EYS35",
+      "before_fingerprint": "sha256:4baf77a2bd8ac2aa91d704dc586aebcb4c599faa4bc789d8e49a791d3880caa8",
+      "creating_session_id": "01M21QTD6SSY9DC6S502CKC3CJ",
+      "proposal_id": "01M21QVP6CV4S76XC9QQGW5HY9",
+      "reason": "接手项目并开始盘点当前来源、现有说明与缺少确认。",
+      "released_claim_ids": [],
+      "source_id": "01M21QQH53JR8QW1W5K5VJRNS7",
+      "source_revision": 2,
+      "target_after_hash": "6275972e66acaa1c87900ad6fa414826989af6ffa458771337b4af1827b58c0c",
+      "target_revision": 2,
+      "work_action": {
+        "action": "progress",
+        "from": "ready",
+        "to": "in_progress"
+      },
+      "write_plan_id": "01M21QVP6KR5XEX4H3NNRQS54Z"
+    },
+    "project_revision": 20,
+    "created_at": 1788912457978
+  },
+  "source_refresh_performed": true,
+  "source_write_performed": true,
+  "write_outcome": "applied",
+  "apply_attempt": {
+    "event_id": "01M21QVP76521MWCQSGW3EYS35",
+    "proposal_id": "01M21QVP6CV4S76XC9QQGW5HY9",
+    "source_id": "01M21QQH53JR8QW1W5K5VJRNS7",
+    "project_revision": 17,
+    "plan": {
+      "id": "01M21QVP6KR5XEX4H3NNRQS54Z",
+      "before_fingerprint": "sha256:4baf77a2bd8ac2aa91d704dc586aebcb4c599faa4bc789d8e49a791d3880caa8",
+      "after_fingerprint": "sha256:7bd145ce47398189ca7af6c7a9a85b4092c80a8158166a23362be389528b9484",
+      "before_size": 1997,
+      "after_size": 2090,
+      "target_after_hash": "6275972e66acaa1c87900ad6fa414826989af6ffa458771337b4af1827b58c0c"
+    },
+    "resolved_event_id": "01M21QVP7TEH2DMEZ3J96Q9KC5"
+  },
+  "recovery_directory": ".awr/mutations/01M21QVP6KR5XEX4H3NNRQS54Z",
+  "source_check": null,
+  "error": null
+}

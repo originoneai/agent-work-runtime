@@ -1,0 +1,52 @@
+{
+  "checkpoint": {
+    "changed_entities": [
+      "evidence:01M21SC9S8M5WVK485P1P4NCS4",
+      "work_items:01M21QQH5476WGWQAGW59RF4GM"
+    ],
+    "context_hash": "1a04ac88b465bfa1cd06fe25036ecbc4c1692a6acfca93c6e8f556275d38c990",
+    "created_at": 1788914131647,
+    "digest": "已完成 QH-BRIEF：交付 deliverables/qinghe-brief.md，包含本周 P0/P1 动作、责任、依赖、完成定义、生效门槛、未决事项与来源；当前本地证据 QH-BRIEF-CHECKLIST-20260909 已绑定两项验收。未执行或代签独立复核。",
+    "id": "01M21SERNZAT7BV97567GY1MFZ",
+    "next_action": "由不同参与者认领 QH-REVIEW，独立核对来源、依赖和生效规则，并将逐条意见写入 deliverables/qh-independent-review.md。",
+    "open_loops": [
+      "三份说明正文及责任信息仍未提供；域名接入确认和旧版页面停用日期仍缺失；materials/week-window.md 是未纳入 AWR 权威源的补充材料；独立复核与最终交付尚未发生。"
+    ],
+    "project_revision": 53,
+    "revision": 1,
+    "session_id": "01M21S37GKRJVF5Q5VB6DEVP37"
+  },
+  "checkpoint_save": {
+    "after_revision": 37,
+    "attempt_id": "01M21SERNYGDGTSYYCBBG3HHXK",
+    "delta_bytes": 6393,
+    "delta_recorded": true,
+    "event_id": "01M21SERNZMCF65ZWT5Z2EP0CX",
+    "observed_changed_entity_count": 2,
+    "reported_changed_entity_count": 0,
+    "session_event_count": 3,
+    "source_observation_count": 4,
+    "through_revision": 53
+  },
+  "context_hash_basis": "caller_supplied_last_used_context",
+  "context_hash_verified": false,
+  "event": {
+    "artifact_id": null,
+    "branch_id": null,
+    "checkpoint_id": "01M21SERNZAT7BV97567GY1MFZ",
+    "created_at": 1788914131647,
+    "id": "01M21SERNZMCF65ZWT5Z2EP0CX",
+    "importance": "normal",
+    "project_revision": 55,
+    "session_id": "01M21S37GKRJVF5Q5VB6DEVP37",
+    "source_id": null,
+    "summary": "Saved session checkpoint and observed delta",
+    "type": "checkpoint.created",
+    "work_item_id": "01M21QQH5476WGWQAGW59RF4GM"
+  },
+  "freshness_basis": "source_refresh",
+  "ok": true,
+  "project_revision": 55,
+  "save_status": "completed",
+  "source_refresh_performed": true
+}

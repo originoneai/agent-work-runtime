@@ -1,0 +1,51 @@
+{
+  "kind": "independent_review_input_manifest",
+  "reviewer": "luna_worker",
+  "reviewer_session": "01M21VK36SJ9KXRB3634VZ1FPS",
+  "executor_client_thread": "01a08379-ef89-7173-917d-274662891bcb",
+  "recorded_at_ms": 1788916565540,
+  "executor_handoff_work_ledger_sha256": "5ca64a6962d2e318dab3c7bc97316eae71a4487248c0d674827b8c2e45ab603a",
+  "current_files": {
+    "project.toml": "9c45ae191289ed0a40883e2120e47eaaa8e3af301c350928b11629406d6c503f",
+    "GOALS.md": "575f650e4ff9b782bebdb8830f5b2670a3bdc447a41ff84e53eec7cf35c249a8",
+    "PLAN.md": "2d726e0e77754a51f779b5eee59ac29c919a4e7ab87b2a43a53a74938b2ba053",
+    "RULES.md": "05c7d1e94f96e3f6bdaccfd8790895a07e11472fe95542c046eb570456ad218d",
+    "work-ledger.yaml": "1f471488f57ac6eab3abbb4c16e6e57942c4c3997b9af12ce9a10b059e88791b",
+    "AGENTS.md": "581c28e430d08fc07fe5d98322b936c79018d654d1c5764eb7e7e7604fa11a39",
+    "DELIVERABLES.md": "32a59caa8ca42ee5481b32777a40777af6ff36076bdd68355b669f44058c56f4",
+    "README.md": "c04cc9f1bb9391f415be8f3aca0c133c442b0785396b4651b947c92e6b24d30b",
+    "materials/request.md": "97e6a3c7fa089071b15ebd6be40683c20d088b2cfa222d7c70ccce1fc1c85bca",
+    "materials/backlog.csv": "bf2e68415f5b4258e0c13fa70de3db8485904ebc0a228ae347fac1a7ad5e6ca6",
+    "materials/week-window.md": "df1bc8d6a0b3a51eabaefacbbebde71931840de029bc21a757e856ad6b04425b",
+    "deliverables/qinghe-brief.md": "31b843562c3918b531d774e1ab19b7b6912db627de6ce2dc4ba37515fa1cfccd",
+    "deliverables/qinghe-dependencies.md": "b3bbb599f1ef5e3f15ffe1b2e149bb1edc5d218c470eab30186744167071161c",
+    "deliverables/qinghe-context-reference.md": "8b9508d2965a6d97fd6b76c6afc5f3acad15f52ac326c9819633ad7da19571d3",
+    "review-inputs/README.md": "44d51646da46397a4c439827ef4777a8be0f7dccbcc91430a28e8bfec995c9e6",
+    "review-inputs/reference-lookup-process-record.json": "0aa782e30d7ac1f2f2b9ba65f9c2224a07404d3111ea5353f1ff0f3015722920",
+    "review-inputs/initial/turn-record.json": "1b3165cca558196c903eabf8e56e1ec0fffec8d0592b8a5896b82507df71b066",
+    "review-inputs/round-1/turn-record.json": "6c611669ab4742323067a085651643cb8508525909023cb5981e0523511207a3",
+    "review-inputs/round-2/turn-record.json": "7965f3a8d622470c9fd18a78481d280658880359e4ee90a00f260bb12c590b53",
+    ".work-receipts/20260909-QH-INPUT-evidence-report.json": "f960af00e8a4542aad91ba86064d2370505bda4170663a44a96647661bbf4a9c",
+    ".work-receipts/20260909-QH-INPUT-evidence-add.json": "848167dc353e70296c696dc60bcb217f06a62b795e821ca6b6747f9b5b35ac73",
+    ".work-receipts/20260909-QH-INPUT-completion.json": "77fcd36bb1cdafed4df8cf16735b36d268a53a9f2b698599dfd2ed6543557680",
+    ".work-receipts/20260909-QH-BRIEF-evidence-report.json": "9db47a081a7d431c2590eacffa4cfb3e20a8087152bd8b4d33099f31ec53b59c",
+    ".work-receipts/20260909-QH-BRIEF-evidence-add.json": "bfc01010feea0e4b72a9fb949e545e96720169b8dbbce81eb0acaa57edb3f017",
+    ".work-receipts/20260909-QH-BRIEF-completion.json": "b3516f0cad91acd61854ea9f101e4d0f0bdfff1e85138da9a4962dd42309b381",
+    ".work-receipts/20260909-QH-BRIEF-rules-change-evidence-report.json": "7fe4e64248e6bac2ae5aa874a94cac331f67a19bcd0e30da336caa1b584f85a6",
+    ".work-receipts/20260909-QH-BRIEF-rules-change-evidence-add.json": "d1c848f439ff34d6b56322f4c8014abf3f0ace8d0b33ffd8f0da834ab89eb917",
+    ".work-receipts/20260909-QH-BRIEF-rules-change-completion.json": "6ec3e3c9e777437e7fab166dc6cb7595fe195d390da8ead41e2b309f7851a4b3"
+  },
+  "business_artifact_inventory": [
+    "deliverables/qinghe-brief.md",
+    "deliverables/qinghe-context-reference.md",
+    "deliverables/qinghe-dependencies.md"
+  ],
+  "material_inventory": [
+    "materials/backlog.csv",
+    "materials/request.md",
+    "materials/week-window.md"
+  ],
+  "external_confirmations_observed": [
+
+  ]
+}

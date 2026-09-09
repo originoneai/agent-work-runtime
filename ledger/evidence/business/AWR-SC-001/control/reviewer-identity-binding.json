@@ -1,0 +1,11 @@
+{
+  "kind": "actual_collaboration_reviewer_identity_binding",
+  "task_name": "/root/source_change_client_run",
+  "profile": "luna_worker",
+  "actual_completion_message_received": true,
+  "reviewer_native_client_task": null,
+  "review_record_sha256": "afea85f721532bbb724adad237b06b12cc6738a3b417371f64a7151d1bf8ab61",
+  "recorded_at": "2026-09-09T09:27:28.969881+08:00",
+  "reviewer_distinct_from_executor": true,
+  "e4_credit": false
+}

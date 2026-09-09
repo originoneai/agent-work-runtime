@@ -1,0 +1,28 @@
+{
+  "event_id": "01M21W35HHJT8YWNXJTSB6ZDAN",
+  "evidence": {
+    "branch_id": null,
+    "command": "rtk proxy ruby .work-receipts/reviewer-verify.rb",
+    "evidence_type": "completion_report",
+    "external_key": "QH-INDEPENDENT-REVIEW-20260909",
+    "id": "01M21W35HHB88BQF0D1GWBHT3N",
+    "level": "locally_verified",
+    "locator": ".work-receipts/reviewer-verification.json",
+    "project_id": "01M21QQH4Z2YQCA7PQZDZ8STC9",
+    "revision": 1,
+    "scope": [
+      "QH-REVIEW"
+    ],
+    "sha256": "79f2d118934d201ee9ed928c283c6c7bc8602700d94ca6dd39027503f04a39c9",
+    "source_ref": null,
+    "source_sha": "cd44a161471cee94fd4f797955327a4fd995cf3a",
+    "summary": "luna_worker independently reviewed current sources, the briefing, dependency list, context reference, two revisions and retained process deviation; the package requires executor changes before final delivery.",
+    "verified_at": 1788916847280,
+    "work_item_id": "01M21QQH54H74PB9525DPEKQ5Z"
+  },
+  "freshness_basis": "source_refresh",
+  "ok": true,
+  "project_revision": 98,
+  "source_refresh_performed": true,
+  "validation_basis": "caller_supplied_bindings"
+}

@@ -1,0 +1,29 @@
+{
+  "event_id": "01M21TDBNZGFPTBHAZJ43Z4SBE",
+  "evidence": {
+    "branch_id": null,
+    "command": "rtk git diff --check; rtk rg -n <rules-change assertions> deliverables/qinghe-brief.md; rtk proxy test -s deliverables/qinghe-brief.md; rtk proxy shasum -a 256 <artifact and source files>",
+    "evidence_type": "completion_report",
+    "external_key": "QH-BRIEF-RULES-REVISION-20260909",
+    "id": "01M21TDBNZKR90EHKW32JGWKJG",
+    "level": "locally_verified",
+    "locator": ".work-receipts/20260909-QH-BRIEF-rules-change-evidence-report.json",
+    "project_id": "01M21QQH4Z2YQCA7PQZDZ8STC9",
+    "revision": 1,
+    "scope": [
+      "QH-BRIEF"
+    ],
+    "sha256": "7fe4e64248e6bac2ae5aa874a94cac331f67a19bcd0e30da336caa1b584f85a6",
+    "source_ref": null,
+    "source_sha": "cd44a161471cee94fd4f797955327a4fd995cf3a",
+    "summary": "按新增硬规则修订本周执行简报，收紧对外标题、个人联系人和具体切换时间边界，并明确相应依赖与复核项。",
+    "verified_at": 1788915087055,
+    "work_item_id": "01M21QQH5476WGWQAGW59RF4GM"
+  },
+  "freshness_basis": "source_refresh",
+  "ok": true,
+  "project_revision": 78,
+  "source_refresh_performed": true,
+  "validation_basis": "caller_supplied_bindings"
+}
+

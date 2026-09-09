@@ -1,0 +1,196 @@
+{
+  "ok": true,
+  "code": "proposal_recorded",
+  "project_revision": 37,
+  "proposal": {
+    "id": "01M21S2ADN707PG8AW5FAR2ZXS",
+    "project_id": "01M21QQH4Z2YQCA7PQZDZ8STC9",
+    "work_item_id": "01M21QQH543P74VQK6J61C4T10",
+    "source_id": "01M21QQH53JR8QW1W5K5VJRNS7",
+    "base_fingerprint": "sha256:0a54bde4e7586920e9e3e211d889b436f96a0e5cd49acdc746aeaa63c819150d",
+    "expected_revision": 30,
+    "mutation_type": "work.complete",
+    "patch": {
+      "changes": {
+        "evidence": [
+          ".work-receipts/20260909-QH-INPUT-evidence-report.json"
+        ],
+        "status": "completed",
+        "verification": {
+          "evidence_level": "locally_verified"
+        }
+      },
+      "intent": "已完成当前项目材料盘点，逐条保留三份说明的可用性缺口与两个待确认事项，并以当前本地核验证据绑定全部验收。",
+      "source_config": {
+        "adapter_options": {},
+        "adapter_version": 1,
+        "mapping_key": "ledger|work-ledger.yaml"
+      },
+      "target": {
+        "kind": "work_item",
+        "meta": {
+          "external_key": "QH-INPUT",
+          "id": "01M21QQH543P74VQK6J61C4T10",
+          "revision": 3,
+          "source_ref": {
+            "end_line": null,
+            "locator": "file:///Users/mac/Documents/originone/agent-work-running/.local/business-live-20260909-v1/project-onboarding/project/work-ledger.yaml",
+            "pointer": "/work_items/0",
+            "section_fingerprint": null,
+            "source_fingerprint": "sha256:0a54bde4e7586920e9e3e211d889b436f96a0e5cd49acdc746aeaa63c819150d",
+            "source_id": "01M21QQH53JR8QW1W5K5VJRNS7",
+            "source_revision": 3,
+            "start_line": null
+          }
+        }
+      },
+      "version": 1,
+      "work_action": {
+        "action": "complete",
+        "completion": {
+          "acceptance": [
+            {
+              "criterion": "核对现有三份说明与两个尚缺确认，不把待确认事项当作就绪。",
+              "evidence": [
+                "01M21R9KJ5QB1VSMV5EMDHCFJZ"
+              ]
+            },
+            {
+              "criterion": "保留实际产物与来源引用，无法确认的内容显式说明。",
+              "evidence": [
+                "01M21R9KJ5QB1VSMV5EMDHCFJZ"
+              ]
+            }
+          ],
+          "evidence": [
+            {
+              "branch_id": null,
+              "command": "rtk rg --files; rtk rg -n <material terms> .; rtk git diff --check",
+              "evidence_type": "completion_report",
+              "external_key": "QH-INPUT-INVENTORY-20260909",
+              "id": "01M21R9KJ5QB1VSMV5EMDHCFJZ",
+              "level": "locally_verified",
+              "locator": ".work-receipts/20260909-QH-INPUT-evidence-report.json",
+              "project_id": "01M21QQH4Z2YQCA7PQZDZ8STC9",
+              "revision": 1,
+              "scope": [
+                "QH-INPUT"
+              ],
+              "sha256": "f960af00e8a4542aad91ba86064d2370505bda4170663a44a96647661bbf4a9c",
+              "source_ref": null,
+              "source_sha": "cd44a161471cee94fd4f797955327a4fd995cf3a",
+              "summary": "核对三份说明的实际可用性和两个待确认项，形成带来源与未知边界的依赖清单及上下文记录。",
+              "verified_at": 1788912876599,
+              "work_item_id": "01M21QQH543P74VQK6J61C4T10"
+            }
+          ],
+          "minimum_level": "locally_verified",
+          "source_sha": "cd44a161471cee94fd4f797955327a4fd995cf3a",
+          "version": 1
+        },
+        "from": "in_progress",
+        "to": "completed"
+      }
+    },
+    "status": "applied",
+    "created_by_session": "01M21QTD6SSY9DC6S502CKC3CJ",
+    "revision": 5
+  },
+  "event": {
+    "id": "01M21S2AFTYSYXCQ3TBX6XDAZV",
+    "project_id": "01M21QQH4Z2YQCA7PQZDZ8STC9",
+    "work_item_id": "01M21QQH543P74VQK6J61C4T10",
+    "session_id": null,
+    "branch_id": null,
+    "event_type": "work.completed",
+    "importance": "normal",
+    "summary": "Verified source work action Complete",
+    "payload": {
+      "action_reason": "已完成当前项目材料盘点，逐条保留三份说明的可用性缺口与两个待确认事项，并以当前本地核验证据绑定全部验收。",
+      "actor": "codex-primary",
+      "after_fingerprint": "sha256:adb7e7ff09b30d595adef45e73bff2ea822d4575e536a9c71fd44ceb9c8949e9",
+      "attempt_event_id": "01M21S2AEYXYW2PTXMVEAX2FH7",
+      "before_fingerprint": "sha256:0a54bde4e7586920e9e3e211d889b436f96a0e5cd49acdc746aeaa63c819150d",
+      "creating_session_id": "01M21QTD6SSY9DC6S502CKC3CJ",
+      "proposal_id": "01M21S2ADN707PG8AW5FAR2ZXS",
+      "reason": "已完成当前项目材料盘点，逐条保留三份说明的可用性缺口与两个待确认事项，并以当前本地核验证据绑定全部验收。",
+      "released_claim_ids": [
+        "01M21QTD6SQ8BSTKMZ112E0D20"
+      ],
+      "source_id": "01M21QQH53JR8QW1W5K5VJRNS7",
+      "source_revision": 4,
+      "target_after_hash": "bdc82aa6e07f65e94c3848ec1a77a68f9bc5378f2ee704262fa393dd94f7996f",
+      "target_revision": 4,
+      "work_action": {
+        "action": "complete",
+        "completion": {
+          "acceptance": [
+            {
+              "criterion": "核对现有三份说明与两个尚缺确认，不把待确认事项当作就绪。",
+              "evidence": [
+                "01M21R9KJ5QB1VSMV5EMDHCFJZ"
+              ]
+            },
+            {
+              "criterion": "保留实际产物与来源引用，无法确认的内容显式说明。",
+              "evidence": [
+                "01M21R9KJ5QB1VSMV5EMDHCFJZ"
+              ]
+            }
+          ],
+          "evidence": [
+            {
+              "branch_id": null,
+              "command": "rtk rg --files; rtk rg -n <material terms> .; rtk git diff --check",
+              "evidence_type": "completion_report",
+              "external_key": "QH-INPUT-INVENTORY-20260909",
+              "id": "01M21R9KJ5QB1VSMV5EMDHCFJZ",
+              "level": "locally_verified",
+              "locator": ".work-receipts/20260909-QH-INPUT-evidence-report.json",
+              "project_id": "01M21QQH4Z2YQCA7PQZDZ8STC9",
+              "revision": 1,
+              "scope": [
+                "QH-INPUT"
+              ],
+              "sha256": "f960af00e8a4542aad91ba86064d2370505bda4170663a44a96647661bbf4a9c",
+              "source_ref": null,
+              "source_sha": "cd44a161471cee94fd4f797955327a4fd995cf3a",
+              "summary": "核对三份说明的实际可用性和两个待确认项，形成带来源与未知边界的依赖清单及上下文记录。",
+              "verified_at": 1788912876599,
+              "work_item_id": "01M21QQH543P74VQK6J61C4T10"
+            }
+          ],
+          "minimum_level": "locally_verified",
+          "source_sha": "cd44a161471cee94fd4f797955327a4fd995cf3a",
+          "version": 1
+        },
+        "from": "in_progress",
+        "to": "completed"
+      },
+      "write_plan_id": "01M21S2AEANA9MGCKNXE30A3VP"
+    },
+    "project_revision": 37,
+    "created_at": 1788913723898
+  },
+  "source_refresh_performed": true,
+  "source_write_performed": true,
+  "write_outcome": "applied",
+  "apply_attempt": {
+    "event_id": "01M21S2AEYXYW2PTXMVEAX2FH7",
+    "proposal_id": "01M21S2ADN707PG8AW5FAR2ZXS",
+    "source_id": "01M21QQH53JR8QW1W5K5VJRNS7",
+    "project_revision": 34,
+    "plan": {
+      "id": "01M21S2AEANA9MGCKNXE30A3VP",
+      "before_fingerprint": "sha256:0a54bde4e7586920e9e3e211d889b436f96a0e5cd49acdc746aeaa63c819150d",
+      "after_fingerprint": "sha256:adb7e7ff09b30d595adef45e73bff2ea822d4575e536a9c71fd44ceb9c8949e9",
+      "before_size": 2234,
+      "after_size": 2299,
+      "target_after_hash": "bdc82aa6e07f65e94c3848ec1a77a68f9bc5378f2ee704262fa393dd94f7996f"
+    },
+    "resolved_event_id": "01M21S2AFTYSYXCQ3TBX6XDAZV"
+  },
+  "recovery_directory": ".awr/mutations/01M21S2AEANA9MGCKNXE30A3VP",
+  "source_check": null,
+  "error": null
+}

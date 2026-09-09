@@ -1,0 +1,89 @@
+{
+  "apply_attempt": null,
+  "code": "proposal_recorded",
+  "error": null,
+  "event": {
+    "branch_id": null,
+    "created_at": 1788917897222,
+    "event_type": "proposal.created",
+    "id": "01M21X1P06B9YQRVVFZTZXV61V",
+    "importance": "normal",
+    "payload": {
+      "action": "create",
+      "actor": null,
+      "expected_revision": 123,
+      "from": null,
+      "intent": "将已形成的独立复核结论和范围写回工作摘要，并为整改后的返检准备准确下一步。",
+      "proposal_id": "01M21X1P06WCPR7JGC4DP88XB1",
+      "proposal_revision": 1,
+      "reason": null,
+      "source_id": "01M21QQH53JR8QW1W5K5VJRNS7",
+      "target_id": "01M21QQH54H74PB9525DPEKQ5Z",
+      "target_key": "QH-REVIEW",
+      "target_kind": "work_item",
+      "to": "draft",
+      "work_action": null
+    },
+    "project_id": "01M21QQH4Z2YQCA7PQZDZ8STC9",
+    "project_revision": 124,
+    "session_id": null,
+    "summary": "Created source mutation proposal",
+    "work_item_id": "01M21QQH54H74PB9525DPEKQ5Z"
+  },
+  "ok": true,
+  "project_revision": 124,
+  "proposal": {
+    "base_fingerprint": "sha256:2853f8867268035b8d60c7ee178fae2be0d24b3222fdbb30d0e111ffb516aaaf",
+    "created_by_session": null,
+    "expected_revision": 123,
+    "id": "01M21X1P06WCPR7JGC4DP88XB1",
+    "mutation_type": "update_fields",
+    "patch": {
+      "changes": {
+        "next_action": "待原执行者提交整改包后，由不同参与者返检 QH-R01 至 QH-R05；返检范围仍限安排与证据边界，不替代目录级和外部确认。",
+        "summary": "luna_worker 已完成安排级独立复核，结论为 requires_executor_changes，并记录 QH-R01 至 QH-R05；该结论未覆盖实际目录、标题、域名、停用日期或门户上线。"
+      },
+      "intent": "将已形成的独立复核结论和范围写回工作摘要，并为整改后的返检准备准确下一步。",
+      "source_config": {
+        "adapter_options": {},
+        "adapter_version": 1,
+        "mapping_key": "ledger|work-ledger.yaml"
+      },
+      "target": {
+        "kind": "work_item",
+        "meta": {
+          "external_key": "QH-REVIEW",
+          "id": "01M21QQH54H74PB9525DPEKQ5Z",
+          "revision": 3,
+          "source_ref": {
+            "end_line": null,
+            "locator": "file:///Users/mac/Documents/originone/agent-work-running/.local/business-live-20260909-v1/project-onboarding/project/work-ledger.yaml",
+            "pointer": "/work_items/2",
+            "section_fingerprint": null,
+            "source_fingerprint": "sha256:2853f8867268035b8d60c7ee178fae2be0d24b3222fdbb30d0e111ffb516aaaf",
+            "source_id": "01M21QQH53JR8QW1W5K5VJRNS7",
+            "source_revision": 13,
+            "start_line": null
+          }
+        }
+      },
+      "version": 1
+    },
+    "project_id": "01M21QQH4Z2YQCA7PQZDZ8STC9",
+    "revision": 1,
+    "source_id": "01M21QQH53JR8QW1W5K5VJRNS7",
+    "status": "draft",
+    "work_item_id": "01M21QQH54H74PB9525DPEKQ5Z"
+  },
+  "recovery_directory": null,
+  "source_check": {
+    "adapter": "yaml-ledger-v1",
+    "checked_at": 1788917897221,
+    "fingerprint": "sha256:2853f8867268035b8d60c7ee178fae2be0d24b3222fdbb30d0e111ffb516aaaf",
+    "locator": "file:///Users/mac/Documents/originone/agent-work-running/.local/business-live-20260909-v1/project-onboarding/project/work-ledger.yaml"
+  },
+  "source_refresh_performed": false,
+  "source_write_performed": false,
+  "write_outcome": "not_requested"
+}
+

@@ -1,0 +1,108 @@
+{
+  "ok": true,
+  "code": "proposal_recorded",
+  "project_revision": 96,
+  "proposal": {
+    "id": "01M21VMH2A6SMP1YJQ0HD48ZVE",
+    "project_id": "01M21QQH4Z2YQCA7PQZDZ8STC9",
+    "work_item_id": "01M21QQH54H74PB9525DPEKQ5Z",
+    "source_id": "01M21QQH53JR8QW1W5K5VJRNS7",
+    "base_fingerprint": "sha256:5ca64a6962d2e318dab3c7bc97316eae71a4487248c0d674827b8c2e45ab603a",
+    "expected_revision": 89,
+    "mutation_type": "work.progress",
+    "patch": {
+      "changes": {
+        "next_action": "形成独立复核记录，列明结论、缺陷、依据和执行者处理要求；保留外部未确认事项。",
+        "status": "in_progress",
+        "summary": "luna_worker 已取得当前复核上下文，正在逐条核对简报、依赖清单、上下文引用及历史修订。"
+      },
+      "intent": "开始由独立参与者复核当前来源、三份执行者产物、两轮修订记录和外部未确认边界。",
+      "source_config": {
+        "adapter_options": {},
+        "adapter_version": 1,
+        "mapping_key": "ledger|work-ledger.yaml"
+      },
+      "target": {
+        "kind": "work_item",
+        "meta": {
+          "external_key": "QH-REVIEW",
+          "id": "01M21QQH54H74PB9525DPEKQ5Z",
+          "revision": 1,
+          "source_ref": {
+            "end_line": null,
+            "locator": "file:///Users/mac/Documents/originone/agent-work-running/.local/business-live-20260909-v1/project-onboarding/project/work-ledger.yaml",
+            "pointer": "/work_items/2",
+            "section_fingerprint": null,
+            "source_fingerprint": "sha256:5ca64a6962d2e318dab3c7bc97316eae71a4487248c0d674827b8c2e45ab603a",
+            "source_id": "01M21QQH53JR8QW1W5K5VJRNS7",
+            "source_revision": 9,
+            "start_line": null
+          }
+        }
+      },
+      "version": 1,
+      "work_action": {
+        "action": "progress",
+        "from": "planned",
+        "to": "in_progress"
+      }
+    },
+    "status": "applied",
+    "created_by_session": "01M21VK36SJ9KXRB3634VZ1FPS",
+    "revision": 5
+  },
+  "event": {
+    "id": "01M21VMH3R0KW7BY7V4K7YPHS4",
+    "project_id": "01M21QQH4Z2YQCA7PQZDZ8STC9",
+    "work_item_id": "01M21QQH54H74PB9525DPEKQ5Z",
+    "session_id": null,
+    "branch_id": null,
+    "event_type": "work.progressed",
+    "importance": "normal",
+    "summary": "Verified source work action Progress",
+    "payload": {
+      "action_reason": "开始由独立参与者复核当前来源、三份执行者产物、两轮修订记录和外部未确认边界。",
+      "actor": "luna_worker",
+      "after_fingerprint": "sha256:1f471488f57ac6eab3abbb4c16e6e57942c4c3997b9af12ce9a10b059e88791b",
+      "attempt_event_id": "01M21VMH36JQJJMW840B62ZCJ2",
+      "before_fingerprint": "sha256:5ca64a6962d2e318dab3c7bc97316eae71a4487248c0d674827b8c2e45ab603a",
+      "creating_session_id": "01M21VK36SJ9KXRB3634VZ1FPS",
+      "proposal_id": "01M21VMH2A6SMP1YJQ0HD48ZVE",
+      "reason": "开始由独立参与者复核当前来源、三份执行者产物、两轮修订记录和外部未确认边界。",
+      "released_claim_ids": [],
+      "source_id": "01M21QQH53JR8QW1W5K5VJRNS7",
+      "source_revision": 10,
+      "target_after_hash": "ec0b47a45afc031c6d04623532f9e072630f906819e84d111c4e65da6897a281",
+      "target_revision": 2,
+      "work_action": {
+        "action": "progress",
+        "from": "planned",
+        "to": "in_progress"
+      },
+      "write_plan_id": "01M21VMH2K3H84WGXTZ7TG0R3N"
+    },
+    "project_revision": 96,
+    "created_at": 1788916417656
+  },
+  "source_refresh_performed": true,
+  "source_write_performed": true,
+  "write_outcome": "applied",
+  "apply_attempt": {
+    "event_id": "01M21VMH36JQJJMW840B62ZCJ2",
+    "proposal_id": "01M21VMH2A6SMP1YJQ0HD48ZVE",
+    "source_id": "01M21QQH53JR8QW1W5K5VJRNS7",
+    "project_revision": 93,
+    "plan": {
+      "id": "01M21VMH2K3H84WGXTZ7TG0R3N",
+      "before_fingerprint": "sha256:5ca64a6962d2e318dab3c7bc97316eae71a4487248c0d674827b8c2e45ab603a",
+      "after_fingerprint": "sha256:1f471488f57ac6eab3abbb4c16e6e57942c4c3997b9af12ce9a10b059e88791b",
+      "before_size": 2551,
+      "after_size": 2741,
+      "target_after_hash": "ec0b47a45afc031c6d04623532f9e072630f906819e84d111c4e65da6897a281"
+    },
+    "resolved_event_id": "01M21VMH3R0KW7BY7V4K7YPHS4"
+  },
+  "recovery_directory": ".awr/mutations/01M21VMH2K3H84WGXTZ7TG0R3N",
+  "source_check": null,
+  "error": null
+}

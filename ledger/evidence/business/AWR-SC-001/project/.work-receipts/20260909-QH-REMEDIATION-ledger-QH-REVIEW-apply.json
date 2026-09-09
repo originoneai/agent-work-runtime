@@ -1,0 +1,95 @@
+{
+  "apply_attempt": {
+    "event_id": "01M21X1PDC452H5M12D6NJ7S5A",
+    "plan": {
+      "after_fingerprint": "sha256:3e6bdc2484e71781970f8eac942016b542df4217284163977b9f362efcdae369",
+      "after_size": 3179,
+      "before_fingerprint": "sha256:2853f8867268035b8d60c7ee178fae2be0d24b3222fdbb30d0e111ffb516aaaf",
+      "before_size": 3060,
+      "id": "01M21X1PCW41MDCYN6XZZQQ2FM",
+      "target_after_hash": "d4184a9f25f4b74cd81899f1c5f1b719742c324e1c4791f33c7ff43fd9773c48"
+    },
+    "project_revision": 127,
+    "proposal_id": "01M21X1P06WCPR7JGC4DP88XB1",
+    "resolved_event_id": "01M21X1PDXVDW0E2TBZ4A4P4DC",
+    "source_id": "01M21QQH53JR8QW1W5K5VJRNS7"
+  },
+  "code": "proposal_recorded",
+  "error": null,
+  "event": {
+    "branch_id": null,
+    "created_at": 1788917897661,
+    "event_type": "proposal.applied",
+    "id": "01M21X1PDXVDW0E2TBZ4A4P4DC",
+    "importance": "normal",
+    "payload": {
+      "actor": "codex-primary",
+      "after_fingerprint": "sha256:3e6bdc2484e71781970f8eac942016b542df4217284163977b9f362efcdae369",
+      "attempt_event_id": "01M21X1PDC452H5M12D6NJ7S5A",
+      "before_fingerprint": "sha256:2853f8867268035b8d60c7ee178fae2be0d24b3222fdbb30d0e111ffb516aaaf",
+      "proposal_id": "01M21X1P06WCPR7JGC4DP88XB1",
+      "reason": "应用已核对的 QH-REVIEW 元数据修正。",
+      "source_id": "01M21QQH53JR8QW1W5K5VJRNS7",
+      "source_revision": 14,
+      "target_after_hash": "d4184a9f25f4b74cd81899f1c5f1b719742c324e1c4791f33c7ff43fd9773c48",
+      "target_revision": 4,
+      "write_plan_id": "01M21X1PCW41MDCYN6XZZQQ2FM"
+    },
+    "project_id": "01M21QQH4Z2YQCA7PQZDZ8STC9",
+    "project_revision": 130,
+    "session_id": null,
+    "summary": "Verified source mutation and projection",
+    "work_item_id": "01M21QQH54H74PB9525DPEKQ5Z"
+  },
+  "ok": true,
+  "project_revision": 130,
+  "proposal": {
+    "base_fingerprint": "sha256:2853f8867268035b8d60c7ee178fae2be0d24b3222fdbb30d0e111ffb516aaaf",
+    "created_by_session": null,
+    "expected_revision": 123,
+    "id": "01M21X1P06WCPR7JGC4DP88XB1",
+    "mutation_type": "update_fields",
+    "patch": {
+      "changes": {
+        "next_action": "待原执行者提交整改包后，由不同参与者返检 QH-R01 至 QH-R05；返检范围仍限安排与证据边界，不替代目录级和外部确认。",
+        "summary": "luna_worker 已完成安排级独立复核，结论为 requires_executor_changes，并记录 QH-R01 至 QH-R05；该结论未覆盖实际目录、标题、域名、停用日期或门户上线。"
+      },
+      "intent": "将已形成的独立复核结论和范围写回工作摘要，并为整改后的返检准备准确下一步。",
+      "source_config": {
+        "adapter_options": {},
+        "adapter_version": 1,
+        "mapping_key": "ledger|work-ledger.yaml"
+      },
+      "target": {
+        "kind": "work_item",
+        "meta": {
+          "external_key": "QH-REVIEW",
+          "id": "01M21QQH54H74PB9525DPEKQ5Z",
+          "revision": 3,
+          "source_ref": {
+            "end_line": null,
+            "locator": "file:///Users/mac/Documents/originone/agent-work-running/.local/business-live-20260909-v1/project-onboarding/project/work-ledger.yaml",
+            "pointer": "/work_items/2",
+            "section_fingerprint": null,
+            "source_fingerprint": "sha256:2853f8867268035b8d60c7ee178fae2be0d24b3222fdbb30d0e111ffb516aaaf",
+            "source_id": "01M21QQH53JR8QW1W5K5VJRNS7",
+            "source_revision": 13,
+            "start_line": null
+          }
+        }
+      },
+      "version": 1
+    },
+    "project_id": "01M21QQH4Z2YQCA7PQZDZ8STC9",
+    "revision": 5,
+    "source_id": "01M21QQH53JR8QW1W5K5VJRNS7",
+    "status": "applied",
+    "work_item_id": "01M21QQH54H74PB9525DPEKQ5Z"
+  },
+  "recovery_directory": ".awr/mutations/01M21X1PCW41MDCYN6XZZQQ2FM",
+  "source_check": null,
+  "source_refresh_performed": true,
+  "source_write_performed": true,
+  "write_outcome": "applied"
+}
+

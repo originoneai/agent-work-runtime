@@ -1,0 +1,1295 @@
+{
+  "kind": "sealed_native_client_turn_review_extract",
+  "phase": "review-correction",
+  "client": "Codex CLI",
+  "client_task_id": "01a08379-ef89-7173-917d-274662891bcb",
+  "actual_user_turn": {
+    "timestamp": "2026-09-09T01:27:33.055Z",
+    "text": "请处理独立复核记录中的问题，更新依赖清单、上下文引用和工作记录，让它们与最新简报保持一致，并逐条保留处理回执。尚未取得的文档、标题、域名和停用日期继续列为明确的移交事项，不补造事实；交接包要清楚说明本次安排复核能覆盖的范围。保留技术参考查找偏离的历史记录，解释未验证来源引用与显式验证记录的区别。完成后把修订后的材料交回复核者检查，这一轮先不提交最终交付。"
+  },
+  "original_input_sha256": "7417524ef547fd8488c91eb3377204749a9b23e72c9ecaa192b663b179a8f786",
+  "native_transcript_snapshot_sha256": "9fc169a4f961ed6d839b56a5cb5ed2cf62d997fb10df25e3734068cb27294cd3",
+  "events_sha256": "230189f6c132864556b8b64f2eb34298ea4701776fa7d68b015aa3db7c3fff76",
+  "final_message": "已完成整改并交回独立复核队列，本轮没有提交最终交付。\n\n主要材料：\n\n- [逐条处理回执](</Users/mac/Documents/originone/agent-work-running/.local/business-live-20260909-v1/project-onboarding/project/deliverables/qh-review-response.md:17>)\n- [更新后的依赖清单](</Users/mac/Documents/originone/agent-work-running/.local/business-live-20260909-v1/project-onboarding/project/deliverables/qinghe-dependencies.md:7>)\n- [更新后的上下文引用](</Users/mac/Documents/originone/agent-work-running/.local/business-live-20260909-v1/project-onboarding/project/deliverables/qinghe-context-reference.md:25>)\n\n处理结果：\n\n- `QH-R01`–`QH-R05` 均保留了处理动作、证据路径、当前状态和返检点。\n- 修正了四个工作项中过时的摘要和下一步。\n- 文档、标题、目录、域名及停用日期继续作为明确移交事项，没有补造事实。\n- 安排级返检与目录级复核已明确分开。\n- locator-only Unknown 仅代表未绑定验证信息的来源引用；显式记录包含哈希、源码 SHA、命令和时间，可标记为本地已验证，但仍不等于独立复核或业务验收。\n- 技术查找偏离记录保持原样，SHA-256 仍为 `0aa782...2920`，未追认合规。\n- 最新简报和原独立复核记录均未修改。\n\nAWR 当前 revision 151：`QH-REVIEW` 已重新开放并 ready；`QH-DELIVER` 保持 planned，因返检未完成而 blocked。整改证据为 `QH-REVIEW-REMEDIATION-HANDOFF-20260909`，等级仅为 `locally_verified`。项目中没有 `deliverables/qh-delivery.md`，也未创建 Git 提交。\n\n按 `karpathy-guidelines`，本轮仅修改指定材料和必要的台账字段，保留了原简报、独立复核文件及历史记录。",
+  "final_message_sha256": "ab665c89d28c21c31b9426fbbdb16eaadacd40b47ce9fff111966b9ac1b9174a",
+  "project_sources_sha256": {
+    "project.toml": "9c45ae191289ed0a40883e2120e47eaaa8e3af301c350928b11629406d6c503f",
+    "GOALS.md": "575f650e4ff9b782bebdb8830f5b2670a3bdc447a41ff84e53eec7cf35c249a8",
+    "PLAN.md": "2d726e0e77754a51f779b5eee59ac29c919a4e7ab87b2a43a53a74938b2ba053",
+    "RULES.md": "05c7d1e94f96e3f6bdaccfd8790895a07e11472fe95542c046eb570456ad218d",
+    "work-ledger.yaml": "4db09cdb71fd2f9b6bf34ded6a9ea9e2fd5bf1567215881efa9c6a0ebe25985c",
+    "AGENTS.md": "581c28e430d08fc07fe5d98322b936c79018d654d1c5764eb7e7e7604fa11a39",
+    "DELIVERABLES.md": "32a59caa8ca42ee5481b32777a40777af6ff36076bdd68355b669f44058c56f4"
+  },
+  "artifacts_sha256": {
+    "deliverables/qh-independent-review.md": "cfd81dd8bbc85608a1d6210d9f482dd300b71af8687fb3efc3538b3a8ac19de1",
+    "deliverables/qh-review-response.md": "92bc899572eab62027c30ec143b75fd9c9c8971569888493a14e17e31d43398d",
+    "deliverables/qinghe-brief.md": "31b843562c3918b531d774e1ab19b7b6912db627de6ce2dc4ba37515fa1cfccd",
+    "deliverables/qinghe-context-reference.md": "fde028a64afc2d1f8543aa28ee7c90375714aa583ea778b9de7d25e9d7f4124a",
+    "deliverables/qinghe-dependencies.md": "42f98e5869ff2edc64b11a51a021b390e1586ea8ad7c1fcf09b1dc0c340385f5"
+  },
+  "receipt_files": {
+    ".work-receipts/20260909-QH-BRIEF-checkpoint.json": {
+      "sha256": "031b14a0a61c48069b3a14c5912e93b3d39542be4e590130eb3506bea9d70ce9",
+      "bytes": 2183
+    },
+    ".work-receipts/20260909-QH-BRIEF-complete.json": {
+      "sha256": "8fb34c02b832402a808b9c1a2725daf48196a0af9c4c21e2185993349781f375",
+      "bytes": 8124
+    },
+    ".work-receipts/20260909-QH-BRIEF-completion.json": {
+      "sha256": "b3516f0cad91acd61854ea9f101e4d0f0bdfff1e85138da9a4962dd42309b381",
+      "bytes": 455
+    },
+    ".work-receipts/20260909-QH-BRIEF-context-bootstrap.json": {
+      "sha256": "e6a4089bb797faad325831080e7752fbaf823321f9f9603f9188f16e90cee245",
+      "bytes": 6178
+    },
+    ".work-receipts/20260909-QH-BRIEF-context-compile.json": {
+      "sha256": "10402a9a5696bfef54d52b166eac373ea579d3cca7699a7ceb758884832acea4",
+      "bytes": 15565
+    },
+    ".work-receipts/20260909-QH-BRIEF-context-completed.json": {
+      "sha256": "98df67aae5551bd2d8ca3208f2327019301940ee0f1a6ff1055ed99083de5bad",
+      "bytes": 18872
+    },
+    ".work-receipts/20260909-QH-BRIEF-evidence-add.json": {
+      "sha256": "bfc01010feea0e4b72a9fb949e545e96720169b8dbbce81eb0acaa57edb3f017",
+      "bytes": 1143
+    },
+    ".work-receipts/20260909-QH-BRIEF-evidence-draft.json": {
+      "sha256": "8b824f925dca84c4bb367b50695d12c27a9450a8dec3d4d377485d070b07bf07",
+      "bytes": 738
+    },
+    ".work-receipts/20260909-QH-BRIEF-evidence-report.json": {
+      "sha256": "9db47a081a7d431c2590eacffa4cfb3e20a8087152bd8b4d33099f31ec53b59c",
+      "bytes": 1971
+    },
+    ".work-receipts/20260909-QH-BRIEF-final-ready.json": {
+      "sha256": "5d10d0ccd2709edf2843fc96c79155849def62ac2d5e3ba5bbee452a70164455",
+      "bytes": 1736
+    },
+    ".work-receipts/20260909-QH-BRIEF-final-status.json": {
+      "sha256": "6b94a6fce3ec5ccacdb513fdb738cf1df10080d164e2017e1234473d25583b1e",
+      "bytes": 1024
+    },
+    ".work-receipts/20260909-QH-BRIEF-progress.json": {
+      "sha256": "bb1edf2bfbb9a31656e22152892d31435606541f61c92c87d4d1eaeac63a4257",
+      "bytes": 4386
+    },
+    ".work-receipts/20260909-QH-BRIEF-rules-change-checkpoint.json": {
+      "sha256": "3295b7ea4ce3627504373b22d61299fbdbf3cc54056ce642ae38a556ffea867b",
+      "bytes": 2332
+    },
+    ".work-receipts/20260909-QH-BRIEF-rules-change-claim.json": {
+      "sha256": "6806d91f19b502f25889ee598dd45ae0c8adf00145f461432a2b300574334964",
+      "bytes": 929
+    },
+    ".work-receipts/20260909-QH-BRIEF-rules-change-complete.json": {
+      "sha256": "5707c88153eca354d9ed7aafd4865972cc16569ada78eb740b365a5b0c3f98c9",
+      "bytes": 8545
+    },
+    ".work-receipts/20260909-QH-BRIEF-rules-change-completion.json": {
+      "sha256": "6ec3e3c9e777437e7fab166dc6cb7595fe195d390da8ead41e2b309f7851a4b3",
+      "bytes": 465
+    },
+    ".work-receipts/20260909-QH-BRIEF-rules-change-context-bootstrap.json": {
+      "sha256": "95b69cefabc7a4b57e3f7fcee13a1e602591cb39c527975a8b03173f58d4ec52",
+      "bytes": 21060
+    },
+    ".work-receipts/20260909-QH-BRIEF-rules-change-context-compile.json": {
+      "sha256": "8328dacf5bfd024a7bcdef3580440f56773fc71f730bbb37fea286ca9527cd88",
+      "bytes": 22287
+    },
+    ".work-receipts/20260909-QH-BRIEF-rules-change-context-completed.json": {
+      "sha256": "de726e5e8b29d70e685dd205721a6ca9cf63379eb79aaab8df98586466a47472",
+      "bytes": 25865
+    },
+    ".work-receipts/20260909-QH-BRIEF-rules-change-detached-context.json": {
+      "sha256": "c19d0d6e6b470661b0bc0cd1a80c5571adfaf828c5b21c1f656a590351b3747a",
+      "bytes": 20918
+    },
+    ".work-receipts/20260909-QH-BRIEF-rules-change-evidence-add.json": {
+      "sha256": "d1c848f439ff34d6b56322f4c8014abf3f0ace8d0b33ffd8f0da834ab89eb917",
+      "bytes": 1242
+    },
+    ".work-receipts/20260909-QH-BRIEF-rules-change-evidence-draft.json": {
+      "sha256": "49797543f9a85b7a22a43a1a8c754278ca02595e25834731eb6e2d07fc2b0394",
+      "bytes": 836
+    },
+    ".work-receipts/20260909-QH-BRIEF-rules-change-evidence-report.json": {
+      "sha256": "7fe4e64248e6bac2ae5aa874a94cac331f67a19bcd0e30da336caa1b584f85a6",
+      "bytes": 3247
+    },
+    ".work-receipts/20260909-QH-BRIEF-rules-change-final-ready.json": {
+      "sha256": "a635de8098bb8980df1b002674b89443c1a2670955cc7bb1508030e4af43c343",
+      "bytes": 1737
+    },
+    ".work-receipts/20260909-QH-BRIEF-rules-change-final-status.json": {
+      "sha256": "fa615cdb30ba187d358b6885c0953f82a7996edf4eaa5ffc9cc88fe13c35a468",
+      "bytes": 1025
+    },
+    ".work-receipts/20260909-QH-BRIEF-rules-change-final-work-show.json": {
+      "sha256": "4c0bb869c10740b7e4e0f68013fc92e31af067428fad0b816bda77329a361506",
+      "bytes": 4108
+    },
+    ".work-receipts/20260909-QH-BRIEF-rules-change-progress.json": {
+      "sha256": "b1c9d868345166c1ea72bc65cc00eeeca9bfabacb4c0c55de21cedc0d10228d3",
+      "bytes": 4367
+    },
+    ".work-receipts/20260909-QH-BRIEF-rules-change-reopen-attempt-1.json": {
+      "sha256": "6b6c00003ebe164149bc1540a04d92d0f563503ee20989e5727814b15bb08d71",
+      "bytes": 104
+    },
+    ".work-receipts/20260909-QH-BRIEF-rules-change-reopen.json": {
+      "sha256": "fe0a4b79ab95ead7591c8ab5824942355b4011c777fdf4a2b5f70f4f3fe552f7",
+      "bytes": 4311
+    },
+    ".work-receipts/20260909-QH-BRIEF-rules-change-session-end.json": {
+      "sha256": "45d4f3320d88e1f007fc3be06bfcb8cdf5d138831b5d31298c2d57d33aead9bd",
+      "bytes": 1051
+    },
+    ".work-receipts/20260909-QH-BRIEF-rules-change-session-start.json": {
+      "sha256": "50606db8758851859a453615bbd1d2c4d94a35dd2fc00002a4d23a936fefd00a",
+      "bytes": 1013
+    },
+    ".work-receipts/20260909-QH-BRIEF-rules-change-work-show.json": {
+      "sha256": "f01b4c5add39899fcb9259787294a2147b8d420a3739d3d386b73fbfe0aa9808",
+      "bytes": 3891
+    },
+    ".work-receipts/20260909-QH-BRIEF-session-end.json": {
+      "sha256": "f4fe7cd72e49db7fa309759736fbdea0ce0d57ce1c88f9b345f47e81e8fe4206",
+      "bytes": 1050
+    },
+    ".work-receipts/20260909-QH-BRIEF-session-start.json": {
+      "sha256": "f59f18171ce596aeb1aca9aaa5557ec27c017cb354abd121d3af9f9b6115df07",
+      "bytes": 1389
+    },
+    ".work-receipts/20260909-QH-INPUT-checkpoint-completed.json": {
+      "sha256": "c1395fc34e438fb542e495c8bb73746d17c8d5ea9d8b7308d9618fc719d56534",
+      "bytes": 2077
+    },
+    ".work-receipts/20260909-QH-INPUT-checkpoint.json": {
+      "sha256": "b9e530d9e6c9af883d7c1d265aa6ae11bfab2db491dbb335d06e603a50904b70",
+      "bytes": 2090
+    },
+    ".work-receipts/20260909-QH-INPUT-complete.json": {
+      "sha256": "d6972575d6161bd22e670300dc4abc1cbbe1f6d4168b43af63a4dc40f697a629",
+      "bytes": 8003
+    },
+    ".work-receipts/20260909-QH-INPUT-completion.json": {
+      "sha256": "77fcd36bb1cdafed4df8cf16735b36d268a53a9f2b698599dfd2ed6543557680",
+      "bytes": 461
+    },
+    ".work-receipts/20260909-QH-INPUT-context-bootstrap.json": {
+      "sha256": "3ea15e8ebcd64dda6f144352bf5dbf8032dcb6f64adaa0b57ccc0bef458579e6",
+      "bytes": 6132
+    },
+    ".work-receipts/20260909-QH-INPUT-context-compile.json": {
+      "sha256": "215e667763208ccdb5d0abe550d5a04a3537c1eb562d1b35c030c50878f193e8",
+      "bytes": 15014
+    },
+    ".work-receipts/20260909-QH-INPUT-context-completed.json": {
+      "sha256": "b1f63069d6a71c16d2fa250fe5ff785a83d8cfdb390a553be9cb6707174d4931",
+      "bytes": 21455
+    },
+    ".work-receipts/20260909-QH-INPUT-context-current.json": {
+      "sha256": "7fbbe77a651654dbcb3da459e7c6588fe36e42ecfc69cdc71a65c812c8fa281d",
+      "bytes": 15881
+    },
+    ".work-receipts/20260909-QH-INPUT-context-resumed.json": {
+      "sha256": "693a07e0c795764deef969f26923344e7af86319726778fc0f48e58adc063533",
+      "bytes": 16262
+    },
+    ".work-receipts/20260909-QH-INPUT-evidence-add.json": {
+      "sha256": "848167dc353e70296c696dc60bcb217f06a62b795e821ca6b6747f9b5b35ac73",
+      "bytes": 1081
+    },
+    ".work-receipts/20260909-QH-INPUT-evidence-draft.json": {
+      "sha256": "f6cff8195a73b3072d29f85fbbf65039d5eae2b811502eb677c86099a13c314a",
+      "bytes": 676
+    },
+    ".work-receipts/20260909-QH-INPUT-evidence-report.json": {
+      "sha256": "f960af00e8a4542aad91ba86064d2370505bda4170663a44a96647661bbf4a9c",
+      "bytes": 1403
+    },
+    ".work-receipts/20260909-QH-INPUT-progress-update.json": {
+      "sha256": "1bfd15c8d71e6fb84df8ccea49ed506078938a4d277b02a8f7ea993e6bd6b625",
+      "bytes": 4419
+    },
+    ".work-receipts/20260909-QH-INPUT-session-end.json": {
+      "sha256": "3a3a577f32691fa4db871ae39eecfe96d1a7d52e97dd5107c080e8392db9e6f8",
+      "bytes": 1050
+    },
+    ".work-receipts/20260909-QH-INPUT-session-start.json": {
+      "sha256": "9ef0f1754e6f15b739f072e7d50c22ffa1c8899a242b572843c7f72ae96e4aed",
+      "bytes": 1389
+    },
+    ".work-receipts/20260909-QH-INPUT-work-progress.json": {
+      "sha256": "6a6ca9c0a825cd39d8020121f50b4206d572d72e904089448330746f2ff6c1ad",
+      "bytes": 4191
+    },
+    ".work-receipts/20260909-QH-REMEDIATION-checkpoint.json": {
+      "sha256": "6c6e0d0424b17ed9aa01456e427c93596ca52fab650e3e303e65391e98c2cdb5",
+      "bytes": 2623
+    },
+    ".work-receipts/20260909-QH-REMEDIATION-context-bootstrap.json": {
+      "sha256": "cd6222703690d54b95e0a3b8212556929eb49f0c5815abe235079f4ca4138f84",
+      "bytes": 15548
+    },
+    ".work-receipts/20260909-QH-REMEDIATION-context-compile.json": {
+      "sha256": "dd51577c01d9a60ba454de5d7cd1b76f13a602c82e9ad0852e033f4874d0573d",
+      "bytes": 15543
+    },
+    ".work-receipts/20260909-QH-REMEDIATION-context-handoff.json": {
+      "sha256": "e2336215dcfa5d02387bc57895f842a057feeb94677f5248564e976810c61504",
+      "bytes": 23850
+    },
+    ".work-receipts/20260909-QH-REMEDIATION-evidence-add.json": {
+      "sha256": "9758fb5a4e4e76526b033b618c571a83dad334073860cd3bca845e0a94713744",
+      "bytes": 1594
+    },
+    ".work-receipts/20260909-QH-REMEDIATION-evidence-draft.json": {
+      "sha256": "56f2cb3fb31df9f7d189d9e5f81b73de1c4e5b7503fcdf6e7f4f4d8300c33ba8",
+      "bytes": 1187
+    },
+    ".work-receipts/20260909-QH-REMEDIATION-evidence-report.json": {
+      "sha256": "24893337a2d942fb3db1493d42b2ea1314293641ddec65bb3cdefdedf44329a1",
+      "bytes": 6034
+    },
+    ".work-receipts/20260909-QH-REMEDIATION-final-ready.json": {
+      "sha256": "9122dec940980af321890e15bc60e95d82eb4fd5ea61b422602eb0b51f9fd779",
+      "bytes": 2257
+    },
+    ".work-receipts/20260909-QH-REMEDIATION-final-status.json": {
+      "sha256": "1f2680977a1ee79990177bab9d5cbbc532b42718010d80379efe6b170a7d005b",
+      "bytes": 1481
+    },
+    ".work-receipts/20260909-QH-REMEDIATION-handoff-event-attempt-1.json": {
+      "sha256": "74078389124d2b9d9b249c98dd25344f2288048142fb4df18f2c486f1f965d2d",
+      "bytes": 119
+    },
+    ".work-receipts/20260909-QH-REMEDIATION-handoff-event-payload.json": {
+      "sha256": "9c170d1e9acbb57a5ea85ee1e8cf2971ce78bfaf5ea88c9e053411af2017cbed",
+      "bytes": 2000
+    },
+    ".work-receipts/20260909-QH-REMEDIATION-handoff-event.json": {
+      "sha256": "03e59b9316202d1afcb032653c09fdf484350f82f1d786f0f308cdb3dab848b6",
+      "bytes": 636
+    },
+    ".work-receipts/20260909-QH-REMEDIATION-initial-ready.json": {
+      "sha256": "3d163100c0c2ba564e54569c8d0b5c9c69485282ee48f760b721e1d040ea291e",
+      "bytes": 940
+    },
+    ".work-receipts/20260909-QH-REMEDIATION-initial-status.json": {
+      "sha256": "9d463f8903f4d5b13f960f89541137b6b2d6f9759939a68e2185543797400751",
+      "bytes": 1052
+    },
+    ".work-receipts/20260909-QH-REMEDIATION-ledger-QH-BRIEF-apply.json": {
+      "sha256": "68e63c754c68bfde4cbe3368442d42a4d79322856f920dfb064936cc3f9d0d57",
+      "bytes": 3916
+    },
+    ".work-receipts/20260909-QH-REMEDIATION-ledger-QH-BRIEF-approve.json": {
+      "sha256": "86b422a87125b9d37b87c7870d740d0b43a89df83ec9a3cd24cf47515e825e85",
+      "bytes": 3563
+    },
+    ".work-receipts/20260909-QH-REMEDIATION-ledger-QH-BRIEF-create.json": {
+      "sha256": "d3760ee3cc1410a5f0dab83ed4263e7aab7a1bc69ce60b67d75e89ccfdf6d0a8",
+      "bytes": 3425
+    },
+    ".work-receipts/20260909-QH-REMEDIATION-ledger-QH-BRIEF-patch.json": {
+      "sha256": "937e25092c28a76cbb2f6943213bfae0434221001a7c626f4f54513fb52329a3",
+      "bytes": 360
+    },
+    ".work-receipts/20260909-QH-REMEDIATION-ledger-QH-BRIEF-submit.json": {
+      "sha256": "456a46843e0d14425dd0bd4ee0f24ff0aad23e6e49cd7aa159245d57a488dbab",
+      "bytes": 3506
+    },
+    ".work-receipts/20260909-QH-REMEDIATION-ledger-QH-DELIVER-apply.json": {
+      "sha256": "bf4c173fbe61a27a2f77c8f1b3a73abb06a0cd6395aa8e40ecae6cd0bd62f6f3",
+      "bytes": 3878
+    },
+    ".work-receipts/20260909-QH-REMEDIATION-ledger-QH-DELIVER-approve.json": {
+      "sha256": "3979b07bc85f28473a1ceb9a9d62e44a366e2988dc08d5b957d5e9fa25161ba0",
+      "bytes": 3492
+    },
+    ".work-receipts/20260909-QH-REMEDIATION-ledger-QH-DELIVER-create.json": {
+      "sha256": "1f0fde5ed1a520c151a17179c689874f34b1cbfb6c028760bbaaa77199e58c5d",
+      "bytes": 3357
+    },
+    ".work-receipts/20260909-QH-REMEDIATION-ledger-QH-DELIVER-patch.json": {
+      "sha256": "9ae7fc575c1a0008261acefeb494aaac91de747eb3b640a57fbef4d212ec8d36",
+      "bytes": 348
+    },
+    ".work-receipts/20260909-QH-REMEDIATION-ledger-QH-DELIVER-submit.json": {
+      "sha256": "4aef90f18f8883834750f2e399be88c263bdf785668dafac7d4f2c9919d3794b",
+      "bytes": 3430
+    },
+    ".work-receipts/20260909-QH-REMEDIATION-ledger-QH-INPUT-apply.json": {
+      "sha256": "e6e66a8ee3d0867e7bae9428e31658e40a005cceb962033eacf65c3f948121f6",
+      "bytes": 3967
+    },
+    ".work-receipts/20260909-QH-REMEDIATION-ledger-QH-INPUT-approve.json": {
+      "sha256": "b8dd1af0c32ec33745a879e8e29f54f976a23f5875f51cf3d10b0db6bf391619",
+      "bytes": 3617
+    },
+    ".work-receipts/20260909-QH-REMEDIATION-ledger-QH-INPUT-create-attempt-1.json": {
+      "sha256": "2da5594bb5f7d0bafd90676da4102ae106bf4407949fdd39dd1adb65cde10310",
+      "bytes": 99
+    },
+    ".work-receipts/20260909-QH-REMEDIATION-ledger-QH-INPUT-create.json": {
+      "sha256": "a147948e7627dfc1e825e59cb76131ec48acc811053215674b20db691b265457",
+      "bytes": 3470
+    },
+    ".work-receipts/20260909-QH-REMEDIATION-ledger-QH-INPUT-patch.json": {
+      "sha256": "f988a081cd9e56313140855dbdcffbf48a4462d7c57e8552fc4d354557c57624",
+      "bytes": 417
+    },
+    ".work-receipts/20260909-QH-REMEDIATION-ledger-QH-INPUT-submit.json": {
+      "sha256": "dcea66ac8f1ad861e693aff53a6601c357a5cc73004bb3c997c4e609559668ea",
+      "bytes": 3559
+    },
+    ".work-receipts/20260909-QH-REMEDIATION-ledger-QH-REVIEW-apply.json": {
+      "sha256": "b756a941502149aab13c4578b0661d4ca230bf719cec199116b062750b6d4d68",
+      "bytes": 3955
+    },
+    ".work-receipts/20260909-QH-REMEDIATION-ledger-QH-REVIEW-approve.json": {
+      "sha256": "a8218665d60a07dded847618cae82a3f86fd7d9bb945dac06eb58b1028dfa0ff",
+      "bytes": 3593
+    },
+    ".work-receipts/20260909-QH-REMEDIATION-ledger-QH-REVIEW-create.json": {
+      "sha256": "c8e15ccc96cf3f3b0c01c80afdd637ea239efab51cbb3c63b0a0902d6e7f4b9e",
+      "bytes": 3467
+    },
+    ".work-receipts/20260909-QH-REMEDIATION-ledger-QH-REVIEW-patch.json": {
+      "sha256": "8bd91b21e81c48d298f4c48049a843a72c6d4c8840722e0dd74bde2975dc6b14",
+      "bytes": 394
+    },
+    ".work-receipts/20260909-QH-REMEDIATION-ledger-QH-REVIEW-submit.json": {
+      "sha256": "2f6ffa46007b9dbe38778d10b3dfe9a9e7d16a185a868596dee0ab8c3c6ffdfa",
+      "bytes": 3561
+    },
+    ".work-receipts/20260909-QH-REMEDIATION-ready-before-evidence.json": {
+      "sha256": "b5fe91730005f0f451c10871d0d2c40206adcde6d30fbdecd98b2f9c77f63243",
+      "bytes": 2656
+    },
+    ".work-receipts/20260909-QH-REMEDIATION-review-reopen.json": {
+      "sha256": "bbe857b692625664a36fbedaaccee8dcf1d775ca28401def84cf313bf0da85c7",
+      "bytes": 4575
+    },
+    ".work-receipts/20260909-QH-REMEDIATION-review-return-session-end.json": {
+      "sha256": "29f79b05417935739aea5daaa39ff3105dee17112c983f83b5c8d6d6f1090c73",
+      "bytes": 1031
+    },
+    ".work-receipts/20260909-QH-REMEDIATION-review-return-session-start.json": {
+      "sha256": "ac81334ae69507baa394fbede64fff3027d7d73ebb946488a6cccc5f54e4e10d",
+      "bytes": 1016
+    },
+    ".work-receipts/20260909-QH-REMEDIATION-session-end.json": {
+      "sha256": "1a5cb303ce54cebfa83d45d06cdbfdf53c1c7dc32f682e8a667b23a6cd9b3966",
+      "bytes": 1096
+    },
+    ".work-receipts/20260909-QH-REMEDIATION-session-start.json": {
+      "sha256": "f39fa1cfe66aff6d0b822f1eec88f001a2934b4fd856586d35728f3948770f4a",
+      "bytes": 1384
+    },
+    ".work-receipts/20260909-QH-REMEDIATION-status-before-evidence.json": {
+      "sha256": "678ce94058c08210142578d14e38f68af9b40b5726bd0aac0d7aac9f714b1156",
+      "bytes": 1481
+    },
+    ".work-receipts/20260909-QH-REMEDIATION-verification.json": {
+      "sha256": "43a307f91b01a84e1d9ef1ddd1f477fedb6e1a74a01ea1a861e1fb7b5e103667",
+      "bytes": 7882
+    },
+    ".work-receipts/20260909-QH-REMEDIATION-work-show-qh-brief-final.json": {
+      "sha256": "9520591b986d35edf79597c2093f8ba24f10e6ea61c77305c5807aa06331a89b",
+      "bytes": 4284
+    },
+    ".work-receipts/20260909-QH-REMEDIATION-work-show-qh-brief.json": {
+      "sha256": "7ca21ec8cde901ff5af98c934411d6c77b5eb21fda83759c54f91f3b5cfd85dd",
+      "bytes": 4112
+    },
+    ".work-receipts/20260909-QH-REMEDIATION-work-show-qh-deliver-final.json": {
+      "sha256": "da7972d42495c60b7bcaede7bdaac8e88fcfb9d77a12871d47707d9a4cdd43f5",
+      "bytes": 2826
+    },
+    ".work-receipts/20260909-QH-REMEDIATION-work-show-qh-deliver-post-handoff.json": {
+      "sha256": "16728ac05c9dbb250a2523cbbed30c64c769f8cc95f6b4bc3d62ddaa00368045",
+      "bytes": 3003
+    },
+    ".work-receipts/20260909-QH-REMEDIATION-work-show-qh-deliver.json": {
+      "sha256": "95214521d4144c5da028529cbe3267f3f6732863be9aef6ae2604169368fcd35",
+      "bytes": 2458
+    },
+    ".work-receipts/20260909-QH-REMEDIATION-work-show-qh-input-final.json": {
+      "sha256": "89803dc1ff8fc176a8f55462d57067d0360e7c903af3c623aa6b2f7d0900e47f",
+      "bytes": 3109
+    },
+    ".work-receipts/20260909-QH-REMEDIATION-work-show-qh-input.json": {
+      "sha256": "0f5bc2f715f902c39be3645cc1a9a2ab2450d5e16de207792ea17fa624c26cd2",
+      "bytes": 3015
+    },
+    ".work-receipts/20260909-QH-REMEDIATION-work-show-qh-review-final.json": {
+      "sha256": "7c4f31d8f62440f86f7614da17cb170b4fd87a90a2c2e479d4652f6def3646da",
+      "bytes": 3328
+    },
+    ".work-receipts/20260909-QH-REMEDIATION-work-show-qh-review-post-handoff.json": {
+      "sha256": "482ba4a1f7de3968805f0cff0c3aa169e64c2a85c414839527e12f207546fc90",
+      "bytes": 3328
+    },
+    ".work-receipts/20260909-QH-REMEDIATION-work-show-qh-review.json": {
+      "sha256": "322757f068323a6b646ed0a20736c7244d975f2bce68cd0a18314f538deadc8a",
+      "bytes": 3312
+    },
+    ".work-receipts/20260909-project-status-after-checkpoint.json": {
+      "sha256": "4d63fa0d1842f88232841f88b62e19a7cc9bfc799a51bc64be3ccb8a30c04b7d",
+      "bytes": 2027
+    },
+    ".work-receipts/reviewer-artifact-add.json": {
+      "sha256": "091cb5694b8c5c97518258bdf7600503f8d45b6841301aa5da50bca9634e823c",
+      "bytes": 578
+    },
+    ".work-receipts/reviewer-build-control.rb": {
+      "sha256": "fcbffc51b87596cfd885b6f71d41b5ad4710c4292ee1effde9a8412c48e6f5d7",
+      "bytes": 8680
+    },
+    ".work-receipts/reviewer-checkpoint.json": {
+      "sha256": "3e43eaae95793c6e8b96dec4ed69d272ff3f97a53b75004775bd66fd8a14fef5",
+      "bytes": 2383
+    },
+    ".work-receipts/reviewer-completion.json": {
+      "sha256": "685bffc9c87dfb76b79ec00b7eed8f05f773cb932f473fc8a6de8b7438226dae",
+      "bytes": 455
+    },
+    ".work-receipts/reviewer-context-compile.json": {
+      "sha256": "7e1038f5be25a452013e877dcef2aeec5bfa8eee1251bf35ba76385d2cf50424",
+      "bytes": 15000
+    },
+    ".work-receipts/reviewer-evidence-add.json": {
+      "sha256": "142a1b385e88944f797a67a7954a0c5f980771ab72c760f3652aa635d66f75dc",
+      "bytes": 1137
+    },
+    ".work-receipts/reviewer-evidence-draft.json": {
+      "sha256": "c99abf9f0bf87e0b5aff9a9bcff1dea06caafde769f8602c64b77227562527bb",
+      "bytes": 733
+    },
+    ".work-receipts/reviewer-final-status.json": {
+      "sha256": "5b6b0633595fc1cfbf00bb331a98e79fcc50cbfceeb0033209db66010c87c94f",
+      "bytes": 1051
+    },
+    ".work-receipts/reviewer-final-work-show.json": {
+      "sha256": "91a4e6703089e354e76f8d136a4e79ae76fab8a38071982c268e87ef74e2ccc5",
+      "bytes": 3311
+    },
+    ".work-receipts/reviewer-progress.json": {
+      "sha256": "4ce467385b7f885df27265b969998fe38f51ed9f566901d9415de0055acbaf6b",
+      "bytes": 4417
+    },
+    ".work-receipts/reviewer-reviewed-files.json": {
+      "sha256": "fa40e07d05f6d185578bcc171487e38876f67c6c8af9e5a9aecaa8f1e4c90351",
+      "bytes": 3757
+    },
+    ".work-receipts/reviewer-session-end.json": {
+      "sha256": "7f68eaad53154e624bc31f2c4db86a157010f83016119b43b0563e82459a4774",
+      "bytes": 1057
+    },
+    ".work-receipts/reviewer-session-start.json": {
+      "sha256": "a0a467df0f33940537721a5e0ac846a0aefb58de61083dc82648612010423c21",
+      "bytes": 1382
+    },
+    ".work-receipts/reviewer-verification.json": {
+      "sha256": "79f2d118934d201ee9ed928c283c6c7bc8602700d94ca6dd39027503f04a39c9",
+      "bytes": 2043
+    },
+    ".work-receipts/reviewer-verify.rb": {
+      "sha256": "e5d06a1d19bf7e22ce189e097cc5a23555f3fd97db0b8d1afc285f607480ea93",
+      "bytes": 6457
+    },
+    ".work-receipts/reviewer-work-complete.json": {
+      "sha256": "76146d2e93014d0f2a98984c9873bdda86eebac81226de6bd75e1ee273766710",
+      "bytes": 8146
+    },
+    ".work-receipts/reviewer-work-qh-brief.json": {
+      "sha256": "50cdcdaaa25d6c3522a3598c2c6fd0575c0836c105e4faea589a65eabbfc8cd4",
+      "bytes": 4110
+    },
+    ".work-receipts/reviewer-work-qh-input.json": {
+      "sha256": "2344990e05d2eeb3a064c61e47be309a6e5bd87637edc22d5587a847f9c16b69",
+      "bytes": 3013
+    }
+  },
+  "commands": [
+    {
+      "event_line": 5,
+      "native_item_id": "item_1",
+      "exit_code": 0,
+      "command_sha256": "937f3921957df41024e1360c844751f8df8919d906f95cb377c5b5bb469d3cab",
+      "output_sha256": "6e22cc54cb02a5e98ae42d06d9d7292db0c1b43894831b32879beb0166b2aea7"
+    },
+    {
+      "event_line": 7,
+      "native_item_id": "item_2",
+      "exit_code": 0,
+      "command_sha256": "50409dd37c74dcc2eca9ee00b7efaba095c0e3a7119859fc820181b46a01f35e",
+      "output_sha256": "5b6b0633595fc1cfbf00bb331a98e79fcc50cbfceeb0033209db66010c87c94f",
+      "business_tool_command": "/bin/zsh -lc 'rtk proxy <awr> --project <business-project> --json status'"
+    },
+    {
+      "event_line": 9,
+      "native_item_id": "item_3",
+      "exit_code": 0,
+      "command_sha256": "ccdd7851daee3c59e5f4c7337852bf81a7f842c384ea73af95a4dddad7197f72",
+      "output_sha256": "c1236ffd26c62c5a68171106df874e84f3c01cd3d6ea629d42f7ccf28683b36e",
+      "business_tool_command": "/bin/zsh -lc 'rtk proxy <awr> --project <business-project> --json ready'"
+    },
+    {
+      "event_line": 11,
+      "native_item_id": "item_4",
+      "exit_code": 0,
+      "command_sha256": "a343992639c9ca906d55a1ac8a751ded34a6188fce5822a22ac19abc652460b4",
+      "output_sha256": "e4943326fd6f5e600b8cf7a66070d129c43559d1cd3dd6df53933d0e967c1199"
+    },
+    {
+      "event_line": 13,
+      "native_item_id": "item_5",
+      "exit_code": 0,
+      "command_sha256": "40ef9d62532e00941a7d6476c975f649ce74f73910c1750c682e5afeae683c42",
+      "output_sha256": "39014ce4c985769d070d842ed762c8a7f30af9a74da7057a44993eb86e8a3c44"
+    },
+    {
+      "event_line": 15,
+      "native_item_id": "item_6",
+      "exit_code": 0,
+      "command_sha256": "060c6d1af00cb9510aed70bb0197872ecd10bf3cad65f9d90885b14808d0eb80",
+      "output_sha256": "1826a2c222311d43f89a58b7a48f1b9d8f45a037d7a5f2a15ca6e512d3ea118b"
+    },
+    {
+      "event_line": 17,
+      "native_item_id": "item_7",
+      "exit_code": 0,
+      "command_sha256": "f9b7be02173e1c586eb35fda090558222e41d7604503eec74edd74e0ecc53729",
+      "output_sha256": "79f2d118934d201ee9ed928c283c6c7bc8602700d94ca6dd39027503f04a39c9"
+    },
+    {
+      "event_line": 19,
+      "native_item_id": "item_8",
+      "exit_code": 0,
+      "command_sha256": "cdc75ca97b4016cf45db95f74adf412c0d53b3be565b3b857f6d49b7534faf2c",
+      "output_sha256": "1962fee12eec8a4633fa4b4fa32b38e83b68bceb6581c8a5dd877b42e53e483b"
+    },
+    {
+      "event_line": 21,
+      "native_item_id": "item_9",
+      "exit_code": 0,
+      "command_sha256": "a15ff85348dc8833725b22eb65e56033dec29ef72634fb1471e5ef04d9f66496",
+      "output_sha256": "459d3bd9fb846889003e0c7ceaad6ec62605989f3cb45fa456ff3b0a31b42b35"
+    },
+    {
+      "event_line": 24,
+      "native_item_id": "item_11",
+      "exit_code": 0,
+      "command_sha256": "a6beffda1b56ef151a455d197048abba273267fe30c960d302f91715195538ba",
+      "output_sha256": "962e7a90e6ceb196dc1f37029e2e76eebaf70ee95198c0db5c5f8a3e8a5cfa64"
+    },
+    {
+      "event_line": 26,
+      "native_item_id": "item_12",
+      "exit_code": 0,
+      "command_sha256": "5e3bb13a2017d608f2bb5412ff8207e27a75b59faf3e6046a77a71980af105bf",
+      "output_sha256": "85cb0a80451fa0a83c8c9b7a5d54152c955280733b0b13f229611ccb73e2c44c"
+    },
+    {
+      "event_line": 28,
+      "native_item_id": "item_13",
+      "exit_code": 0,
+      "command_sha256": "239e3f7a47e4c9130861f2890fd90ecd9fc8713807e3aab291f582fa8417a29f",
+      "output_sha256": "01d04bc4d81375580aac8db764f2fcd52166b184e7e04e2eb41237afd684940a"
+    },
+    {
+      "event_line": 30,
+      "native_item_id": "item_14",
+      "exit_code": 0,
+      "command_sha256": "64c9a586abfe660188363171c7c386a207c3c6ac9238e2c38e2d4c44855d104e",
+      "output_sha256": "0aa782e30d7ac1f2f2b9ba65f9c2224a07404d3111ea5353f1ff0f3015722920"
+    },
+    {
+      "event_line": 32,
+      "native_item_id": "item_15",
+      "exit_code": 0,
+      "command_sha256": "376f80bdd8b284bcbdd1345f9385d7000ed3bd4ce15f47e7d49e8f05e6d2f084",
+      "output_sha256": "778e5e0c46c947f980bc648f73140b70c272cb02b51fb6f6dc41bfe10dfb1fdf"
+    },
+    {
+      "event_line": 34,
+      "native_item_id": "item_16",
+      "exit_code": 0,
+      "command_sha256": "8c118d5339fdd8a39e2c0343e15ec7b6ea14cc8375293781ad9329f769d2b850",
+      "output_sha256": "38fb66292a6bbbda67fe08dcfaa0bc3cf8f170565c56f1a568706da4ac89a6ab"
+    },
+    {
+      "event_line": 36,
+      "native_item_id": "item_17",
+      "exit_code": 0,
+      "command_sha256": "2400632e4bbc759c2e7d93b5aa88751bf63d5b7eacb18dcfaae8c8496877adc6",
+      "output_sha256": "be076c74081385060576550725cb99e58af62bfdde8fcc5b3b8fd5999a5571a2"
+    },
+    {
+      "event_line": 38,
+      "native_item_id": "item_18",
+      "exit_code": 0,
+      "command_sha256": "f9b31efc9d4b7a57430a1031cf0c1eb7df31d312c08d965079efcf60d07da365",
+      "output_sha256": "7e46bcebdf4619b6a5c8cfbc044e720ef5bc554bf743c7c0b823e88acdf4ebb2"
+    },
+    {
+      "event_line": 40,
+      "native_item_id": "item_19",
+      "exit_code": 0,
+      "command_sha256": "b3050ca991fd75f454463a552fffbd3ec35bf579f18893eb0a0a4e783e52ae79",
+      "output_sha256": "70a2fc84c26cc641dd139a17d47f11ae9342c999d6835041e2d805805cf312aa"
+    },
+    {
+      "event_line": 42,
+      "native_item_id": "item_20",
+      "exit_code": 0,
+      "command_sha256": "8faed22960ffb9d31caeb6e24d55afa04da34e387d798f714aefcdc1c5fc223a",
+      "output_sha256": "5967f584fddab98abdc02093bbca4e36c7324b26967e1d18978c128282c5b6b8"
+    },
+    {
+      "event_line": 44,
+      "native_item_id": "item_21",
+      "exit_code": 0,
+      "command_sha256": "b5a079cc0cad6eb3d43e4b1adc65f250002c852221edd5490b1333b1b3ddae26",
+      "output_sha256": "2d89550fa7a0e037ab21a19e7e2bebb6806e6eef2c609682129f322e1fac2b05"
+    },
+    {
+      "event_line": 46,
+      "native_item_id": "item_22",
+      "exit_code": 0,
+      "command_sha256": "783e41801953394c9f53a91ff9fa3afe27e92f22839a28ca9427d182ab09dc29",
+      "output_sha256": "2db0e0222aa9098f03cf2447dbf7ba9aa0db7d99dbe2ed9768f093ff219a0954"
+    },
+    {
+      "event_line": 48,
+      "native_item_id": "item_23",
+      "exit_code": 0,
+      "command_sha256": "dd82124cd8fde9fbb1d243aa9cbab904ef53bf12b84c0b8963856cf0ecd71339",
+      "output_sha256": "2b2e45eaa4999207163cfd136d29ca0f66a90ba36982817b28ac133a34f74c98"
+    },
+    {
+      "event_line": 50,
+      "native_item_id": "item_24",
+      "exit_code": 0,
+      "command_sha256": "3462c8ae2f8d0fb75146638b6b28ca92e26c9a5493aae76fbaded80c54dbc109",
+      "output_sha256": "6a89e4415ceff611526244337ec96feae9b850369b6bd2b79b15ff053d086265"
+    },
+    {
+      "event_line": 52,
+      "native_item_id": "item_25",
+      "exit_code": 0,
+      "command_sha256": "6db6e144d7f94638f9e52f31a8ea406070dd4dee4953b6b04584dbac53187305",
+      "output_sha256": "f70831ed1be4b486de652a001d4d3f5dfa9cb61e7a3f140549b03a78a41218e5"
+    },
+    {
+      "event_line": 54,
+      "native_item_id": "item_26",
+      "exit_code": 0,
+      "command_sha256": "4f8896ec21c0e2bc2a270e80bb5abc5c5749c990c8c6fe67e3d02525ef959777",
+      "output_sha256": "c2e4b3ed37f0f34bdd469575e30a6dd22b55b1bdcd8e1f0550a60f0d0c283d17"
+    },
+    {
+      "event_line": 58,
+      "native_item_id": "item_28",
+      "exit_code": 0,
+      "command_sha256": "df2c2051750f7f93109f453700dd0bdcb832672ce83d300dbc438c59c1ce4586",
+      "output_sha256": "b786d152bca1ae81f5b74540c9da0ccf88591c48b9fb2973464b1cc83f75ba36",
+      "business_tool_command": "/bin/zsh -lc \"'rtk' 'proxy' '<awr>' '--project' '<business-project>' '--json' 'session' 'start' '--work' 'QH-DELIVER' '--agent' 'codex-primary' '--provider' 'openai' '--model' 'gpt-5' '--claim' '--expected-revision' '108'\""
+    },
+    {
+      "event_line": 62,
+      "native_item_id": "item_30",
+      "exit_code": 0,
+      "command_sha256": "33fa76eecee791eb781fbc453687ff622e74f88cbd5a893d95bca369f62dc20c",
+      "output_sha256": "427942d0eb5a200b11b891cab8c9c0da99c435eb1559ffab86db14e4435f1a39"
+    },
+    {
+      "event_line": 64,
+      "native_item_id": "item_31",
+      "exit_code": 0,
+      "command_sha256": "d2bfc84b8862a9aaf86b538b5fddee802f6b541d17e2e270704038a48ac1dc9b",
+      "output_sha256": "0a71594dd328261d32edecd7df77fffa6df97131f17b0bc2ab3d9132dfcb1d8f",
+      "business_tool_command": "/bin/zsh -lc \"'rtk' 'proxy' '<awr>' '--project' '<business-project>' '--json' 'context' 'compile' '--work' 'QH-DELIVER' '--session' '01M21WPF433PJ678X41F1TNGDS' '--intent' 'bootstrap' '--budget' '4500'\""
+    },
+    {
+      "event_line": 68,
+      "native_item_id": "item_33",
+      "exit_code": 0,
+      "command_sha256": "3dd608fea36a5651cd4e9ea4de0f23d3bd187f7d51880773ea1681d97dc7f4c3",
+      "output_sha256": "1bdbd13bd25a2532184e6b85153912e5c4f11e5a63b0f49f457290eb36c793d2",
+      "business_tool_command": "/bin/zsh -lc \"'rtk' 'proxy' '<awr>' '--project' '<business-project>' '--json' 'context' 'compile' '--work' 'QH-DELIVER' '--session' '01M21WPF433PJ678X41F1TNGDS' '--source-sha' 'cd44a161471cee94fd4f797955327a4fd995cf3a' '--intent' 'work' '--budget' '8000'\""
+    },
+    {
+      "event_line": 72,
+      "native_item_id": "item_35",
+      "exit_code": 0,
+      "command_sha256": "922f3cc99351eb7353f05cf4af221f3c472e4bc1fe40e2cd9894c82173af79cd",
+      "output_sha256": "a0c92801b223c4f83e63092d4a710d15f5947da533169a58928a98e3d755a660"
+    },
+    {
+      "event_line": 74,
+      "native_item_id": "item_36",
+      "exit_code": 0,
+      "command_sha256": "73e2c991a88c18687bd7a8dc23dea6dd767069319f7949aff5434c2486ad23e3",
+      "output_sha256": "790cc1d509f70467860e31002c2049d15c1f54f6943e3739d9726f80791f22ee"
+    },
+    {
+      "event_line": 76,
+      "native_item_id": "item_37",
+      "exit_code": 0,
+      "command_sha256": "3c7e6f15b2820b29f621f70b94680c9c9174808e18aa37c28fa6f1e255e981c4",
+      "output_sha256": "a4fd1b71cbee0616e4519053756eba18642952cd9d5c277efa2cf6581aa25dc3"
+    },
+    {
+      "event_line": 78,
+      "native_item_id": "item_38",
+      "exit_code": 0,
+      "command_sha256": "88832bdbd923fc9f8109e7047fcbfe4170df74b0e215195df677fd38d6175d65",
+      "output_sha256": "17f79a7efb21f2ca480cf357a9528978dddb2470f54d177a56ed89fa575e2b05"
+    },
+    {
+      "event_line": 80,
+      "native_item_id": "item_39",
+      "exit_code": 0,
+      "command_sha256": "0e147e62b3238d39ff4796f55a158cd43aa2af11935ec4d60a646ecaffbb2203",
+      "output_sha256": "5efcc9e9e113f3b40bebcadb24027f96c3f72904d86adfb8489a6e64788c1d78"
+    },
+    {
+      "event_line": 82,
+      "native_item_id": "item_40",
+      "exit_code": 0,
+      "command_sha256": "b38b7fa5ba17267ca40d8641e239cdb9ba372dc8198563fb76662f72d11fb840",
+      "output_sha256": "ddcb233ae76d87a9d2126b71d7ca7eb966a4982e7d9f34c70ba598f6fc7511ca"
+    },
+    {
+      "event_line": 84,
+      "native_item_id": "item_41",
+      "exit_code": 0,
+      "command_sha256": "69594c1c28e23d8fd885726d0fab14d7c260dd10c9ac40bc876adae84e145cb7",
+      "output_sha256": "5637fcfd9fa9d1be04028585e5c9b0f1f179465adcce01b5467c8a65b0790984"
+    },
+    {
+      "event_line": 86,
+      "native_item_id": "item_42",
+      "exit_code": 0,
+      "command_sha256": "35c0c7fc52e0ea09ca85053aa337781a441235ec015835ae63652917e6ed4603",
+      "output_sha256": "029a3bf10b6deb96f01ae1ae5933f2eb7117f4a21d1f31b70b3d32bd18ac1ad2"
+    },
+    {
+      "event_line": 89,
+      "native_item_id": "item_44",
+      "exit_code": 0,
+      "command_sha256": "dada3c918a137b30c6dc36fc2be24a4e3ae76b7da561c1e9ad3db628aab2c447",
+      "output_sha256": "d5c60b69795cb14c0b3fcc00926c765f8c8c68e53b3def4cb5765ae4cac60e05"
+    },
+    {
+      "event_line": 91,
+      "native_item_id": "item_45",
+      "exit_code": 0,
+      "command_sha256": "7487007c0158ba3693a2dcdeb4298ca5fa04ffd3171feef133f9d940eb56a789",
+      "output_sha256": "6e8c327aeca99f33c1f49566eb50b5189da13ca32ea19ed3f513e69c5e577ab2",
+      "business_tool_command": "/bin/zsh -lc \"'rtk' 'proxy' '<awr>' '--project' '<business-project>' '--json' 'work' 'show' 'QH-INPUT' '--source-sha' 'cd44a161471cee94fd4f797955327a4fd995cf3a'\""
+    },
+    {
+      "event_line": 93,
+      "native_item_id": "item_46",
+      "exit_code": 0,
+      "command_sha256": "d7d56636f508b1952544bd1877ac7003bb199fd815b23b9f43bd2397552272f7",
+      "output_sha256": "d34a0480978f06e04b24bf04a4f609ffca9bbe9dd371b7b0fd2b5a683aa8a8d5",
+      "business_tool_command": "/bin/zsh -lc \"'rtk' 'proxy' '<awr>' '--project' '<business-project>' '--json' 'work' 'show' 'QH-BRIEF' '--source-sha' 'cd44a161471cee94fd4f797955327a4fd995cf3a'\""
+    },
+    {
+      "event_line": 95,
+      "native_item_id": "item_47",
+      "exit_code": 0,
+      "command_sha256": "434384e7f5d1eb63b98e9a8ce66e665840a67dc34e6566d47c4ed4445eaeb004",
+      "output_sha256": "7c27aecd040ff37062ee5932586034ac61b16a43bdb1726fe9eebe2f27fd3205",
+      "business_tool_command": "/bin/zsh -lc \"'rtk' 'proxy' '<awr>' '--project' '<business-project>' '--json' 'work' 'show' 'QH-REVIEW' '--source-sha' 'cd44a161471cee94fd4f797955327a4fd995cf3a'\""
+    },
+    {
+      "event_line": 97,
+      "native_item_id": "item_48",
+      "exit_code": 0,
+      "command_sha256": "f921af0ffb3efb9ce0393711ebba51290f82f8d33757b5dea62be90ac58351fd",
+      "output_sha256": "439510c128cb7ace50c9a27311d6d0a6e8812c35e0c375d08a501b3a347018de",
+      "business_tool_command": "/bin/zsh -lc \"'rtk' 'proxy' '<awr>' '--project' '<business-project>' '--json' 'work' 'show' 'QH-DELIVER' '--source-sha' 'cd44a161471cee94fd4f797955327a4fd995cf3a'\""
+    },
+    {
+      "event_line": 102,
+      "native_item_id": "item_51",
+      "exit_code": 0,
+      "command_sha256": "1a03ee5e53ef6ddcba0861b4a1f0c2ffe1f59056b21dd1ee0534b4ff24092945",
+      "output_sha256": "80d4395f0634bdac1e0018a6536d932c8eb6b5fff8f524f4fe50cdc39857f232"
+    },
+    {
+      "event_line": 106,
+      "native_item_id": "item_53",
+      "exit_code": 1,
+      "command_sha256": "b05508d75f7c31ce39188af0ef8c6a3d973a637b6480cdcae318d91540591dc8",
+      "output_sha256": "2da5594bb5f7d0bafd90676da4102ae106bf4407949fdd39dd1adb65cde10310",
+      "business_tool_command": "/bin/zsh -lc \"'rtk' 'proxy' '<awr>' '--project' '<business-project>' '--json' 'proposal' 'create' '--kind' 'work' '--target' 'QH-INPUT' '--intent' '纠正已完成盘点工作的过时摘要和下一步，将缺失材料改列为后续移交事项。' '--patch-file' '.work-receipts/20260909-QH-REMEDIATION-ledger-QH-INPUT-patch.json' '--session' '01M21WPF433PJ678X41F1TNGDS' '--expected-revision' '109'\""
+    },
+    {
+      "event_line": 110,
+      "native_item_id": "item_55",
+      "exit_code": 0,
+      "command_sha256": "cd9f7865ab9b6fcd8bd9e0b32270bcd19ce98f4a77fe60edd0680aa4b80605c7",
+      "output_sha256": "f7a67e48cb1d232659e3511c84de575b2645e7c23b08c96ad9dfb3e53d54d741",
+      "business_tool_command": "/bin/zsh -lc \"'rtk' 'proxy' '<awr>' '--project' '<business-project>' '--json' 'proposal' 'create' '--kind' 'work' '--target' 'QH-INPUT' '--intent' '纠正已完成盘点工作的过时摘要和下一步，将缺失材料改列为后续移交事项。' '--patch-file' '.work-receipts/20260909-QH-REMEDIATION-ledger-QH-INPUT-patch.json' '--expected-revision' '109'\""
+    },
+    {
+      "event_line": 114,
+      "native_item_id": "item_57",
+      "exit_code": 0,
+      "command_sha256": "915046ab06659043067ef19a58d42d10658ee26567b22f2cbfe66e4a8ad593c4",
+      "output_sha256": "67ce24fa102041334a07bfcaa4213e6f72625d1b6898b2676ca6ab7f723bdc1e",
+      "business_tool_command": "/bin/zsh -lc \"'rtk' 'proxy' '<awr>' '--project' '<business-project>' '--json' 'proposal' 'submit' '01M21X0KD707CV0BYZA3NM2X8W' '--actor' 'codex-primary' '--reason' '提交仅涉及状态一致性的字段修正；不构成独立业务复核。' '--expected-revision' '110'\""
+    },
+    {
+      "event_line": 118,
+      "native_item_id": "item_59",
+      "exit_code": 0,
+      "command_sha256": "c95ed8bdc46471e5b9701b26111c53b6b3b58a819fe3c9f54daf712cb7a1e122",
+      "output_sha256": "a775f03ea6b6b75b663c29485cabd325b697cbad555aa6b23880990931c901ad",
+      "business_tool_command": "/bin/zsh -lc \"'rtk' 'proxy' '<awr>' '--project' '<business-project>' '--json' 'proposal' 'approve' '01M21X0KD707CV0BYZA3NM2X8W' '--actor' 'codex-primary' '--reason' '确认补丁只纠正过时摘要和下一步，不改变已完成验收或补造业务事实；此批准不是独立复核。' '--expected-revision' '111'\""
+    },
+    {
+      "event_line": 122,
+      "native_item_id": "item_61",
+      "exit_code": 0,
+      "command_sha256": "9e39744ef7b00d827188701ddc6294cb35edb88ae27beb28f13e365a1a9287dd",
+      "output_sha256": "01c97b2dcb7508d3d948cd482c317be2d441d9cdc44888a595fd0b839598e919",
+      "business_tool_command": "/bin/zsh -lc \"'rtk' 'proxy' '<awr>' '--project' '<business-project>' '--json' 'proposal' 'apply' '01M21X0KD707CV0BYZA3NM2X8W' '--actor' 'codex-primary' '--reason' '应用已核对的 QH-INPUT 元数据修正。' '--expected-revision' '112'\""
+    },
+    {
+      "event_line": 126,
+      "native_item_id": "item_63",
+      "exit_code": 0,
+      "command_sha256": "663f885705c0419b258c890b70dac4d95df958d3f6406e2c77ec83f89982ff97",
+      "output_sha256": "ad9f14f01ee458abc0c8bd756415b609142fdeb897999c2e9cb9f9102f422a8a",
+      "business_tool_command": "/bin/zsh -lc \"'rtk' 'proxy' '<awr>' '--project' '<business-project>' '--json' 'proposal' 'create' '--kind' 'work' '--target' 'QH-BRIEF' '--intent' '纠正已完成简报工作的过时摘要和下一步，明确当前处于整改返检而非继续编写。' '--patch-file' '.work-receipts/20260909-QH-REMEDIATION-ledger-QH-BRIEF-patch.json' '--expected-revision' '116'\""
+    },
+    {
+      "event_line": 130,
+      "native_item_id": "item_65",
+      "exit_code": 0,
+      "command_sha256": "720d431665e87fd4def6629af3798e284c76ba63a78ef18eda6de4ee639ef3fb",
+      "output_sha256": "9a48303d26b971899ab269c7a625bd9b3fddec0867e734a7022ad941e08a3158",
+      "business_tool_command": "/bin/zsh -lc \"'rtk' 'proxy' '<awr>' '--project' '<business-project>' '--json' 'proposal' 'submit' '01M21X1NE5EYGEHMGY56325GYJ' '--actor' 'codex-primary' '--reason' '提交 QH-BRIEF 状态一致性修正；不构成独立业务复核。' '--expected-revision' '117'\""
+    },
+    {
+      "event_line": 134,
+      "native_item_id": "item_67",
+      "exit_code": 0,
+      "command_sha256": "9fe21f6460a0a9e2d0846ee8efd2907ed3954b4a48f241f1d219d9184ba508cb",
+      "output_sha256": "629f39ff1c6da4f49c48db95ab910bcd8aa6ec90b20924d8da79a63386d0b732",
+      "business_tool_command": "/bin/zsh -lc \"'rtk' 'proxy' '<awr>' '--project' '<business-project>' '--json' 'proposal' 'approve' '01M21X1NE5EYGEHMGY56325GYJ' '--actor' 'codex-primary' '--reason' '确认补丁只更新完成范围和返检下一步，不改变验收或外部事实；此批准不是独立复核。' '--expected-revision' '118'\""
+    },
+    {
+      "event_line": 138,
+      "native_item_id": "item_69",
+      "exit_code": 0,
+      "command_sha256": "131e4bade3e0801aa91ef198efd9e0c79f1bbd252689ac68c381983e5b721bb1",
+      "output_sha256": "0a10f3b3257c39fee482bf1e4c198581abbbcea5391d0dfab0eb91cf26dbd00d",
+      "business_tool_command": "/bin/zsh -lc \"'rtk' 'proxy' '<awr>' '--project' '<business-project>' '--json' 'proposal' 'apply' '01M21X1NE5EYGEHMGY56325GYJ' '--actor' 'codex-primary' '--reason' '应用已核对的 QH-BRIEF 元数据修正。' '--expected-revision' '119'\""
+    },
+    {
+      "event_line": 142,
+      "native_item_id": "item_71",
+      "exit_code": 0,
+      "command_sha256": "282c3517c882a0de2f7edc105ea123a8fa0dcb4f989d58301678fe454c26cebb",
+      "output_sha256": "03c384b5069521f7f4ca5cd9b916041c2ce072b988ee27c1709e056c4a578d52",
+      "business_tool_command": "/bin/zsh -lc \"'rtk' 'proxy' '<awr>' '--project' '<business-project>' '--json' 'proposal' 'create' '--kind' 'work' '--target' 'QH-REVIEW' '--intent' '将已形成的独立复核结论和范围写回工作摘要，并为整改后的返检准备准确下一步。' '--patch-file' '.work-receipts/20260909-QH-REMEDIATION-ledger-QH-REVIEW-patch.json' '--expected-revision' '123'\""
+    },
+    {
+      "event_line": 146,
+      "native_item_id": "item_73",
+      "exit_code": 0,
+      "command_sha256": "fe1f5109c8d34b3d24d47f6c1dfbf4f46e85c1d3d5ebfdc6cadf9aae8e27235e",
+      "output_sha256": "84d6088d6d7061358cd403e790a7ba032871ca31f2bcd929214d38e888712e02",
+      "business_tool_command": "/bin/zsh -lc \"'rtk' 'proxy' '<awr>' '--project' '<business-project>' '--json' 'proposal' 'submit' '01M21X1P06WCPR7JGC4DP88XB1' '--actor' 'codex-primary' '--reason' '提交 QH-REVIEW 记录一致性修正；不代替原独立复核者签署返检。' '--expected-revision' '124'\""
+    },
+    {
+      "event_line": 150,
+      "native_item_id": "item_75",
+      "exit_code": 0,
+      "command_sha256": "6d32f66cabd752c6e1d2b673d8f5bd72232ca5ce52aa8d57acc99fd7b6d0dde3",
+      "output_sha256": "6ded83fb477e1b3e05d6db49c827b2cc13e21a8e2c7ca9e129f0ea7e1211d884",
+      "business_tool_command": "/bin/zsh -lc \"'rtk' 'proxy' '<awr>' '--project' '<business-project>' '--json' 'proposal' 'approve' '01M21X1P06WCPR7JGC4DP88XB1' '--actor' 'codex-primary' '--reason' '确认补丁只转录既有复核结论及范围，不新增复核结论；此批准不是独立复核。' '--expected-revision' '125'\""
+    },
+    {
+      "event_line": 154,
+      "native_item_id": "item_77",
+      "exit_code": 0,
+      "command_sha256": "46e71ed526cff94b4ba3a0594a058e019211f3648e471a4a0084795abdb3f9b6",
+      "output_sha256": "d6d9263dd63373dfb65208601d9a860a2fa181423ae93d12fd7c762bdebd63ea",
+      "business_tool_command": "/bin/zsh -lc \"'rtk' 'proxy' '<awr>' '--project' '<business-project>' '--json' 'proposal' 'apply' '01M21X1P06WCPR7JGC4DP88XB1' '--actor' 'codex-primary' '--reason' '应用已核对的 QH-REVIEW 元数据修正。' '--expected-revision' '126'\""
+    },
+    {
+      "event_line": 158,
+      "native_item_id": "item_79",
+      "exit_code": 0,
+      "command_sha256": "17869636a4076ea1d82d14d595efb8a5d61905a788d802edc07c84ee5a1629ec",
+      "output_sha256": "026be50c19b2c118247dfeaf0dc696b03230ed846c45a6c86b3f93c0c769194e",
+      "business_tool_command": "/bin/zsh -lc \"'rtk' 'proxy' '<awr>' '--project' '<business-project>' '--json' 'proposal' 'create' '--kind' 'work' '--target' 'QH-DELIVER' '--intent' '明确本轮只准备复核整改返检包，不提交或完成最终交付。' '--patch-file' '.work-receipts/20260909-QH-REMEDIATION-ledger-QH-DELIVER-patch.json' '--expected-revision' '130'\""
+    },
+    {
+      "event_line": 162,
+      "native_item_id": "item_81",
+      "exit_code": 0,
+      "command_sha256": "20c06aee7bb830f51755bfb5382bd740c0be2b831e1e60fc4cc14fb70e4e18e1",
+      "output_sha256": "d21a8d5d0411cbe0961bfa5b257fcbe094deffe37b8c664c2ca08e6898f7b1b9",
+      "business_tool_command": "/bin/zsh -lc \"'rtk' 'proxy' '<awr>' '--project' '<business-project>' '--json' 'proposal' 'submit' '01M21X1PJ46D1BGCPM92K85ZYV' '--actor' 'codex-primary' '--reason' '提交 QH-DELIVER 范围和下一步修正；保持 planned。' '--expected-revision' '131'\""
+    },
+    {
+      "event_line": 166,
+      "native_item_id": "item_83",
+      "exit_code": 0,
+      "command_sha256": "293038997fbef450af62de971c35cc57a4bea40ad527da4d290580c26077c32a",
+      "output_sha256": "9af28bc28adb61af346d9a14034040ff7365a2846fb2fcf3bf19c86e545aa1b6",
+      "business_tool_command": "/bin/zsh -lc \"'rtk' 'proxy' '<awr>' '--project' '<business-project>' '--json' 'proposal' 'approve' '01M21X1PJ46D1BGCPM92K85ZYV' '--actor' 'codex-primary' '--reason' '确认补丁保持最终交付未完成，并将外部缺口保留为移交事项；此批准不是独立复核。' '--expected-revision' '132'\""
+    },
+    {
+      "event_line": 170,
+      "native_item_id": "item_85",
+      "exit_code": 0,
+      "command_sha256": "42f4e5db976c2efb2909af5d96b149e6a547d24e22b50c2c11b425b1f4c546b4",
+      "output_sha256": "e0261ef3cb45682efeb77fdf3609662580d6febc65c5feafeef261d6bd3aeaee",
+      "business_tool_command": "/bin/zsh -lc \"'rtk' 'proxy' '<awr>' '--project' '<business-project>' '--json' 'proposal' 'apply' '01M21X1PJ46D1BGCPM92K85ZYV' '--actor' 'codex-primary' '--reason' '应用已核对的 QH-DELIVER 元数据修正。' '--expected-revision' '133'\""
+    },
+    {
+      "event_line": 182,
+      "native_item_id": "item_91",
+      "exit_code": 0,
+      "command_sha256": "239e3f7a47e4c9130861f2890fd90ecd9fc8713807e3aab291f582fa8417a29f",
+      "output_sha256": "4e5f35eb756666386998a5bf751cc9ad0b5d053a5b2c12aaa507420c3f981e3b"
+    },
+    {
+      "event_line": 184,
+      "native_item_id": "item_92",
+      "exit_code": 0,
+      "command_sha256": "f930a8e4574ff84df1b60860ac1041058cd18fcc3037993d343caead45c27a93",
+      "output_sha256": "01ba4719c80b6fe911b091a7c05124b64eeece964e09c058ef8f9805daca546b"
+    },
+    {
+      "event_line": 186,
+      "native_item_id": "item_93",
+      "exit_code": 0,
+      "command_sha256": "3a31b136450e061e282802cfad873e417ff0232ebeee8054ba5e4ded9d0c8751",
+      "output_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "event_line": 188,
+      "native_item_id": "item_94",
+      "exit_code": 0,
+      "command_sha256": "1e9d4c440a492aa3d047424502817c28e2c8518ceceb7d5fdc98ada4ff36b75e",
+      "output_sha256": "4d85790452314cc5619d123af5bcb832efbd84783c92c0516be945b7e4d2d2a6"
+    },
+    {
+      "event_line": 191,
+      "native_item_id": "item_96",
+      "exit_code": 0,
+      "command_sha256": "3e8651e7455e0324e051cdf8b75eeb3ed814e151d65bf9953527b60f764ff1f2",
+      "output_sha256": "f4c1d8a8b0927480560b1ed6ade62db98d1423b6da1d4a093ce66229fa7a6c43",
+      "business_tool_command": "/bin/zsh -lc \"'rtk' 'proxy' '<awr>' '--project' '<business-project>' '--json' 'session' 'start' '--work' 'QH-REVIEW' '--agent' 'codex-primary' '--provider' 'openai' '--model' 'gpt-5' '--expected-revision' '137'\""
+    },
+    {
+      "event_line": 195,
+      "native_item_id": "item_98",
+      "exit_code": 0,
+      "command_sha256": "3174af1802ae6551942ada8256b67ca2c93375892bf17dac47105f8d3f4edd13",
+      "output_sha256": "c5069f90fc2526a715a1e8e6fa76aa1eb24aa94fe6d2c45e1836991d933edc06",
+      "business_tool_command": "/bin/zsh -lc \"'rtk' 'proxy' '<awr>' '--project' '<business-project>' '--json' 'work' 'reopen' 'QH-REVIEW' '--session' '01M21XKGH0Z7X5ESRSF0DX8PQN' '--reason' '执行者已按 QH-R01 至 QH-R05 更新依赖清单、上下文引用、工作记录和逐条回执，需要由不同参与者独立返检；本次重开不代表返检通过。' '--next-action' '由不同参与者认领 QH-REVIEW，检查 deliverables/qh-review-response.md、qinghe-dependencies.md、qinghe-context-reference.md 及 AWR 回执；仅评价安排与证据边界，不签署最终交付。' '--expected-revision' '138'\""
+    },
+    {
+      "event_line": 199,
+      "native_item_id": "item_100",
+      "exit_code": 0,
+      "command_sha256": "ca61c734654710aea52ab8ce7fc47d136c02d24ba9a9cdb590bbb58e439bc4f6",
+      "output_sha256": "411da76d0e6cb053f99512e6c4775fab734825fd45aec1a47c94c1620e4ecf3c",
+      "business_tool_command": "/bin/zsh -lc \"'rtk' 'proxy' '<awr>' '--project' '<business-project>' '--json' 'session' 'end' '--session' '01M21XKGH0Z7X5ESRSF0DX8PQN' '--work' 'QH-REVIEW' '--outcome' 'ended' '--expected-revision' '145'\""
+    },
+    {
+      "event_line": 203,
+      "native_item_id": "item_102",
+      "exit_code": 0,
+      "command_sha256": "62e5ac1177b7eb8b108b95db681480dbf07f1b6731c3db9e1a75a391a4168a0d",
+      "output_sha256": "78349636edeba69e2a2a8461d56c0dbd05c16f287ec78b3f8e7bca98611dd237",
+      "business_tool_command": "/bin/zsh -lc \"'rtk' 'proxy' '<awr>' '--project' '<business-project>' '--json' 'context' 'compile' '--work' 'QH-REVIEW' '--detached' '--source-sha' 'cd44a161471cee94fd4f797955327a4fd995cf3a' '--intent' 'review' '--budget' '8000'\""
+    },
+    {
+      "event_line": 209,
+      "native_item_id": "item_105",
+      "exit_code": 0,
+      "command_sha256": "ed3183070cac0339f0437df4fa9ddbf44e39a23cd57fd424b8c16f20ae8c2ea7",
+      "output_sha256": "3b818540cc0baeff70c60160c8b619fabddf8f0bebe68435204b4cf4d1c1867f"
+    },
+    {
+      "event_line": 211,
+      "native_item_id": "item_106",
+      "exit_code": 0,
+      "command_sha256": "f5cf7781e7775dffe286228910efdaf7e2f4b9af24ca2bb6d610cb995354ca98",
+      "output_sha256": "cbd1dcfead818f7ff61d1061529e62da35add3e4cc9f9b8a920c5e99bf5d0669"
+    },
+    {
+      "event_line": 215,
+      "native_item_id": "item_108",
+      "exit_code": 0,
+      "command_sha256": "5e3bb13a2017d608f2bb5412ff8207e27a75b59faf3e6046a77a71980af105bf",
+      "output_sha256": "0cfd8fd5be3ca172a867b0e4e58064d7cb5ee1eabc93d70077eb1826f553f3f9"
+    },
+    {
+      "event_line": 217,
+      "native_item_id": "item_109",
+      "exit_code": 0,
+      "command_sha256": "a6beffda1b56ef151a455d197048abba273267fe30c960d302f91715195538ba",
+      "output_sha256": "e6876ae8672858a506f5057af274a0018f09dc490f4fdf3cdc0fa3eb37fd7bfa"
+    },
+    {
+      "event_line": 219,
+      "native_item_id": "item_110",
+      "exit_code": 0,
+      "command_sha256": "ef25da3e16c6f68e18c693e31d19db3d16886316ac919ab3c52498c9fe68e9f3",
+      "output_sha256": "0b2698760757fd3cb9351d4e3695bfa2783bfa19fe0f73509305cdcc5cacd23d"
+    },
+    {
+      "event_line": 221,
+      "native_item_id": "item_111",
+      "exit_code": 0,
+      "command_sha256": "50409dd37c74dcc2eca9ee00b7efaba095c0e3a7119859fc820181b46a01f35e",
+      "output_sha256": "acf8670eb797421b7be3bc7d2f26899681205c1e187140e9eadcf89ab342b2e0",
+      "business_tool_command": "/bin/zsh -lc 'rtk proxy <awr> --project <business-project> --json status'"
+    },
+    {
+      "event_line": 223,
+      "native_item_id": "item_112",
+      "exit_code": 0,
+      "command_sha256": "ccdd7851daee3c59e5f4c7337852bf81a7f842c384ea73af95a4dddad7197f72",
+      "output_sha256": "a93979b7a6036807a19120cea448d018c40171a2cc0f5d0a2b135a47c7617515",
+      "business_tool_command": "/bin/zsh -lc 'rtk proxy <awr> --project <business-project> --json ready'"
+    },
+    {
+      "event_line": 226,
+      "native_item_id": "item_113",
+      "exit_code": 0,
+      "command_sha256": "3a31b136450e061e282802cfad873e417ff0232ebeee8054ba5e4ded9d0c8751",
+      "output_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "event_line": 227,
+      "native_item_id": "item_114",
+      "exit_code": 0,
+      "command_sha256": "f930a8e4574ff84df1b60860ac1041058cd18fcc3037993d343caead45c27a93",
+      "output_sha256": "01ba4719c80b6fe911b091a7c05124b64eeece964e09c058ef8f9805daca546b"
+    },
+    {
+      "event_line": 229,
+      "native_item_id": "item_115",
+      "exit_code": 0,
+      "command_sha256": "042e9f71c9cddafa3c2b15bbe104f08d02c8314cc1789283a2bc79e28b717551",
+      "output_sha256": "bfde22b42ffa6c31a985cfff6ee00086adc868a785eebbbef5d0e9e4441e2535"
+    },
+    {
+      "event_line": 231,
+      "native_item_id": "item_116",
+      "exit_code": 0,
+      "command_sha256": "0bf6d7a022e79b9d25079fa26cb8fc4857e58f68eaff82cd72b24feec47ac808",
+      "output_sha256": "90d76385a378a26d77de57bd26541ce2c22af916936d24f82a866d434d80cc9f"
+    },
+    {
+      "event_line": 233,
+      "native_item_id": "item_117",
+      "exit_code": 1,
+      "command_sha256": "c66ee223f2f6b8e2848821733dba65f3f04570524f69c305c9df169f263376c5",
+      "output_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "event_line": 235,
+      "native_item_id": "item_118",
+      "exit_code": 0,
+      "command_sha256": "7487007c0158ba3693a2dcdeb4298ca5fa04ffd3171feef133f9d940eb56a789",
+      "output_sha256": "2bbf7d96a4ca89f6c42a2dc7b35847dd2ba4849da5a2d7bd3823b502696c44f2",
+      "business_tool_command": "/bin/zsh -lc \"'rtk' 'proxy' '<awr>' '--project' '<business-project>' '--json' 'work' 'show' 'QH-INPUT' '--source-sha' 'cd44a161471cee94fd4f797955327a4fd995cf3a'\""
+    },
+    {
+      "event_line": 237,
+      "native_item_id": "item_119",
+      "exit_code": 0,
+      "command_sha256": "d7d56636f508b1952544bd1877ac7003bb199fd815b23b9f43bd2397552272f7",
+      "output_sha256": "d74b94c09b2e351e78f08e8ac311c4fc04c2c01458c7e0406b74669c7da805f3",
+      "business_tool_command": "/bin/zsh -lc \"'rtk' 'proxy' '<awr>' '--project' '<business-project>' '--json' 'work' 'show' 'QH-BRIEF' '--source-sha' 'cd44a161471cee94fd4f797955327a4fd995cf3a'\""
+    },
+    {
+      "event_line": 239,
+      "native_item_id": "item_120",
+      "exit_code": 0,
+      "command_sha256": "434384e7f5d1eb63b98e9a8ce66e665840a67dc34e6566d47c4ed4445eaeb004",
+      "output_sha256": "049acd06e531db3452f696100e59730726f83091098d5c8bb538e3eb8fb319ad",
+      "business_tool_command": "/bin/zsh -lc \"'rtk' 'proxy' '<awr>' '--project' '<business-project>' '--json' 'work' 'show' 'QH-REVIEW' '--source-sha' 'cd44a161471cee94fd4f797955327a4fd995cf3a'\""
+    },
+    {
+      "event_line": 241,
+      "native_item_id": "item_121",
+      "exit_code": 0,
+      "command_sha256": "f921af0ffb3efb9ce0393711ebba51290f82f8d33757b5dea62be90ac58351fd",
+      "output_sha256": "93662da5de5fa9f25711f14b92338d5476ec41d3347882724db2e7c08513b0c4",
+      "business_tool_command": "/bin/zsh -lc \"'rtk' 'proxy' '<awr>' '--project' '<business-project>' '--json' 'work' 'show' 'QH-DELIVER' '--source-sha' 'cd44a161471cee94fd4f797955327a4fd995cf3a'\""
+    },
+    {
+      "event_line": 249,
+      "native_item_id": "item_125",
+      "exit_code": 0,
+      "command_sha256": "3a31b136450e061e282802cfad873e417ff0232ebeee8054ba5e4ded9d0c8751",
+      "output_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "event_line": 252,
+      "native_item_id": "item_126",
+      "exit_code": 0,
+      "command_sha256": "f930a8e4574ff84df1b60860ac1041058cd18fcc3037993d343caead45c27a93",
+      "output_sha256": "01ba4719c80b6fe911b091a7c05124b64eeece964e09c058ef8f9805daca546b"
+    },
+    {
+      "event_line": 253,
+      "native_item_id": "item_127",
+      "exit_code": 0,
+      "command_sha256": "042e9f71c9cddafa3c2b15bbe104f08d02c8314cc1789283a2bc79e28b717551",
+      "output_sha256": "09fbc7218bbde80f0c66e3f27f3002b6e0157de149f18e5b79a49d419725ded8"
+    },
+    {
+      "event_line": 257,
+      "native_item_id": "item_128",
+      "exit_code": 0,
+      "command_sha256": "a343992639c9ca906d55a1ac8a751ded34a6188fce5822a22ac19abc652460b4",
+      "output_sha256": "e4943326fd6f5e600b8cf7a66070d129c43559d1cd3dd6df53933d0e967c1199"
+    },
+    {
+      "event_line": 258,
+      "native_item_id": "item_129",
+      "exit_code": 1,
+      "command_sha256": "c66ee223f2f6b8e2848821733dba65f3f04570524f69c305c9df169f263376c5",
+      "output_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "event_line": 259,
+      "native_item_id": "item_130",
+      "exit_code": 0,
+      "command_sha256": "aa8db4b553e9810914d071b17f5c502d8cf78a1c4670a441e2bbdf2f4cd939c0",
+      "output_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "event_line": 261,
+      "native_item_id": "item_131",
+      "exit_code": 0,
+      "command_sha256": "19d57f4caa9cb0f511ebcdbb62b79cd1e908a375ee69024b61c5cadbb9d5d856",
+      "output_sha256": "565a7c17982deb1662fa501cdd53d5a1331f6caf842c08aaf4c9331bfb6b9d5c"
+    },
+    {
+      "event_line": 265,
+      "native_item_id": "item_133",
+      "exit_code": 0,
+      "command_sha256": "9257e14e930cee02299e86715b71be7629a01f0b246eeb3ba035389c40a64b1d",
+      "output_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "event_line": 267,
+      "native_item_id": "item_134",
+      "exit_code": 0,
+      "command_sha256": "d475f2323838c1a03b1b352030688957f40c362ed7a70a11e6c13fc301212e2d",
+      "output_sha256": "2a68f8f8aab1b0185ee9e50eee77030bf888c233beba3c45cc8e942d31d1afe7"
+    },
+    {
+      "event_line": 271,
+      "native_item_id": "item_136",
+      "exit_code": 0,
+      "command_sha256": "f11fcc374649e01eb7c61e712bd77166ef99248e5ca4b22616189c59349ffb6e",
+      "output_sha256": "b94d9d29be729a56a43b643a1afc057528152d36d03295b9c4358d43bc102682",
+      "business_tool_command": "/bin/zsh -lc \"'rtk' 'proxy' '<awr>' '--project' '<business-project>' '--json' 'evidence' 'add' '--input' '.work-receipts/20260909-QH-REMEDIATION-evidence-draft.json' '--expected-revision' '146'\""
+    },
+    {
+      "event_line": 275,
+      "native_item_id": "item_138",
+      "exit_code": 0,
+      "command_sha256": "ef10b3e33cb9592df9fc42960f377a38f37c2c867d2aac0af17b965747ebfaa7",
+      "output_sha256": "0750fbc31d085725cdd99a8c754df17584e5bf7d0df026a65ca3c69797cf7ac3"
+    },
+    {
+      "event_line": 279,
+      "native_item_id": "item_140",
+      "exit_code": 1,
+      "command_sha256": "0aeea52f5394bfb93470cc0566071dd4725c839472b0036826c701574bcf3281",
+      "output_sha256": "74078389124d2b9d9b249c98dd25344f2288048142fb4df18f2c486f1f965d2d",
+      "business_tool_command": "/bin/zsh -lc \"'rtk' 'proxy' '<awr>' '--project' '<business-project>' '--json' 'event' 'append' '--work' 'QH-REVIEW' '--type' 'review.remediation_ready' '--importance' 'normal' '--summary' 'QH-R01 至 QH-R05 整改包已形成并交回独立复核队列；本轮未提交最终交付。' '--payload' '.work-receipts/20260909-QH-REMEDIATION-handoff-event-payload.json' '--expected-revision' '147'\""
+    },
+    {
+      "event_line": 283,
+      "native_item_id": "item_142",
+      "exit_code": 0,
+      "command_sha256": "1dd16ddaaeb383587625fe9e97f96c9d76eb5a88edebcb9c3b817439ef455fdb",
+      "output_sha256": "a20e213cfe57e84c1e2a1e46c038f57fe44071d3ae7fb79d4726f9e59fff14e1",
+      "business_tool_command": "/bin/zsh -lc \"'rtk' 'proxy' '<awr>' '--project' '<business-project>' '--json' 'event' 'append' '--work' 'QH-REVIEW' '--type' 'review.remediation_ready' '--importance' 'normal' '--summary' 'QH-R01 至 QH-R05 整改包已形成并交回独立复核队列；详见 deliverables/qh-review-response.md，本轮未提交最终交付。' '--expected-revision' '147'\""
+    },
+    {
+      "event_line": 288,
+      "native_item_id": "item_145",
+      "exit_code": 0,
+      "command_sha256": "d10fb07daca67e76ce0e6d3530e71eeeb052c598fe2ed3e80322fbb40551a8e2",
+      "output_sha256": "21d259608d7dbabac49d5ba5f1127a2ac74e5d6f62a90372ee8658b2c233144c",
+      "business_tool_command": "/bin/zsh -lc \"'rtk' 'proxy' '<awr>' '--project' '<business-project>' '--json' 'session' 'checkpoint' '--session' '01M21WPF433PJ678X41F1TNGDS' '--work' 'QH-DELIVER' '--context-hash' 'd6ec6b01493b6d2da31589646db617b69560854f9f25279bf078107d284510e3' '--digest' '已处理独立复核 QH-R01 至 QH-R05：更新依赖清单和上下文引用，修正四个工作项摘要/下一步，形成 deliverables/qh-review-response.md，保留技术查找偏离历史并解释 Unknown locator 与显式验证记录；QH-REVIEW 已重开返检，QH-DELIVER 未完成。' '--next-action' '由不同参与者认领 QH-REVIEW，按 deliverables/qh-review-response.md 逐条返检；返检通过前保持 QH-DELIVER planned/blocked，不提交最终交付。' '--open-loop' '三份说明的实际文件或链接、版本、访问状态、可对外标题和责任信息仍未取得。' '--open-loop' '实际内容目录不存在，标题、入口和个人联系人清理的目录级复核尚未发生。' '--open-loop' '外部域名确认与旧版页面停用日期、切换条件和回退安排仍未取得，不得承诺具体切换时间。' '--open-loop' 'locator-only Unknown 来源引用继续作为未验证缺口保留；技术参考查找偏离的 independent assessment 仍为 pending。' '--expected-revision' '148'\""
+    },
+    {
+      "event_line": 292,
+      "native_item_id": "item_147",
+      "exit_code": 0,
+      "command_sha256": "3cdd3f0ef874536dfd99a94742e3333bddfd9316d40067f4a18e89c34ec9ec8a",
+      "output_sha256": "c0e01d41d54a4f11244ee9d71d669e804e70e86ae1dcc8ba8af2823f1197ce2c",
+      "business_tool_command": "/bin/zsh -lc \"'rtk' 'proxy' '<awr>' '--project' '<business-project>' '--json' 'session' 'end' '--session' '01M21WPF433PJ678X41F1TNGDS' '--work' 'QH-DELIVER' '--outcome' 'incomplete' '--expected-revision' '150'\""
+    },
+    {
+      "event_line": 296,
+      "native_item_id": "item_149",
+      "exit_code": 0,
+      "command_sha256": "50409dd37c74dcc2eca9ee00b7efaba095c0e3a7119859fc820181b46a01f35e",
+      "output_sha256": "91251d864e8514c52f68cf4fc27d90f5d7ab16cd53e7a61da1ecb29f0dbc3c6b",
+      "business_tool_command": "/bin/zsh -lc 'rtk proxy <awr> --project <business-project> --json status'"
+    },
+    {
+      "event_line": 298,
+      "native_item_id": "item_150",
+      "exit_code": 0,
+      "command_sha256": "ccdd7851daee3c59e5f4c7337852bf81a7f842c384ea73af95a4dddad7197f72",
+      "output_sha256": "dd6b10fa761381022c156e2d03242a1a5acbcfa8af25a11f2442caf8b020462e",
+      "business_tool_command": "/bin/zsh -lc 'rtk proxy <awr> --project <business-project> --json ready'"
+    },
+    {
+      "event_line": 302,
+      "native_item_id": "item_152",
+      "exit_code": 0,
+      "command_sha256": "434384e7f5d1eb63b98e9a8ce66e665840a67dc34e6566d47c4ed4445eaeb004",
+      "output_sha256": "e834230f764a9cea2bd6548735d9a604ba43ac1937e05b72dd2c2c23742bb284",
+      "business_tool_command": "/bin/zsh -lc \"'rtk' 'proxy' '<awr>' '--project' '<business-project>' '--json' 'work' 'show' 'QH-REVIEW' '--source-sha' 'cd44a161471cee94fd4f797955327a4fd995cf3a'\""
+    },
+    {
+      "event_line": 304,
+      "native_item_id": "item_153",
+      "exit_code": 0,
+      "command_sha256": "f921af0ffb3efb9ce0393711ebba51290f82f8d33757b5dea62be90ac58351fd",
+      "output_sha256": "079b08bdd1fc8447371c81b18e3ecd44683e4d62db835280c359d6d5c37ed74d",
+      "business_tool_command": "/bin/zsh -lc \"'rtk' 'proxy' '<awr>' '--project' '<business-project>' '--json' 'work' 'show' 'QH-DELIVER' '--source-sha' 'cd44a161471cee94fd4f797955327a4fd995cf3a'\""
+    }
+  ],
+  "original_recorded_at": "2026-09-09T10:07:49+08:00",
+  "all_snapshot_hashes_verified": true,
+  "limitations": [
+    "Extract only. Raw native context remains private. Independent review, later business revisions, final delivery and remote verification are separate requirements."
+  ],
+  "e4_completion_claim": false
+}

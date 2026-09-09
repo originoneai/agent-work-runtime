@@ -1,0 +1,42 @@
+{
+  "kind": "actual_client_turn_snapshot",
+  "recorded_at": "2026-09-09T10:07:49+08:00",
+  "phase": "review-correction",
+  "client": "Codex CLI",
+  "client_task_id": "01a08379-ef89-7173-917d-274662891bcb",
+  "actual_user_turn": {
+    "timestamp": "2026-09-09T01:27:33.055Z",
+    "text": "请处理独立复核记录中的问题，更新依赖清单、上下文引用和工作记录，让它们与最新简报保持一致，并逐条保留处理回执。尚未取得的文档、标题、域名和停用日期继续列为明确的移交事项，不补造事实；交接包要清楚说明本次安排复核能覆盖的范围。保留技术参考查找偏离的历史记录，解释未验证来源引用与显式验证记录的区别。完成后把修订后的材料交回复核者检查，这一轮先不提交最终交付。"
+  },
+  "input_sha256": "7417524ef547fd8488c91eb3377204749a9b23e72c9ecaa192b663b179a8f786",
+  "events_local": ".local/business-live-20260909-v1/project-onboarding/control/review-correction-events.jsonl",
+  "events_sha256": "230189f6c132864556b8b64f2eb34298ea4701776fa7d68b015aa3db7c3fff76",
+  "native_transcript_snapshot_local": ".local/business-live-20260909-v1/project-onboarding/control/review-correction-snapshot/native-transcript.jsonl",
+  "native_transcript_snapshot_sha256": "9fc169a4f961ed6d839b56a5cb5ed2cf62d997fb10df25e3734068cb27294cd3",
+  "final_message_sha256": "ab665c89d28c21c31b9426fbbdb16eaadacd40b47ce9fff111966b9ac1b9174a",
+  "project_sources_sha256": {
+    "project.toml": "9c45ae191289ed0a40883e2120e47eaaa8e3af301c350928b11629406d6c503f",
+    "GOALS.md": "575f650e4ff9b782bebdb8830f5b2670a3bdc447a41ff84e53eec7cf35c249a8",
+    "PLAN.md": "2d726e0e77754a51f779b5eee59ac29c919a4e7ab87b2a43a53a74938b2ba053",
+    "RULES.md": "05c7d1e94f96e3f6bdaccfd8790895a07e11472fe95542c046eb570456ad218d",
+    "work-ledger.yaml": "4db09cdb71fd2f9b6bf34ded6a9ea9e2fd5bf1567215881efa9c6a0ebe25985c",
+    "AGENTS.md": "581c28e430d08fc07fe5d98322b936c79018d654d1c5764eb7e7e7604fa11a39",
+    "DELIVERABLES.md": "32a59caa8ca42ee5481b32777a40777af6ff36076bdd68355b669f44058c56f4"
+  },
+  "artifacts_sha256": {
+    "deliverables/qh-independent-review.md": "cfd81dd8bbc85608a1d6210d9f482dd300b71af8687fb3efc3538b3a8ac19de1",
+    "deliverables/qh-review-response.md": "92bc899572eab62027c30ec143b75fd9c9c8971569888493a14e17e31d43398d",
+    "deliverables/qinghe-brief.md": "31b843562c3918b531d774e1ab19b7b6912db627de6ce2dc4ba37515fa1cfccd",
+    "deliverables/qinghe-context-reference.md": "fde028a64afc2d1f8543aa28ee7c90375714aa583ea778b9de7d25e9d7f4124a",
+    "deliverables/qinghe-dependencies.md": "42f98e5869ff2edc64b11a51a021b390e1586ea8ad7c1fcf09b1dc0c340385f5"
+  },
+  "tool_event_counts": {
+    "agent_message": 7,
+    "command_execution": 103,
+    "file_change": 47
+  },
+  "command_executions": 103,
+  "nonzero_commands": 4,
+  "snapshot_local": ".local/business-live-20260909-v1/project-onboarding/control/review-correction-snapshot",
+  "e4_completion_claim": false
+}

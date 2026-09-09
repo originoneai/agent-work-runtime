@@ -1,0 +1,162 @@
+{
+  "level": "L0",
+  "context": {
+    "project_id": "01M21QQH4Z2YQCA7PQZDZ8STC9",
+    "project_key": "awr-v1/project-onboarding/awr-live-20260909-001",
+    "project_name": "青禾文档门户上线",
+    "project_revision": 152,
+    "branch_id": null,
+    "work": {
+      "id": "01M21QQH54H74PB9525DPEKQ5Z",
+      "external_key": "QH-REVIEW",
+      "title": "独立复核上线安排",
+      "phase": "QH-DELIVERY",
+      "status": "planned",
+      "raw_status": "planned",
+      "next_action": "由不同参与者认领 QH-REVIEW，检查 deliverables/qh-review-response.md、qinghe-dependencies.md、qinghe-context-reference.md 及 AWR 回执；仅评价安排与证据边界，不签署最终交付。",
+      "blocker": null,
+      "revision": 5,
+      "source_ref": {
+        "source_id": "01M21QQH53JR8QW1W5K5VJRNS7",
+        "locator": "file:///Users/mac/Documents/originone/agent-work-running/.local/business-live-20260909-v1/project-onboarding/project/work-ledger.yaml",
+        "source_revision": 16,
+        "source_fingerprint": "sha256:4db09cdb71fd2f9b6bf34ded6a9ea9e2fd5bf1567215881efa9c6a0ebe25985c",
+        "pointer": "/work_items/2",
+        "start_line": null,
+        "end_line": null,
+        "section_fingerprint": null
+      }
+    },
+    "selection_basis": "explicit_work",
+    "session": {
+      "id": "01M21Z2F3HZ8EHTRYY5N7RMRVZ",
+      "project_id": "01M21QQH4Z2YQCA7PQZDZ8STC9",
+      "work_item_id": "01M21QQH54H74PB9525DPEKQ5Z",
+      "branch_id": null,
+      "agent_id": "luna_worker",
+      "provider": "openai",
+      "model": "gpt-5.6-sol",
+      "status": "active",
+      "started_at": 1788920020081,
+      "ended_at": null,
+      "start_project_revision": 151,
+      "end_project_revision": null,
+      "last_checkpoint_id": null,
+      "revision": 1
+    },
+    "checkpoint": {
+      "id": "01M21W4TKDFVNDN6G42MW9TEJM",
+      "session_id": "01M21VK36SJ9KXRB3634VZ1FPS",
+      "project_revision": 105,
+      "context_hash": "b93f62ab6796364279983c883f61964e4fcc10d109d04ce2506d660ee0b12445",
+      "digest": "独立复核已完成：简报对新增硬规则响应基本正确，但依赖清单和上下文引用停留在初始轮次，目录草案及实际输入缺失，另有证据重复 Unknown 和初始技术查找越界；交接包需整改后再最终交付。",
+      "next_action": "原执行者处理 QH-R01 至 QH-R05，更新专用依赖清单和上下文引用，补充或明确保留目录与外部确认缺口，再形成 qh-delivery.md。",
+      "open_loops": [
+        "三份说明的实际文件、版本、可访问性、可对外标题和责任信息未确认。",
+        "外部域名接入和旧版页面停用日期未确认，不得承诺具体切换时间。",
+        "当前没有内容目录草案，目录级标题、入口和联系人清理无法复核。",
+        "QH-INPUT、QH-BRIEF 的 locator-only Unknown 重复证据需在最终交付前解释或处理。"
+      ],
+      "changed_entities": [
+        "evidence:01M21W4261T2JWBXMCR1X1C77B",
+        "work_items:01M21QQH54H74PB9525DPEKQ5Z"
+      ],
+      "revision": 1,
+      "created_at": 1788916951661
+    },
+    "checkpoint_origin": "previous_closed_session",
+    "critical_rules": [
+      {
+        "id": "01M21QQH53D6MHVTB91Z62KFEQ",
+        "external_key": "file:///Users/mac/Documents/originone/agent-work-running/.local/business-live-20260909-v1/project-onboarding/project/RULES.md#authority",
+        "revision": 1,
+        "source_ref": {
+          "source_id": "01M21QQH524J7FS6Y2S4A4EVCM",
+          "locator": "file:///Users/mac/Documents/originone/agent-work-running/.local/business-live-20260909-v1/project-onboarding/project/RULES.md",
+          "source_revision": 2,
+          "source_fingerprint": "sha256:05c7d1e94f96e3f6bdaccfd8790895a07e11472fe95542c046eb570456ad218d",
+          "pointer": "#authority",
+          "start_line": 1,
+          "end_line": 4,
+          "section_fingerprint": "sha256:91475bbc52075362a75e6bd9d3fe1de18d834c4995ef382330d752680e95bc0e"
+        },
+        "text": "来源与交付\n\n以当前项目来源为准。未知或缺证据的内容显式保留，不将计划、样例或文件存在当作真实验收通过。",
+        "severity": "hard",
+        "scope": {
+          "type": "project",
+          "value": "*"
+        },
+        "unresolved": []
+      },
+      {
+        "id": "01M21QQH53GGR3RE3EMRXRGB3C",
+        "external_key": "file:///Users/mac/Documents/originone/agent-work-running/.local/business-live-20260909-v1/project-onboarding/project/RULES.md#business",
+        "revision": 1,
+        "source_ref": {
+          "source_id": "01M21QQH524J7FS6Y2S4A4EVCM",
+          "locator": "file:///Users/mac/Documents/originone/agent-work-running/.local/business-live-20260909-v1/project-onboarding/project/RULES.md",
+          "source_revision": 2,
+          "source_fingerprint": "sha256:05c7d1e94f96e3f6bdaccfd8790895a07e11472fe95542c046eb570456ad218d",
+          "pointer": "#business",
+          "start_line": 5,
+          "end_line": 8,
+          "section_fingerprint": "sha256:75e8716227f7b43b7da91a9afdef5334fc21050a064b2a05b7b6da26b59a0263"
+        },
+        "text": "业务要求\n\n内容目录经独立复核后才可列为已确认；外部域名接入尚待信息管理员确认，不能安排为已就绪。",
+        "severity": "hard",
+        "scope": {
+          "type": "project",
+          "value": "*"
+        },
+        "unresolved": []
+      },
+      {
+        "id": "01M21SRJ03QXV2F6SQA384W0VF",
+        "external_key": "file:///Users/mac/Documents/originone/agent-work-running/.local/business-live-20260909-v1/project-onboarding/project/RULES.md#revision",
+        "revision": 1,
+        "source_ref": {
+          "source_id": "01M21QQH524J7FS6Y2S4A4EVCM",
+          "locator": "file:///Users/mac/Documents/originone/agent-work-running/.local/business-live-20260909-v1/project-onboarding/project/RULES.md",
+          "source_revision": 2,
+          "source_fingerprint": "sha256:05c7d1e94f96e3f6bdaccfd8790895a07e11472fe95542c046eb570456ad218d",
+          "pointer": "#revision",
+          "start_line": 9,
+          "end_line": 11,
+          "section_fingerprint": "sha256:f13a6228bedfb0543d17f3815d5a81ab69ade394ad20705b05dad1e43013f55d"
+        },
+        "text": "追加业务要求\n\n对外目录本周只允许列出已核实的文档标题，不展示个人联系人；没有域名确认不得承诺具体切换时间。",
+        "severity": "hard",
+        "scope": {
+          "type": "project",
+          "value": "*"
+        },
+        "unresolved": []
+      }
+    ],
+    "source_revisions": [
+      {
+        "id": "01M21QQH53JR8QW1W5K5VJRNS7",
+        "revision": 16,
+        "fingerprint": "sha256:4db09cdb71fd2f9b6bf34ded6a9ea9e2fd5bf1567215881efa9c6a0ebe25985c",
+        "freshness": "fresh",
+        "locator": "file:///Users/mac/Documents/originone/agent-work-running/.local/business-live-20260909-v1/project-onboarding/project/work-ledger.yaml"
+      },
+      {
+        "id": "01M21QQH524J7FS6Y2S4A4EVCM",
+        "revision": 2,
+        "fingerprint": "sha256:05c7d1e94f96e3f6bdaccfd8790895a07e11472fe95542c046eb570456ad218d",
+        "freshness": "fresh",
+        "locator": "file:///Users/mac/Documents/originone/agent-work-running/.local/business-live-20260909-v1/project-onboarding/project/RULES.md"
+      }
+    ],
+    "gaps": [],
+    "complete": true,
+    "execution_context_complete": false
+  },
+  "rendered_context": "AWR L0 Bootstrap\nProject: 青禾文档门户上线 [awr-v1/project-onboarding/awr-live-20260909-001] 01M21QQH4Z2YQCA7PQZDZ8STC9\nRevision: 152 | Branch: main\nWork: QH-REVIEW [01M21QQH54H74PB9525DPEKQ5Z] r5 — 独立复核上线安排\nPhase: QH-DELIVERY | Status: planned (Planned)\nNext: 由不同参与者认领 QH-REVIEW，检查 deliverables/qh-review-response.md、qinghe-dependencies.md、qinghe-context-reference.md 及 AWR 回执；仅评价安排与证据边界，不签署最终交付。\nBlocker: none\nWork source: 01M21QQH53JR8QW1W5K5VJRNS7/work_items/2@r16\nSession: 01M21Z2F3HZ8EHTRYY5N7RMRVZ r1 active agent=luna_worker provider=openai model=gpt-5.6-sol\nHard rules [01M21QQH524J7FS6Y2S4A4EVCM@r2]:\n[#authority]\n来源与交付\n\n以当前项目来源为准。未知或缺证据的内容显式保留，不将计划、样例或文件存在当作真实验收通过。\n[#business]\n业务要求\n\n内容目录经独立复核后才可列为已确认；外部域名接入尚待信息管理员确认，不能安排为已就绪。\n[#revision]\n追加业务要求\n\n对外目录本周只允许列出已核实的文档标题，不展示个人联系人；没有域名确认不得承诺具体切换时间。\nCheckpoint origin: previous_closed_session\nCheckpoint: 01M21W4TKDFVNDN6G42MW9TEJM session=01M21VK36SJ9KXRB3634VZ1FPS r1 base=105 hash=b93f62ab6796364279983c883f61964e4fcc10d109d04ce2506d660ee0b12445\nDigest: 独立复核已完成：简报对新增硬规则响应基本正确，但依赖清单和上下文引用停留在初始轮次，目录草案及实际输入缺失，另有证据重复 Unknown 和初始技术查找越界；交接包需整改后再最终交付。\nCheckpoint next: 原执行者处理 QH-R01 至 QH-R05，更新专用依赖清单和上下文引用，补充或明确保留目录与外部确认缺口，再形成 qh-delivery.md。\nOpen loop: 三份说明的实际文件、版本、可访问性、可对外标题和责任信息未确认。\nOpen loop: 外部域名接入和旧版页面停用日期未确认，不得承诺具体切换时间。\nOpen loop: 当前没有内容目录草案，目录级标题、入口和联系人清理无法复核。\nOpen loop: QH-INPUT、QH-BRIEF 的 locator-only Unknown 重复证据需在最终交付前解释或处理。\nChanged: evidence:01M21W4261T2JWBXMCR1X1C77B\nChanged: work_items:01M21QQH54H74PB9525DPEKQ5Z\nBootstrap: complete\nCompile L1 before execution.\n",
+  "context_hash": "45e891aa19335803513f8663388f8b32965a65e065f2db1e9f80cc7ad2ea8331",
+  "token_estimate": 765,
+  "token_budget": 1600,
+  "tokenizer": "o200k_base",
+  "token_scope": "rendered_context; excludes transport envelope and surrounding conversation"
+}

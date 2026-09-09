@@ -1,0 +1,92 @@
+{
+  "acceptance": [
+    "处理复核意见，交付最终简报与追溯记录。",
+    "保留实际产物与来源引用，无法确认的内容显式说明。"
+  ],
+  "decisions": [],
+  "dependency_cycles": [],
+  "evidence": [],
+  "evidence_currency_basis": {
+    "branch_id": null,
+    "requested_source_sha": "cd44a161471cee94fd4f797955327a4fd995cf3a"
+  },
+  "freshness_basis": "source_refresh",
+  "missing_dependencies": [],
+  "ok": true,
+  "project_revision": 146,
+  "read_only": false,
+  "required_dependencies": [
+    {
+      "external_key": "QH-BRIEF",
+      "freshness": "fresh",
+      "revision": 7,
+      "source_revision": 16,
+      "status": "completed"
+    },
+    {
+      "external_key": "QH-INPUT",
+      "freshness": "fresh",
+      "revision": 5,
+      "source_revision": 16,
+      "status": "completed"
+    },
+    {
+      "external_key": "QH-REVIEW",
+      "freshness": "fresh",
+      "revision": 5,
+      "source_revision": 16,
+      "status": "planned"
+    }
+  ],
+  "source_issues": [],
+  "source_ref": {
+    "end_line": null,
+    "locator": "file:///Users/mac/Documents/originone/agent-work-running/.local/business-live-20260909-v1/project-onboarding/project/work-ledger.yaml",
+    "pointer": "/work_items/3",
+    "section_fingerprint": null,
+    "source_fingerprint": "sha256:4db09cdb71fd2f9b6bf34ded6a9ea9e2fd5bf1567215881efa9c6a0ebe25985c",
+    "source_id": "01M21QQH53JR8QW1W5K5VJRNS7",
+    "source_revision": 16,
+    "start_line": null
+  },
+  "source_refresh_performed": true,
+  "source_warnings": 0,
+  "work": {
+    "active_claims": [
+      {
+        "agent_id": "codex-primary",
+        "expires_at": null,
+        "id": "01M21WPF44KG3D7EH41EFXB0ND",
+        "session_id": "01M21WPF433PJ678X41F1TNGDS"
+      }
+    ],
+    "blocker": null,
+    "diagnostics": [
+      {
+        "code": "active_claim",
+        "detail": "claimed by codex-primary in session 01M21WPF433PJ678X41F1TNGDS",
+        "work_item_key": "QH-DELIVER"
+      },
+      {
+        "code": "dependency_not_completed",
+        "detail": "required dependency has source status planned",
+        "work_item_key": "QH-REVIEW"
+      }
+    ],
+    "external_key": "QH-DELIVER",
+    "freshness": "fresh",
+    "id": "01M21QQH54SAENARZ5SV55BX7X",
+    "milestone": "QH-DELIVERY",
+    "next_action": "等待独立复核者检查整改后的依赖清单、上下文引用、工作记录和逐条回执；三份文档、标题、域名及停用日期继续作为明确移交事项。",
+    "owner": null,
+    "priority": "P0",
+    "raw_status": "planned",
+    "ready": false,
+    "revision": 2,
+    "source_revision": 16,
+    "status": "planned",
+    "summary": "本轮只处理独立复核问题并准备返检包，不提交 deliverables/qh-delivery.md，也不宣称最终交付完成。",
+    "title": "交付更新后的上线说明"
+  }
+}
+

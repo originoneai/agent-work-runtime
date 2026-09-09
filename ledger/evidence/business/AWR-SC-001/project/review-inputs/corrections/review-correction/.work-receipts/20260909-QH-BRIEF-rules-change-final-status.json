@@ -1,0 +1,39 @@
+{
+  "blocked_count": 1,
+  "branch_id": null,
+  "counts": {
+    "completed": 2,
+    "planned": 2
+  },
+  "current": [],
+  "current_total": 0,
+  "freshness_basis": "source_refresh",
+  "next_action": "独立复核上线安排，先核对当前来源和负责范围。",
+  "ok": true,
+  "project": "青禾文档门户上线",
+  "project_id": "01M21QQH4Z2YQCA7PQZDZ8STC9",
+  "project_revision": 88,
+  "read_only": false,
+  "ready_count": 1,
+  "source_issues": [],
+  "source_refresh_performed": true,
+  "source_warnings": 0,
+  "suggested_work": {
+    "blocker": null,
+    "external_key": "QH-REVIEW",
+    "freshness": "fresh",
+    "id": "01M21QQH54H74PB9525DPEKQ5Z",
+    "milestone": "QH-DELIVERY",
+    "next_action": "独立复核上线安排，先核对当前来源和负责范围。",
+    "owner": null,
+    "priority": "P0",
+    "raw_status": "planned",
+    "revision": 1,
+    "source_revision": 9,
+    "status": "planned",
+    "summary": "独立复核上线安排",
+    "title": "独立复核上线安排"
+  },
+  "total": 4
+}
+

@@ -1,0 +1,83 @@
+{
+  "version": 1,
+  "work_item": "QH-BRIEF",
+  "source_sha": "cd44a161471cee94fd4f797955327a4fd995cf3a",
+  "command": "rtk git diff --check; rtk rg -n <rules-change assertions> deliverables/qinghe-brief.md; rtk proxy test -s deliverables/qinghe-brief.md; rtk proxy shasum -a 256 <artifact and source files>",
+  "scope": [
+    "QH-BRIEF"
+  ],
+  "verified_at": 1788915087055,
+  "artifacts": [
+    {
+      "locator": "deliverables/qinghe-brief.md",
+      "sha256": "31b843562c3918b531d774e1ab19b7b6912db627de6ce2dc4ba37515fa1cfccd"
+    }
+  ],
+  "sources": [
+    {
+      "locator": "GOALS.md",
+      "sha256": "575f650e4ff9b782bebdb8830f5b2670a3bdc447a41ff84e53eec7cf35c249a8"
+    },
+    {
+      "locator": "PLAN.md",
+      "sha256": "2d726e0e77754a51f779b5eee59ac29c919a4e7ab87b2a43a53a74938b2ba053"
+    },
+    {
+      "locator": "RULES.md",
+      "sha256": "05c7d1e94f96e3f6bdaccfd8790895a07e11472fe95542c046eb570456ad218d"
+    },
+    {
+      "locator": "work-ledger.yaml",
+      "sha256": "705239ced357f63d7c6b3319bc5567c0dcaade8d008c9da2eff5a7213097442e"
+    },
+    {
+      "locator": "materials/request.md",
+      "sha256": "97e6a3c7fa089071b15ebd6be40683c20d088b2cfa222d7c70ccce1fc1c85bca"
+    },
+    {
+      "locator": "materials/backlog.csv",
+      "sha256": "bf2e68415f5b4258e0c13fa70de3db8485904ebc0a228ae347fac1a7ad5e6ca6"
+    },
+    {
+      "locator": "materials/week-window.md",
+      "sha256": "df1bc8d6a0b3a51eabaefacbbebde71931840de029bc21a757e856ad6b04425b",
+      "provenance_note": "supplementary project material; not an AWR authority source"
+    },
+    {
+      "locator": "DELIVERABLES.md",
+      "sha256": "32a59caa8ca42ee5481b32777a40777af6ff36076bdd68355b669f44058c56f4"
+    }
+  ],
+  "rule_changes": [
+    {
+      "rule": "对外目录本周只允许列出已核实的文档标题",
+      "response": "新增标题核实前置步骤；未核实名称只留内部缺口表，对外目录可能少于三项。"
+    },
+    {
+      "rule": "对外目录不展示个人联系人",
+      "response": "内部执行记录保留责任角色与协调信息，对外目录增加个人信息清理检查。"
+    },
+    {
+      "rule": "没有域名确认不得承诺具体切换时间",
+      "response": "明确周五仅为简报交付节点；域名确认与旧版停用条件共同约束具体切换时间。"
+    }
+  ],
+  "checks": [
+    {
+      "name": "本周优先清单、依赖与开始要求",
+      "passed": true,
+      "details": "简报新增规则变化对照表和标题核实前置步骤；各 P0 项保留责任、动作、前置依赖、影响或完成定义，并更新依赖图和来源。",
+      "criteria": [
+        "交付本周优先清单、依赖和开始前要求，并给出材料出处。"
+      ]
+    },
+    {
+      "name": "来源、未知项与新增硬规则边界",
+      "passed": true,
+      "details": "简报引用当前 RULES.md 第 1–11 行，明确仅发布已核实标题、不展示个人联系人、域名未确认前不承诺具体切换时间，并继续保留正文、域名、停用日期和独立复核等未知项；文件非空且 git diff --check 通过。",
+      "criteria": [
+        "保留实际产物与来源引用，无法确认的内容显式说明。"
+      ]
+    }
+  ]
+}

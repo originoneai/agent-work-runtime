@@ -1,0 +1,53 @@
+{
+  "version": 1,
+  "work_item": "QH-BRIEF",
+  "source_sha": "cd44a161471cee94fd4f797955327a4fd995cf3a",
+  "command": "rtk git diff --check; rtk rg -n <checklist sections> deliverables/qinghe-brief.md; rtk shasum -a 256 <artifact and source files>",
+  "scope": [
+    "QH-BRIEF"
+  ],
+  "verified_at": 1788913975806,
+  "artifacts": [
+    {
+      "locator": "deliverables/qinghe-brief.md",
+      "sha256": "4ce7ed36f0f29c2a78c200ee876b4c7da812af5f89cc79387f20a1386274db06"
+    }
+  ],
+  "sources": [
+    {
+      "locator": "materials/request.md",
+      "sha256": "97e6a3c7fa089071b15ebd6be40683c20d088b2cfa222d7c70ccce1fc1c85bca"
+    },
+    {
+      "locator": "materials/backlog.csv",
+      "sha256": "bf2e68415f5b4258e0c13fa70de3db8485904ebc0a228ae347fac1a7ad5e6ca6"
+    },
+    {
+      "locator": "materials/week-window.md",
+      "sha256": "df1bc8d6a0b3a51eabaefacbbebde71931840de029bc21a757e856ad6b04425b",
+      "provenance_note": "supplementary untracked project material; not an AWR authority source"
+    },
+    {
+      "locator": "RULES.md",
+      "sha256": "14fb573ef193e475f1f6d6bf54cfcf59888646150cee3ea0719de39733327386"
+    }
+  ],
+  "checks": [
+    {
+      "name": "本周优先清单、依赖与开始要求",
+      "passed": true,
+      "details": "简报按 P0 立即推进、并行确认、依赖交付和 P1 后置组织，逐项包含责任、动作、前置依赖、影响或完成定义，并给出来源。",
+      "criteria": [
+        "交付本周优先清单、依赖和开始前要求，并给出材料出处。"
+      ]
+    },
+    {
+      "name": "来源与未知边界",
+      "passed": true,
+      "details": "简报保留实际文件路径与来源引用，明确三份正文未取得、域名与停用日期未确认、独立复核未发生，并注明 week-window.md 的补充材料身份；git diff --check 通过。",
+      "criteria": [
+        "保留实际产物与来源引用，无法确认的内容显式说明。"
+      ]
+    }
+  ]
+}

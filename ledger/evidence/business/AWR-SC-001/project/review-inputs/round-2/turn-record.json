@@ -1,0 +1,28 @@
+{
+  "kind": "actual_prior_business_turn",
+  "phase": "round-2",
+  "client_task_id": "01a08379-ef89-7173-917d-274662891bcb",
+  "actual_user_turn": {
+    "timestamp": "2026-09-09T00:40:20.800Z",
+    "text": "我调整了项目规则，请更新简报，说明哪些安排需要改变。"
+  },
+  "source_sha256": {
+    "project.toml": "9c45ae191289ed0a40883e2120e47eaaa8e3af301c350928b11629406d6c503f",
+    "GOALS.md": "575f650e4ff9b782bebdb8830f5b2670a3bdc447a41ff84e53eec7cf35c249a8",
+    "PLAN.md": "2d726e0e77754a51f779b5eee59ac29c919a4e7ab87b2a43a53a74938b2ba053",
+    "RULES.md": "05c7d1e94f96e3f6bdaccfd8790895a07e11472fe95542c046eb570456ad218d",
+    "work-ledger.yaml": "5ca64a6962d2e318dab3c7bc97316eae71a4487248c0d674827b8c2e45ab603a",
+    "AGENTS.md": "581c28e430d08fc07fe5d98322b936c79018d654d1c5764eb7e7e7604fa11a39",
+    "DELIVERABLES.md": "32a59caa8ca42ee5481b32777a40777af6ff36076bdd68355b669f44058c56f4"
+  },
+  "artifact_sha256": {
+    "deliverables/qinghe-brief.md": "31b843562c3918b531d774e1ab19b7b6912db627de6ce2dc4ba37515fa1cfccd",
+    "deliverables/qinghe-context-reference.md": "8b9508d2965a6d97fd6b76c6afc5f3acad15f52ac326c9819633ad7da19571d3",
+    "deliverables/qinghe-dependencies.md": "b3bbb599f1ef5e3f15ffe1b2e149bb1edc5d218c470eab30186744167071161c"
+  },
+  "native_transcript_sha256": "2d3ee626aa9d6e07e0f5ae33b511f29f3dfa27a7e3c77155b57fef838569c6c0",
+  "events_sha256": "688c6a9987e2d47254952f0fbeb9cab11a405155489605f4feeabc85b228bfba",
+  "sealed_at": "2026-09-09T08:58:37+08:00",
+  "final_message": "已更新[本周执行简报](</Users/mac/Documents/originone/agent-work-running/.local/business-live-20260909-v1/project-onboarding/project/deliverables/qinghe-brief.md:13>)。\n\n需要改变的安排：\n\n- 对外目录不再预设三项，先核实标题，仅发布已核实项。\n- 内部可记录责任角色和协调信息；对外目录必须移除个人联系人。\n- 域名确认成为具体切换时间的硬依赖；旧版停用日期不能单独形成切换承诺。\n- 周五仍交付简报，但不等同于承诺门户切换。\n- 独立复核新增三项检查：标题核实、联系人清理、切换时间表述。\n\nAWR 当前为 revision 88，`QH-BRIEF` 已按本地验证证据重新完成；下一项是由其他参与者认领 `QH-REVIEW`。域名确认、独立复核和最终上线仍未完成。按 `karpathy-guidelines` 采用了最小范围修订，并保留所有未确认事项。未创建 Git 提交。",
+  "note": "Copied historical evidence, not newly authored business output or a review conclusion."
+}

@@ -1,0 +1,16 @@
+{
+  "kind": "actual_independent_reviewer_identity_binding",
+  "verified_at": "2026-09-09T10:36:52+08:00",
+  "actual_agent_task": "/root/source_change_client_run",
+  "actual_agent_type": "luna_worker",
+  "actual_task_completed": true,
+  "awr_session_id": "01M21Z2F3HZ8EHTRYY5N7RMRVZ",
+  "awr_claim_id": "01M21Z2F3JS2KK0S8K77D6MBTT",
+  "review_receipt": "control/independent-re-review.json",
+  "review_receipt_sha256": "4cdfc268936e7c42476610a73e71ba43e155bda8e1c44c941fda306b3d2b75aa",
+  "verified_receipts": 40,
+  "executor_correction_artifacts_unchanged": true,
+  "review_verdict": "pass_for_arrangement_level_remediation_only",
+  "scope": "Project takeover brief, priorities, dependencies, rules and explicit unknown transfers; external directory/domain/launch not confirmed.",
+  "e4_credit": false
+}

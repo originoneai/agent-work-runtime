@@ -1,0 +1,17 @@
+{
+  "external_key": "QH-REVIEW-REMEDIATION-HANDOFF-20260909",
+  "work_item_key": "QH-DELIVER",
+  "evidence_type": "progress_report",
+  "level": "locally_verified",
+  "summary": "已处理独立复核 QH-R01 至 QH-R05，更新依赖、上下文和工作记录并形成返检包；证据仅覆盖本地一致性，不是独立返检或最终交付。",
+  "locator": ".work-receipts/20260909-QH-REMEDIATION-evidence-report.json",
+  "sha256": "24893337a2d942fb3db1493d42b2ea1314293641ddec65bb3cdefdedf44329a1",
+  "source_sha": "cd44a161471cee94fd4f797955327a4fd995cf3a",
+  "command": "rtk git diff --check; rtk rg -n <QH-R01..QH-R05 and boundary assertions> deliverables/qinghe-dependencies.md deliverables/qinghe-context-reference.md deliverables/qh-review-response.md; rtk proxy test ! -e deliverables/qh-delivery.md; rtk proxy shasum -a 256 <handoff artifacts, retained review/history, ledger and rules>; rtk proxy jq empty <selected AWR receipts>; awr work show QH-INPUT|QH-BRIEF|QH-REVIEW|QH-DELIVER --source-sha cd44a161471cee94fd4f797955327a4fd995cf3a; awr status; awr ready",
+  "scope": [
+    "QH-DELIVER",
+    "QH-REVIEW"
+  ],
+  "branch_id": null,
+  "verified_at": 1788918897971
+}

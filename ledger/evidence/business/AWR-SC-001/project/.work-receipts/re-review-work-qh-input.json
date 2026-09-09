@@ -1,0 +1,85 @@
+{
+  "acceptance": [
+    "核对现有三份说明与两个尚缺确认，不把待确认事项当作就绪。",
+    "保留实际产物与来源引用，无法确认的内容显式说明。"
+  ],
+  "decisions": [],
+  "dependency_cycles": [],
+  "evidence": [
+    {
+      "currency": "current",
+      "external_key": "QH-INPUT-INVENTORY-20260909",
+      "level": "locally_verified",
+      "locator": ".work-receipts/20260909-QH-INPUT-evidence-report.json",
+      "missing_bindings": [],
+      "reasons": [],
+      "source_sha": "cd44a161471cee94fd4f797955327a4fd995cf3a",
+      "summary": "核对三份说明的实际可用性和两个待确认项，形成带来源与未知边界的依赖清单及上下文记录。"
+    },
+    {
+      "currency": "unknown",
+      "external_key": "QH-INPUT/evidence/.work-receipts/20260909-QH-INPUT-evidence-report.json",
+      "level": "unknown",
+      "locator": ".work-receipts/20260909-QH-INPUT-evidence-report.json",
+      "missing_bindings": [
+        "sha256",
+        "source_sha",
+        "command",
+        "verified_at"
+      ],
+      "reasons": [
+        "both recorded and requested source SHA are needed to determine currency"
+      ],
+      "source_sha": null,
+      "summary": "Evidence reference; not yet verified by AWR"
+    }
+  ],
+  "evidence_currency_basis": {
+    "branch_id": null,
+    "requested_source_sha": "cd44a161471cee94fd4f797955327a4fd995cf3a"
+  },
+  "freshness_basis": "source_refresh",
+  "missing_dependencies": [],
+  "ok": true,
+  "project_revision": 159,
+  "read_only": false,
+  "required_dependencies": [],
+  "source_issues": [],
+  "source_ref": {
+    "end_line": null,
+    "locator": "file:///Users/mac/Documents/originone/agent-work-running/.local/business-live-20260909-v1/project-onboarding/project/work-ledger.yaml",
+    "pointer": "/work_items/0",
+    "section_fingerprint": null,
+    "source_fingerprint": "sha256:5d32d35b33c9507a21f9daa9bdecd40a4f9b1b3d96a5f30400dc58bba00e2982",
+    "source_id": "01M21QQH53JR8QW1W5K5VJRNS7",
+    "source_revision": 17,
+    "start_line": null
+  },
+  "source_refresh_performed": true,
+  "source_warnings": 0,
+  "work": {
+    "active_claims": [],
+    "blocker": null,
+    "diagnostics": [
+      {
+        "code": "status_not_selectable",
+        "detail": "source status is completed",
+        "work_item_key": "QH-INPUT"
+      }
+    ],
+    "external_key": "QH-INPUT",
+    "freshness": "fresh",
+    "id": "01M21QQH543P74VQK6J61C4T10",
+    "milestone": "QH-DELIVERY",
+    "next_action": "由后续交付责任方在取得真实文档、标题依据、域名确认或停用安排后补充盘点；未取得前持续标记为未确认，不重开既有盘点结论。",
+    "owner": null,
+    "priority": "P0",
+    "raw_status": "completed",
+    "ready": false,
+    "revision": 5,
+    "source_revision": 17,
+    "status": "completed",
+    "summary": "QH-INPUT 的来源盘点与缺口登记已经完成；三份文档、可对外标题、域名确认和停用日期仍未取得，现作为后续移交事项，不再表述为 QH-INPUT 尚待完成。",
+    "title": "盘点需求和缺少材料"
+  }
+}

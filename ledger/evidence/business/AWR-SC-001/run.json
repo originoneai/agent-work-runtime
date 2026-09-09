@@ -1,0 +1,49 @@
+{
+  "format": "awr-business-run-1",
+  "scenario_id": "AWR-SC-001",
+  "fixture_contract_version": "1.0.1",
+  "fixture_contract_sha256": "ed7b94e4bb086b569f7b7191b0c6281c7fe8d2c2a910394b310d1b0c430b9049",
+  "fixture_files_sha256": {
+    "project/.gitignore": "6a53f49e42cd698827d93a42132da508bbfe893dd2688aee6db092adb261b663",
+    "project/GOALS.md": "575f650e4ff9b782bebdb8830f5b2670a3bdc447a41ff84e53eec7cf35c249a8",
+    "project/PLAN.md": "2d726e0e77754a51f779b5eee59ac29c919a4e7ab87b2a43a53a74938b2ba053",
+    "project/README.md": "c04cc9f1bb9391f415be8f3aca0c133c442b0785396b4651b947c92e6b24d30b",
+    "project/RULES.md": "14fb573ef193e475f1f6d6bf54cfcf59888646150cee3ea0719de39733327386",
+    "project/materials/backlog.csv": "bf2e68415f5b4258e0c13fa70de3db8485904ebc0a228ae347fac1a7ad5e6ca6",
+    "project/materials/request.md": "97e6a3c7fa089071b15ebd6be40683c20d088b2cfa222d7c70ccce1fc1c85bca",
+    "project/project.toml": "632f3745e45d042bfd2b661cde84d9507738a258b313a042f1092dc615038342",
+    "project/work-ledger.yaml": "4baf77a2bd8ac2aa91d704dc586aebcb4c599faa4bc789d8e49a791d3880caa8",
+    "prompts/followup-1.md": "de71f1913ba93df2414004b551a1868666adde266da430339167bb3db1a29075",
+    "prompts/followup-2.md": "4042b2ce7624b41a17911abc6dcb7ae311ca7b6fc404f376ea122ad52af53819",
+    "prompts/initial.md": "ebffdaab17df9dbaeaa6ae6260dc0ea7070d2c6afc42b4acd2ac12e1683d8bfa",
+    "scenario.json": "834c28b6d59c397ff4d11f5136e6b9223060e6df5a4a0d77ced3b35e8fc61250",
+    "updates/round-1/materials/week-window.md": "df1bc8d6a0b3a51eabaefacbbebde71931840de029bc21a757e856ad6b04425b",
+    "updates/round-2/RULES.md": "05c7d1e94f96e3f6bdaccfd8790895a07e11472fe95542c046eb570456ad218d",
+    "work-graph.yaml": "fb0337bd7f9f7cd8a9d55b8855f0a666c351be9306182283afbc12f1e352bfea"
+  },
+  "created_at": "2026-09-09T01:24:46+08:00",
+  "run_id": "awr-live-20260909-001",
+  "namespace": "awr-v1/project-onboarding/awr-live-20260909-001",
+  "project_root": "/Users/mac/Documents/originone/agent-work-running/.local/business-live-20260909-v1/project-onboarding/project",
+  "phase": "ready",
+  "published_rounds": [
+    1,
+    2
+  ],
+  "model_calls": 0,
+  "e4_completed": 0,
+  "participants_bound": false,
+  "live_preconditions_satisfied": false,
+  "seed_commit": "cd44a161471cee94fd4f797955327a4fd995cf3a",
+  "project_source_sha256": {
+    ".gitignore": "6a53f49e42cd698827d93a42132da508bbfe893dd2688aee6db092adb261b663",
+    "GOALS.md": "575f650e4ff9b782bebdb8830f5b2670a3bdc447a41ff84e53eec7cf35c249a8",
+    "PLAN.md": "2d726e0e77754a51f779b5eee59ac29c919a4e7ab87b2a43a53a74938b2ba053",
+    "README.md": "c04cc9f1bb9391f415be8f3aca0c133c442b0785396b4651b947c92e6b24d30b",
+    "RULES.md": "14fb573ef193e475f1f6d6bf54cfcf59888646150cee3ea0719de39733327386",
+    "materials/backlog.csv": "bf2e68415f5b4258e0c13fa70de3db8485904ebc0a228ae347fac1a7ad5e6ca6",
+    "materials/request.md": "97e6a3c7fa089071b15ebd6be40683c20d088b2cfa222d7c70ccce1fc1c85bca",
+    "project.toml": "9c45ae191289ed0a40883e2120e47eaaa8e3af301c350928b11629406d6c503f",
+    "work-ledger.yaml": "4baf77a2bd8ac2aa91d704dc586aebcb4c599faa4bc789d8e49a791d3880caa8"
+  }
+}

@@ -1,0 +1,30 @@
+{
+  "hashes": {
+    "exit_code": 0,
+    "output": "31b843562c3918b531d774e1ab19b7b6912db627de6ce2dc4ba37515fa1cfccd  deliverables/qinghe-brief.md\n42f98e5869ff2edc64b11a51a021b390e1586ea8ad7c1fcf09b1dc0c340385f5  deliverables/qinghe-dependencies.md\nfde028a64afc2d1f8543aa28ee7c90375714aa583ea778b9de7d25e9d7f4124a  deliverables/qinghe-context-reference.md\n92bc899572eab62027c30ec143b75fd9c9c8971569888493a14e17e31d43398d  deliverables/qh-review-response.md\ncfd81dd8bbc85608a1d6210d9f482dd300b71af8687fb3efc3538b3a8ac19de1  deliverables/qh-independent-review.md\n0aa782e30d7ac1f2f2b9ba65f9c2224a07404d3111ea5353f1ff0f3015722920  review-inputs/reference-lookup-process-record.json\n4db09cdb71fd2f9b6bf34ded6a9ea9e2fd5bf1567215881efa9c6a0ebe25985c  work-ledger.yaml\n05c7d1e94f96e3f6bdaccfd8790895a07e11472fe95542c046eb570456ad218d  RULES.md\n"
+  },
+  "diff_check": {
+    "exit_code": 0,
+    "output": "\n"
+  },
+  "no_final": {
+    "exit_code": 0,
+    "output": ""
+  },
+  "placeholders": {
+    "exit_code": 1,
+    "output": ""
+  },
+  "content": {
+    "exit_code": 0,
+    "output": "deliverables/qinghe-context-reference.md:8:- 本轮工作范围：处理独立复核 `QH-R01` 至 `QH-R05`，形成返检包；不提交最终交付。\ndeliverables/qinghe-context-reference.md:32:| 安排级独立复核 `QH-REVIEW` | `01M21VK36SJ9KXRB3634VZ1FPS` | r89 / `b93f62ab6796364279983c883f61964e4fcc10d109d04ce2506d660ee0b12445` | 不同参与者形成 `QH-R01` 至 `QH-R05`，结论为 `requires_executor_changes` |\ndeliverables/qinghe-context-reference.md:55:AWR 公共技术合同进一步说明，`validation_basis=caller_supplied_bindings` 只表示按调用者提交的绑定保存，记录成功不代表命令已执行或业务验收已完成。该解释依据允许使用的技术参考 `/Users/mac/Documents/originone/agent-work-running/docs/reference/cli-mcp-contract.md` 的“记录输入与回执”部分。\ndeliverables/qinghe-context-reference.md:68:- `QH-R01` 至 `QH-R05` 的处理动作、回执和未决边界；\ndeliverables/qh-review-response.md:13:`QH-R01`、`QH-R02` 的文档和工作记录问题已修订；`QH-R03` 已把安排级与目录级复核边界拆开，但目录、标题和入口仍因缺少真实输入而保持未完成；`QH-R04` 已补充 Unknown locator 投影与显式验证记录的区别，未删除或提升 Unknown 项；`QH-R05` 的原始偏离记录和哈希保持不变。\ndeliverables/qh-review-response.md:21:| `QH-R01` | 重写上下文引用，补齐 QH-INPUT、QH-BRIEF 两阶段、规则修订、独立复核和本轮整改会话；更新当前规则、台账版本、简报指纹与历史演进 | [上下文引用](qinghe-context-reference.md)；`.work-receipts/20260909-QH-REMEDIATION-context-compile.json`；`.work-receipts/20260909-QH-REMEDIATION-context-handoff.json` | 已处理，待独立返检 | 核对会话、revision、context hash、当前来源和历史指纹是否可追溯；不得把本文件视为执行者自证 |\ndeliverables/qh-review-response.md:22:| `QH-R02` | 更新依赖清单，写入当前工作状态、标题核实、联系人清理、域名与具体切换时间、目录级复核和最终交付依赖；通过 AWR 提案修正四个工作项的摘要与下一步 | [依赖清单](qinghe-dependencies.md)；四组 `.work-receipts/20260909-QH-REMEDIATION-ledger-*-{create,submit,approve,apply}.json` | 已处理，待独立返检 | 核对 completed 工作不再写成尚待完成，`QH-REVIEW` 已回到返检状态，`QH-DELIVER` 未完成 |\ndeliverables/qh-review-response.md:23:| `QH-R03` | 未虚构目录草案；把本轮限定为安排级整改返检，单列目录级复核所需真实输入和不能覆盖的结论 | [依赖清单](qinghe-dependencies.md)“返检能覆盖与不能覆盖的范围”；[上下文引用](qinghe-context-reference.md)“本次返检范围” | 边界已澄清；目录级门槛仍未满足 | 确认返检只评价安排与证据边界，不确认实际标题、入口、联系人清理、域名、切换或上线 |\ndeliverables/qh-review-response.md:24:| `QH-R04` | 说明台账 locator-only Unknown 投影与显式 `evidence add` 记录是不同身份和等级；保留 Unknown 缺口，不用 completed 状态掩盖 | [上下文引用](qinghe-context-reference.md)“未验证来源引用与显式验证记录”；`.work-receipts/20260909-QH-REMEDIATION-work-show-qh-input-final.json`、`...-qh-brief-final.json`、`...-qh-review-final.json` | 解释已补，Unknown 项仍显式保留 | 对照 current/locally_verified 记录的完整绑定与 Unknown 记录缺少的四项绑定；确认没有把登记成功写成命令执行或业务验收 |\ndeliverables/qh-review-response.md:25:| `QH-R05` | 原样保留技术参考查找偏离记录；不删除、不改写、不追认合规；本轮仅使用项目允许的 CLI 合同解释证据格式 | `review-inputs/reference-lookup-process-record.json`，SHA-256 `0aa782e30d7ac1f2f2b9ba65f9c2224a07404d3111ea5353f1ff0f3015722920` | 历史已保留；independent assessment 仍为 pending | 复核原文件与哈希未变，并确认该历史不是青禾业务来源、不得计入验收 |\ndeliverables/qh-review-response.md:58:| 外部域名 | 信息管理员的可追溯确认 | 待确认 / 未就绪 |\ndeliverables/qh-review-response.md:65:2. 逐条检查 `QH-R01` 至 `QH-R05` 的处理动作与回执，不沿用执行者的“已处理”作为返检结论。\ndeliverables/qinghe-dependencies.md:12:| `QH-BRIEF` | completed | 最新简报已响应 `RULES.md` r2：仅发布已核实标题、不展示个人联系人、域名未确认前不承诺具体切换时间 | 等待独立复核者检查本次整改包 |\ndeliverables/qinghe-dependencies.md:13:| `QH-REVIEW` | planned，待返检 | 首轮安排级独立复核已形成 `QH-R01` 至 `QH-R05` | 由不同参与者返检修订后的依赖清单、上下文引用、工作记录和处理回执 |\ndeliverables/qinghe-dependencies.md:20:| 安装说明 | 需求材料中出现该名称；当前项目未见正文、链接、版本、访问状态、可对外标题或责任信息 | 提供实际文件或可访问链接，并由内容责任角色确认版本、访问状态和可对外标题 | 保持“待提供 / 标题未核实”，不进入对外目录 |\ndeliverables/qinghe-dependencies.md:22:| 常见问题草稿 | 同上 | 提供实际草稿或链接，并确认版本、访问状态、可对外标题和是否达到目录复核条件 | 保持“待提供 / 标题未核实”，不进入对外目录 |\ndeliverables/qinghe-dependencies.md:24:| 外部域名接入 | 尚待信息管理员确认 | 取得可追溯的域名接入确认 | 保持“待确认 / 未就绪”，不得承诺具体切换时间 |\ndeliverables/qinghe-dependencies.md:52:1. 已按 `QH-R01` 至 `QH-R05` 更新专用依赖清单、上下文引用和工作记录，并形成逐条处理回执。\ndeliverables/qinghe-dependencies.md:55:4. 只有返检及适用的真实目录/外部确认门槛满足后，才可进入最终交付；本轮不提交最终交付。\ndeliverables/qinghe-dependencies.md:62:- `QH-R01` 至 `QH-R05` 是否逐条处理并留有回执；\ndeliverables/qinghe-dependencies.md:64:- locator-only Unknown 引用是否与显式验证记录正确区分；\ndeliverables/qinghe-dependencies.md:67:安排级返检不能确认：\ndeliverables/qinghe-dependencies.md:79:- 域名确认前保持“待确认 / 未就绪”，不承诺具体切换时间。\ndeliverables/qinghe-dependencies.md:85:- [独立复核记录](qh-independent-review.md)：`QH-R01` 至 `QH-R05`。\n"
+  },
+  "json": {
+    "exit_code": 0,
+    "output": ""
+  },
+  "git_status": {
+    "exit_code": 0,
+    "output": " M .gitignore\n M RULES.md\n M work-ledger.yaml\n?? .awr/\n?? AGENTS.md\n?? DELIVERABLES.md\n?? deliverables/\n?? materials/week-window.md\n?? review-inputs/"
+  }
+}
