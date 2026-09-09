@@ -1,8 +1,8 @@
 schema_version: 1
 contract_id: awr-v1
 contract_version: 1.0.1
-ledger_revision: 174
-updated_at: '2026-09-09T01:28:28+08:00'
+ledger_revision: 175
+updated_at: '2026-09-09T08:01:49+08:00'
 project:
   name: Agent Work Runtime
   external_key: agent-work-runtime
@@ -12,13 +12,12 @@ project:
 current:
   milestone: M9
   work_item: AWR-QA-003
-  next_action: 取得启动 Codex/Kimi 实际业务会话及仅使用 luna_worker 并行执行/独立复核的明确授权，再从新项目逐场开展验收。
+  next_action: 从八套已准备的独立项目逐场执行真实业务、两轮追问、独立复核和远端交付，先完成新项目接手场景。
   open_loops:
-  - 10/10 指标已达标；六项 CLI p95 为 33.817084–135.13625 ms，旧严格目标和失败基线保留。
-  - QA-003 八套全新隔离项目、自然输入、空执行记录及 Codex/Kimi 接入草稿已准备：.local/business-live-20260909-v1/。未初始化业务运行态、未启动模型、未发布后续轮次，E4 仍为 0/8。
-  - 依据项目 AGENTS.md 的显式授权限制，下一阶段 Codex/Kimi 实际客户端调用及 luna_worker 并行/独立复核等待用户授权；客户端连接、正常项目信任和实际身份仍需在执行时验证。
-  - 用户授权后从开发会话 01M210J7CAZ2BY7T1K7298118B 的最终 checkpoint 接续并重新取得 QA-003 claim；先检查既有 successor，避免重复 resume。
-  - 所有场景均需实际工具轮次、两轮追问、独立复核和各自远端交付；准备、seed commit、接口探针和自用记录不计通过。后续文档、二进制与发布任务仍待验收依赖完成。
+  - 用户已明确授权本项目 Codex/Kimi 实际客户端及 luna_worker 并行执行/独立复核，后续同范围不重复询问；执行配置沿用既有模型和 hooks。
+  - QA-003 已从保存 checkpoint 恢复并重新认领；八套本地新项目保留，逐场开展实际工具执行、两轮业务追问、独立复核和独立远端交付。
+  - 10/10 指标已达标；六项 CLI p95 为 33.817084–135.13625 ms。原严格目标和失败基线保留。
+  - 真实 E4 仍为 0/8，尚未启动或未完成的实际客户端连接、会话、复核和产物不能据准备材料计为通过。
 milestones:
 - id: M0
   status: completed
@@ -1732,7 +1731,7 @@ work_items:
   id: AWR-QA-003
   kind: quality
   milestone: M9
-  next_action: 取得启动 Codex/Kimi 实际业务会话及仅使用 luna_worker 并行执行/独立复核的明确授权，再从新项目逐场开展验收。
+  next_action: 从八套已准备的独立项目逐场执行真实业务、两轮追问、独立复核和远端交付，先完成新项目接手场景。
   owner: codex-primary
   priority: P2
   required_for_v1: true
@@ -1743,12 +1742,13 @@ work_items:
   status: in_progress
   title: 实际 Agent 客户端完整业务验收
   verification:
+    authorization_status: authorized_by_user
     evidence_directory: ledger/evidence/AWR-QA-003
     evidence_level: none
     minimum: 证明本条验收行为；功能阶段运行必要的定向检查，系统测试在 M9 集中执行。
-    scope_adjustment: 合同 1.0.1 仅改变延迟准入；业务准备包同步明确绑定该版本及 SHA，八个业务定义、覆盖维度和硬门槛与 1.0.0 完全一致。既有 QA-002 证据保留其历史源码绑定。
     preparation_report: ledger/evidence/business/preparation-20260909-v1.json
-    authorization_status: awaiting_explicit_user_authorization
+    scope_adjustment: 合同 1.0.1 仅改变延迟准入；业务准备包同步明确绑定该版本及 SHA，八个业务定义、覆盖维度和硬门槛与 1.0.0 完全一致。既有 QA-002 证据保留其历史源码绑定。
+    authorization_receipt: ledger/evidence/business/execution-authorization.json
 - acceptance:
   - 为 V1 声明支持的三个平台执行构建及核心持久化/路径/CLI 功能验证。
   - 平台、架构、工具链与结果绑定记录；不可用环境保持未验证。
