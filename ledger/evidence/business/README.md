@@ -1,8 +1,8 @@
 # 实际客户端验收准备
 
-2026-09-09 的本轮准备绑定 AWR 合同 1.0.1。八套项目已分别生成新的 namespace、工作图来源和 Git 输入基线；完整绑定见 [准备记录](preparation-20260909-v1.json)。这批材料尚未执行真实客户端业务，E4 仍为 **0/8**。
+2026-09-09 的本轮准备绑定 AWR 合同 1.0.1。八套项目已分别生成新的 namespace、工作图来源和 Git 输入基线；完整绑定见 [准备记录](preparation-20260909-v1.json)。本批已开始真实客户端业务执行；当前进展与完成数只由[源台账](../../work-ledger.yaml)及其[派生索引](../../README.md)给出，准备记录仍保留生成时的历史状态。
 
-本地目录前缀为 `.local/business-live-20260909-v1/`。每个目录中的 `project/` 是客户端工作区；`run.json` 是准备回执；`execution-record.json` 保留尚未填写的实际轮次、复核与交付记录。输入 seed commit 不属于业务交付提交。
+本地目录前缀为 `.local/business-live-20260909-v1/`。每个目录中的 `project/` 是客户端工作区；`run.json` 是准备回执；`execution-record.json` 随实际执行补充轮次、复核与交付记录；尚未发生的环节保持空值。输入 seed commit 不属于业务交付提交。
 
 | 场景 | 本地目录 | 首个自然业务输入 | 额外执行条件 |
 | --- | --- | --- | --- |
@@ -15,7 +15,7 @@
 | 受限资料与大日志 | `restricted-material/project/` | [初始请求](../../../tests/fixtures/business/restricted-material/prompts/initial.md) | 按授权使用资料，第一轮再发布公开长日志 |
 | 跨客户端接续分支 | `branch-handoff/project/` | [前序工作](../../../tests/fixtures/business/branch-handoff/prompts/prelude.md) | 不同实际客户端、分支交接和原生 MCP 工具调用 |
 
-每套项目的 `control/client-setup/` 已生成绑定准确路径的 Codex/Kimi 配置草稿，尚未安装。拟使用 Codex CLI 执行业务，Kimi Code 参与跨客户端交接；并行执行及独立复核仅使用获准的 `luna_worker`。本机可执行文件版本已记录，但模型调用、客户端原生 MCP 连接、项目信任与参与者身份尚未验证。
+每套项目的 `control/client-setup/` 包含绑定准确路径的 Codex/Kimi 配置草稿，是否实际启用以该场运行记录为准。Codex CLI 执行业务，Kimi Code 参与跨客户端交接；并行执行及独立复核仅使用获准的 `luna_worker`。实际模型调用、客户端原生 MCP 连接、项目信任与参与者身份须分别保留运行证据，不能由版本或配置文件存在推断。
 
 项目 [AGENTS.md](../../../AGENTS.md) 要求显式授权后才能分派子代理。用户随后明确授权本项目实际客户端执行及 luna_worker 并行协作和独立复核，并要求后续同范围不重复询问，见 [授权记录](execution-authorization.json)。准备记录保留其生成时尚未启动客户端的历史状态；当前执行状态以台账和每场运行记录为准。通过客户端正常的项目信任流程连接 AWR，保留既有模型设置及 hooks，不使用信任绕过参数。
 

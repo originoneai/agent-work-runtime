@@ -1,8 +1,8 @@
 schema_version: 1
 contract_id: awr-v1
 contract_version: 1.0.1
-ledger_revision: 178
-updated_at: '2026-09-09T08:27:07+08:00'
+ledger_revision: 179
+updated_at: '2026-09-09T08:30:57+08:00'
 project:
   name: Agent Work Runtime
   external_key: agent-work-runtime
@@ -12,7 +12,7 @@ project:
 current:
   milestone: M9
   work_item: AWR-QA-003
-  next_action: 继续四个已启动实际客户端场景；新项目接手推进两轮业务追问，其余执行来源变化、受限材料及跨客户端交接，完成后分别独立复核。
+  next_action: 继续五个已启动实际客户端场景；推进两轮业务追问、长任务真实前序工作和跨客户端交接，完成后分别独立复核。
   open_loops:
   - 用户已明确授权本项目 Codex/Kimi 实际客户端及 luna_worker 并行执行/独立复核，后续同范围不重复询问；执行配置沿用既有模型和 hooks。
   - QA-003 已从保存 checkpoint 恢复并重新认领；八套本地新项目保留，逐场开展实际工具执行、两轮业务追问、独立复核和独立远端交付。
@@ -1731,7 +1731,7 @@ work_items:
   id: AWR-QA-003
   kind: quality
   milestone: M9
-  next_action: 继续四个已启动实际客户端场景；新项目接手推进两轮业务追问，其余执行来源变化、受限材料及跨客户端交接，完成后分别独立复核。
+  next_action: 继续五个已启动实际客户端场景；推进两轮业务追问、长任务真实前序工作和跨客户端交接，完成后分别独立复核。
   owner: codex-primary
   priority: P2
   required_for_v1: true
@@ -2014,8 +2014,8 @@ scenarios:
   blocker: null
   delivery: null
 - id: AWR-SC-002
-  status: planned
-  executor: null
+  status: in_progress
+  executor: codex-cli:01a08392-3f62-74a0-b844-087b9ef0b1c1
   reviewer: null
   evidence: []
   gates:
