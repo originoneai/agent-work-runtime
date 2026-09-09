@@ -3,7 +3,7 @@ use std::{
     fs,
     io::Write,
     path::PathBuf,
-    process::{Command, Output},
+    process::{Command, Output, Stdio},
     sync::Arc,
     time::{Duration, Instant},
 };
@@ -25,6 +25,27 @@ impl Project {
     }
     fn ok(&self, args: &[&str]) -> Value {
         decode(self.run(args))
+    }
+    fn hook(&self, external: &str, event: &str) -> Value {
+        let mut child = Command::new(env!("CARGO_BIN_EXE_awr"))
+            .args([
+                "--project",
+                self.0.to_str().unwrap(),
+                "--json",
+                "client",
+                "hook",
+                "--client",
+                "generic",
+                "--work",
+                "INTAKE-001",
+            ])
+            .stdin(Stdio::piped())
+            .stdout(Stdio::piped())
+            .stderr(Stdio::piped())
+            .spawn()
+            .unwrap();
+        child.stdin.take().unwrap().write_all(&serde_json::to_vec(&serde_json::json!({"session_id":external,"hook_event_name":event,"cwd":self.0,"turn_id":"work-progress"})).unwrap()).unwrap();
+        decode(child.wait_with_output().unwrap())
     }
     fn bind(&self, name: &str) -> String {
         self.ok(&[
@@ -104,6 +125,205 @@ fn successful_child() {
 fn failed_child() {
     eprintln!("report input rejected");
     std::process::exit(7);
+}
+
+#[test]
+#[ignore = "owned child process fixture for recovery while work remains running"]
+fn slow_child() {
+    std::thread::sleep(Duration::from_secs(6));
+    successful_child();
+}
+
+#[test]
+fn resume_and_client_context_include_live_work_and_completed_results() {
+    let p = Project::new();
+    let s = p.bind("recovery-source");
+    let live = p.launch(&s, "live-report", "slow_child");
+    let live_id = live["execution"]["id"].as_str().unwrap();
+    p.wait(live_id, &["running"]);
+    let failed = p.launch(&s, "failed-report", "failed_child");
+    let failed_id = failed["execution"]["id"].as_str().unwrap();
+    p.wait(failed_id, &["failed"]);
+    p.ok(&[
+        "client",
+        "progress",
+        "--client",
+        "generic",
+        "--external-session",
+        "recovery-source",
+        "--next-action",
+        "Collect the report then review the failed import",
+        "--open-loop",
+        "Independent report review remains",
+    ]);
+    let cp = p.hook("recovery-source", "Stop");
+    assert_eq!(cp["awr"]["checkpoint_saved"], true);
+    let revision = p.ok(&["status"])["project_revision"].to_string();
+    let inspection = p.ok(&["recovery", "inspect", "--session", &s]);
+    assert_eq!(inspection["side_effects_performed"], false);
+    assert_eq!(p.ok(&["status"])["project_revision"].to_string(), revision);
+    let observations = inspection["executions"].as_array().unwrap();
+    assert!(
+        observations.iter().any(|o| o["execution_id"] == live_id
+            && o["state"] == "running"
+            && o["verified"] == true)
+    );
+    assert!(
+        observations.iter().any(|o| o["execution_id"] == failed_id
+            && o["state"] == "failed"
+            && o["exit_code"] == 7)
+    );
+    let resumed = p.ok(&[
+        "session",
+        "resume",
+        "--from-session",
+        &s,
+        "--agent",
+        "successor",
+        "--provider",
+        "generic",
+        "--model",
+        "fixture",
+        "--no-claim",
+        "--expected-revision",
+        &revision,
+        "--budget",
+        "12000",
+    ]);
+    assert_eq!(resumed["context_ready"], true);
+    assert!(
+        resumed["executions"]
+            .as_array()
+            .unwrap()
+            .iter()
+            .any(|o| o["execution_id"] == live_id && o["state"] == "running")
+    );
+    let context = resumed["context"].to_string();
+    assert!(context.contains(live_id));
+    assert!(context.contains(failed_id));
+    assert!(context.contains("Independent report review remains"));
+    let successor = resumed["resumed"]["session"]["id"].as_str().unwrap();
+    let bound = p.ok(&[
+        "client",
+        "bind",
+        "--client",
+        "generic",
+        "--external-session",
+        "recovery-successor",
+        "--work",
+        "INTAKE-001",
+        "--session",
+        successor,
+    ]);
+    assert_eq!(
+        bound["context"]["context"]["executions"]
+            .as_array()
+            .unwrap()
+            .len(),
+        2
+    );
+    let native = p.hook("recovery-successor", "SessionStart");
+    let text = native["hookSpecificOutput"]["additionalContext"]
+        .as_str()
+        .unwrap();
+    assert!(text.contains("owned_supervisor_identity_and_live_child_probe"));
+    assert!(text.contains(failed_id));
+    p.wait(live_id, &["succeeded"]);
+    let completed = p.ok(&["execution", "inspect", live_id]);
+    assert_eq!(completed["observation"]["state"], "succeeded");
+    assert_eq!(completed["observation"]["verified"], true);
+    assert_eq!(completed["observation"]["exit_code"], 0);
+}
+
+#[test]
+fn a_result_receipt_survives_a_failed_final_journal_write_and_rejects_wrong_identity() {
+    let p = Project::new();
+    let s = p.bind("receipt-recovery");
+    let launched = p.launch(&s, "receipt-gap", "slow_child");
+    let id = launched["execution"]["id"].as_str().unwrap();
+    let running = p.wait(id, &["running"]);
+    let conn = rusqlite::Connection::open(p.0.join(".awr/state.db")).unwrap();
+    conn.execute_batch("CREATE TRIGGER fixture_fail_finish BEFORE INSERT ON events WHEN NEW.event_type='execution.finished' BEGIN SELECT RAISE(ABORT,'injected final journal write failure'); END;").unwrap();
+    drop(conn);
+    let path = p.0.join(running["receipt"].as_str().unwrap());
+    let start = Instant::now();
+    while !path.is_file() {
+        assert!(start.elapsed() < Duration::from_secs(15));
+        std::thread::sleep(Duration::from_millis(50));
+    }
+    assert_eq!(
+        p.ok(&["execution", "show", id])["execution"]["state"],
+        "running"
+    );
+    let observed = p.ok(&["execution", "inspect", id]);
+    assert_eq!(observed["observation"]["state"], "succeeded");
+    assert_eq!(
+        observed["observation"]["basis"],
+        "supervisor_result_receipt"
+    );
+    let mut receipt: Value = serde_json::from_slice(&fs::read(&path).unwrap()).unwrap();
+    receipt["nonce"] = serde_json::json!(awr_core::Id::new());
+    fs::write(&path, serde_json::to_vec(&receipt).unwrap()).unwrap();
+    let bad = p.ok(&["execution", "inspect", id]);
+    assert_eq!(bad["observation"]["state"], "unknown");
+    assert_eq!(bad["observation"]["verified"], false);
+    assert_eq!(
+        bad["observation"]["basis"],
+        "invalid_or_unreadable_completion_receipt"
+    );
+}
+
+#[cfg(unix)]
+#[test]
+fn missing_supervisor_is_unknown_and_inspection_neither_restarts_nor_kills_child() {
+    let p = Project::new();
+    let s = p.bind("interrupted-supervisor");
+    let launched = p.launch(&s, "interrupted-report", "slow_child");
+    let id = launched["execution"]["id"].as_str().unwrap();
+    let running = p.wait(id, &["running"]);
+    assert_eq!(
+        p.ok(&["execution", "inspect", id])["observation"]["state"],
+        "running"
+    );
+    // Terminate only the fixture supervisor whose execution identity was just verified.
+    let killed = Command::new("kill")
+        .args(["-KILL", &running["worker"]["pid"].to_string()])
+        .status()
+        .unwrap();
+    assert!(killed.success());
+    let begin = Instant::now();
+    let unknown = loop {
+        let o = p.ok(&["execution", "inspect", id]);
+        if o["observation"]["state"] == "unknown" {
+            break o;
+        }
+        assert!(begin.elapsed() < Duration::from_secs(2));
+        std::thread::sleep(Duration::from_millis(20));
+    };
+    assert_eq!(unknown["observation"]["verified"], false);
+    assert_eq!(
+        unknown["observation"]["basis"],
+        "supervisor_unreachable_without_completion_receipt"
+    );
+    let duplicate = p.launch(&s, "interrupted-report", "slow_child");
+    assert_eq!(duplicate["created"], false);
+    let begin = Instant::now();
+    while !p.0.join("report.txt").exists() {
+        assert!(begin.elapsed() < Duration::from_secs(15));
+        std::thread::sleep(Duration::from_millis(50));
+    }
+    assert_eq!(
+        fs::read_to_string(p.0.join("launches.txt"))
+            .unwrap()
+            .lines()
+            .count(),
+        1
+    );
+    // The artifact's existence alone is not a supervisor completion receipt.
+    assert_eq!(
+        p.ok(&["execution", "inspect", id])["observation"]["state"],
+        "unknown"
+    );
 }
 
 #[test]
@@ -261,4 +481,50 @@ fn external_reference_is_not_a_completion_and_generic_events_cannot_forge_it() {
     ]);
     assert!(!forged.status.success());
     assert!(String::from_utf8_lossy(&forged.stderr).contains("reserved"));
+    let inspected = p.ok(&[
+        "execution",
+        "inspect",
+        e["execution"]["id"].as_str().unwrap(),
+    ]);
+    assert_eq!(inspected["observation"]["state"], "unknown");
+    assert_eq!(
+        inspected["observation"]["basis"],
+        "external_reference_requires_executor_adapter"
+    );
+}
+
+#[test]
+fn execution_context_is_deterministic_and_never_silently_drops_registered_work() {
+    let p = Project::new();
+    let s = p.bind("context-budget");
+    for i in 0..8 {
+        p.ok(&[
+            "execution",
+            "register",
+            "--session",
+            &s,
+            "--key",
+            &format!("external-job-{i}"),
+            "--purpose",
+            "Track the independent report build",
+            "--reference",
+            &format!("ci://build/{i}"),
+        ]);
+    }
+    let args = ["context", "compile", "--session", &s, "--budget", "12000"];
+    let first = p.ok(&args);
+    let inspected = p.ok(&["recovery", "inspect", "--session", &s]);
+    assert_eq!(inspected["executions"].as_array().unwrap().len(), 8);
+    let second = p.ok(&args);
+    assert_eq!(
+        first["work_context"]["context_hash"],
+        second["work_context"]["context_hash"]
+    );
+    let text = first.to_string();
+    for i in 0..8 {
+        assert!(text.contains(&format!("external-job-{i}")));
+    }
+    let too_small = p.run(&["context", "compile", "--session", &s, "--budget", "500"]);
+    assert!(!too_small.status.success());
+    assert!(String::from_utf8_lossy(&too_small.stderr).contains("BudgetExceeded"));
 }

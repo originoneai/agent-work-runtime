@@ -101,6 +101,10 @@ pub fn run(root: &Path, args: &ResumeArgs, json_output: bool) -> Result<()> {
         for gap in &report.recovery_gaps {
             println!("Recovery gap: {gap}");
         }
+        print!(
+            "{}",
+            awr_runtime::render_execution_observations(&report.executions)?
+        );
         if let Some(context) = &report.context {
             print!("{}", context.rendered_context());
         }

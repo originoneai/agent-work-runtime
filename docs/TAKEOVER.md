@@ -63,4 +63,17 @@ External references remain unverified. Recording a PID, a URL or an asserted suc
 
 ## Recovery inspection
 
-Implementation and validation are tracked by AWR-TAKE-004. Its command reference and evidence will be added when delivered.
+```sh
+awr execution inspect EXECUTION_ID
+awr recovery inspect --session AWR_SESSION_ID
+awr session resume --from-session AWR_SESSION_ID --agent successor \
+  --provider generic --model selected-model --no-claim --expected-revision REVISION
+```
+
+`execution inspect` and `recovery inspect` open the runtime database read-only. They never restart commands, kill processes, update sources or create successor sessions. Recovery inspection includes the last successful checkpoint, while `session resume` performs the existing source refresh, revision checks and successor transition.
+
+Each execution observation is `running`, `succeeded`, `failed` or `unknown`, with an observation time and evidence basis. Running requires a response from the registered loopback supervisor matching its execution ID, nonce, supervisor PID and child PID. Success/failure comes from the supervisor's immutable completion event, or its identity-bound atomic result receipt if the final database write was interrupted. A missing supervisor, invalid receipt, absent dispatch or unsupported external executor remains unknown. A numeric PID or a produced file alone is insufficient. Observations are local snapshots; running status can change immediately afterward.
+
+L0 and L1 retain every execution's recorded facts for the selected work and branch, including prior sessions' results. These records participate in deterministic context hashing and mandatory token budgeting. When they do not fit, compilation fails explicitly rather than omitting them. Live observations are separately labeled in resume output and client SessionStart/PostCompact context, because network/time observations are not part of the source-context hash. Automatic inspection has a two-second work budget; remaining records are returned as unknown with a reason and an explicit inspection command. The complete native additional-context output has a 10,000-token ceiling.
+
+Recovery checks use actual owned subprocesses to cover caller/session exit, live continuation, success, failure, a killed fixture supervisor, duplicate keys and a fault-injected final database write. These are local integration checks. Native hook trust/activation, full E4 acceptance, other operating systems and publication of this feature batch remain separate delivery steps.

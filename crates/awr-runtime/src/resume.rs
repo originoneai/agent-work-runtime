@@ -37,6 +37,8 @@ pub struct ResumeReport {
     pub context_error: Option<ErrorReport>,
     /// Current L1 completeness, not a claim that unrecorded historical memory was recovered.
     pub context_ready: bool,
+    /// Time-bound live evidence, separate from the deterministic L1 journal snapshot/hash.
+    pub executions: Vec<ExecutionObservation>,
 }
 
 /// Source refresh and target-agent preflight precede the atomic runtime transition.
@@ -194,6 +196,13 @@ pub fn resume_session(
         context: None,
         context_error: None,
         context_ready: false,
+        executions: crate::inspect_work_executions(
+            store,
+            &root,
+            project.id,
+            work.item.meta.id,
+            from.branch_id,
+        )?,
     };
     let preflight = match compile_context(store, &root, &context_request) {
         Ok(context) => context,
@@ -249,5 +258,12 @@ pub fn resume_session(
             report.context_error = Some(error.report());
         }
     }
+    report.executions = crate::inspect_work_executions(
+        store,
+        &root,
+        project.id,
+        work.item.meta.id,
+        from.branch_id,
+    )?;
     Ok(report)
 }

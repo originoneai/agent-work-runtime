@@ -1,0 +1,13 @@
+# Taking over project work
+
+Use the binary built from this branch. Registry previews published before this change do not contain these commands. Substitute your project path and returned IDs in the following steps.
+
+1. Run `awr --project /path/to/project init` and review source mappings, proposed work and missing information. Existing files remain in place. For a new project, `awr --project /path/to/project init --goal "Deliver a report exporter" --accept` creates the minimal authoritative intake sources. For an existing project, review an external JSON draft as described in [the takeover guide](../../docs/TAKEOVER.md) before accepting it.
+2. Run `awr client bind --client generic --external-session terminal-one --work INTAKE-001` in that project. Keep the returned `binding.session_id`. Read the returned context and refine the generated goal, work and acceptance before substantive development.
+3. Save progress with `awr client progress --client generic --external-session terminal-one --next-action "Collect the report and review its contents" --open-loop "Independent review remains"`.
+4. Start a real project command with `awr execution run --session SESSION_ID --key report-build-one --purpose "Build the report" -- YOUR_EXECUTABLE YOUR_ARGUMENTS`. The CLI returns after registration and dispatch. Use `awr execution inspect EXECUTION_ID` to verify whether it is running or finished. Repeating the same key and intent returns the same execution.
+5. After a client interruption, run `awr recovery inspect --session SESSION_ID`. Review any unknown state before retrying work. This command does not start or stop anything. Use `awr status` to obtain a current revision, then `awr session resume --from-session SESSION_ID --agent terminal-two --provider generic --model your-model --no-claim --expected-revision REVISION`. The result includes recorded continuity, current source context and separately timestamped execution observations.
+
+For automatic native lifecycle delivery, preview `awr client install --client codex --work INTAKE-001`, accept the project-local configuration, and verify the exact definitions in a fresh trusted client's `/hooks` view. Configuration generation alone does not demonstrate activation. Generic CLI binding is useful without native hooks, but binding by itself does not schedule checkpoints.
+
+The local integration checks in `crates/awr-cli/tests/takeover_init.rs`, `client_continuity.rs` and `execution_registry.rs` provide executable examples using disposable projects and owned child processes. They are not native-client E4 acceptance.

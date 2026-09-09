@@ -368,6 +368,13 @@ fn native_hook(root: &Path, client: &str, work: &str) -> Result<Value> {
         binding.context_revision = Some(pack.context.project_revision);
         binding.last_hook_event = Some(event.into());
         binding = save(&mut db.store, project, binding, false)?;
+        let executions = awr_runtime::inspect_work_executions(
+            &db.store,
+            root,
+            project,
+            session.work_item_id.unwrap(),
+            session.branch_id,
+        )?;
         let continuity = format!(
             "{}\n\nSaved next action: {}\nOpen loops: {}\nTo update continuity, use awr client progress --client {} --external-session {} --next-action <action>. Unrecorded conversation history has not been reconstructed.",
             pack.rendered_context,
@@ -376,8 +383,19 @@ fn native_hook(root: &Path, client: &str, work: &str) -> Result<Value> {
             client,
             external
         );
+        let continuity = format!(
+            "{continuity}\n{}",
+            awr_runtime::render_execution_observations(&executions)?
+        );
+        let total_tokens = awr_context::token_count(&continuity);
+        if total_tokens > 10000 {
+            return Err(Error::BudgetExceeded {
+                required: total_tokens,
+                budget: 10000,
+            });
+        }
         return Ok(
-            json!({"continue":true,"hookSpecificOutput":{"hookEventName":event,"additionalContext":continuity},"awr":{"binding":binding,"context_ready":pack.context.complete,"checkpoint_saved":false}}),
+            json!({"continue":true,"hookSpecificOutput":{"hookEventName":event,"additionalContext":continuity},"awr":{"binding":binding,"context_ready":pack.context.complete,"checkpoint_saved":false,"executions":executions,"additional_context_tokens":total_tokens}}),
         );
     }
     // Stable native turn IDs deduplicate repeats. Events without IDs also bind their observed
@@ -610,7 +628,14 @@ pub fn run(root: &Path, command: &ClientCommand, json_output: bool) -> Result<()
             binding.context_hash = Some(pack.context_hash.clone());
             binding.context_revision = Some(pack.context.project_revision);
             let project = db.project.id;
-            json!({"binding":save(&mut db.store,project,binding,false)?,"context":pack})
+            let executions = awr_runtime::inspect_work_executions(
+                &db.store,
+                &root,
+                project,
+                native.work_item_id.unwrap(),
+                native.branch_id,
+            )?;
+            json!({"binding":save(&mut db.store,project,binding,false)?,"context":pack,"executions":executions})
         }
         ClientCommand::Progress {
             identity,

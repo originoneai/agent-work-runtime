@@ -43,6 +43,10 @@ pub enum ExecutionCommand {
     Show {
         id: Id,
     },
+    /// Verify a managed supervisor/result without restarting or killing any command.
+    Inspect {
+        id: Id,
+    },
     #[command(hide = true)]
     Worker {
         id: Id,
@@ -102,7 +106,11 @@ fn protect_runtime(root: &Path) -> Result<()> {
             f.sync_all()?;
         }
         Err(e) if e.kind() == std::io::ErrorKind::AlreadyExists => {}
-        Err(e) => return Err(Error::Storage(format!("creating execution runtime ignore: {e}"))),
+        Err(e) => {
+            return Err(Error::Storage(format!(
+                "creating execution runtime ignore: {e}"
+            )));
+        }
     }
     Ok(())
 }
@@ -185,6 +193,11 @@ pub fn run(root: &Path, command: &ExecutionCommand, _json_output: bool) -> Resul
                 .transpose()?;
             json!({"executions":db.store.executions(db.project.id,work)?,"live_verification_performed":false})
         }
+        ExecutionCommand::Inspect { id } => {
+            let (store, project) = read_state(&root)?;
+            let e = store.execution(project.id, *id)?;
+            json!({"observation":awr_runtime::inspect_execution(&root,&e)?,"side_effects_performed":false})
+        }
         ExecutionCommand::Show { id } => {
             let db = RuntimeProject::open(&root, false)?;
             json!({"execution":db.store.execution(db.project.id,*id)?,"live_verification_performed":false})
@@ -193,6 +206,13 @@ pub fn run(root: &Path, command: &ExecutionCommand, _json_output: bool) -> Resul
     };
     println!("{}", serde_json::to_string_pretty(&result)?);
     Ok(())
+}
+
+pub(crate) fn read_state(root: &Path) -> Result<(Store, Project)> {
+    let root = root.canonicalize()?;
+    let store = Store::open_readonly(&crate::source::runtime_dir(&root, false)?.join("state.db"))?;
+    let project = store.project_by_root(&root)?;
+    Ok((store, project))
 }
 
 fn detach(command: &mut Command) {

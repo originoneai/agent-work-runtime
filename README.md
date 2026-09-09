@@ -101,6 +101,10 @@ target/debug/awr source reindex
 
 Initialization previews the mapping before acceptance. An existing matching `.awr/project.toml` is reused without rewriting it; a conflicting mapping is rejected. Without `--manifest`, standard source paths are discovered, and ambiguous primary sources require an explicit mapping. Runtime databases, WAL files, artifacts and caches receive default Git ignore entries. A [small example](examples/basic/README.md) is included.
 
+For an existing or empty project, `awr init` now proposes a reviewable intake: existing sources remain authoritative, conventional Markdown ledgers can be indexed, and missing goal/plan/rule/work sources are proposed under `.awr/intake/`. Use `--goal "Project purpose" --accept` for a new project or `--write-draft /outside/project/intake.json` for review before acceptance. Proposed work does not assert unverified completion.
+
+The [project takeover guide](docs/TAKEOVER.md) covers `client install/bind/progress/hook`, `execution run/register/list/show/inspect` and `recovery inspect`. These add client lifecycle checkpoints, independently supervised local commands and evidence-based recovery. Native client activation is verified separately. `session resume` includes live execution observations; deterministic L0/L1 context retains their recorded facts and does not silently omit them to fit a budget.
+
 `source list` is read-only and shows the last observed state. `source scan` refreshes availability and flags pending changes; `source reindex` parses and commits those changes. `--json` provides structured reports and incomplete operations exit nonzero. Use read-only database diagnostics when needed:
 
 ```sh

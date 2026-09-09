@@ -27,6 +27,7 @@ pub enum ContextSection {
     Dependencies,
     Decisions,
     Delta,
+    Executions,
     Evidence,
     Metadata,
 }
@@ -40,6 +41,7 @@ impl ContextSection {
             Self::Dependencies => "Dependencies",
             Self::Decisions => "Decisions",
             Self::Delta => "Recent Delta",
+            Self::Executions => "Executions",
             Self::Evidence => "Evidence",
             Self::Metadata => "Metadata",
         }

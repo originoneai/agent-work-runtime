@@ -486,6 +486,24 @@ fn compile_context_selected(
         }
     }
     let mut required = hard_chunks(&hard)?;
+    // Every execution on this work/branch is mandatory, including completed results and
+    // unverified nonterminal records. Budget overflow is explicit, never silent omission.
+    for execution in store
+        .executions(project.id, Some(work.item.meta.id))?
+        .iter()
+        .filter(|e| e.branch_id == branch)
+    {
+        required.push(chunk(
+            format!("execution:{}", execution.id),
+            ContextSection::Executions,
+            execution.continuity_text()?,
+            vec![SelectedEntity {
+                kind: "execution".into(),
+                id: execution.id,
+                revision: execution.revision,
+            }],
+        ));
+    }
     required.push(chunk(
         "branch-context", ContextSection::Metadata,
         format!("Work branch: {} | revision: {:?} | fork: {} | parent: {}\nGit ref at creation: {}; recorded commit: {}\nSource basis: {}\nRuntime scope: {}",

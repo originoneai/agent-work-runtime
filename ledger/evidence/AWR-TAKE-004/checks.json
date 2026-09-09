@@ -1,0 +1,29 @@
+{
+  "checked_at": "2026-09-09T06:25:56.697501+00:00",
+  "commands": [
+    {
+      "command": "cargo test --offline --locked -p awr-cli --test execution_registry --test client_continuity --test takeover_init --test source_cli",
+      "result": "22 passed, 3 child fixture entrypoints ignored by the outer runner and invoked explicitly"
+    },
+    {
+      "command": "cargo test --offline --locked -p awr-cli --test execution_registry",
+      "result": "8 passed, 3 child fixtures invoked explicitly; includes the additional deterministic-context/budget check"
+    },
+    {
+      "command": "cargo test --offline --locked -p awr-core -p awr-store -p awr-source -p awr-context -p awr-runtime",
+      "result": "140 passed, 3 existing ignored checks, 36 suites"
+    }
+  ],
+  "coverage": [
+    "live supervisor identity probe and completed/failed outcomes with evidence times",
+    "read-only recovery inspection leaves project revision unchanged",
+    "resume and client lifecycle output include predecessor executions and continuity",
+    "L0/L1 preserve execution records; live observations do not alter deterministic context hashes",
+    "mandatory execution facts fail explicitly when context budget is too small",
+    "actual killed owned supervisor remains unknown while its child completes without restart",
+    "atomic result receipt remains usable after injected final database write failure",
+    "incorrect receipt identity remains unknown",
+    "external reference remains unknown"
+  ],
+  "scope": "Local implementation and integration evidence only. No native hook activation, new E4 scene, non-host OS proof or registry release is claimed."
+}

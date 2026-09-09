@@ -12,6 +12,7 @@ mod mutation;
 mod onboarding;
 mod query;
 mod records;
+mod recovery;
 mod resume;
 mod search;
 mod session;
@@ -46,6 +47,11 @@ enum Command {
     Execution {
         #[command(subcommand)]
         command: execution::ExecutionCommand,
+    },
+    /// Inspect saved work and verify execution evidence before resuming.
+    Recovery {
+        #[command(subcommand)]
+        command: recovery::RecoveryCommand,
     },
     /// List, scan or index authoritative project sources.
     Source {
@@ -127,6 +133,7 @@ fn run(cli: &Cli) -> Result<()> {
         Some(Command::Init(args)) => onboarding::run(&cli.project, args, cli.json),
         Some(Command::Client { command }) => client::run(&cli.project, command, cli.json),
         Some(Command::Execution { command }) => execution::run(&cli.project, command, cli.json),
+        Some(Command::Recovery { command }) => recovery::run(&cli.project, command, cli.json),
         Some(Command::Source { command }) => source::run(&cli.project, command, cli.json),
         Some(Command::Status { branch }) => {
             query::status(&cli.project, branch.as_deref(), cli.json)
