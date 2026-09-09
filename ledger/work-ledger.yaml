@@ -1,8 +1,8 @@
 schema_version: 1
 contract_id: awr-v1
 contract_version: 1.0.1
-ledger_revision: 181
-updated_at: '2026-09-09T08:53:07+08:00'
+ledger_revision: 183
+updated_at: '2026-09-09T09:21:42+08:00'
 project:
   name: Agent Work Runtime
   external_key: agent-work-runtime
@@ -12,7 +12,7 @@ project:
 current:
   milestone: M9
   work_item: AWR-QA-003
-  next_action: 继续六个已启动实际客户端场景；推进两轮业务追问、长任务真实前序工作、证据补齐和跨客户端交接，完成后分别独立复核。
+  next_action: 继续八个已启动实际客户端场景；完成两轮业务修订、不同参与者独立复核和逐场景交付。并行协作先建立真实分工，长任务验证新客户端接续，中断场景保留真实故障前后状态。
   open_loops:
   - 用户已明确授权本项目 Codex/Kimi 实际客户端及 luna_worker 并行执行/独立复核，后续同范围不重复询问；执行配置沿用既有模型和 hooks。
   - QA-003 已从保存 checkpoint 恢复并重新认领；八套本地新项目保留，逐场开展实际工具执行、两轮业务追问、独立复核和独立远端交付。
@@ -1731,7 +1731,7 @@ work_items:
   id: AWR-QA-003
   kind: quality
   milestone: M9
-  next_action: 继续六个已启动实际客户端场景；推进两轮业务追问、长任务真实前序工作、证据补齐和跨客户端交接，完成后分别独立复核。
+  next_action: 继续八个已启动实际客户端场景；完成两轮业务修订、不同参与者独立复核和逐场景交付。并行协作先建立真实分工，长任务验证新客户端接续，中断场景保留真实故障前后状态。
   owner: codex-primary
   priority: P2
   required_for_v1: true
@@ -1769,7 +1769,8 @@ work_items:
   id: AWR-QA-004
   kind: quality
   milestone: M9
-  next_action: 执行源码 d483766 的三平台原生 11/11、交付 eab85e7 与 Git/GitHub 回执已核实；完成写回、checkpoint/end 和 Doctor 零项复核通过，后续进入 AWR-P9-001。
+  next_action: 执行源码 d483766 的三平台原生 11/11、交付 eab85e7 与 Git/GitHub 回执已核实；完成写回、checkpoint/end 和 Doctor 零项复核通过，后续进入
+    AWR-P9-001。
   owner: codex-primary
   priority: P2
   required_for_v1: true
@@ -1876,8 +1877,8 @@ work_items:
     evidence_directory: ledger/evidence/AWR-P9-004
     evidence_level: locally_verified
     minimum: 证明本条验收行为；功能阶段运行必要的定向检查，系统测试在 M9 集中执行。
-    scope_adjustment: 首轮真实样本 L0 为 1232 tokens、L1 为 3182 tokens，Rust 与 Python o200k_base 一致。将通用 L0 展示精简及对应 CLI 回归纳入本条，保留全部规定的
-      L0 事实、原文硬规则和结构化来源绑定；不修改验收预算或分母。
+    scope_adjustment: 首轮真实样本 L0 为 1232 tokens、L1 为 3182 tokens，Rust 与 Python o200k_base 一致。将通用 L0 展示精简及对应
+      CLI 回归纳入本条，保留全部规定的 L0 事实、原文硬规则和结构化来源绑定；不修改验收预算或分母。
 - acceptance:
   - 固定硬件、数据规模与冷热缓存条件，记录 status/work/ready/compile/search/reindex 耗时。
   - 六项操作预热后至少 30 次按 p95 <1000 ms 验收；冷进程启动另报，原 20/20/50/100/100/500 ms 保留为后续优化目标。
@@ -2015,7 +2016,7 @@ scenarios:
   delivery: null
 - id: AWR-SC-002
   status: in_progress
-  executor: codex-cli:01a08392-3f62-74a0-b844-087b9ef0b1c1
+  executor: codex-cli:01a083b2-ae71-77a3-9cc9-977b6c656d5a
   reviewer: null
   evidence: []
   gates:
@@ -2050,8 +2051,8 @@ scenarios:
   blocker: null
   delivery: null
 - id: AWR-SC-004
-  status: planned
-  executor: null
+  status: in_progress
+  executor: codex-cli:01a083c0-2c0b-7fc1-ba7d-0b0721dfeb0f
   reviewer: null
   evidence: []
   gates:
@@ -2086,8 +2087,8 @@ scenarios:
   blocker: null
   delivery: null
 - id: AWR-SC-006
-  status: planned
-  executor: null
+  status: in_progress
+  executor: codex-cli:01a083b6-aa5f-7ba0-9135-c128ada421a2
   reviewer: null
   evidence: []
   gates:
