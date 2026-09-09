@@ -13,8 +13,10 @@ by the existing contract and ledger; this preparation does not mark them complet
 
 Both versions are derived from `workspace.package.version` in `Cargo.toml`.
 `-dev.N`, `-alpha.N`, `-beta.N` and `-rc.N` map to PEP 440 development/prerelease
-versions. The native `--version` output retains the Cargo version. A preview is
-never published as npm `latest`. The publication assembler rejects stable versions.
+versions. The native `--version` output retains the Cargo version. The intended npm
+preview tag is `next`; always verify registry tags after upload. An unexpected
+`latest` alias is an open release issue and must be recorded in the registry receipt.
+The publication assembler rejects stable versions.
 Names must be checked again before the first upload; a registry 404 does not reserve
 a name or guarantee that an upload will be accepted.
 

@@ -59,9 +59,18 @@
       "awr_work_transition"
     ]
   },
-  "latest_tag_cleanup": "blocked_http_400",
+  "latest_tag_cleanup": {
+    "status": "blocked",
+    "response": "HTTP 400 after successful WebAuthn authentication",
+    "clients": [
+      "npm 10.9.2",
+      "npm 11.19.1"
+    ],
+    "further_attempts": "stopped",
+    "available_preview_tag": "next"
+  },
   "scope": "Actual npm publication and macOS registry installation; no stable V1 or business acceptance claim",
-  "recorded_at": "2026-09-09T12:11:23+08:00",
+  "recorded_at": "2026-09-09T12:17:38+08:00",
   "build_run_url": "https://github.com/originoneai/agent-work-runtime/actions/runs/34308446039",
   "pypi_publication": "pending_trusted_publisher_confirmation",
   "pypi_organization": "company_application_submitted_pending_review",
@@ -71,5 +80,8 @@
     "name": "package-registries",
     "allowed_branch": "main",
     "allowed_tag_pattern": "pypi-preview-*"
-  }
+  },
+  "publishing_workflow_commit": "5507f0716eda73e4299cb0d22c94969d0a94824e",
+  "pull_request": "https://github.com/originoneai/agent-work-runtime/pull/1",
+  "integration_state": "draft; ledger conflicts with concurrently updated main are deferred to integration"
 }
