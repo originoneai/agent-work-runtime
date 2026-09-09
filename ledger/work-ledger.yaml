@@ -1,8 +1,8 @@
 schema_version: 1
 contract_id: awr-v1
 contract_version: 1.0.1
-ledger_revision: 189
-updated_at: 2026-09-09T12:17:38+08:00
+ledger_revision: 190
+updated_at: 2026-09-09T12:28:46+08:00
 project:
   name: Agent Work Runtime
   external_key: agent-work-runtime
@@ -1967,7 +1967,7 @@ work_items:
   blocker: null
   next_action: 在独立分支准备 npm/PyPI 预发布安装包；正式 V1 发布继续依赖既有验收。
   distribution_preparation:
-    status: blocked
+    status: published
     owner: codex-side-conversation
     branch: codex/npm-pypi-release-prep
     user_request: 2026-09-09 用户要求注册账号和 originoneai 组织，并准备两个渠道推送版本。
@@ -1986,15 +1986,18 @@ work_items:
     - docs/release/preview-candidate.json
     - docs/release/preview-publication.json
     npm_status: 4 个开发预览包已发布；注册表文件哈希匹配，macOS 从 npm 安装并验证 CLI/MCP 通过。
-    pypi_status: 三平台 wheel 已验证；企业组织申请待审核，可信发布绑定等待用户确认。
+    pypi_status: 三平台 0.1.0.dev0 wheel 已通过可信发布上传；实际下载哈希匹配，macOS 从 PyPI 全新安装并验证 CLI/MCP 通过。
     open_loops:
     - npm 首次发布自动附加 latest；npm 10.9.2 和 11.19.1 移除请求均在完成认证后返回 HTTP 400，已停止重试；next 通道可安装。
-    - PyPI 绑定确认后，从独立分支推送候选发布 tag，提升同一批已验证 wheel 并回验注册表安装。
+    - PyPI originoneai 企业组织申请仍待平台审核；本次预览已由 originoneai 个人账号发布，不依赖组织审核。
     - 草稿 PR https://github.com/originoneai/agent-work-runtime/pull/1 与主线程的新台账有合并冲突；在主线集成时处理，不改动主线程工作区。
-    publishing_workflow_commit: 5507f0716eda73e4299cb0d22c94969d0a94824e
+    publishing_workflow_commit: 0070921aba82d1360d2398a99c2cf9dd78649c1d
+    publishing_tag: pypi-preview-v0.1.0.dev0
+    verified_tag_object_sha: 1c95de1e33da71d823ad0448032b0d7c9ddbd454
+    publishing_run_url: https://github.com/originoneai/agent-work-runtime/actions/runs/34310699197
     pull_request: https://github.com/originoneai/agent-work-runtime/pull/1
-    blocker: PyPI 可信发布绑定等待用户确认；npm latest 标签移除被平台拒绝，保留开放记录。
-    next_action: 用户确认已预填的 PyPI 发布绑定后，提交绑定并推送 pypi-preview-v0.1.0.dev0 标签；核对三平台 wheel 注册表字节和实际 pip 安装，不计作 V1 正式发布。
+    blocker: null
+    next_action: 双渠道开发预览发布与注册表安装验证已完成；主线集成时处理草稿 PR 台账冲突，组织审核与 npm 标签问题单独保留跟进，不计作 V1 正式发布。
 - id: AWR-P9-007
   title: V1 发布门槛与远端交付回执
   milestone: M10

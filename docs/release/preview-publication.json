@@ -69,10 +69,70 @@
     "further_attempts": "stopped",
     "available_preview_tag": "next"
   },
-  "scope": "Actual npm publication and macOS registry installation; no stable V1 or business acceptance claim",
-  "recorded_at": "2026-09-09T12:17:38+08:00",
+  "scope": "Actual npm and PyPI publication; all seven registry file hashes match the verified build, with macOS registry installation checks on both channels; no stable V1 or business acceptance claim",
+  "recorded_at": "2026-09-09T12:28:46+08:00",
   "build_run_url": "https://github.com/originoneai/agent-work-runtime/actions/runs/34308446039",
-  "pypi_publication": "pending_trusted_publisher_confirmation",
+  "pypi_publication": {
+    "registry": "PyPI",
+    "project": "agent-work-runtime",
+    "version": "0.1.0.dev0",
+    "project_url": "https://pypi.org/project/agent-work-runtime/0.1.0.dev0/",
+    "metadata_url": "https://pypi.org/pypi/agent-work-runtime/0.1.0.dev0/json",
+    "status": "published_verified",
+    "source_sha": "fc9c78c967525d819c7843e2cdb70167bb7a4a58",
+    "packages": [
+      {
+        "filename": "agent_work_runtime-0.1.0.dev0-py3-none-macosx_15_0_arm64.whl",
+        "url": "https://files.pythonhosted.org/packages/2a/fc/48bfd57207e6f8066c7a9020d250cda9f4f3a0d0997d45f0b7fb71b70078/agent_work_runtime-0.1.0.dev0-py3-none-macosx_15_0_arm64.whl",
+        "sha256": "4abc54fbf239219d580b11e37fa9c69304793b2dc0c8709c82cc6ae854bd0385",
+        "uploaded_at": "2026-09-09T04:22:41.685649Z",
+        "requires_python": ">=3.9"
+      },
+      {
+        "filename": "agent_work_runtime-0.1.0.dev0-py3-none-manylinux_2_39_x86_64.whl",
+        "url": "https://files.pythonhosted.org/packages/12/f6/3b7830fd76b6a91116a43f6677307fd6769c9f715df024ccd42724bd61ad/agent_work_runtime-0.1.0.dev0-py3-none-manylinux_2_39_x86_64.whl",
+        "sha256": "c5ae6af2943e29690e21c6978f272fb7eac8dd184f487cfc2e18919b3341fce5",
+        "uploaded_at": "2026-09-09T04:22:48.279083Z",
+        "requires_python": ">=3.9"
+      },
+      {
+        "filename": "agent_work_runtime-0.1.0.dev0-py3-none-win_amd64.whl",
+        "url": "https://files.pythonhosted.org/packages/b0/39/900d4ac3a55c7d7b56b42321a9e4c2d81a92adb48b70810ae41c5ef31dae/agent_work_runtime-0.1.0.dev0-py3-none-win_amd64.whl",
+        "sha256": "5636ec910c41fa80cd40d5b68a5e625cdeffdbbb22e424c7c9cceb534eb7afee",
+        "uploaded_at": "2026-09-09T04:22:50.863575Z",
+        "requires_python": ">=3.9"
+      }
+    ],
+    "registry_install_platform": "darwin-arm64",
+    "registry_install_python": "3.12.11",
+    "registry_install_checks": {
+      "version_and_help": true,
+      "exit_code_and_stderr": true,
+      "unicode_space_project_init_and_status": true,
+      "mcp_stdio_tools": [
+        "awr_context_compile",
+        "awr_event_append",
+        "awr_evidence_record",
+        "awr_project_status",
+        "awr_search",
+        "awr_work_get",
+        "awr_work_ready",
+        "awr_work_transition"
+      ]
+    },
+    "publishing_tag": "pypi-preview-v0.1.0.dev0",
+    "publishing_workflow_commit": "0070921aba82d1360d2398a99c2cf9dd78649c1d",
+    "publishing_run_id": 34310699197,
+    "publishing_run_url": "https://github.com/originoneai/agent-work-runtime/actions/runs/34310699197",
+    "recorded_at": "2026-09-09T04:27:20.240574+00:00",
+    "scope": "Actual registry downloads on all three published platforms and macOS installation; not stable V1 or business acceptance",
+    "remote_tag_receipt": {
+      "ref": "refs/tags/pypi-preview-v0.1.0.dev0",
+      "tag_object_sha": "1c95de1e33da71d823ad0448032b0d7c9ddbd454",
+      "peeled_commit_sha": "0070921aba82d1360d2398a99c2cf9dd78649c1d",
+      "verified_at": "2026-09-09T12:28:46+08:00"
+    }
+  },
   "pypi_organization": "company_application_submitted_pending_review",
   "npm_organization": "originoneai",
   "npm_owner": "originoneai-maintainer",
@@ -81,7 +141,7 @@
     "allowed_branch": "main",
     "allowed_tag_pattern": "pypi-preview-*"
   },
-  "publishing_workflow_commit": "5507f0716eda73e4299cb0d22c94969d0a94824e",
+  "publishing_workflow_commit": "0070921aba82d1360d2398a99c2cf9dd78649c1d",
   "pull_request": "https://github.com/originoneai/agent-work-runtime/pull/1",
   "integration_state": "draft; ledger conflicts with concurrently updated main are deferred to integration"
 }

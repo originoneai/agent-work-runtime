@@ -44,6 +44,40 @@ as tested. The npm Linux launcher rejects musl and older glibc. Intel macOS, Lin
 arm64 and Windows arm64 are not included. SQLite is bundled; Git-bound operations
 still require an installed Git executable.
 
+## Install the published preview
+
+The first preview is available on [npm](https://www.npmjs.com/package/@originoneai/agent-work-runtime)
+and [PyPI](https://pypi.org/project/agent-work-runtime/0.1.0.dev0/).
+Choose either installation channel; both provide `awr` and `awr-mcp`.
+
+Python, in a virtual environment:
+
+```sh
+python -m pip install agent-work-runtime==0.1.0.dev0
+```
+
+npm:
+
+```sh
+npm install -g @originoneai/agent-work-runtime@next
+```
+
+After installing, run `awr --version`, `awr --help`, or `awr-mcp --help`.
+The current native version is `0.1.0-dev`. The platform and interpreter limits above
+apply to these packages.
+
+All seven files downloaded from the registries match the candidate build hashes.
+Fresh macOS installations from both registries passed the CLI and MCP installation
+checks. Linux and Windows installation checks passed in the original three-platform
+build; post-publication installation was checked on macOS. Publication provenance,
+hashes, workflow/tag receipts and the remaining follow-ups are recorded in
+[preview-publication.json](preview-publication.json).
+
+The npm organization is active. The PyPI company organization application remains
+under review; the verified `originoneai` account published this preview successfully.
+npm also assigned `latest` to this first development version. Both authenticated
+cleanup attempts returned HTTP 400; use `@next` for the documented preview channel.
+
 ## Build and inspect locally
 
 Use a dedicated virtual environment, leaving the main development environment alone:
