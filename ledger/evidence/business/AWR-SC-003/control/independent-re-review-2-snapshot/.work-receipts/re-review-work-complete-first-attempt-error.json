@@ -1,0 +1,10 @@
+{
+  "kind": "reviewer_command_failure",
+  "command": "awr work complete SG-REVIEW --input .work-receipts/re-review-completion-input.json --expected-revision 141",
+  "exit_code": 1,
+  "error": {
+    "code": "SourceUnavailable",
+    "message": "source unavailable: .work-receipts/re-review-completion-input.json: No such file or directory (os error 2)"
+  },
+  "business_state_changed": false
+}

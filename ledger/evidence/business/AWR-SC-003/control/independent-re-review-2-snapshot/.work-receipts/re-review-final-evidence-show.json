@@ -1,0 +1,30 @@
+{
+  "currency": "current",
+  "evidence": {
+    "branch_id": null,
+    "command": "rtk python3 .work-receipts/re-review-post-verify.py",
+    "external_key": "SG-REVIEW-INDEPENDENT-RECHECK-20260909",
+    "freshness": null,
+    "id": "01M2213R7RB4F8PQK3B8C1924J",
+    "level": "locally_verified",
+    "locator": ".work-receipts/re-review-verification.json",
+    "revision": 1,
+    "scope": [
+      "SG-REVIEW"
+    ],
+    "scope_total": 1,
+    "sha256": "87b170404e6f92958f56a29700ebf7149d2382c14d8aad67c9f18f4ac5dbf3ff",
+    "source_ref": null,
+    "source_sha": "146ed3bbf79fd0561158e46bb2219eeb05c89e67",
+    "summary": "Independent re-review accepted the plan-scope remediation: R-01.1 through R-01.5 closed; R-02.1 through R-02.3 remain permanently disclosed scope deviations; no final delivery, partner approval, E4, or business acceptance.",
+    "type": "independent_re_review_report",
+    "verified_at": 1788922010497,
+    "work_item_id": "01M21R5CNJY0DZNP7FA3JX28VA"
+  },
+  "freshness_basis": "source_refresh",
+  "missing_bindings": [],
+  "ok": true,
+  "project_revision": 149,
+  "reasons": [],
+  "source_refresh_performed": true
+}

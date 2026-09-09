@@ -1,0 +1,196 @@
+{
+  "ok": true,
+  "code": "proposal_recorded",
+  "project_revision": 51,
+  "proposal": {
+    "id": "01M21STAKYJ233V34FFMS95VK0",
+    "project_id": "01M21R5CNDAT34RYH0ZM7SFMX6",
+    "work_item_id": "01M21R5CNJE4F5HTMS7EFE4XRF",
+    "source_id": "01M21R5CNHD84RKW0T9FS9Z0F4",
+    "base_fingerprint": "sha256:9809de67fabc1ac712895c79c3b0ec6b2c0cc61d8d966749d5170ccf49c1eb51",
+    "expected_revision": 44,
+    "mutation_type": "work.complete",
+    "patch": {
+      "changes": {
+        "evidence": [
+          ".work-receipts/sg-depend-verification.json"
+        ],
+        "status": "completed",
+        "verification": {
+          "evidence_level": "locally_verified"
+        }
+      },
+      "intent": "已完成三家材料差异、可推进工作、依赖语义变化与下游验收门槛分析；影响说明绑定 RULES.md r2、规则 delta 和本地验证证据。",
+      "source_config": {
+        "adapter_options": {},
+        "adapter_version": 1,
+        "mapping_key": "ledger|work-ledger.yaml"
+      },
+      "target": {
+        "kind": "work_item",
+        "meta": {
+          "external_key": "SG-DEPEND",
+          "id": "01M21R5CNJE4F5HTMS7EFE4XRF",
+          "revision": 2,
+          "source_ref": {
+            "end_line": null,
+            "locator": "file:///Users/mac/Documents/originone/agent-work-running/.local/business-live-20260909-v1/source-change/project/work-ledger.yaml",
+            "pointer": "/work_items/1",
+            "section_fingerprint": null,
+            "source_fingerprint": "sha256:9809de67fabc1ac712895c79c3b0ec6b2c0cc61d8d966749d5170ccf49c1eb51",
+            "source_id": "01M21R5CNHD84RKW0T9FS9Z0F4",
+            "source_revision": 4,
+            "start_line": null
+          }
+        }
+      },
+      "version": 1,
+      "work_action": {
+        "action": "complete",
+        "completion": {
+          "acceptance": [
+            {
+              "criterion": "说明三家伙伴的材料差异和可推进工作。",
+              "evidence": [
+                "01M21SRWPW71M1KXNQ9P10KD3E"
+              ]
+            },
+            {
+              "criterion": "保留实际产物与来源引用，无法确认的内容显式说明。",
+              "evidence": [
+                "01M21SRWPW71M1KXNQ9P10KD3E"
+              ]
+            }
+          ],
+          "evidence": [
+            {
+              "branch_id": null,
+              "command": "rtk proxy ruby -rjson -rdigest -e 'doc=\"deliverables/songguo-change-impact.md\"; body=File.read(doc); required=[\"接入开放日期尚未确认\",\"资料核对窗口由两家缩为一家\",\"资料齐全的申请优先\",\"正式依赖拓扑仍是\",\"SG-DIFF → SG-DEPEND → SG-PLAN → SG-REVIEW → SG-DELIVER\",\"溪桥\",\"云岭\",\"南园\",\"不是业务批准记录\",\"受影响的验收条件\"]; missing=required.reject { |item| body.include?(item) }; abort(\"missing content: #{missing.join(\",\")}\") unless missing.empty?; refs=[\"RULES.md\",\"PLAN.md\",\"work-ledger.yaml\",\"materials/initial-plan.md\",\"materials/partner-requests.csv\",\"DELIVERABLES.md\",\"deliverables/songguo-source-versions.md\",\".work-receipts/awr-sg-depend-rule-delta.json\"]; absent=refs.reject { |item| File.file?(item) }; abort(\"missing source: #{absent.join(\",\")}\") unless absent.empty?; abort(\"deliverable hash mismatch\") unless Digest::SHA256.file(doc).hexdigest==\"6792b22621c6364fd3802b5a7e5c9552710f418df917ffdac819dcb0d5fe3beb\"; abort(\"rules hash mismatch\") unless Digest::SHA256.file(\"RULES.md\").hexdigest==\"bbd2f4b5241b1c3fbdd774c9c749464960beaa47ac1d70501f2ddcdae441499a\"; delta=JSON.parse(File.read(\".work-receipts/awr-sg-depend-rule-delta.json\")); rule_change=delta.dig(\"delta\",\"events\",\"source_changes\").find { |change| change.dig(\"after\",\"domain\")==\"rules\" }; abort(\"missing rules delta\") unless rule_change && rule_change.dig(\"before\",\"revision\")==1 && rule_change.dig(\"after\",\"revision\")==2 && rule_change.fetch(\"changed_entities\").any? { |entity| entity[\"external_key\"].end_with?(\"#revision\") && entity[\"latest_action\"]==\"added\" }; abort(\"review boundary violated\") if File.exist?(\"deliverables/sg-independent-review.md\") || File.exist?(\"deliverables/sg-delivery.md\"); puts \"SG-DEPEND verification passed\"'",
+              "evidence_type": "completion_report",
+              "external_key": "SG-DEPEND-CHANGE-IMPACT-20260909",
+              "id": "01M21SRWPW71M1KXNQ9P10KD3E",
+              "level": "locally_verified",
+              "locator": ".work-receipts/sg-depend-verification.json",
+              "project_id": "01M21R5CNDAT34RYH0ZM7SFMX6",
+              "revision": 1,
+              "scope": [
+                "SG-DEPEND"
+              ],
+              "sha256": "2a7b1151619ad50be7557be2fa0744a6cd91f320149aaf61e1e6fbdb95b9d1c9",
+              "source_ref": null,
+              "source_sha": "146ed3bbf79fd0561158e46bb2219eeb05c89e67",
+              "summary": "Locally verified change-impact report covering the one-partner window, complete-material priority, three partner preparation states, unchanged dependency edges, and tightened downstream acceptance gates.",
+              "verified_at": 1788914341831,
+              "work_item_id": "01M21R5CNJE4F5HTMS7EFE4XRF"
+            }
+          ],
+          "minimum_level": "locally_verified",
+          "source_sha": "146ed3bbf79fd0561158e46bb2219eeb05c89e67",
+          "version": 1
+        },
+        "from": "in_progress",
+        "to": "completed"
+      }
+    },
+    "status": "applied",
+    "created_by_session": "01M21SAY2939TRZECJBHGTEEWQ",
+    "revision": 5
+  },
+  "event": {
+    "id": "01M21STAPJ36X14J7ZMWXQSWTQ",
+    "project_id": "01M21R5CNDAT34RYH0ZM7SFMX6",
+    "work_item_id": "01M21R5CNJE4F5HTMS7EFE4XRF",
+    "session_id": null,
+    "branch_id": null,
+    "event_type": "work.completed",
+    "importance": "normal",
+    "summary": "Verified source work action Complete",
+    "payload": {
+      "action_reason": "已完成三家材料差异、可推进工作、依赖语义变化与下游验收门槛分析；影响说明绑定 RULES.md r2、规则 delta 和本地验证证据。",
+      "actor": "codex-root",
+      "after_fingerprint": "sha256:fb2457b4e94e96105e7cdc04ad4ad744261d637c21f79d46a7d227c38a9f9db2",
+      "attempt_event_id": "01M21STANCC7YTNPP4FFHC5F8D",
+      "before_fingerprint": "sha256:9809de67fabc1ac712895c79c3b0ec6b2c0cc61d8d966749d5170ccf49c1eb51",
+      "creating_session_id": "01M21SAY2939TRZECJBHGTEEWQ",
+      "proposal_id": "01M21STAKYJ233V34FFMS95VK0",
+      "reason": "已完成三家材料差异、可推进工作、依赖语义变化与下游验收门槛分析；影响说明绑定 RULES.md r2、规则 delta 和本地验证证据。",
+      "released_claim_ids": [
+        "01M21SAY29Q37EKHQ7WE3CN31G"
+      ],
+      "source_id": "01M21R5CNHD84RKW0T9FS9Z0F4",
+      "source_revision": 5,
+      "target_after_hash": "a027055303d4e7207efd7b7c5461d5d34900938a5b2e8f50954dc28abe34edbd",
+      "target_revision": 3,
+      "work_action": {
+        "action": "complete",
+        "completion": {
+          "acceptance": [
+            {
+              "criterion": "说明三家伙伴的材料差异和可推进工作。",
+              "evidence": [
+                "01M21SRWPW71M1KXNQ9P10KD3E"
+              ]
+            },
+            {
+              "criterion": "保留实际产物与来源引用，无法确认的内容显式说明。",
+              "evidence": [
+                "01M21SRWPW71M1KXNQ9P10KD3E"
+              ]
+            }
+          ],
+          "evidence": [
+            {
+              "branch_id": null,
+              "command": "rtk proxy ruby -rjson -rdigest -e 'doc=\"deliverables/songguo-change-impact.md\"; body=File.read(doc); required=[\"接入开放日期尚未确认\",\"资料核对窗口由两家缩为一家\",\"资料齐全的申请优先\",\"正式依赖拓扑仍是\",\"SG-DIFF → SG-DEPEND → SG-PLAN → SG-REVIEW → SG-DELIVER\",\"溪桥\",\"云岭\",\"南园\",\"不是业务批准记录\",\"受影响的验收条件\"]; missing=required.reject { |item| body.include?(item) }; abort(\"missing content: #{missing.join(\",\")}\") unless missing.empty?; refs=[\"RULES.md\",\"PLAN.md\",\"work-ledger.yaml\",\"materials/initial-plan.md\",\"materials/partner-requests.csv\",\"DELIVERABLES.md\",\"deliverables/songguo-source-versions.md\",\".work-receipts/awr-sg-depend-rule-delta.json\"]; absent=refs.reject { |item| File.file?(item) }; abort(\"missing source: #{absent.join(\",\")}\") unless absent.empty?; abort(\"deliverable hash mismatch\") unless Digest::SHA256.file(doc).hexdigest==\"6792b22621c6364fd3802b5a7e5c9552710f418df917ffdac819dcb0d5fe3beb\"; abort(\"rules hash mismatch\") unless Digest::SHA256.file(\"RULES.md\").hexdigest==\"bbd2f4b5241b1c3fbdd774c9c749464960beaa47ac1d70501f2ddcdae441499a\"; delta=JSON.parse(File.read(\".work-receipts/awr-sg-depend-rule-delta.json\")); rule_change=delta.dig(\"delta\",\"events\",\"source_changes\").find { |change| change.dig(\"after\",\"domain\")==\"rules\" }; abort(\"missing rules delta\") unless rule_change && rule_change.dig(\"before\",\"revision\")==1 && rule_change.dig(\"after\",\"revision\")==2 && rule_change.fetch(\"changed_entities\").any? { |entity| entity[\"external_key\"].end_with?(\"#revision\") && entity[\"latest_action\"]==\"added\" }; abort(\"review boundary violated\") if File.exist?(\"deliverables/sg-independent-review.md\") || File.exist?(\"deliverables/sg-delivery.md\"); puts \"SG-DEPEND verification passed\"'",
+              "evidence_type": "completion_report",
+              "external_key": "SG-DEPEND-CHANGE-IMPACT-20260909",
+              "id": "01M21SRWPW71M1KXNQ9P10KD3E",
+              "level": "locally_verified",
+              "locator": ".work-receipts/sg-depend-verification.json",
+              "project_id": "01M21R5CNDAT34RYH0ZM7SFMX6",
+              "revision": 1,
+              "scope": [
+                "SG-DEPEND"
+              ],
+              "sha256": "2a7b1151619ad50be7557be2fa0744a6cd91f320149aaf61e1e6fbdb95b9d1c9",
+              "source_ref": null,
+              "source_sha": "146ed3bbf79fd0561158e46bb2219eeb05c89e67",
+              "summary": "Locally verified change-impact report covering the one-partner window, complete-material priority, three partner preparation states, unchanged dependency edges, and tightened downstream acceptance gates.",
+              "verified_at": 1788914341831,
+              "work_item_id": "01M21R5CNJE4F5HTMS7EFE4XRF"
+            }
+          ],
+          "minimum_level": "locally_verified",
+          "source_sha": "146ed3bbf79fd0561158e46bb2219eeb05c89e67",
+          "version": 1
+        },
+        "from": "in_progress",
+        "to": "completed"
+      },
+      "write_plan_id": "01M21STAMHAXP7H9Y91PEWXZ8S"
+    },
+    "project_revision": 51,
+    "created_at": 1788914510546
+  },
+  "source_refresh_performed": true,
+  "source_write_performed": true,
+  "write_outcome": "applied",
+  "apply_attempt": {
+    "event_id": "01M21STANCC7YTNPP4FFHC5F8D",
+    "proposal_id": "01M21STAKYJ233V34FFMS95VK0",
+    "source_id": "01M21R5CNHD84RKW0T9FS9Z0F4",
+    "project_revision": 48,
+    "plan": {
+      "id": "01M21STAMHAXP7H9Y91PEWXZ8S",
+      "before_fingerprint": "sha256:9809de67fabc1ac712895c79c3b0ec6b2c0cc61d8d966749d5170ccf49c1eb51",
+      "after_fingerprint": "sha256:fb2457b4e94e96105e7cdc04ad4ad744261d637c21f79d46a7d227c38a9f9db2",
+      "before_size": 2812,
+      "after_size": 2866,
+      "target_after_hash": "a027055303d4e7207efd7b7c5461d5d34900938a5b2e8f50954dc28abe34edbd"
+    },
+    "resolved_event_id": "01M21STAPJ36X14J7ZMWXQSWTQ"
+  },
+  "recovery_directory": ".awr/mutations/01M21STAMHAXP7H9Y91PEWXZ8S",
+  "source_check": null,
+  "error": null
+}

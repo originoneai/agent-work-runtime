@@ -1,0 +1,41 @@
+{
+  "kind": "actual_client_turn_snapshot",
+  "recorded_at": "2026-09-09T09:10:21+08:00",
+  "phase": "round-2",
+  "client": "Codex CLI",
+  "client_task_id": "01a08381-04a8-7871-9372-a3f55c2d8367",
+  "actual_user_turn": {
+    "timestamp": "2026-09-09T00:46:04.927Z",
+    "text": "请把仍不确定的内容核清楚，再给我一版可以执行的安排。"
+  },
+  "input_sha256": "a2e8bc998be62e6f137d8f20554ef88bbe5dd01ed3000df570b6b39bc872a421",
+  "events_local": ".local/business-live-20260909-v1/source-change/control/round-2-events.jsonl",
+  "events_sha256": "a2f6cbf485810eeb0b11dbef5b8bdb5c3feb260c1902a08dc100167273a6019f",
+  "native_transcript_snapshot_local": ".local/business-live-20260909-v1/source-change/control/round-2-snapshot/native-transcript.jsonl",
+  "native_transcript_snapshot_sha256": "e4cd5a3d14033154acc7b22e11abbfbc5f978d931e39b75c2a6a11e2d9298d3a",
+  "final_message_sha256": "56020dc6c5327d4a6cb9ff77ade5ef8f6db5d591040f3082ac6d9f46cdff52ec",
+  "project_sources_sha256": {
+    "project.toml": "e65e64ec8d1f7582698e85d862d56f0ec78402b65601cc388baba3a21fc513f8",
+    "GOALS.md": "72db42bd7c8026e45523101a06a3bc3c4f23ab7fd92fbbbe745cc2e15b21a259",
+    "PLAN.md": "a5fdfcd2e2922d451655eafc43705a8b0ac21baf3587fec73bce49caa15972b5",
+    "RULES.md": "bbd2f4b5241b1c3fbdd774c9c749464960beaa47ac1d70501f2ddcdae441499a",
+    "work-ledger.yaml": "843aaee9d627d13819cc048c8e34eece32a99406e4185d0a00e4db0fe7520ebe",
+    "AGENTS.md": "d81b0418bd7132c8692723c8a048132485b569011644beae906d4b325f5ba6a8",
+    "DELIVERABLES.md": "a9c077962b3f1f5096fc5d8d18c43edea37f5a593faa5d8e4e108ff53b4f8f77"
+  },
+  "artifacts_sha256": {
+    "deliverables/songguo-change-impact.md": "6792b22621c6364fd3802b5a7e5c9552710f418df917ffdac819dcb0d5fe3beb",
+    "deliverables/songguo-revised-plan.md": "58e419ab7ff87b2566fc156f3256b01e444987be7e8fae6dc6ad727027b0ca37",
+    "deliverables/songguo-source-versions.md": "b026c37190ea1f5dddc2a30a0e7aab3e4e6577c541843e4cfe61395ed7f78d04"
+  },
+  "tool_event_counts": {
+    "agent_message": 7,
+    "command_execution": 89,
+    "error": 1,
+    "file_change": 21
+  },
+  "command_executions": 89,
+  "nonzero_commands": 8,
+  "snapshot_local": ".local/business-live-20260909-v1/source-change/control/round-2-snapshot",
+  "e4_completion_claim": false
+}

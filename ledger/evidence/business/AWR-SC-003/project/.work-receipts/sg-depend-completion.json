@@ -1,0 +1,18 @@
+{
+  "version": 1,
+  "source_sha": "146ed3bbf79fd0561158e46bb2219eeb05c89e67",
+  "acceptance": [
+    {
+      "criterion": "说明三家伙伴的材料差异和可推进工作。",
+      "evidence": [
+        "SG-DEPEND-CHANGE-IMPACT-20260909"
+      ]
+    },
+    {
+      "criterion": "保留实际产物与来源引用，无法确认的内容显式说明。",
+      "evidence": [
+        "SG-DEPEND-CHANGE-IMPACT-20260909"
+      ]
+    }
+  ]
+}

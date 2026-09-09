@@ -1,0 +1,49 @@
+{
+  "claim": {
+    "acquired_at": 1788917910894,
+    "agent_id": "/root/restricted_material_client_run",
+    "branch_id": null,
+    "expires_at": 1788921510894,
+    "id": "01M21X23BEA02H9GWN04DXEH79",
+    "project_id": "01M21R5CNDAT34RYH0ZM7SFMX6",
+    "released_at": null,
+    "revision": 1,
+    "session_id": "01M21X23BEFAEAYF6RJ97K3CG3",
+    "status": "active",
+    "work_item_id": "01M21R5CNJY0DZNP7FA3JX28VA"
+  },
+  "event": {
+    "artifact_id": null,
+    "branch_id": null,
+    "checkpoint_id": null,
+    "created_at": 1788917910894,
+    "id": "01M21X23BEZKQZ40N0XX09687P",
+    "importance": "normal",
+    "project_revision": 75,
+    "session_id": "01M21X23BEFAEAYF6RJ97K3CG3",
+    "source_id": null,
+    "summary": "Started agent work session",
+    "type": "session.started",
+    "work_item_id": "01M21R5CNJY0DZNP7FA3JX28VA"
+  },
+  "freshness_basis": "source_refresh",
+  "ok": true,
+  "project_revision": 75,
+  "session": {
+    "agent_id": "/root/restricted_material_client_run",
+    "branch_id": null,
+    "end_project_revision": null,
+    "ended_at": null,
+    "id": "01M21X23BEFAEAYF6RJ97K3CG3",
+    "last_checkpoint_id": null,
+    "model": "gpt-5.6-sol",
+    "project_id": "01M21R5CNDAT34RYH0ZM7SFMX6",
+    "provider": "openai",
+    "revision": 1,
+    "start_project_revision": 74,
+    "started_at": 1788917910894,
+    "status": "active",
+    "work_item_id": "01M21R5CNJY0DZNP7FA3JX28VA"
+  },
+  "source_refresh_performed": true
+}

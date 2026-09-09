@@ -1,0 +1,85 @@
+{
+  "acceptance": [
+    "区分原草案与当前规则，记录来源及尚未确认事项。",
+    "保留实际产物与来源引用，无法确认的内容显式说明。"
+  ],
+  "decisions": [],
+  "dependency_cycles": [],
+  "evidence": [
+    {
+      "currency": "current",
+      "external_key": "SG-DIFF-SOURCE-VERSIONS-20260909",
+      "level": "locally_verified",
+      "locator": ".work-receipts/sg-diff-verification.json",
+      "missing_bindings": [],
+      "reasons": [],
+      "source_sha": "146ed3bbf79fd0561158e46bb2219eeb05c89e67",
+      "summary": "Locally verified source-version comparison for the current two-partner window, with the unnamed pair, unconfirmed date, and unavailable pre-change source history preserved as unresolved facts."
+    },
+    {
+      "currency": "unknown",
+      "external_key": "SG-DIFF/evidence/.work-receipts/sg-diff-verification.json",
+      "level": "unknown",
+      "locator": ".work-receipts/sg-diff-verification.json",
+      "missing_bindings": [
+        "sha256",
+        "source_sha",
+        "command",
+        "verified_at"
+      ],
+      "reasons": [
+        "both recorded and requested source SHA are needed to determine currency"
+      ],
+      "source_sha": null,
+      "summary": "Evidence reference; not yet verified by AWR"
+    }
+  ],
+  "evidence_currency_basis": {
+    "branch_id": null,
+    "requested_source_sha": "146ed3bbf79fd0561158e46bb2219eeb05c89e67"
+  },
+  "freshness_basis": "source_refresh",
+  "missing_dependencies": [],
+  "ok": true,
+  "project_revision": 32,
+  "read_only": false,
+  "required_dependencies": [],
+  "source_issues": [],
+  "source_ref": {
+    "end_line": null,
+    "locator": "file:///Users/mac/Documents/originone/agent-work-running/.local/business-live-20260909-v1/source-change/project/work-ledger.yaml",
+    "pointer": "/work_items/0",
+    "section_fingerprint": null,
+    "source_fingerprint": "sha256:214f4835eeb7875fa2ab14d4503e66335da13b3049771365b9277f49655096ee",
+    "source_id": "01M21R5CNHD84RKW0T9FS9Z0F4",
+    "source_revision": 3,
+    "start_line": null
+  },
+  "source_refresh_performed": true,
+  "source_warnings": 0,
+  "work": {
+    "active_claims": [],
+    "blocker": null,
+    "diagnostics": [
+      {
+        "code": "status_not_selectable",
+        "detail": "source status is completed",
+        "work_item_key": "SG-DIFF"
+      }
+    ],
+    "external_key": "SG-DIFF",
+    "freshness": "fresh",
+    "id": "01M21R5CNJ9YAPW5K5AAEFQ5QW",
+    "milestone": "SG-DELIVERY",
+    "next_action": "生成 deliverables/songguo-source-versions.md，显式记录未指定的两家名单与未确认开放日期。",
+    "owner": null,
+    "priority": "P0",
+    "raw_status": "completed",
+    "ready": false,
+    "revision": 3,
+    "source_revision": 3,
+    "status": "completed",
+    "summary": "权威源均新鲜；已识别当前窗口两家与原草案三家的范围差异。",
+    "title": "核对计划和生效规则"
+  }
+}

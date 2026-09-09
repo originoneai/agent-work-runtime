@@ -1,0 +1,86 @@
+{
+  "version": 1,
+  "work_item": "SG-REVIEW",
+  "source_sha": "146ed3bbf79fd0561158e46bb2219eeb05c89e67",
+  "command": "rtk python3 .work-receipts/reviewer-verify.py > .work-receipts/reviewer-verification-output.txt",
+  "scope": [
+    "SG-REVIEW"
+  ],
+  "verified_at": 1788918540320,
+  "reviewer": {
+    "canonical_task": "/root/restricted_material_client_run",
+    "participant_kind": "luna_worker",
+    "awr_session": "01M21X23BEFAEAYF6RJ97K3CG3",
+    "independent_from_client_task_id": "01a08381-04a8-7871-9372-a3f55c2d8367"
+  },
+  "verdict": "CHANGES_REQUIRED",
+  "artifact": {
+    "artifact_id": "01M21XJ2CJ124KN02TKTFHAA8E",
+    "path": "deliverables/sg-independent-review.md",
+    "sha256": "735fe7cff0bc7357b9db30d2ef79f82fc9822932a546811b4a2403ef98fa7ee7"
+  },
+  "source_context": {
+    "project_revision": 82,
+    "work_item_revision": 2,
+    "context_hash": "16f1269a3b803573f3917406fb012cd7fe1d10cfabf2b42a1933fa5b38ef7711",
+    "source_versions": {
+      "GOALS.md": "sha256:72db42bd7c8026e45523101a06a3bc3c4f23ab7fd92fbbbe745cc2e15b21a259",
+      "PLAN.md": "sha256:a5fdfcd2e2922d451655eafc43705a8b0ac21baf3587fec73bce49caa15972b5",
+      "RULES.md": "sha256:bbd2f4b5241b1c3fbdd774c9c749464960beaa47ac1d70501f2ddcdae441499a",
+      "work-ledger.yaml": "sha256:c76e6dd3b16ad3c72dcb138d4615cbae9c49a7f0501dd25bd7e270af52c76e9c"
+    }
+  },
+  "supporting_inputs": {
+    "review-inputs/reference-lookup-process-record.json": "sha256:b2f75186aee39d65367c6ce7aca7b710a12710e43a942debdefeb88d917062c5",
+    "review-inputs/initial/turn-record.json": "sha256:1fb09aa010a79015126e73fb522f4454930c880e4366f8e5fcf201b3a0b79899",
+    "review-inputs/round-1/turn-record.json": "sha256:05a439ea261c688004ab22f39699daeef42f57d63d4cb767419552665a168cc4",
+    "review-inputs/round-2/turn-record.json": "sha256:0a0742f1d545de7faaa3a8d7bd2624e0be251d9a9605636392d24280913b5318",
+    ".work-receipts/reviewer-source-audit.json": "sha256:6ea4727dbe4792f343a2f964e3e2f1c442c10e98594a24edea353d50e8fe3680"
+  },
+  "checks": [
+    {
+      "name": "latest sources, versions, and affected acceptance conditions",
+      "passed": true,
+      "details": "Reviewed current RULES revision 2, sealed initial/round-1/round-2 history, object scope, dependency content, time boundary, and acceptance implications. Found blocking stale current-source wording in songguo-source-versions.md and issued R-01; a finding is the result of the completed review, not a package pass.",
+      "criteria": [
+        "核对最新规则、来源版本和受影响的验收条件。"
+      ]
+    },
+    {
+      "name": "review artifact, references, and explicit unknowns",
+      "passed": true,
+      "details": "The independent review report cites current project sources, materials, sealed review inputs, report/session identity and hashes; it retains missing partner files, assignments, date, approval and acceptance as unknown. It distinguishes arrangement review from onboarding approval and records the reference-lookup process deviation.",
+      "criteria": [
+        "保留实际产物与来源引用，无法确认的内容显式说明。"
+      ]
+    }
+  ],
+  "blocking_findings": [
+    {
+      "id": "R-01",
+      "summary": "Source version comparison remains unchanged from initial through round-2 and presents the superseded two-partner window as current.",
+      "required_action": "Original executor must revise the comparison to bind the one-partner current rule and Xiqiao clarification, preserve the historical chain, update cross-references, and return exact hashes for re-review."
+    }
+  ],
+  "process_findings": [
+    {
+      "id": "R-02",
+      "summary": "Four of five retained parent technical-reference commands exceeded the initial allowlist; item_46 was allowed. Retained outputs show technical AWR/schema material and zero hits for current business terms.",
+      "required_action": "Preserve the deviation permanently; do not retroactively classify it as compliant or use it for E4."
+    },
+    {
+      "id": "R-03",
+      "summary": "Reviewer preflight enumerated sibling control filenames while inventorying the assigned control output area; no sibling control body was opened and no review finding depends on it.",
+      "required_action": "Retain this reviewer process note in reviewer-source-audit.json and control/independent-review.json."
+    }
+  ],
+  "unresolved": [
+    "Opening date remains unconfirmed.",
+    "Xiqiao field-description body and verification evidence are absent.",
+    "Yunling contact-responsibility statement and Nanyuan directory are absent.",
+    "Execution roles besides the actual independent reviewer are not bound.",
+    "No onboarding approval or real business acceptance exists.",
+    "R-01 has not been corrected or re-reviewed."
+  ],
+  "evidence_boundary": "Locally verified completion of the independent review activity only. The reviewed package verdict is CHANGES_REQUIRED; no partner onboarding approval, final delivery, E4, or business acceptance is granted."
+}

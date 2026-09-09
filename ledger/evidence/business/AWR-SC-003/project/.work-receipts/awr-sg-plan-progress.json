@@ -1,0 +1,108 @@
+{
+  "ok": true,
+  "code": "proposal_recorded",
+  "project_revision": 62,
+  "proposal": {
+    "id": "01M21TBVEZXV755629C6G2T8C0",
+    "project_id": "01M21R5CNDAT34RYH0ZM7SFMX6",
+    "work_item_id": "01M21R5CNJWP450CJ6PRNMWK4V",
+    "source_id": "01M21R5CNHD84RKW0T9FS9Z0F4",
+    "base_fingerprint": "sha256:fb2457b4e94e96105e7cdc04ad4ad744261d637c21f79d46a7d227c38a9f9db2",
+    "expected_revision": 55,
+    "mutation_type": "work.progress",
+    "patch": {
+      "changes": {
+        "next_action": "生成 deliverables/songguo-revised-plan.md，明确溪桥本轮核对、云岭和南园补件准备、逐项退出条件及独立复核门槛。",
+        "status": "in_progress",
+        "summary": "当前一家核对窗口对象已核清为溪桥；云岭职责说明和南园资料目录仍待补，开放日期仍未确认。"
+      },
+      "intent": "已核清新增材料：溪桥已补交字段说明且协调会确认其进入本轮核对；云岭职责说明仍缺；开放日期仍未确认。开始形成单窗口可执行安排。",
+      "source_config": {
+        "adapter_options": {},
+        "adapter_version": 1,
+        "mapping_key": "ledger|work-ledger.yaml"
+      },
+      "target": {
+        "kind": "work_item",
+        "meta": {
+          "external_key": "SG-PLAN",
+          "id": "01M21R5CNJWP450CJ6PRNMWK4V",
+          "revision": 1,
+          "source_ref": {
+            "end_line": null,
+            "locator": "file:///Users/mac/Documents/originone/agent-work-running/.local/business-live-20260909-v1/source-change/project/work-ledger.yaml",
+            "pointer": "/work_items/2",
+            "section_fingerprint": null,
+            "source_fingerprint": "sha256:fb2457b4e94e96105e7cdc04ad4ad744261d637c21f79d46a7d227c38a9f9db2",
+            "source_id": "01M21R5CNHD84RKW0T9FS9Z0F4",
+            "source_revision": 5,
+            "start_line": null
+          }
+        }
+      },
+      "version": 1,
+      "work_action": {
+        "action": "progress",
+        "from": "planned",
+        "to": "in_progress"
+      }
+    },
+    "status": "applied",
+    "created_by_session": "01M21T7Y015S05MCVASD6W3DA9",
+    "revision": 5
+  },
+  "event": {
+    "id": "01M21TBVH2XG5G153DD33M8XYK",
+    "project_id": "01M21R5CNDAT34RYH0ZM7SFMX6",
+    "work_item_id": "01M21R5CNJWP450CJ6PRNMWK4V",
+    "session_id": null,
+    "branch_id": null,
+    "event_type": "work.progressed",
+    "importance": "normal",
+    "summary": "Verified source work action Progress",
+    "payload": {
+      "action_reason": "已核清新增材料：溪桥已补交字段说明且协调会确认其进入本轮核对；云岭职责说明仍缺；开放日期仍未确认。开始形成单窗口可执行安排。",
+      "actor": "codex-root",
+      "after_fingerprint": "sha256:917cb6a77f5fcd53d060632e6fd3409361089f46863f54f03e39897322e88e6c",
+      "attempt_event_id": "01M21TBVGEWABC2FJPZ3MQR5ET",
+      "before_fingerprint": "sha256:fb2457b4e94e96105e7cdc04ad4ad744261d637c21f79d46a7d227c38a9f9db2",
+      "creating_session_id": "01M21T7Y015S05MCVASD6W3DA9",
+      "proposal_id": "01M21TBVEZXV755629C6G2T8C0",
+      "reason": "已核清新增材料：溪桥已补交字段说明且协调会确认其进入本轮核对；云岭职责说明仍缺；开放日期仍未确认。开始形成单窗口可执行安排。",
+      "released_claim_ids": [],
+      "source_id": "01M21R5CNHD84RKW0T9FS9Z0F4",
+      "source_revision": 6,
+      "target_after_hash": "91bf13be470187ace6240475da690cb290a7c148797ee34885d3e1e667abff65",
+      "target_revision": 2,
+      "work_action": {
+        "action": "progress",
+        "from": "planned",
+        "to": "in_progress"
+      },
+      "write_plan_id": "01M21TBVF9KTPSW3TYRK6ZG9TR"
+    },
+    "project_revision": 62,
+    "created_at": 1788915084834
+  },
+  "source_refresh_performed": true,
+  "source_write_performed": true,
+  "write_outcome": "applied",
+  "apply_attempt": {
+    "event_id": "01M21TBVGEWABC2FJPZ3MQR5ET",
+    "proposal_id": "01M21TBVEZXV755629C6G2T8C0",
+    "source_id": "01M21R5CNHD84RKW0T9FS9Z0F4",
+    "project_revision": 59,
+    "plan": {
+      "id": "01M21TBVF9KTPSW3TYRK6ZG9TR",
+      "before_fingerprint": "sha256:fb2457b4e94e96105e7cdc04ad4ad744261d637c21f79d46a7d227c38a9f9db2",
+      "after_fingerprint": "sha256:917cb6a77f5fcd53d060632e6fd3409361089f46863f54f03e39897322e88e6c",
+      "before_size": 2866,
+      "after_size": 3096,
+      "target_after_hash": "91bf13be470187ace6240475da690cb290a7c148797ee34885d3e1e667abff65"
+    },
+    "resolved_event_id": "01M21TBVH2XG5G153DD33M8XYK"
+  },
+  "recovery_directory": ".awr/mutations/01M21TBVF9KTPSW3TYRK6ZG9TR",
+  "source_check": null,
+  "error": null
+}

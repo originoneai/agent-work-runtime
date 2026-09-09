@@ -1,0 +1,69 @@
+{
+  "kind": "readonly_runtime_contract_triage",
+  "recorded_at": "2026-09-09T09:19:13.077461+08:00",
+  "source_files": {
+    "crates/awr-source/src/yaml_ledger.rs": {
+      "sha256": "1f0a958e62b410bc9c25cdb65a3fef3cdf26415be78cc6e11f6112ea0b567151",
+      "lines": "408-480"
+    },
+    "crates/awr-core/src/completion.rs": {
+      "sha256": "ec46e695bf733b15cab46f35d4bff5b16e284b9f48738b8a1f99cb1a85cea47b",
+      "lines": "255-290"
+    }
+  },
+  "actual_receipts": {
+    "awr-post-sg-plan-work-show.json": "8055606194873915ecbc6c94f234ae4d2775abda81b1849e694b28a00570fef3",
+    "awr-sg-plan-context-final.json": "d3972915156b947a85443b5722301dc2b144b7e0c59ccecc6d61e0fb98294e86",
+    "awr-sg-plan-complete.json": "ffa52bcf12f4f86fd59270177a04e32eb3d6c3246e6e4da8fd23f289771166c6",
+    "awr-sg-plan-evidence-add.json": "7bf9a78ac3a901d0676179664b8b05b63a3c389e322c15ecbde4ff486790557b"
+  },
+  "observed_evidence": [
+    {
+      "currency": "current",
+      "external_key": "SG-PLAN-EXECUTABLE-20260909",
+      "level": "locally_verified",
+      "locator": ".work-receipts/sg-plan-verification.json",
+      "missing_bindings": [],
+      "reasons": [],
+      "source_sha": "146ed3bbf79fd0561158e46bb2219eeb05c89e67",
+      "summary": "Locally verified plan: Xiqiao is the sole current-round object; Yunling and Nanyuan remain in bounded preparation; entry, exit, review, and unknown-fact gates are explicit."
+    },
+    {
+      "currency": "unknown",
+      "external_key": "SG-PLAN/evidence/.work-receipts/sg-plan-verification.json",
+      "level": "unknown",
+      "locator": ".work-receipts/sg-plan-verification.json",
+      "missing_bindings": [
+        "sha256",
+        "source_sha",
+        "command",
+        "verified_at"
+      ],
+      "reasons": [
+        "both recorded and requested source SHA are needed to determine currency"
+      ],
+      "source_sha": null,
+      "summary": "Evidence reference; not yet verified by AWR"
+    }
+  ],
+  "context_gaps": [
+    {
+      "code": "evidence_currency_unknown",
+      "reason": "both recorded and requested source SHA are needed to determine currency",
+      "reference": "SG-PLAN/evidence/.work-receipts/sg-plan-verification.json"
+    },
+    {
+      "code": "evidence_level_unverified",
+      "reason": "evidence level does not claim completed verification",
+      "reference": "SG-PLAN/evidence/.work-receipts/sg-plan-verification.json"
+    },
+    {
+      "code": "missing_evidence_bindings",
+      "reason": "sha256, source_sha, command, verified_at",
+      "reference": "SG-PLAN/evidence/.work-receipts/sg-plan-verification.json"
+    }
+  ],
+  "conclusion": "Current source adapter intentionally projects ledger evidence locators as unverified source_reference records; completion writes report locators while retaining immutable bound runtime evidence. The additional Unknown record is separate from the explicitly current verified record and does not negate it. Context reports the reference gap. This is a usability/documentation limitation, not evidence of a false source-completion pass by itself. Actual business quality and source currency still require independent review.",
+  "runtime_mutation_performed": false,
+  "e4_gate_granted": false
+}

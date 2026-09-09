@@ -1,0 +1,10 @@
+{
+  "kind": "reviewer_command_failure",
+  "command": "target/release/awr --project <project> --json work reopen SG-REVIEW --session 01M21ZYEDC5YQPFP7JS62FQB0M --reason <reason> --next-action <next-action> --summary <summary> --expected-revision 119",
+  "exit_code": 1,
+  "error": {
+    "code": "InvalidInput",
+    "message": "invalid input: field summary is not authorized by this work action"
+  },
+  "business_state_changed": false
+}

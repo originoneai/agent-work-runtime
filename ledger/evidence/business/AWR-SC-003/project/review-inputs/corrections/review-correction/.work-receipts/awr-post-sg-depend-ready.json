@@ -1,0 +1,94 @@
+{
+  "blocked_sample": [
+    {
+      "active_claims": [],
+      "blocker": null,
+      "diagnostics": [
+        {
+          "code": "dependency_not_completed",
+          "detail": "required dependency has source status planned",
+          "work_item_key": "SG-PLAN"
+        },
+        {
+          "code": "dependency_not_completed",
+          "detail": "required dependency has source status planned",
+          "work_item_key": "SG-REVIEW"
+        }
+      ],
+      "external_key": "SG-DELIVER",
+      "freshness": "fresh",
+      "id": "01M21R5CNJR7TK10C4WW2A704Q",
+      "milestone": "SG-DELIVERY",
+      "next_action": "交付修订计划，先核对当前来源和负责范围。",
+      "owner": null,
+      "priority": "P0",
+      "raw_status": "planned",
+      "ready": false,
+      "revision": 1,
+      "source_revision": 5,
+      "status": "planned",
+      "summary": "交付修订计划",
+      "title": "交付修订计划"
+    },
+    {
+      "active_claims": [],
+      "blocker": null,
+      "diagnostics": [
+        {
+          "code": "dependency_not_completed",
+          "detail": "required dependency has source status planned",
+          "work_item_key": "SG-PLAN"
+        }
+      ],
+      "external_key": "SG-REVIEW",
+      "freshness": "fresh",
+      "id": "01M21R5CNJY0DZNP7FA3JX28VA",
+      "milestone": "SG-DELIVERY",
+      "next_action": "独立复核计划修订，先核对当前来源和负责范围。",
+      "owner": null,
+      "priority": "P0",
+      "raw_status": "planned",
+      "ready": false,
+      "revision": 1,
+      "source_revision": 5,
+      "status": "planned",
+      "summary": "独立复核计划修订",
+      "title": "独立复核计划修订"
+    }
+  ],
+  "blocked_total": 2,
+  "branch_id": null,
+  "diagnostic_counts": {
+    "dependency_not_completed": 2
+  },
+  "freshness_basis": "source_refresh",
+  "ok": true,
+  "project_revision": 54,
+  "read_only": false,
+  "ready": [
+    {
+      "active_claims": [],
+      "blocker": null,
+      "diagnostics": [],
+      "external_key": "SG-PLAN",
+      "freshness": "fresh",
+      "id": "01M21R5CNJWP450CJ6PRNMWK4V",
+      "milestone": "SG-DELIVERY",
+      "next_action": "修订伙伴接入安排，先核对当前来源和负责范围。",
+      "owner": null,
+      "priority": "P0",
+      "raw_status": "planned",
+      "ready": true,
+      "revision": 1,
+      "source_revision": 5,
+      "status": "planned",
+      "summary": "修订伙伴接入安排",
+      "title": "修订伙伴接入安排"
+    }
+  ],
+  "ready_total": 1,
+  "source_issues": [],
+  "source_refresh_performed": true,
+  "source_warnings": 0,
+  "truncated": false
+}

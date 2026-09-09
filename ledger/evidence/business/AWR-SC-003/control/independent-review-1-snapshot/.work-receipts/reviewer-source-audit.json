@@ -1,0 +1,114 @@
+{
+  "version": 1,
+  "kind": "independent_review_source_audit",
+  "reviewer": {
+    "canonical_task": "/root/restricted_material_client_run",
+    "participant_kind": "luna_worker",
+    "awr_session": "01M21X23BEFAEAYF6RJ97K3CG3"
+  },
+  "generated_at_ms": 1788918211810,
+  "method": "SHA-256 current project files and published review-input snapshots; compare current artifacts with sealed round-2 artifact fingerprints; inspect retained reference lookup outputs for current-business terms.",
+  "sha256": {
+    "project.toml": "e65e64ec8d1f7582698e85d862d56f0ec78402b65601cc388baba3a21fc513f8",
+    "GOALS.md": "72db42bd7c8026e45523101a06a3bc3c4f23ab7fd92fbbbe745cc2e15b21a259",
+    "PLAN.md": "a5fdfcd2e2922d451655eafc43705a8b0ac21baf3587fec73bce49caa15972b5",
+    "RULES.md": "bbd2f4b5241b1c3fbdd774c9c749464960beaa47ac1d70501f2ddcdae441499a",
+    "work-ledger.yaml": "c76e6dd3b16ad3c72dcb138d4615cbae9c49a7f0501dd25bd7e270af52c76e9c",
+    "AGENTS.md": "d81b0418bd7132c8692723c8a048132485b569011644beae906d4b325f5ba6a8",
+    "DELIVERABLES.md": "a9c077962b3f1f5096fc5d8d18c43edea37f5a593faa5d8e4e108ff53b4f8f77",
+    "materials/initial-plan.md": "068d12832d34cef9d11640de05597523bc2647260fd063a863034e54ae0b2513",
+    "materials/partner-requests.csv": "af1cd4a95205845f01b56e9ff182d1f5cddbe06b47f0e1b9bb64001a5cf38db3",
+    "materials/clarification.md": "8177205a3f6aa84f02efb5f3ebb28333c4711db302f6400d443608cb38cf1e1e",
+    "deliverables/songguo-source-versions.md": "b026c37190ea1f5dddc2a30a0e7aab3e4e6577c541843e4cfe61395ed7f78d04",
+    "deliverables/songguo-change-impact.md": "6792b22621c6364fd3802b5a7e5c9552710f418df917ffdac819dcb0d5fe3beb",
+    "deliverables/songguo-revised-plan.md": "58e419ab7ff87b2566fc156f3256b01e444987be7e8fae6dc6ad727027b0ca37",
+    "review-inputs/README.md": "2079142a61f1dffec70827727271695fd7960638ba709722cf0211aa186c92d0",
+    "review-inputs/reference-lookup-process-record.json": "b2f75186aee39d65367c6ce7aca7b710a12710e43a942debdefeb88d917062c5",
+    "review-inputs/initial/turn-record.json": "1fb09aa010a79015126e73fb522f4454930c880e4366f8e5fcf201b3a0b79899",
+    "review-inputs/round-1/turn-record.json": "05a439ea261c688004ab22f39699daeef42f57d63d4cb767419552665a168cc4",
+    "review-inputs/round-2/turn-record.json": "0a0742f1d545de7faaa3a8d7bd2624e0be251d9a9605636392d24280913b5318"
+  },
+  "sealed_round_2_artifact_match": {
+    "deliverables/songguo-change-impact.md": {
+      "expected": "6792b22621c6364fd3802b5a7e5c9552710f418df917ffdac819dcb0d5fe3beb",
+      "actual": "6792b22621c6364fd3802b5a7e5c9552710f418df917ffdac819dcb0d5fe3beb",
+      "matches": true
+    },
+    "deliverables/songguo-revised-plan.md": {
+      "expected": "58e419ab7ff87b2566fc156f3256b01e444987be7e8fae6dc6ad727027b0ca37",
+      "actual": "58e419ab7ff87b2566fc156f3256b01e444987be7e8fae6dc6ad727027b0ca37",
+      "matches": true
+    },
+    "deliverables/songguo-source-versions.md": {
+      "expected": "b026c37190ea1f5dddc2a30a0e7aab3e4e6577c541843e4cfe61395ed7f78d04",
+      "actual": "b026c37190ea1f5dddc2a30a0e7aab3e4e6577c541843e4cfe61395ed7f78d04",
+      "matches": true
+    }
+  },
+  "current_vs_round_2_inputs": {
+    "GOALS.md": {
+      "current": "72db42bd7c8026e45523101a06a3bc3c4f23ab7fd92fbbbe745cc2e15b21a259",
+      "round_2_snapshot_path": "review-inputs/round-2/sources/GOALS.md",
+      "round_2_snapshot": "72db42bd7c8026e45523101a06a3bc3c4f23ab7fd92fbbbe745cc2e15b21a259",
+      "matches": true
+    },
+    "PLAN.md": {
+      "current": "a5fdfcd2e2922d451655eafc43705a8b0ac21baf3587fec73bce49caa15972b5",
+      "round_2_snapshot_path": "review-inputs/round-2/sources/PLAN.md",
+      "round_2_snapshot": "a5fdfcd2e2922d451655eafc43705a8b0ac21baf3587fec73bce49caa15972b5",
+      "matches": true
+    },
+    "RULES.md": {
+      "current": "bbd2f4b5241b1c3fbdd774c9c749464960beaa47ac1d70501f2ddcdae441499a",
+      "round_2_snapshot_path": "review-inputs/round-2/sources/RULES.md",
+      "round_2_snapshot": "bbd2f4b5241b1c3fbdd774c9c749464960beaa47ac1d70501f2ddcdae441499a",
+      "matches": true
+    },
+    "materials/initial-plan.md": {
+      "current": "068d12832d34cef9d11640de05597523bc2647260fd063a863034e54ae0b2513",
+      "round_2_snapshot_path": "review-inputs/round-2/materials/initial-plan.md",
+      "round_2_snapshot": "068d12832d34cef9d11640de05597523bc2647260fd063a863034e54ae0b2513",
+      "matches": true
+    },
+    "materials/partner-requests.csv": {
+      "current": "af1cd4a95205845f01b56e9ff182d1f5cddbe06b47f0e1b9bb64001a5cf38db3",
+      "round_2_snapshot_path": "review-inputs/round-2/materials/partner-requests.csv",
+      "round_2_snapshot": "af1cd4a95205845f01b56e9ff182d1f5cddbe06b47f0e1b9bb64001a5cf38db3",
+      "matches": true
+    },
+    "materials/clarification.md": {
+      "current": "8177205a3f6aa84f02efb5f3ebb28333c4711db302f6400d443608cb38cf1e1e",
+      "round_2_snapshot_path": "review-inputs/round-2/materials/clarification.md",
+      "round_2_snapshot": "8177205a3f6aa84f02efb5f3ebb28333c4711db302f6400d443608cb38cf1e1e",
+      "matches": true
+    }
+  },
+  "history_facts": {
+    "initial_rule_sha256": "29d58166a2bf2fcc7420556341b736b7ed896b31af10d0f69a4ca7d5930729c9",
+    "round_1_rule_sha256": "bbd2f4b5241b1c3fbdd774c9c749464960beaa47ac1d70501f2ddcdae441499a",
+    "round_2_rule_sha256": "bbd2f4b5241b1c3fbdd774c9c749464960beaa47ac1d70501f2ddcdae441499a",
+    "source_versions_hash_unchanged_initial_through_round_2": true,
+    "original_client_task_id": "01a08381-04a8-7871-9372-a3f55c2d8367"
+  },
+  "reference_lookup_assessment_inputs": {
+    "command_count": 5,
+    "business_term_hits": {
+      "溪桥": 0,
+      "云岭": 0,
+      "南园": 0,
+      "松果": 0,
+      "伙伴接入": 0,
+      "source-change": 0,
+      "AWR-SC-007": 0
+    },
+    "technical_only_marker_count": 17,
+    "initial_agents_sha256": "43b5f2d885cd8f027c4307f50d9f0534265d50b56be61f65ccdcb2d850426eb6",
+    "round_1_agents_sha256": "d81b0418bd7132c8692723c8a048132485b569011644beae906d4b325f5ba6a8"
+  },
+  "reviewer_process_note": {
+    "names_only_control_inventory_command_observed": true,
+    "command": "rtk rg --files ... source-change/control",
+    "content_opened": false,
+    "impact": "Sibling control filenames were enumerated during preflight because the assigned output scope included control/independent-review.json. No sibling control file body was opened; all review findings use current project files and published review-inputs."
+  }
+}

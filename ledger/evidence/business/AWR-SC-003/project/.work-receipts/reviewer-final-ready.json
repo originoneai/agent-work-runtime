@@ -1,0 +1,36 @@
+{
+  "blocked_sample": [],
+  "blocked_total": 0,
+  "branch_id": null,
+  "diagnostic_counts": {},
+  "freshness_basis": "source_refresh",
+  "ok": true,
+  "project_revision": 94,
+  "read_only": false,
+  "ready": [
+    {
+      "active_claims": [],
+      "blocker": null,
+      "diagnostics": [],
+      "external_key": "SG-DELIVER",
+      "freshness": "fresh",
+      "id": "01M21R5CNJR7TK10C4WW2A704Q",
+      "milestone": "SG-DELIVERY",
+      "next_action": "交付修订计划，先核对当前来源和负责范围。",
+      "owner": null,
+      "priority": "P0",
+      "raw_status": "planned",
+      "ready": true,
+      "revision": 1,
+      "source_revision": 9,
+      "status": "planned",
+      "summary": "交付修订计划",
+      "title": "交付修订计划"
+    }
+  ],
+  "ready_total": 1,
+  "source_issues": [],
+  "source_refresh_performed": true,
+  "source_warnings": 0,
+  "truncated": false
+}

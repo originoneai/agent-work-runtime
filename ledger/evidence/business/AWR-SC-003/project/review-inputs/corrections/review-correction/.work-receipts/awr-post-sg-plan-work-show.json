@@ -1,0 +1,100 @@
+{
+  "acceptance": [
+    "依据最新来源形成可以执行的安排，保留不确定性。",
+    "保留实际产物与来源引用，无法确认的内容显式说明。"
+  ],
+  "decisions": [],
+  "dependency_cycles": [],
+  "evidence": [
+    {
+      "currency": "current",
+      "external_key": "SG-PLAN-EXECUTABLE-20260909",
+      "level": "locally_verified",
+      "locator": ".work-receipts/sg-plan-verification.json",
+      "missing_bindings": [],
+      "reasons": [],
+      "source_sha": "146ed3bbf79fd0561158e46bb2219eeb05c89e67",
+      "summary": "Locally verified plan: Xiqiao is the sole current-round object; Yunling and Nanyuan remain in bounded preparation; entry, exit, review, and unknown-fact gates are explicit."
+    },
+    {
+      "currency": "unknown",
+      "external_key": "SG-PLAN/evidence/.work-receipts/sg-plan-verification.json",
+      "level": "unknown",
+      "locator": ".work-receipts/sg-plan-verification.json",
+      "missing_bindings": [
+        "sha256",
+        "source_sha",
+        "command",
+        "verified_at"
+      ],
+      "reasons": [
+        "both recorded and requested source SHA are needed to determine currency"
+      ],
+      "source_sha": null,
+      "summary": "Evidence reference; not yet verified by AWR"
+    }
+  ],
+  "evidence_currency_basis": {
+    "branch_id": null,
+    "requested_source_sha": "146ed3bbf79fd0561158e46bb2219eeb05c89e67"
+  },
+  "freshness_basis": "source_refresh",
+  "missing_dependencies": [],
+  "ok": true,
+  "project_revision": 74,
+  "read_only": false,
+  "required_dependencies": [
+    {
+      "external_key": "SG-DEPEND",
+      "freshness": "fresh",
+      "revision": 3,
+      "source_revision": 7,
+      "status": "completed"
+    },
+    {
+      "external_key": "SG-DIFF",
+      "freshness": "fresh",
+      "revision": 3,
+      "source_revision": 7,
+      "status": "completed"
+    }
+  ],
+  "source_issues": [],
+  "source_ref": {
+    "end_line": null,
+    "locator": "file:///Users/mac/Documents/originone/agent-work-running/.local/business-live-20260909-v1/source-change/project/work-ledger.yaml",
+    "pointer": "/work_items/2",
+    "section_fingerprint": null,
+    "source_fingerprint": "sha256:843aaee9d627d13819cc048c8e34eece32a99406e4185d0a00e4db0fe7520ebe",
+    "source_id": "01M21R5CNHD84RKW0T9FS9Z0F4",
+    "source_revision": 7,
+    "start_line": null
+  },
+  "source_refresh_performed": true,
+  "source_warnings": 0,
+  "work": {
+    "active_claims": [],
+    "blocker": null,
+    "diagnostics": [
+      {
+        "code": "status_not_selectable",
+        "detail": "source status is completed",
+        "work_item_key": "SG-PLAN"
+      }
+    ],
+    "external_key": "SG-PLAN",
+    "freshness": "fresh",
+    "id": "01M21R5CNJWP450CJ6PRNMWK4V",
+    "milestone": "SG-DELIVERY",
+    "next_action": "生成 deliverables/songguo-revised-plan.md，明确溪桥本轮核对、云岭和南园补件准备、逐项退出条件及独立复核门槛。",
+    "owner": null,
+    "priority": "P0",
+    "raw_status": "completed",
+    "ready": false,
+    "revision": 3,
+    "source_revision": 7,
+    "status": "completed",
+    "summary": "当前一家核对窗口对象已核清为溪桥；云岭职责说明和南园资料目录仍待补，开放日期仍未确认。",
+    "title": "修订伙伴接入安排"
+  }
+}

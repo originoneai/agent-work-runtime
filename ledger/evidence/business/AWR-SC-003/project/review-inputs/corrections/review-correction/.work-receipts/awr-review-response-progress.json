@@ -1,0 +1,108 @@
+{
+  "ok": true,
+  "code": "proposal_recorded",
+  "project_revision": 102,
+  "proposal": {
+    "id": "01M21YB49MR0CS2YTMCCV3ASZ3",
+    "project_id": "01M21R5CNDAT34RYH0ZM7SFMX6",
+    "work_item_id": "01M21R5CNJR7TK10C4WW2A704Q",
+    "source_id": "01M21R5CNHD84RKW0T9FS9Z0F4",
+    "base_fingerprint": "sha256:8be608720f20cbd3620f026392cca2132474b0e14614b44f4845da7ac210d2f4",
+    "expected_revision": 95,
+    "mutation_type": "work.progress",
+    "patch": {
+      "changes": {
+        "next_action": "修订 songguo-source-versions.md，更新 change-impact 与 revised-plan 的交叉引用，新增逐条复核意见回应，并将精确哈希和来源绑定交回原独立复核者。",
+        "status": "in_progress",
+        "summary": "处理独立复核整改：保留历史修订与技术参考查找偏离，纠正旧窗口当前式表述；最终交付保持未提交。"
+      },
+      "intent": "独立复核结论为 CHANGES_REQUIRED：版本对照仍把旧两家窗口写成当前口径；本轮仅处理 R-01 和 R-02、更新交叉引用并准备原复核者复查，不提交最终交付。",
+      "source_config": {
+        "adapter_options": {},
+        "adapter_version": 1,
+        "mapping_key": "ledger|work-ledger.yaml"
+      },
+      "target": {
+        "kind": "work_item",
+        "meta": {
+          "external_key": "SG-DELIVER",
+          "id": "01M21R5CNJR7TK10C4WW2A704Q",
+          "revision": 1,
+          "source_ref": {
+            "end_line": null,
+            "locator": "file:///Users/mac/Documents/originone/agent-work-running/.local/business-live-20260909-v1/source-change/project/work-ledger.yaml",
+            "pointer": "/work_items/4",
+            "section_fingerprint": null,
+            "source_fingerprint": "sha256:8be608720f20cbd3620f026392cca2132474b0e14614b44f4845da7ac210d2f4",
+            "source_id": "01M21R5CNHD84RKW0T9FS9Z0F4",
+            "source_revision": 9,
+            "start_line": null
+          }
+        }
+      },
+      "version": 1,
+      "work_action": {
+        "action": "progress",
+        "from": "planned",
+        "to": "in_progress"
+      }
+    },
+    "status": "applied",
+    "created_by_session": "01M21Y9K91WH0FD7N095ZKASWY",
+    "revision": 5
+  },
+  "event": {
+    "id": "01M21YB4BEE48K9ZJ2E350DSAY",
+    "project_id": "01M21R5CNDAT34RYH0ZM7SFMX6",
+    "work_item_id": "01M21R5CNJR7TK10C4WW2A704Q",
+    "session_id": null,
+    "branch_id": null,
+    "event_type": "work.progressed",
+    "importance": "normal",
+    "summary": "Verified source work action Progress",
+    "payload": {
+      "action_reason": "独立复核结论为 CHANGES_REQUIRED：版本对照仍把旧两家窗口写成当前口径；本轮仅处理 R-01 和 R-02、更新交叉引用并准备原复核者复查，不提交最终交付。",
+      "actor": "codex-root",
+      "after_fingerprint": "sha256:217b557e5f6479a6a89b3cb0c0bae6980a70b97ca83f38e729634108202571a6",
+      "attempt_event_id": "01M21YB4AQN848MYCM8M79MRGY",
+      "before_fingerprint": "sha256:8be608720f20cbd3620f026392cca2132474b0e14614b44f4845da7ac210d2f4",
+      "creating_session_id": "01M21Y9K91WH0FD7N095ZKASWY",
+      "proposal_id": "01M21YB49MR0CS2YTMCCV3ASZ3",
+      "reason": "独立复核结论为 CHANGES_REQUIRED：版本对照仍把旧两家窗口写成当前口径；本轮仅处理 R-01 和 R-02、更新交叉引用并准备原复核者复查，不提交最终交付。",
+      "released_claim_ids": [],
+      "source_id": "01M21R5CNHD84RKW0T9FS9Z0F4",
+      "source_revision": 10,
+      "target_after_hash": "272dd30d7e4a251355cc7c3cbf6992dbc192e7affd10a83d3bbfb83988396d77",
+      "target_revision": 2,
+      "work_action": {
+        "action": "progress",
+        "from": "planned",
+        "to": "in_progress"
+      },
+      "write_plan_id": "01M21YB49YMV945K4CRATYB42T"
+    },
+    "project_revision": 102,
+    "created_at": 1788919255406
+  },
+  "source_refresh_performed": true,
+  "source_write_performed": true,
+  "write_outcome": "applied",
+  "apply_attempt": {
+    "event_id": "01M21YB4AQN848MYCM8M79MRGY",
+    "proposal_id": "01M21YB49MR0CS2YTMCCV3ASZ3",
+    "source_id": "01M21R5CNHD84RKW0T9FS9Z0F4",
+    "project_revision": 99,
+    "plan": {
+      "id": "01M21YB49YMV945K4CRATYB42T",
+      "before_fingerprint": "sha256:8be608720f20cbd3620f026392cca2132474b0e14614b44f4845da7ac210d2f4",
+      "after_fingerprint": "sha256:217b557e5f6479a6a89b3cb0c0bae6980a70b97ca83f38e729634108202571a6",
+      "before_size": 3272,
+      "after_size": 3557,
+      "target_after_hash": "272dd30d7e4a251355cc7c3cbf6992dbc192e7affd10a83d3bbfb83988396d77"
+    },
+    "resolved_event_id": "01M21YB4BEE48K9ZJ2E350DSAY"
+  },
+  "recovery_directory": ".awr/mutations/01M21YB49YMV945K4CRATYB42T",
+  "source_check": null,
+  "error": null
+}

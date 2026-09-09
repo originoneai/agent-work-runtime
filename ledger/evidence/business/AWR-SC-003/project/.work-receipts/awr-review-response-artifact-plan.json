@@ -1,0 +1,18 @@
+{
+  "artifact": {
+    "artifact_type": "work_plan_crossrefs_revised",
+    "id": "01M21ZA8KJG7BY7FA4VRSM8E42",
+    "locator": ".awr/artifacts/01M21ZA8KBY6MMYAGC5999TE7A",
+    "mime": "text/markdown",
+    "project_id": "01M21R5CNDAT34RYH0ZM7SFMX6",
+    "revision": 1,
+    "sha256": "8ae8430b33e93a07b74e4c3c26b59bfa3c29e956b590d8eec1883766b5083550",
+    "size": 14864,
+    "source_event_id": "01M21YB4BEE48K9ZJ2E350DSAY"
+  },
+  "event_id": "01M21ZA8KJPNXGJ1BF591CJN71",
+  "freshness_basis": "runtime_database",
+  "ok": true,
+  "project_revision": 105,
+  "source_refresh_performed": false
+}

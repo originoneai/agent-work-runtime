@@ -1,0 +1,39 @@
+{
+  "kind": "actual_client_turn_snapshot",
+  "recorded_at": "2026-09-09T08:29:36+08:00",
+  "phase": "initial",
+  "client": "Codex CLI",
+  "client_task_id": "01a08381-04a8-7871-9372-a3f55c2d8367",
+  "actual_user_turn": {
+    "timestamp": "2026-09-09T00:11:09.807Z",
+    "text": "项目计划和规则刚有调整，请重新梳理当前任务，确保后续工作使用最新要求。"
+  },
+  "input_sha256": "513d3787292b68798d728a118bd3aea5126231b51f028d3105b691c1ff2ce205",
+  "events_local": ".local/business-live-20260909-v1/source-change/control/initial-events.jsonl",
+  "events_sha256": "d66722f3d5e71b814382e0a55869174c7e67e78d14e993cafcf3ecc0f98726a8",
+  "native_transcript_snapshot_local": ".local/business-live-20260909-v1/source-change/control/initial-snapshot/native-transcript.jsonl",
+  "native_transcript_snapshot_sha256": "895cc467cc3afbc9044b22d2c772a7335f9611f3e415f7e6fbc0e349f7e69cd8",
+  "final_message_sha256": "035718b15ab13166ae2957fe97d91237ca85c5f1a80a6c124cf34fb0c77ca249",
+  "project_sources_sha256": {
+    "project.toml": "e65e64ec8d1f7582698e85d862d56f0ec78402b65601cc388baba3a21fc513f8",
+    "GOALS.md": "72db42bd7c8026e45523101a06a3bc3c4f23ab7fd92fbbbe745cc2e15b21a259",
+    "PLAN.md": "a5fdfcd2e2922d451655eafc43705a8b0ac21baf3587fec73bce49caa15972b5",
+    "RULES.md": "29d58166a2bf2fcc7420556341b736b7ed896b31af10d0f69a4ca7d5930729c9",
+    "work-ledger.yaml": "214f4835eeb7875fa2ab14d4503e66335da13b3049771365b9277f49655096ee",
+    "AGENTS.md": "43b5f2d885cd8f027c4307f50d9f0534265d50b56be61f65ccdcb2d850426eb6",
+    "DELIVERABLES.md": "a9c077962b3f1f5096fc5d8d18c43edea37f5a593faa5d8e4e108ff53b4f8f77"
+  },
+  "artifacts_sha256": {
+    "deliverables/songguo-source-versions.md": "b026c37190ea1f5dddc2a30a0e7aab3e4e6577c541843e4cfe61395ed7f78d04"
+  },
+  "tool_event_counts": {
+    "error": 1,
+    "agent_message": 13,
+    "command_execution": 102,
+    "file_change": 10
+  },
+  "command_executions": 102,
+  "nonzero_commands": 2,
+  "snapshot_local": ".local/business-live-20260909-v1/source-change/control/initial-snapshot",
+  "e4_completion_claim": false
+}

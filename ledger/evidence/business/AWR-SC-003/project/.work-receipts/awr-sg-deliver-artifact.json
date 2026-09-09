@@ -1,0 +1,18 @@
+{
+  "artifact": {
+    "artifact_type": "final_delivery",
+    "id": "01M225HYW34ZC8971N70Z6B4WR",
+    "locator": ".awr/artifacts/01M225HYVQYRE9H8MXH90K7NNP",
+    "mime": "text/markdown",
+    "project_id": "01M21R5CNDAT34RYH0ZM7SFMX6",
+    "revision": 1,
+    "sha256": "463998db8b7394e5ebd65bd64e87634e2f804871e030173e770dc8e432a55fed",
+    "size": 16232,
+    "source_event_id": "01M225HCM0P3R7GFG03Z4S6CAA"
+  },
+  "event_id": "01M225HYW379BX51Q2GRAGADVP",
+  "freshness_basis": "runtime_database",
+  "ok": true,
+  "project_revision": 166,
+  "source_refresh_performed": false
+}

@@ -1,0 +1,202 @@
+{
+  "branch_context": {
+    "branch_id": null,
+    "name": "main",
+    "parent_branch_id": null,
+    "branch_revision": null,
+    "fork_project_revision": 0,
+    "creation_event_id": null,
+    "git_ref": null,
+    "git_binding": null,
+    "source_basis": "shared_current_sources; git_ref is a creation observation, not a frozen source snapshot",
+    "runtime_scope": "exact_branch; no parent or sibling runtime inheritance; delta never precedes fork"
+  },
+  "source_refresh_ok": true,
+  "source_issues": [],
+  "delta": {
+    "project_id": "01M21R5CNDAT34RYH0ZM7SFMX6",
+    "work_item_id": "01M21R5CNJE4F5HTMS7EFE4XRF",
+    "work_item_key": "SG-DEPEND",
+    "branch_id": null,
+    "after_revision": 32,
+    "fork_project_revision": 0,
+    "baseline_origin": "explicit_revision",
+    "checkpoint_id": null,
+    "events": {
+      "project_revision": 42,
+      "source_changes": [
+        {
+          "source_id": "01M21R5CNGRYT79GGY5S3V3QCR",
+          "event_count": 2,
+          "first_event": {
+            "id": "01M21S9BKHRTW55A5VH7C0MFRY",
+            "project_revision": 33,
+            "created_at": 1788913954417
+          },
+          "last_event": {
+            "id": "01M21S9BKJTWZ106FB2D9SXNNP",
+            "project_revision": 34,
+            "created_at": 1788913954418
+          },
+          "latest_operation": "source.projected",
+          "before_known": true,
+          "before": {
+            "id": "01M21R5CNGRYT79GGY5S3V3QCR",
+            "domain": "rules",
+            "role": "primary",
+            "locator": "file:///Users/mac/Documents/originone/agent-work-running/.local/business-live-20260909-v1/source-change/project/RULES.md",
+            "format": "markdown",
+            "adapter": "markdown-rules-v1",
+            "revision": 1,
+            "fingerprint": "sha256:29d58166a2bf2fcc7420556341b736b7ed896b31af10d0f69a4ca7d5930729c9",
+            "freshness": "fresh",
+            "active": true
+          },
+          "after": {
+            "id": "01M21R5CNGRYT79GGY5S3V3QCR",
+            "domain": "rules",
+            "role": "primary",
+            "locator": "file:///Users/mac/Documents/originone/agent-work-running/.local/business-live-20260909-v1/source-change/project/RULES.md",
+            "format": "markdown",
+            "adapter": "markdown-rules-v1",
+            "revision": 2,
+            "fingerprint": "sha256:bbd2f4b5241b1c3fbdd774c9c749464960beaa47ac1d70501f2ddcdae441499a",
+            "freshness": "fresh",
+            "active": true
+          },
+          "legacy_events": 0,
+          "changed_entities": [
+            {
+              "kind": "rules",
+              "id": "01M21S9BKJD9KM5Q5TS5SFP6B8",
+              "external_key": "file:///Users/mac/Documents/originone/agent-work-running/.local/business-live-20260909-v1/source-change/project/RULES.md#revision",
+              "latest_action": "added",
+              "before_revision": null,
+              "after_revision": 1,
+              "occurrences": 1,
+              "first_event": {
+                "id": "01M21S9BKJTWZ106FB2D9SXNNP",
+                "project_revision": 34,
+                "created_at": 1788913954418
+              },
+              "last_event": {
+                "id": "01M21S9BKJTWZ106FB2D9SXNNP",
+                "project_revision": 34,
+                "created_at": 1788913954418
+              }
+            }
+          ],
+          "changed_entity_count": 1,
+          "omitted_entities": 0
+        },
+        {
+          "source_id": "01M21R5CNHD84RKW0T9FS9Z0F4",
+          "event_count": 2,
+          "first_event": {
+            "id": "01M21SDRXH9TPDP1QZ44RH8Z6W",
+            "project_revision": 40,
+            "created_at": 1788914099121
+          },
+          "last_event": {
+            "id": "01M21SDRXJKPGW9N1ZC4DSGHT4",
+            "project_revision": 41,
+            "created_at": 1788914099122
+          },
+          "latest_operation": "source.projected",
+          "before_known": true,
+          "before": {
+            "id": "01M21R5CNHD84RKW0T9FS9Z0F4",
+            "domain": "ledger",
+            "role": "primary",
+            "locator": "file:///Users/mac/Documents/originone/agent-work-running/.local/business-live-20260909-v1/source-change/project/work-ledger.yaml",
+            "format": "yaml",
+            "adapter": "yaml-ledger-v1",
+            "revision": 3,
+            "fingerprint": "sha256:214f4835eeb7875fa2ab14d4503e66335da13b3049771365b9277f49655096ee",
+            "freshness": "fresh",
+            "active": true
+          },
+          "after": {
+            "id": "01M21R5CNHD84RKW0T9FS9Z0F4",
+            "domain": "ledger",
+            "role": "primary",
+            "locator": "file:///Users/mac/Documents/originone/agent-work-running/.local/business-live-20260909-v1/source-change/project/work-ledger.yaml",
+            "format": "yaml",
+            "adapter": "yaml-ledger-v1",
+            "revision": 4,
+            "fingerprint": "sha256:9809de67fabc1ac712895c79c3b0ec6b2c0cc61d8d966749d5170ccf49c1eb51",
+            "freshness": "fresh",
+            "active": true
+          },
+          "legacy_events": 0,
+          "changed_entities": [
+            {
+              "kind": "work_items",
+              "id": "01M21R5CNJE4F5HTMS7EFE4XRF",
+              "external_key": "SG-DEPEND",
+              "latest_action": "updated",
+              "before_revision": 1,
+              "after_revision": 2,
+              "occurrences": 1,
+              "first_event": {
+                "id": "01M21SDRXJKPGW9N1ZC4DSGHT4",
+                "project_revision": 41,
+                "created_at": 1788914099122
+              },
+              "last_event": {
+                "id": "01M21SDRXJKPGW9N1ZC4DSGHT4",
+                "project_revision": 41,
+                "created_at": 1788914099122
+              }
+            }
+          ],
+          "changed_entity_count": 1,
+          "omitted_entities": 0
+        }
+      ],
+      "important_events": [],
+      "important_event_count": 0,
+      "omitted_important_events": 0,
+      "process_history": [
+        {
+          "event_type": "proposal.apply_started",
+          "importance": "normal",
+          "before_or_at_baseline": 0,
+          "after_baseline": 1
+        },
+        {
+          "event_type": "proposal.approved",
+          "importance": "normal",
+          "before_or_at_baseline": 0,
+          "after_baseline": 1
+        },
+        {
+          "event_type": "proposal.created",
+          "importance": "normal",
+          "before_or_at_baseline": 0,
+          "after_baseline": 1
+        },
+        {
+          "event_type": "proposal.ready",
+          "importance": "normal",
+          "before_or_at_baseline": 0,
+          "after_baseline": 1
+        },
+        {
+          "event_type": "session.started",
+          "importance": "normal",
+          "before_or_at_baseline": 0,
+          "after_baseline": 1
+        },
+        {
+          "event_type": "work.progressed",
+          "importance": "normal",
+          "before_or_at_baseline": 0,
+          "after_baseline": 1
+        }
+      ]
+    },
+    "gaps": [],
+    "history_scope": "Source changes: all project sources after baseline, including retired sources. Process history: this work or project-global events on the exact branch; high/critical summaries after baseline. Full immutable events remain available through Store.event/project EventQuery; omitted counts are explicit."
+  }
+}

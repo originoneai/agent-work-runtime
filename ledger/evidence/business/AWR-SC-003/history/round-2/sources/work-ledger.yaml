@@ -1,0 +1,40 @@
+milestones:
+- id: SG-DELIVERY
+  title: 松果伙伴接入方案交付
+  status: in_progress
+work_items:
+- {"acceptance":["区分原草案与当前规则，记录来源及尚未确认事项。","保留实际产物与来源引用，无法确认的内容显式说明。"],"depends_on":[],"evidence":[".work-receipts/sg-diff-verification.json"],"goal":"goal#sg","id":"SG-DIFF","milestone":"SG-DELIVERY","next_action":"生成 deliverables/songguo-source-versions.md，显式记录未指定的两家名单与未确认开放日期。","owner":null,"priority":"P0","status":"completed","summary":"权威源均新鲜；已识别当前窗口两家与原草案三家的范围差异。","title":"核对计划和生效规则","verification":{"evidence_level":"locally_verified"}}
+- {"acceptance":["说明三家伙伴的材料差异和可推进工作。","保留实际产物与来源引用，无法确认的内容显式说明。"],"depends_on":["SG-DIFF"],"evidence":[".work-receipts/sg-depend-verification.json"],"goal":"goal#sg","id":"SG-DEPEND","milestone":"SG-DELIVERY","next_action":"生成 deliverables/songguo-change-impact.md，说明三家材料差异、可推进工作及 SG-PLAN/SG-REVIEW/SG-DELIVER 的新增验收门槛。","owner":null,"priority":"P0","status":"completed","summary":"正式依赖拓扑不变，但 SG-DIFF 仅可作为旧安排基线；下游执行与验收必须改绑 RULES.md r2。","title":"分析接入依赖变化","verification":{"evidence_level":"locally_verified"}}
+- {"acceptance":["依据最新来源形成可以执行的安排，保留不确定性。","保留实际产物与来源引用，无法确认的内容显式说明。"],"depends_on":["SG-DEPEND"],"evidence":[".work-receipts/sg-plan-verification.json"],"goal":"goal#sg","id":"SG-PLAN","milestone":"SG-DELIVERY","next_action":"生成 deliverables/songguo-revised-plan.md，明确溪桥本轮核对、云岭和南园补件准备、逐项退出条件及独立复核门槛。","owner":null,"priority":"P0","status":"completed","summary":"当前一家核对窗口对象已核清为溪桥；云岭职责说明和南园资料目录仍待补，开放日期仍未确认。","title":"修订伙伴接入安排","verification":{"evidence_level":"locally_verified"}}
+- id: SG-REVIEW
+  title: 独立复核计划修订
+  status: planned
+  owner: null
+  priority: P0
+  milestone: SG-DELIVERY
+  goal: goal#sg
+  acceptance:
+  - 核对最新规则、来源版本和受影响的验收条件。
+  - 保留实际产物与来源引用，无法确认的内容显式说明。
+  depends_on:
+  - SG-PLAN
+  next_action: 独立复核计划修订，先核对当前来源和负责范围。
+  evidence: []
+  verification:
+    evidence_level: none
+- id: SG-DELIVER
+  title: 交付修订计划
+  status: planned
+  owner: null
+  priority: P0
+  milestone: SG-DELIVERY
+  goal: goal#sg
+  acceptance:
+  - 处理复核意见并交付版本对照与最终计划。
+  - 保留实际产物与来源引用，无法确认的内容显式说明。
+  depends_on:
+  - SG-REVIEW
+  next_action: 交付修订计划，先核对当前来源和负责范围。
+  evidence: []
+  verification:
+    evidence_level: none

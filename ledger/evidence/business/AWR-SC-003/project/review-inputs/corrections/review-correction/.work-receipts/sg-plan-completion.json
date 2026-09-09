@@ -1,0 +1,18 @@
+{
+  "version": 1,
+  "source_sha": "146ed3bbf79fd0561158e46bb2219eeb05c89e67",
+  "acceptance": [
+    {
+      "criterion": "依据最新来源形成可以执行的安排，保留不确定性。",
+      "evidence": [
+        "SG-PLAN-EXECUTABLE-20260909"
+      ]
+    },
+    {
+      "criterion": "保留实际产物与来源引用，无法确认的内容显式说明。",
+      "evidence": [
+        "SG-PLAN-EXECUTABLE-20260909"
+      ]
+    }
+  ]
+}

@@ -1,0 +1,133 @@
+{
+  "version": 1,
+  "work_item": "SG-REVIEW",
+  "source_sha": "146ed3bbf79fd0561158e46bb2219eeb05c89e67",
+  "command": "rtk python3 .work-receipts/re-review-post-verify.py",
+  "scope": [
+    "SG-REVIEW"
+  ],
+  "verified_at": 1788922010497,
+  "reviewer": {
+    "canonical_task": "/root/restricted_material_client_run",
+    "participant_kind": "luna_worker",
+    "awr_session": "01M2202ANNA5WFK3Q9DZ015B7A",
+    "awr_claim": "01M2203KGQ2881PWDRPWTH2SX1",
+    "independent_from_client_task_id": "01a08381-04a8-7871-9372-a3f55c2d8367"
+  },
+  "verdict": "REMEDIATION_ACCEPTED_FOR_PLAN_SCOPE",
+  "artifact": {
+    "path": "deliverables/sg-independent-re-review.md",
+    "sha256": "479367efd6e411692552ec40d47af607fa48dee64c344c2824a67308575af72c"
+  },
+  "source_context": {
+    "project_revision": 136,
+    "context_hash": "34ad6b72e2d5df287fc8c6bdb2ed9db3cdc1d41c08ef897f288def5921db36a8",
+    "complete": true,
+    "correction_source_sha256": {
+      "GOALS.md": "72db42bd7c8026e45523101a06a3bc3c4f23ab7fd92fbbbe745cc2e15b21a259",
+      "PLAN.md": "a5fdfcd2e2922d451655eafc43705a8b0ac21baf3587fec73bce49caa15972b5",
+      "RULES.md": "bbd2f4b5241b1c3fbdd774c9c749464960beaa47ac1d70501f2ddcdae441499a",
+      "work-ledger.yaml": "f5e693b93783066f43e893d9024bd5273fa40d7b6feb24e5918aaf5e8e6aa99a"
+    }
+  },
+  "publication": {
+    "path": "/Users/mac/Documents/originone/agent-work-running/.local/business-live-20260909-v1/source-change/control/review-correction-publication.json",
+    "sha256": "8aa3ed46770e7cf44503a6b3f8810f1b918290eb4cfa10ca4ae42410e3826b53",
+    "published_at": "2026-09-09T10:26:01+08:00",
+    "actual_client_task_id": "01a08381-04a8-7871-9372-a3f55c2d8367",
+    "declared_file_count": 103,
+    "private_native_transcript_published": false,
+    "independent_verdict": "pending",
+    "e4_credit": false
+  },
+  "package_verification": {
+    "path": ".work-receipts/re-review-package-verification.json",
+    "sha256": "2b447274729e32a58f9a4e64dcabe48431d0c50910eafdb75827ad4f39ac8bac",
+    "ok": true,
+    "declared_files": 103,
+    "published_receipts": 89
+  },
+  "producer_files_post_re_review": {
+    "deliverables/songguo-source-versions.md": {
+      "expected_sha256": "26bac246b439a54551533d6146b0d12045830b539ce5a5deb0b2e1b431eac136",
+      "actual_sha256": "26bac246b439a54551533d6146b0d12045830b539ce5a5deb0b2e1b431eac136",
+      "unchanged_during_re_review": true
+    },
+    "deliverables/songguo-change-impact.md": {
+      "expected_sha256": "c1a644f08291eaf7b716063c11a4ab07efd319ad82ed9d08cc4e7cc6505756cb",
+      "actual_sha256": "c1a644f08291eaf7b716063c11a4ab07efd319ad82ed9d08cc4e7cc6505756cb",
+      "unchanged_during_re_review": true
+    },
+    "deliverables/songguo-revised-plan.md": {
+      "expected_sha256": "8ae8430b33e93a07b74e4c3c26b59bfa3c29e956b590d8eec1883766b5083550",
+      "actual_sha256": "8ae8430b33e93a07b74e4c3c26b59bfa3c29e956b590d8eec1883766b5083550",
+      "unchanged_during_re_review": true
+    },
+    "deliverables/sg-review-response.md": {
+      "expected_sha256": "ee0f42b76eeef5755fc79d737beba6e9ccdd163f93c954c2a253c97bec191018",
+      "actual_sha256": "ee0f42b76eeef5755fc79d737beba6e9ccdd163f93c954c2a253c97bec191018",
+      "unchanged_during_re_review": true
+    }
+  },
+  "report_links": {
+    "count": 13,
+    "missing": []
+  },
+  "checks": [
+    {
+      "name": "sealed correction package and producer receipts",
+      "passed": true,
+      "details": "Verified all 103 published files, all 89 published work receipts, all 86 JSON receipt parses, and the retained sealed execution counts.",
+      "criteria": [
+        "保留实际产物与来源引用，无法确认的内容显式说明。"
+      ]
+    },
+    {
+      "name": "R-01 current and historical source chain",
+      "passed": true,
+      "details": "Verified the draft-three, historical-two, current-one and Xiqiao chain, both real revision turns, supersession boundaries, exact producer hashes and resolved cross-references.",
+      "criteria": [
+        "核对最新规则、来源版本和受影响的验收条件。"
+      ]
+    },
+    {
+      "name": "R-02 retained technical lookup deviation",
+      "passed": true,
+      "details": "Kept item_46 as allowed at the time and item_61/63/64/66 as historical scope deviations; retained zero business-keyword hits, limited impact language and the no-E4 boundary.",
+      "criteria": [
+        "核对最新规则、来源版本和受影响的验收条件。",
+        "保留实际产物与来源引用，无法确认的内容显式说明。"
+      ]
+    },
+    {
+      "name": "independent report and delivery boundary",
+      "passed": true,
+      "details": "The new report is independently authored, all its links resolve, the original review remains unchanged, all unknowns remain explicit, and final delivery remains absent for the executor.",
+      "criteria": [
+        "保留实际产物与来源引用，无法确认的内容显式说明。"
+      ]
+    }
+  ],
+  "all_checks_passed": true,
+  "closed_findings": [
+    "R-01.1",
+    "R-01.2",
+    "R-01.3",
+    "R-01.4",
+    "R-01.5"
+  ],
+  "retained_process_findings": [
+    "R-02.1",
+    "R-02.2",
+    "R-02.3"
+  ],
+  "unresolved": [
+    "The onboarding opening date remains unconfirmed.",
+    "The Xiqiao field-description body and actual verification evidence are absent.",
+    "The Yunling responsibility statement and Nanyuan directory remain absent.",
+    "Named executor roles, onboarding approval and real business acceptance remain absent.",
+    "Earlier controlled authoritative versions, exact edit time and approval chain remain absent.",
+    "The original executor must consume this re-review and perform final delivery; this reviewer does not write it."
+  ],
+  "evidence_boundary": "Locally verified independent acceptance of the plan-scope remediation only. R-02 remains a historical scope deviation. No partner onboarding approval, material verification, final delivery, E4, clean-scope execution claim, or real business acceptance is granted."
+}

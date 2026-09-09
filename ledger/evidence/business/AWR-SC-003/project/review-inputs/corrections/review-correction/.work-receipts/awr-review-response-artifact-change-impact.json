@@ -1,0 +1,18 @@
+{
+  "artifact": {
+    "artifact_type": "change_impact_crossrefs_revised",
+    "id": "01M21ZA8F775AG0GSVV75JZQE0",
+    "locator": ".awr/artifacts/01M21ZA8F2XJ998YP5ZZT2RY3J",
+    "mime": "text/markdown",
+    "project_id": "01M21R5CNDAT34RYH0ZM7SFMX6",
+    "revision": 1,
+    "sha256": "c1a644f08291eaf7b716063c11a4ab07efd319ad82ed9d08cc4e7cc6505756cb",
+    "size": 10903,
+    "source_event_id": "01M21YB4BEE48K9ZJ2E350DSAY"
+  },
+  "event_id": "01M21ZA8F7QC41BMWAV20MQE1J",
+  "freshness_basis": "runtime_database",
+  "ok": true,
+  "project_revision": 104,
+  "source_refresh_performed": false
+}

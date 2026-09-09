@@ -1,0 +1,18 @@
+{
+  "artifact": {
+    "artifact_type": "independent_re_review",
+    "id": "01M2212KNGY22H727YFXRZB5WB",
+    "locator": ".awr/artifacts/01M2212KNAY8EAYDPQMP233VVC",
+    "mime": "text/markdown",
+    "project_id": "01M21R5CNDAT34RYH0ZM7SFMX6",
+    "revision": 1,
+    "sha256": "479367efd6e411692552ec40d47af607fa48dee64c344c2824a67308575af72c",
+    "size": 9907,
+    "source_event_id": "01M22123YPEJ5HZ8BN68AE7RD3"
+  },
+  "event_id": "01M2212KNG1039GXTN91NFNARM",
+  "freshness_basis": "runtime_database",
+  "ok": true,
+  "project_revision": 138,
+  "source_refresh_performed": false
+}

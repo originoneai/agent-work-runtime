@@ -1,0 +1,50 @@
+{
+  "blocked_sample": [
+    {
+      "active_claims": [],
+      "blocker": "等待原独立复核者 /root/restricted_material_client_run 核对四份整改材料的新哈希并给出明确复查结论。",
+      "diagnostics": [
+        {
+          "code": "active_blocker",
+          "detail": "等待原独立复核者 /root/restricted_material_client_run 核对四份整改材料的新哈希并给出明确复查结论。",
+          "work_item_key": "SG-DELIVER"
+        },
+        {
+          "code": "status_not_selectable",
+          "detail": "source status is blocked",
+          "work_item_key": "SG-DELIVER"
+        }
+      ],
+      "external_key": "SG-DELIVER",
+      "freshness": "fresh",
+      "id": "01M21R5CNJR7TK10C4WW2A704Q",
+      "milestone": "SG-DELIVERY",
+      "next_action": "由原独立复核者检查 deliverables/sg-review-response.md、三个修订材料和证据 SG-DELIVER-REVIEW-RESPONSE-20260909，逐项确认 R-01.1 至 R-01.5、R-02.1 至 R-02.3；本执行者不代写复查结论。",
+      "owner": null,
+      "priority": "P0",
+      "raw_status": "blocked",
+      "ready": false,
+      "revision": 3,
+      "source_revision": 14,
+      "status": "blocked",
+      "summary": "处理独立复核整改：保留历史修订与技术参考查找偏离，纠正旧窗口当前式表述；最终交付保持未提交。",
+      "title": "交付修订计划"
+    }
+  ],
+  "blocked_total": 1,
+  "branch_id": null,
+  "diagnostic_counts": {
+    "active_blocker": 1,
+    "status_not_selectable": 1
+  },
+  "freshness_basis": "source_refresh",
+  "ok": true,
+  "project_revision": 149,
+  "read_only": false,
+  "ready": [],
+  "ready_total": 0,
+  "source_issues": [],
+  "source_refresh_performed": true,
+  "source_warnings": 0,
+  "truncated": false
+}

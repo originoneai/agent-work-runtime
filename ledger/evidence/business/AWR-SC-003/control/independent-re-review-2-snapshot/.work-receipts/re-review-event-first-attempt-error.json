@@ -1,0 +1,10 @@
+{
+  "kind": "reviewer_command_failure",
+  "command": "awr event append --type review.recheck_completed --payload .work-receipts/re-review-event-payload.json --expected-revision 136",
+  "exit_code": 1,
+  "error": {
+    "code": "InvalidInput",
+    "message": "invalid input: event payload contains an unknown field or invalid field type/value"
+  },
+  "business_state_changed": false
+}

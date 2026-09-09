@@ -1,0 +1,9 @@
+{
+  "kind": "reviewer_verification_failure",
+  "command": "rtk python3 .work-receipts/re-review-post-verify.py",
+  "exit_code": 1,
+  "report_sha256": "16ab772456366b6ff5e6babbcfc30e4d6934048dc3a6270e7df6cb94154dbf7b",
+  "failed_check": "R-02 retained technical lookup deviation",
+  "cause": "The report grouped item_61/63/64/66 in one shorthand string, while the verification required each retained item ID verbatim.",
+  "substantive_finding_changed": false
+}

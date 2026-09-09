@@ -1,0 +1,28 @@
+{
+  "kind": "actual_prior_business_turn",
+  "phase": "round-2",
+  "client_task_id": "01a08381-04a8-7871-9372-a3f55c2d8367",
+  "actual_user_turn": {
+    "timestamp": "2026-09-09T00:46:04.927Z",
+    "text": "请把仍不确定的内容核清楚，再给我一版可以执行的安排。"
+  },
+  "source_sha256": {
+    "project.toml": "e65e64ec8d1f7582698e85d862d56f0ec78402b65601cc388baba3a21fc513f8",
+    "GOALS.md": "72db42bd7c8026e45523101a06a3bc3c4f23ab7fd92fbbbe745cc2e15b21a259",
+    "PLAN.md": "a5fdfcd2e2922d451655eafc43705a8b0ac21baf3587fec73bce49caa15972b5",
+    "RULES.md": "bbd2f4b5241b1c3fbdd774c9c749464960beaa47ac1d70501f2ddcdae441499a",
+    "work-ledger.yaml": "843aaee9d627d13819cc048c8e34eece32a99406e4185d0a00e4db0fe7520ebe",
+    "AGENTS.md": "d81b0418bd7132c8692723c8a048132485b569011644beae906d4b325f5ba6a8",
+    "DELIVERABLES.md": "a9c077962b3f1f5096fc5d8d18c43edea37f5a593faa5d8e4e108ff53b4f8f77"
+  },
+  "artifact_sha256": {
+    "deliverables/songguo-change-impact.md": "6792b22621c6364fd3802b5a7e5c9552710f418df917ffdac819dcb0d5fe3beb",
+    "deliverables/songguo-revised-plan.md": "58e419ab7ff87b2566fc156f3256b01e444987be7e8fae6dc6ad727027b0ca37",
+    "deliverables/songguo-source-versions.md": "b026c37190ea1f5dddc2a30a0e7aab3e4e6577c541843e4cfe61395ed7f78d04"
+  },
+  "native_transcript_sha256": "e4cd5a3d14033154acc7b22e11abbfbc5f978d931e39b75c2a6a11e2d9298d3a",
+  "events_sha256": "a2f6cbf485810eeb0b11dbef5b8bdb5c3feb260c1902a08dc100167273a6019f",
+  "sealed_at": "2026-09-09T09:10:21+08:00",
+  "final_message": "已核清并形成可执行版：[松果伙伴接入修订执行计划](/Users/mac/Documents/originone/agent-work-running/.local/business-live-20260909-v1/source-change/project/deliverables/songguo-revised-plan.md)。\n\n关键结论：\n\n- 本轮只有一个资料核对名额，协调会已确认由溪桥进入。\n- 溪桥已补交字段说明，但项目内尚无说明正文，因此首项动作是取得并登记实际文件，不能直接判定核验通过。\n- 云岭仍缺联系人职责说明；南园仍未提交资料目录。两者可并行补件，但不占用当前核对名额。\n- 接入开放日期尚未确认，所有对外材料必须逐份明确说明。\n- 具体执行人尚未给出，启动前须实名登记；独立复核人必须与计划执行者不同。\n\n执行顺序已经明确为：责任人及来源冻结 → 溪桥取件、完整性检查、字段核对、返工结案 → 云岭和南园并行补件 → 溪桥结案后刷新规则并重排下一家 → 独立复核 → 处理意见后最终交付。\n\n`SG-PLAN` 已通过本地验证并完成 AWR 验收绑定，证据为 `locally_verified`。当前 AWR revision `74`，5 项中已完成 3 项，下一项是 `SG-REVIEW`；独立复核和最终交付文件均未提前创建。验证记录见 [sg-plan-verification.json](/Users/mac/Documents/originone/agent-work-running/.local/business-live-20260909-v1/source-change/project/.work-receipts/sg-plan-verification.json)。",
+  "note": "Copied historical evidence, not newly authored business output or a review conclusion."
+}

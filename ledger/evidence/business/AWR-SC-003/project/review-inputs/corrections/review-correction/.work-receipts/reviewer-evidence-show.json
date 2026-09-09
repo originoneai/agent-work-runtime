@@ -1,0 +1,30 @@
+{
+  "currency": "current",
+  "evidence": {
+    "branch_id": null,
+    "command": "rtk python3 .work-receipts/reviewer-verify.py > .work-receipts/reviewer-verification-output.txt",
+    "external_key": "SG-REVIEW-INDEPENDENT-20260909",
+    "freshness": null,
+    "id": "01M21XNVBS3G94V6VT6RTC2258",
+    "level": "locally_verified",
+    "locator": ".work-receipts/reviewer-review-verification.json",
+    "revision": 1,
+    "scope": [
+      "SG-REVIEW"
+    ],
+    "scope_total": 1,
+    "sha256": "6f3d7ecc1e980e4964ce59f953961a0a3fab9b6ba352ec650fd85a2c2d5b68a2",
+    "source_ref": null,
+    "source_sha": "146ed3bbf79fd0561158e46bb2219eeb05c89e67",
+    "summary": "Independent arrangement review completed with CHANGES_REQUIRED: current plan uses the one-partner Xiqiao scope, but the source-version comparison remains stale; process deviation and all delivery conditions are retained.",
+    "type": "completion_report",
+    "verified_at": 1788918540320,
+    "work_item_id": "01M21R5CNJY0DZNP7FA3JX28VA"
+  },
+  "freshness_basis": "source_refresh",
+  "missing_bindings": [],
+  "ok": true,
+  "project_revision": 84,
+  "reasons": [],
+  "source_refresh_performed": true
+}

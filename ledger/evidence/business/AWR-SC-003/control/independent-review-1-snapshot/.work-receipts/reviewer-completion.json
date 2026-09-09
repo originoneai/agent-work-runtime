@@ -1,0 +1,18 @@
+{
+  "version": 1,
+  "source_sha": "146ed3bbf79fd0561158e46bb2219eeb05c89e67",
+  "acceptance": [
+    {
+      "criterion": "核对最新规则、来源版本和受影响的验收条件。",
+      "evidence": [
+        "SG-REVIEW-INDEPENDENT-20260909"
+      ]
+    },
+    {
+      "criterion": "保留实际产物与来源引用，无法确认的内容显式说明。",
+      "evidence": [
+        "SG-REVIEW-INDEPENDENT-20260909"
+      ]
+    }
+  ]
+}

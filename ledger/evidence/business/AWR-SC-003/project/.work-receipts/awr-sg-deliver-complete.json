@@ -1,0 +1,196 @@
+{
+  "ok": true,
+  "code": "proposal_recorded",
+  "project_revision": 174,
+  "proposal": {
+    "id": "01M225Q451S2KRZQS0NHSW7A4D",
+    "project_id": "01M21R5CNDAT34RYH0ZM7SFMX6",
+    "work_item_id": "01M21R5CNJR7TK10C4WW2A704Q",
+    "source_id": "01M21R5CNHD84RKW0T9FS9Z0F4",
+    "base_fingerprint": "sha256:efbb84c69ac25aa0b146018a340162ea4fd6ef473f295642e583944737a721cc",
+    "expected_revision": 167,
+    "mutation_type": "work.complete",
+    "patch": {
+      "changes": {
+        "evidence": [
+          ".work-receipts/sg-delivery-verification.json"
+        ],
+        "status": "completed",
+        "verification": {
+          "evidence_level": "locally_verified"
+        }
+      },
+      "intent": "最新独立返检已关闭 R-01 并接受 R-02 的永久披露；deliverables/sg-delivery.md 已交付当前伙伴安排、来源版本说明、变更影响、未决事项及处理角色，验证报告确认全部引用、哈希和两项 acceptance 通过。所有缺失材料、实际核验、具体负责人、批准、真实验收和开放日期继续保留为未确认。",
+      "source_config": {
+        "adapter_options": {},
+        "adapter_version": 1,
+        "mapping_key": "ledger|work-ledger.yaml"
+      },
+      "target": {
+        "kind": "work_item",
+        "meta": {
+          "external_key": "SG-DELIVER",
+          "id": "01M21R5CNJR7TK10C4WW2A704Q",
+          "revision": 5,
+          "source_ref": {
+            "end_line": null,
+            "locator": "file:///Users/mac/Documents/originone/agent-work-running/.local/business-live-20260909-v1/source-change/project/work-ledger.yaml",
+            "pointer": "/work_items/4",
+            "section_fingerprint": null,
+            "source_fingerprint": "sha256:efbb84c69ac25aa0b146018a340162ea4fd6ef473f295642e583944737a721cc",
+            "source_id": "01M21R5CNHD84RKW0T9FS9Z0F4",
+            "source_revision": 16,
+            "start_line": null
+          }
+        }
+      },
+      "version": 1,
+      "work_action": {
+        "action": "complete",
+        "completion": {
+          "acceptance": [
+            {
+              "criterion": "处理复核意见并交付版本对照与最终计划。",
+              "evidence": [
+                "01M225NT4PD6JXZDZ7VSQ5E6RP"
+              ]
+            },
+            {
+              "criterion": "保留实际产物与来源引用，无法确认的内容显式说明。",
+              "evidence": [
+                "01M225NT4PD6JXZDZ7VSQ5E6RP"
+              ]
+            }
+          ],
+          "evidence": [
+            {
+              "branch_id": null,
+              "command": "rtk python3 .work-receipts/sg-delivery-verify.py",
+              "evidence_type": "completion_report",
+              "external_key": "SG-DELIVER-FINAL-20260909",
+              "id": "01M225NT4PD6JXZDZ7VSQ5E6RP",
+              "level": "locally_verified",
+              "locator": ".work-receipts/sg-delivery-verification.json",
+              "project_id": "01M21R5CNDAT34RYH0ZM7SFMX6",
+              "revision": 1,
+              "scope": [
+                "SG-DELIVER"
+              ],
+              "sha256": "7d62e0f638bfcab1bad2e84def7ee696c43d1f42252c673c73dedb1ada80b0f7",
+              "source_ref": null,
+              "source_sha": "146ed3bbf79fd0561158e46bb2219eeb05c89e67",
+              "summary": "Locally verified final plan-scope delivery: the current single-window Xiqiao arrangement, source-version chain, change impact, unresolved facts and next-handler roles are complete; original review, remediation, sealed revisions and R-02 technical lookup deviations remain traceable.",
+              "verified_at": 1788926811483,
+              "work_item_id": "01M21R5CNJR7TK10C4WW2A704Q"
+            }
+          ],
+          "minimum_level": "locally_verified",
+          "source_sha": "146ed3bbf79fd0561158e46bb2219eeb05c89e67",
+          "version": 1
+        },
+        "from": "in_progress",
+        "to": "completed"
+      }
+    },
+    "status": "applied",
+    "created_by_session": "01M223HYYH4QAF5H0FPNV32807",
+    "revision": 5
+  },
+  "event": {
+    "id": "01M225Q46Y65Q9QTYPNY2BE32J",
+    "project_id": "01M21R5CNDAT34RYH0ZM7SFMX6",
+    "work_item_id": "01M21R5CNJR7TK10C4WW2A704Q",
+    "session_id": null,
+    "branch_id": null,
+    "event_type": "work.completed",
+    "importance": "normal",
+    "summary": "Verified source work action Complete",
+    "payload": {
+      "action_reason": "最新独立返检已关闭 R-01 并接受 R-02 的永久披露；deliverables/sg-delivery.md 已交付当前伙伴安排、来源版本说明、变更影响、未决事项及处理角色，验证报告确认全部引用、哈希和两项 acceptance 通过。所有缺失材料、实际核验、具体负责人、批准、真实验收和开放日期继续保留为未确认。",
+      "actor": "codex-root",
+      "after_fingerprint": "sha256:cc361872c66a5dbcacb831d1a2746df037fb4811f9b21cc99b3bc5e109e816ea",
+      "attempt_event_id": "01M225Q466P8622D1XZNDV9CEA",
+      "before_fingerprint": "sha256:efbb84c69ac25aa0b146018a340162ea4fd6ef473f295642e583944737a721cc",
+      "creating_session_id": "01M223HYYH4QAF5H0FPNV32807",
+      "proposal_id": "01M225Q451S2KRZQS0NHSW7A4D",
+      "reason": "最新独立返检已关闭 R-01 并接受 R-02 的永久披露；deliverables/sg-delivery.md 已交付当前伙伴安排、来源版本说明、变更影响、未决事项及处理角色，验证报告确认全部引用、哈希和两项 acceptance 通过。所有缺失材料、实际核验、具体负责人、批准、真实验收和开放日期继续保留为未确认。",
+      "released_claim_ids": [
+        "01M223KY11WAZS82X847KJY91G"
+      ],
+      "source_id": "01M21R5CNHD84RKW0T9FS9Z0F4",
+      "source_revision": 17,
+      "target_after_hash": "20e06ad9235be9313d75c7e767d5986960557b3c5b7d415be0739d17f63fea5b",
+      "target_revision": 6,
+      "work_action": {
+        "action": "complete",
+        "completion": {
+          "acceptance": [
+            {
+              "criterion": "处理复核意见并交付版本对照与最终计划。",
+              "evidence": [
+                "01M225NT4PD6JXZDZ7VSQ5E6RP"
+              ]
+            },
+            {
+              "criterion": "保留实际产物与来源引用，无法确认的内容显式说明。",
+              "evidence": [
+                "01M225NT4PD6JXZDZ7VSQ5E6RP"
+              ]
+            }
+          ],
+          "evidence": [
+            {
+              "branch_id": null,
+              "command": "rtk python3 .work-receipts/sg-delivery-verify.py",
+              "evidence_type": "completion_report",
+              "external_key": "SG-DELIVER-FINAL-20260909",
+              "id": "01M225NT4PD6JXZDZ7VSQ5E6RP",
+              "level": "locally_verified",
+              "locator": ".work-receipts/sg-delivery-verification.json",
+              "project_id": "01M21R5CNDAT34RYH0ZM7SFMX6",
+              "revision": 1,
+              "scope": [
+                "SG-DELIVER"
+              ],
+              "sha256": "7d62e0f638bfcab1bad2e84def7ee696c43d1f42252c673c73dedb1ada80b0f7",
+              "source_ref": null,
+              "source_sha": "146ed3bbf79fd0561158e46bb2219eeb05c89e67",
+              "summary": "Locally verified final plan-scope delivery: the current single-window Xiqiao arrangement, source-version chain, change impact, unresolved facts and next-handler roles are complete; original review, remediation, sealed revisions and R-02 technical lookup deviations remain traceable.",
+              "verified_at": 1788926811483,
+              "work_item_id": "01M21R5CNJR7TK10C4WW2A704Q"
+            }
+          ],
+          "minimum_level": "locally_verified",
+          "source_sha": "146ed3bbf79fd0561158e46bb2219eeb05c89e67",
+          "version": 1
+        },
+        "from": "in_progress",
+        "to": "completed"
+      },
+      "write_plan_id": "01M225Q45NPSNRM8DTNHCPDB97"
+    },
+    "project_revision": 174,
+    "created_at": 1788926988510
+  },
+  "source_refresh_performed": true,
+  "source_write_performed": true,
+  "write_outcome": "applied",
+  "apply_attempt": {
+    "event_id": "01M225Q466P8622D1XZNDV9CEA",
+    "proposal_id": "01M225Q451S2KRZQS0NHSW7A4D",
+    "source_id": "01M21R5CNHD84RKW0T9FS9Z0F4",
+    "project_revision": 171,
+    "plan": {
+      "id": "01M225Q45NPSNRM8DTNHCPDB97",
+      "before_fingerprint": "sha256:efbb84c69ac25aa0b146018a340162ea4fd6ef473f295642e583944737a721cc",
+      "after_fingerprint": "sha256:cc361872c66a5dbcacb831d1a2746df037fb4811f9b21cc99b3bc5e109e816ea",
+      "before_size": 3697,
+      "after_size": 3753,
+      "target_after_hash": "20e06ad9235be9313d75c7e767d5986960557b3c5b7d415be0739d17f63fea5b"
+    },
+    "resolved_event_id": "01M225Q46Y65Q9QTYPNY2BE32J"
+  },
+  "recovery_directory": ".awr/mutations/01M225Q45NPSNRM8DTNHCPDB97",
+  "source_check": null,
+  "error": null
+}

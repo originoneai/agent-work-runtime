@@ -1,0 +1,134 @@
+{
+  "acceptance": [
+    "核对最新规则、来源版本和受影响的验收条件。",
+    "保留实际产物与来源引用，无法确认的内容显式说明。"
+  ],
+  "decisions": [],
+  "dependency_cycles": [],
+  "evidence": [
+    {
+      "currency": "current",
+      "external_key": "SG-REVIEW-INDEPENDENT-20260909",
+      "level": "locally_verified",
+      "locator": ".work-receipts/reviewer-review-verification.json",
+      "missing_bindings": [],
+      "reasons": [],
+      "source_sha": "146ed3bbf79fd0561158e46bb2219eeb05c89e67",
+      "summary": "Independent arrangement review completed with CHANGES_REQUIRED: current plan uses the one-partner Xiqiao scope, but the source-version comparison remains stale; process deviation and all delivery conditions are retained."
+    },
+    {
+      "currency": "current",
+      "external_key": "SG-REVIEW-INDEPENDENT-RECHECK-20260909",
+      "level": "locally_verified",
+      "locator": ".work-receipts/re-review-verification.json",
+      "missing_bindings": [],
+      "reasons": [],
+      "source_sha": "146ed3bbf79fd0561158e46bb2219eeb05c89e67",
+      "summary": "Independent re-review accepted the plan-scope remediation: R-01.1 through R-01.5 closed; R-02.1 through R-02.3 remain permanently disclosed scope deviations; no final delivery, partner approval, E4, or business acceptance."
+    },
+    {
+      "currency": "unknown",
+      "external_key": "SG-REVIEW/evidence/.work-receipts/re-review-verification.json",
+      "level": "unknown",
+      "locator": ".work-receipts/re-review-verification.json",
+      "missing_bindings": [
+        "sha256",
+        "source_sha",
+        "command",
+        "verified_at"
+      ],
+      "reasons": [
+        "both recorded and requested source SHA are needed to determine currency"
+      ],
+      "source_sha": null,
+      "summary": "Evidence reference; not yet verified by AWR"
+    },
+    {
+      "currency": "unknown",
+      "external_key": "SG-REVIEW/evidence/.work-receipts/reviewer-review-verification.json",
+      "level": "unknown",
+      "locator": ".work-receipts/reviewer-review-verification.json",
+      "missing_bindings": [
+        "sha256",
+        "source_sha",
+        "command",
+        "verified_at"
+      ],
+      "reasons": [
+        "both recorded and requested source SHA are needed to determine currency"
+      ],
+      "source_sha": null,
+      "summary": "Evidence reference; not yet verified by AWR"
+    }
+  ],
+  "evidence_currency_basis": {
+    "branch_id": null,
+    "requested_source_sha": "146ed3bbf79fd0561158e46bb2219eeb05c89e67"
+  },
+  "freshness_basis": "source_refresh",
+  "missing_dependencies": [],
+  "ok": true,
+  "project_revision": 149,
+  "read_only": false,
+  "required_dependencies": [
+    {
+      "external_key": "SG-DEPEND",
+      "freshness": "fresh",
+      "revision": 3,
+      "source_revision": 14,
+      "status": "completed"
+    },
+    {
+      "external_key": "SG-DIFF",
+      "freshness": "fresh",
+      "revision": 3,
+      "source_revision": 14,
+      "status": "completed"
+    },
+    {
+      "external_key": "SG-PLAN",
+      "freshness": "fresh",
+      "revision": 3,
+      "source_revision": 14,
+      "status": "completed"
+    }
+  ],
+  "source_issues": [],
+  "source_ref": {
+    "end_line": null,
+    "locator": "file:///Users/mac/Documents/originone/agent-work-running/.local/business-live-20260909-v1/source-change/project/work-ledger.yaml",
+    "pointer": "/work_items/3",
+    "section_fingerprint": null,
+    "source_fingerprint": "sha256:8a7983bee8c2a5ca48572f992bc69d59e38578e7df51cc6c3f97e07f55244930",
+    "source_id": "01M21R5CNHD84RKW0T9FS9Z0F4",
+    "source_revision": 14,
+    "start_line": null
+  },
+  "source_refresh_performed": true,
+  "source_warnings": 0,
+  "work": {
+    "active_claims": [],
+    "blocker": null,
+    "diagnostics": [
+      {
+        "code": "status_not_selectable",
+        "detail": "source status is completed",
+        "work_item_key": "SG-REVIEW"
+      }
+    ],
+    "external_key": "SG-REVIEW",
+    "freshness": "fresh",
+    "id": "01M21R5CNJY0DZNP7FA3JX28VA",
+    "milestone": "SG-DELIVERY",
+    "next_action": "撰写 deliverables/sg-independent-re-review.md，登记独立返检证据并完成 SG-REVIEW 返检活动。",
+    "owner": null,
+    "priority": "P0",
+    "raw_status": "completed",
+    "ready": false,
+    "revision": 6,
+    "source_revision": 14,
+    "status": "completed",
+    "summary": "独立复核松果伙伴接入安排",
+    "title": "独立复核计划修订"
+  }
+}

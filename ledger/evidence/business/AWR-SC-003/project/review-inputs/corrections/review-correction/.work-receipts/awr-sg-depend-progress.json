@@ -1,0 +1,108 @@
+{
+  "ok": true,
+  "code": "proposal_recorded",
+  "project_revision": 42,
+  "proposal": {
+    "id": "01M21SDRWBV824YP71P5RSP9TR",
+    "project_id": "01M21R5CNDAT34RYH0ZM7SFMX6",
+    "work_item_id": "01M21R5CNJE4F5HTMS7EFE4XRF",
+    "source_id": "01M21R5CNHD84RKW0T9FS9Z0F4",
+    "base_fingerprint": "sha256:214f4835eeb7875fa2ab14d4503e66335da13b3049771365b9277f49655096ee",
+    "expected_revision": 35,
+    "mutation_type": "work.progress",
+    "patch": {
+      "changes": {
+        "next_action": "生成 deliverables/songguo-change-impact.md，说明三家材料差异、可推进工作及 SG-PLAN/SG-REVIEW/SG-DELIVER 的新增验收门槛。",
+        "status": "in_progress",
+        "summary": "正式依赖拓扑不变，但 SG-DIFF 仅可作为旧安排基线；下游执行与验收必须改绑 RULES.md r2。"
+      },
+      "intent": "已确认 RULES.md 从 r1 变为 r2：新增一家窗口、资料齐全优先和对外日期声明三项硬要求，开始分析其依赖与验收影响。",
+      "source_config": {
+        "adapter_options": {},
+        "adapter_version": 1,
+        "mapping_key": "ledger|work-ledger.yaml"
+      },
+      "target": {
+        "kind": "work_item",
+        "meta": {
+          "external_key": "SG-DEPEND",
+          "id": "01M21R5CNJE4F5HTMS7EFE4XRF",
+          "revision": 1,
+          "source_ref": {
+            "end_line": null,
+            "locator": "file:///Users/mac/Documents/originone/agent-work-running/.local/business-live-20260909-v1/source-change/project/work-ledger.yaml",
+            "pointer": "/work_items/1",
+            "section_fingerprint": null,
+            "source_fingerprint": "sha256:214f4835eeb7875fa2ab14d4503e66335da13b3049771365b9277f49655096ee",
+            "source_id": "01M21R5CNHD84RKW0T9FS9Z0F4",
+            "source_revision": 3,
+            "start_line": null
+          }
+        }
+      },
+      "version": 1,
+      "work_action": {
+        "action": "progress",
+        "from": "planned",
+        "to": "in_progress"
+      }
+    },
+    "status": "applied",
+    "created_by_session": "01M21SAY2939TRZECJBHGTEEWQ",
+    "revision": 5
+  },
+  "event": {
+    "id": "01M21SDRXM6KC6WC1JKMNNEGQK",
+    "project_id": "01M21R5CNDAT34RYH0ZM7SFMX6",
+    "work_item_id": "01M21R5CNJE4F5HTMS7EFE4XRF",
+    "session_id": null,
+    "branch_id": null,
+    "event_type": "work.progressed",
+    "importance": "normal",
+    "summary": "Verified source work action Progress",
+    "payload": {
+      "action_reason": "已确认 RULES.md 从 r1 变为 r2：新增一家窗口、资料齐全优先和对外日期声明三项硬要求，开始分析其依赖与验收影响。",
+      "actor": "codex-root",
+      "after_fingerprint": "sha256:9809de67fabc1ac712895c79c3b0ec6b2c0cc61d8d966749d5170ccf49c1eb51",
+      "attempt_event_id": "01M21SDRX1Y4ZWP9R8M7YAEZ9C",
+      "before_fingerprint": "sha256:214f4835eeb7875fa2ab14d4503e66335da13b3049771365b9277f49655096ee",
+      "creating_session_id": "01M21SAY2939TRZECJBHGTEEWQ",
+      "proposal_id": "01M21SDRWBV824YP71P5RSP9TR",
+      "reason": "已确认 RULES.md 从 r1 变为 r2：新增一家窗口、资料齐全优先和对外日期声明三项硬要求，开始分析其依赖与验收影响。",
+      "released_claim_ids": [],
+      "source_id": "01M21R5CNHD84RKW0T9FS9Z0F4",
+      "source_revision": 4,
+      "target_after_hash": "a2156390ed7906fcd4918260cc8b3b9d4bc736963dd1569e4c56855d6eb424a1",
+      "target_revision": 2,
+      "work_action": {
+        "action": "progress",
+        "from": "planned",
+        "to": "in_progress"
+      },
+      "write_plan_id": "01M21SDRWKZ8XTH237VWQ1BBSF"
+    },
+    "project_revision": 42,
+    "created_at": 1788914099124
+  },
+  "source_refresh_performed": true,
+  "source_write_performed": true,
+  "write_outcome": "applied",
+  "apply_attempt": {
+    "event_id": "01M21SDRX1Y4ZWP9R8M7YAEZ9C",
+    "proposal_id": "01M21SDRWBV824YP71P5RSP9TR",
+    "source_id": "01M21R5CNHD84RKW0T9FS9Z0F4",
+    "project_revision": 39,
+    "plan": {
+      "id": "01M21SDRWKZ8XTH237VWQ1BBSF",
+      "before_fingerprint": "sha256:214f4835eeb7875fa2ab14d4503e66335da13b3049771365b9277f49655096ee",
+      "after_fingerprint": "sha256:9809de67fabc1ac712895c79c3b0ec6b2c0cc61d8d966749d5170ccf49c1eb51",
+      "before_size": 2593,
+      "after_size": 2812,
+      "target_after_hash": "a2156390ed7906fcd4918260cc8b3b9d4bc736963dd1569e4c56855d6eb424a1"
+    },
+    "resolved_event_id": "01M21SDRXM6KC6WC1JKMNNEGQK"
+  },
+  "recovery_directory": ".awr/mutations/01M21SDRWKZ8XTH237VWQ1BBSF",
+  "source_check": null,
+  "error": null
+}

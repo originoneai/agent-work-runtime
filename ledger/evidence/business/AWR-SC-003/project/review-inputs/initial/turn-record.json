@@ -1,0 +1,26 @@
+{
+  "kind": "actual_prior_business_turn",
+  "phase": "initial",
+  "client_task_id": "01a08381-04a8-7871-9372-a3f55c2d8367",
+  "actual_user_turn": {
+    "timestamp": "2026-09-09T00:11:09.807Z",
+    "text": "项目计划和规则刚有调整，请重新梳理当前任务，确保后续工作使用最新要求。"
+  },
+  "source_sha256": {
+    "project.toml": "e65e64ec8d1f7582698e85d862d56f0ec78402b65601cc388baba3a21fc513f8",
+    "GOALS.md": "72db42bd7c8026e45523101a06a3bc3c4f23ab7fd92fbbbe745cc2e15b21a259",
+    "PLAN.md": "a5fdfcd2e2922d451655eafc43705a8b0ac21baf3587fec73bce49caa15972b5",
+    "RULES.md": "29d58166a2bf2fcc7420556341b736b7ed896b31af10d0f69a4ca7d5930729c9",
+    "work-ledger.yaml": "214f4835eeb7875fa2ab14d4503e66335da13b3049771365b9277f49655096ee",
+    "AGENTS.md": "43b5f2d885cd8f027c4307f50d9f0534265d50b56be61f65ccdcb2d850426eb6",
+    "DELIVERABLES.md": "a9c077962b3f1f5096fc5d8d18c43edea37f5a593faa5d8e4e108ff53b4f8f77"
+  },
+  "artifact_sha256": {
+    "deliverables/songguo-source-versions.md": "b026c37190ea1f5dddc2a30a0e7aab3e4e6577c541843e4cfe61395ed7f78d04"
+  },
+  "native_transcript_sha256": "895cc467cc3afbc9044b22d2c772a7335f9611f3e415f7e6fbc0e349f7e69cd8",
+  "events_sha256": "d66722f3d5e71b814382e0a55869174c7e67e78d14e993cafcf3ecc0f98726a8",
+  "sealed_at": "2026-09-09T08:29:36+08:00",
+  "final_message": "已按最新来源重新梳理并固化：\n\n- AWR 当前 revision `32`，来源无告警。\n- `SG-DIFF` 已完成并绑定本地验证证据。\n- 唯一可继续任务为 `SG-DEPEND（分析接入依赖变化）`。\n- 最新口径：三家可做静态材料差异盘点，但当前实际资料核对仅限两家；具体两家名单尚未提供，不能自行选择。\n- 接入开放日期仍未确认，后续计划不得写成日期承诺。\n- 顺序保持：`SG-DEPEND → SG-PLAN → SG-REVIEW → SG-DELIVER`，其中独立复核必须由其他参与者完成。\n\n产物与状态：\n\n- [来源版本对照](</Users/mac/Documents/originone/agent-work-running/.local/business-live-20260909-v1/source-change/project/deliverables/songguo-source-versions.md>)，SHA-256：`b026c371…f78d04`\n- [最终 AWR 状态回执](</Users/mac/Documents/originone/agent-work-running/.local/business-live-20260909-v1/source-change/project/.work-receipts/awr-final-status.json>)\n- [checkpoint 与未决事项](</Users/mac/Documents/originone/agent-work-running/.local/business-live-20260909-v1/source-change/project/.work-receipts/awr-sg-diff-session-show.json>)\n\n证据等级仅为 `locally_verified`，不代表伙伴资料已核验、独立复核通过或最终交付完成。AWR 还投影出一条缺少绑定信息的 locator-only 重复证据；后续应使用已验证记录 `SG-DIFF-SOURCE-VERSIONS-20260909`，该区别也已写入 checkpoint。未提交 Git commit，原有未跟踪的 `AGENTS.md`、`DELIVERABLES.md` 均已保留。",
+  "note": "Copied historical evidence, not newly authored business output or a review conclusion."
+}

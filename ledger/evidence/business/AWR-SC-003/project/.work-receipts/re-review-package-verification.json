@@ -1,0 +1,1825 @@
+{
+  "kind": "independent_re_review_package_verification",
+  "reviewer": {
+    "canonical_task": "/root/restricted_material_client_run",
+    "participant_type": "luna_worker",
+    "awr_session_id": "01M2202ANNA5WFK3Q9DZ015B7A",
+    "awr_claim_id": "01M2203KGQ2881PWDRPWTH2SX1"
+  },
+  "verified_at": 1788921626751,
+  "publication": {
+    "path": "/Users/mac/Documents/originone/agent-work-running/.local/business-live-20260909-v1/source-change/control/review-correction-publication.json",
+    "sha256": "8aa3ed46770e7cf44503a6b3f8810f1b918290eb4cfa10ca4ae42410e3826b53",
+    "published_at": "2026-09-09T10:26:01+08:00",
+    "actual_client_task_id": "01a08381-04a8-7871-9372-a3f55c2d8367",
+    "declared_file_count": 103,
+    "private_native_transcript_published": false,
+    "independent_verdict": "pending",
+    "e4_credit": false
+  },
+  "package_files": {
+    ".work-receipts/awr-final-ready.json": {
+      "expected_sha256": "78d30de886404f7e283eb1d82b6939317f41f8724f1489c6ff0d2253cb296a5e",
+      "actual_sha256": "78d30de886404f7e283eb1d82b6939317f41f8724f1489c6ff0d2253cb296a5e",
+      "bytes": 3739,
+      "match": true
+    },
+    ".work-receipts/awr-final-status.json": {
+      "expected_sha256": "1e124f651a90fedef9a5aeb088827671ad5423f8ce3a6fcd2f6ab049711959c3",
+      "actual_sha256": "1e124f651a90fedef9a5aeb088827671ad5423f8ce3a6fcd2f6ab049711959c3",
+      "bytes": 1024,
+      "match": true
+    },
+    ".work-receipts/awr-post-review-response-status.json": {
+      "expected_sha256": "06a65095591e3c1cd5a25b098dfa97aaedf69d40e92436107394333a019d7c98",
+      "actual_sha256": "06a65095591e3c1cd5a25b098dfa97aaedf69d40e92436107394333a019d7c98",
+      "bytes": 562,
+      "match": true
+    },
+    ".work-receipts/awr-post-review-response-work-show.json": {
+      "expected_sha256": "1b08b1ad8ef8c383026704e9a3caee13890b24a8953239b21291e0668c3aa5dc",
+      "actual_sha256": "1b08b1ad8ef8c383026704e9a3caee13890b24a8953239b21291e0668c3aa5dc",
+      "bytes": 3494,
+      "match": true
+    },
+    ".work-receipts/awr-post-sg-depend-ready.json": {
+      "expected_sha256": "c3d0af3aa228c40b714e336be60b2dc2707576fefa4a73468ba2c74222ef7f8f",
+      "actual_sha256": "c3d0af3aa228c40b714e336be60b2dc2707576fefa4a73468ba2c74222ef7f8f",
+      "bytes": 2629,
+      "match": true
+    },
+    ".work-receipts/awr-post-sg-depend-sources.json": {
+      "expected_sha256": "245df8202e276917a52af83f30747cc6cc47645fcb878982661aef3f00f282bb",
+      "actual_sha256": "245df8202e276917a52af83f30747cc6cc47645fcb878982661aef3f00f282bb",
+      "bytes": 3465,
+      "match": true
+    },
+    ".work-receipts/awr-post-sg-depend-status.json": {
+      "expected_sha256": "f18b241a3477f672f3f39b0e5c4893f11be23e2826855250b0d391dba39b1810",
+      "actual_sha256": "f18b241a3477f672f3f39b0e5c4893f11be23e2826855250b0d391dba39b1810",
+      "bytes": 1022,
+      "match": true
+    },
+    ".work-receipts/awr-post-sg-depend-work-show.json": {
+      "expected_sha256": "f1a8b698627fe99fc15a1c33550930e23cf10ad7dfe60006ba0cf5e940ba6a29",
+      "actual_sha256": "f1a8b698627fe99fc15a1c33550930e23cf10ad7dfe60006ba0cf5e940ba6a29",
+      "bytes": 3159,
+      "match": true
+    },
+    ".work-receipts/awr-post-sg-plan-status.json": {
+      "expected_sha256": "8017b42557987b8515439ccc7a9682abb01657af923927cc7b7e66d7c66bd689",
+      "actual_sha256": "8017b42557987b8515439ccc7a9682abb01657af923927cc7b7e66d7c66bd689",
+      "bytes": 1024,
+      "match": true
+    },
+    ".work-receipts/awr-post-sg-plan-work-show.json": {
+      "expected_sha256": "8055606194873915ecbc6c94f234ae4d2775abda81b1849e694b28a00570fef3",
+      "actual_sha256": "8055606194873915ecbc6c94f234ae4d2775abda81b1849e694b28a00570fef3",
+      "bytes": 3290,
+      "match": true
+    },
+    ".work-receipts/awr-review-recheck-request-event.json": {
+      "expected_sha256": "4a98109a753fd9bbe3337fa407ec0e2a249a1df45bacf11b67ad3d2d947017cc",
+      "actual_sha256": "4a98109a753fd9bbe3337fa407ec0e2a249a1df45bacf11b67ad3d2d947017cc",
+      "bytes": 771,
+      "match": true
+    },
+    ".work-receipts/awr-review-response-artifact-change-impact.json": {
+      "expected_sha256": "2c8c96f2e5b00d578443ed3752a67d7a1600e1e77b71ff1c9f26b5bc7e647636",
+      "actual_sha256": "2c8c96f2e5b00d578443ed3752a67d7a1600e1e77b71ff1c9f26b5bc7e647636",
+      "bytes": 592,
+      "match": true
+    },
+    ".work-receipts/awr-review-response-artifact-handoff.json": {
+      "expected_sha256": "57411ed9e22d0e333bd88fa78caf7c559d7e709913ba4feb659e6fb744c7e571",
+      "actual_sha256": "57411ed9e22d0e333bd88fa78caf7c559d7e709913ba4feb659e6fb744c7e571",
+      "bytes": 583,
+      "match": true
+    },
+    ".work-receipts/awr-review-response-artifact-plan.json": {
+      "expected_sha256": "e2d9b99d83bd1fa4b5a16e8a444edef738573255fd8b3ba8a9cf25e16df35b23",
+      "actual_sha256": "e2d9b99d83bd1fa4b5a16e8a444edef738573255fd8b3ba8a9cf25e16df35b23",
+      "bytes": 588,
+      "match": true
+    },
+    ".work-receipts/awr-review-response-artifact-source-versions.json": {
+      "expected_sha256": "4eec8b5dfbea2b4246fb8a88a20c251b2c08f38f33aad250d22ffe1cffd30d4b",
+      "actual_sha256": "4eec8b5dfbea2b4246fb8a88a20c251b2c08f38f33aad250d22ffe1cffd30d4b",
+      "bytes": 594,
+      "match": true
+    },
+    ".work-receipts/awr-review-response-blocked-for-recheck.json": {
+      "expected_sha256": "65f9adedf8cbbb592de806520f3199d804c716d7761e30157dc7eb039937b1c5",
+      "actual_sha256": "65f9adedf8cbbb592de806520f3199d804c716d7761e30157dc7eb039937b1c5",
+      "bytes": 4785,
+      "match": true
+    },
+    ".work-receipts/awr-review-response-bootstrap.json": {
+      "expected_sha256": "faf6b12b3673fdb37eefef01082e74816e0aafac623cd40afad8784ea42d7029",
+      "actual_sha256": "faf6b12b3673fdb37eefef01082e74816e0aafac623cd40afad8784ea42d7029",
+      "bytes": 7295,
+      "match": true
+    },
+    ".work-receipts/awr-review-response-checkpoint.json": {
+      "expected_sha256": "abf0acebd112b3920ff76af8c7a4e4d8460a3021830b23a5b73fd244d4029bde",
+      "actual_sha256": "abf0acebd112b3920ff76af8c7a4e4d8460a3021830b23a5b73fd244d4029bde",
+      "bytes": 2595,
+      "match": true
+    },
+    ".work-receipts/awr-review-response-context-after-handoff.json": {
+      "expected_sha256": "fd0f9a8088db1481cbaf489b39f61471d6c3a22679d0baac5486c4601675b159",
+      "actual_sha256": "fd0f9a8088db1481cbaf489b39f61471d6c3a22679d0baac5486c4601675b159",
+      "bytes": 19719,
+      "match": true
+    },
+    ".work-receipts/awr-review-response-context-after-progress.json": {
+      "expected_sha256": "6dad0b41ba719e3b40b1523fd7d0f4fd3ebf7bfaa7f62adc03891ec19cb7db4d",
+      "actual_sha256": "6dad0b41ba719e3b40b1523fd7d0f4fd3ebf7bfaa7f62adc03891ec19cb7db4d",
+      "bytes": 18081,
+      "match": true
+    },
+    ".work-receipts/awr-review-response-context-final.json": {
+      "expected_sha256": "7004cb9ed8d951281218b672552454a496a557e305295b312d94c5f4ddf36d9a",
+      "actual_sha256": "7004cb9ed8d951281218b672552454a496a557e305295b312d94c5f4ddf36d9a",
+      "bytes": 19925,
+      "match": true
+    },
+    ".work-receipts/awr-review-response-context-initial.json": {
+      "expected_sha256": "ade340ba077484a5e626f3467b708e8bafa68188910db5f0eb3192d33acf6966",
+      "actual_sha256": "ade340ba077484a5e626f3467b708e8bafa68188910db5f0eb3192d33acf6966",
+      "bytes": 15922,
+      "match": true
+    },
+    ".work-receipts/awr-review-response-evidence-add.json": {
+      "expected_sha256": "f5bfdf97388cc388932afba5898a45adc5d383ee38148b4bbdab6f5b0d11a345",
+      "actual_sha256": "f5bfdf97388cc388932afba5898a45adc5d383ee38148b4bbdab6f5b0d11a345",
+      "bytes": 5153,
+      "match": true
+    },
+    ".work-receipts/awr-review-response-progress.json": {
+      "expected_sha256": "d2b114dd1fd0ae2d03d808f0babf4e83ed970f50d2492b217a7634b12734be07",
+      "actual_sha256": "d2b114dd1fd0ae2d03d808f0babf4e83ed970f50d2492b217a7634b12734be07",
+      "bytes": 4758,
+      "match": true
+    },
+    ".work-receipts/awr-review-response-session-end.json": {
+      "expected_sha256": "1ae83a7dc339303d72555bec4b6843441a6e321f0fab0d2d044c318c5450e037",
+      "actual_sha256": "1ae83a7dc339303d72555bec4b6843441a6e321f0fab0d2d044c318c5450e037",
+      "bytes": 1086,
+      "match": true
+    },
+    ".work-receipts/awr-review-response-session-start.json": {
+      "expected_sha256": "d7f2e39ce3547fdd9c745f8a6e33a3331186de5f5380aea94f35130bebd666d4",
+      "actual_sha256": "d7f2e39ce3547fdd9c745f8a6e33a3331186de5f5380aea94f35130bebd666d4",
+      "bytes": 1374,
+      "match": true
+    },
+    ".work-receipts/awr-sg-depend-artifact.json": {
+      "expected_sha256": "ebaf4a7e44ab805d24f7dfbe3ee3d46b16dcfef4ec1099f34fecf749a088f38f",
+      "actual_sha256": "ebaf4a7e44ab805d24f7dfbe3ee3d46b16dcfef4ec1099f34fecf749a088f38f",
+      "bytes": 584,
+      "match": true
+    },
+    ".work-receipts/awr-sg-depend-checkpoint.json": {
+      "expected_sha256": "38f086e40258075675bc8a9a85f78ca40ad9cf7da00dbf37e7a11eac0208650a",
+      "actual_sha256": "38f086e40258075675bc8a9a85f78ca40ad9cf7da00dbf37e7a11eac0208650a",
+      "bytes": 2505,
+      "match": true
+    },
+    ".work-receipts/awr-sg-depend-complete.json": {
+      "expected_sha256": "24cff379aa070608218a9761223696da66ddfa6a70d18ee4cf93a8ad2e35ee9d",
+      "actual_sha256": "24cff379aa070608218a9761223696da66ddfa6a70d18ee4cf93a8ad2e35ee9d",
+      "bytes": 11725,
+      "match": true
+    },
+    ".work-receipts/awr-sg-depend-evidence-add.json": {
+      "expected_sha256": "1ca7dbc10bb5f43f22d2ae4f0a152712230f61fcb57ecbe402be8c699edc9e8f",
+      "actual_sha256": "1ca7dbc10bb5f43f22d2ae4f0a152712230f61fcb57ecbe402be8c699edc9e8f",
+      "bytes": 2966,
+      "match": true
+    },
+    ".work-receipts/awr-sg-depend-progress.json": {
+      "expected_sha256": "d91b4d720e46c473e8903430ffed79167a08ef6dda074ad31ea3ed45d438dec8",
+      "actual_sha256": "d91b4d720e46c473e8903430ffed79167a08ef6dda074ad31ea3ed45d438dec8",
+      "bytes": 4562,
+      "match": true
+    },
+    ".work-receipts/awr-sg-depend-rule-delta.json": {
+      "expected_sha256": "43070733bc4e684d897c50dcb6ab24d2fbb19144fc7ad48f74d54fb5a524b7fc",
+      "actual_sha256": "43070733bc4e684d897c50dcb6ab24d2fbb19144fc7ad48f74d54fb5a524b7fc",
+      "bytes": 7381,
+      "match": true
+    },
+    ".work-receipts/awr-sg-depend-session-end.json": {
+      "expected_sha256": "9463f544adfa995882255af7530f82716bdfeba54681c999475f3baa2a7fe83a",
+      "actual_sha256": "9463f544adfa995882255af7530f82716bdfeba54681c999475f3baa2a7fe83a",
+      "bytes": 1047,
+      "match": true
+    },
+    ".work-receipts/awr-sg-depend-session-show.json": {
+      "expected_sha256": "502f1a8fd25d1da5f4be884a1aa28de656d33c87ce9bcf3c0d163185a38f0f88",
+      "actual_sha256": "502f1a8fd25d1da5f4be884a1aa28de656d33c87ce9bcf3c0d163185a38f0f88",
+      "bytes": 3353,
+      "match": true
+    },
+    ".work-receipts/awr-sg-depend-session-start.json": {
+      "expected_sha256": "140780008d6a3400722cb3043f1fa6dc777caa917eaf2bfe2a3dc542fb678f50",
+      "actual_sha256": "140780008d6a3400722cb3043f1fa6dc777caa917eaf2bfe2a3dc542fb678f50",
+      "bytes": 1374,
+      "match": true
+    },
+    ".work-receipts/awr-sg-diff-checkpoint.json": {
+      "expected_sha256": "68361072e514486201f54353f012a3c58d10418aadb3424fe2fd20522f9b469b",
+      "actual_sha256": "68361072e514486201f54353f012a3c58d10418aadb3424fe2fd20522f9b469b",
+      "bytes": 2291,
+      "match": true
+    },
+    ".work-receipts/awr-sg-diff-session-end.json": {
+      "expected_sha256": "209e1e3ac7a172481e98733da37355b5037c1d1fe9f3d8ddf4f8fc19d3bddf12",
+      "actual_sha256": "209e1e3ac7a172481e98733da37355b5037c1d1fe9f3d8ddf4f8fc19d3bddf12",
+      "bytes": 1047,
+      "match": true
+    },
+    ".work-receipts/awr-sg-diff-session-show.json": {
+      "expected_sha256": "f06f4b6516f3ffbf38737521e89d77c77d643b6fe015ab8c13e5876b2d7b909c",
+      "actual_sha256": "f06f4b6516f3ffbf38737521e89d77c77d643b6fe015ab8c13e5876b2d7b909c",
+      "bytes": 3139,
+      "match": true
+    },
+    ".work-receipts/awr-sg-diff-work-show.json": {
+      "expected_sha256": "e34899fba7aeb39a9b894775bbdd8d290ebe0cbb88a766b1745d8bf0a123a81e",
+      "actual_sha256": "e34899fba7aeb39a9b894775bbdd8d290ebe0cbb88a766b1745d8bf0a123a81e",
+      "bytes": 2934,
+      "match": true
+    },
+    ".work-receipts/awr-sg-plan-artifact.json": {
+      "expected_sha256": "e0669afdc06b23c92d54c2167e02327723eac7d032369cc58e06b206e0306425",
+      "actual_sha256": "e0669afdc06b23c92d54c2167e02327723eac7d032369cc58e06b206e0306425",
+      "bytes": 577,
+      "match": true
+    },
+    ".work-receipts/awr-sg-plan-bootstrap.json": {
+      "expected_sha256": "bb8ca1fbd7f8be8eff3a1b8f0370866614d512d6196562ba652bbca93bc759f7",
+      "actual_sha256": "bb8ca1fbd7f8be8eff3a1b8f0370866614d512d6196562ba652bbca93bc759f7",
+      "bytes": 7313,
+      "match": true
+    },
+    ".work-receipts/awr-sg-plan-checkpoint.json": {
+      "expected_sha256": "21fd67747d145409a944b158aa36de8d6c744609e1c8e1ab0ce1fb3fb0b67483",
+      "actual_sha256": "21fd67747d145409a944b158aa36de8d6c744609e1c8e1ab0ce1fb3fb0b67483",
+      "bytes": 2544,
+      "match": true
+    },
+    ".work-receipts/awr-sg-plan-complete.json": {
+      "expected_sha256": "ffa52bcf12f4f86fd59270177a04e32eb3d6c3246e6e4da8fd23f289771166c6",
+      "actual_sha256": "ffa52bcf12f4f86fd59270177a04e32eb3d6c3246e6e4da8fd23f289771166c6",
+      "bytes": 11697,
+      "match": true
+    },
+    ".work-receipts/awr-sg-plan-context-after-evidence.json": {
+      "expected_sha256": "9d5bd272b208d51b6286f5b6e6d1ab19501fb89fce209377ca4993d0c61554d8",
+      "actual_sha256": "9d5bd272b208d51b6286f5b6e6d1ab19501fb89fce209377ca4993d0c61554d8",
+      "bytes": 17773,
+      "match": true
+    },
+    ".work-receipts/awr-sg-plan-context-after-progress.json": {
+      "expected_sha256": "174c5d6944ff7379ebb17f060ae1cf13ecf01c7ea11b9115dd7af435668ba2a6",
+      "actual_sha256": "174c5d6944ff7379ebb17f060ae1cf13ecf01c7ea11b9115dd7af435668ba2a6",
+      "bytes": 16959,
+      "match": true
+    },
+    ".work-receipts/awr-sg-plan-context-final.json": {
+      "expected_sha256": "d3972915156b947a85443b5722301dc2b144b7e0c59ccecc6d61e0fb98294e86",
+      "actual_sha256": "d3972915156b947a85443b5722301dc2b144b7e0c59ccecc6d61e0fb98294e86",
+      "bytes": 20219,
+      "match": true
+    },
+    ".work-receipts/awr-sg-plan-context-initial.json": {
+      "expected_sha256": "98c77d2f148e350b9b2eebb4a75f03a4ca9621b61cdee48e779cab4990867328",
+      "actual_sha256": "98c77d2f148e350b9b2eebb4a75f03a4ca9621b61cdee48e779cab4990867328",
+      "bytes": 14869,
+      "match": true
+    },
+    ".work-receipts/awr-sg-plan-evidence-add.json": {
+      "expected_sha256": "7bf9a78ac3a901d0676179664b8b05b63a3c389e322c15ecbde4ff486790557b",
+      "actual_sha256": "7bf9a78ac3a901d0676179664b8b05b63a3c389e322c15ecbde4ff486790557b",
+      "bytes": 2900,
+      "match": true
+    },
+    ".work-receipts/awr-sg-plan-progress.json": {
+      "expected_sha256": "ff67fe6ac87204242789b4b9d51a3c004c1934b079c8357a5b5804a879ab8a62",
+      "actual_sha256": "ff67fe6ac87204242789b4b9d51a3c004c1934b079c8357a5b5804a879ab8a62",
+      "bytes": 4664,
+      "match": true
+    },
+    ".work-receipts/awr-sg-plan-session-end.json": {
+      "expected_sha256": "879e2d5dd9691ee863518993e4b383b3b2d77cdda4df5f6835fc93740f0b70d8",
+      "actual_sha256": "879e2d5dd9691ee863518993e4b383b3b2d77cdda4df5f6835fc93740f0b70d8",
+      "bytes": 1047,
+      "match": true
+    },
+    ".work-receipts/awr-sg-plan-session-start.json": {
+      "expected_sha256": "a4918d301d43f8ee64db01d7be043d9076f782c80c53c249a1c2c8c2059c8ff9",
+      "actual_sha256": "a4918d301d43f8ee64db01d7be043d9076f782c80c53c249a1c2c8c2059c8ff9",
+      "bytes": 1374,
+      "match": true
+    },
+    ".work-receipts/review-recheck-request-payload.json": {
+      "expected_sha256": "d31861f4b9a5e6055481e11e042fa71d5738b0dd15b0a99fe5279f61756e96cd",
+      "actual_sha256": "d31861f4b9a5e6055481e11e042fa71d5738b0dd15b0a99fe5279f61756e96cd",
+      "bytes": 2257,
+      "match": true
+    },
+    ".work-receipts/reviewer-active-sessions.json": {
+      "expected_sha256": "5b7fce98207a53232dfa1c694bba2e7ead77edd5c4bf28de6e5c46e31e8af61c",
+      "actual_sha256": "5b7fce98207a53232dfa1c694bba2e7ead77edd5c4bf28de6e5c46e31e8af61c",
+      "bytes": 180,
+      "match": true
+    },
+    ".work-receipts/reviewer-artifact-add.json": {
+      "expected_sha256": "b65c61ea7317b569f3f8bbb43a5985eddd57b677e6b2109810ef66e48b0a5543",
+      "actual_sha256": "b65c61ea7317b569f3f8bbb43a5985eddd57b677e6b2109810ef66e48b0a5543",
+      "bytes": 578,
+      "match": true
+    },
+    ".work-receipts/reviewer-checkpoint.json": {
+      "expected_sha256": "a3734bddf7d3dc38acb44f87314a7d1376d3d34af4a78e10a0be6d10db9f1aa1",
+      "actual_sha256": "a3734bddf7d3dc38acb44f87314a7d1376d3d34af4a78e10a0be6d10db9f1aa1",
+      "bytes": 2344,
+      "match": true
+    },
+    ".work-receipts/reviewer-completion.json": {
+      "expected_sha256": "cf0e1348aa43cc76abbfeb4d033f39ff015f32094774d37269e0e15f49052aab",
+      "actual_sha256": "cf0e1348aa43cc76abbfeb4d033f39ff015f32094774d37269e0e15f49052aab",
+      "bytes": 446,
+      "match": true
+    },
+    ".work-receipts/reviewer-context-after-evidence.json": {
+      "expected_sha256": "614eaea1bf3aa99f5e0fa605790047ce6b72057ea68951e5d9e085fe8199a941",
+      "actual_sha256": "614eaea1bf3aa99f5e0fa605790047ce6b72057ea68951e5d9e085fe8199a941",
+      "bytes": 18459,
+      "match": true
+    },
+    ".work-receipts/reviewer-context-bootstrap.json": {
+      "expected_sha256": "d30b130090f1ded51954a963f22a2a049a5454e811ddaaf5f8956d25fb898cbc",
+      "actual_sha256": "d30b130090f1ded51954a963f22a2a049a5454e811ddaaf5f8956d25fb898cbc",
+      "bytes": 7402,
+      "match": true
+    },
+    ".work-receipts/reviewer-context-compile.json": {
+      "expected_sha256": "e0d6b76bed240ede46b1c29e8311f9efa092316adcab4513be798a32394a8801",
+      "actual_sha256": "e0d6b76bed240ede46b1c29e8311f9efa092316adcab4513be798a32394a8801",
+      "bytes": 17329,
+      "match": true
+    },
+    ".work-receipts/reviewer-context-final.json": {
+      "expected_sha256": "d5311aa045646182faeb36f2a66c19fd59363112bb9fe772cc8b74e8a51a7944",
+      "actual_sha256": "d5311aa045646182faeb36f2a66c19fd59363112bb9fe772cc8b74e8a51a7944",
+      "bytes": 18203,
+      "match": true
+    },
+    ".work-receipts/reviewer-doctor.json": {
+      "expected_sha256": "f90c1459e4bd0de54626602c63e86707444990efb0a4f5b11950fca92b5dc272",
+      "actual_sha256": "f90c1459e4bd0de54626602c63e86707444990efb0a4f5b11950fca92b5dc272",
+      "bytes": 1247,
+      "match": true
+    },
+    ".work-receipts/reviewer-evidence-add.json": {
+      "expected_sha256": "4bd21caf650e3c02d706982a3bf9216c90712a16e73c7425939f6df3dc2c9cb2",
+      "actual_sha256": "4bd21caf650e3c02d706982a3bf9216c90712a16e73c7425939f6df3dc2c9cb2",
+      "bytes": 1203,
+      "match": true
+    },
+    ".work-receipts/reviewer-evidence-draft.json": {
+      "expected_sha256": "f6376ebc28c21e88e72202d6a99a249f099dd5f43f8dd11b11ea970eeb127dce",
+      "actual_sha256": "f6376ebc28c21e88e72202d6a99a249f099dd5f43f8dd11b11ea970eeb127dce",
+      "bytes": 799,
+      "match": true
+    },
+    ".work-receipts/reviewer-evidence-show.json": {
+      "expected_sha256": "7501cb131952f1cfb4d5b407dbd40406e1200638738afd54d3880562095fce48",
+      "actual_sha256": "7501cb131952f1cfb4d5b407dbd40406e1200638738afd54d3880562095fce48",
+      "bytes": 1165,
+      "match": true
+    },
+    ".work-receipts/reviewer-final-ready.json": {
+      "expected_sha256": "59ac31da39ba167515a05cb10916514a295c046c358cfadc82594fb1d66455f9",
+      "actual_sha256": "59ac31da39ba167515a05cb10916514a295c046c358cfadc82594fb1d66455f9",
+      "bytes": 901,
+      "match": true
+    },
+    ".work-receipts/reviewer-final-status.json": {
+      "expected_sha256": "4ce91a4b03af90801e8514a08f1cf2a959432802d5593facdfc65de4df34f6c4",
+      "actual_sha256": "4ce91a4b03af90801e8514a08f1cf2a959432802d5593facdfc65de4df34f6c4",
+      "bytes": 1001,
+      "match": true
+    },
+    ".work-receipts/reviewer-final-work-show.json": {
+      "expected_sha256": "d862c1224e7c39f1ad3c6b82690888cbd195a385a4759834bce69fcd4f909ab2",
+      "actual_sha256": "d862c1224e7c39f1ad3c6b82690888cbd195a385a4759834bce69fcd4f909ab2",
+      "bytes": 3350,
+      "match": true
+    },
+    ".work-receipts/reviewer-review-verification.json": {
+      "expected_sha256": "6f3d7ecc1e980e4964ce59f953961a0a3fab9b6ba352ec650fd85a2c2d5b68a2",
+      "actual_sha256": "6f3d7ecc1e980e4964ce59f953961a0a3fab9b6ba352ec650fd85a2c2d5b68a2",
+      "bytes": 4999,
+      "match": true
+    },
+    ".work-receipts/reviewer-session-end.json": {
+      "expected_sha256": "c15107132ba8f9083e1f2b3ecb957ea0cd79d39bc5e2e4901ecd4f75034206b2",
+      "actual_sha256": "c15107132ba8f9083e1f2b3ecb957ea0cd79d39bc5e2e4901ecd4f75034206b2",
+      "bytes": 1079,
+      "match": true
+    },
+    ".work-receipts/reviewer-session-start.json": {
+      "expected_sha256": "241403b188951c6ee13a8c73237c844f05262ea211b71b32aefd2494a2007d14",
+      "actual_sha256": "241403b188951c6ee13a8c73237c844f05262ea211b71b32aefd2494a2007d14",
+      "bytes": 1441,
+      "match": true
+    },
+    ".work-receipts/reviewer-source-audit-first-attempt-error.json": {
+      "expected_sha256": "6e74e595edf674764f87ea977f11ce9b6b8e0cfaf24c486e8a77b2b03dfe80fe",
+      "actual_sha256": "6e74e595edf674764f87ea977f11ce9b6b8e0cfaf24c486e8a77b2b03dfe80fe",
+      "bytes": 581,
+      "match": true
+    },
+    ".work-receipts/reviewer-source-audit.json": {
+      "expected_sha256": "6ea4727dbe4792f343a2f964e3e2f1c442c10e98594a24edea353d50e8fe3680",
+      "actual_sha256": "6ea4727dbe4792f343a2f964e3e2f1c442c10e98594a24edea353d50e8fe3680",
+      "bytes": 6416,
+      "match": true
+    },
+    ".work-receipts/reviewer-verification-command-output.txt": {
+      "expected_sha256": "f58086c0dd8bdb4086ae5de151c1c0e5b5c23b89e17a2a63dd77b963e994083d",
+      "actual_sha256": "f58086c0dd8bdb4086ae5de151c1c0e5b5c23b89e17a2a63dd77b963e994083d",
+      "bytes": 150,
+      "match": true
+    },
+    ".work-receipts/reviewer-verification-output.txt": {
+      "expected_sha256": "f58086c0dd8bdb4086ae5de151c1c0e5b5c23b89e17a2a63dd77b963e994083d",
+      "actual_sha256": "f58086c0dd8bdb4086ae5de151c1c0e5b5c23b89e17a2a63dd77b963e994083d",
+      "bytes": 150,
+      "match": true
+    },
+    ".work-receipts/reviewer-verify.py": {
+      "expected_sha256": "6bdc3dc99e5705d32983067970a1f1fd9e29b5b83dcce49471cbb7b59f185bfb",
+      "actual_sha256": "6bdc3dc99e5705d32983067970a1f1fd9e29b5b83dcce49471cbb7b59f185bfb",
+      "bytes": 2362,
+      "match": true
+    },
+    ".work-receipts/reviewer-work-complete.json": {
+      "expected_sha256": "7627f77a9108db71740f56e562f35fc78accc10b03f162707cae80615d136aab",
+      "actual_sha256": "7627f77a9108db71740f56e562f35fc78accc10b03f162707cae80615d136aab",
+      "bytes": 8204,
+      "match": true
+    },
+    ".work-receipts/reviewer-work-progress.json": {
+      "expected_sha256": "f57807a3e7860bc6f7c24d518d227bd0dd6f64beff3401f9fdda72f78e493138",
+      "actual_sha256": "f57807a3e7860bc6f7c24d518d227bd0dd6f64beff3401f9fdda72f78e493138",
+      "bytes": 4319,
+      "match": true
+    },
+    ".work-receipts/reviewer-work-show-before-complete.json": {
+      "expected_sha256": "c8d12d5c17d9055fbaf0ea3f89048b903ea99b436bd7c9a234d1969ca04515ca",
+      "actual_sha256": "c8d12d5c17d9055fbaf0ea3f89048b903ea99b436bd7c9a234d1969ca04515ca",
+      "bytes": 3266,
+      "match": true
+    },
+    ".work-receipts/sg-depend-completion.json": {
+      "expected_sha256": "e50c403c6bfe703d743948e292f056c0e1c9e4b56c5468321bcf9ef1434f2c7b",
+      "actual_sha256": "e50c403c6bfe703d743948e292f056c0e1c9e4b56c5468321bcf9ef1434f2c7b",
+      "bytes": 441,
+      "match": true
+    },
+    ".work-receipts/sg-depend-evidence-draft.json": {
+      "expected_sha256": "7077bdb31898c2cb319bd3a84a9be94b6e342bf34d2857cac084e06261c47c60",
+      "actual_sha256": "7077bdb31898c2cb319bd3a84a9be94b6e342bf34d2857cac084e06261c47c60",
+      "bytes": 2562,
+      "match": true
+    },
+    ".work-receipts/sg-depend-verification.json": {
+      "expected_sha256": "2a7b1151619ad50be7557be2fa0744a6cd91f320149aaf61e1e6fbdb95b9d1c9",
+      "actual_sha256": "2a7b1151619ad50be7557be2fa0744a6cd91f320149aaf61e1e6fbdb95b9d1c9",
+      "bytes": 4378,
+      "match": true
+    },
+    ".work-receipts/sg-diff-completion.json": {
+      "expected_sha256": "4afda00189c79763e00ee3579abf4530cc3f1d3c67b9213655841bc805c1bb57",
+      "actual_sha256": "4afda00189c79763e00ee3579abf4530cc3f1d3c67b9213655841bc805c1bb57",
+      "bytes": 456,
+      "match": true
+    },
+    ".work-receipts/sg-diff-evidence-draft.json": {
+      "expected_sha256": "5f24512be8e740017bac056efbbe37f977bf4ff866246b809ce3d619d038288a",
+      "actual_sha256": "5f24512be8e740017bac056efbbe37f977bf4ff866246b809ce3d619d038288a",
+      "bytes": 1767,
+      "match": true
+    },
+    ".work-receipts/sg-diff-verification.json": {
+      "expected_sha256": "7e08ee2571219a2b22d3ef0b80a0b027d71529b83dd8f4a16a26d8e1bdeca25f",
+      "actual_sha256": "7e08ee2571219a2b22d3ef0b80a0b027d71529b83dd8f4a16a26d8e1bdeca25f",
+      "bytes": 3252,
+      "match": true
+    },
+    ".work-receipts/sg-plan-completion.json": {
+      "expected_sha256": "455ae570c0c4335154af5b157634cf7c1e212d9f4771a2701cb85246e4a1d94b",
+      "actual_sha256": "455ae570c0c4335154af5b157634cf7c1e212d9f4771a2701cb85246e4a1d94b",
+      "bytes": 446,
+      "match": true
+    },
+    ".work-receipts/sg-plan-evidence-draft.json": {
+      "expected_sha256": "41849f85bbd5d47692d1fbdd90450c83f7ac4a6e3c18e3c0e50599ed877f84c1",
+      "actual_sha256": "41849f85bbd5d47692d1fbdd90450c83f7ac4a6e3c18e3c0e50599ed877f84c1",
+      "bytes": 2486,
+      "match": true
+    },
+    ".work-receipts/sg-plan-verification.json": {
+      "expected_sha256": "e93279b50d28ad6d77416297d4cdfbd65634797dfc4c27284afb337266001397",
+      "actual_sha256": "e93279b50d28ad6d77416297d4cdfbd65634797dfc4c27284afb337266001397",
+      "bytes": 4927,
+      "match": true
+    },
+    ".work-receipts/sg-review-response-evidence-draft.json": {
+      "expected_sha256": "903ceac7ff18fb03387b3c05b55bc975531f45ac6996cc5df967018f78b1934a",
+      "actual_sha256": "903ceac7ff18fb03387b3c05b55bc975531f45ac6996cc5df967018f78b1934a",
+      "bytes": 4749,
+      "match": true
+    },
+    ".work-receipts/sg-review-response-verification.json": {
+      "expected_sha256": "6998f11a527e4e4d6add08d8f0d4613fbf0f26a718319061335a2d80a94c1eae",
+      "actual_sha256": "6998f11a527e4e4d6add08d8f0d4613fbf0f26a718319061335a2d80a94c1eae",
+      "bytes": 8912,
+      "match": true
+    },
+    "deliverables/sg-independent-review.md": {
+      "expected_sha256": "735fe7cff0bc7357b9db30d2ef79f82fc9822932a546811b4a2403ef98fa7ee7",
+      "actual_sha256": "735fe7cff0bc7357b9db30d2ef79f82fc9822932a546811b4a2403ef98fa7ee7",
+      "bytes": 11177,
+      "match": true
+    },
+    "deliverables/sg-review-response.md": {
+      "expected_sha256": "ee0f42b76eeef5755fc79d737beba6e9ccdd163f93c954c2a253c97bec191018",
+      "actual_sha256": "ee0f42b76eeef5755fc79d737beba6e9ccdd163f93c954c2a253c97bec191018",
+      "bytes": 9754,
+      "match": true
+    },
+    "deliverables/songguo-change-impact.md": {
+      "expected_sha256": "c1a644f08291eaf7b716063c11a4ab07efd319ad82ed9d08cc4e7cc6505756cb",
+      "actual_sha256": "c1a644f08291eaf7b716063c11a4ab07efd319ad82ed9d08cc4e7cc6505756cb",
+      "bytes": 10903,
+      "match": true
+    },
+    "deliverables/songguo-revised-plan.md": {
+      "expected_sha256": "8ae8430b33e93a07b74e4c3c26b59bfa3c29e956b590d8eec1883766b5083550",
+      "actual_sha256": "8ae8430b33e93a07b74e4c3c26b59bfa3c29e956b590d8eec1883766b5083550",
+      "bytes": 14864,
+      "match": true
+    },
+    "deliverables/songguo-source-versions.md": {
+      "expected_sha256": "26bac246b439a54551533d6146b0d12045830b539ce5a5deb0b2e1b431eac136",
+      "actual_sha256": "26bac246b439a54551533d6146b0d12045830b539ce5a5deb0b2e1b431eac136",
+      "bytes": 15604,
+      "match": true
+    },
+    "review-correction-review-extract.json": {
+      "expected_sha256": "514e23c788272d826862b06618c6ea030f3534d87cab207fd1ea00c30bcf9639",
+      "actual_sha256": "514e23c788272d826862b06618c6ea030f3534d87cab207fd1ea00c30bcf9639",
+      "bytes": 47144,
+      "match": true
+    },
+    "review-correction-sealed.json": {
+      "expected_sha256": "afbf05a19e48a89b9c5b1e3d1c8f5251a8717acb967ae7615bd31c110fc76456",
+      "actual_sha256": "afbf05a19e48a89b9c5b1e3d1c8f5251a8717acb967ae7615bd31c110fc76456",
+      "bytes": 2838,
+      "match": true
+    },
+    "sources/AGENTS.md": {
+      "expected_sha256": "d81b0418bd7132c8692723c8a048132485b569011644beae906d4b325f5ba6a8",
+      "actual_sha256": "d81b0418bd7132c8692723c8a048132485b569011644beae906d4b325f5ba6a8",
+      "bytes": 2898,
+      "match": true
+    },
+    "sources/DELIVERABLES.md": {
+      "expected_sha256": "a9c077962b3f1f5096fc5d8d18c43edea37f5a593faa5d8e4e108ff53b4f8f77",
+      "actual_sha256": "a9c077962b3f1f5096fc5d8d18c43edea37f5a593faa5d8e4e108ff53b4f8f77",
+      "bytes": 896,
+      "match": true
+    },
+    "sources/GOALS.md": {
+      "expected_sha256": "72db42bd7c8026e45523101a06a3bc3c4f23ab7fd92fbbbe745cc2e15b21a259",
+      "actual_sha256": "72db42bd7c8026e45523101a06a3bc3c4f23ab7fd92fbbbe745cc2e15b21a259",
+      "bytes": 151,
+      "match": true
+    },
+    "sources/PLAN.md": {
+      "expected_sha256": "a5fdfcd2e2922d451655eafc43705a8b0ac21baf3587fec73bce49caa15972b5",
+      "actual_sha256": "a5fdfcd2e2922d451655eafc43705a8b0ac21baf3587fec73bce49caa15972b5",
+      "bytes": 174,
+      "match": true
+    },
+    "sources/RULES.md": {
+      "expected_sha256": "bbd2f4b5241b1c3fbdd774c9c749464960beaa47ac1d70501f2ddcdae441499a",
+      "actual_sha256": "bbd2f4b5241b1c3fbdd774c9c749464960beaa47ac1d70501f2ddcdae441499a",
+      "bytes": 600,
+      "match": true
+    },
+    "sources/project.toml": {
+      "expected_sha256": "e65e64ec8d1f7582698e85d862d56f0ec78402b65601cc388baba3a21fc513f8",
+      "actual_sha256": "e65e64ec8d1f7582698e85d862d56f0ec78402b65601cc388baba3a21fc513f8",
+      "bytes": 561,
+      "match": true
+    },
+    "sources/work-ledger.yaml": {
+      "expected_sha256": "f5e693b93783066f43e893d9024bd5273fa40d7b6feb24e5918aaf5e8e6aa99a",
+      "actual_sha256": "f5e693b93783066f43e893d9024bd5273fa40d7b6feb24e5918aaf5e8e6aa99a",
+      "bytes": 3729,
+      "match": true
+    }
+  },
+  "published_execution_receipt_count": 89,
+  "published_execution_receipts": {
+    ".work-receipts/awr-final-ready.json": {
+      "published_sha256": "78d30de886404f7e283eb1d82b6939317f41f8724f1489c6ff0d2253cb296a5e",
+      "current_sha256": "78d30de886404f7e283eb1d82b6939317f41f8724f1489c6ff0d2253cb296a5e",
+      "unchanged_since_publication": true
+    },
+    ".work-receipts/awr-final-status.json": {
+      "published_sha256": "1e124f651a90fedef9a5aeb088827671ad5423f8ce3a6fcd2f6ab049711959c3",
+      "current_sha256": "1e124f651a90fedef9a5aeb088827671ad5423f8ce3a6fcd2f6ab049711959c3",
+      "unchanged_since_publication": true
+    },
+    ".work-receipts/awr-post-review-response-status.json": {
+      "published_sha256": "06a65095591e3c1cd5a25b098dfa97aaedf69d40e92436107394333a019d7c98",
+      "current_sha256": "06a65095591e3c1cd5a25b098dfa97aaedf69d40e92436107394333a019d7c98",
+      "unchanged_since_publication": true
+    },
+    ".work-receipts/awr-post-review-response-work-show.json": {
+      "published_sha256": "1b08b1ad8ef8c383026704e9a3caee13890b24a8953239b21291e0668c3aa5dc",
+      "current_sha256": "1b08b1ad8ef8c383026704e9a3caee13890b24a8953239b21291e0668c3aa5dc",
+      "unchanged_since_publication": true
+    },
+    ".work-receipts/awr-post-sg-depend-ready.json": {
+      "published_sha256": "c3d0af3aa228c40b714e336be60b2dc2707576fefa4a73468ba2c74222ef7f8f",
+      "current_sha256": "c3d0af3aa228c40b714e336be60b2dc2707576fefa4a73468ba2c74222ef7f8f",
+      "unchanged_since_publication": true
+    },
+    ".work-receipts/awr-post-sg-depend-sources.json": {
+      "published_sha256": "245df8202e276917a52af83f30747cc6cc47645fcb878982661aef3f00f282bb",
+      "current_sha256": "245df8202e276917a52af83f30747cc6cc47645fcb878982661aef3f00f282bb",
+      "unchanged_since_publication": true
+    },
+    ".work-receipts/awr-post-sg-depend-status.json": {
+      "published_sha256": "f18b241a3477f672f3f39b0e5c4893f11be23e2826855250b0d391dba39b1810",
+      "current_sha256": "f18b241a3477f672f3f39b0e5c4893f11be23e2826855250b0d391dba39b1810",
+      "unchanged_since_publication": true
+    },
+    ".work-receipts/awr-post-sg-depend-work-show.json": {
+      "published_sha256": "f1a8b698627fe99fc15a1c33550930e23cf10ad7dfe60006ba0cf5e940ba6a29",
+      "current_sha256": "f1a8b698627fe99fc15a1c33550930e23cf10ad7dfe60006ba0cf5e940ba6a29",
+      "unchanged_since_publication": true
+    },
+    ".work-receipts/awr-post-sg-plan-status.json": {
+      "published_sha256": "8017b42557987b8515439ccc7a9682abb01657af923927cc7b7e66d7c66bd689",
+      "current_sha256": "8017b42557987b8515439ccc7a9682abb01657af923927cc7b7e66d7c66bd689",
+      "unchanged_since_publication": true
+    },
+    ".work-receipts/awr-post-sg-plan-work-show.json": {
+      "published_sha256": "8055606194873915ecbc6c94f234ae4d2775abda81b1849e694b28a00570fef3",
+      "current_sha256": "8055606194873915ecbc6c94f234ae4d2775abda81b1849e694b28a00570fef3",
+      "unchanged_since_publication": true
+    },
+    ".work-receipts/awr-review-recheck-request-event.json": {
+      "published_sha256": "4a98109a753fd9bbe3337fa407ec0e2a249a1df45bacf11b67ad3d2d947017cc",
+      "current_sha256": "4a98109a753fd9bbe3337fa407ec0e2a249a1df45bacf11b67ad3d2d947017cc",
+      "unchanged_since_publication": true
+    },
+    ".work-receipts/awr-review-response-artifact-change-impact.json": {
+      "published_sha256": "2c8c96f2e5b00d578443ed3752a67d7a1600e1e77b71ff1c9f26b5bc7e647636",
+      "current_sha256": "2c8c96f2e5b00d578443ed3752a67d7a1600e1e77b71ff1c9f26b5bc7e647636",
+      "unchanged_since_publication": true
+    },
+    ".work-receipts/awr-review-response-artifact-handoff.json": {
+      "published_sha256": "57411ed9e22d0e333bd88fa78caf7c559d7e709913ba4feb659e6fb744c7e571",
+      "current_sha256": "57411ed9e22d0e333bd88fa78caf7c559d7e709913ba4feb659e6fb744c7e571",
+      "unchanged_since_publication": true
+    },
+    ".work-receipts/awr-review-response-artifact-plan.json": {
+      "published_sha256": "e2d9b99d83bd1fa4b5a16e8a444edef738573255fd8b3ba8a9cf25e16df35b23",
+      "current_sha256": "e2d9b99d83bd1fa4b5a16e8a444edef738573255fd8b3ba8a9cf25e16df35b23",
+      "unchanged_since_publication": true
+    },
+    ".work-receipts/awr-review-response-artifact-source-versions.json": {
+      "published_sha256": "4eec8b5dfbea2b4246fb8a88a20c251b2c08f38f33aad250d22ffe1cffd30d4b",
+      "current_sha256": "4eec8b5dfbea2b4246fb8a88a20c251b2c08f38f33aad250d22ffe1cffd30d4b",
+      "unchanged_since_publication": true
+    },
+    ".work-receipts/awr-review-response-blocked-for-recheck.json": {
+      "published_sha256": "65f9adedf8cbbb592de806520f3199d804c716d7761e30157dc7eb039937b1c5",
+      "current_sha256": "65f9adedf8cbbb592de806520f3199d804c716d7761e30157dc7eb039937b1c5",
+      "unchanged_since_publication": true
+    },
+    ".work-receipts/awr-review-response-bootstrap.json": {
+      "published_sha256": "faf6b12b3673fdb37eefef01082e74816e0aafac623cd40afad8784ea42d7029",
+      "current_sha256": "faf6b12b3673fdb37eefef01082e74816e0aafac623cd40afad8784ea42d7029",
+      "unchanged_since_publication": true
+    },
+    ".work-receipts/awr-review-response-checkpoint.json": {
+      "published_sha256": "abf0acebd112b3920ff76af8c7a4e4d8460a3021830b23a5b73fd244d4029bde",
+      "current_sha256": "abf0acebd112b3920ff76af8c7a4e4d8460a3021830b23a5b73fd244d4029bde",
+      "unchanged_since_publication": true
+    },
+    ".work-receipts/awr-review-response-context-after-handoff.json": {
+      "published_sha256": "fd0f9a8088db1481cbaf489b39f61471d6c3a22679d0baac5486c4601675b159",
+      "current_sha256": "fd0f9a8088db1481cbaf489b39f61471d6c3a22679d0baac5486c4601675b159",
+      "unchanged_since_publication": true
+    },
+    ".work-receipts/awr-review-response-context-after-progress.json": {
+      "published_sha256": "6dad0b41ba719e3b40b1523fd7d0f4fd3ebf7bfaa7f62adc03891ec19cb7db4d",
+      "current_sha256": "6dad0b41ba719e3b40b1523fd7d0f4fd3ebf7bfaa7f62adc03891ec19cb7db4d",
+      "unchanged_since_publication": true
+    },
+    ".work-receipts/awr-review-response-context-final.json": {
+      "published_sha256": "7004cb9ed8d951281218b672552454a496a557e305295b312d94c5f4ddf36d9a",
+      "current_sha256": "7004cb9ed8d951281218b672552454a496a557e305295b312d94c5f4ddf36d9a",
+      "unchanged_since_publication": true
+    },
+    ".work-receipts/awr-review-response-context-initial.json": {
+      "published_sha256": "ade340ba077484a5e626f3467b708e8bafa68188910db5f0eb3192d33acf6966",
+      "current_sha256": "ade340ba077484a5e626f3467b708e8bafa68188910db5f0eb3192d33acf6966",
+      "unchanged_since_publication": true
+    },
+    ".work-receipts/awr-review-response-evidence-add.json": {
+      "published_sha256": "f5bfdf97388cc388932afba5898a45adc5d383ee38148b4bbdab6f5b0d11a345",
+      "current_sha256": "f5bfdf97388cc388932afba5898a45adc5d383ee38148b4bbdab6f5b0d11a345",
+      "unchanged_since_publication": true
+    },
+    ".work-receipts/awr-review-response-progress.json": {
+      "published_sha256": "d2b114dd1fd0ae2d03d808f0babf4e83ed970f50d2492b217a7634b12734be07",
+      "current_sha256": "d2b114dd1fd0ae2d03d808f0babf4e83ed970f50d2492b217a7634b12734be07",
+      "unchanged_since_publication": true
+    },
+    ".work-receipts/awr-review-response-session-end.json": {
+      "published_sha256": "1ae83a7dc339303d72555bec4b6843441a6e321f0fab0d2d044c318c5450e037",
+      "current_sha256": "1ae83a7dc339303d72555bec4b6843441a6e321f0fab0d2d044c318c5450e037",
+      "unchanged_since_publication": true
+    },
+    ".work-receipts/awr-review-response-session-start.json": {
+      "published_sha256": "d7f2e39ce3547fdd9c745f8a6e33a3331186de5f5380aea94f35130bebd666d4",
+      "current_sha256": "d7f2e39ce3547fdd9c745f8a6e33a3331186de5f5380aea94f35130bebd666d4",
+      "unchanged_since_publication": true
+    },
+    ".work-receipts/awr-sg-depend-artifact.json": {
+      "published_sha256": "ebaf4a7e44ab805d24f7dfbe3ee3d46b16dcfef4ec1099f34fecf749a088f38f",
+      "current_sha256": "ebaf4a7e44ab805d24f7dfbe3ee3d46b16dcfef4ec1099f34fecf749a088f38f",
+      "unchanged_since_publication": true
+    },
+    ".work-receipts/awr-sg-depend-checkpoint.json": {
+      "published_sha256": "38f086e40258075675bc8a9a85f78ca40ad9cf7da00dbf37e7a11eac0208650a",
+      "current_sha256": "38f086e40258075675bc8a9a85f78ca40ad9cf7da00dbf37e7a11eac0208650a",
+      "unchanged_since_publication": true
+    },
+    ".work-receipts/awr-sg-depend-complete.json": {
+      "published_sha256": "24cff379aa070608218a9761223696da66ddfa6a70d18ee4cf93a8ad2e35ee9d",
+      "current_sha256": "24cff379aa070608218a9761223696da66ddfa6a70d18ee4cf93a8ad2e35ee9d",
+      "unchanged_since_publication": true
+    },
+    ".work-receipts/awr-sg-depend-evidence-add.json": {
+      "published_sha256": "1ca7dbc10bb5f43f22d2ae4f0a152712230f61fcb57ecbe402be8c699edc9e8f",
+      "current_sha256": "1ca7dbc10bb5f43f22d2ae4f0a152712230f61fcb57ecbe402be8c699edc9e8f",
+      "unchanged_since_publication": true
+    },
+    ".work-receipts/awr-sg-depend-progress.json": {
+      "published_sha256": "d91b4d720e46c473e8903430ffed79167a08ef6dda074ad31ea3ed45d438dec8",
+      "current_sha256": "d91b4d720e46c473e8903430ffed79167a08ef6dda074ad31ea3ed45d438dec8",
+      "unchanged_since_publication": true
+    },
+    ".work-receipts/awr-sg-depend-rule-delta.json": {
+      "published_sha256": "43070733bc4e684d897c50dcb6ab24d2fbb19144fc7ad48f74d54fb5a524b7fc",
+      "current_sha256": "43070733bc4e684d897c50dcb6ab24d2fbb19144fc7ad48f74d54fb5a524b7fc",
+      "unchanged_since_publication": true
+    },
+    ".work-receipts/awr-sg-depend-session-end.json": {
+      "published_sha256": "9463f544adfa995882255af7530f82716bdfeba54681c999475f3baa2a7fe83a",
+      "current_sha256": "9463f544adfa995882255af7530f82716bdfeba54681c999475f3baa2a7fe83a",
+      "unchanged_since_publication": true
+    },
+    ".work-receipts/awr-sg-depend-session-show.json": {
+      "published_sha256": "502f1a8fd25d1da5f4be884a1aa28de656d33c87ce9bcf3c0d163185a38f0f88",
+      "current_sha256": "502f1a8fd25d1da5f4be884a1aa28de656d33c87ce9bcf3c0d163185a38f0f88",
+      "unchanged_since_publication": true
+    },
+    ".work-receipts/awr-sg-depend-session-start.json": {
+      "published_sha256": "140780008d6a3400722cb3043f1fa6dc777caa917eaf2bfe2a3dc542fb678f50",
+      "current_sha256": "140780008d6a3400722cb3043f1fa6dc777caa917eaf2bfe2a3dc542fb678f50",
+      "unchanged_since_publication": true
+    },
+    ".work-receipts/awr-sg-diff-checkpoint.json": {
+      "published_sha256": "68361072e514486201f54353f012a3c58d10418aadb3424fe2fd20522f9b469b",
+      "current_sha256": "68361072e514486201f54353f012a3c58d10418aadb3424fe2fd20522f9b469b",
+      "unchanged_since_publication": true
+    },
+    ".work-receipts/awr-sg-diff-session-end.json": {
+      "published_sha256": "209e1e3ac7a172481e98733da37355b5037c1d1fe9f3d8ddf4f8fc19d3bddf12",
+      "current_sha256": "209e1e3ac7a172481e98733da37355b5037c1d1fe9f3d8ddf4f8fc19d3bddf12",
+      "unchanged_since_publication": true
+    },
+    ".work-receipts/awr-sg-diff-session-show.json": {
+      "published_sha256": "f06f4b6516f3ffbf38737521e89d77c77d643b6fe015ab8c13e5876b2d7b909c",
+      "current_sha256": "f06f4b6516f3ffbf38737521e89d77c77d643b6fe015ab8c13e5876b2d7b909c",
+      "unchanged_since_publication": true
+    },
+    ".work-receipts/awr-sg-diff-work-show.json": {
+      "published_sha256": "e34899fba7aeb39a9b894775bbdd8d290ebe0cbb88a766b1745d8bf0a123a81e",
+      "current_sha256": "e34899fba7aeb39a9b894775bbdd8d290ebe0cbb88a766b1745d8bf0a123a81e",
+      "unchanged_since_publication": true
+    },
+    ".work-receipts/awr-sg-plan-artifact.json": {
+      "published_sha256": "e0669afdc06b23c92d54c2167e02327723eac7d032369cc58e06b206e0306425",
+      "current_sha256": "e0669afdc06b23c92d54c2167e02327723eac7d032369cc58e06b206e0306425",
+      "unchanged_since_publication": true
+    },
+    ".work-receipts/awr-sg-plan-bootstrap.json": {
+      "published_sha256": "bb8ca1fbd7f8be8eff3a1b8f0370866614d512d6196562ba652bbca93bc759f7",
+      "current_sha256": "bb8ca1fbd7f8be8eff3a1b8f0370866614d512d6196562ba652bbca93bc759f7",
+      "unchanged_since_publication": true
+    },
+    ".work-receipts/awr-sg-plan-checkpoint.json": {
+      "published_sha256": "21fd67747d145409a944b158aa36de8d6c744609e1c8e1ab0ce1fb3fb0b67483",
+      "current_sha256": "21fd67747d145409a944b158aa36de8d6c744609e1c8e1ab0ce1fb3fb0b67483",
+      "unchanged_since_publication": true
+    },
+    ".work-receipts/awr-sg-plan-complete.json": {
+      "published_sha256": "ffa52bcf12f4f86fd59270177a04e32eb3d6c3246e6e4da8fd23f289771166c6",
+      "current_sha256": "ffa52bcf12f4f86fd59270177a04e32eb3d6c3246e6e4da8fd23f289771166c6",
+      "unchanged_since_publication": true
+    },
+    ".work-receipts/awr-sg-plan-context-after-evidence.json": {
+      "published_sha256": "9d5bd272b208d51b6286f5b6e6d1ab19501fb89fce209377ca4993d0c61554d8",
+      "current_sha256": "9d5bd272b208d51b6286f5b6e6d1ab19501fb89fce209377ca4993d0c61554d8",
+      "unchanged_since_publication": true
+    },
+    ".work-receipts/awr-sg-plan-context-after-progress.json": {
+      "published_sha256": "174c5d6944ff7379ebb17f060ae1cf13ecf01c7ea11b9115dd7af435668ba2a6",
+      "current_sha256": "174c5d6944ff7379ebb17f060ae1cf13ecf01c7ea11b9115dd7af435668ba2a6",
+      "unchanged_since_publication": true
+    },
+    ".work-receipts/awr-sg-plan-context-final.json": {
+      "published_sha256": "d3972915156b947a85443b5722301dc2b144b7e0c59ccecc6d61e0fb98294e86",
+      "current_sha256": "d3972915156b947a85443b5722301dc2b144b7e0c59ccecc6d61e0fb98294e86",
+      "unchanged_since_publication": true
+    },
+    ".work-receipts/awr-sg-plan-context-initial.json": {
+      "published_sha256": "98c77d2f148e350b9b2eebb4a75f03a4ca9621b61cdee48e779cab4990867328",
+      "current_sha256": "98c77d2f148e350b9b2eebb4a75f03a4ca9621b61cdee48e779cab4990867328",
+      "unchanged_since_publication": true
+    },
+    ".work-receipts/awr-sg-plan-evidence-add.json": {
+      "published_sha256": "7bf9a78ac3a901d0676179664b8b05b63a3c389e322c15ecbde4ff486790557b",
+      "current_sha256": "7bf9a78ac3a901d0676179664b8b05b63a3c389e322c15ecbde4ff486790557b",
+      "unchanged_since_publication": true
+    },
+    ".work-receipts/awr-sg-plan-progress.json": {
+      "published_sha256": "ff67fe6ac87204242789b4b9d51a3c004c1934b079c8357a5b5804a879ab8a62",
+      "current_sha256": "ff67fe6ac87204242789b4b9d51a3c004c1934b079c8357a5b5804a879ab8a62",
+      "unchanged_since_publication": true
+    },
+    ".work-receipts/awr-sg-plan-session-end.json": {
+      "published_sha256": "879e2d5dd9691ee863518993e4b383b3b2d77cdda4df5f6835fc93740f0b70d8",
+      "current_sha256": "879e2d5dd9691ee863518993e4b383b3b2d77cdda4df5f6835fc93740f0b70d8",
+      "unchanged_since_publication": true
+    },
+    ".work-receipts/awr-sg-plan-session-start.json": {
+      "published_sha256": "a4918d301d43f8ee64db01d7be043d9076f782c80c53c249a1c2c8c2059c8ff9",
+      "current_sha256": "a4918d301d43f8ee64db01d7be043d9076f782c80c53c249a1c2c8c2059c8ff9",
+      "unchanged_since_publication": true
+    },
+    ".work-receipts/review-recheck-request-payload.json": {
+      "published_sha256": "d31861f4b9a5e6055481e11e042fa71d5738b0dd15b0a99fe5279f61756e96cd",
+      "current_sha256": "d31861f4b9a5e6055481e11e042fa71d5738b0dd15b0a99fe5279f61756e96cd",
+      "unchanged_since_publication": true
+    },
+    ".work-receipts/reviewer-active-sessions.json": {
+      "published_sha256": "5b7fce98207a53232dfa1c694bba2e7ead77edd5c4bf28de6e5c46e31e8af61c",
+      "current_sha256": "5b7fce98207a53232dfa1c694bba2e7ead77edd5c4bf28de6e5c46e31e8af61c",
+      "unchanged_since_publication": true
+    },
+    ".work-receipts/reviewer-artifact-add.json": {
+      "published_sha256": "b65c61ea7317b569f3f8bbb43a5985eddd57b677e6b2109810ef66e48b0a5543",
+      "current_sha256": "b65c61ea7317b569f3f8bbb43a5985eddd57b677e6b2109810ef66e48b0a5543",
+      "unchanged_since_publication": true
+    },
+    ".work-receipts/reviewer-checkpoint.json": {
+      "published_sha256": "a3734bddf7d3dc38acb44f87314a7d1376d3d34af4a78e10a0be6d10db9f1aa1",
+      "current_sha256": "a3734bddf7d3dc38acb44f87314a7d1376d3d34af4a78e10a0be6d10db9f1aa1",
+      "unchanged_since_publication": true
+    },
+    ".work-receipts/reviewer-completion.json": {
+      "published_sha256": "cf0e1348aa43cc76abbfeb4d033f39ff015f32094774d37269e0e15f49052aab",
+      "current_sha256": "cf0e1348aa43cc76abbfeb4d033f39ff015f32094774d37269e0e15f49052aab",
+      "unchanged_since_publication": true
+    },
+    ".work-receipts/reviewer-context-after-evidence.json": {
+      "published_sha256": "614eaea1bf3aa99f5e0fa605790047ce6b72057ea68951e5d9e085fe8199a941",
+      "current_sha256": "614eaea1bf3aa99f5e0fa605790047ce6b72057ea68951e5d9e085fe8199a941",
+      "unchanged_since_publication": true
+    },
+    ".work-receipts/reviewer-context-bootstrap.json": {
+      "published_sha256": "d30b130090f1ded51954a963f22a2a049a5454e811ddaaf5f8956d25fb898cbc",
+      "current_sha256": "d30b130090f1ded51954a963f22a2a049a5454e811ddaaf5f8956d25fb898cbc",
+      "unchanged_since_publication": true
+    },
+    ".work-receipts/reviewer-context-compile.json": {
+      "published_sha256": "e0d6b76bed240ede46b1c29e8311f9efa092316adcab4513be798a32394a8801",
+      "current_sha256": "e0d6b76bed240ede46b1c29e8311f9efa092316adcab4513be798a32394a8801",
+      "unchanged_since_publication": true
+    },
+    ".work-receipts/reviewer-context-final.json": {
+      "published_sha256": "d5311aa045646182faeb36f2a66c19fd59363112bb9fe772cc8b74e8a51a7944",
+      "current_sha256": "d5311aa045646182faeb36f2a66c19fd59363112bb9fe772cc8b74e8a51a7944",
+      "unchanged_since_publication": true
+    },
+    ".work-receipts/reviewer-doctor.json": {
+      "published_sha256": "f90c1459e4bd0de54626602c63e86707444990efb0a4f5b11950fca92b5dc272",
+      "current_sha256": "f90c1459e4bd0de54626602c63e86707444990efb0a4f5b11950fca92b5dc272",
+      "unchanged_since_publication": true
+    },
+    ".work-receipts/reviewer-evidence-add.json": {
+      "published_sha256": "4bd21caf650e3c02d706982a3bf9216c90712a16e73c7425939f6df3dc2c9cb2",
+      "current_sha256": "4bd21caf650e3c02d706982a3bf9216c90712a16e73c7425939f6df3dc2c9cb2",
+      "unchanged_since_publication": true
+    },
+    ".work-receipts/reviewer-evidence-draft.json": {
+      "published_sha256": "f6376ebc28c21e88e72202d6a99a249f099dd5f43f8dd11b11ea970eeb127dce",
+      "current_sha256": "f6376ebc28c21e88e72202d6a99a249f099dd5f43f8dd11b11ea970eeb127dce",
+      "unchanged_since_publication": true
+    },
+    ".work-receipts/reviewer-evidence-show.json": {
+      "published_sha256": "7501cb131952f1cfb4d5b407dbd40406e1200638738afd54d3880562095fce48",
+      "current_sha256": "7501cb131952f1cfb4d5b407dbd40406e1200638738afd54d3880562095fce48",
+      "unchanged_since_publication": true
+    },
+    ".work-receipts/reviewer-final-ready.json": {
+      "published_sha256": "59ac31da39ba167515a05cb10916514a295c046c358cfadc82594fb1d66455f9",
+      "current_sha256": "59ac31da39ba167515a05cb10916514a295c046c358cfadc82594fb1d66455f9",
+      "unchanged_since_publication": true
+    },
+    ".work-receipts/reviewer-final-status.json": {
+      "published_sha256": "4ce91a4b03af90801e8514a08f1cf2a959432802d5593facdfc65de4df34f6c4",
+      "current_sha256": "4ce91a4b03af90801e8514a08f1cf2a959432802d5593facdfc65de4df34f6c4",
+      "unchanged_since_publication": true
+    },
+    ".work-receipts/reviewer-final-work-show.json": {
+      "published_sha256": "d862c1224e7c39f1ad3c6b82690888cbd195a385a4759834bce69fcd4f909ab2",
+      "current_sha256": "d862c1224e7c39f1ad3c6b82690888cbd195a385a4759834bce69fcd4f909ab2",
+      "unchanged_since_publication": true
+    },
+    ".work-receipts/reviewer-review-verification.json": {
+      "published_sha256": "6f3d7ecc1e980e4964ce59f953961a0a3fab9b6ba352ec650fd85a2c2d5b68a2",
+      "current_sha256": "6f3d7ecc1e980e4964ce59f953961a0a3fab9b6ba352ec650fd85a2c2d5b68a2",
+      "unchanged_since_publication": true
+    },
+    ".work-receipts/reviewer-session-end.json": {
+      "published_sha256": "c15107132ba8f9083e1f2b3ecb957ea0cd79d39bc5e2e4901ecd4f75034206b2",
+      "current_sha256": "c15107132ba8f9083e1f2b3ecb957ea0cd79d39bc5e2e4901ecd4f75034206b2",
+      "unchanged_since_publication": true
+    },
+    ".work-receipts/reviewer-session-start.json": {
+      "published_sha256": "241403b188951c6ee13a8c73237c844f05262ea211b71b32aefd2494a2007d14",
+      "current_sha256": "241403b188951c6ee13a8c73237c844f05262ea211b71b32aefd2494a2007d14",
+      "unchanged_since_publication": true
+    },
+    ".work-receipts/reviewer-source-audit-first-attempt-error.json": {
+      "published_sha256": "6e74e595edf674764f87ea977f11ce9b6b8e0cfaf24c486e8a77b2b03dfe80fe",
+      "current_sha256": "6e74e595edf674764f87ea977f11ce9b6b8e0cfaf24c486e8a77b2b03dfe80fe",
+      "unchanged_since_publication": true
+    },
+    ".work-receipts/reviewer-source-audit.json": {
+      "published_sha256": "6ea4727dbe4792f343a2f964e3e2f1c442c10e98594a24edea353d50e8fe3680",
+      "current_sha256": "6ea4727dbe4792f343a2f964e3e2f1c442c10e98594a24edea353d50e8fe3680",
+      "unchanged_since_publication": true
+    },
+    ".work-receipts/reviewer-verification-command-output.txt": {
+      "published_sha256": "f58086c0dd8bdb4086ae5de151c1c0e5b5c23b89e17a2a63dd77b963e994083d",
+      "current_sha256": "f58086c0dd8bdb4086ae5de151c1c0e5b5c23b89e17a2a63dd77b963e994083d",
+      "unchanged_since_publication": true
+    },
+    ".work-receipts/reviewer-verification-output.txt": {
+      "published_sha256": "f58086c0dd8bdb4086ae5de151c1c0e5b5c23b89e17a2a63dd77b963e994083d",
+      "current_sha256": "f58086c0dd8bdb4086ae5de151c1c0e5b5c23b89e17a2a63dd77b963e994083d",
+      "unchanged_since_publication": true
+    },
+    ".work-receipts/reviewer-verify.py": {
+      "published_sha256": "6bdc3dc99e5705d32983067970a1f1fd9e29b5b83dcce49471cbb7b59f185bfb",
+      "current_sha256": "6bdc3dc99e5705d32983067970a1f1fd9e29b5b83dcce49471cbb7b59f185bfb",
+      "unchanged_since_publication": true
+    },
+    ".work-receipts/reviewer-work-complete.json": {
+      "published_sha256": "7627f77a9108db71740f56e562f35fc78accc10b03f162707cae80615d136aab",
+      "current_sha256": "7627f77a9108db71740f56e562f35fc78accc10b03f162707cae80615d136aab",
+      "unchanged_since_publication": true
+    },
+    ".work-receipts/reviewer-work-progress.json": {
+      "published_sha256": "f57807a3e7860bc6f7c24d518d227bd0dd6f64beff3401f9fdda72f78e493138",
+      "current_sha256": "f57807a3e7860bc6f7c24d518d227bd0dd6f64beff3401f9fdda72f78e493138",
+      "unchanged_since_publication": true
+    },
+    ".work-receipts/reviewer-work-show-before-complete.json": {
+      "published_sha256": "c8d12d5c17d9055fbaf0ea3f89048b903ea99b436bd7c9a234d1969ca04515ca",
+      "current_sha256": "c8d12d5c17d9055fbaf0ea3f89048b903ea99b436bd7c9a234d1969ca04515ca",
+      "unchanged_since_publication": true
+    },
+    ".work-receipts/sg-depend-completion.json": {
+      "published_sha256": "e50c403c6bfe703d743948e292f056c0e1c9e4b56c5468321bcf9ef1434f2c7b",
+      "current_sha256": "e50c403c6bfe703d743948e292f056c0e1c9e4b56c5468321bcf9ef1434f2c7b",
+      "unchanged_since_publication": true
+    },
+    ".work-receipts/sg-depend-evidence-draft.json": {
+      "published_sha256": "7077bdb31898c2cb319bd3a84a9be94b6e342bf34d2857cac084e06261c47c60",
+      "current_sha256": "7077bdb31898c2cb319bd3a84a9be94b6e342bf34d2857cac084e06261c47c60",
+      "unchanged_since_publication": true
+    },
+    ".work-receipts/sg-depend-verification.json": {
+      "published_sha256": "2a7b1151619ad50be7557be2fa0744a6cd91f320149aaf61e1e6fbdb95b9d1c9",
+      "current_sha256": "2a7b1151619ad50be7557be2fa0744a6cd91f320149aaf61e1e6fbdb95b9d1c9",
+      "unchanged_since_publication": true
+    },
+    ".work-receipts/sg-diff-completion.json": {
+      "published_sha256": "4afda00189c79763e00ee3579abf4530cc3f1d3c67b9213655841bc805c1bb57",
+      "current_sha256": "4afda00189c79763e00ee3579abf4530cc3f1d3c67b9213655841bc805c1bb57",
+      "unchanged_since_publication": true
+    },
+    ".work-receipts/sg-diff-evidence-draft.json": {
+      "published_sha256": "5f24512be8e740017bac056efbbe37f977bf4ff866246b809ce3d619d038288a",
+      "current_sha256": "5f24512be8e740017bac056efbbe37f977bf4ff866246b809ce3d619d038288a",
+      "unchanged_since_publication": true
+    },
+    ".work-receipts/sg-diff-verification.json": {
+      "published_sha256": "7e08ee2571219a2b22d3ef0b80a0b027d71529b83dd8f4a16a26d8e1bdeca25f",
+      "current_sha256": "7e08ee2571219a2b22d3ef0b80a0b027d71529b83dd8f4a16a26d8e1bdeca25f",
+      "unchanged_since_publication": true
+    },
+    ".work-receipts/sg-plan-completion.json": {
+      "published_sha256": "455ae570c0c4335154af5b157634cf7c1e212d9f4771a2701cb85246e4a1d94b",
+      "current_sha256": "455ae570c0c4335154af5b157634cf7c1e212d9f4771a2701cb85246e4a1d94b",
+      "unchanged_since_publication": true
+    },
+    ".work-receipts/sg-plan-evidence-draft.json": {
+      "published_sha256": "41849f85bbd5d47692d1fbdd90450c83f7ac4a6e3c18e3c0e50599ed877f84c1",
+      "current_sha256": "41849f85bbd5d47692d1fbdd90450c83f7ac4a6e3c18e3c0e50599ed877f84c1",
+      "unchanged_since_publication": true
+    },
+    ".work-receipts/sg-plan-verification.json": {
+      "published_sha256": "e93279b50d28ad6d77416297d4cdfbd65634797dfc4c27284afb337266001397",
+      "current_sha256": "e93279b50d28ad6d77416297d4cdfbd65634797dfc4c27284afb337266001397",
+      "unchanged_since_publication": true
+    },
+    ".work-receipts/sg-review-response-evidence-draft.json": {
+      "published_sha256": "903ceac7ff18fb03387b3c05b55bc975531f45ac6996cc5df967018f78b1934a",
+      "current_sha256": "903ceac7ff18fb03387b3c05b55bc975531f45ac6996cc5df967018f78b1934a",
+      "unchanged_since_publication": true
+    },
+    ".work-receipts/sg-review-response-verification.json": {
+      "published_sha256": "6998f11a527e4e4d6add08d8f0d4613fbf0f26a718319061335a2d80a94c1eae",
+      "current_sha256": "6998f11a527e4e4d6add08d8f0d4613fbf0f26a718319061335a2d80a94c1eae",
+      "unchanged_since_publication": true
+    }
+  },
+  "published_receipt_json_parse": {
+    "json_file_count": 86,
+    "parse_errors": []
+  },
+  "sealed_execution_counts": {
+    "command_executions": 70,
+    "nonzero_commands": 4,
+    "tool_event_counts": {
+      "agent_message": 5,
+      "command_execution": 70,
+      "file_change": 29
+    },
+    "e4_completion_claim": false,
+    "note": "Counts are preserved from the public sealed summary. The private native transcript was not published or inspected in this re-review."
+  },
+  "producer_artifacts_before_after": {
+    "deliverables/songguo-source-versions.md": {
+      "before_sha256": "b026c37190ea1f5dddc2a30a0e7aab3e4e6577c541843e4cfe61395ed7f78d04",
+      "after_expected_sha256": "26bac246b439a54551533d6146b0d12045830b539ce5a5deb0b2e1b431eac136",
+      "after_actual_sha256": "26bac246b439a54551533d6146b0d12045830b539ce5a5deb0b2e1b431eac136",
+      "after_matches_publication": true
+    },
+    "deliverables/songguo-change-impact.md": {
+      "before_sha256": "6792b22621c6364fd3802b5a7e5c9552710f418df917ffdac819dcb0d5fe3beb",
+      "after_expected_sha256": "c1a644f08291eaf7b716063c11a4ab07efd319ad82ed9d08cc4e7cc6505756cb",
+      "after_actual_sha256": "c1a644f08291eaf7b716063c11a4ab07efd319ad82ed9d08cc4e7cc6505756cb",
+      "after_matches_publication": true
+    },
+    "deliverables/songguo-revised-plan.md": {
+      "before_sha256": "58e419ab7ff87b2566fc156f3256b01e444987be7e8fae6dc6ad727027b0ca37",
+      "after_expected_sha256": "8ae8430b33e93a07b74e4c3c26b59bfa3c29e956b590d8eec1883766b5083550",
+      "after_actual_sha256": "8ae8430b33e93a07b74e4c3c26b59bfa3c29e956b590d8eec1883766b5083550",
+      "after_matches_publication": true
+    },
+    "deliverables/sg-review-response.md": {
+      "before_sha256": null,
+      "after_expected_sha256": "ee0f42b76eeef5755fc79d737beba6e9ccdd163f93c954c2a253c97bec191018",
+      "after_actual_sha256": "ee0f42b76eeef5755fc79d737beba6e9ccdd163f93c954c2a253c97bec191018",
+      "after_matches_publication": true
+    }
+  },
+  "sealed_historical_artifacts": {
+    "review-inputs/initial/deliverables/songguo-source-versions.md": {
+      "expected_sha256": "b026c37190ea1f5dddc2a30a0e7aab3e4e6577c541843e4cfe61395ed7f78d04",
+      "actual_sha256": "b026c37190ea1f5dddc2a30a0e7aab3e4e6577c541843e4cfe61395ed7f78d04",
+      "match": true
+    },
+    "review-inputs/round-1/deliverables/songguo-source-versions.md": {
+      "expected_sha256": "b026c37190ea1f5dddc2a30a0e7aab3e4e6577c541843e4cfe61395ed7f78d04",
+      "actual_sha256": "b026c37190ea1f5dddc2a30a0e7aab3e4e6577c541843e4cfe61395ed7f78d04",
+      "match": true
+    },
+    "review-inputs/round-2/deliverables/songguo-source-versions.md": {
+      "expected_sha256": "b026c37190ea1f5dddc2a30a0e7aab3e4e6577c541843e4cfe61395ed7f78d04",
+      "actual_sha256": "b026c37190ea1f5dddc2a30a0e7aab3e4e6577c541843e4cfe61395ed7f78d04",
+      "match": true
+    },
+    "review-inputs/round-1/deliverables/songguo-change-impact.md": {
+      "expected_sha256": "6792b22621c6364fd3802b5a7e5c9552710f418df917ffdac819dcb0d5fe3beb",
+      "actual_sha256": "6792b22621c6364fd3802b5a7e5c9552710f418df917ffdac819dcb0d5fe3beb",
+      "match": true
+    },
+    "review-inputs/round-2/deliverables/songguo-change-impact.md": {
+      "expected_sha256": "6792b22621c6364fd3802b5a7e5c9552710f418df917ffdac819dcb0d5fe3beb",
+      "actual_sha256": "6792b22621c6364fd3802b5a7e5c9552710f418df917ffdac819dcb0d5fe3beb",
+      "match": true
+    },
+    "review-inputs/round-2/deliverables/songguo-revised-plan.md": {
+      "expected_sha256": "58e419ab7ff87b2566fc156f3256b01e444987be7e8fae6dc6ad727027b0ca37",
+      "actual_sha256": "58e419ab7ff87b2566fc156f3256b01e444987be7e8fae6dc6ad727027b0ca37",
+      "match": true
+    }
+  },
+  "immutable_review_records": {
+    "deliverables/sg-independent-review.md": {
+      "expected_sha256": "735fe7cff0bc7357b9db30d2ef79f82fc9822932a546811b4a2403ef98fa7ee7",
+      "actual_sha256": "735fe7cff0bc7357b9db30d2ef79f82fc9822932a546811b4a2403ef98fa7ee7",
+      "match": true
+    },
+    "review-inputs/reference-lookup-process-record.json": {
+      "expected_sha256": "b2f75186aee39d65367c6ce7aca7b710a12710e43a942debdefeb88d917062c5",
+      "actual_sha256": "b2f75186aee39d65367c6ce7aca7b710a12710e43a942debdefeb88d917062c5",
+      "match": true
+    }
+  },
+  "cross_references": {
+    "resolved_count": 109,
+    "resolved": [
+      {
+        "document": "deliverables/songguo-source-versions.md",
+        "target": "../materials/initial-plan.md",
+        "resolved": "/Users/mac/Documents/originone/agent-work-running/.local/business-live-20260909-v1/source-change/project/materials/initial-plan.md"
+      },
+      {
+        "document": "deliverables/songguo-source-versions.md",
+        "target": "../review-inputs/initial/turn-record.json",
+        "resolved": "/Users/mac/Documents/originone/agent-work-running/.local/business-live-20260909-v1/source-change/project/review-inputs/initial/turn-record.json"
+      },
+      {
+        "document": "deliverables/songguo-source-versions.md",
+        "target": "../review-inputs/initial/sources/RULES.md",
+        "resolved": "/Users/mac/Documents/originone/agent-work-running/.local/business-live-20260909-v1/source-change/project/review-inputs/initial/sources/RULES.md"
+      },
+      {
+        "document": "deliverables/songguo-source-versions.md",
+        "target": "../RULES.md",
+        "resolved": "/Users/mac/Documents/originone/agent-work-running/.local/business-live-20260909-v1/source-change/project/RULES.md"
+      },
+      {
+        "document": "deliverables/songguo-source-versions.md",
+        "target": "../review-inputs/round-1/sources/RULES.md",
+        "resolved": "/Users/mac/Documents/originone/agent-work-running/.local/business-live-20260909-v1/source-change/project/review-inputs/round-1/sources/RULES.md"
+      },
+      {
+        "document": "deliverables/songguo-source-versions.md",
+        "target": "../review-inputs/round-1/turn-record.json",
+        "resolved": "/Users/mac/Documents/originone/agent-work-running/.local/business-live-20260909-v1/source-change/project/review-inputs/round-1/turn-record.json"
+      },
+      {
+        "document": "deliverables/songguo-source-versions.md",
+        "target": "../materials/clarification.md",
+        "resolved": "/Users/mac/Documents/originone/agent-work-running/.local/business-live-20260909-v1/source-change/project/materials/clarification.md"
+      },
+      {
+        "document": "deliverables/songguo-source-versions.md",
+        "target": "../materials/partner-requests.csv",
+        "resolved": "/Users/mac/Documents/originone/agent-work-running/.local/business-live-20260909-v1/source-change/project/materials/partner-requests.csv"
+      },
+      {
+        "document": "deliverables/songguo-source-versions.md",
+        "target": "../review-inputs/round-2/turn-record.json",
+        "resolved": "/Users/mac/Documents/originone/agent-work-running/.local/business-live-20260909-v1/source-change/project/review-inputs/round-2/turn-record.json"
+      },
+      {
+        "document": "deliverables/songguo-source-versions.md",
+        "target": "songguo-revised-plan.md",
+        "resolved": "/Users/mac/Documents/originone/agent-work-running/.local/business-live-20260909-v1/source-change/project/deliverables/songguo-revised-plan.md"
+      },
+      {
+        "document": "deliverables/songguo-source-versions.md",
+        "target": "../review-inputs/round-2/deliverables/songguo-revised-plan.md",
+        "resolved": "/Users/mac/Documents/originone/agent-work-running/.local/business-live-20260909-v1/source-change/project/review-inputs/round-2/deliverables/songguo-revised-plan.md"
+      },
+      {
+        "document": "deliverables/songguo-source-versions.md",
+        "target": "../project.toml",
+        "resolved": "/Users/mac/Documents/originone/agent-work-running/.local/business-live-20260909-v1/source-change/project/project.toml"
+      },
+      {
+        "document": "deliverables/songguo-source-versions.md",
+        "target": "../GOALS.md",
+        "resolved": "/Users/mac/Documents/originone/agent-work-running/.local/business-live-20260909-v1/source-change/project/GOALS.md"
+      },
+      {
+        "document": "deliverables/songguo-source-versions.md",
+        "target": "../PLAN.md",
+        "resolved": "/Users/mac/Documents/originone/agent-work-running/.local/business-live-20260909-v1/source-change/project/PLAN.md"
+      },
+      {
+        "document": "deliverables/songguo-source-versions.md",
+        "target": "../RULES.md",
+        "resolved": "/Users/mac/Documents/originone/agent-work-running/.local/business-live-20260909-v1/source-change/project/RULES.md"
+      },
+      {
+        "document": "deliverables/songguo-source-versions.md",
+        "target": "../work-ledger.yaml",
+        "resolved": "/Users/mac/Documents/originone/agent-work-running/.local/business-live-20260909-v1/source-change/project/work-ledger.yaml"
+      },
+      {
+        "document": "deliverables/songguo-source-versions.md",
+        "target": "../review-inputs/initial/deliverables/songguo-source-versions.md",
+        "resolved": "/Users/mac/Documents/originone/agent-work-running/.local/business-live-20260909-v1/source-change/project/review-inputs/initial/deliverables/songguo-source-versions.md"
+      },
+      {
+        "document": "deliverables/songguo-source-versions.md",
+        "target": "../review-inputs/round-1/deliverables/songguo-source-versions.md",
+        "resolved": "/Users/mac/Documents/originone/agent-work-running/.local/business-live-20260909-v1/source-change/project/review-inputs/round-1/deliverables/songguo-source-versions.md"
+      },
+      {
+        "document": "deliverables/songguo-source-versions.md",
+        "target": "../review-inputs/round-2/deliverables/songguo-source-versions.md",
+        "resolved": "/Users/mac/Documents/originone/agent-work-running/.local/business-live-20260909-v1/source-change/project/review-inputs/round-2/deliverables/songguo-source-versions.md"
+      },
+      {
+        "document": "deliverables/songguo-source-versions.md",
+        "target": "../review-inputs/round-1/deliverables/songguo-change-impact.md",
+        "resolved": "/Users/mac/Documents/originone/agent-work-running/.local/business-live-20260909-v1/source-change/project/review-inputs/round-1/deliverables/songguo-change-impact.md"
+      },
+      {
+        "document": "deliverables/songguo-source-versions.md",
+        "target": "../review-inputs/round-2/deliverables/songguo-revised-plan.md",
+        "resolved": "/Users/mac/Documents/originone/agent-work-running/.local/business-live-20260909-v1/source-change/project/review-inputs/round-2/deliverables/songguo-revised-plan.md"
+      },
+      {
+        "document": "deliverables/songguo-source-versions.md",
+        "target": "sg-independent-review.md",
+        "resolved": "/Users/mac/Documents/originone/agent-work-running/.local/business-live-20260909-v1/source-change/project/deliverables/sg-independent-review.md"
+      },
+      {
+        "document": "deliverables/songguo-source-versions.md",
+        "target": "sg-review-response.md",
+        "resolved": "/Users/mac/Documents/originone/agent-work-running/.local/business-live-20260909-v1/source-change/project/deliverables/sg-review-response.md"
+      },
+      {
+        "document": "deliverables/songguo-source-versions.md",
+        "target": "../review-inputs/reference-lookup-process-record.json",
+        "resolved": "/Users/mac/Documents/originone/agent-work-running/.local/business-live-20260909-v1/source-change/project/review-inputs/reference-lookup-process-record.json"
+      },
+      {
+        "document": "deliverables/songguo-source-versions.md",
+        "target": "../project.toml",
+        "resolved": "/Users/mac/Documents/originone/agent-work-running/.local/business-live-20260909-v1/source-change/project/project.toml"
+      },
+      {
+        "document": "deliverables/songguo-source-versions.md",
+        "target": "../GOALS.md",
+        "resolved": "/Users/mac/Documents/originone/agent-work-running/.local/business-live-20260909-v1/source-change/project/GOALS.md"
+      },
+      {
+        "document": "deliverables/songguo-source-versions.md",
+        "target": "../PLAN.md",
+        "resolved": "/Users/mac/Documents/originone/agent-work-running/.local/business-live-20260909-v1/source-change/project/PLAN.md"
+      },
+      {
+        "document": "deliverables/songguo-source-versions.md",
+        "target": "../RULES.md",
+        "resolved": "/Users/mac/Documents/originone/agent-work-running/.local/business-live-20260909-v1/source-change/project/RULES.md"
+      },
+      {
+        "document": "deliverables/songguo-source-versions.md",
+        "target": "../work-ledger.yaml",
+        "resolved": "/Users/mac/Documents/originone/agent-work-running/.local/business-live-20260909-v1/source-change/project/work-ledger.yaml"
+      },
+      {
+        "document": "deliverables/songguo-source-versions.md",
+        "target": "../materials/initial-plan.md",
+        "resolved": "/Users/mac/Documents/originone/agent-work-running/.local/business-live-20260909-v1/source-change/project/materials/initial-plan.md"
+      },
+      {
+        "document": "deliverables/songguo-source-versions.md",
+        "target": "../materials/partner-requests.csv",
+        "resolved": "/Users/mac/Documents/originone/agent-work-running/.local/business-live-20260909-v1/source-change/project/materials/partner-requests.csv"
+      },
+      {
+        "document": "deliverables/songguo-source-versions.md",
+        "target": "../materials/clarification.md",
+        "resolved": "/Users/mac/Documents/originone/agent-work-running/.local/business-live-20260909-v1/source-change/project/materials/clarification.md"
+      },
+      {
+        "document": "deliverables/songguo-source-versions.md",
+        "target": "songguo-change-impact.md",
+        "resolved": "/Users/mac/Documents/originone/agent-work-running/.local/business-live-20260909-v1/source-change/project/deliverables/songguo-change-impact.md"
+      },
+      {
+        "document": "deliverables/songguo-source-versions.md",
+        "target": "songguo-revised-plan.md",
+        "resolved": "/Users/mac/Documents/originone/agent-work-running/.local/business-live-20260909-v1/source-change/project/deliverables/songguo-revised-plan.md"
+      },
+      {
+        "document": "deliverables/songguo-source-versions.md",
+        "target": "sg-independent-review.md",
+        "resolved": "/Users/mac/Documents/originone/agent-work-running/.local/business-live-20260909-v1/source-change/project/deliverables/sg-independent-review.md"
+      },
+      {
+        "document": "deliverables/songguo-source-versions.md",
+        "target": "../review-inputs/README.md",
+        "resolved": "/Users/mac/Documents/originone/agent-work-running/.local/business-live-20260909-v1/source-change/project/review-inputs/README.md"
+      },
+      {
+        "document": "deliverables/songguo-source-versions.md",
+        "target": "../review-inputs/initial/turn-record.json",
+        "resolved": "/Users/mac/Documents/originone/agent-work-running/.local/business-live-20260909-v1/source-change/project/review-inputs/initial/turn-record.json"
+      },
+      {
+        "document": "deliverables/songguo-source-versions.md",
+        "target": "../review-inputs/round-1/turn-record.json",
+        "resolved": "/Users/mac/Documents/originone/agent-work-running/.local/business-live-20260909-v1/source-change/project/review-inputs/round-1/turn-record.json"
+      },
+      {
+        "document": "deliverables/songguo-source-versions.md",
+        "target": "../review-inputs/round-2/turn-record.json",
+        "resolved": "/Users/mac/Documents/originone/agent-work-running/.local/business-live-20260909-v1/source-change/project/review-inputs/round-2/turn-record.json"
+      },
+      {
+        "document": "deliverables/songguo-source-versions.md",
+        "target": "../review-inputs/reference-lookup-process-record.json",
+        "resolved": "/Users/mac/Documents/originone/agent-work-running/.local/business-live-20260909-v1/source-change/project/review-inputs/reference-lookup-process-record.json"
+      },
+      {
+        "document": "deliverables/songguo-change-impact.md",
+        "target": "../review-inputs/round-1/deliverables/songguo-change-impact.md",
+        "resolved": "/Users/mac/Documents/originone/agent-work-running/.local/business-live-20260909-v1/source-change/project/review-inputs/round-1/deliverables/songguo-change-impact.md"
+      },
+      {
+        "document": "deliverables/songguo-change-impact.md",
+        "target": "../review-inputs/initial/deliverables/songguo-source-versions.md",
+        "resolved": "/Users/mac/Documents/originone/agent-work-running/.local/business-live-20260909-v1/source-change/project/review-inputs/initial/deliverables/songguo-source-versions.md"
+      },
+      {
+        "document": "deliverables/songguo-change-impact.md",
+        "target": "songguo-source-versions.md",
+        "resolved": "/Users/mac/Documents/originone/agent-work-running/.local/business-live-20260909-v1/source-change/project/deliverables/songguo-source-versions.md"
+      },
+      {
+        "document": "deliverables/songguo-change-impact.md",
+        "target": "../RULES.md",
+        "resolved": "/Users/mac/Documents/originone/agent-work-running/.local/business-live-20260909-v1/source-change/project/RULES.md"
+      },
+      {
+        "document": "deliverables/songguo-change-impact.md",
+        "target": "../GOALS.md",
+        "resolved": "/Users/mac/Documents/originone/agent-work-running/.local/business-live-20260909-v1/source-change/project/GOALS.md"
+      },
+      {
+        "document": "deliverables/songguo-change-impact.md",
+        "target": "../PLAN.md",
+        "resolved": "/Users/mac/Documents/originone/agent-work-running/.local/business-live-20260909-v1/source-change/project/PLAN.md"
+      },
+      {
+        "document": "deliverables/songguo-change-impact.md",
+        "target": "../RULES.md",
+        "resolved": "/Users/mac/Documents/originone/agent-work-running/.local/business-live-20260909-v1/source-change/project/RULES.md"
+      },
+      {
+        "document": "deliverables/songguo-change-impact.md",
+        "target": "../materials/partner-requests.csv",
+        "resolved": "/Users/mac/Documents/originone/agent-work-running/.local/business-live-20260909-v1/source-change/project/materials/partner-requests.csv"
+      },
+      {
+        "document": "deliverables/songguo-change-impact.md",
+        "target": "../RULES.md",
+        "resolved": "/Users/mac/Documents/originone/agent-work-running/.local/business-live-20260909-v1/source-change/project/RULES.md"
+      },
+      {
+        "document": "deliverables/songguo-change-impact.md",
+        "target": "../PLAN.md",
+        "resolved": "/Users/mac/Documents/originone/agent-work-running/.local/business-live-20260909-v1/source-change/project/PLAN.md"
+      },
+      {
+        "document": "deliverables/songguo-change-impact.md",
+        "target": "../work-ledger.yaml",
+        "resolved": "/Users/mac/Documents/originone/agent-work-running/.local/business-live-20260909-v1/source-change/project/work-ledger.yaml"
+      },
+      {
+        "document": "deliverables/songguo-change-impact.md",
+        "target": "songguo-source-versions.md",
+        "resolved": "/Users/mac/Documents/originone/agent-work-running/.local/business-live-20260909-v1/source-change/project/deliverables/songguo-source-versions.md"
+      },
+      {
+        "document": "deliverables/songguo-change-impact.md",
+        "target": "../review-inputs/initial/deliverables/songguo-source-versions.md",
+        "resolved": "/Users/mac/Documents/originone/agent-work-running/.local/business-live-20260909-v1/source-change/project/review-inputs/initial/deliverables/songguo-source-versions.md"
+      },
+      {
+        "document": "deliverables/songguo-change-impact.md",
+        "target": "sg-independent-review.md",
+        "resolved": "/Users/mac/Documents/originone/agent-work-running/.local/business-live-20260909-v1/source-change/project/deliverables/sg-independent-review.md"
+      },
+      {
+        "document": "deliverables/songguo-change-impact.md",
+        "target": "sg-review-response.md",
+        "resolved": "/Users/mac/Documents/originone/agent-work-running/.local/business-live-20260909-v1/source-change/project/deliverables/sg-review-response.md"
+      },
+      {
+        "document": "deliverables/songguo-change-impact.md",
+        "target": "../review-inputs/reference-lookup-process-record.json",
+        "resolved": "/Users/mac/Documents/originone/agent-work-running/.local/business-live-20260909-v1/source-change/project/review-inputs/reference-lookup-process-record.json"
+      },
+      {
+        "document": "deliverables/songguo-change-impact.md",
+        "target": "../materials/initial-plan.md",
+        "resolved": "/Users/mac/Documents/originone/agent-work-running/.local/business-live-20260909-v1/source-change/project/materials/initial-plan.md"
+      },
+      {
+        "document": "deliverables/songguo-change-impact.md",
+        "target": "../materials/partner-requests.csv",
+        "resolved": "/Users/mac/Documents/originone/agent-work-running/.local/business-live-20260909-v1/source-change/project/materials/partner-requests.csv"
+      },
+      {
+        "document": "deliverables/songguo-change-impact.md",
+        "target": "../DELIVERABLES.md",
+        "resolved": "/Users/mac/Documents/originone/agent-work-running/.local/business-live-20260909-v1/source-change/project/DELIVERABLES.md"
+      },
+      {
+        "document": "deliverables/songguo-change-impact.md",
+        "target": "../.work-receipts/awr-sg-depend-rule-delta.json",
+        "resolved": "/Users/mac/Documents/originone/agent-work-running/.local/business-live-20260909-v1/source-change/project/.work-receipts/awr-sg-depend-rule-delta.json"
+      },
+      {
+        "document": "deliverables/songguo-revised-plan.md",
+        "target": "../review-inputs/round-2/deliverables/songguo-revised-plan.md",
+        "resolved": "/Users/mac/Documents/originone/agent-work-running/.local/business-live-20260909-v1/source-change/project/review-inputs/round-2/deliverables/songguo-revised-plan.md"
+      },
+      {
+        "document": "deliverables/songguo-revised-plan.md",
+        "target": "../RULES.md",
+        "resolved": "/Users/mac/Documents/originone/agent-work-running/.local/business-live-20260909-v1/source-change/project/RULES.md"
+      },
+      {
+        "document": "deliverables/songguo-revised-plan.md",
+        "target": "../materials/clarification.md",
+        "resolved": "/Users/mac/Documents/originone/agent-work-running/.local/business-live-20260909-v1/source-change/project/materials/clarification.md"
+      },
+      {
+        "document": "deliverables/songguo-revised-plan.md",
+        "target": "../materials/partner-requests.csv",
+        "resolved": "/Users/mac/Documents/originone/agent-work-running/.local/business-live-20260909-v1/source-change/project/materials/partner-requests.csv"
+      },
+      {
+        "document": "deliverables/songguo-revised-plan.md",
+        "target": "../materials/partner-requests.csv",
+        "resolved": "/Users/mac/Documents/originone/agent-work-running/.local/business-live-20260909-v1/source-change/project/materials/partner-requests.csv"
+      },
+      {
+        "document": "deliverables/songguo-revised-plan.md",
+        "target": "../materials/clarification.md",
+        "resolved": "/Users/mac/Documents/originone/agent-work-running/.local/business-live-20260909-v1/source-change/project/materials/clarification.md"
+      },
+      {
+        "document": "deliverables/songguo-revised-plan.md",
+        "target": "../materials/clarification.md",
+        "resolved": "/Users/mac/Documents/originone/agent-work-running/.local/business-live-20260909-v1/source-change/project/materials/clarification.md"
+      },
+      {
+        "document": "deliverables/songguo-revised-plan.md",
+        "target": "../materials/partner-requests.csv",
+        "resolved": "/Users/mac/Documents/originone/agent-work-running/.local/business-live-20260909-v1/source-change/project/materials/partner-requests.csv"
+      },
+      {
+        "document": "deliverables/songguo-revised-plan.md",
+        "target": "../RULES.md",
+        "resolved": "/Users/mac/Documents/originone/agent-work-running/.local/business-live-20260909-v1/source-change/project/RULES.md"
+      },
+      {
+        "document": "deliverables/songguo-revised-plan.md",
+        "target": "../materials/clarification.md",
+        "resolved": "/Users/mac/Documents/originone/agent-work-running/.local/business-live-20260909-v1/source-change/project/materials/clarification.md"
+      },
+      {
+        "document": "deliverables/songguo-revised-plan.md",
+        "target": "sg-independent-review.md",
+        "resolved": "/Users/mac/Documents/originone/agent-work-running/.local/business-live-20260909-v1/source-change/project/deliverables/sg-independent-review.md"
+      },
+      {
+        "document": "deliverables/songguo-revised-plan.md",
+        "target": "../PLAN.md",
+        "resolved": "/Users/mac/Documents/originone/agent-work-running/.local/business-live-20260909-v1/source-change/project/PLAN.md"
+      },
+      {
+        "document": "deliverables/songguo-revised-plan.md",
+        "target": "../work-ledger.yaml",
+        "resolved": "/Users/mac/Documents/originone/agent-work-running/.local/business-live-20260909-v1/source-change/project/work-ledger.yaml"
+      },
+      {
+        "document": "deliverables/songguo-revised-plan.md",
+        "target": "../DELIVERABLES.md",
+        "resolved": "/Users/mac/Documents/originone/agent-work-running/.local/business-live-20260909-v1/source-change/project/DELIVERABLES.md"
+      },
+      {
+        "document": "deliverables/songguo-revised-plan.md",
+        "target": "songguo-source-versions.md",
+        "resolved": "/Users/mac/Documents/originone/agent-work-running/.local/business-live-20260909-v1/source-change/project/deliverables/songguo-source-versions.md"
+      },
+      {
+        "document": "deliverables/songguo-revised-plan.md",
+        "target": "../RULES.md",
+        "resolved": "/Users/mac/Documents/originone/agent-work-running/.local/business-live-20260909-v1/source-change/project/RULES.md"
+      },
+      {
+        "document": "deliverables/songguo-revised-plan.md",
+        "target": "sg-independent-review.md",
+        "resolved": "/Users/mac/Documents/originone/agent-work-running/.local/business-live-20260909-v1/source-change/project/deliverables/sg-independent-review.md"
+      },
+      {
+        "document": "deliverables/songguo-revised-plan.md",
+        "target": "sg-review-response.md",
+        "resolved": "/Users/mac/Documents/originone/agent-work-running/.local/business-live-20260909-v1/source-change/project/deliverables/sg-review-response.md"
+      },
+      {
+        "document": "deliverables/songguo-revised-plan.md",
+        "target": "songguo-source-versions.md",
+        "resolved": "/Users/mac/Documents/originone/agent-work-running/.local/business-live-20260909-v1/source-change/project/deliverables/songguo-source-versions.md"
+      },
+      {
+        "document": "deliverables/songguo-revised-plan.md",
+        "target": "../review-inputs/reference-lookup-process-record.json",
+        "resolved": "/Users/mac/Documents/originone/agent-work-running/.local/business-live-20260909-v1/source-change/project/review-inputs/reference-lookup-process-record.json"
+      },
+      {
+        "document": "deliverables/songguo-revised-plan.md",
+        "target": "../GOALS.md",
+        "resolved": "/Users/mac/Documents/originone/agent-work-running/.local/business-live-20260909-v1/source-change/project/GOALS.md"
+      },
+      {
+        "document": "deliverables/songguo-revised-plan.md",
+        "target": "../PLAN.md",
+        "resolved": "/Users/mac/Documents/originone/agent-work-running/.local/business-live-20260909-v1/source-change/project/PLAN.md"
+      },
+      {
+        "document": "deliverables/songguo-revised-plan.md",
+        "target": "../RULES.md",
+        "resolved": "/Users/mac/Documents/originone/agent-work-running/.local/business-live-20260909-v1/source-change/project/RULES.md"
+      },
+      {
+        "document": "deliverables/songguo-revised-plan.md",
+        "target": "../work-ledger.yaml",
+        "resolved": "/Users/mac/Documents/originone/agent-work-running/.local/business-live-20260909-v1/source-change/project/work-ledger.yaml"
+      },
+      {
+        "document": "deliverables/songguo-revised-plan.md",
+        "target": "songguo-source-versions.md",
+        "resolved": "/Users/mac/Documents/originone/agent-work-running/.local/business-live-20260909-v1/source-change/project/deliverables/songguo-source-versions.md"
+      },
+      {
+        "document": "deliverables/songguo-revised-plan.md",
+        "target": "../materials/clarification.md",
+        "resolved": "/Users/mac/Documents/originone/agent-work-running/.local/business-live-20260909-v1/source-change/project/materials/clarification.md"
+      },
+      {
+        "document": "deliverables/songguo-revised-plan.md",
+        "target": "../materials/partner-requests.csv",
+        "resolved": "/Users/mac/Documents/originone/agent-work-running/.local/business-live-20260909-v1/source-change/project/materials/partner-requests.csv"
+      },
+      {
+        "document": "deliverables/songguo-revised-plan.md",
+        "target": "../review-inputs/round-1/deliverables/songguo-change-impact.md",
+        "resolved": "/Users/mac/Documents/originone/agent-work-running/.local/business-live-20260909-v1/source-change/project/review-inputs/round-1/deliverables/songguo-change-impact.md"
+      },
+      {
+        "document": "deliverables/songguo-revised-plan.md",
+        "target": "songguo-change-impact.md",
+        "resolved": "/Users/mac/Documents/originone/agent-work-running/.local/business-live-20260909-v1/source-change/project/deliverables/songguo-change-impact.md"
+      },
+      {
+        "document": "deliverables/songguo-revised-plan.md",
+        "target": "../DELIVERABLES.md",
+        "resolved": "/Users/mac/Documents/originone/agent-work-running/.local/business-live-20260909-v1/source-change/project/DELIVERABLES.md"
+      },
+      {
+        "document": "deliverables/songguo-revised-plan.md",
+        "target": "songguo-source-versions.md",
+        "resolved": "/Users/mac/Documents/originone/agent-work-running/.local/business-live-20260909-v1/source-change/project/deliverables/songguo-source-versions.md"
+      },
+      {
+        "document": "deliverables/songguo-revised-plan.md",
+        "target": "sg-independent-review.md",
+        "resolved": "/Users/mac/Documents/originone/agent-work-running/.local/business-live-20260909-v1/source-change/project/deliverables/sg-independent-review.md"
+      },
+      {
+        "document": "deliverables/songguo-revised-plan.md",
+        "target": "sg-review-response.md",
+        "resolved": "/Users/mac/Documents/originone/agent-work-running/.local/business-live-20260909-v1/source-change/project/deliverables/sg-review-response.md"
+      },
+      {
+        "document": "deliverables/songguo-revised-plan.md",
+        "target": "../review-inputs/reference-lookup-process-record.json",
+        "resolved": "/Users/mac/Documents/originone/agent-work-running/.local/business-live-20260909-v1/source-change/project/review-inputs/reference-lookup-process-record.json"
+      },
+      {
+        "document": "deliverables/sg-review-response.md",
+        "target": "sg-independent-review.md",
+        "resolved": "/Users/mac/Documents/originone/agent-work-running/.local/business-live-20260909-v1/source-change/project/deliverables/sg-independent-review.md"
+      },
+      {
+        "document": "deliverables/sg-review-response.md",
+        "target": "sg-independent-review.md",
+        "resolved": "/Users/mac/Documents/originone/agent-work-running/.local/business-live-20260909-v1/source-change/project/deliverables/sg-independent-review.md"
+      },
+      {
+        "document": "deliverables/sg-review-response.md",
+        "target": "songguo-source-versions.md",
+        "resolved": "/Users/mac/Documents/originone/agent-work-running/.local/business-live-20260909-v1/source-change/project/deliverables/songguo-source-versions.md"
+      },
+      {
+        "document": "deliverables/sg-review-response.md",
+        "target": "songguo-change-impact.md",
+        "resolved": "/Users/mac/Documents/originone/agent-work-running/.local/business-live-20260909-v1/source-change/project/deliverables/songguo-change-impact.md"
+      },
+      {
+        "document": "deliverables/sg-review-response.md",
+        "target": "songguo-revised-plan.md",
+        "resolved": "/Users/mac/Documents/originone/agent-work-running/.local/business-live-20260909-v1/source-change/project/deliverables/songguo-revised-plan.md"
+      },
+      {
+        "document": "deliverables/sg-review-response.md",
+        "target": "../review-inputs/initial/turn-record.json",
+        "resolved": "/Users/mac/Documents/originone/agent-work-running/.local/business-live-20260909-v1/source-change/project/review-inputs/initial/turn-record.json"
+      },
+      {
+        "document": "deliverables/sg-review-response.md",
+        "target": "../review-inputs/round-1/turn-record.json",
+        "resolved": "/Users/mac/Documents/originone/agent-work-running/.local/business-live-20260909-v1/source-change/project/review-inputs/round-1/turn-record.json"
+      },
+      {
+        "document": "deliverables/sg-review-response.md",
+        "target": "../review-inputs/round-2/turn-record.json",
+        "resolved": "/Users/mac/Documents/originone/agent-work-running/.local/business-live-20260909-v1/source-change/project/review-inputs/round-2/turn-record.json"
+      },
+      {
+        "document": "deliverables/sg-review-response.md",
+        "target": "../review-inputs/reference-lookup-process-record.json",
+        "resolved": "/Users/mac/Documents/originone/agent-work-running/.local/business-live-20260909-v1/source-change/project/review-inputs/reference-lookup-process-record.json"
+      },
+      {
+        "document": "deliverables/sg-review-response.md",
+        "target": "sg-independent-review.md",
+        "resolved": "/Users/mac/Documents/originone/agent-work-running/.local/business-live-20260909-v1/source-change/project/deliverables/sg-independent-review.md"
+      },
+      {
+        "document": "deliverables/sg-review-response.md",
+        "target": "songguo-source-versions.md",
+        "resolved": "/Users/mac/Documents/originone/agent-work-running/.local/business-live-20260909-v1/source-change/project/deliverables/songguo-source-versions.md"
+      },
+      {
+        "document": "deliverables/sg-review-response.md",
+        "target": "songguo-change-impact.md",
+        "resolved": "/Users/mac/Documents/originone/agent-work-running/.local/business-live-20260909-v1/source-change/project/deliverables/songguo-change-impact.md"
+      },
+      {
+        "document": "deliverables/sg-review-response.md",
+        "target": "songguo-revised-plan.md",
+        "resolved": "/Users/mac/Documents/originone/agent-work-running/.local/business-live-20260909-v1/source-change/project/deliverables/songguo-revised-plan.md"
+      },
+      {
+        "document": "deliverables/sg-review-response.md",
+        "target": "songguo-source-versions.md",
+        "resolved": "/Users/mac/Documents/originone/agent-work-running/.local/business-live-20260909-v1/source-change/project/deliverables/songguo-source-versions.md"
+      },
+      {
+        "document": "deliverables/sg-review-response.md",
+        "target": "../review-inputs/reference-lookup-process-record.json",
+        "resolved": "/Users/mac/Documents/originone/agent-work-running/.local/business-live-20260909-v1/source-change/project/review-inputs/reference-lookup-process-record.json"
+      }
+    ],
+    "expected_absent_future_links": [
+      {
+        "document": "deliverables/songguo-revised-plan.md",
+        "target": "sg-delivery.md",
+        "resolved": "/Users/mac/Documents/originone/agent-work-running/.local/business-live-20260909-v1/source-change/project/deliverables/sg-delivery.md",
+        "absent": true
+      }
+    ],
+    "missing": []
+  },
+  "reference_lookup_assessment": {
+    "record_sha256": "b2f75186aee39d65367c6ce7aca7b710a12710e43a942debdefeb88d917062c5",
+    "command_ids": [
+      "item_46",
+      "item_61",
+      "item_63",
+      "item_64",
+      "item_66"
+    ],
+    "allowed_at_time": [
+      "item_46"
+    ],
+    "scope_deviations_at_time": [
+      "item_61",
+      "item_63",
+      "item_64",
+      "item_66"
+    ],
+    "item_46_initially_allowlisted": true,
+    "cli_mcp_contract_only_later_allowlisted": true,
+    "examples_and_crates_not_later_allowlisted": true,
+    "business_keyword_hits_in_retained_outputs": {
+      "item_46": {
+        "溪桥": 0,
+        "云岭": 0,
+        "南园": 0,
+        "松果": 0,
+        "伙伴接入": 0,
+        "source-change": 0,
+        "AWR-SC-007": 0
+      },
+      "item_61": {
+        "溪桥": 0,
+        "云岭": 0,
+        "南园": 0,
+        "松果": 0,
+        "伙伴接入": 0,
+        "source-change": 0,
+        "AWR-SC-007": 0
+      },
+      "item_63": {
+        "溪桥": 0,
+        "云岭": 0,
+        "南园": 0,
+        "松果": 0,
+        "伙伴接入": 0,
+        "source-change": 0,
+        "AWR-SC-007": 0
+      },
+      "item_64": {
+        "溪桥": 0,
+        "云岭": 0,
+        "南园": 0,
+        "松果": 0,
+        "伙伴接入": 0,
+        "source-change": 0,
+        "AWR-SC-007": 0
+      },
+      "item_66": {
+        "溪桥": 0,
+        "云岭": 0,
+        "南园": 0,
+        "松果": 0,
+        "伙伴接入": 0,
+        "source-change": 0,
+        "AWR-SC-007": 0
+      }
+    },
+    "all_business_keyword_hits_zero": true,
+    "independent_assessment_field_retained": "pending",
+    "e4_credit": false
+  },
+  "checks": {
+    "publication_declares_103_files": true,
+    "all_103_package_files_match": true,
+    "all_published_execution_receipts_unchanged": true,
+    "all_published_json_receipts_parse": true,
+    "sealed_execution_counts_retained": true,
+    "producer_artifacts_match_publication": true,
+    "sealed_historical_artifacts_unchanged": true,
+    "original_review_and_process_record_unchanged": true,
+    "four_layer_chain_present": true,
+    "no_forbidden_old_current_phrases": true,
+    "current_one_partner_xiqiao_scope_present": true,
+    "all_external_docs_retain_unconfirmed_date": true,
+    "response_addresses_all_findings": true,
+    "r02_classification_retained": true,
+    "cross_references_resolve": true,
+    "future_final_delivery_absent": true,
+    "unresolved_facts_preserved": true
+  },
+  "ok": true,
+  "evidence_boundary": "Independent re-review of the sealed correction package and current producer documents only; not final delivery, partner onboarding approval, material verification, real business acceptance, or E4."
+}

@@ -1,0 +1,105 @@
+{
+  "version": 1,
+  "kind": "independent_review_control_receipt",
+  "project": {
+    "name": "松果伙伴接入方案",
+    "external_key": "awr-v1/source-change/awr-live-20260909-003",
+    "path": "/Users/mac/Documents/originone/agent-work-running/.local/business-live-20260909-v1/source-change/project"
+  },
+  "review": {
+    "verdict": "CHANGES_REQUIRED",
+    "scope": "arrangement_level_independent_review",
+    "package_approved": false,
+    "partner_onboarding_approved": false,
+    "final_delivery_created": false,
+    "e4_credit": false,
+    "report_path": "/Users/mac/Documents/originone/agent-work-running/.local/business-live-20260909-v1/source-change/project/deliverables/sg-independent-review.md",
+    "report_sha256": "735fe7cff0bc7357b9db30d2ef79f82fc9822932a546811b4a2403ef98fa7ee7",
+    "blocking_findings": [
+      "R-01 current source-version comparison remains unchanged from the initial turn and presents the superseded two-partner window as current."
+    ],
+    "process_findings": [
+      "R-02 four of five retained parent technical-reference reads exceeded the initial allowlist; item_46 was allowed; retained outputs have zero hits for current business terms.",
+      "Reviewer preflight enumerated sibling control filenames while inventorying the assigned output area; no sibling control file body was opened."
+    ],
+    "next_action": "Original executor revises songguo-source-versions.md and cross-references, preserves process deviation and unresolved facts, returns new hashes for independent re-review before final delivery."
+  },
+  "identity": {
+    "canonical_task": "/root/restricted_material_client_run",
+    "participant_kind": "luna_worker",
+    "awr_session_id": "01M21X23BEFAEAYF6RJ97K3CG3",
+    "awr_claim_id": "01M21X23BEA02H9GWN04DXEH79",
+    "native_client_thread_id": null,
+    "native_client_thread_id_note": "No additional model client was launched; current canonical luna_worker task identity and AWR session are the reviewer identity.",
+    "original_executor_client_task_id": "01a08381-04a8-7871-9372-a3f55c2d8367",
+    "independent_from_original_executor": true
+  },
+  "awr": {
+    "session_start_revision": 74,
+    "session_end_revision": 94,
+    "session_status": "ended",
+    "checkpoint_id": "01M21XSEAVX853C79C738PWQB3",
+    "checkpoint_context_hash": "083e41c29dad2690378d3fb5b69e71184881f11609bb585c0f072e71c5a62da6",
+    "review_artifact_id": "01M21XJ2CJ124KN02TKTFHAA8E",
+    "evidence_external_key": "SG-REVIEW-INDEPENDENT-20260909",
+    "evidence_id": "01M21XNVBS3G94V6VT6RTC2258",
+    "evidence_level": "locally_verified",
+    "work_status": "completed",
+    "completion_meaning": "Independent review activity finished; reviewed package remains CHANGES_REQUIRED.",
+    "final_project_revision": 94,
+    "counts": {
+      "completed": 4,
+      "planned": 1
+    },
+    "ready_work": [
+      "SG-DELIVER"
+    ],
+    "ready_boundary": "SG-DELIVER being structurally ready does not mean review findings are closed or final delivery is approved.",
+    "doctor_ok": true,
+    "active_sessions": 0,
+    "evidence_projection_note": "AWR work show contains the current fully bound evidence SG-REVIEW-INDEPENDENT-20260909 plus a locator-only source-ledger projection with unknown level. Use the fully bound external key; the duplicate locator is not additional verification."
+  },
+  "sealed_original_artifacts": {
+    "deliverables/songguo-source-versions.md": "b026c37190ea1f5dddc2a30a0e7aab3e4e6577c541843e4cfe61395ed7f78d04",
+    "deliverables/songguo-change-impact.md": "6792b22621c6364fd3802b5a7e5c9552710f418df917ffdac819dcb0d5fe3beb",
+    "deliverables/songguo-revised-plan.md": "58e419ab7ff87b2566fc156f3256b01e444987be7e8fae6dc6ad727027b0ca37"
+  },
+  "unresolved": [
+    "Opening date is unconfirmed.",
+    "Xiqiao field-description body and verification result are absent.",
+    "Yunling contact-responsibility statement is absent.",
+    "Nanyuan material directory is absent.",
+    "Execution roles other than the actual reviewer are unbound.",
+    "No partner onboarding approval or real business acceptance exists.",
+    "R-01 is not corrected or re-reviewed."
+  ],
+  "receipts": {
+    ".work-receipts/reviewer-active-sessions.json": "5b7fce98207a53232dfa1c694bba2e7ead77edd5c4bf28de6e5c46e31e8af61c",
+    ".work-receipts/reviewer-artifact-add.json": "b65c61ea7317b569f3f8bbb43a5985eddd57b677e6b2109810ef66e48b0a5543",
+    ".work-receipts/reviewer-checkpoint.json": "a3734bddf7d3dc38acb44f87314a7d1376d3d34af4a78e10a0be6d10db9f1aa1",
+    ".work-receipts/reviewer-completion.json": "cf0e1348aa43cc76abbfeb4d033f39ff015f32094774d37269e0e15f49052aab",
+    ".work-receipts/reviewer-context-after-evidence.json": "614eaea1bf3aa99f5e0fa605790047ce6b72057ea68951e5d9e085fe8199a941",
+    ".work-receipts/reviewer-context-bootstrap.json": "d30b130090f1ded51954a963f22a2a049a5454e811ddaaf5f8956d25fb898cbc",
+    ".work-receipts/reviewer-context-compile.json": "e0d6b76bed240ede46b1c29e8311f9efa092316adcab4513be798a32394a8801",
+    ".work-receipts/reviewer-context-final.json": "d5311aa045646182faeb36f2a66c19fd59363112bb9fe772cc8b74e8a51a7944",
+    ".work-receipts/reviewer-doctor.json": "f90c1459e4bd0de54626602c63e86707444990efb0a4f5b11950fca92b5dc272",
+    ".work-receipts/reviewer-evidence-add.json": "4bd21caf650e3c02d706982a3bf9216c90712a16e73c7425939f6df3dc2c9cb2",
+    ".work-receipts/reviewer-evidence-draft.json": "f6376ebc28c21e88e72202d6a99a249f099dd5f43f8dd11b11ea970eeb127dce",
+    ".work-receipts/reviewer-evidence-show.json": "7501cb131952f1cfb4d5b407dbd40406e1200638738afd54d3880562095fce48",
+    ".work-receipts/reviewer-final-ready.json": "59ac31da39ba167515a05cb10916514a295c046c358cfadc82594fb1d66455f9",
+    ".work-receipts/reviewer-final-status.json": "4ce91a4b03af90801e8514a08f1cf2a959432802d5593facdfc65de4df34f6c4",
+    ".work-receipts/reviewer-final-work-show.json": "d862c1224e7c39f1ad3c6b82690888cbd195a385a4759834bce69fcd4f909ab2",
+    ".work-receipts/reviewer-review-verification.json": "6f3d7ecc1e980e4964ce59f953961a0a3fab9b6ba352ec650fd85a2c2d5b68a2",
+    ".work-receipts/reviewer-session-end.json": "c15107132ba8f9083e1f2b3ecb957ea0cd79d39bc5e2e4901ecd4f75034206b2",
+    ".work-receipts/reviewer-session-start.json": "241403b188951c6ee13a8c73237c844f05262ea211b71b32aefd2494a2007d14",
+    ".work-receipts/reviewer-source-audit-first-attempt-error.json": "6e74e595edf674764f87ea977f11ce9b6b8e0cfaf24c486e8a77b2b03dfe80fe",
+    ".work-receipts/reviewer-source-audit.json": "6ea4727dbe4792f343a2f964e3e2f1c442c10e98594a24edea353d50e8fe3680",
+    ".work-receipts/reviewer-verification-command-output.txt": "f58086c0dd8bdb4086ae5de151c1c0e5b5c23b89e17a2a63dd77b963e994083d",
+    ".work-receipts/reviewer-verification-output.txt": "f58086c0dd8bdb4086ae5de151c1c0e5b5c23b89e17a2a63dd77b963e994083d",
+    ".work-receipts/reviewer-verify.py": "6bdc3dc99e5705d32983067970a1f1fd9e29b5b83dcce49471cbb7b59f185bfb",
+    ".work-receipts/reviewer-work-complete.json": "7627f77a9108db71740f56e562f35fc78accc10b03f162707cae80615d136aab",
+    ".work-receipts/reviewer-work-progress.json": "f57807a3e7860bc6f7c24d518d227bd0dd6f64beff3401f9fdda72f78e493138",
+    ".work-receipts/reviewer-work-show-before-complete.json": "c8d12d5c17d9055fbaf0ea3f89048b903ea99b436bd7c9a234d1969ca04515ca"
+  },
+  "generated_at_ms": 1788918878137
+}

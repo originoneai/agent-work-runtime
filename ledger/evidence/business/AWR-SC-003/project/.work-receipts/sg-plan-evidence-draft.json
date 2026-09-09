@@ -1,0 +1,14 @@
+{
+  "external_key": "SG-PLAN-EXECUTABLE-20260909",
+  "work_item_key": "SG-PLAN",
+  "evidence_type": "completion_report",
+  "level": "locally_verified",
+  "summary": "Locally verified plan: Xiqiao is the sole current-round object; Yunling and Nanyuan remain in bounded preparation; entry, exit, review, and unknown-fact gates are explicit.",
+  "locator": ".work-receipts/sg-plan-verification.json",
+  "sha256": "e93279b50d28ad6d77416297d4cdfbd65634797dfc4c27284afb337266001397",
+  "source_sha": "146ed3bbf79fd0561158e46bb2219eeb05c89e67",
+  "command": "rtk proxy ruby -rjson -rdigest -e 'doc=\"deliverables/songguo-revised-plan.md\"; body=File.read(doc); required=[\"接入开放日期尚未确认\",\"只允许一家伙伴进入实际资料核对窗口\",\"溪桥进入本轮核对\",\"联系人职责说明仍未提供\",\"尚未提交资料目录\",\"阶段 A\",\"阶段 B\",\"阶段 C\",\"阶段 D\",\"阶段 E\",\"仍未确认但已划定影响的事项\",\"不构成接入批准、资料核验通过、独立复核通过或最终交付结论\"]; missing=required.reject { |item| body.include?(item) }; abort(\"missing content: #{missing.join(\",\")}\") unless missing.empty?; refs=[\"GOALS.md\",\"PLAN.md\",\"RULES.md\",\"work-ledger.yaml\",\"DELIVERABLES.md\",\"materials/clarification.md\",\"materials/partner-requests.csv\",\"deliverables/songguo-change-impact.md\"]; absent=refs.reject { |item| File.file?(item) }; abort(\"missing source: #{absent.join(\",\")}\") unless absent.empty?; material_files=Dir.glob(\"materials/**/*\").select { |path| File.file?(path) }.sort; abort(\"unexpected material inventory\") unless material_files==[\"materials/clarification.md\",\"materials/initial-plan.md\",\"materials/partner-requests.csv\"]; abort(\"deliverable hash mismatch\") unless Digest::SHA256.file(doc).hexdigest==\"58e419ab7ff87b2566fc156f3256b01e444987be7e8fae6dc6ad727027b0ca37\"; abort(\"rules hash mismatch\") unless Digest::SHA256.file(\"RULES.md\").hexdigest==\"bbd2f4b5241b1c3fbdd774c9c749464960beaa47ac1d70501f2ddcdae441499a\"; abort(\"clarification hash mismatch\") unless Digest::SHA256.file(\"materials/clarification.md\").hexdigest==\"8177205a3f6aa84f02efb5f3ebb28333c4711db302f6400d443608cb38cf1e1e\"; abort(\"review boundary violated\") if File.exist?(\"deliverables/sg-independent-review.md\") || File.exist?(\"deliverables/sg-delivery.md\"); puts \"SG-PLAN verification passed\"'",
+  "scope": ["SG-PLAN"],
+  "branch_id": null,
+  "verified_at": 1788915569236
+}

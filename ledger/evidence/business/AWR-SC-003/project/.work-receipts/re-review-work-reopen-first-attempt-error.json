@@ -1,0 +1,14 @@
+{
+  "kind": "reviewer_command_failure",
+  "command": "target/release/awr --project <project> --json work reopen SG-REVIEW --session 01M21ZYEDC5YQPFP7JS62FQB0M --expected-revision 3",
+  "exit_code": 1,
+  "error": {
+    "code": "RevisionConflict",
+    "message": "revision conflict: expected 3, actual 119",
+    "details": {
+      "actual": 119,
+      "expected": 3
+    }
+  },
+  "business_state_changed": false
+}

@@ -1,0 +1,23 @@
+{
+  "blocked_count": 1,
+  "branch_id": null,
+  "counts": {
+    "blocked": 1,
+    "completed": 4
+  },
+  "current": [],
+  "current_total": 0,
+  "freshness_basis": "source_refresh",
+  "next_action": "Inspect readiness diagnostics and resolve the blocking prerequisite.",
+  "ok": true,
+  "project": "松果伙伴接入方案",
+  "project_id": "01M21R5CNDAT34RYH0ZM7SFMX6",
+  "project_revision": 118,
+  "read_only": false,
+  "ready_count": 0,
+  "source_issues": [],
+  "source_refresh_performed": true,
+  "source_warnings": 0,
+  "suggested_work": null,
+  "total": 5
+}

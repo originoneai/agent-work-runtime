@@ -1,0 +1,88 @@
+{
+  "checkpoint": {
+    "changed_entities": [
+      "evidence:01M21RVAATF6Y2D46CGE192577",
+      "work_items:01M21R5CNJ9YAPW5K5AAEFQ5QW"
+    ],
+    "context_hash": "385f55af6a79f78c154071be2f8b70f8257a12895d09d06b0b8d9c3ad01372f9",
+    "created_at": 1788913610105,
+    "digest": "SG-DIFF 已完成：来源版本对照产物已生成并导入，locally_verified 证据已逐条绑定验收；完成后 SG-DEPEND 已成为唯一 ready 项。",
+    "id": "01M21RYVBS3NYEEQZ587YPW6BR",
+    "next_action": "为 SG-DEPEND 启动新会话并领取任务，刷新 L1 后区分三家静态材料差异盘点与仅限已确认两家的实际资料核对。",
+    "open_loops": [
+      "U-01：当前窗口两家伙伴的具体名单未提供，不得自行选择。",
+      "U-02：接入开放日期未确认，不得形成日期承诺。",
+      "U-03：调整前权威源字节、变更时间和批准记录未提供，只能做语义对照。",
+      "AWR 完成写回的 locator-only 来源证据会投影为 Unknown；当前可核验记录是 SG-DIFF-SOURCE-VERSIONS-20260909，后续读取需带 source SHA。"
+    ],
+    "project_revision": 29,
+    "revision": 1,
+    "session_id": "01M21R6AFCZCBKPFGQ7C278HCM"
+  },
+  "checkpoint_save": {
+    "after_revision": 12,
+    "attempt_id": "01M21RYVBRRP1S3PCGE1QN6AE0",
+    "delta_bytes": 6422,
+    "delta_recorded": true,
+    "event_id": "01M21RYVBSZ6QZ9RMN1NR9MH1X",
+    "observed_changed_entity_count": 2,
+    "reported_changed_entity_count": 2,
+    "session_event_count": 3,
+    "source_observation_count": 4,
+    "through_revision": 29
+  },
+  "checkpoint_saves": {
+    "attempts": [
+      {
+        "base_project_revision": 29,
+        "checkpoint_id": "01M21RYVBS3NYEEQZ587YPW6BR",
+        "created_at": 1788913610104,
+        "id": "01M21RYVBRRP1S3PCGE1QN6AE0",
+        "started_project_revision": 30,
+        "status": "completed"
+      }
+    ],
+    "incomplete_count": 0,
+    "limit": 20,
+    "may_have_more": false
+  },
+  "claims": [
+    {
+      "acquired_at": 1788912806380,
+      "agent_id": "codex-root",
+      "branch_id": null,
+      "expires_at": null,
+      "id": "01M21R6AFDZNYQPDS1ASTRJMZH",
+      "project_id": "01M21R5CNDAT34RYH0ZM7SFMX6",
+      "released_at": 1788913494368,
+      "revision": 2,
+      "session_id": "01M21R6AFCZCBKPFGQ7C278HCM",
+      "status": "released",
+      "work_item_id": "01M21R5CNJ9YAPW5K5AAEFQ5QW"
+    }
+  ],
+  "context_requires_refresh": true,
+  "freshness_basis": "runtime_database",
+  "inherited_checkpoint": null,
+  "inherited_checkpoint_save": null,
+  "ok": true,
+  "project_revision": 32,
+  "resumed_successor": null,
+  "session": {
+    "agent_id": "codex-root",
+    "branch_id": null,
+    "end_project_revision": 32,
+    "ended_at": 1788913621803,
+    "id": "01M21R6AFCZCBKPFGQ7C278HCM",
+    "last_checkpoint_id": "01M21RYVBS3NYEEQZ587YPW6BR",
+    "model": "gpt-5",
+    "project_id": "01M21R5CNDAT34RYH0ZM7SFMX6",
+    "provider": "openai",
+    "revision": 3,
+    "start_project_revision": 12,
+    "started_at": 1788912806380,
+    "status": "ended",
+    "work_item_id": "01M21R5CNJ9YAPW5K5AAEFQ5QW"
+  },
+  "source_refresh_performed": false
+}

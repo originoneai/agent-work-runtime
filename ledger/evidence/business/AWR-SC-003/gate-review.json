@@ -1,0 +1,114 @@
+{
+  "kind": "actual_business_case_gate_review_before_remote_delivery",
+  "scenario_id": "AWR-SC-003",
+  "reviewed_at": "2026-09-09T12:28:32+08:00",
+  "contract": "contracts/awr-v1.json",
+  "contract_sha256": "3ed22c45aa3fda0964fbcdd089a2d51d9779aee3c21d846f4c1b9d2a863666d9",
+  "fixture_contract_version": "1.0.1",
+  "runtime_source_commit": "4f6fd11c5283a4ddb52e6cb6fe8ef5a5fd8931aa",
+  "runtime_binary_sha256": "df3aee795905f87fe8bc0747a33b6e73c8a25cef0a072d0b2467e226d0d10217",
+  "business_fixture_seed_commit": "146ed3bbf79fd0561158e46bb2219eeb05c89e67",
+  "executor": "codex-cli:01a08381-04a8-7871-9372-a3f55c2d8367",
+  "reviewer": "luna_worker:/root/restricted_material_client_run",
+  "scope": "按来源变更重排伙伴接入计划，交付版本对照、依赖与验收影响、最终安排和未决事项；实际伙伴接入与材料核验尚未发生。",
+  "gates": {
+    "natural_client_initiation": {
+      "passed": true,
+      "evidence": [
+        "control/initial-sealed.json",
+        "control/native-input-audit.json"
+      ],
+      "result": "The exact natural initial request appears once in the actual native client; all five actual business inputs are accounted for and manually reviewed without internal IDs or technical state instructions."
+    },
+    "tool_or_role_execution": {
+      "passed": true,
+      "evidence": [
+        "control/final-native-metadata.json",
+        "control/initial-review-extract.json",
+        "control/final-delivery-review-extract.json"
+      ],
+      "result": "Five actual Codex business turns execute AWR and produce artifacts; two distinct actual luna_worker review sessions are bound to independently verified reports."
+    },
+    "real_artifact": {
+      "passed": true,
+      "evidence": [
+        "project/deliverables/songguo-source-versions.md",
+        "project/deliverables/songguo-change-impact.md",
+        "project/deliverables/songguo-revised-plan.md"
+      ],
+      "result": "Actual source-version explanation, changed dependency/acceptance assessment and executable plan are retained with original historical bytes."
+    },
+    "business_followup_1": {
+      "passed": true,
+      "evidence": [
+        "round-1-inputs.json",
+        "control/round-1-review-extract.json",
+        "history/round-1/deliverables/songguo-change-impact.md"
+      ],
+      "result": "A newly published one-partner rule preceded the first natural followup. The client assessed capacity, dependency and acceptance impacts and retained missing facts."
+    },
+    "business_followup_2": {
+      "passed": true,
+      "evidence": [
+        "round-2-inputs.json",
+        "control/round-2-review-extract.json",
+        "history/round-2/deliverables/songguo-revised-plan.md"
+      ],
+      "result": "A separately published coordination clarification preceded the second natural followup. The client selected the named current partner and revised an executable one-window plan."
+    },
+    "independent_review": {
+      "passed": true,
+      "evidence": [
+        "control/independent-review.json",
+        "control/independent-re-review.json",
+        "control/re-reviewer-identity-binding.json",
+        "project/deliverables/sg-independent-review.md",
+        "project/deliverables/sg-independent-re-review.md"
+      ],
+      "result": "The distinct actual reviewer found obsolete current-version references, the original client corrected four artifacts, and actual re-review accepted the plan-scope remediation. Technical reference deviations stay recorded and receive no compliance credit."
+    },
+    "final_delivery": {
+      "passed": true,
+      "evidence": [
+        "control/final-delivery-sealed.json",
+        "control/final-delivery-observation.json",
+        "project/deliverables/sg-delivery.md"
+      ],
+      "result": "After re-review, the original native client delivered the current plan and explicit remaining responsibilities. Root read the entire final artifact and verified four reviewed producer artifacts and both independent reports remained unchanged."
+    },
+    "traceable_receipt": {
+      "passed": true,
+      "evidence": [
+        "project/.work-receipts/sg-delivery-verification.json",
+        "project/.work-receipts/sg-delivery-trace.json",
+        "project/.work-receipts/awr-sg-deliver-complete.json",
+        "control/final-delivery-observation.json",
+        "receipt-storage.json"
+      ],
+      "result": "141 final receipt files match sealed bytes; three acceptance mappings, nine final checks and source/artifact hashes were examined. The actual applied completion event and ended session are independently observed read-only; five works are completed and all claims released."
+    },
+    "fixture_isolation": {
+      "passed": true,
+      "evidence": [
+        "run.json",
+        "control/final-delivery-observation.json",
+        "project/review-inputs/reference-lookup-process-record.json",
+        "project/deliverables/sg-independent-re-review.md"
+      ],
+      "result": "The separately prepared namespace, Git source seed, project and actual work IDs are distinct from the other current databases. Retained technical lookups have no observed cross-case business task, answer or result reuse; the out-of-allowlist lookup remains a process violation."
+    },
+    "independent_commit_and_remote_sha": {
+      "passed": false,
+      "evidence": [],
+      "result": "Pending a case-only artifact commit, matching independent Git and GitHub remote observations, then a separate acceptance binding."
+    }
+  },
+  "limitations": [
+    "The historical out-of-allowlist technical lookup is not retroactively compliant and receives no compliance credit.",
+    "Only the completed source-change planning business loop is assessed. Partner materials, named owners, actual checks, approvals, opening date and earlier authorization remain unknown.",
+    "Native full context, global instructions, memory, thinking and runtime databases remain private; business extracts account for actual command/output hashes.",
+    "run.json remains preparation history, not current model-call or participant statistics.",
+    "No whole-case completion credit precedes the separately verified remote delivery."
+  ],
+  "completion_claim": false
+}

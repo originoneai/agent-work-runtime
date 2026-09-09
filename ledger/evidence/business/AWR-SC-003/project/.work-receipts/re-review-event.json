@@ -1,0 +1,19 @@
+{
+  "event": {
+    "branch_id": null,
+    "created_at": 1788922105814,
+    "event_type": "review.recheck_completed",
+    "id": "01M22123YPEJ5HZ8BN68AE7RD3",
+    "importance": "high",
+    "payload": {},
+    "project_id": "01M21R5CNDAT34RYH0ZM7SFMX6",
+    "project_revision": 137,
+    "session_id": "01M2202ANNA5WFK3Q9DZ015B7A",
+    "summary": "原独立复核者已完成固定整改包返检：R-01.1 至 R-01.5 关闭；R-02.1 至 R-02.3 披露充分且偏离永久保留；仅通过计划范围，最终交付仍回原客户端。",
+    "work_item_id": "01M21R5CNJY0DZNP7FA3JX28VA"
+  },
+  "freshness_basis": "source_refresh",
+  "ok": true,
+  "project_revision": 137,
+  "source_refresh_performed": true
+}

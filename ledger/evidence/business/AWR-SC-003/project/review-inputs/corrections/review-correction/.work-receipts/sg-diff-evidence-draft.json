@@ -1,0 +1,16 @@
+{
+  "external_key": "SG-DIFF-SOURCE-VERSIONS-20260909",
+  "work_item_key": "SG-DIFF",
+  "evidence_type": "completion_report",
+  "level": "locally_verified",
+  "summary": "Locally verified source-version comparison for the current two-partner window, with the unnamed pair, unconfirmed date, and unavailable pre-change source history preserved as unresolved facts.",
+  "locator": ".work-receipts/sg-diff-verification.json",
+  "sha256": "7e08ee2571219a2b22d3ef0b80a0b027d71529b83dd8f4a16a26d8e1bdeca25f",
+  "source_sha": "146ed3bbf79fd0561158e46bb2219eeb05c89e67",
+  "command": "rtk proxy ruby -rdigest -e 'path=\"deliverables/songguo-source-versions.md\"; body=File.read(path); required=[\"原草案与当前生效要求对照\",\"U-01\",\"U-02\",\"U-03\",\"当前窗口的伙伴资料核对数量是两家\",\"不得自行从溪桥、云岭、南园中选两家\",\"接入开放日期未确认\",\"由不同参与者独立复核\"]; missing=required.reject { |item| body.include?(item) }; abort(\"missing content: #{missing.join(\",\")}\") unless missing.empty?; refs=[\"project.toml\",\"GOALS.md\",\"PLAN.md\",\"RULES.md\",\"work-ledger.yaml\",\"materials/initial-plan.md\",\"materials/partner-requests.csv\",\"DELIVERABLES.md\"]; absent=refs.reject { |item| File.file?(item) }; abort(\"missing source: #{absent.join(\",\")}\") unless absent.empty?; abort(\"review boundary violated\") if File.exist?(\"deliverables/sg-independent-review.md\") || File.exist?(\"deliverables/sg-delivery.md\"); abort(\"content hash mismatch\") unless Digest::SHA256.file(path).hexdigest==\"b026c37190ea1f5dddc2a30a0e7aab3e4e6577c541843e4cfe61395ed7f78d04\"; puts \"SG-DIFF verification passed\"'",
+  "scope": [
+    "SG-DIFF"
+  ],
+  "branch_id": null,
+  "verified_at": 1788913296491
+}
