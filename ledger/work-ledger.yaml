@@ -1,8 +1,8 @@
 schema_version: 1
 contract_id: awr-v1
 contract_version: 1.0.1
-ledger_revision: 192
-updated_at: '2026-09-09T13:17:26.706454+08:00'
+ledger_revision: 193
+updated_at: '2026-09-09T13:19:58.939743+08:00'
 project:
   name: Agent Work Runtime
   external_key: agent-work-runtime
@@ -2146,10 +2146,11 @@ scenarios:
   blocker: null
   delivery: null
 - id: AWR-SC-008
-  status: in_progress
+  status: blocked
   executor: kimi-code:session_6e556096-55b8-4651-8403-bd7cd4077593
   reviewer: null
-  evidence: []
+  evidence:
+  - ledger/evidence/business/client-git-boundary-20260909.json
   gates:
     natural_client_initiation: false
     tool_or_role_execution: false
@@ -2161,7 +2162,7 @@ scenarios:
     traceable_receipt: false
     fixture_isolation: false
     independent_commit_and_remote_sha: false
-  blocker: null
+  blocker: 新 r2 原客户端实际策略将项目 .git 设为只读，未创建真实工作 Git ref，前序硬条件未满足；等待正常授权且实际允许 Git 元数据写入的客户端环境。
   delivery: null
 metrics:
 - id: bootstrap_tokens
