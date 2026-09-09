@@ -1,0 +1,185 @@
+{
+  "kind": "business_acceptance",
+  "scenario_id": "AWR-SC-003",
+  "repository": "https://github.com/originoneai/agent-work-runtime",
+  "source_commit": "9ce7c6a403a60cda4d7f7020eef8bdb5c497c3c2",
+  "runtime_source_commit": "4f6fd11c5283a4ddb52e6cb6fe8ef5a5fd8931aa",
+  "runtime_binary_sha256": "df3aee795905f87fe8bc0747a33b6e73c8a25cef0a072d0b2467e226d0d10217",
+  "business_fixture_seed_commit": "146ed3bbf79fd0561158e46bb2219eeb05c89e67",
+  "checked_at": "2026-09-09T12:34:28+08:00",
+  "executor": "codex-cli:01a08381-04a8-7871-9372-a3f55c2d8367",
+  "reviewer": "luna_worker:/root/restricted_material_client_run",
+  "scope": "按来源变更重排伙伴接入计划，交付版本对照、依赖与验收影响、最终安排和未决事项；实际伙伴接入与材料核验尚未发生。",
+  "remote_receipt": {
+    "commit": "9ce7c6a403a60cda4d7f7020eef8bdb5c497c3c2",
+    "url": "https://github.com/originoneai/agent-work-runtime/commit/9ce7c6a403a60cda4d7f7020eef8bdb5c497c3c2",
+    "verified_at": "2026-09-09T12:34:28+08:00",
+    "git_ls_remote": {
+      "ref": "refs/heads/main",
+      "sha": "9ce7c6a403a60cda4d7f7020eef8bdb5c497c3c2",
+      "actual_result": "9ce7c6a403a60cda4d7f7020eef8bdb5c497c3c2\trefs/heads/main",
+      "exit_code": 0
+    },
+    "github_api": {
+      "endpoint": "repos/originoneai/agent-work-runtime/commits/main",
+      "sha": "9ce7c6a403a60cda4d7f7020eef8bdb5c497c3c2",
+      "html_url": "https://github.com/originoneai/agent-work-runtime/commit/9ce7c6a403a60cda4d7f7020eef8bdb5c497c3c2",
+      "exit_code": 0
+    },
+    "scope": "Actual root Git transport and GitHub API independently matched after successful case-only push; 478 files under AWR-SC-003 only."
+  },
+  "gates": {
+    "natural_client_initiation": true,
+    "tool_or_role_execution": true,
+    "real_artifact": true,
+    "business_followup_1": true,
+    "business_followup_2": true,
+    "independent_review": true,
+    "final_delivery": true,
+    "traceable_receipt": true,
+    "fixture_isolation": true,
+    "independent_commit_and_remote_sha": true
+  },
+  "checks": [
+    {
+      "name": "natural_client_initiation",
+      "passed": true,
+      "result": "The exact natural initial request appears once in the actual native client; all five actual business inputs are accounted for and manually reviewed without internal IDs or technical state instructions.",
+      "artifacts": [
+        "control/initial-sealed.json",
+        "control/native-input-audit.json"
+      ]
+    },
+    {
+      "name": "tool_or_role_execution",
+      "passed": true,
+      "result": "Five actual Codex business turns execute AWR and produce artifacts; two distinct actual luna_worker review sessions are bound to independently verified reports.",
+      "artifacts": [
+        "control/final-native-metadata.json",
+        "control/initial-review-extract.json",
+        "control/final-delivery-review-extract.json"
+      ]
+    },
+    {
+      "name": "real_artifact",
+      "passed": true,
+      "result": "Actual source-version explanation, changed dependency/acceptance assessment and executable plan are retained with original historical bytes.",
+      "artifacts": [
+        "project/deliverables/songguo-source-versions.md",
+        "project/deliverables/songguo-change-impact.md",
+        "project/deliverables/songguo-revised-plan.md"
+      ]
+    },
+    {
+      "name": "business_followup_1",
+      "passed": true,
+      "result": "A newly published one-partner rule preceded the first natural followup. The client assessed capacity, dependency and acceptance impacts and retained missing facts.",
+      "artifacts": [
+        "round-1-inputs.json",
+        "control/round-1-review-extract.json",
+        "history/round-1/deliverables/songguo-change-impact.md"
+      ]
+    },
+    {
+      "name": "business_followup_2",
+      "passed": true,
+      "result": "A separately published coordination clarification preceded the second natural followup. The client selected the named current partner and revised an executable one-window plan.",
+      "artifacts": [
+        "round-2-inputs.json",
+        "control/round-2-review-extract.json",
+        "history/round-2/deliverables/songguo-revised-plan.md"
+      ]
+    },
+    {
+      "name": "independent_review",
+      "passed": true,
+      "result": "The distinct actual reviewer found obsolete current-version references, the original client corrected four artifacts, and actual re-review accepted the plan-scope remediation. Technical reference deviations stay recorded and receive no compliance credit.",
+      "artifacts": [
+        "control/independent-review.json",
+        "control/independent-re-review.json",
+        "control/re-reviewer-identity-binding.json",
+        "project/deliverables/sg-independent-review.md",
+        "project/deliverables/sg-independent-re-review.md"
+      ]
+    },
+    {
+      "name": "final_delivery",
+      "passed": true,
+      "result": "After re-review, the original native client delivered the current plan and explicit remaining responsibilities. Root read the entire final artifact and verified four reviewed producer artifacts and both independent reports remained unchanged.",
+      "artifacts": [
+        "control/final-delivery-sealed.json",
+        "control/final-delivery-observation.json",
+        "project/deliverables/sg-delivery.md"
+      ]
+    },
+    {
+      "name": "traceable_receipt",
+      "passed": true,
+      "result": "141 final receipt files match sealed bytes; three acceptance mappings, nine final checks and source/artifact hashes were examined. The actual applied completion event and ended session are independently observed read-only; five works are completed and all claims released.",
+      "artifacts": [
+        "project/.work-receipts/sg-delivery-verification.json",
+        "project/.work-receipts/sg-delivery-trace.json",
+        "project/.work-receipts/awr-sg-deliver-complete.json",
+        "control/final-delivery-observation.json",
+        "receipt-storage.json"
+      ]
+    },
+    {
+      "name": "fixture_isolation",
+      "passed": true,
+      "result": "The separately prepared namespace, Git source seed, project and actual work IDs are distinct from the other current databases. Retained technical lookups have no observed cross-case business task, answer or result reuse; the out-of-allowlist lookup remains a process violation.",
+      "artifacts": [
+        "run.json",
+        "control/final-delivery-observation.json",
+        "project/review-inputs/reference-lookup-process-record.json",
+        "project/deliverables/sg-independent-re-review.md"
+      ]
+    },
+    {
+      "name": "independent_commit_and_remote_sha",
+      "passed": true,
+      "result": "The case-only artifact commit 9ce7c6a403a60cda4d7f7020eef8bdb5c497c3c2 was independently observed through Git transport and GitHub API after successful push."
+    }
+  ],
+  "artifacts": [
+    "ledger/evidence/business/AWR-SC-003/control/final-delivery-observation.json",
+    "ledger/evidence/business/AWR-SC-003/control/final-delivery-review-extract.json",
+    "ledger/evidence/business/AWR-SC-003/control/final-delivery-sealed.json",
+    "ledger/evidence/business/AWR-SC-003/control/final-native-metadata.json",
+    "ledger/evidence/business/AWR-SC-003/control/independent-re-review.json",
+    "ledger/evidence/business/AWR-SC-003/control/independent-review.json",
+    "ledger/evidence/business/AWR-SC-003/control/initial-review-extract.json",
+    "ledger/evidence/business/AWR-SC-003/control/initial-sealed.json",
+    "ledger/evidence/business/AWR-SC-003/control/native-input-audit.json",
+    "ledger/evidence/business/AWR-SC-003/control/re-reviewer-identity-binding.json",
+    "ledger/evidence/business/AWR-SC-003/control/round-1-review-extract.json",
+    "ledger/evidence/business/AWR-SC-003/control/round-2-review-extract.json",
+    "ledger/evidence/business/AWR-SC-003/gate-review.json",
+    "ledger/evidence/business/AWR-SC-003/history/round-1/deliverables/songguo-change-impact.md",
+    "ledger/evidence/business/AWR-SC-003/history/round-2/deliverables/songguo-revised-plan.md",
+    "ledger/evidence/business/AWR-SC-003/manifest.json",
+    "ledger/evidence/business/AWR-SC-003/project/.work-receipts/awr-sg-deliver-complete.json",
+    "ledger/evidence/business/AWR-SC-003/project/.work-receipts/sg-delivery-trace.json",
+    "ledger/evidence/business/AWR-SC-003/project/.work-receipts/sg-delivery-verification.json",
+    "ledger/evidence/business/AWR-SC-003/project/deliverables/sg-delivery.md",
+    "ledger/evidence/business/AWR-SC-003/project/deliverables/sg-independent-re-review.md",
+    "ledger/evidence/business/AWR-SC-003/project/deliverables/sg-independent-review.md",
+    "ledger/evidence/business/AWR-SC-003/project/deliverables/songguo-change-impact.md",
+    "ledger/evidence/business/AWR-SC-003/project/deliverables/songguo-revised-plan.md",
+    "ledger/evidence/business/AWR-SC-003/project/deliverables/songguo-source-versions.md",
+    "ledger/evidence/business/AWR-SC-003/project/review-inputs/reference-lookup-process-record.json",
+    "ledger/evidence/business/AWR-SC-003/publication-review.json",
+    "ledger/evidence/business/AWR-SC-003/receipt-storage.json",
+    "ledger/evidence/business/AWR-SC-003/round-1-inputs.json",
+    "ledger/evidence/business/AWR-SC-003/round-2-inputs.json",
+    "ledger/evidence/business/AWR-SC-003/run.json"
+  ],
+  "limitations": [
+    "The historical out-of-allowlist technical lookup is not retroactively compliant and receives no compliance credit.",
+    "Only the completed source-change planning business loop is assessed. Partner materials, named owners, actual checks, approvals, opening date and earlier authorization remain unknown.",
+    "Native full context, global instructions, memory, thinking and runtime databases remain private; business extracts account for actual command/output hashes.",
+    "run.json remains preparation history, not current model-call or participant statistics.",
+    "This acceptance binds the actual source-change planning business chain in its isolated synthetic project; real partner onboarding remains unverified."
+  ],
+  "completion_claim": true
+}

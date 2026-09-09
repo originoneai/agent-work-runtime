@@ -1,8 +1,8 @@
 schema_version: 1
 contract_id: awr-v1
 contract_version: 1.0.1
-ledger_revision: 190
-updated_at: '2026-09-09T12:29:06+08:00'
+ledger_revision: 191
+updated_at: '2026-09-09T12:34:28+08:00'
 project:
   name: Agent Work Runtime
   external_key: agent-work-runtime
@@ -12,12 +12,12 @@ project:
 current:
   milestone: M9
   work_item: AWR-QA-003
-  next_action: 真实业务交付 1/8。实际输入预检共享修复完成并通过 11 项定向检查，独立提交；来源变化已封存最终交付待单场远端验收。长任务与帮助中心原客户端交付，中断恢复整改及受限资料返检继续；并行协作安排真实现场接续，跨客户端用全新 r2 保留环境拒绝后推进。
+  next_action: 真实业务交付 2/8：接手新项目与来源变化均已单场提交并通过 Git/GitHub 远端核验。继续长任务、帮助中心最终交付；中断恢复整改、受限资料返检；并行协作实际现场接续后开展第二轮追问，跨客户端全新 r2 按环境实际边界推进。
   open_loops:
   - 用户已明确授权本项目 Codex/Kimi 实际客户端及 luna_worker 并行执行/独立复核，后续同范围不重复询问；执行配置沿用既有模型和 hooks。
   - QA-003 已从保存 checkpoint 恢复并重新认领；八套本地新项目保留，逐场开展实际工具执行、两轮业务追问、独立复核和独立远端交付。
   - 10/10 指标已达标；六项 CLI p95 为 33.817084–135.13625 ms。原严格目标和失败基线保留。
-  - 真实业务验收当前 1/8；只有 AWR-SC-001 已完成全部硬门槛，其他场景尚缺的复核、修订、原生 MCP、最终交付或独立远端回执继续执行，不能据准备状态计数。
+  - 真实业务验收当前 2/8；AWR-SC-001 与 AWR-SC-003 已完成全部硬门槛，其他场景尚缺的复核、修订、原生 MCP、最终交付或独立远端回执继续执行，不能据准备状态计数。
   - 跨客户端旧轮保留真实 MCP 与内部步骤泄露记录但不计 E4；全新 r2 Codex 正常前序执行已发现 Git ref 环境限制，等待实际交接封存后按真实边界推进，不绕过。通用输入预检已实现，仍须独立审查精确业务输入。
 milestones:
 - id: M0
@@ -1738,7 +1738,7 @@ work_items:
   id: AWR-QA-003
   kind: quality
   milestone: M9
-  next_action: 真实业务交付 1/8。实际输入预检共享修复完成并通过 11 项定向检查，独立提交；来源变化已封存最终交付待单场远端验收。长任务与帮助中心原客户端交付，中断恢复整改及受限资料返检继续；并行协作安排真实现场接续，跨客户端用全新 r2 保留环境拒绝后推进。
+  next_action: 真实业务交付 2/8：接手新项目与来源变化均已单场提交并通过 Git/GitHub 远端核验。继续长任务、帮助中心最终交付；中断恢复整改、受限资料返检；并行协作实际现场接续后开展第二轮追问，跨客户端全新 r2 按环境实际边界推进。
   owner: codex-primary
   priority: P2
   required_for_v1: true
@@ -2044,23 +2044,27 @@ scenarios:
   blocker: null
   delivery: null
 - id: AWR-SC-003
-  status: in_progress
+  status: completed
   executor: codex-cli:01a08381-04a8-7871-9372-a3f55c2d8367
   reviewer: luna_worker:/root/restricted_material_client_run
-  evidence: []
+  evidence:
+  - ledger/evidence/business/AWR-SC-003/acceptance.json
   gates:
-    natural_client_initiation: false
-    tool_or_role_execution: false
-    real_artifact: false
-    business_followup_1: false
-    business_followup_2: false
-    independent_review: false
-    final_delivery: false
-    traceable_receipt: false
-    fixture_isolation: false
-    independent_commit_and_remote_sha: false
+    natural_client_initiation: true
+    tool_or_role_execution: true
+    real_artifact: true
+    business_followup_1: true
+    business_followup_2: true
+    independent_review: true
+    final_delivery: true
+    traceable_receipt: true
+    fixture_isolation: true
+    independent_commit_and_remote_sha: true
   blocker: null
-  delivery: null
+  delivery:
+    source_commit: 9ce7c6a403a60cda4d7f7020eef8bdb5c497c3c2
+    url: https://github.com/originoneai/agent-work-runtime/commit/9ce7c6a403a60cda4d7f7020eef8bdb5c497c3c2
+    verified_at: '2026-09-09T12:34:28+08:00'
 - id: AWR-SC-004
   status: in_progress
   executor: codex-cli:01a083c0-2c0b-7fc1-ba7d-0b0721dfeb0f
