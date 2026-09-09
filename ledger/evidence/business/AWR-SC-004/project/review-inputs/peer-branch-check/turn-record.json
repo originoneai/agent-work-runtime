@@ -1,0 +1,29 @@
+{
+  "kind": "actual_prior_business_turn",
+  "phase": "peer-branch-check",
+  "client_task_id": "01a083ca-4a86-7b81-93cd-59afa64767e0",
+  "actual_user_turn": {
+    "timestamp": "2026-09-09T02:13:50.078Z",
+    "text": "请在独立工作分支上作为第二位内容校对负责人，核对当前活动内容安排与现场保障回执，并形成自己的核对记录。现有内容负责人仍在推进；请遵守现有归属，遇到重叠先记录待协调事项，不覆盖对方产物。"
+  },
+  "source_sha256": {
+    "project.toml": "d52670ea0470cd5d8ee1290f6fc5802ae5caadaea5a99d1641471fff8189238a",
+    "GOALS.md": "b4c7d4b82ee317c7fdd4186bed1abb78ba366ef98ac0866b09f85844e22fbf15",
+    "PLAN.md": "729e1a14fe3b11ed869252e5b8aa85d8a3854719865d1cb7b3602ef91aa90ed9",
+    "RULES.md": "31ac59aa580dc3f29f17cd1f532eebbaa0152a041ccd8e00ca74e6d4cd914e19",
+    "work-ledger.yaml": "13a426a9dff824fe1f20daa8f5a781ad3b61f814f6e8c0dd839877b87c046c12",
+    "AGENTS.md": "d0ca28ca18c438aefdada6a14cb847a0664e261f9e8e48abbfd8701720eb66a2",
+    "DELIVERABLES.md": "b81c90585753fd7d52390d4dd5fb338c4a4d71c4b7cc0bcfb17222be50a34766"
+  },
+  "artifact_sha256": {
+    "deliverables/xingqiao-collaboration-review.md": "41bc099d732235e9ad1dbeab0daf5bb4ddc8d8058470234430b739a1bd5f69c6",
+    "deliverables/xingqiao-content.md": "36c1427fadcba2c7c7749a0cf98e1e0f7ed8d725faa5c298ad1aa8d1edf5e462",
+    "deliverables/xingqiao-ownership.md": "52f5b4ffc113c40d46eb272d9de2aa002f878e8e8eb10d159e78eebd226c4a75",
+    "deliverables/xingqiao-venue.md": "3035f626d7ef00cd860d2fd4781513b76d9587b1e6c67924b549ce8865c828a6"
+  },
+  "native_transcript_sha256": "a5f39009fc14139910d9d85299de1f7a3ba8b0f7089d8bf8b496a8038a3abd05",
+  "events_sha256": "26adb3cc571d2efdf4b75acf4c590bf15921f6c40301c3075484be22433eb0a9",
+  "sealed_at": "2026-09-09T10:48:06+08:00",
+  "final_message": "已完成第二内容校对，并保留在独立 AWR 工作分支 `xq-content-proofread-2`。\n\n- [第二内容校对记录](/Users/mac/Documents/originone/agent-work-running/.local/business-live-20260909-v1/parallel-ownership/project/deliverables/xingqiao-collaboration-review.md:24)\n- 当前内容与现场回执在计划层面已对齐：85 分钟议程、场外 10 分钟、单投影窗口、三组桌面及离线降级路径一致。\n- 新增 `COORD-06`：内容侧虽已形成 C→V 回复，但缺少现场方接收确认，暂按“待协调接续”处理。\n- 场地时刻、实机测试、人员、接口和物料仍未闭合，不能视为现场验收或正式 `XQ-REVIEW`。\n- [本轮核验证据](/Users/mac/Documents/originone/agent-work-running/.local/business-live-20260909-v1/parallel-ownership/project/.work-receipts/proofread2-r2-evidence-report.json:6) 已登记为 `locally_verified`，校验脚本及 `git diff --check` 均通过。\n- [交接检查点](/Users/mac/Documents/originone/agent-work-running/.local/business-live-20260909-v1/parallel-ownership/project/.work-receipts/proofread2-r2-checkpoint.json:6) 已保存；校对会话和认领已释放，默认工作面已归还 `main`。\n\n全程只新增校对记录和回执，没有修改原内容负责人或现场负责人的产物；原内容负责人仍在继续推进 `XQ-CONTENT`。",
+  "note": "Copied historical evidence, not newly authored business output or a review conclusion."
+}

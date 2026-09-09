@@ -1,0 +1,49 @@
+{
+  "claim": {
+    "acquired_at": 1788917792669,
+    "agent_id": "xq-content-executor",
+    "branch_id": null,
+    "expires_at": 1788921392669,
+    "id": "01M21WYFWY9Y01GV8JVGXHJZBF",
+    "project_id": "01M21W3H8XNKD8AKP4N1JNQQTM",
+    "released_at": null,
+    "revision": 1,
+    "session_id": "01M21WYFWXQHZNK0BJTYVD8N1K",
+    "status": "active",
+    "work_item_id": "01M21W3H924XZK5JAZCTWTQPJH"
+  },
+  "event": {
+    "artifact_id": null,
+    "branch_id": null,
+    "checkpoint_id": null,
+    "created_at": 1788917792670,
+    "id": "01M21WYFWYK77W8ZCEZ4PMWFX5",
+    "importance": "normal",
+    "project_revision": 40,
+    "session_id": "01M21WYFWXQHZNK0BJTYVD8N1K",
+    "source_id": null,
+    "summary": "Started agent work session",
+    "type": "session.started",
+    "work_item_id": "01M21W3H924XZK5JAZCTWTQPJH"
+  },
+  "freshness_basis": "source_refresh",
+  "ok": true,
+  "project_revision": 40,
+  "session": {
+    "agent_id": "xq-content-executor",
+    "branch_id": null,
+    "end_project_revision": null,
+    "ended_at": null,
+    "id": "01M21WYFWXQHZNK0BJTYVD8N1K",
+    "last_checkpoint_id": null,
+    "model": "gpt-5",
+    "project_id": "01M21W3H8XNKD8AKP4N1JNQQTM",
+    "provider": "codex",
+    "revision": 1,
+    "start_project_revision": 39,
+    "started_at": 1788917792669,
+    "status": "active",
+    "work_item_id": "01M21W3H924XZK5JAZCTWTQPJH"
+  },
+  "source_refresh_performed": true
+}

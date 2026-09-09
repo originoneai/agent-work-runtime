@@ -1,0 +1,4 @@
+{
+  "code": "InvalidTransition",
+  "message": "invalid transition: cannot Approve a Draft proposal"
+}

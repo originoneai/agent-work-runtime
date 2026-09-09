@@ -1,0 +1,162 @@
+{
+  "acceptance": [
+    "处理共有约束和执行者离开后的接续事项。",
+    "保留实际产物与来源引用，无法确认的内容显式说明。"
+  ],
+  "decisions": [],
+  "dependency_cycles": [],
+  "evidence": [
+    {
+      "currency": "unknown",
+      "external_key": "XQ-MERGE-HANDOFF-READY-20260909",
+      "level": "locally_verified",
+      "locator": ".work-receipts/xq-merge-handoff-evidence-report.json",
+      "missing_bindings": [],
+      "reasons": [
+        "both recorded and requested source SHA are needed to determine currency"
+      ],
+      "source_sha": "8f4031f40c096691df03099c2382cbb86112be19",
+      "summary": "已汇总内容与现场两项现有结果，处理实际接续状态，按场地、设备、人员和成品材料列出后续角色与闭合条件，并形成独立复核交接包。"
+    },
+    {
+      "currency": "unknown",
+      "external_key": "XQ-MERGE-RETURN-CHECK-HANDOFF-20260909",
+      "level": "locally_verified",
+      "locator": ".work-receipts/xq-return-check-handoff-evidence-report.json",
+      "missing_bindings": [],
+      "reasons": [
+        "both recorded and requested source SHA are needed to determine currency"
+      ],
+      "source_sha": "8f4031f40c096691df03099c2382cbb86112be19",
+      "summary": "现行台账已与实际进展完全对齐：四项筹备工作 completed，XQ-REVIEW 可由不同独立参与者返检，XQ-DELIVER 在返检完成前继续阻断；原稿、分工和失败均保留。"
+    },
+    {
+      "currency": "unknown",
+      "external_key": "XQ-MERGE-REVIEW-REMEDIATION-20260909",
+      "level": "locally_verified",
+      "locator": ".work-receipts/xq-review-remediation-evidence-report.json",
+      "missing_bindings": [],
+      "reasons": [
+        "both recorded and requested source SHA are needed to determine currency"
+      ],
+      "source_sha": "8f4031f40c096691df03099c2382cbb86112be19",
+      "summary": "已逐项回应首次独立复核 XQ-R01/XQ-R02，修正分工与四项工作现行文字，保留原稿、历次分工和失败记录，并形成仍待独立返检的固定筹备包。"
+    },
+    {
+      "currency": "unknown",
+      "external_key": "XQ-MERGE-REVIEW-REMEDIATION-FINAL-20260909",
+      "level": "locally_verified",
+      "locator": ".work-receipts/xq-review-remediation-final-evidence-report.json",
+      "missing_bindings": [],
+      "reasons": [
+        "both recorded and requested source SHA are needed to determine currency"
+      ],
+      "source_sha": "8f4031f40c096691df03099c2382cbb86112be19",
+      "summary": "完成后复验已消除 XQ-MERGE 最后一处过时 next_action；四项 completed 工作现行文字、历史保留、现场未知项和独立返检门禁均已最终核对。"
+    },
+    {
+      "currency": "unknown",
+      "external_key": "XQ-MERGE/evidence/.work-receipts/xq-merge-handoff-evidence-report.json",
+      "level": "unknown",
+      "locator": ".work-receipts/xq-merge-handoff-evidence-report.json",
+      "missing_bindings": [
+        "sha256",
+        "source_sha",
+        "command",
+        "verified_at"
+      ],
+      "reasons": [
+        "both recorded and requested source SHA are needed to determine currency"
+      ],
+      "source_sha": null,
+      "summary": "Evidence reference; not yet verified by AWR"
+    },
+    {
+      "currency": "unknown",
+      "external_key": "XQ-MERGE/evidence/.work-receipts/xq-review-remediation-evidence-report.json",
+      "level": "unknown",
+      "locator": ".work-receipts/xq-review-remediation-evidence-report.json",
+      "missing_bindings": [
+        "sha256",
+        "source_sha",
+        "command",
+        "verified_at"
+      ],
+      "reasons": [
+        "both recorded and requested source SHA are needed to determine currency"
+      ],
+      "source_sha": null,
+      "summary": "Evidence reference; not yet verified by AWR"
+    }
+  ],
+  "evidence_currency_basis": {
+    "branch_id": null,
+    "requested_source_sha": null
+  },
+  "freshness_basis": "source_refresh",
+  "missing_dependencies": [],
+  "ok": true,
+  "project_revision": 284,
+  "read_only": false,
+  "required_dependencies": [
+    {
+      "external_key": "XQ-CONTENT",
+      "freshness": "fresh",
+      "revision": 9,
+      "source_revision": 26,
+      "status": "completed"
+    },
+    {
+      "external_key": "XQ-INPUT",
+      "freshness": "fresh",
+      "revision": 4,
+      "source_revision": 26,
+      "status": "completed"
+    },
+    {
+      "external_key": "XQ-VENUE",
+      "freshness": "fresh",
+      "revision": 4,
+      "source_revision": 26,
+      "status": "completed"
+    }
+  ],
+  "source_issues": [],
+  "source_ref": {
+    "end_line": null,
+    "locator": "file:///Users/mac/Documents/originone/agent-work-running/.local/business-live-20260909-v1/parallel-ownership/project/work-ledger.yaml",
+    "pointer": "/work_items/3",
+    "section_fingerprint": null,
+    "source_fingerprint": "sha256:c571682e22d0a891f8d7072c8f4ce4575909463b974e9443fe72f062d3b316ae",
+    "source_id": "01M21W3H91TRWQ6G4NPD4BJPHC",
+    "source_revision": 26,
+    "start_line": null
+  },
+  "source_refresh_performed": true,
+  "source_warnings": 0,
+  "work": {
+    "active_claims": [],
+    "blocker": null,
+    "diagnostics": [
+      {
+        "code": "status_not_selectable",
+        "detail": "source status is completed",
+        "work_item_key": "XQ-MERGE"
+      }
+    ],
+    "external_key": "XQ-MERGE",
+    "freshness": "fresh",
+    "id": "01M21W3H92RVAXHPQ6ZEDVXV4S",
+    "milestone": "XQ-DELIVERY",
+    "next_action": "本工作及本轮整改均已完成，认领已释放；固定整改版本已交回独立返检。由运营方另派不同独立参与者返检 XQ-R01/XQ-R02；仅在其再次完成 XQ-REVIEW 后才认领 XQ-DELIVER。",
+    "owner": null,
+    "priority": "P0",
+    "raw_status": "completed",
+    "ready": false,
+    "revision": 7,
+    "source_revision": 26,
+    "status": "completed",
+    "summary": "已完成首次汇总；本轮已按独立复核修正分工现行状态及 XQ-INPUT、XQ-CONTENT、XQ-VENUE、XQ-MERGE 的摘要或下一步，保留原稿、历次分工与失败记录并形成返检包。",
+    "title": "协调内容与现场结果"
+  }
+}

@@ -1,0 +1,28 @@
+{
+  "event_id": "01M21XEQ1ANQQ9VVCJZK3B0WX5",
+  "evidence": {
+    "branch_id": null,
+    "command": "rtk proxy sh .work-receipts/verify-xq-venue.sh",
+    "evidence_type": "report",
+    "external_key": "XQ-VENUE-PLAN-20260909",
+    "id": "01M21XEQ1A31Y2M7ZH17E1CVMB",
+    "level": "locally_verified",
+    "locator": ".work-receipts/xq-venue-evidence-report.json",
+    "project_id": "01M21W3H8XNKD8AKP4N1JNQQTM",
+    "revision": 1,
+    "scope": [
+      "XQ-VENUE"
+    ],
+    "sha256": "8137b243c28f2d894247d19d8d0585f0e0cdcf71d531cf97bbe34103bed889c4",
+    "source_ref": null,
+    "source_sha": "8f4031f40c096691df03099c2382cbb86112be19",
+    "summary": "现场时间、单投影、三组桌面和内容交接方案已通过本地结构化核对。",
+    "verified_at": 1788918233000,
+    "work_item_id": "01M21W3H92418GRK38VA4D0RD7"
+  },
+  "freshness_basis": "source_refresh",
+  "ok": true,
+  "project_revision": 50,
+  "source_refresh_performed": true,
+  "validation_basis": "caller_supplied_bindings"
+}

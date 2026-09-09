@@ -1,0 +1,108 @@
+{
+  "ok": true,
+  "code": "proposal_recorded",
+  "project_revision": 173,
+  "proposal": {
+    "id": "01M22AHK6V8Y33J41M3QQ64SS9",
+    "project_id": "01M21W3H8XNKD8AKP4N1JNQQTM",
+    "work_item_id": "01M21W3H924SNZ0DV020S3BM69",
+    "source_id": "01M21W3H91TRWQ6G4NPD4BJPHC",
+    "base_fingerprint": "sha256:a5dfe2640461483aac4dabced4a4e27f144d5b70e23b80fba40b35f5a36b13ac",
+    "expected_revision": 166,
+    "mutation_type": "work.progress",
+    "patch": {
+      "changes": {
+        "next_action": "原协调客户端修正分工记录中的已结束会话状态，并用正常 AWR 流程校正 XQ-INPUT、XQ-CONTENT、XQ-VENUE、XQ-MERGE 的过时 summary/next_action；保留历史快照、冲突和失败后交回独立返检",
+        "status": "in_progress",
+        "summary": "独立复核已核对两项产物、十阶段修订、真实作者、冲突与接续；发现当前分工/AWR 状态现行性缺陷，需原执行者整改"
+      },
+      "intent": "独立复核确认并行协作与接续证据成立，但发现当前分工记录和四个 completed 工作项仍保留过时运行态或待完成文字",
+      "source_config": {
+        "adapter_options": {},
+        "adapter_version": 1,
+        "mapping_key": "ledger|work-ledger.yaml"
+      },
+      "target": {
+        "kind": "work_item",
+        "meta": {
+          "external_key": "XQ-REVIEW",
+          "id": "01M21W3H924SNZ0DV020S3BM69",
+          "revision": 1,
+          "source_ref": {
+            "end_line": null,
+            "locator": "file:///Users/mac/Documents/originone/agent-work-running/.local/business-live-20260909-v1/parallel-ownership/project/work-ledger.yaml",
+            "pointer": "/work_items/4",
+            "section_fingerprint": null,
+            "source_fingerprint": "sha256:a5dfe2640461483aac4dabced4a4e27f144d5b70e23b80fba40b35f5a36b13ac",
+            "source_id": "01M21W3H91TRWQ6G4NPD4BJPHC",
+            "source_revision": 14,
+            "start_line": null
+          }
+        }
+      },
+      "version": 1,
+      "work_action": {
+        "action": "progress",
+        "from": "planned",
+        "to": "in_progress"
+      }
+    },
+    "status": "applied",
+    "created_by_session": "01M22A0GPWAEKDDQBCGV95Q1BS",
+    "revision": 5
+  },
+  "event": {
+    "id": "01M22AHK8EB6P77DF5SF64M8JM",
+    "project_id": "01M21W3H8XNKD8AKP4N1JNQQTM",
+    "work_item_id": "01M21W3H924SNZ0DV020S3BM69",
+    "session_id": null,
+    "branch_id": null,
+    "event_type": "work.progressed",
+    "importance": "normal",
+    "summary": "Verified source work action Progress",
+    "payload": {
+      "action_reason": "独立复核确认并行协作与接续证据成立，但发现当前分工记录和四个 completed 工作项仍保留过时运行态或待完成文字",
+      "actor": "luna_worker",
+      "after_fingerprint": "sha256:48c8dafb4851d3bec1a64f81480eb3c89ae63b3494de3423d63e59f76a60d093",
+      "attempt_event_id": "01M22AHK7R7DFFVEYKK2QWESVX",
+      "before_fingerprint": "sha256:a5dfe2640461483aac4dabced4a4e27f144d5b70e23b80fba40b35f5a36b13ac",
+      "creating_session_id": "01M22A0GPWAEKDDQBCGV95Q1BS",
+      "proposal_id": "01M22AHK6V8Y33J41M3QQ64SS9",
+      "reason": "独立复核确认并行协作与接续证据成立，但发现当前分工记录和四个 completed 工作项仍保留过时运行态或待完成文字",
+      "released_claim_ids": [],
+      "source_id": "01M21W3H91TRWQ6G4NPD4BJPHC",
+      "source_revision": 15,
+      "target_after_hash": "8a401662bbc7000a50485933c50edf562ae12040b10249caeb21d3bf2432484d",
+      "target_revision": 2,
+      "work_action": {
+        "action": "progress",
+        "from": "planned",
+        "to": "in_progress"
+      },
+      "write_plan_id": "01M22AHK75YP1J5K4SKFRK7PBN"
+    },
+    "project_revision": 173,
+    "created_at": 1788932050190
+  },
+  "source_refresh_performed": true,
+  "source_write_performed": true,
+  "write_outcome": "applied",
+  "apply_attempt": {
+    "event_id": "01M22AHK7R7DFFVEYKK2QWESVX",
+    "proposal_id": "01M22AHK6V8Y33J41M3QQ64SS9",
+    "source_id": "01M21W3H91TRWQ6G4NPD4BJPHC",
+    "project_revision": 170,
+    "plan": {
+      "id": "01M22AHK75YP1J5K4SKFRK7PBN",
+      "before_fingerprint": "sha256:a5dfe2640461483aac4dabced4a4e27f144d5b70e23b80fba40b35f5a36b13ac",
+      "after_fingerprint": "sha256:48c8dafb4851d3bec1a64f81480eb3c89ae63b3494de3423d63e59f76a60d093",
+      "before_size": 4108,
+      "after_size": 4448,
+      "target_after_hash": "8a401662bbc7000a50485933c50edf562ae12040b10249caeb21d3bf2432484d"
+    },
+    "resolved_event_id": "01M22AHK8EB6P77DF5SF64M8JM"
+  },
+  "recovery_directory": ".awr/mutations/01M22AHK75YP1J5K4SKFRK7PBN",
+  "source_check": null,
+  "error": null
+}

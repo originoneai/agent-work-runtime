@@ -1,0 +1,53 @@
+{
+  "checkpoint": {
+    "changed_entities": [
+      "evidence:01M21WNFW4WFCAMB36F702G0VN",
+      "work_items:01M21W3H92ENNZNW0MQM61AZND"
+    ],
+    "context_hash": "8477a19ec0d3a8899fb09202593fb2b67940b481aa564381131aed892e1aedab",
+    "created_at": 1788917665915,
+    "digest": "共同约束已核对并完成 XQ-INPUT；双执行者职责、独占产物与交接规则已写入分工记录。",
+    "id": "01M21WTM3VAXS35B1ZQ1YR9Y3B",
+    "next_action": "分别启动并认领 XQ-CONTENT 与 XQ-VENUE，会话检查点继续携带各自进行中内容和对方配合事项。",
+    "open_loops": [
+      "额外 10 分钟在布置与收场间的拆分，以及是否位于 90 分钟开放窗口之外，仍需现场执行者确认并回传内容执行者。",
+      "内容执行者需给出所有投影使用环节和相对占用时段，现场执行者据此确认单台设备可用性。"
+    ],
+    "project_revision": 29,
+    "revision": 1,
+    "session_id": "01M21W6Z2DJWT1M8BK8H66KD5T"
+  },
+  "checkpoint_save": {
+    "after_revision": 12,
+    "attempt_id": "01M21WTM3TNF01Z54MF26EX825",
+    "delta_bytes": 6424,
+    "delta_recorded": true,
+    "event_id": "01M21WTM3VPJPND0MVEGSC19KE",
+    "observed_changed_entity_count": 2,
+    "reported_changed_entity_count": 1,
+    "session_event_count": 3,
+    "source_observation_count": 4,
+    "through_revision": 29
+  },
+  "context_hash_basis": "caller_supplied_last_used_context",
+  "context_hash_verified": false,
+  "event": {
+    "artifact_id": null,
+    "branch_id": null,
+    "checkpoint_id": "01M21WTM3VAXS35B1ZQ1YR9Y3B",
+    "created_at": 1788917665915,
+    "id": "01M21WTM3VPJPND0MVEGSC19KE",
+    "importance": "normal",
+    "project_revision": 31,
+    "session_id": "01M21W6Z2DJWT1M8BK8H66KD5T",
+    "source_id": null,
+    "summary": "Saved session checkpoint and observed delta",
+    "type": "checkpoint.created",
+    "work_item_id": "01M21W3H92ENNZNW0MQM61AZND"
+  },
+  "freshness_basis": "source_refresh",
+  "ok": true,
+  "project_revision": 31,
+  "save_status": "completed",
+  "source_refresh_performed": true
+}

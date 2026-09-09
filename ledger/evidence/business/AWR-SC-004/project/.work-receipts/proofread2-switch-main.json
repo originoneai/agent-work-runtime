@@ -1,0 +1,36 @@
+{
+  "event": {
+    "branch_id": null,
+    "created_at": 1788920788512,
+    "event_type": "branch.switched",
+    "id": "01M21ZSXH0VRH1HW4PJNK0G5YQ",
+    "importance": "normal",
+    "payload": {
+      "actor": "xq-content-reviewer-2",
+      "git_write_performed": false,
+      "reason": "第二内容校对分支已保存检查点，恢复 main 默认选择供原负责人继续",
+      "selection": {
+        "current_branch_id": null,
+        "previous_branch_id": "01M21Z7CBNFNN0B7HVMY9WTVTC",
+        "retained_active_claims": 0,
+        "retained_active_sessions": 0
+      },
+      "source_write_performed": false
+    },
+    "project_id": "01M21W3H8XNKD8AKP4N1JNQQTM",
+    "project_revision": 68,
+    "session_id": null,
+    "summary": "Changed current work branch",
+    "work_item_id": null
+  },
+  "git_write_performed": false,
+  "project_id": "01M21W3H8XNKD8AKP4N1JNQQTM",
+  "project_revision": 68,
+  "selection": {
+    "current_branch_id": null,
+    "previous_branch_id": "01M21Z7CBNFNN0B7HVMY9WTVTC",
+    "retained_active_claims": 0,
+    "retained_active_sessions": 0
+  },
+  "source_write_performed": false
+}

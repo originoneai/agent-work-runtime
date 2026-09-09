@@ -1,0 +1,122 @@
+{
+  "kind": "reviewed_business_gate_plan",
+  "scenario_id": "AWR-SC-004",
+  "reviewed_at": "2026-09-09T16:52:15+08:00",
+  "completion_claim": false,
+  "e4_credit": 0,
+  "gates": {
+    "natural_client_initiation": {
+      "passed": true,
+      "scope": "Canonical initial business request occurred once in the actual coordinator native thread; the 13-input retrospective audit distinguishes natural business inputs from three host setup envelopes.",
+      "evidence": [
+        "control/initial-sealed.json",
+        "control/initial-review-extract.json",
+        "control/native-input-audit-final.json"
+      ]
+    },
+    "tool_or_role_execution": {
+      "passed": true,
+      "scope": "Three distinct Codex native threads performed coordinator/content, peer/venue and successor/venue work. Public evidence binds actual authorship, AWR sessions/claims/branches, RevisionConflict and later ClaimConflict without equating runtime branches to isolated Git worktrees.",
+      "evidence": [
+        "control/prelude-sealed.json",
+        "control/peer-branch-check-sealed.json",
+        "control/venue-continuation-sealed.json",
+        "control/parallel-process-review-publication.json",
+        "project/review-inputs/parallel-process-evidence/peer-initial-sealed.json",
+        "project/review-inputs/parallel-process-evidence/actual-parallel-conflict-binding.json",
+        "project/review-inputs/parallel-process-evidence/artifact-authorship-correction.json"
+      ]
+    },
+    "real_artifact": {
+      "passed": true,
+      "scope": "The final sealed snapshot contains eight hash-bound business/review/delivery artifacts with authorship attributed to actual producing turns rather than shared snapshot membership.",
+      "evidence": [
+        "control/final-delivery-sealed.json",
+        "project/deliverables/xingqiao-content.md",
+        "project/deliverables/xingqiao-venue.md",
+        "project/deliverables/xingqiao-ownership.md",
+        "project/deliverables/xingqiao-collaboration-review.md",
+        "project/deliverables/xingqiao-independent-results.md"
+      ]
+    },
+    "business_followup_1": {
+      "passed": true,
+      "scope": "The first canonical followup introduced the temporary absence, was sent once to the actual coordinator, and led to a separately executed successor handoff that preserved unresolved venue matters.",
+      "evidence": [
+        "round-1-inputs.json",
+        "control/round-1-sealed.json",
+        "control/round-1-review-extract.json",
+        "control/venue-continuation-sealed.json",
+        "control/venue-continuation-review-extract.json"
+      ]
+    },
+    "business_followup_2": {
+      "passed": true,
+      "scope": "The second canonical followup requested separate result checks and common actions; the coordinator then corrected the stale handoff wording and formed the combined preparation plan.",
+      "evidence": [
+        "round-2-inputs.json",
+        "control/round-2-sealed.json",
+        "control/round-2-review-extract.json",
+        "control/coordination-correction-sealed.json",
+        "control/coordination-correction-review-extract.json"
+      ]
+    },
+    "independent_review": {
+      "passed": true,
+      "scope": "A distinct luna_worker reviewer raised XQ-R01/R02, the original producer remediated them, and the same reviewer independently rechecked and closed both findings with ended sessions and released claims.",
+      "evidence": [
+        "control/independent-review.json",
+        "control/reviewer-identity-binding.json",
+        "project/deliverables/xq-independent-review.md",
+        "control/review-correction-sealed.json",
+        "control/review-correction-publication.json",
+        "control/independent-recheck.json",
+        "control/recheck-reviewer-identity-binding.json",
+        "project/deliverables/xq-independent-recheck.md"
+      ]
+    },
+    "final_delivery": {
+      "passed": true,
+      "scope": "After recheck, the original coordinator produced the final preparation delivery. Root and a distinct read-only reviewer verified the sealed final turn and its scope; onsite readiness, execution and release remain outside this gate.",
+      "evidence": [
+        "control/final-delivery-sealed.json",
+        "control/final-delivery-review-extract.json",
+        "control/final-delivery-observation.json",
+        "control/final-delivery-independent-check.json",
+        "project/deliverables/xq-delivery.md"
+      ]
+    },
+    "traceable_receipt": {
+      "passed": true,
+      "scope": "Twelve standard phase seals/extracts, the custom peer publication, 258 final receipt files, 359 fixed review inputs, retained prior/review files and all known failures remain hash-bound. Raw events and native transcripts are excluded from public copying.",
+      "evidence": [
+        "execution-record.json",
+        "control/final-delivery-sealed.json",
+        "control/final-delivery-review-extract.json",
+        "control/final-delivery-observation.json",
+        "control/parallel-process-review-publication.json",
+        "control/native-input-audit-final.json"
+      ]
+    },
+    "fixture_isolation": {
+      "passed": true,
+      "scope": "The run retains its independent fixture namespace and seed project. The final source/artifact snapshots are tied to this project, while the untouched run.json remains a historical preparation receipt and is not treated as proof of later execution.",
+      "evidence": [
+        "run.json",
+        "control/prelude-sealed.json",
+        "control/final-delivery-sealed.json",
+        "project/project.toml"
+      ]
+    },
+    "independent_commit_and_remote_sha": {
+      "passed": false,
+      "scope": "No immutable public artifact commit or verified remote SHA exists yet. Business project HEAD 8f4031f... is the setup commit and does not include uncommitted delivery artifacts; publication must be verified after packaging.",
+      "evidence": []
+    }
+  },
+  "limitations": [
+    "This plan does not run the packager or create a public commit.",
+    "Passed gates are limited to the cited local business evidence and do not infer onsite execution or release.",
+    "Native private context, raw events and AWR database files remain excluded."
+  ]
+}

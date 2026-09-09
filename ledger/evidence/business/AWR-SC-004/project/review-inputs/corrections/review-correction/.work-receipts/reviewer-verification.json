@@ -1,0 +1,202 @@
+{
+  "kind": "xq_independent_review_verification",
+  "verified_at": "2026-09-09T13:30:07+08:00",
+  "source_commit": "8f4031f40c096691df03099c2382cbb86112be19",
+  "checks": {
+    "main_publication_147_exact": true,
+    "process_publication_10_exact": true,
+    "ten_retained_real_phases": true,
+    "main_client_bound": true,
+    "peer_client_bound": true,
+    "successor_client_bound": true,
+    "peer_venue_authorship": true,
+    "main_content_and_merge_authorship": true,
+    "successor_ownership_authorship": true,
+    "snapshot_membership_not_used_as_authorship": true,
+    "current_artifacts_match_correction_snapshot": true,
+    "venue_remained_peer_bytes": true,
+    "earlier_revision_conflict_distinguished": true,
+    "later_claim_conflict_bound": true,
+    "different_runtime_branch_observed": true,
+    "initial_peer_branch_gap_preserved": true,
+    "two_natural_followups_bound": true,
+    "later_wording_correction_bound": true,
+    "successor_received_four_handoffs": true,
+    "successor_scope_stays_bounded": true,
+    "historical_stale_status_labeled": true,
+    "time_constraints_consistent": true,
+    "single_projector_nonoverlap": true,
+    "three_tables_conditional": true,
+    "unknowns_preserved": true,
+    "no_final_or_e4_claim": true
+  },
+  "ok": true,
+  "publications": {
+    "main": {
+      "path": "../control/review-input-publication.json",
+      "sha256": "0fb081c8482a604e4e3cfc03857393fa38f1616c9a53b2a923c02dd9dbb6e01b",
+      "declared": 147,
+      "actual": 147,
+      "missing": [],
+      "extra": [],
+      "mismatches": []
+    },
+    "parallel_process": {
+      "path": "../control/parallel-process-review-publication.json",
+      "sha256": "55efb2f825d76ef3c30e93ac2fac0c0690e873c854a7e2f3ff4a367de3fca73e",
+      "declared": 10,
+      "actual": 10,
+      "missing": [],
+      "extra": [],
+      "mismatches": []
+    }
+  },
+  "retained_phases": [
+    {
+      "phase": "prelude",
+      "client_task_id": "01a083c0-2c0b-7fc1-ba7d-0b0721dfeb0f",
+      "user_timestamp": "2026-09-09T01:20:09.893Z",
+      "user_text": "请把活动内容安排和现场保障分别交给两位执行者推进，各自保留正在处理的内容和需要对方配合的事项。",
+      "events_sha256": "ccc0714f4d2b8c76ca0091c279ce6fbafb475249ee296a1ce9b982eabe0a8c4a",
+      "native_transcript_sha256": "98d2d02d1fe49e9023255bd2c6f3a6b91317c8f71e16271773518ed82ba485fc"
+    },
+    {
+      "phase": "peer-branch-check",
+      "client_task_id": "01a083ca-4a86-7b81-93cd-59afa64767e0",
+      "user_timestamp": "2026-09-09T02:13:50.078Z",
+      "user_text": "请在独立工作分支上作为第二位内容校对负责人，核对当前活动内容安排与现场保障回执，并形成自己的核对记录。现有内容负责人仍在推进；请遵守现有归属，遇到重叠先记录待协调事项，不覆盖对方产物。",
+      "events_sha256": "26adb3cc571d2efdf4b75acf4c590bf15921f6c40301c3075484be22433eb0a9",
+      "native_transcript_sha256": "a5f39009fc14139910d9d85299de1f7a3ba8b0f7089d8bf8b496a8038a3abd05"
+    },
+    {
+      "phase": "prelude-content-update",
+      "client_task_id": "01a083c0-2c0b-7fc1-ba7d-0b0721dfeb0f",
+      "user_timestamp": "2026-09-09T02:19:39.998Z",
+      "user_text": "现场同事已经提交了保障方案，请结合其回执继续修订你负责的内容安排，更新当前工作进展，保留尚未协调的问题。",
+      "events_sha256": "d331a29269b2e0bdfc4b4e78c201054a5d9e41492803a221dc90fd213385fd64",
+      "native_transcript_sha256": "7d531ce0fdeda80b6e8ab24a64ccccc1719a8ba4d4059a70b190b46b6aa49802"
+    },
+    {
+      "phase": "peer-receipt-followthrough",
+      "client_task_id": "01a083ca-4a86-7b81-93cd-59afa64767e0",
+      "user_timestamp": "2026-09-09T02:49:10.672Z",
+      "user_text": "请继续由你跟进内容回复的接收确认，先将尚未确认的部分记录清楚。这项校对暂不交回协调者，等内容负责人回应后再结束。",
+      "events_sha256": "7286265746c4f29b3e452062cee5e9f665e1c54dd73bd49f95f8a4720f1b489d",
+      "native_transcript_sha256": "3af0d9a7ad6de5029ac48c14cb8b4f9c6e76e78dc479e1e2ab72b5a716cfb36a"
+    },
+    {
+      "phase": "prelude-receipt-response",
+      "client_task_id": "01a083c0-2c0b-7fc1-ba7d-0b0721dfeb0f",
+      "user_timestamp": "2026-09-09T02:51:56.946Z",
+      "user_text": "请根据校对同事指出的交接措辞问题，核对实际接收情况，修订内容安排中不准确的表述，并把当前处理结果更新到工作记录。尚未收到的确认要继续保留。",
+      "events_sha256": "b88afcc059f9062d5463d0f23782d938925f4c7ecba6071ef4dc5283000162b6",
+      "native_transcript_sha256": "88939c1a563066f185ab5acae8cf3c880ac020a19eef90b91f3eab5f54620ffe"
+    },
+    {
+      "phase": "initial",
+      "client_task_id": "01a083c0-2c0b-7fc1-ba7d-0b0721dfeb0f",
+      "user_timestamp": "2026-09-09T03:32:03.323Z",
+      "user_text": "这两项工作需要并行推进，请先明确分工和交接关系，再分别产出结果。",
+      "events_sha256": "7d7128ee0ea3a1070044f3651acc3ac41343b8574e864024d9d2f3bd532a7103",
+      "native_transcript_sha256": "e637eb68ffafefc552e0186fa701ece6a80e4d5ea352d934d085bc4910f72a87"
+    },
+    {
+      "phase": "round-1",
+      "client_task_id": "01a083c0-2c0b-7fc1-ba7d-0b0721dfeb0f",
+      "user_timestamp": "2026-09-09T03:44:05.672Z",
+      "user_text": "其中一位执行者暂时离开，请安排接续，保留尚未解决的问题。",
+      "events_sha256": "cacdbdb20fa1e9275f018abc40b9c73677213446e52c43c0546aa8ecff41b7ac",
+      "native_transcript_sha256": "4c5d14a4e4c020b5fee818fa0c525af68b7dff20babd87ff56cfd87997647ea8"
+    },
+    {
+      "phase": "venue-continuation",
+      "client_task_id": "01a08460-5417-75c3-8ee2-7249153e9c67",
+      "user_timestamp": "2026-09-09T04:15:04.593Z",
+      "user_text": "请接续暂离同事负责的现场保障工作，核对现有设备安排和内容同事的交接记录，确认你实际接手的范围并继续推进。保留原始方案和未决事项，把接收结果、仍需协调的问题及后续安排留在可追溯记录中。完成本轮接续后先交回协调者。",
+      "events_sha256": "ffcbe5a055e73b50de5446e7e18764d65dd85268ae686cc737a6ae560a1de72d",
+      "native_transcript_sha256": "b34f27b1df6fc325f1bb9a6148a6cea8d90219704d7cdc563fba3f888cdc2269"
+    },
+    {
+      "phase": "round-2",
+      "client_task_id": "01a083c0-2c0b-7fc1-ba7d-0b0721dfeb0f",
+      "user_timestamp": "2026-09-09T04:33:15.275Z",
+      "user_text": "请分别复核两项工作的结果，并汇总需要共同处理的事项。",
+      "events_sha256": "0c551d0de1e695fe2e11bd03b9bb01f0bdc4a945bae22acfb3cffe75d602e02e",
+      "native_transcript_sha256": "5f9dcc3a4ef419a8976f3b2bf4ce1d6df1467a5ce2b265aecf608172bfc8f05a"
+    },
+    {
+      "phase": "coordination-correction",
+      "client_task_id": "01a083c0-2c0b-7fc1-ba7d-0b0721dfeb0f",
+      "user_timestamp": "2026-09-09T04:44:25.915Z",
+      "user_text": "请处理刚才核对发现的稿件状态不一致，按已经发生的接续更新你负责的内容安排，并把两项工作的现有结果整理成可交接的筹备方案。当前资料无法确认的场地、设备、人员和成品材料继续列明，给出后续处理角色与条件。计划材料完善以后交给另一位参与者独立复核，保留原稿、原回执及发现的问题。",
+      "events_sha256": "5fe175d1c5fe24a08f85bba38ffea96c979120280eae4936cffe8b480eaece1a",
+      "native_transcript_sha256": "d50d7c9c7ffd1bb55756bca6798f2ebe8f2a8432caa54c234b3d635479c3a9dd"
+    }
+  ],
+  "current_artifacts_sha256": {
+    "deliverables/xingqiao-independent-results.md": "6060f7ed92faa5cdb44a95838f0d3d465b9f67012ee31f1c2be8883c89aff9c1",
+    "deliverables/xingqiao-content.md": "7fc0ccf93f8f8aa6b8d881c91c6f61dc32e63ed979f6cc120f5ba9086eb253c5",
+    "deliverables/xingqiao-venue.md": "3035f626d7ef00cd860d2fd4781513b76d9587b1e6c67924b549ce8865c828a6",
+    "deliverables/xingqiao-ownership.md": "2658295d0430fd4d63104c74e46e4f1c86a9b1d94c4e322d004c4932bcc0dbad",
+    "deliverables/xingqiao-collaboration-review.md": "21e564a7fa985cb67a842e1e836ed84f9a69db2865c86171e0edef4df891d5c0"
+  },
+  "actual_authorship": [
+    {
+      "path": "deliverables/xingqiao-content.md",
+      "sha256": "7fc0ccf93f8f8aa6b8d881c91c6f61dc32e63ed979f6cc120f5ba9086eb253c5",
+      "producing_turn": "coordination-correction",
+      "actual_client_task_id": "01a083c0-2c0b-7fc1-ba7d-0b0721dfeb0f",
+      "authorship_note": "Actual producing native phase; later shared snapshots only observe this version."
+    },
+    {
+      "path": "deliverables/xingqiao-independent-results.md",
+      "sha256": "6060f7ed92faa5cdb44a95838f0d3d465b9f67012ee31f1c2be8883c89aff9c1",
+      "producing_turn": "coordination-correction",
+      "actual_client_task_id": "01a083c0-2c0b-7fc1-ba7d-0b0721dfeb0f",
+      "authorship_note": "Actual producing native phase; later shared snapshots only observe this version."
+    },
+    {
+      "path": "deliverables/xingqiao-ownership.md",
+      "sha256": "2658295d0430fd4d63104c74e46e4f1c86a9b1d94c4e322d004c4932bcc0dbad",
+      "producing_turn": "venue-continuation",
+      "actual_client_task_id": "01a08460-5417-75c3-8ee2-7249153e9c67",
+      "authorship_note": "Actual producing native phase; later shared snapshots only observe this version."
+    },
+    {
+      "path": "deliverables/xingqiao-collaboration-review.md",
+      "sha256": "21e564a7fa985cb67a842e1e836ed84f9a69db2865c86171e0edef4df891d5c0",
+      "producing_turn": "peer-receipt-followthrough",
+      "actual_client_task_id": "01a083ca-4a86-7b81-93cd-59afa64767e0",
+      "authorship_note": "Actual producing native phase; later shared snapshots only observe this version."
+    },
+    {
+      "path": "deliverables/xingqiao-venue.md",
+      "sha256": "3035f626d7ef00cd860d2fd4781513b76d9587b1e6c67924b549ce8865c828a6",
+      "producing_turn": "peer-initial",
+      "actual_client_task_id": "01a083ca-4a86-7b81-93cd-59afa64767e0",
+      "authorship_note": "Actual producing native phase; later shared snapshots only observe this version."
+    }
+  ],
+  "conflicts": {
+    "early_revision_conflict": {
+      "code": "RevisionConflict",
+      "message": "revision conflict: expected 29, actual 31",
+      "details": {
+        "actual": 31,
+        "expected": 29
+      }
+    },
+    "late_claim_conflict": {
+      "code": "ClaimConflict",
+      "receipt": ".work-receipts/018-work-progress-xq-content-handoff-wording-conflict.json",
+      "receipt_sha256": "d9d01e9a41934057f3a39dc1f871f6ce57751107a565267ba6b5b5ad61febbea",
+      "native_item_id": "item_40"
+    }
+  },
+  "boundaries": {
+    "producer_files_modified_by_reviewer": false,
+    "native_clients_started_by_reviewer": false,
+    "final_delivery_performed": false,
+    "whole_scenario_e4_granted": false
+  }
+}

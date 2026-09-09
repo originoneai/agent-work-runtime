@@ -1,0 +1,36 @@
+{
+  "event": {
+    "branch_id": null,
+    "created_at": 1788923521495,
+    "event_type": "branch.switched",
+    "id": "01M222DAEQRPTQYDZGBST5EACC",
+    "importance": "normal",
+    "payload": {
+      "actor": "xq-content-reviewer-2",
+      "git_write_performed": false,
+      "reason": "内容负责人已回应，第二校对按约结束；仅恢复 main 默认工作面，不创建协调者交接",
+      "selection": {
+        "current_branch_id": null,
+        "previous_branch_id": "01M21Z7CBNFNN0B7HVMY9WTVTC",
+        "retained_active_claims": 0,
+        "retained_active_sessions": 0
+      },
+      "source_write_performed": false
+    },
+    "project_id": "01M21W3H8XNKD8AKP4N1JNQQTM",
+    "project_revision": 97,
+    "session_id": null,
+    "summary": "Changed current work branch",
+    "work_item_id": null
+  },
+  "git_write_performed": false,
+  "project_id": "01M21W3H8XNKD8AKP4N1JNQQTM",
+  "project_revision": 97,
+  "selection": {
+    "current_branch_id": null,
+    "previous_branch_id": "01M21Z7CBNFNN0B7HVMY9WTVTC",
+    "retained_active_claims": 0,
+    "retained_active_sessions": 0
+  },
+  "source_write_performed": false
+}

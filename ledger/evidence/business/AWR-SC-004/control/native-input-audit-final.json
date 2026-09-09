@@ -1,0 +1,176 @@
+{
+  "kind": "retrospective_actual_native_input_audit",
+  "at": "2026-09-09T16:22:00.265171+08:00",
+  "native_clients": [
+    {
+      "client": "Codex CLI",
+      "native_task_id": "01a083c0-2c0b-7fc1-ba7d-0b0721dfeb0f",
+      "cli_version": "0.153.4",
+      "model": "gpt-5.6-sol",
+      "effort": "max",
+      "model_override": false,
+      "private_native_sha256": "5836eb299149316b2ed0b0ede0061105c9b78167bead6a06a37bd1f14ee7ae75"
+    },
+    {
+      "client": "Codex CLI",
+      "native_task_id": "01a083ca-4a86-7b81-93cd-59afa64767e0",
+      "cli_version": "0.153.4",
+      "model": "gpt-5.6-sol",
+      "effort": "max",
+      "model_override": false,
+      "private_native_sha256": "3af0d9a7ad6de5029ac48c14cb8b4f9c6e76e78dc479e1e2ab72b5a716cfb36a"
+    },
+    {
+      "client": "Codex CLI",
+      "native_task_id": "01a08460-5417-75c3-8ee2-7249153e9c67",
+      "cli_version": "0.153.4",
+      "model": "gpt-5.6-sol",
+      "effort": "max",
+      "model_override": false,
+      "private_native_sha256": "b34f27b1df6fc325f1bb9a6148a6cea8d90219704d7cdc563fba3f888cdc2269"
+    }
+  ],
+  "policy_rules_sha256": "6ef794db3c42904ad98f0dce374753872118b398e36df908176d6b9192e53ed5",
+  "inputs": [
+    {
+      "native_client": "01a083c0-2c0b-7fc1-ba7d-0b0721dfeb0f",
+      "timestamp": "2026-09-09T01:20:09.806Z",
+      "sha256": "dbfc6c434fde08a39b468285e8cee4a03fcf0f91ac58a9983ee7ab382ae7f39a",
+      "kind": "host_setup_envelope",
+      "raw_content_private": true
+    },
+    {
+      "native_client": "01a083c0-2c0b-7fc1-ba7d-0b0721dfeb0f",
+      "timestamp": "2026-09-09T01:20:09.893Z",
+      "sha256": "b024fa6ccc2f5918a9fdf9b20793cc10bb65145341adfc96a03fef175cfff2c7",
+      "kind": "actual_business_input",
+      "phase": "prelude",
+      "text": "请把活动内容安排和现场保障分别交给两位执行者推进，各自保留正在处理的内容和需要对方配合的事项。",
+      "input_policy_passed": true
+    },
+    {
+      "native_client": "01a083c0-2c0b-7fc1-ba7d-0b0721dfeb0f",
+      "timestamp": "2026-09-09T02:19:39.998Z",
+      "sha256": "ce1aefce29f2dc9e8d411103d1da4888ab64017e637714bfc1e1ce4bbfeea1a1",
+      "kind": "actual_business_input",
+      "phase": "prelude-content-update",
+      "text": "现场同事已经提交了保障方案，请结合其回执继续修订你负责的内容安排，更新当前工作进展，保留尚未协调的问题。",
+      "input_policy_passed": true
+    },
+    {
+      "native_client": "01a083c0-2c0b-7fc1-ba7d-0b0721dfeb0f",
+      "timestamp": "2026-09-09T02:51:56.946Z",
+      "sha256": "43cd9419ac2a137f408fcb6de0f56c9097df04aeb46286e96c5ef79f5e32b127",
+      "kind": "actual_business_input",
+      "phase": "prelude-receipt-response",
+      "text": "请根据校对同事指出的交接措辞问题，核对实际接收情况，修订内容安排中不准确的表述，并把当前处理结果更新到工作记录。尚未收到的确认要继续保留。",
+      "input_policy_passed": true
+    },
+    {
+      "native_client": "01a083c0-2c0b-7fc1-ba7d-0b0721dfeb0f",
+      "timestamp": "2026-09-09T03:32:03.323Z",
+      "sha256": "480bbd03b7e89fa0c10899e3a7bca3e63e163c642f338a17619c0ca85be746e7",
+      "kind": "actual_business_input",
+      "phase": "initial",
+      "text": "这两项工作需要并行推进，请先明确分工和交接关系，再分别产出结果。",
+      "input_policy_passed": true
+    },
+    {
+      "native_client": "01a083c0-2c0b-7fc1-ba7d-0b0721dfeb0f",
+      "timestamp": "2026-09-09T03:44:05.672Z",
+      "sha256": "761970384237cff0b0f5f7a720eb461132e0d6a6c24fb1900c99e0db446f8ea3",
+      "kind": "actual_business_input",
+      "phase": "round-1",
+      "text": "其中一位执行者暂时离开，请安排接续，保留尚未解决的问题。",
+      "input_policy_passed": true
+    },
+    {
+      "native_client": "01a083c0-2c0b-7fc1-ba7d-0b0721dfeb0f",
+      "timestamp": "2026-09-09T04:33:15.275Z",
+      "sha256": "c34415d25da819abab9abe3089a1e0e5d215d42b8864d8cf050a5659c12f4b44",
+      "kind": "actual_business_input",
+      "phase": "round-2",
+      "text": "请分别复核两项工作的结果，并汇总需要共同处理的事项。",
+      "input_policy_passed": true
+    },
+    {
+      "native_client": "01a083c0-2c0b-7fc1-ba7d-0b0721dfeb0f",
+      "timestamp": "2026-09-09T04:44:25.915Z",
+      "sha256": "f89bff9afd77d88141cf4908b545e33ad837546af9809475ba5eb6f4fb9547e3",
+      "kind": "actual_business_input",
+      "phase": "coordination-correction",
+      "text": "请处理刚才核对发现的稿件状态不一致，按已经发生的接续更新你负责的内容安排，并把两项工作的现有结果整理成可交接的筹备方案。当前资料无法确认的场地、设备、人员和成品材料继续列明，给出后续处理角色与条件。计划材料完善以后交给另一位参与者独立复核，保留原稿、原回执及发现的问题。",
+      "input_policy_passed": true
+    },
+    {
+      "native_client": "01a083c0-2c0b-7fc1-ba7d-0b0721dfeb0f",
+      "timestamp": "2026-09-09T05:47:47.223Z",
+      "sha256": "fcb5a8c380c2b4814f086498d2ff454075c74dd46476b39be07fc4c3067527bb",
+      "kind": "actual_business_input",
+      "phase": "review-correction",
+      "text": "独立复核发现，分工记录还把已经结束的执行过程写成正在进行，几项已完成工作的摘要和下一步也没有跟上最新进展。请依据现有回执修正这些现行状态，保留原稿、历次分工和失败记录，明确筹备工作已经完成的部分、仍待现场确认的事项及后续责任。逐项回应复核意见，再交回独立返检；返检通过后再进行最终交付。",
+      "input_policy_passed": true
+    },
+    {
+      "native_client": "01a083c0-2c0b-7fc1-ba7d-0b0721dfeb0f",
+      "timestamp": "2026-09-09T07:31:36.799Z",
+      "sha256": "4f79a0d6b5bb0f9c559b26ef82d85790e756b3e098e0809c442c44a0e337ddfb",
+      "kind": "actual_business_input",
+      "phase": "final-delivery",
+      "text": "独立返检已经通过。请整理最终的活动筹备交付包，清楚说明已经完成的筹备工作、现场仍待确认的事项、后续责任和交接条件。保留历次分工、修订、失败与复核记录的来龙去脉，方便接手的人继续推进。",
+      "input_policy_passed": true
+    },
+    {
+      "native_client": "01a083ca-4a86-7b81-93cd-59afa64767e0",
+      "timestamp": "2026-09-09T01:31:11.569Z",
+      "sha256": "dbfc6c434fde08a39b468285e8cee4a03fcf0f91ac58a9983ee7ab382ae7f39a",
+      "kind": "host_setup_envelope",
+      "raw_content_private": true
+    },
+    {
+      "native_client": "01a083ca-4a86-7b81-93cd-59afa64767e0",
+      "timestamp": "2026-09-09T01:31:11.651Z",
+      "sha256": "64c122382f26fb64e5a675568fe15b9383102bf84984062ba9cf83c0a71e0c6a",
+      "kind": "actual_business_input",
+      "phase": "peer-initial",
+      "text": "请由你接手核对活动的共同约束，并负责现场保障，把需要内容负责人配合的事项保留下来。已有同事正在处理的内容以实际工作归属为准，保持明确的交接关系。",
+      "input_policy_passed": true
+    },
+    {
+      "native_client": "01a083ca-4a86-7b81-93cd-59afa64767e0",
+      "timestamp": "2026-09-09T02:13:50.078Z",
+      "sha256": "f2554df6926016c6e89d8b7422c9c6b44260802a4ffc6068d69a2f2f9ea9c1c1",
+      "kind": "actual_business_input",
+      "phase": "peer-branch-check",
+      "text": "请在独立工作分支上作为第二位内容校对负责人，核对当前活动内容安排与现场保障回执，并形成自己的核对记录。现有内容负责人仍在推进；请遵守现有归属，遇到重叠先记录待协调事项，不覆盖对方产物。",
+      "input_policy_passed": true
+    },
+    {
+      "native_client": "01a083ca-4a86-7b81-93cd-59afa64767e0",
+      "timestamp": "2026-09-09T02:49:10.672Z",
+      "sha256": "a77189618e3e56e0371a4f2afa9941968db536bb95faa6292fbd58ee7fdf4fc0",
+      "kind": "actual_business_input",
+      "phase": "peer-receipt-followthrough",
+      "text": "请继续由你跟进内容回复的接收确认，先将尚未确认的部分记录清楚。这项校对暂不交回协调者，等内容负责人回应后再结束。",
+      "input_policy_passed": true
+    },
+    {
+      "native_client": "01a08460-5417-75c3-8ee2-7249153e9c67",
+      "timestamp": "2026-09-09T04:15:04.513Z",
+      "sha256": "dbfc6c434fde08a39b468285e8cee4a03fcf0f91ac58a9983ee7ab382ae7f39a",
+      "kind": "host_setup_envelope",
+      "raw_content_private": true
+    },
+    {
+      "native_client": "01a08460-5417-75c3-8ee2-7249153e9c67",
+      "timestamp": "2026-09-09T04:15:04.593Z",
+      "sha256": "1252644aeeef6556873ba7d14bd68add01b36b80c6748cd521d47196fd513307",
+      "kind": "actual_business_input",
+      "phase": "venue-continuation",
+      "text": "请接续暂离同事负责的现场保障工作，核对现有设备安排和内容同事的交接记录，确认你实际接手的范围并继续推进。保留原始方案和未决事项，把接收结果、仍需协调的问题及后续安排留在可追溯记录中。完成本轮接续后先交回协调者。",
+      "input_policy_passed": true
+    }
+  ],
+  "all_business_inputs_accounted_for": true,
+  "limitation": "Exact read-only retrospective input inventory; root natural-language review is separate. Fixed host setup remains private."
+}

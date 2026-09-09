@@ -1,0 +1,43 @@
+{
+  "version": 1,
+  "work_item": "XQ-CONTENT",
+  "source_sha": "8f4031f40c096691df03099c2382cbb86112be19",
+  "command": "rtk proxy sh .work-receipts/verify-xq-content-handoff-ready.sh",
+  "scope": [
+    "XQ-CONTENT"
+  ],
+  "verified_at": 1788929684000,
+  "producer": {
+    "agent_id": "xq-content-executor",
+    "session_id": "01M21WYFWXQHZNK0BJTYVD8N1K",
+    "content_sha256": "7fc0ccf93f8f8aa6b8d881c91c6f61dc32e63ed979f6cc120f5ba9086eb253c5",
+    "pre_revision_snapshot_sha256": "7fc9fc339952ecccfa71b2602810e0657191247c7b64346c071f5ae4a75d8eff",
+    "venue_sha256": "3035f626d7ef00cd860d2fd4781513b76d9587b1e6c67924b549ce8865c828a6"
+  },
+  "checks": [
+    {
+      "name": "稿件接续状态一致性",
+      "passed": true,
+      "details": "当前内容稿已依据接续者会话 01M22688HDB0K4K691RF9CB8TC 和检查点 01M226KV47XENA1P03FR5D1QG7，将 C→V-01 至 C→V-04 校正为项目内已接收；同时明确项目内接收不等于外部发送、场地方确认或实机验收。",
+      "criteria": [
+        "交付各环节安排及现场需要配合的事项。"
+      ]
+    },
+    {
+      "name": "内容安排与现场配合项",
+      "passed": true,
+      "details": "内容稿保留 85 分钟议程、5 分钟场内缓冲、T+10—T+35 单投影唯一占用和三组桌面贯穿全程的条件性安排，并逐项列出时间、设备、布局、人员和物料的现场配合需求。",
+      "criteria": [
+        "交付各环节安排及现场需要配合的事项。"
+      ]
+    },
+    {
+      "name": "原稿、原方案与未知项保留",
+      "passed": true,
+      "details": "修改前内容原稿已完整快照且哈希匹配；原现场方案哈希保持不变。稿件继续列明场地、设备、人员和成品材料缺口，并明确独立复核尚未发生。",
+      "criteria": [
+        "保留实际产物与来源引用，无法确认的内容显式说明。"
+      ]
+    }
+  ]
+}

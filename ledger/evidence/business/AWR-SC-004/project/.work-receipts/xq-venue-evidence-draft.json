@@ -1,0 +1,16 @@
+{
+  "external_key": "XQ-VENUE-PLAN-20260909",
+  "work_item_key": "XQ-VENUE",
+  "evidence_type": "report",
+  "level": "locally_verified",
+  "summary": "现场时间、单投影、三组桌面和内容交接方案已通过本地结构化核对。",
+  "locator": ".work-receipts/xq-venue-evidence-report.json",
+  "sha256": "8137b243c28f2d894247d19d8d0585f0e0cdcf71d531cf97bbe34103bed889c4",
+  "source_sha": "8f4031f40c096691df03099c2382cbb86112be19",
+  "command": "rtk proxy sh .work-receipts/verify-xq-venue.sh",
+  "scope": [
+    "XQ-VENUE"
+  ],
+  "branch_id": null,
+  "verified_at": 1788918233000
+}

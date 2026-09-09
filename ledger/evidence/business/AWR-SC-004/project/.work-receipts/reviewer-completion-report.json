@@ -1,0 +1,49 @@
+{
+  "version": 1,
+  "work_item": "XQ-REVIEW",
+  "source_sha": "8f4031f40c096691df03099c2382cbb86112be19",
+  "command": "rtk python .work-receipts/reviewer-verify.py",
+  "scope": [
+    "XQ-REVIEW"
+  ],
+  "verified_at": 1788932310979,
+  "artifact": {
+    "locator": "deliverables/xq-independent-review.md",
+    "sha256": "c4dd2d34080ba24bfdb3d8408990c55b2152c33241ab259b86e4d034335c9c13"
+  },
+  "verification_record": {
+    "locator": ".work-receipts/reviewer-verification.json",
+    "sha256": "859bd48d3c61eea5e2d37d0d100ff228acbb5c6a8ccc7279bb3d6a3139580c4b"
+  },
+  "checks": [
+    {
+      "name": "two-results-and-merged-constraints-reviewed",
+      "passed": true,
+      "details": "The reviewer independently checked separate content and venue authorship and outputs, the merged 85/90/10-minute plan, the single-projector window, conditional three-table layout, actual successor receipt, and the exact two publication sets. Two current-state defects are recorded for producer remediation.",
+      "criteria": [
+        "分别复核两个产物和合并后的时间设备约束。"
+      ]
+    },
+    {
+      "name": "artifacts-sources-failures-and-unknowns-retained",
+      "passed": true,
+      "details": "The review binds five current artifact hashes and ten real phases, distinguishes RevisionConflict from ClaimConflict, corrects snapshot-membership authorship, preserves historical failures, and leaves venue, equipment, people, materials, final delivery and E4 explicitly unresolved.",
+      "criteria": [
+        "保留实际产物与来源引用，无法确认的内容显式说明。"
+      ]
+    }
+  ],
+  "verdict": "requires_executor_changes",
+  "defects": [
+    {
+      "id": "XQ-R01",
+      "summary": "The current ownership record says the content executor session remains active although the actual session ended at project revision 165 and XQ-CONTENT is completed with no active claim."
+    },
+    {
+      "id": "XQ-R02",
+      "summary": "XQ-INPUT, XQ-CONTENT, XQ-VENUE and XQ-MERGE are completed but retain stale in-progress or pre-completion summary/next_action text."
+    }
+  ],
+  "final_delivery_performed": false,
+  "whole_scenario_e4_granted": false
+}

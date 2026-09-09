@@ -1,0 +1,76 @@
+{
+  "version": 1,
+  "work_item": "XQ-MERGE",
+  "source_sha": "8f4031f40c096691df03099c2382cbb86112be19",
+  "command": "rtk proxy sh .work-receipts/verify-xq-return-check-handoff.sh",
+  "scope": [
+    "XQ-MERGE"
+  ],
+  "verified_at": 1788936130333,
+  "artifact": {
+    "ownership": {
+      "locator": "deliverables/xingqiao-ownership.md",
+      "sha256": "d1238aea798cc63e1d190cb4cbae24ba0b415f786501e1221312d83dcfcceafc"
+    },
+    "handoff_plan": {
+      "locator": "deliverables/xingqiao-independent-results.md",
+      "sha256": "681ebc8aa9988fe7d27d581eb4e76d68dc24dbacce49a59c5df17953311f8699"
+    },
+    "ledger": {
+      "locator": "work-ledger.yaml",
+      "sha256": "c571682e22d0a891f8d7072c8f4ce4575909463b974e9443fe72f062d3b316ae"
+    },
+    "verifier": {
+      "locator": ".work-receipts/verify-xq-return-check-handoff.sh",
+      "sha256": "f0f4e2ecb6256d72cc5c76755fe87b73c22accfd07c3f759a7b936edd1a63f10"
+    }
+  },
+  "current_status": {
+    "completed_work": [
+      "XQ-INPUT",
+      "XQ-CONTENT",
+      "XQ-VENUE",
+      "XQ-MERGE"
+    ],
+    "ready_work": "XQ-REVIEW",
+    "blocked_work": "XQ-DELIVER",
+    "active_work_count": 0,
+    "independent_return_check": "pending",
+    "final_delivery": "not_started"
+  },
+  "handoff_metadata_proposals": {
+    "xq_review": "01M22E0E7VFCQPAMMC6CCG7ZD0",
+    "xq_deliver": "01M22E3HYV5YNTJ0Y6JM2KMDEC"
+  },
+  "checks": [
+    {
+      "name": "All current work text follows actual progress",
+      "passed": true,
+      "details": "Four completed work items describe completed scope and conditional downstream responsibility. XQ-REVIEW states that remediation is ready for a different independent participant. XQ-DELIVER states that it is not started and remains blocked until return-check completes XQ-REVIEW."
+    },
+    {
+      "name": "Review comments are answered without rewriting history",
+      "passed": true,
+      "details": "The handoff plan answers XQ-R01 and every XQ-R02 sub-item. Pre-remediation ownership, merged-plan and ledger snapshots, the first requires_executor_changes report, original producer files, prior assignments and failure receipts remain separately traceable."
+    },
+    {
+      "name": "Onsite unknowns keep explicit responsibility and conditions",
+      "passed": true,
+      "details": "Venue/time, layout, equipment, people, finished content, onsite materials, external handoff evidence and return-check remain open with a next role, start condition and closure condition."
+    },
+    {
+      "name": "Independent boundary and final-delivery gate are effective",
+      "passed": true,
+      "details": "AWR reports one ready work item, XQ-REVIEW, and one blocked work item, XQ-DELIVER. All correction and handoff-coordination sessions are ended, no final-delivery artifact exists, and this report does not claim independent return-check passage."
+    }
+  ],
+  "retained_latest_failure": {
+    "locator": ".work-receipts/084-return-check-handoff-verification-attempt-1.json",
+    "sha256": "d7df2061c8d06a69b365c6f8ad960cc0f98338f07fa4dd4a6e59a6f47728765c",
+    "resolution": "The current verifier reads XQ-DELIVER by its normalized one-line JSON identity while preserving the historical verifier byte-for-byte."
+  },
+  "verdict": "ready_for_independent_return_check",
+  "independent_return_check_performed": false,
+  "final_delivery_performed": false,
+  "whole_scenario_e4_granted": false
+}

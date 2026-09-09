@@ -1,0 +1,18 @@
+{
+  "kind": "actual_receipt_followthrough_ownership_observation",
+  "observed_at": "2026-09-09T10:51:49+08:00",
+  "live_claims": [
+    {
+      "id": "01M22154A26T021N27EV6M5726",
+      "session_id": "01M22154A1QHYDK8CBQ129WXJV",
+      "agent_id": "xq-content-reviewer-2",
+      "work_item_id": "01M21W3H924XZK5JAZCTWTQPJH",
+      "branch_id": "01M21Z7CBNFNN0B7HVMY9WTVTC",
+      "status": "active",
+      "expires_at": null
+    }
+  ],
+  "operator_read_only": true,
+  "next_action": "Original content producer responds to the actual peer finding about missing receiver confirmation.",
+  "e4_credit": false
+}

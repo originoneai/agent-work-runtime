@@ -1,0 +1,59 @@
+{
+  "checkpoint": {
+    "changed_entities": [
+      "work_items:01M21W3H92418GRK38VA4D0RD7",
+      "work_items:01M21W3H924SNZ0DV020S3BM69",
+      "work_items:01M21W3H924XZK5JAZCTWTQPJH",
+      "work_items:01M21W3H92ENNZNW0MQM61AZND",
+      "work_items:01M21W3H92RVAXHPQ6ZEDVXV4S"
+    ],
+    "context_hash": "ed514688ea62431f3bea68976fc446033641740218e81812448d54dd962419f5",
+    "created_at": 1788935020416,
+    "digest": "已逐项回应首次独立复核 XQ-R01/XQ-R02：修正已结束会话和四项工作现行文字，保留整改前原稿、历次分工、原复核和失败回执；固定分工稿与筹备方案哈希并通过本地整改校验。",
+    "id": "01M22DC7W0SB3RN234VFSEMB42",
+    "next_action": "由运营方另派不同独立参与者认领 XQ-REVIEW，按返检包逐项核对并登记结论；只有返检通过并再次完成 XQ-REVIEW 后才认领 XQ-DELIVER。",
+    "open_loops": [
+      "活动绝对日期、90+10 边界、场地尺寸及三组桌面容量、视线、通道仍待有权限的场地方和后续现场核验人确认。",
+      "投影实机、接口、线材、信号源、操作人、扩声、供电和真实测试结果仍待后续现场核验人确认。",
+      "参会人数、主持/分享/汇报/操作/收场责任人及成品内容材料、现场物料数量仍待协调者和内容责任人补齐。",
+      "是否需要外部发送留痕仍待协调者决定；项目内接收不等于外部发送或现场执行接受。",
+      "独立返检尚未发生，XQ-DELIVER 与最终交付继续阻断。"
+    ],
+    "project_revision": 237,
+    "revision": 1,
+    "session_id": "01M22BK3JB8VGGGBC2AWHSHGT2"
+  },
+  "checkpoint_save": {
+    "after_revision": 184,
+    "attempt_id": "01M22DC7VZYDZE0WDG95R1H0J7",
+    "delta_bytes": 15680,
+    "delta_recorded": true,
+    "event_id": "01M22DC7W0C1DK6XR2T6K3K917",
+    "observed_changed_entity_count": 5,
+    "reported_changed_entity_count": 3,
+    "session_event_count": 4,
+    "source_observation_count": 12,
+    "through_revision": 237
+  },
+  "context_hash_basis": "caller_supplied_last_used_context",
+  "context_hash_verified": false,
+  "event": {
+    "artifact_id": null,
+    "branch_id": null,
+    "checkpoint_id": "01M22DC7W0SB3RN234VFSEMB42",
+    "created_at": 1788935020416,
+    "id": "01M22DC7W0C1DK6XR2T6K3K917",
+    "importance": "normal",
+    "project_revision": 239,
+    "session_id": "01M22BK3JB8VGGGBC2AWHSHGT2",
+    "source_id": null,
+    "summary": "Saved session checkpoint and observed delta",
+    "type": "checkpoint.created",
+    "work_item_id": "01M21W3H92RVAXHPQ6ZEDVXV4S"
+  },
+  "freshness_basis": "source_refresh",
+  "ok": true,
+  "project_revision": 239,
+  "save_status": "completed",
+  "source_refresh_performed": true
+}

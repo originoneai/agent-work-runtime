@@ -1,0 +1,29 @@
+{
+  "kind": "actual_prior_business_turn",
+  "phase": "round-2",
+  "client_task_id": "01a083c0-2c0b-7fc1-ba7d-0b0721dfeb0f",
+  "actual_user_turn": {
+    "timestamp": "2026-09-09T04:33:15.275Z",
+    "text": "请分别复核两项工作的结果，并汇总需要共同处理的事项。"
+  },
+  "source_sha256": {
+    "project.toml": "d52670ea0470cd5d8ee1290f6fc5802ae5caadaea5a99d1641471fff8189238a",
+    "GOALS.md": "b4c7d4b82ee317c7fdd4186bed1abb78ba366ef98ac0866b09f85844e22fbf15",
+    "PLAN.md": "729e1a14fe3b11ed869252e5b8aa85d8a3854719865d1cb7b3602ef91aa90ed9",
+    "RULES.md": "31ac59aa580dc3f29f17cd1f532eebbaa0152a041ccd8e00ca74e6d4cd914e19",
+    "work-ledger.yaml": "e31265cdcf08d8462141fdc314aa28c16d3b4f6e6a6510b18210d0b239b1b73c",
+    "AGENTS.md": "d0ca28ca18c438aefdada6a14cb847a0664e261f9e8e48abbfd8701720eb66a2",
+    "DELIVERABLES.md": "b81c90585753fd7d52390d4dd5fb338c4a4d71c4b7cc0bcfb17222be50a34766"
+  },
+  "artifact_sha256": {
+    "deliverables/xingqiao-collaboration-review.md": "21e564a7fa985cb67a842e1e836ed84f9a69db2865c86171e0edef4df891d5c0",
+    "deliverables/xingqiao-content.md": "7fc9fc339952ecccfa71b2602810e0657191247c7b64346c071f5ae4a75d8eff",
+    "deliverables/xingqiao-ownership.md": "2658295d0430fd4d63104c74e46e4f1c86a9b1d94c4e322d004c4932bcc0dbad",
+    "deliverables/xingqiao-venue.md": "3035f626d7ef00cd860d2fd4781513b76d9587b1e6c67924b549ce8865c828a6"
+  },
+  "native_transcript_sha256": "5f9dcc3a4ef419a8976f3b2bf4ce1d6df1467a5ce2b265aecf608172bfc8f05a",
+  "events_sha256": "0c551d0de1e695fe2e11bd03b9bb01f0bdc4a945bae22acfb3cffe75d602e02e",
+  "sealed_at": "2026-09-09T12:40:36+08:00",
+  "final_message": "复核结论：当前不能进入正式 `XQ-REVIEW`。内容结果需要修订，现场结果仅在计划层面条件通过。\n\n| 工作结果 | 复核结论 | 主要依据 |\n| --- | --- | --- |\n| [活动内容安排](/Users/mac/Documents/originone/agent-work-running/.local/business-live-20260909-v1/parallel-ownership/project/deliverables/xingqiao-content.md:45) | **需修订，仍在进行中** | 85 分钟时间轴和单投影安排正确；但稿件仍称接续者尚未建立、`C→V-01` 至 `C→V-04` 未接收，与后续实际接续回执冲突；案例文件、人员和物料也未定稿 |\n| [现场保障方案](/Users/mac/Documents/originone/agent-work-running/.local/business-live-20260909-v1/parallel-ownership/project/deliverables/xingqiao-venue.md:12) | **计划层面条件通过，现场执行未验证** | 85/90/5 分钟计算正确，投影仅占用 `T+10—T+35`、无计划冲突；但90+10边界、实机、桌面和资源条件均未闭合 |\n\n需要共同处理：\n\n1. 统一交接状态：[接续记录](/Users/mac/Documents/originone/agent-work-running/.local/business-live-20260909-v1/parallel-ownership/project/deliverables/xingqiao-ownership.md:63) 已确认项目内收到四项交接，内容稿仍保留旧状态。\n2. 确认90分钟窗口与额外10分钟的关系、绝对开放时间及7/3拆分；若10分钟包含在90分钟内，当前至少短缺5分钟。\n3. 完成投影实机、接口、线材、信号源、操作人、成品文件及测试结果核验。\n4. 按实际人数和场地核验三组桌面的容量、视线及安全通道。\n5. 补齐人员角色、讨论材料、纸笔数量、扩声、供电及其他物料。\n6. 重新安排现场核验人；现有接续会话已交回且状态为“不完整”，当前没有活动认领。\n7. 先完成 `XQ-CONTENT`，再进入 `XQ-MERGE`；正式复核必须由未参与两项产物执行的独立人员完成。\n\n补充证据边界：接续者当前校验脚本通过，但原现场校验脚本因依赖旧版内容标题已不能在当前快照重跑通过，因此旧证据只能视为历史快照，不是当前正式验收。",
+  "note": "Copied historical evidence, not newly authored business output or a review conclusion."
+}

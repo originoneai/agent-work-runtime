@@ -1,0 +1,87 @@
+{
+  "acceptance": [
+    "整合已复核结果和仍待共同处理的问题。",
+    "保留实际产物与来源引用，无法确认的内容显式说明。"
+  ],
+  "decisions": [],
+  "dependency_cycles": [],
+  "evidence": [],
+  "evidence_currency_basis": {
+    "branch_id": null,
+    "requested_source_sha": null
+  },
+  "freshness_basis": "source_refresh",
+  "missing_dependencies": [],
+  "ok": true,
+  "project_revision": 311,
+  "read_only": false,
+  "required_dependencies": [
+    {
+      "external_key": "XQ-CONTENT",
+      "freshness": "fresh",
+      "revision": 9,
+      "source_revision": 29,
+      "status": "completed"
+    },
+    {
+      "external_key": "XQ-INPUT",
+      "freshness": "fresh",
+      "revision": 4,
+      "source_revision": 29,
+      "status": "completed"
+    },
+    {
+      "external_key": "XQ-MERGE",
+      "freshness": "fresh",
+      "revision": 7,
+      "source_revision": 29,
+      "status": "completed"
+    },
+    {
+      "external_key": "XQ-REVIEW",
+      "freshness": "fresh",
+      "revision": 8,
+      "source_revision": 29,
+      "status": "completed"
+    },
+    {
+      "external_key": "XQ-VENUE",
+      "freshness": "fresh",
+      "revision": 4,
+      "source_revision": 29,
+      "status": "completed"
+    }
+  ],
+  "source_issues": [],
+  "source_ref": {
+    "end_line": null,
+    "locator": "file:///Users/mac/Documents/originone/agent-work-running/.local/business-live-20260909-v1/parallel-ownership/project/work-ledger.yaml",
+    "pointer": "/work_items/5",
+    "section_fingerprint": null,
+    "source_fingerprint": "sha256:e68a404d8933c93103cb22ba2aa67ad620b055c2a16a36ef8214826b26d76b96",
+    "source_id": "01M21W3H91TRWQ6G4NPD4BJPHC",
+    "source_revision": 29,
+    "start_line": null
+  },
+  "source_refresh_performed": true,
+  "source_warnings": 0,
+  "work": {
+    "active_claims": [],
+    "blocker": null,
+    "diagnostics": [],
+    "external_key": "XQ-DELIVER",
+    "freshness": "fresh",
+    "id": "01M21W3H92ETY0KG090P5SCSBC",
+    "milestone": "XQ-DELIVERY",
+    "next_action": "等待不同独立参与者返检通过并再次完成 XQ-REVIEW；此前不认领、不生成最终交付。条件满足后，由最终交付角色核对返检回执、固定版本和未闭合事项，再整理活动筹备交付包。",
+    "owner": null,
+    "priority": "P0",
+    "raw_status": "planned",
+    "ready": true,
+    "revision": 2,
+    "source_revision": 29,
+    "status": "planned",
+    "summary": "尚未开始；最终交付受 XQ-REVIEW 独立返检门禁阻断。",
+    "title": "交付活动筹备包"
+  }
+}

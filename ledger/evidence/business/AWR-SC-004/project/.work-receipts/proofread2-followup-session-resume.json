@@ -1,0 +1,13 @@
+{
+  "branch_id": "01M21Z7CBNFNN0B7HVMY9WTVTC",
+  "claim_id": "01M22154A26T021N27EV6M5726",
+  "committed_project_revision": 86,
+  "context_hash": "8e2e6d41a40e8eeb0a9ee3f1f8a97286428e2f1f14c8bf0b8d0c6fde424e1258",
+  "context_ready": true,
+  "event_id": "01M22154A24WXNZQ85GCJW7VF5",
+  "from_session_id": "01M21ZY6FW0C9R4T1B6N99QQKQ",
+  "new_session_id": "01M22154A1QHYDK8CBQ129WXJV",
+  "ok": true,
+  "recovery_basis": "checkpoint",
+  "work_item_key": "XQ-CONTENT"
+}

@@ -1,0 +1,566 @@
+{
+  "checkpoint_id": "01M22E23GD24GNAP71HVJZ8SDM",
+  "completeness": {
+    "acceptance_complete": true,
+    "assessment_scope": "Completeness of current required context facts and associations. Known unresolved dependencies and evidence gaps are retained; this does not certify task completion, verification execution or release readiness.",
+    "branch_context": {
+      "branch_id": null,
+      "branch_revision": null,
+      "creation_event_id": null,
+      "fork_project_revision": 0,
+      "git_binding": null,
+      "git_ref": null,
+      "name": "main",
+      "parent_branch_id": null,
+      "runtime_scope": "exact_branch; no parent or sibling runtime inheritance; delta never precedes fork",
+      "source_basis": "shared_current_sources; git_ref is a creation observation, not a frozen source snapshot"
+    },
+    "branch_id": null,
+    "complete": true,
+    "decision_context_complete": true,
+    "dependencies_complete": true,
+    "evidence_gaps": [
+      {
+        "code": "evidence_currency_unknown",
+        "reason": "both recorded and requested source SHA are needed to determine currency",
+        "reference": "XQ-REVIEW/evidence/.work-receipts/reviewer-completion-report.json"
+      },
+      {
+        "code": "evidence_currency_unknown",
+        "reason": "both recorded and requested source SHA are needed to determine currency",
+        "reference": "XQ-REVIEW/evidence/.work-receipts/reviewer-recheck-completion-report.json"
+      },
+      {
+        "code": "evidence_level_unverified",
+        "reason": "evidence level does not claim completed verification",
+        "reference": "XQ-REVIEW/evidence/.work-receipts/reviewer-completion-report.json"
+      },
+      {
+        "code": "evidence_level_unverified",
+        "reason": "evidence level does not claim completed verification",
+        "reference": "XQ-REVIEW/evidence/.work-receipts/reviewer-recheck-completion-report.json"
+      },
+      {
+        "code": "missing_evidence_bindings",
+        "reason": "sha256, source_sha, command, verified_at",
+        "reference": "XQ-REVIEW/evidence/.work-receipts/reviewer-completion-report.json"
+      },
+      {
+        "code": "missing_evidence_bindings",
+        "reason": "sha256, source_sha, command, verified_at",
+        "reference": "XQ-REVIEW/evidence/.work-receipts/reviewer-recheck-completion-report.json"
+      }
+    ],
+    "freshness_basis": "source_refresh_at_project_revision",
+    "goal_context_complete": true,
+    "issues": [],
+    "project_id": "01M21W3H8XNKD8AKP4N1JNQQTM",
+    "project_revision": 308,
+    "rules_complete": true,
+    "source_fresh": true,
+    "source_refresh_performed": true,
+    "source_versions": [
+      {
+        "fingerprint": "sha256:b4c7d4b82ee317c7fdd4186bed1abb78ba366ef98ac0866b09f85844e22fbf15",
+        "freshness": "fresh",
+        "id": "01M21W3H8Y24ZD64CESES56X3Q",
+        "locator": "file:///Users/mac/Documents/originone/agent-work-running/.local/business-live-20260909-v1/parallel-ownership/project/GOALS.md",
+        "revision": 1
+      },
+      {
+        "fingerprint": "sha256:729e1a14fe3b11ed869252e5b8aa85d8a3854719865d1cb7b3602ef91aa90ed9",
+        "freshness": "fresh",
+        "id": "01M21W3H8Z4RERTD0EV8114GH2",
+        "locator": "file:///Users/mac/Documents/originone/agent-work-running/.local/business-live-20260909-v1/parallel-ownership/project/PLAN.md",
+        "revision": 1
+      },
+      {
+        "fingerprint": "sha256:31ac59aa580dc3f29f17cd1f532eebbaa0152a041ccd8e00ca74e6d4cd914e19",
+        "freshness": "fresh",
+        "id": "01M21W3H90YD13FCC1DJ07WZQD",
+        "locator": "file:///Users/mac/Documents/originone/agent-work-running/.local/business-live-20260909-v1/parallel-ownership/project/RULES.md",
+        "revision": 1
+      },
+      {
+        "fingerprint": "sha256:e68a404d8933c93103cb22ba2aa67ad620b055c2a16a36ef8214826b26d76b96",
+        "freshness": "fresh",
+        "id": "01M21W3H91TRWQ6G4NPD4BJPHC",
+        "locator": "file:///Users/mac/Documents/originone/agent-work-running/.local/business-live-20260909-v1/parallel-ownership/project/work-ledger.yaml",
+        "revision": 29
+      }
+    ],
+    "status": "CONTEXT COMPLETE",
+    "unresolved_required_dependencies": [],
+    "work_item_found": true,
+    "work_item_key": "XQ-REVIEW",
+    "work_state_complete": true
+  },
+  "delta_after_revision": 267,
+  "diagnostic_text": null,
+  "freshness_basis": "source_refresh",
+  "goal_selection_basis": "project_primary_goal_sources",
+  "level": "L1",
+  "ok": true,
+  "omitted_refs": [],
+  "project_revision": 308,
+  "read_only": false,
+  "selection_basis": "explicit_work",
+  "session_id": "01M22EXK425XHY2N02VFPN7T6K",
+  "source_refresh_performed": true,
+  "work_context": {
+    "context_hash": "c3f5d96506d85225b3a06e17d5f6b812b76367fa0804173f5ac1b3078cfac620",
+    "identity": {
+      "branch_id": null,
+      "project_id": "01M21W3H8XNKD8AKP4N1JNQQTM",
+      "project_key": "awr-v1/parallel-ownership/awr-live-20260909-004",
+      "project_revision": 308,
+      "source_versions": [
+        {
+          "fingerprint": "sha256:b4c7d4b82ee317c7fdd4186bed1abb78ba366ef98ac0866b09f85844e22fbf15",
+          "freshness": "fresh",
+          "id": "01M21W3H8Y24ZD64CESES56X3Q",
+          "locator": "file:///Users/mac/Documents/originone/agent-work-running/.local/business-live-20260909-v1/parallel-ownership/project/GOALS.md",
+          "revision": 1
+        },
+        {
+          "fingerprint": "sha256:729e1a14fe3b11ed869252e5b8aa85d8a3854719865d1cb7b3602ef91aa90ed9",
+          "freshness": "fresh",
+          "id": "01M21W3H8Z4RERTD0EV8114GH2",
+          "locator": "file:///Users/mac/Documents/originone/agent-work-running/.local/business-live-20260909-v1/parallel-ownership/project/PLAN.md",
+          "revision": 1
+        },
+        {
+          "fingerprint": "sha256:31ac59aa580dc3f29f17cd1f532eebbaa0152a041ccd8e00ca74e6d4cd914e19",
+          "freshness": "fresh",
+          "id": "01M21W3H90YD13FCC1DJ07WZQD",
+          "locator": "file:///Users/mac/Documents/originone/agent-work-running/.local/business-live-20260909-v1/parallel-ownership/project/RULES.md",
+          "revision": 1
+        },
+        {
+          "fingerprint": "sha256:e68a404d8933c93103cb22ba2aa67ad620b055c2a16a36ef8214826b26d76b96",
+          "freshness": "fresh",
+          "id": "01M21W3H91TRWQ6G4NPD4BJPHC",
+          "locator": "file:///Users/mac/Documents/originone/agent-work-running/.local/business-live-20260909-v1/parallel-ownership/project/work-ledger.yaml",
+          "revision": 29
+        }
+      ],
+      "work_item_id": "01M21W3H924SNZ0DV020S3BM69",
+      "work_item_key": "XQ-REVIEW",
+      "work_item_revision": 8
+    },
+    "omitted_chunks": [],
+    "policy": "awr.whole_chunks.v1",
+    "rendered_context": "Project: awr-v1/parallel-ownership/awr-live-20260909-004 [01M21W3H8XNKD8AKP4N1JNQQTM] r308\nWork: XQ-REVIEW [01M21W3H924SNZ0DV020S3BM69] r8\nBranch: main\nSources:\n01M21W3H8Y24ZD64CESES56X3Q r1 sha256:b4c7d4b82ee317c7fdd4186bed1abb78ba366ef98ac0866b09f85844e22fbf15 Fresh file:///Users/mac/Documents/originone/agent-work-running/.local/business-live-20260909-v1/parallel-ownership/project/GOALS.md\n01M21W3H8Z4RERTD0EV8114GH2 r1 sha256:729e1a14fe3b11ed869252e5b8aa85d8a3854719865d1cb7b3602ef91aa90ed9 Fresh file:///Users/mac/Documents/originone/agent-work-running/.local/business-live-20260909-v1/parallel-ownership/project/PLAN.md\n01M21W3H90YD13FCC1DJ07WZQD r1 sha256:31ac59aa580dc3f29f17cd1f532eebbaa0152a041ccd8e00ca74e6d4cd914e19 Fresh file:///Users/mac/Documents/originone/agent-work-running/.local/business-live-20260909-v1/parallel-ownership/project/RULES.md\n01M21W3H91TRWQ6G4NPD4BJPHC r29 sha256:e68a404d8933c93103cb22ba2aa67ad620b055c2a16a36ef8214826b26d76b96 Fresh file:///Users/mac/Documents/originone/agent-work-running/.local/business-live-20260909-v1/parallel-ownership/project/work-ledger.yaml\n\n## Goal\n[goal-body:goal#xq]\ngoal:01M21W3H8ZYN88MQAFTTSP57KZ@r1\n并行完成活动内容安排和现场保障，明确分工、接续关系和共同约束。\n[goal:goal#xq]\ngoal:01M21W3H8ZYN88MQAFTTSP57KZ@r1\n星桥活动筹备\nStatus: active\nSuccess criteria:\n\n\n## Current Work\n[XQ-REVIEW]\nwork_item:01M21W3H924SNZ0DV020S3BM69@r8\nStatus: \"completed\"\nRaw status: \"completed\"\nBlocker present: false\nBlocker:\n\nNext Action:\n本工作完成后不再重复返检。由最终交付角色核对固定整改包、本返检报告和未闭合事项，再认领 XQ-DELIVER；现场验证、最终交付和整场 E4 仍未发生。\n[work-summary]\nwork_item:01M21W3H924SNZ0DV020S3BM69@r8\n独立返检已完成：XQ-R01/XQ-R02 均已闭合；两个产物、合并后的时间设备约束、真实角色与冲突链、原稿失败和未知事项均已核对，结论通过本次 XQ-REVIEW 范围。\n\n## Acceptance\n[acceptance]\nwork_item:01M21W3H924SNZ0DV020S3BM69@r8\n1. 分别复核两个产物和合并后的时间设备约束。\n2. 保留实际产物与来源引用，无法确认的内容显式说明。\n\n## Rules\n[file:///Users/mac/Documents/originone/agent-work-running/.local/business-live-20260909-v1/parallel-ownership/project/RULES.md#authority]\nrule:01M21W3H91NAYC0CEF6JV018X7@r1\nSeverity: hard\nScope: {\"type\":\"project\",\"value\":\"*\"}\n来源与交付\n\n以当前项目来源为准。未知或缺证据的内容显式保留，不将计划、样例或文件存在当作真实验收通过。\n[file:///Users/mac/Documents/originone/agent-work-running/.local/business-live-20260909-v1/parallel-ownership/project/RULES.md#business]\nrule:01M21W3H91ZYJ8NH5DK6GZQW7P@r1\nSeverity: hard\nScope: {\"type\":\"project\",\"value\":\"*\"}\n业务要求\n\n内容与现场工作分别由不同执行者负责；共同事项要有明确交接记录，独立复核者不得兼任产物执行者。\n\n## Dependencies\n[dependency-summary]\nRequired dependencies: 0 unresolved, 4 resolved; 0 missing, 0 cycle members.\n[resolved:XQ-CONTENT]\nwork_item:01M21W3H924XZK5JAZCTWTQPJH@r9\n整理活动内容安排\nStatus: \"completed\"\nRaw status: \"completed\"\n[resolved:XQ-INPUT]\nwork_item:01M21W3H92ENNZNW0MQM61AZND@r4\n核对活动共同约束\nStatus: \"completed\"\nRaw status: \"completed\"\n[resolved:XQ-MERGE]\nwork_item:01M21W3H92RVAXHPQ6ZEDVXV4S@r7\n协调内容与现场结果\nStatus: \"completed\"\nRaw status: \"completed\"\n[resolved:XQ-VENUE]\nwork_item:01M21W3H92418GRK38VA4D0RD7@r4\n整理现场保障方案\nStatus: \"completed\"\nRaw status: \"completed\"\n\n## Recent Delta\n[change:01M21W3H91TRWQ6G4NPD4BJPHC:01M21W3H924SNZ0DV020S3BM69]\ndelta:work_items:01M21W3H924SNZ0DV020S3BM69@r8\nwork_items XQ-REVIEW: updated Some(5) -> Some(8), 3 changes; event 01M22G4BZF88W7YWJW15QV987J\n[change:01M21W3H91TRWQ6G4NPD4BJPHC:01M21W3H92ETY0KG090P5SCSBC]\ndelta:work_items:01M21W3H92ETY0KG090P5SCSBC@r2\nwork_items XQ-DELIVER: updated Some(1) -> Some(2), 1 changes; event 01M22E449JGA9JQJ7PJA6Y5YBV\n[change:01M21W3H91TRWQ6G4NPD4BJPHC:01M22G4BZCMVYZQRVVZQHD5N9E]\ndelta:evidence:01M22G4BZCMVYZQRVVZQHD5N9E@r1\nevidence XQ-REVIEW/evidence/.work-receipts/reviewer-recheck-completion-report.json: added None -> Some(1), 1 changes; event 01M22G4BZF88W7YWJW15QV987J\n[checkpoint]\ncheckpoint:01M22E23GD24GNAP71HVJZ8SDM@r1\nCheckpoint context hash: 4b13e373d253f33e5278ef6d401852d95c378905dc4cbe506931f10bbc66b17f\nCheckpoint Next Action:\n由不同独立参与者认领 XQ-REVIEW，按固定返检包逐项核对；通过则再次完成 XQ-REVIEW，未通过则保留问题并退回整改。\nCheckpoint Open Loops:\n独立返检尚未执行，首次 requires_executor_changes 结论仍是最新独立结论。\n场地、设备、人员、成品材料和外部发送事实仍未闭合，返检不得把本地证据提升为现场通过。\nXQ-DELIVER 继续等待 XQ-REVIEW 返检通过。\n[checkpoint-digest]\ncheckpoint:01M22E23GD24GNAP71HVJZ8SDM@r1\n已把 XQ-REVIEW 现行摘要和下一步更新为：XQ-MERGE 整改及最终本地复验已完成，当前直接等待运营方另派独立参与者返检；本会话没有执行或签署返检。\n[delta-baseline]\nAfter project revision 267 (previous_closed_session) through 308. Checkpoint: 01M22E23GD24GNAP71HVJZ8SDM. Important events: 0; omitted by event limit: 0.\n[folded-process-history]\nbranch.switched normal: 3 at/before baseline, 0 after\ncheckpoint.created normal: 1 at/before baseline, 1 after\ncheckpoint.started normal: 1 at/before baseline, 1 after\nevidence.recorded normal: 1 at/before baseline, 3 after\nproposal.applied normal: 1 at/before baseline, 0 after\nproposal.apply_started normal: 4 at/before baseline, 3 after\nproposal.approved normal: 4 at/before baseline, 3 after\nproposal.created normal: 4 at/before baseline, 3 after\nproposal.ready normal: 4 at/before baseline, 3 after\nsession.ended normal: 2 at/before baseline, 1 after\nsession.started normal: 3 at/before baseline, 1 after\nwork.claimed normal: 0 at/before baseline, 1 after\nwork.completed normal: 1 at/before baseline, 1 after\nwork.progressed normal: 1 at/before baseline, 2 after\nwork.reopened normal: 1 at/before baseline, 0 after\n[source:01M21W3H91TRWQ6G4NPD4BJPHC]\n8 source events; latest source.projected. Before known: true\nBefore: r25 sha256:bf405b2cc3b27b72272afd189a16b0b429031183f04438eb4984b1dca4f36b9b Fresh active=true\nAfter: r29 sha256:e68a404d8933c93103cb22ba2aa67ad620b055c2a16a36ef8214826b26d76b96 Fresh active=true\nChanged identities: 3; omitted identities: 0; legacy events without entity history: 0.\nHistory events: 01M22E449GT7BXX2W61ZCC4RVQ .. 01M22G4BZF88W7YWJW15QV987J (r276..r307)\n\n## Evidence\n[evidence-gaps]\nmissing_evidence_bindings [XQ-REVIEW/evidence/.work-receipts/reviewer-completion-report.json]: sha256, source_sha, command, verified_at\nevidence_currency_unknown [XQ-REVIEW/evidence/.work-receipts/reviewer-completion-report.json]: both recorded and requested source SHA are needed to determine currency\nevidence_level_unverified [XQ-REVIEW/evidence/.work-receipts/reviewer-completion-report.json]: evidence level does not claim completed verification\nmissing_evidence_bindings [XQ-REVIEW/evidence/.work-receipts/reviewer-recheck-completion-report.json]: sha256, source_sha, command, verified_at\nevidence_currency_unknown [XQ-REVIEW/evidence/.work-receipts/reviewer-recheck-completion-report.json]: both recorded and requested source SHA are needed to determine currency\nevidence_level_unverified [XQ-REVIEW/evidence/.work-receipts/reviewer-recheck-completion-report.json]: evidence level does not claim completed verification\n[evidence:XQ-INDEPENDENT-RECHECK-20260909]\nevidence:01M22FSCP6GBWK4E81ZY0ZEC1W@r1\nAn independent reviewer rechecked the fixed 202-file correction package, verified XQ-R01 and XQ-R02 are closed, preserved the original 147-file and 10-file process packages, distinguished the real RevisionConflict and ClaimConflict, confirm…\nLevel: LocallyVerified; currency: Current\nReport: .work-receipts/reviewer-recheck-completion-report.json\nSource SHA: 8f4031f40c096691df03099c2382cbb86112be19\nScope: XQ-REVIEW\n[evidence:XQ-INDEPENDENT-RECHECK-20260909-V2]\nevidence:01M22FZ8TQWBB8650H8ZSN689J@r1\nAn independent reviewer rechecked the fixed 202-file correction package, verified XQ-R01 and XQ-R02 are closed, preserved the original 147-file and 10-file process packages, distinguished the real RevisionConflict and ClaimConflict, confirm…\nLevel: LocallyVerified; currency: Current\nReport: .work-receipts/reviewer-recheck-completion-report.json\nSource SHA: 8f4031f40c096691df03099c2382cbb86112be19\nScope: XQ-REVIEW\n[evidence:XQ-INDEPENDENT-RECHECK-20260909-V3]\nevidence:01M22G3V7QMZB78H4KGKFD40MG@r1\nAn independent reviewer rechecked the fixed 202-file correction package, verified XQ-R01 and XQ-R02 are closed, preserved the original 147-file and 10-file process packages, distinguished the real RevisionConflict and ClaimConflict, confirm…\nLevel: LocallyVerified; currency: Current\nReport: .work-receipts/reviewer-recheck-completion-report.json\nSource SHA: 8f4031f40c096691df03099c2382cbb86112be19\nScope: XQ-REVIEW\n[evidence:XQ-INDEPENDENT-REVIEW-20260909]\nevidence:01M22AT425XHA66YK5GAV1H24G@r1\nA different luna_worker independently reviewed both producer outputs and the merged constraints, verified the exact 147+10 published files, actual authorship, branch/conflict timeline, successor handoff and unknowns, and recorded XQ-R01/XQ-…\nLevel: LocallyVerified; currency: Current\nReport: .work-receipts/reviewer-completion-report.json\nSource SHA: 8f4031f40c096691df03099c2382cbb86112be19\nScope: XQ-REVIEW\n[evidence:XQ-REVIEW/evidence/.work-receipts/reviewer-completion-report.json]\nevidence:01M22ATM69QZK10N9XCGX4MWDZ@r1\nEvidence reference; not yet verified by AWR\nLevel: Unknown; currency: Unknown\nReport: .work-receipts/reviewer-completion-report.json\nSource SHA: unknown\nScope: XQ-REVIEW\n[evidence:XQ-REVIEW/evidence/.work-receipts/reviewer-recheck-completion-report.json]\nevidence:01M22G4BZCMVYZQRVVZQHD5N9E@r1\nEvidence reference; not yet verified by AWR\nLevel: Unknown; currency: Unknown\nReport: .work-receipts/reviewer-recheck-completion-report.json\nSource SHA: unknown\nScope: XQ-REVIEW\n\n## Metadata\n[branch-context]\nWork branch: main | revision: None | fork: 0 | parent: main\nGit ref at creation: unbound; recorded commit: unverified\nSource basis: shared_current_sources; git_ref is a creation observation, not a frozen source snapshot\nRuntime scope: exact_branch; no parent or sibling runtime inheritance; delta never precedes fork\n[completeness]\nCONTEXT COMPLETE\n\nCompleteness of current required context facts and associations. Known unresolved dependencies and evidence gaps are retained; this does not certify task completion, verification execution or release readiness.\n[identity]\nIntent: handoff\nSelection: explicit_work\nSession: 01M22EXK425XHY2N02VFPN7T6K\nPhase: XQ-DELIVERY\nTitle: 独立复核两项结果\n\nOptional chunks omitted: 0. Full details remain available through explicit queries.\n",
+    "required_tokens": 1780,
+    "selected_chunks": [
+      {
+        "entities": [
+          {
+            "id": "01M21W3H8ZYN88MQAFTTSP57KZ",
+            "kind": "goal",
+            "revision": 1
+          }
+        ],
+        "key": "goal-body:goal#xq",
+        "required": false,
+        "section": "goal"
+      },
+      {
+        "entities": [
+          {
+            "id": "01M21W3H8ZYN88MQAFTTSP57KZ",
+            "kind": "goal",
+            "revision": 1
+          }
+        ],
+        "key": "goal:goal#xq",
+        "required": true,
+        "section": "goal"
+      },
+      {
+        "entities": [
+          {
+            "id": "01M21W3H924SNZ0DV020S3BM69",
+            "kind": "work_item",
+            "revision": 8
+          }
+        ],
+        "key": "XQ-REVIEW",
+        "required": true,
+        "section": "work"
+      },
+      {
+        "entities": [
+          {
+            "id": "01M21W3H924SNZ0DV020S3BM69",
+            "kind": "work_item",
+            "revision": 8
+          }
+        ],
+        "key": "work-summary",
+        "required": false,
+        "section": "work"
+      },
+      {
+        "entities": [
+          {
+            "id": "01M21W3H924SNZ0DV020S3BM69",
+            "kind": "work_item",
+            "revision": 8
+          }
+        ],
+        "key": "acceptance",
+        "required": true,
+        "section": "acceptance"
+      },
+      {
+        "entities": [
+          {
+            "id": "01M21W3H91NAYC0CEF6JV018X7",
+            "kind": "rule",
+            "revision": 1
+          }
+        ],
+        "key": "file:///Users/mac/Documents/originone/agent-work-running/.local/business-live-20260909-v1/parallel-ownership/project/RULES.md#authority",
+        "required": true,
+        "section": "rules"
+      },
+      {
+        "entities": [
+          {
+            "id": "01M21W3H91ZYJ8NH5DK6GZQW7P",
+            "kind": "rule",
+            "revision": 1
+          }
+        ],
+        "key": "file:///Users/mac/Documents/originone/agent-work-running/.local/business-live-20260909-v1/parallel-ownership/project/RULES.md#business",
+        "required": true,
+        "section": "rules"
+      },
+      {
+        "entities": [],
+        "key": "dependency-summary",
+        "required": true,
+        "section": "dependencies"
+      },
+      {
+        "entities": [
+          {
+            "id": "01M21W3H924XZK5JAZCTWTQPJH",
+            "kind": "work_item",
+            "revision": 9
+          }
+        ],
+        "key": "resolved:XQ-CONTENT",
+        "required": false,
+        "section": "dependencies"
+      },
+      {
+        "entities": [
+          {
+            "id": "01M21W3H92ENNZNW0MQM61AZND",
+            "kind": "work_item",
+            "revision": 4
+          }
+        ],
+        "key": "resolved:XQ-INPUT",
+        "required": false,
+        "section": "dependencies"
+      },
+      {
+        "entities": [
+          {
+            "id": "01M21W3H92RVAXHPQ6ZEDVXV4S",
+            "kind": "work_item",
+            "revision": 7
+          }
+        ],
+        "key": "resolved:XQ-MERGE",
+        "required": false,
+        "section": "dependencies"
+      },
+      {
+        "entities": [
+          {
+            "id": "01M21W3H92418GRK38VA4D0RD7",
+            "kind": "work_item",
+            "revision": 4
+          }
+        ],
+        "key": "resolved:XQ-VENUE",
+        "required": false,
+        "section": "dependencies"
+      },
+      {
+        "entities": [
+          {
+            "id": "01M21W3H924SNZ0DV020S3BM69",
+            "kind": "delta:work_items",
+            "revision": 8
+          }
+        ],
+        "key": "change:01M21W3H91TRWQ6G4NPD4BJPHC:01M21W3H924SNZ0DV020S3BM69",
+        "required": false,
+        "section": "delta"
+      },
+      {
+        "entities": [
+          {
+            "id": "01M21W3H92ETY0KG090P5SCSBC",
+            "kind": "delta:work_items",
+            "revision": 2
+          }
+        ],
+        "key": "change:01M21W3H91TRWQ6G4NPD4BJPHC:01M21W3H92ETY0KG090P5SCSBC",
+        "required": false,
+        "section": "delta"
+      },
+      {
+        "entities": [
+          {
+            "id": "01M22G4BZCMVYZQRVVZQHD5N9E",
+            "kind": "delta:evidence",
+            "revision": 1
+          }
+        ],
+        "key": "change:01M21W3H91TRWQ6G4NPD4BJPHC:01M22G4BZCMVYZQRVVZQHD5N9E",
+        "required": false,
+        "section": "delta"
+      },
+      {
+        "entities": [
+          {
+            "id": "01M22E23GD24GNAP71HVJZ8SDM",
+            "kind": "checkpoint",
+            "revision": 1
+          }
+        ],
+        "key": "checkpoint",
+        "required": true,
+        "section": "delta"
+      },
+      {
+        "entities": [
+          {
+            "id": "01M22E23GD24GNAP71HVJZ8SDM",
+            "kind": "checkpoint",
+            "revision": 1
+          }
+        ],
+        "key": "checkpoint-digest",
+        "required": false,
+        "section": "delta"
+      },
+      {
+        "entities": [],
+        "key": "delta-baseline",
+        "required": true,
+        "section": "delta"
+      },
+      {
+        "entities": [],
+        "key": "folded-process-history",
+        "required": false,
+        "section": "delta"
+      },
+      {
+        "entities": [],
+        "key": "source:01M21W3H91TRWQ6G4NPD4BJPHC",
+        "required": true,
+        "section": "delta"
+      },
+      {
+        "entities": [],
+        "key": "evidence-gaps",
+        "required": true,
+        "section": "evidence"
+      },
+      {
+        "entities": [
+          {
+            "id": "01M22FSCP6GBWK4E81ZY0ZEC1W",
+            "kind": "evidence",
+            "revision": 1
+          }
+        ],
+        "key": "evidence:XQ-INDEPENDENT-RECHECK-20260909",
+        "required": false,
+        "section": "evidence"
+      },
+      {
+        "entities": [
+          {
+            "id": "01M22FZ8TQWBB8650H8ZSN689J",
+            "kind": "evidence",
+            "revision": 1
+          }
+        ],
+        "key": "evidence:XQ-INDEPENDENT-RECHECK-20260909-V2",
+        "required": false,
+        "section": "evidence"
+      },
+      {
+        "entities": [
+          {
+            "id": "01M22G3V7QMZB78H4KGKFD40MG",
+            "kind": "evidence",
+            "revision": 1
+          }
+        ],
+        "key": "evidence:XQ-INDEPENDENT-RECHECK-20260909-V3",
+        "required": false,
+        "section": "evidence"
+      },
+      {
+        "entities": [
+          {
+            "id": "01M22AT425XHA66YK5GAV1H24G",
+            "kind": "evidence",
+            "revision": 1
+          }
+        ],
+        "key": "evidence:XQ-INDEPENDENT-REVIEW-20260909",
+        "required": false,
+        "section": "evidence"
+      },
+      {
+        "entities": [
+          {
+            "id": "01M22ATM69QZK10N9XCGX4MWDZ",
+            "kind": "evidence",
+            "revision": 1
+          }
+        ],
+        "key": "evidence:XQ-REVIEW/evidence/.work-receipts/reviewer-completion-report.json",
+        "required": false,
+        "section": "evidence"
+      },
+      {
+        "entities": [
+          {
+            "id": "01M22G4BZCMVYZQRVVZQHD5N9E",
+            "kind": "evidence",
+            "revision": 1
+          }
+        ],
+        "key": "evidence:XQ-REVIEW/evidence/.work-receipts/reviewer-recheck-completion-report.json",
+        "required": false,
+        "section": "evidence"
+      },
+      {
+        "entities": [],
+        "key": "branch-context",
+        "required": true,
+        "section": "metadata"
+      },
+      {
+        "entities": [],
+        "key": "completeness",
+        "required": true,
+        "section": "metadata"
+      },
+      {
+        "entities": [],
+        "key": "identity",
+        "required": true,
+        "section": "metadata"
+      }
+    ],
+    "selected_entities": [
+      {
+        "id": "01M22E23GD24GNAP71HVJZ8SDM",
+        "kind": "checkpoint",
+        "revision": 1
+      },
+      {
+        "id": "01M22G4BZCMVYZQRVVZQHD5N9E",
+        "kind": "delta:evidence",
+        "revision": 1
+      },
+      {
+        "id": "01M21W3H924SNZ0DV020S3BM69",
+        "kind": "delta:work_items",
+        "revision": 8
+      },
+      {
+        "id": "01M21W3H92ETY0KG090P5SCSBC",
+        "kind": "delta:work_items",
+        "revision": 2
+      },
+      {
+        "id": "01M22AT425XHA66YK5GAV1H24G",
+        "kind": "evidence",
+        "revision": 1
+      },
+      {
+        "id": "01M22ATM69QZK10N9XCGX4MWDZ",
+        "kind": "evidence",
+        "revision": 1
+      },
+      {
+        "id": "01M22FSCP6GBWK4E81ZY0ZEC1W",
+        "kind": "evidence",
+        "revision": 1
+      },
+      {
+        "id": "01M22FZ8TQWBB8650H8ZSN689J",
+        "kind": "evidence",
+        "revision": 1
+      },
+      {
+        "id": "01M22G3V7QMZB78H4KGKFD40MG",
+        "kind": "evidence",
+        "revision": 1
+      },
+      {
+        "id": "01M22G4BZCMVYZQRVVZQHD5N9E",
+        "kind": "evidence",
+        "revision": 1
+      },
+      {
+        "id": "01M21W3H8ZYN88MQAFTTSP57KZ",
+        "kind": "goal",
+        "revision": 1
+      },
+      {
+        "id": "01M21W3H91NAYC0CEF6JV018X7",
+        "kind": "rule",
+        "revision": 1
+      },
+      {
+        "id": "01M21W3H91ZYJ8NH5DK6GZQW7P",
+        "kind": "rule",
+        "revision": 1
+      },
+      {
+        "id": "01M21W3H92418GRK38VA4D0RD7",
+        "kind": "work_item",
+        "revision": 4
+      },
+      {
+        "id": "01M21W3H924SNZ0DV020S3BM69",
+        "kind": "work_item",
+        "revision": 8
+      },
+      {
+        "id": "01M21W3H924XZK5JAZCTWTQPJH",
+        "kind": "work_item",
+        "revision": 9
+      },
+      {
+        "id": "01M21W3H92ENNZNW0MQM61AZND",
+        "kind": "work_item",
+        "revision": 4
+      },
+      {
+        "id": "01M21W3H92RVAXHPQ6ZEDVXV4S",
+        "kind": "work_item",
+        "revision": 7
+      }
+    ],
+    "token_budget": 5000,
+    "token_count_scope": "Exact o200k_base ordinary-text token count of rendered_context, including headings, references and omission footer. JSON transport/envelope, tool framing and surrounding conversation are excluded. Counts for other model tokenizers may differ; no cross-tokenizer error bound is claimed.",
+    "token_estimate": 3568,
+    "tokenizer": "o200k_base"
+  }
+}

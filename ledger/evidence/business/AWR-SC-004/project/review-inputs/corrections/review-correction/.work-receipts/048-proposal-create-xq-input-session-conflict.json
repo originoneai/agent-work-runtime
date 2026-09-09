@@ -1,0 +1,4 @@
+{
+  "code": "InvalidInput",
+  "message": "invalid input: work target conflicts with the creating session"
+}

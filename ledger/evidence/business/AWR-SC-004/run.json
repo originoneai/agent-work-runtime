@@ -1,0 +1,50 @@
+{
+  "format": "awr-business-run-1",
+  "scenario_id": "AWR-SC-004",
+  "fixture_contract_version": "1.0.1",
+  "fixture_contract_sha256": "ed7b94e4bb086b569f7b7191b0c6281c7fe8d2c2a910394b310d1b0c430b9049",
+  "fixture_files_sha256": {
+    "project/.gitignore": "6a53f49e42cd698827d93a42132da508bbfe893dd2688aee6db092adb261b663",
+    "project/GOALS.md": "b4c7d4b82ee317c7fdd4186bed1abb78ba366ef98ac0866b09f85844e22fbf15",
+    "project/PLAN.md": "729e1a14fe3b11ed869252e5b8aa85d8a3854719865d1cb7b3602ef91aa90ed9",
+    "project/README.md": "77ab994eb549c3cefc1774f038ae7149c1adc69887899e0f910ff9f69fc4b445",
+    "project/RULES.md": "31ac59aa580dc3f29f17cd1f532eebbaa0152a041ccd8e00ca74e6d4cd914e19",
+    "project/materials/agenda.csv": "0b946ce991d14b6fe703e991a3192484888fbcda324969bf5d29eff347c92d05",
+    "project/materials/venue.md": "be74fba2f6c04946fcd19a676eaf7f4b6c721cc51e8728718cd0a6df06b28fb6",
+    "project/project.toml": "499909a1826ad7e9012d612ffb5ffc73bb3e09f1a61e992ba8e3ed55e99e039e",
+    "project/work-ledger.yaml": "e98cc65ea60c3740138c52d16e0e602153d9a5dbd262e6791ac53db31990e22f",
+    "prompts/followup-1.md": "761970384237cff0b0f5f7a720eb461132e0d6a6c24fb1900c99e0db446f8ea3",
+    "prompts/followup-2.md": "c34415d25da819abab9abe3089a1e0e5d215d42b8864d8cf050a5659c12f4b44",
+    "prompts/initial.md": "480bbd03b7e89fa0c10899e3a7bca3e63e163c642f338a17619c0ca85be746e7",
+    "prompts/prelude.md": "b024fa6ccc2f5918a9fdf9b20793cc10bb65145341adfc96a03fef175cfff2c7",
+    "scenario.json": "740f07da09f2c76e522592daa9f928624599b5bb76517baac5f17de18562fd3b",
+    "updates/round-1/materials/absence-note.md": "99aaf718844939814cc93c095bbd4bfcdd0fde8e6b9c10443d0cb83b2e66bc85",
+    "updates/round-2/materials/joint-review.md": "6205ec3a29224e4defee548e308f9c0f3d6cb56caf201ac211ff7d15c81f0dde",
+    "work-graph.yaml": "54e81cf9a0710d416e7d6a2582a00ed909158a706680783f80c448f0f97670d6"
+  },
+  "created_at": "2026-09-09T01:24:46+08:00",
+  "run_id": "awr-live-20260909-004",
+  "namespace": "awr-v1/parallel-ownership/awr-live-20260909-004",
+  "project_root": "/Users/mac/Documents/originone/agent-work-running/.local/business-live-20260909-v1/parallel-ownership/project",
+  "phase": "ready",
+  "published_rounds": [
+    1,
+    2
+  ],
+  "model_calls": 0,
+  "e4_completed": 0,
+  "participants_bound": false,
+  "live_preconditions_satisfied": false,
+  "seed_commit": "8f4031f40c096691df03099c2382cbb86112be19",
+  "project_source_sha256": {
+    ".gitignore": "6a53f49e42cd698827d93a42132da508bbfe893dd2688aee6db092adb261b663",
+    "GOALS.md": "b4c7d4b82ee317c7fdd4186bed1abb78ba366ef98ac0866b09f85844e22fbf15",
+    "PLAN.md": "729e1a14fe3b11ed869252e5b8aa85d8a3854719865d1cb7b3602ef91aa90ed9",
+    "README.md": "77ab994eb549c3cefc1774f038ae7149c1adc69887899e0f910ff9f69fc4b445",
+    "RULES.md": "31ac59aa580dc3f29f17cd1f532eebbaa0152a041ccd8e00ca74e6d4cd914e19",
+    "materials/agenda.csv": "0b946ce991d14b6fe703e991a3192484888fbcda324969bf5d29eff347c92d05",
+    "materials/venue.md": "be74fba2f6c04946fcd19a676eaf7f4b6c721cc51e8728718cd0a6df06b28fb6",
+    "project.toml": "d52670ea0470cd5d8ee1290f6fc5802ae5caadaea5a99d1641471fff8189238a",
+    "work-ledger.yaml": "e98cc65ea60c3740138c52d16e0e602153d9a5dbd262e6791ac53db31990e22f"
+  }
+}

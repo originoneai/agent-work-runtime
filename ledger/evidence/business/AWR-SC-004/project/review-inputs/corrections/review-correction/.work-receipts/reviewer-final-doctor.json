@@ -1,0 +1,46 @@
+{
+  "ok": true,
+  "application_id": 1096241713,
+  "schema_version": 3,
+  "sqlite_version": "3.53.2",
+  "journal_mode": "wal",
+  "foreign_keys": true,
+  "busy_timeout_ms": 5000,
+  "migrations": [
+    {
+      "version": 1,
+      "name": "catalog",
+      "applied_at": 1788916909338
+    },
+    {
+      "version": 2,
+      "name": "domain",
+      "applied_at": 1788916909339
+    },
+    {
+      "version": 3,
+      "name": "search",
+      "applied_at": 1788916909339
+    }
+  ],
+  "integrity": [
+    "ok"
+  ],
+  "foreign_key_violations": 0,
+  "schema_issues": [],
+  "database_ok": true,
+  "read_only": true,
+  "source_refresh_performed": false,
+  "project_id": "01M21W3H8XNKD8AKP4N1JNQQTM",
+  "project_revision": 184,
+  "observed_final_revision": 184,
+  "checked_at": 1788932393806,
+  "findings": [],
+  "sources_checked": 4,
+  "artifacts_checked": 0,
+  "limitations": [
+    "Active status and age do not prove process liveness; explicit interruption requires selecting a session.",
+    "Pending operations and unregistered artifact files may belong to a live writer. Diagnosis does not complete, delete or repair them.",
+    "Source reads are capped at 16 MiB each. Registered artifact content is hashed within the requested cap and never emitted."
+  ]
+}

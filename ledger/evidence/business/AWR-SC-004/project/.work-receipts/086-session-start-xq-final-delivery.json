@@ -1,0 +1,49 @@
+{
+  "claim": {
+    "acquired_at": 1788939296872,
+    "agent_id": "xq-final-delivery-executor",
+    "branch_id": null,
+    "expires_at": 1788942896872,
+    "id": "01M22HER39DEZ2EEATBJKFP3QA",
+    "project_id": "01M21W3H8XNKD8AKP4N1JNQQTM",
+    "released_at": null,
+    "revision": 1,
+    "session_id": "01M22HER372Y2YEY489KN81737",
+    "status": "active",
+    "work_item_id": "01M21W3H92ETY0KG090P5SCSBC"
+  },
+  "event": {
+    "artifact_id": null,
+    "branch_id": null,
+    "checkpoint_id": null,
+    "created_at": 1788939296873,
+    "id": "01M22HER39D1BPSZ10ZZRNMK7B",
+    "importance": "normal",
+    "project_revision": 312,
+    "session_id": "01M22HER372Y2YEY489KN81737",
+    "source_id": null,
+    "summary": "Started agent work session",
+    "type": "session.started",
+    "work_item_id": "01M21W3H92ETY0KG090P5SCSBC"
+  },
+  "freshness_basis": "source_refresh",
+  "ok": true,
+  "project_revision": 312,
+  "session": {
+    "agent_id": "xq-final-delivery-executor",
+    "branch_id": null,
+    "end_project_revision": null,
+    "ended_at": null,
+    "id": "01M22HER372Y2YEY489KN81737",
+    "last_checkpoint_id": null,
+    "model": "gpt-5",
+    "project_id": "01M21W3H8XNKD8AKP4N1JNQQTM",
+    "provider": "codex",
+    "revision": 1,
+    "start_project_revision": 311,
+    "started_at": 1788939296871,
+    "status": "active",
+    "work_item_id": "01M21W3H92ETY0KG090P5SCSBC"
+  },
+  "source_refresh_performed": true
+}

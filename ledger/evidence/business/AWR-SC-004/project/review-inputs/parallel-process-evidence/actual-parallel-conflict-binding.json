@@ -1,0 +1,103 @@
+{
+  "kind": "actual_native_parallel_ownership_conflict_binding",
+  "observed_at": "2026-09-09T11:31:46+08:00",
+  "main_actual_native_id": "01a083c0-2c0b-7fc1-ba7d-0b0721dfeb0f",
+  "peer_actual_native_id": "01a083ca-4a86-7b81-93cd-59afa64767e0",
+  "source_event_item": {
+    "id": "item_40",
+    "type": "command_execution",
+    "command": "/bin/zsh -lc 'rtk proxy /Users/mac/Documents/originone/agent-work-running/target/release/awr --project /Users/mac/Documents/originone/agent-work-running/.local/business-live-20260909-v1/parallel-ownership/project --json work progress XQ-CONTENT --session 01M21WYFWXQHZNK0BJTYVD8N1K --reason \"已核对校对 COORD-06 与实际会话时间线，纠正 C→V 交接状态措辞\" --summary \"已将 C→V-01 至 C→V-04 更正为内容侧回复已形成、待实际发送与现场接收确认；其余场地、设备、人员和物料确认继续保留。\" --next-action \"完成 C→V-01 至 C→V-04 的实际发送并取得现场接收确认，同时补齐案例材料、人员设备信息和场地方条件。\" --expected-revision 90'",
+    "aggregated_output": "{\"code\":\"ClaimConflict\",\"message\":\"claim conflict: another session holds this work; release or hand off that runtime claim first\"}\n",
+    "exit_code": 1,
+    "status": "failed"
+  },
+  "events_sha256": "b88afcc059f9062d5463d0f23782d938925f4c7ecba6071ef4dc5283000162b6",
+  "conflict_receipt": ".work-receipts/018-work-progress-xq-content-handoff-wording-conflict.json",
+  "conflict_receipt_sha256": "d9d01e9a41934057f3a39dc1f871f6ce57751107a565267ba6b5b5ad61febbea",
+  "pre_turn_ownership_observation": "control/receipt-followthrough-ownership-observation.json",
+  "pre_turn_observation_sha256": "fb96155c879185fe790a0e703c7cc4f9ae25cdd36484335faabbf5ebac96f238",
+  "current_readonly_runtime": {
+    "sessions": [
+      {
+        "id": "01M21WYFWXQHZNK0BJTYVD8N1K",
+        "project_id": "01M21W3H8XNKD8AKP4N1JNQQTM",
+        "work_item_id": "01M21W3H924XZK5JAZCTWTQPJH",
+        "branch_id": null,
+        "agent_id": "xq-content-executor",
+        "provider": "codex",
+        "model": "gpt-5",
+        "status": "active",
+        "started_at": 1788917792669,
+        "ended_at": null,
+        "start_project_revision": 39,
+        "end_project_revision": null,
+        "last_checkpoint_id": "01M221RY7F976FXCBXCGYFRVBH",
+        "revision": 4
+      },
+      {
+        "id": "01M22154A1QHYDK8CBQ129WXJV",
+        "project_id": "01M21W3H8XNKD8AKP4N1JNQQTM",
+        "work_item_id": "01M21W3H924XZK5JAZCTWTQPJH",
+        "branch_id": "01M21Z7CBNFNN0B7HVMY9WTVTC",
+        "agent_id": "xq-content-reviewer-2",
+        "provider": "codex",
+        "model": "gpt-5",
+        "status": "ended",
+        "started_at": 1788922204481,
+        "ended_at": 1788923448158,
+        "start_project_revision": 85,
+        "end_project_revision": 96,
+        "last_checkpoint_id": "01M2228YBYD573B1EED3A6GC9W",
+        "revision": 4
+      }
+    ],
+    "claims": [
+      {
+        "id": "01M21WYFWY9Y01GV8JVGXHJZBF",
+        "project_id": "01M21W3H8XNKD8AKP4N1JNQQTM",
+        "work_item_id": "01M21W3H924XZK5JAZCTWTQPJH",
+        "session_id": "01M21WYFWXQHZNK0BJTYVD8N1K",
+        "agent_id": "xq-content-executor",
+        "branch_id": null,
+        "status": "expired",
+        "acquired_at": 1788917792669,
+        "expires_at": 1788921392669,
+        "released_at": null,
+        "revision": 2
+      },
+      {
+        "id": "01M22154A26T021N27EV6M5726",
+        "project_id": "01M21W3H8XNKD8AKP4N1JNQQTM",
+        "work_item_id": "01M21W3H924XZK5JAZCTWTQPJH",
+        "session_id": "01M22154A1QHYDK8CBQ129WXJV",
+        "agent_id": "xq-content-reviewer-2",
+        "branch_id": "01M21Z7CBNFNN0B7HVMY9WTVTC",
+        "status": "released",
+        "acquired_at": 1788922204481,
+        "expires_at": null,
+        "released_at": 1788923448158,
+        "revision": 2
+      },
+      {
+        "id": "01M221JAWYRPF6FC16FNKQ9S78",
+        "project_id": "01M21W3H8XNKD8AKP4N1JNQQTM",
+        "work_item_id": "01M21W3H924XZK5JAZCTWTQPJH",
+        "session_id": "01M21WYFWXQHZNK0BJTYVD8N1K",
+        "agent_id": "xq-content-executor",
+        "branch_id": null,
+        "status": "active",
+        "acquired_at": 1788922637213,
+        "expires_at": 1788926237213,
+        "released_at": null,
+        "revision": 1
+      }
+    ]
+  },
+  "limitations": [
+    "Initial prelude and branch-check only showed RevisionConflict and were not claim-conflict proof.",
+    "Observed ClaimConflict is the actual original content client attempting normal source progress while another runtime branch held the same work.",
+    "Runtime branches do not isolate Git files. Shared snapshots record observed membership, not producer authorship.",
+    "No runtime database or business source was mutated by the root observer."
+  ],
+  "e4_credit": false
+}

@@ -1,0 +1,143 @@
+{
+  "acceptance": [
+    "交付各环节安排及现场需要配合的事项。",
+    "保留实际产物与来源引用，无法确认的内容显式说明。"
+  ],
+  "decisions": [],
+  "dependency_cycles": [],
+  "evidence": [
+    {
+      "currency": "unknown",
+      "external_key": "XQ-CONTENT-HANDOFF-READY-20260909",
+      "level": "locally_verified",
+      "locator": ".work-receipts/xq-content-handoff-ready-evidence-report.json",
+      "missing_bindings": [],
+      "reasons": [
+        "both recorded and requested source SHA are needed to determine currency"
+      ],
+      "source_sha": "8f4031f40c096691df03099c2382cbb86112be19",
+      "summary": "内容安排已依据实际接续回执校正状态，保留原稿、原现场方案和全部尚未确认的执行条件。"
+    },
+    {
+      "currency": "historical",
+      "external_key": "XQ-CONTENT-PROOFREAD2-20260909",
+      "level": "locally_verified",
+      "locator": ".work-receipts/proofread2-evidence-report.json",
+      "missing_bindings": [],
+      "reasons": [
+        "evidence belongs to a different branch"
+      ],
+      "source_sha": "8f4031f40c096691df03099c2382cbb86112be19",
+      "summary": "第二内容校对记录已完成快照核对；该记录不替代原内容产物或正式 XQ-REVIEW。"
+    },
+    {
+      "currency": "historical",
+      "external_key": "XQ-CONTENT-PROOFREAD2-FOLLOWUP-20260909",
+      "level": "locally_verified",
+      "locator": ".work-receipts/proofread2-followup-evidence-report.json",
+      "missing_bindings": [],
+      "reasons": [
+        "evidence belongs to a different branch"
+      ],
+      "source_sha": "8f4031f40c096691df03099c2382cbb86112be19",
+      "summary": "内容负责人已回应并修正接收状态措辞；实际发送、现场接收与执行事实仍保持未确认。"
+    },
+    {
+      "currency": "historical",
+      "external_key": "XQ-CONTENT-PROOFREAD2-R2-20260909",
+      "level": "locally_verified",
+      "locator": ".work-receipts/proofread2-r2-evidence-report.json",
+      "missing_bindings": [],
+      "reasons": [
+        "evidence belongs to a different branch"
+      ],
+      "source_sha": "8f4031f40c096691df03099c2382cbb86112be19",
+      "summary": "第二内容校对已对原负责人吸收现场回执后的当前快照完成增量核对；计划层面对齐，实际现场事实和接收回执仍待闭合。"
+    },
+    {
+      "currency": "unknown",
+      "external_key": "XQ-CONTENT-VENUE-SUCCESSOR-HANDOFF-20260909",
+      "level": "locally_verified",
+      "locator": ".work-receipts/xq-venue-successor-evidence-report.json",
+      "missing_bindings": [],
+      "reasons": [
+        "both recorded and requested source SHA are needed to determine currency"
+      ],
+      "source_sha": "8f4031f40c096691df03099c2382cbb86112be19",
+      "summary": "现场接续者已核对原设备方案并实际接收内容侧四项交接回复，保留现场实测和外部协调缺口。"
+    },
+    {
+      "currency": "unknown",
+      "external_key": "XQ-CONTENT/evidence/.work-receipts/xq-content-handoff-ready-evidence-report.json",
+      "level": "unknown",
+      "locator": ".work-receipts/xq-content-handoff-ready-evidence-report.json",
+      "missing_bindings": [
+        "sha256",
+        "source_sha",
+        "command",
+        "verified_at"
+      ],
+      "reasons": [
+        "both recorded and requested source SHA are needed to determine currency"
+      ],
+      "source_sha": null,
+      "summary": "Evidence reference; not yet verified by AWR"
+    }
+  ],
+  "evidence_currency_basis": {
+    "branch_id": null,
+    "requested_source_sha": null
+  },
+  "freshness_basis": "source_refresh",
+  "missing_dependencies": [],
+  "ok": true,
+  "project_revision": 166,
+  "read_only": false,
+  "required_dependencies": [
+    {
+      "external_key": "XQ-INPUT",
+      "freshness": "fresh",
+      "revision": 3,
+      "source_revision": 14,
+      "status": "completed"
+    }
+  ],
+  "source_issues": [],
+  "source_ref": {
+    "end_line": null,
+    "locator": "file:///Users/mac/Documents/originone/agent-work-running/.local/business-live-20260909-v1/parallel-ownership/project/work-ledger.yaml",
+    "pointer": "/work_items/1",
+    "section_fingerprint": null,
+    "source_fingerprint": "sha256:a5dfe2640461483aac4dabced4a4e27f144d5b70e23b80fba40b35f5a36b13ac",
+    "source_id": "01M21W3H91TRWQ6G4NPD4BJPHC",
+    "source_revision": 14,
+    "start_line": null
+  },
+  "source_refresh_performed": true,
+  "source_warnings": 0,
+  "work": {
+    "active_claims": [],
+    "blocker": null,
+    "diagnostics": [
+      {
+        "code": "status_not_selectable",
+        "detail": "source status is completed",
+        "work_item_key": "XQ-CONTENT"
+      }
+    ],
+    "external_key": "XQ-CONTENT",
+    "freshness": "fresh",
+    "id": "01M21W3H924XZK5JAZCTWTQPJH",
+    "milestone": "XQ-DELIVERY",
+    "next_action": "按验收映射完成 XQ-CONTENT；随后由协调者认领 XQ-MERGE，汇总两项现有结果、共同未决项及独立复核准入条件。",
+    "owner": null,
+    "priority": "P0",
+    "raw_status": "completed",
+    "ready": false,
+    "revision": 8,
+    "source_revision": 14,
+    "status": "completed",
+    "summary": "已将 C→V-01 至 C→V-04 校正为接续者项目内已接收，保留外部发送、场地、设备、人员和成品材料缺口；修改前原稿已完整快照，原现场方案未改动，本地验证通过。",
+    "title": "整理活动内容安排"
+  }
+}

@@ -1,0 +1,16 @@
+{
+  "external_key": "XQ-FINAL-DELIVERY-20260909",
+  "work_item_key": "XQ-DELIVER",
+  "evidence_type": "completion_report",
+  "level": "locally_verified",
+  "summary": "独立返检通过后形成最终活动筹备交付包：已完成工作、统一执行基线、九项现场未知、后续角色、启动/关闭条件及分工修订失败复核历史均已整理；原产物和失败回执保持不变，现场验证、活动执行与整场 E4 未发生。",
+  "locator": ".work-receipts/xq-final-delivery-evidence-report.json",
+  "sha256": "32c5541639171d476d24177edb5d33e5929775629cbad05be2858625ab593e52",
+  "source_sha": "8f4031f40c096691df03099c2382cbb86112be19",
+  "command": "rtk proxy python3 .work-receipts/verify-xq-final-delivery.py",
+  "scope": [
+    "XQ-DELIVER"
+  ],
+  "branch_id": null,
+  "verified_at": 1788940078000
+}

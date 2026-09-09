@@ -1,0 +1,1788 @@
+{
+  "format": "awr-business-execution-record-1",
+  "template_only": false,
+  "fixture_contract_version": "1.0.1",
+  "scenario_id": "AWR-SC-004",
+  "run_namespace": "awr-v1/parallel-ownership/awr-live-20260909-004",
+  "source_commit": "4f6fd11c5283a4ddb52e6cb6fe8ef5a5fd8931aa",
+  "binary_sha256": "df3aee795905f87fe8bc0747a33b6e73c8a25cef0a072d0b2467e226d0d10217",
+  "fixture_preparation_receipt": ".local/business-live-20260909-v1/parallel-ownership/run.json",
+  "run_json_preserved_unchanged": true,
+  "updated_from_execution_record_sha256": "138332d4e01395a42dc8af0bac25f2370d2f48792c5a6e1ce0ef17d1c07512fb",
+  "updated_at": "2026-09-09T16:52:15+08:00",
+  "status": "awaiting_public_package_review",
+  "completion_claim": false,
+  "e4_credit": 0,
+  "participants": [
+    {
+      "role": "coordinator_and_content_executor",
+      "identity": "codex-cli:01a083c0-2c0b-7fc1-ba7d-0b0721dfeb0f",
+      "actual_client_task_id": "01a083c0-2c0b-7fc1-ba7d-0b0721dfeb0f"
+    },
+    {
+      "role": "peer_and_original_venue_executor",
+      "identity": "codex-cli:01a083ca-4a86-7b81-93cd-59afa64767e0",
+      "actual_client_task_id": "01a083ca-4a86-7b81-93cd-59afa64767e0"
+    },
+    {
+      "role": "venue_successor",
+      "identity": "codex-cli:01a08460-5417-75c3-8ee2-7249153e9c67",
+      "actual_client_task_id": "01a08460-5417-75c3-8ee2-7249153e9c67"
+    },
+    {
+      "role": "independent_reviewer_and_rechecker",
+      "identity": "luna_worker:/root/client_handoff_setup",
+      "initial_session_id": "01M22A0GPWAEKDDQBCGV95Q1BS",
+      "recheck_session_id": "01M22EXK425XHY2N02VFPN7T6K"
+    },
+    {
+      "role": "final_delivery_read_only_checker",
+      "identity": "luna_worker:/root/restricted_material_client_run",
+      "record": "control/final-delivery-independent-check.json"
+    }
+  ],
+  "native_clients": [
+    {
+      "client": "Codex CLI",
+      "native_task_id": "01a083c0-2c0b-7fc1-ba7d-0b0721dfeb0f",
+      "cli_version": "0.153.4",
+      "model": "gpt-5.6-sol",
+      "effort": "max",
+      "model_override": false,
+      "private_native_sha256": "5836eb299149316b2ed0b0ede0061105c9b78167bead6a06a37bd1f14ee7ae75"
+    },
+    {
+      "client": "Codex CLI",
+      "native_task_id": "01a083ca-4a86-7b81-93cd-59afa64767e0",
+      "cli_version": "0.153.4",
+      "model": "gpt-5.6-sol",
+      "effort": "max",
+      "model_override": false,
+      "private_native_sha256": "3af0d9a7ad6de5029ac48c14cb8b4f9c6e76e78dc479e1e2ab72b5a716cfb36a"
+    },
+    {
+      "client": "Codex CLI",
+      "native_task_id": "01a08460-5417-75c3-8ee2-7249153e9c67",
+      "cli_version": "0.153.4",
+      "model": "gpt-5.6-sol",
+      "effort": "max",
+      "model_override": false,
+      "private_native_sha256": "b34f27b1df6fc325f1bb9a6148a6cea8d90219704d7cdc563fba3f888cdc2269"
+    }
+  ],
+  "identity_boundary": "Actual business participants are bound by three distinct Codex native task IDs. AWR logical agent_id/provider/model labels are caller metadata and are not native identity proof.",
+  "phase_summary": {
+    "standard_phase_count": 12,
+    "custom_phase_count": 1,
+    "actual_business_turn_count": 13,
+    "standard_completed_commands": 901,
+    "custom_peer_completed_commands": 110,
+    "all_completed_commands": 1011,
+    "pre_final_technical_scope_commands": 885,
+    "final_delivery_commands": 126,
+    "standard_phases": [
+      {
+        "phase": "prelude",
+        "client_task_id": "01a083c0-2c0b-7fc1-ba7d-0b0721dfeb0f",
+        "actual_user_turn": {
+          "timestamp": "2026-09-09T01:20:09.893Z",
+          "text": "请把活动内容安排和现场保障分别交给两位执行者推进，各自保留正在处理的内容和需要对方配合的事项。"
+        },
+        "completed_commands": 100,
+        "receipt_files": 25,
+        "seal": {
+          "path": "control/prelude-sealed.json",
+          "sha256": "cdaa32c15ed48ab38e842cef6190494d7a0d6b7abbd38b93dc4cde5acd4921ba"
+        },
+        "review_extract": {
+          "path": "control/prelude-review-extract.json",
+          "sha256": "7d3763a24272e01f1cc04f1c6dbd00599f4a08b39c36ec22c6b84d9add29b3ad"
+        },
+        "turn_exit_code": 0,
+        "raw_native_context_public": false,
+        "nonzero_command_count": 2,
+        "nonzero_commands": [
+          {
+            "event_line": 71,
+            "native_item_id": "item_36",
+            "exit_code": 2,
+            "command_sha256": "650a5280721bfa80aec0b009294e469160a4f48b94737455943c335146289cfd",
+            "output_sha256": "0b3a2e89957b64e94e62d5630cd844c98e75a731c3d25839d1da330d097ac769"
+          },
+          {
+            "event_line": 126,
+            "native_item_id": "item_64",
+            "exit_code": 1,
+            "command_sha256": "d339bf7e08d579a5644c10ad226476cc44f57a922f6a6d5eb388f18f11a8e77a",
+            "output_sha256": "caecb9739f3bc55f7a982a3232e7217cfa166d789e7d6d171202e4c374ef014b"
+          }
+        ]
+      },
+      {
+        "phase": "peer-branch-check",
+        "client_task_id": "01a083ca-4a86-7b81-93cd-59afa64767e0",
+        "actual_user_turn": {
+          "timestamp": "2026-09-09T02:13:50.078Z",
+          "text": "请在独立工作分支上作为第二位内容校对负责人，核对当前活动内容安排与现场保障回执，并形成自己的核对记录。现有内容负责人仍在推进；请遵守现有归属，遇到重叠先记录待协调事项，不覆盖对方产物。"
+        },
+        "completed_commands": 99,
+        "receipt_files": 46,
+        "seal": {
+          "path": "control/peer-branch-check-sealed.json",
+          "sha256": "1fa9ca19c591f3efbfade24502f201792058ffdbfa59529c5bd12b562c7d2656"
+        },
+        "review_extract": {
+          "path": "control/peer-branch-check-review-extract.json",
+          "sha256": "027e4c968cf1d1a66b0f92e1cd6a29614c07dba50a716f29fa55bd8257c78cbe"
+        },
+        "turn_exit_code": 0,
+        "raw_native_context_public": false,
+        "nonzero_command_count": 6,
+        "nonzero_commands": [
+          {
+            "event_line": 134,
+            "native_item_id": "item_69",
+            "exit_code": 1,
+            "command_sha256": "1ea8b4a5fa38c0823055cd00b3a24ee782dd152859d1a458329226006ba30d91",
+            "output_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+          },
+          {
+            "event_line": 180,
+            "native_item_id": "item_93",
+            "exit_code": 1,
+            "command_sha256": "951ef862356d54d7962617e0199f5f49c53abc1383ea006b9192be0a0542c9e1",
+            "output_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+          },
+          {
+            "event_line": 184,
+            "native_item_id": "item_96",
+            "exit_code": 1,
+            "command_sha256": "b322331bc9b59dcac3fe35fd9fc0633e734cefa8011bce7ba9a8a5c02c71348b",
+            "output_sha256": "5d3aae272c2b9b5246d222d850a4b02f33a6e45c64a584d11252502b69ea0fb9"
+          },
+          {
+            "event_line": 193,
+            "native_item_id": "item_101",
+            "exit_code": 2,
+            "command_sha256": "3d7657a0e084edc1d7e5a7100a8e831ba2a9d2220c5a62223dd926ede8c34783",
+            "output_sha256": "5f548d4373d316152dcb25dfcb92b28c19e7f21de512b6032ffc83f652fd3403"
+          },
+          {
+            "event_line": 195,
+            "native_item_id": "item_102",
+            "exit_code": 1,
+            "command_sha256": "d2388c77adb9a67d8b172cac51cda0f0ece4f471cd35efe08481b3c425352277",
+            "output_sha256": "0c605f0970706c8cfc6ebc9f9c8c14a67ab2af154e4eef9f785cd78072f767bd"
+          },
+          {
+            "event_line": 197,
+            "native_item_id": "item_103",
+            "exit_code": 2,
+            "command_sha256": "eff98f49a50524c62972852b8497084601b7c7e65b94c0b1548ae41f86b10001",
+            "output_sha256": "b150a376c00ee7420d52e577a87c6b83cad20d4f53984d9a2dd44b98658c0019"
+          }
+        ]
+      },
+      {
+        "phase": "prelude-content-update",
+        "client_task_id": "01a083c0-2c0b-7fc1-ba7d-0b0721dfeb0f",
+        "actual_user_turn": {
+          "timestamp": "2026-09-09T02:19:39.998Z",
+          "text": "现场同事已经提交了保障方案，请结合其回执继续修订你负责的内容安排，更新当前工作进展，保留尚未协调的问题。"
+        },
+        "completed_commands": 44,
+        "receipt_files": 46,
+        "seal": {
+          "path": "control/prelude-content-update-sealed.json",
+          "sha256": "7c8ceb0b3491ac0d592048a8767880cfb1ca88c085698e0fcf398575e80cebdc"
+        },
+        "review_extract": {
+          "path": "control/prelude-content-update-review-extract.json",
+          "sha256": "1e1d0daaba0cfd511350ea584b8d0ea578a9da50cb86ff0ff1149c4201336f57"
+        },
+        "turn_exit_code": 0,
+        "raw_native_context_public": false,
+        "nonzero_command_count": 5,
+        "nonzero_commands": [
+          {
+            "event_line": 31,
+            "native_item_id": "item_15",
+            "exit_code": 2,
+            "command_sha256": "4d0e522644582c26af3a857bd6678148202b07cce6ba265609a1bc7a0daa8f80",
+            "output_sha256": "cf9d78ff655d99b2f1d359377354bca8def0ad90715ef542de376b915c0ce2a3"
+          },
+          {
+            "event_line": 39,
+            "native_item_id": "item_19",
+            "exit_code": 1,
+            "command_sha256": "a49db0a53e25188aa6e47333afa9da4bcc00dbdba2e0fa5746b53c43ff4eaf9e",
+            "output_sha256": "fafc854f4283fda4c0edc628f251a0539d378a6bef4f104adbec626527a28f2c"
+          },
+          {
+            "event_line": 50,
+            "native_item_id": "item_25",
+            "exit_code": 2,
+            "command_sha256": "c8cf3a8c7686a8852241ee13ee8db595abfe5acc689d5e38994a9dd03c718589",
+            "output_sha256": "78c20fd45ae37d5888fb7e6bec1152a90f6e57ad0b7c6cb0987cfa36f8c13937"
+          },
+          {
+            "event_line": 64,
+            "native_item_id": "item_32",
+            "exit_code": 1,
+            "command_sha256": "cb53f59cf440dffcfd8076168bd9572f6f63475f75f60a1df36e447f75bed8f4",
+            "output_sha256": "7c2f0289bff41c3e928f13623be6668dc6d7e3202adc38c1d3e1f4a92d564696"
+          },
+          {
+            "event_line": 83,
+            "native_item_id": "item_42",
+            "exit_code": 1,
+            "command_sha256": "6bc6851772105569bdaa52610ae7c24fad167d82ef4a6bddf7c58fbded564a15",
+            "output_sha256": "6e4c5f5bca8b7ca9db2204afe56310679e1f37217be9d3bc6b739209126d9a55"
+          }
+        ]
+      },
+      {
+        "phase": "peer-receipt-followthrough",
+        "client_task_id": "01a083ca-4a86-7b81-93cd-59afa64767e0",
+        "actual_user_turn": {
+          "timestamp": "2026-09-09T02:49:10.672Z",
+          "text": "请继续由你跟进内容回复的接收确认，先将尚未确认的部分记录清楚。这项校对暂不交回协调者，等内容负责人回应后再结束。"
+        },
+        "completed_commands": 34,
+        "receipt_files": 61,
+        "seal": {
+          "path": "control/peer-receipt-followthrough-sealed.json",
+          "sha256": "3134af08c42df8c9b967a4403b7c1d54819de679ea9a94b0a21340e82d600050"
+        },
+        "review_extract": {
+          "path": "control/peer-receipt-followthrough-review-extract.json",
+          "sha256": "b0a02e5296cf07ba8be836322b7132e17aed0ab0f11a3cfdbbe66515b8f2d507"
+        },
+        "turn_exit_code": 0,
+        "raw_native_context_public": false,
+        "nonzero_command_count": 0,
+        "nonzero_commands": []
+      },
+      {
+        "phase": "prelude-receipt-response",
+        "client_task_id": "01a083c0-2c0b-7fc1-ba7d-0b0721dfeb0f",
+        "actual_user_turn": {
+          "timestamp": "2026-09-09T02:51:56.946Z",
+          "text": "请根据校对同事指出的交接措辞问题，核对实际接收情况，修订内容安排中不准确的表述，并把当前处理结果更新到工作记录。尚未收到的确认要继续保留。"
+        },
+        "completed_commands": 55,
+        "receipt_files": 61,
+        "seal": {
+          "path": "control/prelude-receipt-response-sealed.json",
+          "sha256": "c474b44763a92b066a8691ca85eea0208ae860be1336ec85616979f688222a1b"
+        },
+        "review_extract": {
+          "path": "control/prelude-receipt-response-review-extract.json",
+          "sha256": "c98f8b38feaee9ddbee8cbf6a4957106fe91b57b20fb296446e764fb0f4f13da"
+        },
+        "turn_exit_code": 0,
+        "raw_native_context_public": false,
+        "nonzero_command_count": 6,
+        "nonzero_commands": [
+          {
+            "event_line": 32,
+            "native_item_id": "item_16",
+            "exit_code": 1,
+            "command_sha256": "3c997ffa742a7d3688ac7e5dc25e248f931adb605ff8a7696a439e47bc7fbe3f",
+            "output_sha256": "26b15de205054e64357b856181c14c60881a5957bff34e8862a225a482caff15"
+          },
+          {
+            "event_line": 41,
+            "native_item_id": "item_22",
+            "exit_code": 1,
+            "command_sha256": "3c997ffa742a7d3688ac7e5dc25e248f931adb605ff8a7696a439e47bc7fbe3f",
+            "output_sha256": "1265330ad094846a8db5286b95adee71d6389cfc8ec74a35c678c5315b8345cb"
+          },
+          {
+            "event_line": 74,
+            "native_item_id": "item_39",
+            "exit_code": 1,
+            "command_sha256": "c8fa607f0ee233686be575b25701ccf903549ff1275ca9ab677d9d7ae905fb8c",
+            "output_sha256": "6d608c290287cbda4d217a7aac577760c7ccd22bd54c16ee0d618017d14e4131"
+          },
+          {
+            "event_line": 76,
+            "native_item_id": "item_40",
+            "exit_code": 1,
+            "command_sha256": "7a57f44ea3f8fe9984856c37400af6b8a76dbc5223fd7c7bac226697bf0c9dae",
+            "output_sha256": "d06ef3637f1a25d6a31e67806540ab71f2a1eb7b260f36d9fb6bd755f966800f"
+          },
+          {
+            "event_line": 91,
+            "native_item_id": "item_48",
+            "exit_code": 1,
+            "command_sha256": "7ab8825e3de3f81955bdba11b26e7bb572915ab0fe13aa480883c512d301c5c9",
+            "output_sha256": "5d37346d0e6423885025aca4ab07a9d70732c6e5deae62fb8042f6fd285e493b"
+          },
+          {
+            "event_line": 119,
+            "native_item_id": "item_62",
+            "exit_code": 1,
+            "command_sha256": "5b5b51f5f7d24690a3ae82edc192dea663031763fb0f395c14cab5faa9879e3a",
+            "output_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+          }
+        ]
+      },
+      {
+        "phase": "initial",
+        "client_task_id": "01a083c0-2c0b-7fc1-ba7d-0b0721dfeb0f",
+        "actual_user_turn": {
+          "timestamp": "2026-09-09T03:32:03.323Z",
+          "text": "这两项工作需要并行推进，请先明确分工和交接关系，再分别产出结果。"
+        },
+        "completed_commands": 27,
+        "receipt_files": 63,
+        "seal": {
+          "path": "control/initial-sealed.json",
+          "sha256": "dcb3e8b26cb095aa793058f4fac011cea7d335d01acf830cd5f11f0ca8e3acdd"
+        },
+        "review_extract": {
+          "path": "control/initial-review-extract.json",
+          "sha256": "77b4a8632619a64e572e04c1fbf412326cf9798db3412cc833c686feb0b6c386"
+        },
+        "turn_exit_code": 0,
+        "raw_native_context_public": false,
+        "nonzero_command_count": 1,
+        "nonzero_commands": [
+          {
+            "event_line": 9,
+            "native_item_id": "item_3",
+            "exit_code": 1,
+            "command_sha256": "d0c96d2a7f6d1d8a9943fa22f136e27949cbf2f00eb46be2e2e8866b92f2ee0e",
+            "output_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+          }
+        ]
+      },
+      {
+        "phase": "round-1",
+        "client_task_id": "01a083c0-2c0b-7fc1-ba7d-0b0721dfeb0f",
+        "actual_user_turn": {
+          "timestamp": "2026-09-09T03:44:05.672Z",
+          "text": "其中一位执行者暂时离开，请安排接续，保留尚未解决的问题。"
+        },
+        "completed_commands": 39,
+        "receipt_files": 65,
+        "seal": {
+          "path": "control/round-1-sealed.json",
+          "sha256": "61752ca01b222892c3731c87406b8f94ddf8bc11b9df5a27e86f3749bdacec21"
+        },
+        "review_extract": {
+          "path": "control/round-1-review-extract.json",
+          "sha256": "dd0a505d803d6930e79a7ef6123887de95ed73177b49371973f3fbb4dd171b09"
+        },
+        "turn_exit_code": 0,
+        "raw_native_context_public": false,
+        "nonzero_command_count": 0,
+        "nonzero_commands": []
+      },
+      {
+        "phase": "venue-continuation",
+        "client_task_id": "01a08460-5417-75c3-8ee2-7249153e9c67",
+        "actual_user_turn": {
+          "timestamp": "2026-09-09T04:15:04.593Z",
+          "text": "请接续暂离同事负责的现场保障工作，核对现有设备安排和内容同事的交接记录，确认你实际接手的范围并继续推进。保留原始方案和未决事项，把接收结果、仍需协调的问题及后续安排留在可追溯记录中。完成本轮接续后先交回协调者。"
+        },
+        "completed_commands": 66,
+        "receipt_files": 73,
+        "seal": {
+          "path": "control/venue-continuation-sealed.json",
+          "sha256": "f4b657cc4d1c5cec690a106b0ae9e36c65149b894f7526a939ed34a5f98ce33c"
+        },
+        "review_extract": {
+          "path": "control/venue-continuation-review-extract.json",
+          "sha256": "a7aa2c22ff80ad242aae2462f093d8407aba8b96385d49846fabdb02d7655d96"
+        },
+        "turn_exit_code": 0,
+        "raw_native_context_public": false,
+        "nonzero_command_count": 1,
+        "nonzero_commands": [
+          {
+            "event_line": 8,
+            "native_item_id": "item_3",
+            "exit_code": 1,
+            "command_sha256": "361bfde000bc321dd26175fd16a2246206dfab0d7425ea0c036e0a604c9d3b4d",
+            "output_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+          }
+        ]
+      },
+      {
+        "phase": "round-2",
+        "client_task_id": "01a083c0-2c0b-7fc1-ba7d-0b0721dfeb0f",
+        "actual_user_turn": {
+          "timestamp": "2026-09-09T04:33:15.275Z",
+          "text": "请分别复核两项工作的结果，并汇总需要共同处理的事项。"
+        },
+        "completed_commands": 44,
+        "receipt_files": 73,
+        "seal": {
+          "path": "control/round-2-sealed.json",
+          "sha256": "a2347fa523bdc279eb5c3ebfb83efc807e63893a435c017593dbc888625a5c0d"
+        },
+        "review_extract": {
+          "path": "control/round-2-review-extract.json",
+          "sha256": "544ca6fcdd84053562dadfe4058c21f3314ff9c69b683ed4e0fa91c67276175c"
+        },
+        "turn_exit_code": 0,
+        "raw_native_context_public": false,
+        "nonzero_command_count": 3,
+        "nonzero_commands": [
+          {
+            "event_line": 7,
+            "native_item_id": "item_2",
+            "exit_code": 1,
+            "command_sha256": "a0d3ffdb8c6f563181b7dba08c2899d603e7aa06cf075032175fb1c34be36506",
+            "output_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+          },
+          {
+            "event_line": 70,
+            "native_item_id": "item_35",
+            "exit_code": 1,
+            "command_sha256": "be20947fc35c4d358c93a9b71e7c1ee02694a4f1b9676f04a937309844049b23",
+            "output_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+          },
+          {
+            "event_line": 79,
+            "native_item_id": "item_39",
+            "exit_code": 1,
+            "command_sha256": "0436177257d9d872eabcfb6db0a1188f30b2a6879393c8a2a70378b7e79537c3",
+            "output_sha256": "338e1d6d8a8aba127cb00be3fbc9627c007e0b2159fc0de2da70209794c358d7"
+          }
+        ]
+      },
+      {
+        "phase": "coordination-correction",
+        "client_task_id": "01a083c0-2c0b-7fc1-ba7d-0b0721dfeb0f",
+        "actual_user_turn": {
+          "timestamp": "2026-09-09T04:44:25.915Z",
+          "text": "请处理刚才核对发现的稿件状态不一致，按已经发生的接续更新你负责的内容安排，并把两项工作的现有结果整理成可交接的筹备方案。当前资料无法确认的场地、设备、人员和成品材料继续列明，给出后续处理角色与条件。计划材料完善以后交给另一位参与者独立复核，保留原稿、原回执及发现的问题。"
+        },
+        "completed_commands": 87,
+        "receipt_files": 94,
+        "seal": {
+          "path": "control/coordination-correction-sealed.json",
+          "sha256": "ce6d4973e19c0a76ee9ae9f83c1d332db5f73c7dc8fad70a04904b131711dff6"
+        },
+        "review_extract": {
+          "path": "control/coordination-correction-review-extract.json",
+          "sha256": "80def3fff69d636618b8de9a36003df3d1b4cdab32616037e850aecfe335acd8"
+        },
+        "turn_exit_code": 0,
+        "raw_native_context_public": false,
+        "nonzero_command_count": 4,
+        "nonzero_commands": [
+          {
+            "event_line": 33,
+            "native_item_id": "item_16",
+            "exit_code": 2,
+            "command_sha256": "dba9e1ed69c8456a086018d60ee5ea3797a13c89ccfcd6de2228af75bb13d814",
+            "output_sha256": "cf9d78ff655d99b2f1d359377354bca8def0ad90715ef542de376b915c0ce2a3"
+          },
+          {
+            "event_line": 90,
+            "native_item_id": "item_45",
+            "exit_code": 1,
+            "command_sha256": "b5b1d5406fb198f7792b3a6ba92394da5c4074ee5f042ded409876d8189b833d",
+            "output_sha256": "859d6ac3f41ed1f81981847980635dbba6a0fd19c4752711644f62e4337e67b0"
+          },
+          {
+            "event_line": 94,
+            "native_item_id": "item_47",
+            "exit_code": 1,
+            "command_sha256": "005ec785a72df0271b8025b3d4b802dabe95614f9ec80ddda37595892881c321",
+            "output_sha256": "1cbc450a611333b38d4b8930f80331cbbfc6e274895d98cdfe77e72aa1a4478b"
+          },
+          {
+            "event_line": 140,
+            "native_item_id": "item_70",
+            "exit_code": 1,
+            "command_sha256": "be20947fc35c4d358c93a9b71e7c1ee02694a4f1b9676f04a937309844049b23",
+            "output_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+          }
+        ]
+      },
+      {
+        "phase": "review-correction",
+        "client_task_id": "01a083c0-2c0b-7fc1-ba7d-0b0721dfeb0f",
+        "actual_user_turn": {
+          "timestamp": "2026-09-09T05:47:47.223Z",
+          "text": "独立复核发现，分工记录还把已经结束的执行过程写成正在进行，几项已完成工作的摘要和下一步也没有跟上最新进展。请依据现有回执修正这些现行状态，保留原稿、历次分工和失败记录，明确筹备工作已经完成的部分、仍待现场确认的事项及后续责任。逐项回应复核意见，再交回独立返检；返检通过后再进行最终交付。"
+        },
+        "completed_commands": 180,
+        "receipt_files": 186,
+        "seal": {
+          "path": "control/review-correction-sealed.json",
+          "sha256": "54e8014758354247bb33f122be129d09eb3ea14242cea9ae0f2415fa63e25ef0"
+        },
+        "review_extract": {
+          "path": "control/review-correction-review-extract.json",
+          "sha256": "3bc9adbb533be007f0557447c8bcea7d981a2f2da24cc9a52547e0e9c7efcd44"
+        },
+        "turn_exit_code": 0,
+        "raw_native_context_public": false,
+        "nonzero_command_count": 11,
+        "nonzero_commands": [
+          {
+            "event_line": 5,
+            "native_item_id": "item_1",
+            "exit_code": 1,
+            "command_sha256": "799ca677c3064deb756a7fa8e5cd18c90c90120fcc3e7989e99e3f096907a459",
+            "output_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+          },
+          {
+            "event_line": 48,
+            "native_item_id": "item_23",
+            "exit_code": 1,
+            "command_sha256": "a09b30d4622cddccb7811c7824ca4c7647681b2baa3e04d15f96280b32c470a9",
+            "output_sha256": "255f0d249f74afe235932e1ec34f6130005460c02c24292629a7cacda2f3485e"
+          },
+          {
+            "event_line": 76,
+            "native_item_id": "item_37",
+            "exit_code": 1,
+            "command_sha256": "0b8cadffc8408b1d922ca2e001045cb694a51a304129b51c8254e054b12347b1",
+            "output_sha256": "2da5594bb5f7d0bafd90676da4102ae106bf4407949fdd39dd1adb65cde10310"
+          },
+          {
+            "event_line": 139,
+            "native_item_id": "item_71",
+            "exit_code": 2,
+            "command_sha256": "237377f909460bc7ce61a47fc4b963ca6026a3054a0eee186d86e6b4d86399ae",
+            "output_sha256": "6178b5d1434cd944183742aff761985c2c9eae47b04ff0e88cb6b4d38ae9301d"
+          },
+          {
+            "event_line": 149,
+            "native_item_id": "item_76",
+            "exit_code": 1,
+            "command_sha256": "93dfe8688b42905f5713f1637f15c5d8a7dba9c01908d0312e7389cbd139e597",
+            "output_sha256": "1cbc450a611333b38d4b8930f80331cbbfc6e274895d98cdfe77e72aa1a4478b"
+          },
+          {
+            "event_line": 169,
+            "native_item_id": "item_86",
+            "exit_code": 2,
+            "command_sha256": "2162873de3513664afeef343129442f576ff163fdadb9ca41926b883d34b65e4",
+            "output_sha256": "957e0591a317152bf6a0c304731a3929aafc0808b92aecb156d3caa7dcdae188"
+          },
+          {
+            "event_line": 214,
+            "native_item_id": "item_109",
+            "exit_code": 1,
+            "command_sha256": "2b8089c8ff2d209f973b4f5fac47d50cb4edcadd273345cd95e0c941d082dda4",
+            "output_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+          },
+          {
+            "event_line": 217,
+            "native_item_id": "item_111",
+            "exit_code": 1,
+            "command_sha256": "93bda61f4c4957b01356583e7feeef2624bf887b055171519c8051a6491eb398",
+            "output_sha256": "aa579526089d21a6959c5d84c0e7a716be5b7fd02225882901845b7cf152fe3e"
+          },
+          {
+            "event_line": 253,
+            "native_item_id": "item_129",
+            "exit_code": 1,
+            "command_sha256": "790cb5302885939379ac7e7b34789a9fb1e73ad24867e5c9a4d37db21cdfb6bf",
+            "output_sha256": "2ea452b48862aa7d673ba76d1df9531e5e5c3cbca4a9012845659caf60e38780"
+          },
+          {
+            "event_line": 449,
+            "native_item_id": "item_229",
+            "exit_code": 1,
+            "command_sha256": "326170e52ba67c99ebfddf861d1a02fa08e42d1f4e610c359af567771084c373",
+            "output_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+          },
+          {
+            "event_line": 487,
+            "native_item_id": "item_249",
+            "exit_code": 1,
+            "command_sha256": "e2aaa26172dcb9283347e88ee9b95afb579e4336ccccd3b005dc90d186b2d780",
+            "output_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+          }
+        ]
+      },
+      {
+        "phase": "final-delivery",
+        "client_task_id": "01a083c0-2c0b-7fc1-ba7d-0b0721dfeb0f",
+        "actual_user_turn": {
+          "timestamp": "2026-09-09T07:31:36.799Z",
+          "text": "独立返检已经通过。请整理最终的活动筹备交付包，清楚说明已经完成的筹备工作、现场仍待确认的事项、后续责任和交接条件。保留历次分工、修订、失败与复核记录的来龙去脉，方便接手的人继续推进。"
+        },
+        "completed_commands": 126,
+        "receipt_files": 258,
+        "seal": {
+          "path": "control/final-delivery-sealed.json",
+          "sha256": "f597f14a40dc9987d625b347a73d5b54172df3f5b42cfa387db760fc9f86bd4e"
+        },
+        "review_extract": {
+          "path": "control/final-delivery-review-extract.json",
+          "sha256": "7deddf49f0b5920806d68045f3ca3c46480258c7c2aa2a52f0a9dc5d2161a410"
+        },
+        "turn_exit_code": 0,
+        "raw_native_context_public": false,
+        "nonzero_command_count": 5,
+        "nonzero_commands": [
+          {
+            "event_line": 63,
+            "native_item_id": "item_32",
+            "exit_code": 1,
+            "command_sha256": "c3fbaed653aeb070e8e5920c30becabe85a9c4c18bfe94cec9ff047d5d072ab0",
+            "output_sha256": "fe6e138af1d6c5d06b72d549754e5cd00552572b66077b707a9713ff522dc4f1"
+          },
+          {
+            "event_line": 76,
+            "native_item_id": "item_39",
+            "exit_code": 1,
+            "command_sha256": "70a14661958959dce8353ec0a8c5768acf7daa73fd48888a86b91da6c6d2f307",
+            "output_sha256": "22d8af5cb1db66b0f452d37bbbe2bdc43ac93d37a18feba834aeb76155465883"
+          },
+          {
+            "event_line": 111,
+            "native_item_id": "item_57",
+            "exit_code": 1,
+            "command_sha256": "0f91c92e70cd392450438d7104f8e384a6ae80b492f8b497076ffd95516983fa",
+            "output_sha256": "1cbc450a611333b38d4b8930f80331cbbfc6e274895d98cdfe77e72aa1a4478b"
+          },
+          {
+            "event_line": 175,
+            "native_item_id": "item_90",
+            "exit_code": 1,
+            "command_sha256": "c53e9d8cd659c315280a6e0f19cb09e33d4b478f924ba91377ef07fb2855cf68",
+            "output_sha256": "75d863307d09e3742ec5b9e344f6dd247ef05e20946f5b30478b2295fec05b87"
+          },
+          {
+            "event_line": 180,
+            "native_item_id": "item_93",
+            "exit_code": 2,
+            "command_sha256": "a9cf31fe6e59fab79823e0b2d9271634241240b2e3bcdc130a911dd5b31cedb2",
+            "output_sha256": "fe09226eb52b7245a54b6332b8547d322e378b6f47f913955ed078de7452814c"
+          }
+        ]
+      }
+    ],
+    "custom_peer_initial": {
+      "phase": "peer-initial",
+      "standard_phase": false,
+      "client_task_id": "01a083ca-4a86-7b81-93cd-59afa64767e0",
+      "actual_user_turn": {
+        "timestamp": "2026-09-09T01:31:11.651Z",
+        "text": "请由你接手核对活动的共同约束，并负责现场保障，把需要内容负责人配合的事项保留下来。已有同事正在处理的内容以实际工作归属为准，保持明确的交接关系。"
+      },
+      "completed_commands": 110,
+      "failed_command_attempts": 6,
+      "custom_seal": {
+        "path": "control/peer-initial-sealed.json",
+        "sha256": "0cb4af31f665beee96aab94edf9e7f4576557837aa1aa72fafbb1aa5a81e921e"
+      },
+      "input_binding": {
+        "path": "control/peer-initial-input-audit-binding.json",
+        "sha256": "fb925917fb7ceb7b5aafac80c9cf82bfd9700e2596a3f63ab90dba8d8d6d5d87"
+      },
+      "fixed_publication": {
+        "path": "control/parallel-process-review-publication.json",
+        "sha256": "55efb2f825d76ef3c30e93ac2fac0c0690e873c854a7e2f3ff4a367de3fca73e",
+        "target": "project/review-inputs/parallel-process-evidence",
+        "file_count": 10,
+        "files_sha256": {
+          "receipt-followthrough-ownership-observation.json": "fb96155c879185fe790a0e703c7cc4f9ae25cdd36484335faabbf5ebac96f238",
+          "peer-postrun-session.json": "bbde74b8397d31e749034a668d97b2699b8ea87d054034718a25caa393b79aa8",
+          "peer-postrun-status.json": "f9804d9c898d6881e9d99e6c121f5237a3ddd059180469574f22119f96086c92",
+          "peer-postrun-branches.json": "1ba3d8480c6bea7f2ee595acf039d333145b3fe71ef6cf5f7c32fa01e4dcad38",
+          "peer-operator-verification.json": "65ac44fda0afa656053640c0c30cc5cf5797a3d0f8c8bbde8e2ddcc8affab072",
+          "artifact-authorship-correction.json": "8f266679f4fa8cf63de4698f50dd18387a7a8cdec6a8250362649dc1a101b6f8",
+          "peer-initial-sealed.json": "0cb4af31f665beee96aab94edf9e7f4576557837aa1aa72fafbb1aa5a81e921e",
+          "parallel-branch-ownership-observation.json": "ad4b1941130b15c27f4ff7325080c95875f02068316717cb3500f581e5b66006",
+          "peer-initial-final.md": "eba1f3d25313ea6fe684c925af4c139e2aff998b96f6448ca91a9cdf0f8aa857",
+          "actual-parallel-conflict-binding.json": "f8be71015503c776048b389f90540c980711254b1d3ab095c5e19671d3b5823c"
+        }
+      },
+      "raw_native_context_public": false,
+      "note": "Custom peer turn has no standard snapshot/review-extract and is intentionally excluded from plan.phases.",
+      "nonzero_command_count": 6,
+      "nonzero_commands": [
+        {
+          "exit_code": 1
+        },
+        {
+          "exit_code": 1
+        },
+        {
+          "exit_code": 128
+        },
+        {
+          "exit_code": 1
+        },
+        {
+          "exit_code": 1
+        },
+        {
+          "exit_code": 1
+        }
+      ]
+    },
+    "standard_nonzero_command_count": 44,
+    "all_nonzero_command_count": 50
+  },
+  "business_turns": [
+    {
+      "ordinal": 1,
+      "phase": "prelude",
+      "category": "business_prelude",
+      "client_task_id": "01a083c0-2c0b-7fc1-ba7d-0b0721dfeb0f",
+      "timestamp": "2026-09-09T01:20:09.893Z",
+      "input_sha256": "b024fa6ccc2f5918a9fdf9b20793cc10bb65145341adfc96a03fef175cfff2c7",
+      "sealed_evidence": {
+        "path": "control/prelude-sealed.json",
+        "sha256": "cdaa32c15ed48ab38e842cef6190494d7a0d6b7abbd38b93dc4cde5acd4921ba"
+      },
+      "canonical_fixture_turn": false
+    },
+    {
+      "ordinal": 2,
+      "phase": "peer-initial",
+      "category": "distinct_peer_onboarding",
+      "client_task_id": "01a083ca-4a86-7b81-93cd-59afa64767e0",
+      "timestamp": "2026-09-09T01:31:11.651Z",
+      "input_sha256": "64c122382f26fb64e5a675568fe15b9383102bf84984062ba9cf83c0a71e0c6a",
+      "sealed_evidence": {
+        "path": "control/peer-initial-sealed.json",
+        "sha256": "0cb4af31f665beee96aab94edf9e7f4576557837aa1aa72fafbb1aa5a81e921e"
+      },
+      "canonical_fixture_turn": false
+    },
+    {
+      "ordinal": 3,
+      "phase": "peer-branch-check",
+      "category": "peer_branch_and_review_continuation",
+      "client_task_id": "01a083ca-4a86-7b81-93cd-59afa64767e0",
+      "timestamp": "2026-09-09T02:13:50.078Z",
+      "input_sha256": "f2554df6926016c6e89d8b7422c9c6b44260802a4ffc6068d69a2f2f9ea9c1c1",
+      "sealed_evidence": {
+        "path": "control/peer-branch-check-sealed.json",
+        "sha256": "1fa9ca19c591f3efbfade24502f201792058ffdbfa59529c5bd12b562c7d2656"
+      },
+      "canonical_fixture_turn": false
+    },
+    {
+      "ordinal": 4,
+      "phase": "prelude-content-update",
+      "category": "content_receipt_continuation",
+      "client_task_id": "01a083c0-2c0b-7fc1-ba7d-0b0721dfeb0f",
+      "timestamp": "2026-09-09T02:19:39.998Z",
+      "input_sha256": "ce1aefce29f2dc9e8d411103d1da4888ab64017e637714bfc1e1ce4bbfeea1a1",
+      "sealed_evidence": {
+        "path": "control/prelude-content-update-sealed.json",
+        "sha256": "7c8ceb0b3491ac0d592048a8767880cfb1ca88c085698e0fcf398575e80cebdc"
+      },
+      "canonical_fixture_turn": false
+    },
+    {
+      "ordinal": 5,
+      "phase": "peer-receipt-followthrough",
+      "category": "peer_receipt_followthrough",
+      "client_task_id": "01a083ca-4a86-7b81-93cd-59afa64767e0",
+      "timestamp": "2026-09-09T02:49:10.672Z",
+      "input_sha256": "a77189618e3e56e0371a4f2afa9941968db536bb95faa6292fbd58ee7fdf4fc0",
+      "sealed_evidence": {
+        "path": "control/peer-receipt-followthrough-sealed.json",
+        "sha256": "3134af08c42df8c9b967a4403b7c1d54819de679ea9a94b0a21340e82d600050"
+      },
+      "canonical_fixture_turn": false
+    },
+    {
+      "ordinal": 6,
+      "phase": "prelude-receipt-response",
+      "category": "coordinator_receipt_response",
+      "client_task_id": "01a083c0-2c0b-7fc1-ba7d-0b0721dfeb0f",
+      "timestamp": "2026-09-09T02:51:56.946Z",
+      "input_sha256": "43cd9419ac2a137f408fcb6de0f56c9097df04aeb46286e96c5ef79f5e32b127",
+      "sealed_evidence": {
+        "path": "control/prelude-receipt-response-sealed.json",
+        "sha256": "c474b44763a92b066a8691ca85eea0208ae860be1336ec85616979f688222a1b"
+      },
+      "canonical_fixture_turn": false
+    },
+    {
+      "ordinal": 7,
+      "phase": "initial",
+      "category": "canonical_initial",
+      "client_task_id": "01a083c0-2c0b-7fc1-ba7d-0b0721dfeb0f",
+      "timestamp": "2026-09-09T03:32:03.323Z",
+      "input_sha256": "480bbd03b7e89fa0c10899e3a7bca3e63e163c642f338a17619c0ca85be746e7",
+      "sealed_evidence": {
+        "path": "control/initial-sealed.json",
+        "sha256": "dcb3e8b26cb095aa793058f4fac011cea7d335d01acf830cd5f11f0ca8e3acdd"
+      },
+      "canonical_fixture_turn": true
+    },
+    {
+      "ordinal": 8,
+      "phase": "round-1",
+      "category": "canonical_followup_1",
+      "client_task_id": "01a083c0-2c0b-7fc1-ba7d-0b0721dfeb0f",
+      "timestamp": "2026-09-09T03:44:05.672Z",
+      "input_sha256": "761970384237cff0b0f5f7a720eb461132e0d6a6c24fb1900c99e0db446f8ea3",
+      "sealed_evidence": {
+        "path": "control/round-1-sealed.json",
+        "sha256": "61752ca01b222892c3731c87406b8f94ddf8bc11b9df5a27e86f3749bdacec21"
+      },
+      "canonical_fixture_turn": true
+    },
+    {
+      "ordinal": 9,
+      "phase": "venue-continuation",
+      "category": "successor_handoff_continuation",
+      "client_task_id": "01a08460-5417-75c3-8ee2-7249153e9c67",
+      "timestamp": "2026-09-09T04:15:04.593Z",
+      "input_sha256": "1252644aeeef6556873ba7d14bd68add01b36b80c6748cd521d47196fd513307",
+      "sealed_evidence": {
+        "path": "control/venue-continuation-sealed.json",
+        "sha256": "f4b657cc4d1c5cec690a106b0ae9e36c65149b894f7526a939ed34a5f98ce33c"
+      },
+      "canonical_fixture_turn": false
+    },
+    {
+      "ordinal": 10,
+      "phase": "round-2",
+      "category": "canonical_followup_2",
+      "client_task_id": "01a083c0-2c0b-7fc1-ba7d-0b0721dfeb0f",
+      "timestamp": "2026-09-09T04:33:15.275Z",
+      "input_sha256": "c34415d25da819abab9abe3089a1e0e5d215d42b8864d8cf050a5659c12f4b44",
+      "sealed_evidence": {
+        "path": "control/round-2-sealed.json",
+        "sha256": "a2347fa523bdc279eb5c3ebfb83efc807e63893a435c017593dbc888625a5c0d"
+      },
+      "canonical_fixture_turn": true
+    },
+    {
+      "ordinal": 11,
+      "phase": "coordination-correction",
+      "category": "post_followup_coordination_correction",
+      "client_task_id": "01a083c0-2c0b-7fc1-ba7d-0b0721dfeb0f",
+      "timestamp": "2026-09-09T04:44:25.915Z",
+      "input_sha256": "f89bff9afd77d88141cf4908b545e33ad837546af9809475ba5eb6f4fb9547e3",
+      "sealed_evidence": {
+        "path": "control/coordination-correction-sealed.json",
+        "sha256": "ce6d4973e19c0a76ee9ae9f83c1d332db5f73c7dc8fad70a04904b131711dff6"
+      },
+      "canonical_fixture_turn": false
+    },
+    {
+      "ordinal": 12,
+      "phase": "review-correction",
+      "category": "independent_review_remediation",
+      "client_task_id": "01a083c0-2c0b-7fc1-ba7d-0b0721dfeb0f",
+      "timestamp": "2026-09-09T05:47:47.223Z",
+      "input_sha256": "fcb5a8c380c2b4814f086498d2ff454075c74dd46476b39be07fc4c3067527bb",
+      "sealed_evidence": {
+        "path": "control/review-correction-sealed.json",
+        "sha256": "54e8014758354247bb33f122be129d09eb3ea14242cea9ae0f2415fa63e25ef0"
+      },
+      "canonical_fixture_turn": false
+    },
+    {
+      "ordinal": 13,
+      "phase": "final-delivery",
+      "category": "final_delivery",
+      "client_task_id": "01a083c0-2c0b-7fc1-ba7d-0b0721dfeb0f",
+      "timestamp": "2026-09-09T07:31:36.799Z",
+      "input_sha256": "4f79a0d6b5bb0f9c559b26ef82d85790e756b3e098e0809c442c44a0e337ddfb",
+      "sealed_evidence": {
+        "path": "control/final-delivery-sealed.json",
+        "sha256": "f597f14a40dc9987d625b347a73d5b54172df3f5b42cfa387db760fc9f86bd4e"
+      },
+      "canonical_fixture_turn": false
+    }
+  ],
+  "canonical_business_flow": {
+    "initial": {
+      "ordinal": 7,
+      "phase": "initial",
+      "category": "canonical_initial",
+      "client_task_id": "01a083c0-2c0b-7fc1-ba7d-0b0721dfeb0f",
+      "timestamp": "2026-09-09T03:32:03.323Z",
+      "input_sha256": "480bbd03b7e89fa0c10899e3a7bca3e63e163c642f338a17619c0ca85be746e7",
+      "sealed_evidence": {
+        "path": "control/initial-sealed.json",
+        "sha256": "dcb3e8b26cb095aa793058f4fac011cea7d335d01acf830cd5f11f0ca8e3acdd"
+      },
+      "canonical_fixture_turn": true
+    },
+    "followup_1": {
+      "ordinal": 8,
+      "phase": "round-1",
+      "category": "canonical_followup_1",
+      "client_task_id": "01a083c0-2c0b-7fc1-ba7d-0b0721dfeb0f",
+      "timestamp": "2026-09-09T03:44:05.672Z",
+      "input_sha256": "761970384237cff0b0f5f7a720eb461132e0d6a6c24fb1900c99e0db446f8ea3",
+      "sealed_evidence": {
+        "path": "control/round-1-sealed.json",
+        "sha256": "61752ca01b222892c3731c87406b8f94ddf8bc11b9df5a27e86f3749bdacec21"
+      },
+      "canonical_fixture_turn": true
+    },
+    "followup_2": {
+      "ordinal": 10,
+      "phase": "round-2",
+      "category": "canonical_followup_2",
+      "client_task_id": "01a083c0-2c0b-7fc1-ba7d-0b0721dfeb0f",
+      "timestamp": "2026-09-09T04:33:15.275Z",
+      "input_sha256": "c34415d25da819abab9abe3089a1e0e5d215d42b8864d8cf050a5659c12f4b44",
+      "sealed_evidence": {
+        "path": "control/round-2-sealed.json",
+        "sha256": "a2347fa523bdc279eb5c3ebfb83efc807e63893a435c017593dbc888625a5c0d"
+      },
+      "canonical_fixture_turn": true
+    },
+    "both_author_updates_published_before_actual_turn_and_later_completed": true,
+    "round_1_publication": "round-1-inputs.json",
+    "round_2_publication": "round-2-inputs.json"
+  },
+  "artifacts": [
+    {
+      "path": "deliverables/xingqiao-collaboration-review.md",
+      "sha256": "21e564a7fa985cb67a842e1e836ed84f9a69db2865c86171e0edef4df891d5c0",
+      "producing_phase": "peer-receipt-followthrough",
+      "actual_producer": "01a083ca-4a86-7b81-93cd-59afa64767e0",
+      "authorship_basis": "actual tool/file-change record; shared snapshot membership is observational only"
+    },
+    {
+      "path": "deliverables/xingqiao-content.md",
+      "sha256": "7fc0ccf93f8f8aa6b8d881c91c6f61dc32e63ed979f6cc120f5ba9086eb253c5",
+      "producing_phase": "coordination-correction",
+      "actual_producer": "01a083c0-2c0b-7fc1-ba7d-0b0721dfeb0f",
+      "authorship_basis": "actual tool/file-change record; shared snapshot membership is observational only"
+    },
+    {
+      "path": "deliverables/xingqiao-independent-results.md",
+      "sha256": "681ebc8aa9988fe7d27d581eb4e76d68dc24dbacce49a59c5df17953311f8699",
+      "producing_phase": "review-correction",
+      "actual_producer": "01a083c0-2c0b-7fc1-ba7d-0b0721dfeb0f",
+      "authorship_basis": "actual tool/file-change record; shared snapshot membership is observational only"
+    },
+    {
+      "path": "deliverables/xingqiao-ownership.md",
+      "sha256": "d1238aea798cc63e1d190cb4cbae24ba0b415f786501e1221312d83dcfcceafc",
+      "producing_phase": "review-correction",
+      "actual_producer": "01a083c0-2c0b-7fc1-ba7d-0b0721dfeb0f",
+      "authorship_basis": "actual tool/file-change record; shared snapshot membership is observational only"
+    },
+    {
+      "path": "deliverables/xingqiao-venue.md",
+      "sha256": "3035f626d7ef00cd860d2fd4781513b76d9587b1e6c67924b549ce8865c828a6",
+      "producing_phase": "peer-initial",
+      "actual_producer": "01a083ca-4a86-7b81-93cd-59afa64767e0",
+      "authorship_basis": "actual tool/file-change record; shared snapshot membership is observational only"
+    },
+    {
+      "path": "deliverables/xq-delivery.md",
+      "sha256": "b29b9c2e10835263680878df33959509c79e3c14217f8e2fc33e5f6d1cb843c1",
+      "producing_phase": "final-delivery",
+      "actual_producer": "01a083c0-2c0b-7fc1-ba7d-0b0721dfeb0f",
+      "authorship_basis": "actual tool/file-change record; shared snapshot membership is observational only"
+    },
+    {
+      "path": "deliverables/xq-independent-recheck.md",
+      "sha256": "e177be268f07a30c35d8f9d1539ab6248a75fb01a935966ce3045809628d902f",
+      "producing_phase": "independent-recheck",
+      "actual_producer": "luna_worker:/root/client_handoff_setup",
+      "authorship_basis": "actual tool/file-change record; shared snapshot membership is observational only"
+    },
+    {
+      "path": "deliverables/xq-independent-review.md",
+      "sha256": "c4dd2d34080ba24bfdb3d8408990c55b2152c33241ab259b86e4d034335c9c13",
+      "producing_phase": "independent-review",
+      "actual_producer": "luna_worker:/root/client_handoff_setup",
+      "authorship_basis": "actual tool/file-change record; shared snapshot membership is observational only"
+    }
+  ],
+  "process_evidence": {
+    "parallel_process_publication": {
+      "path": "control/parallel-process-review-publication.json",
+      "sha256": "55efb2f825d76ef3c30e93ac2fac0c0690e873c854a7e2f3ff4a367de3fca73e",
+      "fixed_files": 10
+    },
+    "review_input_publication": {
+      "path": "control/review-input-publication.json",
+      "sha256": "0fb081c8482a604e4e3cfc03857393fa38f1616c9a53b2a923c02dd9dbb6e01b",
+      "fixed_files": 147
+    },
+    "review_correction_publication": {
+      "path": "control/review-correction-publication.json",
+      "sha256": "6c4a15d910a83eb44ee1967c6b6c25f17f4c5c32ebab54e8e4878f3fda5380d5",
+      "fixed_files": 202
+    },
+    "fixed_review_inputs_total": 359,
+    "native_input_audit": {
+      "path": "control/native-input-audit-final.json",
+      "sha256": "86a8af36fe6d576d7adfde9f447d8993e545d2cf83f8202ffaa49be1d334a47a",
+      "actual_business_inputs": 13,
+      "host_setup_envelopes": 3,
+      "native_clients": 3,
+      "all_business_inputs_accounted_for": true
+    },
+    "technical_read_scope": {
+      "pre_final_report": "control/technical-read-scope-at-time-check.json",
+      "pre_final_report_sha256": "d8934df20d15186c9c7da2453aa2a9e863bd46a277ce2f4a14d028f35aeaf6be",
+      "pre_final_phases": 12,
+      "pre_final_commands": 885,
+      "final_report": "control/final-delivery-independent-check.json",
+      "final_report_sha256": "bf24ac17a85436a911d5b9d979e52ea3d7338f5518b6342c0e3fc44a5cc3fb5c",
+      "final_commands": 126,
+      "conclusion": "No forbidden technical read observed in the bounded completed-command audits; evidence limitations remain explicit."
+    }
+  },
+  "review_chain": {
+    "initial_review": {
+      "reviewer": "luna_worker:/root/client_handoff_setup",
+      "session_id": "01M22A0GPWAEKDDQBCGV95Q1BS",
+      "verdict": "requires_executor_changes",
+      "findings": [
+        "XQ-R01",
+        "XQ-R02"
+      ],
+      "record": "control/independent-review.json",
+      "sha256": "f122e40f274d96fed5fb6ca6157e9c6dbcba2a3bbf93a2aee0c7d405c61b3c24"
+    },
+    "producer_remediation": {
+      "phase": "review-correction",
+      "client_task_id": "01a083c0-2c0b-7fc1-ba7d-0b0721dfeb0f",
+      "seal": "control/review-correction-sealed.json",
+      "seal_sha256": "54e8014758354247bb33f122be129d09eb3ea14242cea9ae0f2415fa63e25ef0",
+      "publication": "control/review-correction-publication.json",
+      "publication_sha256": "6c4a15d910a83eb44ee1967c6b6c25f17f4c5c32ebab54e8e4878f3fda5380d5"
+    },
+    "independent_recheck": {
+      "reviewer": "luna_worker:/root/client_handoff_setup",
+      "session_id": "01M22EXK425XHY2N02VFPN7T6K",
+      "claim_id": "01M22EXVYZ7TNS1ZD3Y7BSC2N2",
+      "verdict": "passed_for_xq_review_scope",
+      "requires_executor_changes": false,
+      "record": "control/independent-recheck.json",
+      "sha256": "4230bcbf31787e3dfb02fee245424f6dbf8a683b0e1cccd7ac0f2b066c9bfc8d"
+    },
+    "final_delivery_check": {
+      "reviewer": "luna_worker:/root/restricted_material_client_run",
+      "verdict": "passed_for_sc004_final_delivery_scope",
+      "record": "control/final-delivery-independent-check.json",
+      "sha256": "bf24ac17a85436a911d5b9d979e52ea3d7338f5518b6342c0e3fc44a5cc3fb5c"
+    }
+  },
+  "final_delivery": {
+    "phase": "final-delivery",
+    "native_thread_id": "01a083c0-2c0b-7fc1-ba7d-0b0721dfeb0f",
+    "exit_code": 0,
+    "seal": "control/final-delivery-sealed.json",
+    "seal_sha256": "f597f14a40dc9987d625b347a73d5b54172df3f5b42cfa387db760fc9f86bd4e",
+    "review_extract": "control/final-delivery-review-extract.json",
+    "review_extract_sha256": "7deddf49f0b5920806d68045f3ca3c46480258c7c2aa2a52f0a9dc5d2161a410",
+    "final_message_sha256": "3a57279be3c5e99f48317aae3b87d2907a6ace65fc27bfb045be7fde72f5ee13",
+    "delivery_artifact": "deliverables/xq-delivery.md",
+    "delivery_artifact_sha256": "b29b9c2e10835263680878df33959509c79e3c14217f8e2fc33e5f6d1cb843c1",
+    "root_observation": "control/final-delivery-observation.json",
+    "root_observation_sha256": "1682a0a1a68a7a3e4eab9dfbace970aaa24a58fb8a1ec5836d1011cae57b0678",
+    "distinct_final_check": "control/final-delivery-independent-check.json",
+    "distinct_final_check_sha256": "bf24ac17a85436a911d5b9d979e52ea3d7338f5518b6342c0e3fc44a5cc3fb5c"
+  },
+  "final_integrity": {
+    "final_receipt_files_checked": 258,
+    "protected_pre_correction_receipts_unchanged": 186,
+    "first_review_files_retained": 34,
+    "recheck_files_retained": 48,
+    "review_files_retained_total": 82,
+    "fixed_inputs_unchanged": 359,
+    "embedded_report_hash_links_checked": 9,
+    "final_artifacts": 8,
+    "final_sources": 7
+  },
+  "awr_final_runtime": {
+    "project_revision": 391,
+    "active_sessions": 0,
+    "active_claims": 0,
+    "work_items": [
+      {
+        "external_key": "XQ-INPUT",
+        "status": "completed",
+        "next_action": "本工作已完成且最终筹备包已交付，不再重复执行；共同约束仅供 VEN-01、VEN-02、EQP-01、EQP-02 等后续现场确认使用，新增事实以新回执追加。"
+      },
+      {
+        "external_key": "XQ-CONTENT",
+        "status": "completed",
+        "next_action": "本工作已完成且最终筹备包已交付；仅当日期、讲者、人数、场地或设备新回执触发变化时，由内容执行者或明确接续者补齐 MAT-01、MAT-02 和受影响安排，并追加版本与交接回执。"
+      },
+      {
+        "external_key": "XQ-VENUE",
+        "status": "completed",
+        "next_action": "本工作已完成且最终筹备包已交付；协调者明确日期、人数和内容材料后，另派现场核验人关闭 VEN-01、VEN-02、EQP-01、EQP-02 与 MAT-02，原执行者无需重复处理。"
+      },
+      {
+        "external_key": "XQ-MERGE",
+        "status": "completed",
+        "next_action": "本工作与整改均已完成，独立返检和最终筹备交付也已完成；不再重复合并或返检。后续仅由活动协调者依据 deliverables/xq-delivery.md 关闭现场未决项，新事实触发时追加回执。"
+      },
+      {
+        "external_key": "XQ-REVIEW",
+        "status": "completed",
+        "next_action": "本工作已完成且返检结论已用于最终筹备交付，XQ-DELIVER 已完成；不再重复返检或交付。后续现场事实由交付包所列角色取得，返检报告不替代现场验收。"
+      },
+      {
+        "external_key": "XQ-DELIVER",
+        "status": "completed",
+        "next_action": "本工作完成后不再重复交付；活动协调者先关闭 VEN-01 与 PPL-01，再按交付包条件推进场地、设备、成品材料、外部交接及真实现场执行并保留回执。"
+      }
+    ],
+    "final_session": {
+      "id": "01M22HER372Y2YEY489KN81737",
+      "status": "ended",
+      "last_checkpoint_id": "01M22JJNKNHTKSXZ6RFTBEMGMY"
+    },
+    "final_claim": {
+      "id": "01M22HER39DEZ2EEATBJKFP3QA",
+      "status": "released",
+      "session_id": "01M22HER372Y2YEY489KN81737"
+    },
+    "completion_event": "01M22JN7NVM29PKP2YDQ4F0S9C",
+    "evidence": {
+      "id": "01M22JCZ9T5BQ5TTVFPV4R40J8",
+      "locator": ".work-receipts/xq-final-delivery-evidence-report.json",
+      "sha256": "32c5541639171d476d24177edb5d33e5929775629cbad05be2858625ab593e52",
+      "source_sha": "8f4031f40c096691df03099c2382cbb86112be19"
+    }
+  },
+  "git_boundary": {
+    "business_project_setup_head": "8f4031f40c096691df03099c2382cbb86112be19",
+    "observed_current_head": "8f4031f40c096691df03099c2382cbb86112be19",
+    "setup_head_contains_uncommitted_delivery_artifacts": false,
+    "runtime_branch_is_git_worktree_isolation": false,
+    "note": "AWR runtime branches share the project Git working directory. An immutable public artifact commit and verified remote SHA remain pending."
+  },
+  "retained_failures": [
+    {
+      "path": "project/.work-receipts/xq-venue-progress-conflict-r29.json",
+      "sha256": "b933a12b7d7575bf87bd54fd014c04df0ebc4e6dbef7d6131d8f9e1ca3d55181",
+      "result": "RevisionConflict expected 29 actual 31"
+    },
+    {
+      "path": "project/.work-receipts/018-work-progress-xq-content-handoff-wording-conflict.json",
+      "sha256": "d9d01e9a41934057f3a39dc1f871f6ce57751107a565267ba6b5b5ad61febbea",
+      "result": "ClaimConflict"
+    },
+    {
+      "path": "project/review-inputs/parallel-process-evidence/peer-initial-sealed.json",
+      "sha256": "0cb4af31f665beee96aab94edf9e7f4576557837aa1aa72fafbb1aa5a81e921e",
+      "result": "110 command executions and 6 failed attempts retained"
+    },
+    {
+      "path": "project/.work-receipts/reviewer-verification-attempt-1.json",
+      "sha256": "9db0eeae04db343f81366f937e3d90a690efb8309a1706bbfdf93371d2627a24",
+      "result": "First independent-review verifier used an overly narrow wording assertion"
+    },
+    {
+      "path": "control/review-correction-sealed.json",
+      "sha256": "54e8014758354247bb33f122be129d09eb3ea14242cea9ae0f2415fa63e25ef0",
+      "result": "180 command executions and 11 nonzero commands retained; overall native process exited 0"
+    },
+    {
+      "path": "project/.work-receipts/042-reopen-xq-merge-invalid-summary.json",
+      "sha256": "662b65d5f5a6df7dc4d8ac957801cefcc0ef82dd66c46d84b1556c6800e5b783",
+      "result": "InvalidInput for unauthorized summary field"
+    },
+    {
+      "path": "project/.work-receipts/048-proposal-create-xq-input-session-conflict.json",
+      "sha256": "db92180164c30abc6350399b7b35d310b08dc462859d6e6a48b917204ac0be1a",
+      "result": "InvalidInput for work target conflicting with creating session"
+    },
+    {
+      "path": "project/.work-receipts/084-return-check-handoff-verification-attempt-1.json",
+      "sha256": "d7df2061c8d06a69b365c6f8ad960cc0f98338f07fa4dd4a6e59a6f47728765c",
+      "result": "Historical verifier expected a multi-line YAML block after source normalization"
+    },
+    {
+      "path": "project/.work-receipts/reviewer-recheck-verification-before.json",
+      "sha256": "67c7c061b4781e5c6fc6758f5cbad59b0441ab49befe7ef04d5104c97d845305",
+      "result": "Recheck verifier first used two overly narrow wording assertions"
+    },
+    {
+      "path": "project/.work-receipts/reviewer-recheck-work-complete-attempt-1.json",
+      "sha256": "67ca5113f997e056b1384c1418c207d13e75a2e9edb9e9c5b272ab68c58ebf04",
+      "result": "EvidenceMissing because completion report lacked version"
+    },
+    {
+      "path": "project/.work-receipts/reviewer-recheck-work-complete-attempt-2.json",
+      "sha256": "84a8f665193c41c375cab64c0200f3848a3aebb15a638502c676904c6f89988d",
+      "result": "EvidenceMissing because completion report lacked work_item"
+    }
+  ],
+  "evidence_limitations": [
+    "RevisionConflict and ClaimConflict are separate observed events; neither substitutes for the other.",
+    "Shared project snapshots may contain files from multiple participants and do not establish authorship without actual tool/file-change records.",
+    "AWR logical agent/model labels are runtime metadata, not actual native client identity.",
+    "The preparation delivery does not prove onsite venue, equipment, staffing, material readiness or event execution.",
+    "Raw native transcripts, raw event streams, host memory/reasoning and AWR database files remain private and are excluded from the public package.",
+    "run.json preserves fixture preparation facts and zero original model calls; later execution is established by sealed evidence rather than rewriting run.json."
+  ],
+  "gates": {
+    "natural_client_initiation": {
+      "passed": true,
+      "scope": "Canonical initial business request occurred once in the actual coordinator native thread; the 13-input retrospective audit distinguishes natural business inputs from three host setup envelopes.",
+      "evidence": [
+        "control/initial-sealed.json",
+        "control/initial-review-extract.json",
+        "control/native-input-audit-final.json"
+      ]
+    },
+    "tool_or_role_execution": {
+      "passed": true,
+      "scope": "Three distinct Codex native threads performed coordinator/content, peer/venue and successor/venue work. Public evidence binds actual authorship, AWR sessions/claims/branches, RevisionConflict and later ClaimConflict without equating runtime branches to isolated Git worktrees.",
+      "evidence": [
+        "control/prelude-sealed.json",
+        "control/peer-branch-check-sealed.json",
+        "control/venue-continuation-sealed.json",
+        "control/parallel-process-review-publication.json",
+        "project/review-inputs/parallel-process-evidence/peer-initial-sealed.json",
+        "project/review-inputs/parallel-process-evidence/actual-parallel-conflict-binding.json",
+        "project/review-inputs/parallel-process-evidence/artifact-authorship-correction.json"
+      ]
+    },
+    "real_artifact": {
+      "passed": true,
+      "scope": "The final sealed snapshot contains eight hash-bound business/review/delivery artifacts with authorship attributed to actual producing turns rather than shared snapshot membership.",
+      "evidence": [
+        "control/final-delivery-sealed.json",
+        "project/deliverables/xingqiao-content.md",
+        "project/deliverables/xingqiao-venue.md",
+        "project/deliverables/xingqiao-ownership.md",
+        "project/deliverables/xingqiao-collaboration-review.md",
+        "project/deliverables/xingqiao-independent-results.md"
+      ]
+    },
+    "business_followup_1": {
+      "passed": true,
+      "scope": "The first canonical followup introduced the temporary absence, was sent once to the actual coordinator, and led to a separately executed successor handoff that preserved unresolved venue matters.",
+      "evidence": [
+        "round-1-inputs.json",
+        "control/round-1-sealed.json",
+        "control/round-1-review-extract.json",
+        "control/venue-continuation-sealed.json",
+        "control/venue-continuation-review-extract.json"
+      ]
+    },
+    "business_followup_2": {
+      "passed": true,
+      "scope": "The second canonical followup requested separate result checks and common actions; the coordinator then corrected the stale handoff wording and formed the combined preparation plan.",
+      "evidence": [
+        "round-2-inputs.json",
+        "control/round-2-sealed.json",
+        "control/round-2-review-extract.json",
+        "control/coordination-correction-sealed.json",
+        "control/coordination-correction-review-extract.json"
+      ]
+    },
+    "independent_review": {
+      "passed": true,
+      "scope": "A distinct luna_worker reviewer raised XQ-R01/R02, the original producer remediated them, and the same reviewer independently rechecked and closed both findings with ended sessions and released claims.",
+      "evidence": [
+        "control/independent-review.json",
+        "control/reviewer-identity-binding.json",
+        "project/deliverables/xq-independent-review.md",
+        "control/review-correction-sealed.json",
+        "control/review-correction-publication.json",
+        "control/independent-recheck.json",
+        "control/recheck-reviewer-identity-binding.json",
+        "project/deliverables/xq-independent-recheck.md"
+      ]
+    },
+    "final_delivery": {
+      "passed": true,
+      "scope": "After recheck, the original coordinator produced the final preparation delivery. Root and a distinct read-only reviewer verified the sealed final turn and its scope; onsite readiness, execution and release remain outside this gate.",
+      "evidence": [
+        "control/final-delivery-sealed.json",
+        "control/final-delivery-review-extract.json",
+        "control/final-delivery-observation.json",
+        "control/final-delivery-independent-check.json",
+        "project/deliverables/xq-delivery.md"
+      ]
+    },
+    "traceable_receipt": {
+      "passed": true,
+      "scope": "Twelve standard phase seals/extracts, the custom peer publication, 258 final receipt files, 359 fixed review inputs, retained prior/review files and all known failures remain hash-bound. Raw events and native transcripts are excluded from public copying.",
+      "evidence": [
+        "execution-record.json",
+        "control/final-delivery-sealed.json",
+        "control/final-delivery-review-extract.json",
+        "control/final-delivery-observation.json",
+        "control/parallel-process-review-publication.json",
+        "control/native-input-audit-final.json"
+      ]
+    },
+    "fixture_isolation": {
+      "passed": true,
+      "scope": "The run retains its independent fixture namespace and seed project. The final source/artifact snapshots are tied to this project, while the untouched run.json remains a historical preparation receipt and is not treated as proof of later execution.",
+      "evidence": [
+        "run.json",
+        "control/prelude-sealed.json",
+        "control/final-delivery-sealed.json",
+        "project/project.toml"
+      ]
+    },
+    "independent_commit_and_remote_sha": {
+      "passed": false,
+      "scope": "No immutable public artifact commit or verified remote SHA exists yet. Business project HEAD 8f4031f... is the setup commit and does not include uncommitted delivery artifacts; publication must be verified after packaging.",
+      "evidence": []
+    }
+  },
+  "public_package_plan": {
+    "path": "control/public-package-plan.json",
+    "sha256": "c12e9f68291b3637d64b515c7f06c0769963cfa448bc99a5feeba49d28191c93",
+    "packager_executed": false,
+    "public_artifact_commit": null,
+    "verified_remote_sha": null
+  },
+  "independent_delivery_commit": null,
+  "verified_remote_receipt": null,
+  "blockers": [
+    "Public packager has not been run.",
+    "Independent artifact commit and verified remote SHA remain missing.",
+    "Onsite venue, equipment, staffing, final material and external receipt facts remain unresolved and require future owners; this does not reopen completed preparation work."
+  ],
+  "status_authority": "project/work-ledger.yaml",
+  "authorization_receipt": "ledger/evidence/business/execution-authorization.json",
+  "retained_failure_index": {
+    "standard_phase_nonzero_commands": [
+      {
+        "phase": "prelude",
+        "event_line": 71,
+        "native_item_id": "item_36",
+        "exit_code": 2,
+        "command_sha256": "650a5280721bfa80aec0b009294e469160a4f48b94737455943c335146289cfd",
+        "output_sha256": "0b3a2e89957b64e94e62d5630cd844c98e75a731c3d25839d1da330d097ac769"
+      },
+      {
+        "phase": "prelude",
+        "event_line": 126,
+        "native_item_id": "item_64",
+        "exit_code": 1,
+        "command_sha256": "d339bf7e08d579a5644c10ad226476cc44f57a922f6a6d5eb388f18f11a8e77a",
+        "output_sha256": "caecb9739f3bc55f7a982a3232e7217cfa166d789e7d6d171202e4c374ef014b"
+      },
+      {
+        "phase": "peer-branch-check",
+        "event_line": 134,
+        "native_item_id": "item_69",
+        "exit_code": 1,
+        "command_sha256": "1ea8b4a5fa38c0823055cd00b3a24ee782dd152859d1a458329226006ba30d91",
+        "output_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      {
+        "phase": "peer-branch-check",
+        "event_line": 180,
+        "native_item_id": "item_93",
+        "exit_code": 1,
+        "command_sha256": "951ef862356d54d7962617e0199f5f49c53abc1383ea006b9192be0a0542c9e1",
+        "output_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      {
+        "phase": "peer-branch-check",
+        "event_line": 184,
+        "native_item_id": "item_96",
+        "exit_code": 1,
+        "command_sha256": "b322331bc9b59dcac3fe35fd9fc0633e734cefa8011bce7ba9a8a5c02c71348b",
+        "output_sha256": "5d3aae272c2b9b5246d222d850a4b02f33a6e45c64a584d11252502b69ea0fb9"
+      },
+      {
+        "phase": "peer-branch-check",
+        "event_line": 193,
+        "native_item_id": "item_101",
+        "exit_code": 2,
+        "command_sha256": "3d7657a0e084edc1d7e5a7100a8e831ba2a9d2220c5a62223dd926ede8c34783",
+        "output_sha256": "5f548d4373d316152dcb25dfcb92b28c19e7f21de512b6032ffc83f652fd3403"
+      },
+      {
+        "phase": "peer-branch-check",
+        "event_line": 195,
+        "native_item_id": "item_102",
+        "exit_code": 1,
+        "command_sha256": "d2388c77adb9a67d8b172cac51cda0f0ece4f471cd35efe08481b3c425352277",
+        "output_sha256": "0c605f0970706c8cfc6ebc9f9c8c14a67ab2af154e4eef9f785cd78072f767bd"
+      },
+      {
+        "phase": "peer-branch-check",
+        "event_line": 197,
+        "native_item_id": "item_103",
+        "exit_code": 2,
+        "command_sha256": "eff98f49a50524c62972852b8497084601b7c7e65b94c0b1548ae41f86b10001",
+        "output_sha256": "b150a376c00ee7420d52e577a87c6b83cad20d4f53984d9a2dd44b98658c0019"
+      },
+      {
+        "phase": "prelude-content-update",
+        "event_line": 31,
+        "native_item_id": "item_15",
+        "exit_code": 2,
+        "command_sha256": "4d0e522644582c26af3a857bd6678148202b07cce6ba265609a1bc7a0daa8f80",
+        "output_sha256": "cf9d78ff655d99b2f1d359377354bca8def0ad90715ef542de376b915c0ce2a3"
+      },
+      {
+        "phase": "prelude-content-update",
+        "event_line": 39,
+        "native_item_id": "item_19",
+        "exit_code": 1,
+        "command_sha256": "a49db0a53e25188aa6e47333afa9da4bcc00dbdba2e0fa5746b53c43ff4eaf9e",
+        "output_sha256": "fafc854f4283fda4c0edc628f251a0539d378a6bef4f104adbec626527a28f2c"
+      },
+      {
+        "phase": "prelude-content-update",
+        "event_line": 50,
+        "native_item_id": "item_25",
+        "exit_code": 2,
+        "command_sha256": "c8cf3a8c7686a8852241ee13ee8db595abfe5acc689d5e38994a9dd03c718589",
+        "output_sha256": "78c20fd45ae37d5888fb7e6bec1152a90f6e57ad0b7c6cb0987cfa36f8c13937"
+      },
+      {
+        "phase": "prelude-content-update",
+        "event_line": 64,
+        "native_item_id": "item_32",
+        "exit_code": 1,
+        "command_sha256": "cb53f59cf440dffcfd8076168bd9572f6f63475f75f60a1df36e447f75bed8f4",
+        "output_sha256": "7c2f0289bff41c3e928f13623be6668dc6d7e3202adc38c1d3e1f4a92d564696"
+      },
+      {
+        "phase": "prelude-content-update",
+        "event_line": 83,
+        "native_item_id": "item_42",
+        "exit_code": 1,
+        "command_sha256": "6bc6851772105569bdaa52610ae7c24fad167d82ef4a6bddf7c58fbded564a15",
+        "output_sha256": "6e4c5f5bca8b7ca9db2204afe56310679e1f37217be9d3bc6b739209126d9a55"
+      },
+      {
+        "phase": "prelude-receipt-response",
+        "event_line": 32,
+        "native_item_id": "item_16",
+        "exit_code": 1,
+        "command_sha256": "3c997ffa742a7d3688ac7e5dc25e248f931adb605ff8a7696a439e47bc7fbe3f",
+        "output_sha256": "26b15de205054e64357b856181c14c60881a5957bff34e8862a225a482caff15"
+      },
+      {
+        "phase": "prelude-receipt-response",
+        "event_line": 41,
+        "native_item_id": "item_22",
+        "exit_code": 1,
+        "command_sha256": "3c997ffa742a7d3688ac7e5dc25e248f931adb605ff8a7696a439e47bc7fbe3f",
+        "output_sha256": "1265330ad094846a8db5286b95adee71d6389cfc8ec74a35c678c5315b8345cb"
+      },
+      {
+        "phase": "prelude-receipt-response",
+        "event_line": 74,
+        "native_item_id": "item_39",
+        "exit_code": 1,
+        "command_sha256": "c8fa607f0ee233686be575b25701ccf903549ff1275ca9ab677d9d7ae905fb8c",
+        "output_sha256": "6d608c290287cbda4d217a7aac577760c7ccd22bd54c16ee0d618017d14e4131"
+      },
+      {
+        "phase": "prelude-receipt-response",
+        "event_line": 76,
+        "native_item_id": "item_40",
+        "exit_code": 1,
+        "command_sha256": "7a57f44ea3f8fe9984856c37400af6b8a76dbc5223fd7c7bac226697bf0c9dae",
+        "output_sha256": "d06ef3637f1a25d6a31e67806540ab71f2a1eb7b260f36d9fb6bd755f966800f"
+      },
+      {
+        "phase": "prelude-receipt-response",
+        "event_line": 91,
+        "native_item_id": "item_48",
+        "exit_code": 1,
+        "command_sha256": "7ab8825e3de3f81955bdba11b26e7bb572915ab0fe13aa480883c512d301c5c9",
+        "output_sha256": "5d37346d0e6423885025aca4ab07a9d70732c6e5deae62fb8042f6fd285e493b"
+      },
+      {
+        "phase": "prelude-receipt-response",
+        "event_line": 119,
+        "native_item_id": "item_62",
+        "exit_code": 1,
+        "command_sha256": "5b5b51f5f7d24690a3ae82edc192dea663031763fb0f395c14cab5faa9879e3a",
+        "output_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      {
+        "phase": "initial",
+        "event_line": 9,
+        "native_item_id": "item_3",
+        "exit_code": 1,
+        "command_sha256": "d0c96d2a7f6d1d8a9943fa22f136e27949cbf2f00eb46be2e2e8866b92f2ee0e",
+        "output_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      {
+        "phase": "venue-continuation",
+        "event_line": 8,
+        "native_item_id": "item_3",
+        "exit_code": 1,
+        "command_sha256": "361bfde000bc321dd26175fd16a2246206dfab0d7425ea0c036e0a604c9d3b4d",
+        "output_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      {
+        "phase": "round-2",
+        "event_line": 7,
+        "native_item_id": "item_2",
+        "exit_code": 1,
+        "command_sha256": "a0d3ffdb8c6f563181b7dba08c2899d603e7aa06cf075032175fb1c34be36506",
+        "output_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      {
+        "phase": "round-2",
+        "event_line": 70,
+        "native_item_id": "item_35",
+        "exit_code": 1,
+        "command_sha256": "be20947fc35c4d358c93a9b71e7c1ee02694a4f1b9676f04a937309844049b23",
+        "output_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      {
+        "phase": "round-2",
+        "event_line": 79,
+        "native_item_id": "item_39",
+        "exit_code": 1,
+        "command_sha256": "0436177257d9d872eabcfb6db0a1188f30b2a6879393c8a2a70378b7e79537c3",
+        "output_sha256": "338e1d6d8a8aba127cb00be3fbc9627c007e0b2159fc0de2da70209794c358d7"
+      },
+      {
+        "phase": "coordination-correction",
+        "event_line": 33,
+        "native_item_id": "item_16",
+        "exit_code": 2,
+        "command_sha256": "dba9e1ed69c8456a086018d60ee5ea3797a13c89ccfcd6de2228af75bb13d814",
+        "output_sha256": "cf9d78ff655d99b2f1d359377354bca8def0ad90715ef542de376b915c0ce2a3"
+      },
+      {
+        "phase": "coordination-correction",
+        "event_line": 90,
+        "native_item_id": "item_45",
+        "exit_code": 1,
+        "command_sha256": "b5b1d5406fb198f7792b3a6ba92394da5c4074ee5f042ded409876d8189b833d",
+        "output_sha256": "859d6ac3f41ed1f81981847980635dbba6a0fd19c4752711644f62e4337e67b0"
+      },
+      {
+        "phase": "coordination-correction",
+        "event_line": 94,
+        "native_item_id": "item_47",
+        "exit_code": 1,
+        "command_sha256": "005ec785a72df0271b8025b3d4b802dabe95614f9ec80ddda37595892881c321",
+        "output_sha256": "1cbc450a611333b38d4b8930f80331cbbfc6e274895d98cdfe77e72aa1a4478b"
+      },
+      {
+        "phase": "coordination-correction",
+        "event_line": 140,
+        "native_item_id": "item_70",
+        "exit_code": 1,
+        "command_sha256": "be20947fc35c4d358c93a9b71e7c1ee02694a4f1b9676f04a937309844049b23",
+        "output_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      {
+        "phase": "review-correction",
+        "event_line": 5,
+        "native_item_id": "item_1",
+        "exit_code": 1,
+        "command_sha256": "799ca677c3064deb756a7fa8e5cd18c90c90120fcc3e7989e99e3f096907a459",
+        "output_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      {
+        "phase": "review-correction",
+        "event_line": 48,
+        "native_item_id": "item_23",
+        "exit_code": 1,
+        "command_sha256": "a09b30d4622cddccb7811c7824ca4c7647681b2baa3e04d15f96280b32c470a9",
+        "output_sha256": "255f0d249f74afe235932e1ec34f6130005460c02c24292629a7cacda2f3485e"
+      },
+      {
+        "phase": "review-correction",
+        "event_line": 76,
+        "native_item_id": "item_37",
+        "exit_code": 1,
+        "command_sha256": "0b8cadffc8408b1d922ca2e001045cb694a51a304129b51c8254e054b12347b1",
+        "output_sha256": "2da5594bb5f7d0bafd90676da4102ae106bf4407949fdd39dd1adb65cde10310"
+      },
+      {
+        "phase": "review-correction",
+        "event_line": 139,
+        "native_item_id": "item_71",
+        "exit_code": 2,
+        "command_sha256": "237377f909460bc7ce61a47fc4b963ca6026a3054a0eee186d86e6b4d86399ae",
+        "output_sha256": "6178b5d1434cd944183742aff761985c2c9eae47b04ff0e88cb6b4d38ae9301d"
+      },
+      {
+        "phase": "review-correction",
+        "event_line": 149,
+        "native_item_id": "item_76",
+        "exit_code": 1,
+        "command_sha256": "93dfe8688b42905f5713f1637f15c5d8a7dba9c01908d0312e7389cbd139e597",
+        "output_sha256": "1cbc450a611333b38d4b8930f80331cbbfc6e274895d98cdfe77e72aa1a4478b"
+      },
+      {
+        "phase": "review-correction",
+        "event_line": 169,
+        "native_item_id": "item_86",
+        "exit_code": 2,
+        "command_sha256": "2162873de3513664afeef343129442f576ff163fdadb9ca41926b883d34b65e4",
+        "output_sha256": "957e0591a317152bf6a0c304731a3929aafc0808b92aecb156d3caa7dcdae188"
+      },
+      {
+        "phase": "review-correction",
+        "event_line": 214,
+        "native_item_id": "item_109",
+        "exit_code": 1,
+        "command_sha256": "2b8089c8ff2d209f973b4f5fac47d50cb4edcadd273345cd95e0c941d082dda4",
+        "output_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      {
+        "phase": "review-correction",
+        "event_line": 217,
+        "native_item_id": "item_111",
+        "exit_code": 1,
+        "command_sha256": "93bda61f4c4957b01356583e7feeef2624bf887b055171519c8051a6491eb398",
+        "output_sha256": "aa579526089d21a6959c5d84c0e7a716be5b7fd02225882901845b7cf152fe3e"
+      },
+      {
+        "phase": "review-correction",
+        "event_line": 253,
+        "native_item_id": "item_129",
+        "exit_code": 1,
+        "command_sha256": "790cb5302885939379ac7e7b34789a9fb1e73ad24867e5c9a4d37db21cdfb6bf",
+        "output_sha256": "2ea452b48862aa7d673ba76d1df9531e5e5c3cbca4a9012845659caf60e38780"
+      },
+      {
+        "phase": "review-correction",
+        "event_line": 449,
+        "native_item_id": "item_229",
+        "exit_code": 1,
+        "command_sha256": "326170e52ba67c99ebfddf861d1a02fa08e42d1f4e610c359af567771084c373",
+        "output_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      {
+        "phase": "review-correction",
+        "event_line": 487,
+        "native_item_id": "item_249",
+        "exit_code": 1,
+        "command_sha256": "e2aaa26172dcb9283347e88ee9b95afb579e4336ccccd3b005dc90d186b2d780",
+        "output_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      {
+        "phase": "final-delivery",
+        "event_line": 63,
+        "native_item_id": "item_32",
+        "exit_code": 1,
+        "command_sha256": "c3fbaed653aeb070e8e5920c30becabe85a9c4c18bfe94cec9ff047d5d072ab0",
+        "output_sha256": "fe6e138af1d6c5d06b72d549754e5cd00552572b66077b707a9713ff522dc4f1"
+      },
+      {
+        "phase": "final-delivery",
+        "event_line": 76,
+        "native_item_id": "item_39",
+        "exit_code": 1,
+        "command_sha256": "70a14661958959dce8353ec0a8c5768acf7daa73fd48888a86b91da6c6d2f307",
+        "output_sha256": "22d8af5cb1db66b0f452d37bbbe2bdc43ac93d37a18feba834aeb76155465883"
+      },
+      {
+        "phase": "final-delivery",
+        "event_line": 111,
+        "native_item_id": "item_57",
+        "exit_code": 1,
+        "command_sha256": "0f91c92e70cd392450438d7104f8e384a6ae80b492f8b497076ffd95516983fa",
+        "output_sha256": "1cbc450a611333b38d4b8930f80331cbbfc6e274895d98cdfe77e72aa1a4478b"
+      },
+      {
+        "phase": "final-delivery",
+        "event_line": 175,
+        "native_item_id": "item_90",
+        "exit_code": 1,
+        "command_sha256": "c53e9d8cd659c315280a6e0f19cb09e33d4b478f924ba91377ef07fb2855cf68",
+        "output_sha256": "75d863307d09e3742ec5b9e344f6dd247ef05e20946f5b30478b2295fec05b87"
+      },
+      {
+        "phase": "final-delivery",
+        "event_line": 180,
+        "native_item_id": "item_93",
+        "exit_code": 2,
+        "command_sha256": "a9cf31fe6e59fab79823e0b2d9271634241240b2e3bcdc130a911dd5b31cedb2",
+        "output_sha256": "fe09226eb52b7245a54b6332b8547d322e378b6f47f913955ed078de7452814c"
+      }
+    ],
+    "custom_peer_nonzero_commands": [
+      {
+        "exit_code": 1
+      },
+      {
+        "exit_code": 1
+      },
+      {
+        "exit_code": 128
+      },
+      {
+        "exit_code": 1
+      },
+      {
+        "exit_code": 1
+      },
+      {
+        "exit_code": 1
+      }
+    ],
+    "named_business_and_review_failures": [
+      {
+        "path": "project/.work-receipts/xq-venue-progress-conflict-r29.json",
+        "sha256": "b933a12b7d7575bf87bd54fd014c04df0ebc4e6dbef7d6131d8f9e1ca3d55181",
+        "result": "RevisionConflict expected 29 actual 31"
+      },
+      {
+        "path": "project/.work-receipts/018-work-progress-xq-content-handoff-wording-conflict.json",
+        "sha256": "d9d01e9a41934057f3a39dc1f871f6ce57751107a565267ba6b5b5ad61febbea",
+        "result": "ClaimConflict"
+      },
+      {
+        "path": "project/review-inputs/parallel-process-evidence/peer-initial-sealed.json",
+        "sha256": "0cb4af31f665beee96aab94edf9e7f4576557837aa1aa72fafbb1aa5a81e921e",
+        "result": "110 command executions and 6 failed attempts retained"
+      },
+      {
+        "path": "project/.work-receipts/reviewer-verification-attempt-1.json",
+        "sha256": "9db0eeae04db343f81366f937e3d90a690efb8309a1706bbfdf93371d2627a24",
+        "result": "First independent-review verifier used an overly narrow wording assertion"
+      },
+      {
+        "path": "control/review-correction-sealed.json",
+        "sha256": "54e8014758354247bb33f122be129d09eb3ea14242cea9ae0f2415fa63e25ef0",
+        "result": "180 command executions and 11 nonzero commands retained; overall native process exited 0"
+      },
+      {
+        "path": "project/.work-receipts/042-reopen-xq-merge-invalid-summary.json",
+        "sha256": "662b65d5f5a6df7dc4d8ac957801cefcc0ef82dd66c46d84b1556c6800e5b783",
+        "result": "InvalidInput for unauthorized summary field"
+      },
+      {
+        "path": "project/.work-receipts/048-proposal-create-xq-input-session-conflict.json",
+        "sha256": "db92180164c30abc6350399b7b35d310b08dc462859d6e6a48b917204ac0be1a",
+        "result": "InvalidInput for work target conflicting with creating session"
+      },
+      {
+        "path": "project/.work-receipts/084-return-check-handoff-verification-attempt-1.json",
+        "sha256": "d7df2061c8d06a69b365c6f8ad960cc0f98338f07fa4dd4a6e59a6f47728765c",
+        "result": "Historical verifier expected a multi-line YAML block after source normalization"
+      },
+      {
+        "path": "project/.work-receipts/reviewer-recheck-verification-before.json",
+        "sha256": "67c7c061b4781e5c6fc6758f5cbad59b0441ab49befe7ef04d5104c97d845305",
+        "result": "Recheck verifier first used two overly narrow wording assertions"
+      },
+      {
+        "path": "project/.work-receipts/reviewer-recheck-work-complete-attempt-1.json",
+        "sha256": "67ca5113f997e056b1384c1418c207d13e75a2e9edb9e9c5b272ab68c58ebf04",
+        "result": "EvidenceMissing because completion report lacked version"
+      },
+      {
+        "path": "project/.work-receipts/reviewer-recheck-work-complete-attempt-2.json",
+        "sha256": "84a8f665193c41c375cab64c0200f3848a3aebb15a638502c676904c6f89988d",
+        "result": "EvidenceMissing because completion report lacked work_item"
+      }
+    ],
+    "note": "Nonzero commands remain failures even where the native turn later exited 0; command/output bodies stay in sealed private records and only bounded hashes/locators are listed here."
+  }
+}

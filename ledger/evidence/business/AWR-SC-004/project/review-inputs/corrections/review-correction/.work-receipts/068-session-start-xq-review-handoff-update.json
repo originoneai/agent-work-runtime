@@ -1,0 +1,37 @@
+{
+  "claim": null,
+  "event": {
+    "artifact_id": null,
+    "branch_id": null,
+    "checkpoint_id": null,
+    "created_at": 1788935658951,
+    "id": "01M22DZQE7PZ9BRACX1H5MFBHF",
+    "importance": "normal",
+    "project_revision": 260,
+    "session_id": "01M22DZQE75MZE6XA856WS6P34",
+    "source_id": null,
+    "summary": "Started agent work session",
+    "type": "session.started",
+    "work_item_id": "01M21W3H924SNZ0DV020S3BM69"
+  },
+  "freshness_basis": "source_refresh",
+  "ok": true,
+  "project_revision": 260,
+  "session": {
+    "agent_id": "xq-return-check-handoff-coordinator",
+    "branch_id": null,
+    "end_project_revision": null,
+    "ended_at": null,
+    "id": "01M22DZQE75MZE6XA856WS6P34",
+    "last_checkpoint_id": null,
+    "model": "gpt-5",
+    "project_id": "01M21W3H8XNKD8AKP4N1JNQQTM",
+    "provider": "codex",
+    "revision": 1,
+    "start_project_revision": 259,
+    "started_at": 1788935658951,
+    "status": "active",
+    "work_item_id": "01M21W3H924SNZ0DV020S3BM69"
+  },
+  "source_refresh_performed": true
+}

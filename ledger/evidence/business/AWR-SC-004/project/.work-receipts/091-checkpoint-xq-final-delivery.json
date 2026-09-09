@@ -1,0 +1,54 @@
+{
+  "checkpoint": {
+    "changed_entities": [
+      "work_items:01M21W3H92ETY0KG090P5SCSBC"
+    ],
+    "context_hash": "c04e2db5fde40ad4a6185f132ede4b412aba85f902dbcff094d76099f382d292",
+    "created_at": 1788940473973,
+    "digest": "最终筹备交付包已形成并通过本地校验，独立返检 XQ-R01/XQ-R02 已通过；现行执行基线、九项现场未知、后续角色、交接条件和完整历史均已固化，证据 XQ-FINAL-DELIVERY-20260909 已登记。",
+    "id": "01M22JJNKNHTKSXZ6RFTBEMGMY",
+    "next_action": "完成 XQ-DELIVER 并结束本会话；后续由活动协调者先关闭 VEN-01 与 PPL-01，再按交付包推进其余现场回执。",
+    "open_loops": [
+      "VEN-01/VEN-02：日期、90+10 边界、绝对时间、7/3 和三组桌面现场可行性尚未确认。",
+      "EQP-01/EQP-02：投影端到端实测、接口线材、操作人、扩声和供电尚未确认。",
+      "PPL-01/MAT-01/MAT-02：人员名单、角色、成品内容和现场物料尚未确认。",
+      "HDO-01/EXE-01：外部收发治理决定、真实现场执行与整场 E4 尚未发生。"
+    ],
+    "project_revision": 327,
+    "revision": 1,
+    "session_id": "01M22HER372Y2YEY489KN81737"
+  },
+  "checkpoint_save": {
+    "after_revision": 311,
+    "attempt_id": "01M22JJNKMKZE7J5VRNA001SHH",
+    "delta_bytes": 6312,
+    "delta_recorded": true,
+    "event_id": "01M22JJNKN85R7KDM8Q1APN0WP",
+    "observed_changed_entity_count": 1,
+    "reported_changed_entity_count": 3,
+    "session_event_count": 3,
+    "source_observation_count": 4,
+    "through_revision": 327
+  },
+  "context_hash_basis": "caller_supplied_last_used_context",
+  "context_hash_verified": false,
+  "event": {
+    "artifact_id": null,
+    "branch_id": null,
+    "checkpoint_id": "01M22JJNKNHTKSXZ6RFTBEMGMY",
+    "created_at": 1788940473973,
+    "id": "01M22JJNKN85R7KDM8Q1APN0WP",
+    "importance": "normal",
+    "project_revision": 329,
+    "session_id": "01M22HER372Y2YEY489KN81737",
+    "source_id": null,
+    "summary": "Saved session checkpoint and observed delta",
+    "type": "checkpoint.created",
+    "work_item_id": "01M21W3H92ETY0KG090P5SCSBC"
+  },
+  "freshness_basis": "source_refresh",
+  "ok": true,
+  "project_revision": 329,
+  "save_status": "completed",
+  "source_refresh_performed": true
+}

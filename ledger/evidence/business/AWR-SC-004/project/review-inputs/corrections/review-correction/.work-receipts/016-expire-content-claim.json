@@ -1,0 +1,36 @@
+{
+  "next_action": "Run doctor to inspect remaining findings.",
+  "ok": true,
+  "project_id": "01M21W3H8XNKD8AKP4N1JNQQTM",
+  "project_revision": 89,
+  "read_only": false,
+  "receipt": {
+    "action": {
+      "claim_id": "01M21WYFWY9Y01GV8JVGXHJZBF",
+      "kind": "expire_claim"
+    },
+    "event": {
+      "branch_id": null,
+      "created_at": 1788922604990,
+      "event_type": "claim.expired",
+      "id": "01M221HBDYAPSHPNST9TE94K91",
+      "importance": "normal",
+      "payload": {
+        "claim_id": "01M21WYFWY9Y01GV8JVGXHJZBF",
+        "expired_at": 1788921392669,
+        "reason": "原内容认领已到期；保留既有检查点并为同一内容会话重新认领以处理校对措辞修订",
+        "reconciled_at": 1788922604990,
+        "session_id": "01M21WYFWXQHZNK0BJTYVD8N1K"
+      },
+      "project_id": "01M21W3H8XNKD8AKP4N1JNQQTM",
+      "project_revision": 89,
+      "session_id": "01M21WYFWXQHZNK0BJTYVD8N1K",
+      "summary": "Applied explicit runtime reconciliation",
+      "work_item_id": "01M21W3H924XZK5JAZCTWTQPJH"
+    },
+    "project_revision": 89
+  },
+  "remaining_problems_evaluated": false,
+  "repair_applied": true,
+  "source_refresh_performed": false
+}

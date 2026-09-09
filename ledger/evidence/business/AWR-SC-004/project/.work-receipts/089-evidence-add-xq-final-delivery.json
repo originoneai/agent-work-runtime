@@ -1,0 +1,28 @@
+{
+  "event_id": "01M22JCZ9TDS34ZYX48H59WJ1G",
+  "evidence": {
+    "branch_id": null,
+    "command": "rtk proxy python3 .work-receipts/verify-xq-final-delivery.py",
+    "evidence_type": "completion_report",
+    "external_key": "XQ-FINAL-DELIVERY-20260909",
+    "id": "01M22JCZ9T5BQ5TTVFPV4R40J8",
+    "level": "locally_verified",
+    "locator": ".work-receipts/xq-final-delivery-evidence-report.json",
+    "project_id": "01M21W3H8XNKD8AKP4N1JNQQTM",
+    "revision": 1,
+    "scope": [
+      "XQ-DELIVER"
+    ],
+    "sha256": "32c5541639171d476d24177edb5d33e5929775629cbad05be2858625ab593e52",
+    "source_ref": null,
+    "source_sha": "8f4031f40c096691df03099c2382cbb86112be19",
+    "summary": "独立返检通过后形成最终活动筹备交付包：已完成工作、统一执行基线、九项现场未知、后续角色、启动/关闭条件及分工修订失败复核历史均已整理；原产物和失败回执保持不变，现场验证、活动执行与整场 E4 未发生。",
+    "verified_at": 1788940078000,
+    "work_item_id": "01M21W3H92ETY0KG090P5SCSBC"
+  },
+  "freshness_basis": "source_refresh",
+  "ok": true,
+  "project_revision": 320,
+  "source_refresh_performed": true,
+  "validation_basis": "caller_supplied_bindings"
+}

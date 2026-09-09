@@ -1,0 +1,42 @@
+{
+  "kind": "actual_client_turn_snapshot",
+  "recorded_at": "2026-09-09T10:48:06+08:00",
+  "phase": "peer-branch-check",
+  "client": "Codex CLI",
+  "client_task_id": "01a083ca-4a86-7b81-93cd-59afa64767e0",
+  "actual_user_turn": {
+    "timestamp": "2026-09-09T02:13:50.078Z",
+    "text": "请在独立工作分支上作为第二位内容校对负责人，核对当前活动内容安排与现场保障回执，并形成自己的核对记录。现有内容负责人仍在推进；请遵守现有归属，遇到重叠先记录待协调事项，不覆盖对方产物。"
+  },
+  "input_sha256": "f2554df6926016c6e89d8b7422c9c6b44260802a4ffc6068d69a2f2f9ea9c1c1",
+  "events_local": ".local/business-live-20260909-v1/parallel-ownership/control/peer-branch-check-events.jsonl",
+  "events_sha256": "26adb3cc571d2efdf4b75acf4c590bf15921f6c40301c3075484be22433eb0a9",
+  "native_transcript_snapshot_local": ".local/business-live-20260909-v1/parallel-ownership/control/peer-branch-check-snapshot/native-transcript.jsonl",
+  "native_transcript_snapshot_sha256": "a5f39009fc14139910d9d85299de1f7a3ba8b0f7089d8bf8b496a8038a3abd05",
+  "final_message_sha256": "4dd20bd189f030169645cd7656755b0b0b653ca7d9fe09f517026346b9891571",
+  "project_sources_sha256": {
+    "project.toml": "d52670ea0470cd5d8ee1290f6fc5802ae5caadaea5a99d1641471fff8189238a",
+    "GOALS.md": "b4c7d4b82ee317c7fdd4186bed1abb78ba366ef98ac0866b09f85844e22fbf15",
+    "PLAN.md": "729e1a14fe3b11ed869252e5b8aa85d8a3854719865d1cb7b3602ef91aa90ed9",
+    "RULES.md": "31ac59aa580dc3f29f17cd1f532eebbaa0152a041ccd8e00ca74e6d4cd914e19",
+    "work-ledger.yaml": "13a426a9dff824fe1f20daa8f5a781ad3b61f814f6e8c0dd839877b87c046c12",
+    "AGENTS.md": "d0ca28ca18c438aefdada6a14cb847a0664e261f9e8e48abbfd8701720eb66a2",
+    "DELIVERABLES.md": "b81c90585753fd7d52390d4dd5fb338c4a4d71c4b7cc0bcfb17222be50a34766"
+  },
+  "artifacts_sha256": {
+    "deliverables/xingqiao-collaboration-review.md": "41bc099d732235e9ad1dbeab0daf5bb4ddc8d8058470234430b739a1bd5f69c6",
+    "deliverables/xingqiao-content.md": "36c1427fadcba2c7c7749a0cf98e1e0f7ed8d725faa5c298ad1aa8d1edf5e462",
+    "deliverables/xingqiao-ownership.md": "52f5b4ffc113c40d46eb272d9de2aa002f878e8e8eb10d159e78eebd226c4a75",
+    "deliverables/xingqiao-venue.md": "3035f626d7ef00cd860d2fd4781513b76d9587b1e6c67924b549ce8865c828a6"
+  },
+  "tool_event_counts": {
+    "agent_message": 14,
+    "command_execution": 99,
+    "file_change": 19,
+    "error": 1
+  },
+  "command_executions": 99,
+  "nonzero_commands": 6,
+  "snapshot_local": ".local/business-live-20260909-v1/parallel-ownership/control/peer-branch-check-snapshot",
+  "e4_completion_claim": false
+}

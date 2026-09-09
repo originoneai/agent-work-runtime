@@ -1,0 +1,52 @@
+{
+  "checkpoint": {
+    "changed_entities": [],
+    "context_hash": "2bd2c9ebf1f7fac8b65650e14d9abbee643e9009e1c73930837a5af47282183e",
+    "created_at": 1788922422387,
+    "digest": "接收确认跟进已启动：已将回复形成、实际回传、现场接收与事实确认四层状态分开记录；当前均无新增确认。",
+    "id": "01M221BS3KXHHEJVY6R2FPGSXW",
+    "next_action": "保持第二校对会话开放，监测原内容负责人新回执或内容工作修订；收到回应后复核 COORD-06 与 FUP-01 至 FUP-06，再决定是否结束。",
+    "open_loops": [
+      "FUP-01：内容稿已形成 C→V-01 至 C→V-04，但是否实际回传尚未确认。",
+      "FUP-02：现场方是否接收内容回复尚未确认，没有修订后的现场检查点或回执。",
+      "FUP-03 至 FUP-05：单投影、三组桌面、90+10、7/3、绝对时间、实机、人员与物料仍缺执行确认。",
+      "FUP-06：原内容负责人尚未回应 COORD-06；按用户要求，本校对暂不交回协调者且会话不结束。"
+    ],
+    "project_revision": 86,
+    "revision": 1,
+    "session_id": "01M22154A1QHYDK8CBQ129WXJV"
+  },
+  "checkpoint_save": {
+    "after_revision": 85,
+    "attempt_id": "01M221BS3KKRQ69E7M09D9B64W",
+    "delta_bytes": 1619,
+    "delta_recorded": true,
+    "event_id": "01M221BS3KD4F4K2MCH3EWZ4D3",
+    "observed_changed_entity_count": 0,
+    "reported_changed_entity_count": 1,
+    "session_event_count": 2,
+    "source_observation_count": 0,
+    "through_revision": 86
+  },
+  "context_hash_basis": "caller_supplied_last_used_context",
+  "context_hash_verified": false,
+  "event": {
+    "artifact_id": null,
+    "branch_id": "01M21Z7CBNFNN0B7HVMY9WTVTC",
+    "checkpoint_id": "01M221BS3KXHHEJVY6R2FPGSXW",
+    "created_at": 1788922422387,
+    "id": "01M221BS3KD4F4K2MCH3EWZ4D3",
+    "importance": "normal",
+    "project_revision": 88,
+    "session_id": "01M22154A1QHYDK8CBQ129WXJV",
+    "source_id": null,
+    "summary": "Saved session checkpoint and observed delta",
+    "type": "checkpoint.created",
+    "work_item_id": "01M21W3H924XZK5JAZCTWTQPJH"
+  },
+  "freshness_basis": "source_refresh",
+  "ok": true,
+  "project_revision": 88,
+  "save_status": "completed",
+  "source_refresh_performed": true
+}

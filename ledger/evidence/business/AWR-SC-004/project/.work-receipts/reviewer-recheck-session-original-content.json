@@ -1,0 +1,153 @@
+{
+  "checkpoint": {
+    "changed_entities": [
+      "work_items:01M21W3H924XZK5JAZCTWTQPJH"
+    ],
+    "context_hash": "3cf048ca55eee22a668c7789d8f3bc267e5b850bd425481801ed8f7eab08fcd3",
+    "created_at": 1788929962590,
+    "digest": "已依据真实接续记录校正内容稿状态：四项 C→V 回复为项目内已接收；原稿快照与原现场方案均保留，内容安排本地验证通过。",
+    "id": "01M228HWJYC5RQZVC3M336VXAV",
+    "next_action": "以已登记证据完成 XQ-CONTENT，随后由协调者认领 XQ-MERGE 并形成两项结果的可交接筹备方案。",
+    "open_loops": [
+      "场地方仍未确认 90+10 包含关系、绝对开放时间和 7/3 条件性拆分。",
+      "投影实机、接口、线材、信号源、操作人及三组桌面容量、视线和通道仍待现场核验。",
+      "参会人数、角色名单、开场与讨论材料、案例演示文件、PDF、无投影提纲、纸笔、扩声和供电需求仍待补齐。",
+      "外部发送留痕与实际执行确认尚无；正式独立复核必须由另一位参与者在汇总材料完善后执行。"
+    ],
+    "project_revision": 136,
+    "revision": 1,
+    "session_id": "01M21WYFWXQHZNK0BJTYVD8N1K"
+  },
+  "checkpoint_save": {
+    "after_revision": 113,
+    "attempt_id": "01M228HWJXYXEEN10M444M6BH1",
+    "delta_bytes": 5934,
+    "delta_recorded": true,
+    "event_id": "01M228HWJYVHPGPT2D6Q37NHME",
+    "observed_changed_entity_count": 1,
+    "reported_changed_entity_count": 1,
+    "session_event_count": 2,
+    "source_observation_count": 4,
+    "through_revision": 136
+  },
+  "checkpoint_saves": {
+    "attempts": [
+      {
+        "base_project_revision": 136,
+        "checkpoint_id": "01M228HWJYC5RQZVC3M336VXAV",
+        "created_at": 1788929962589,
+        "id": "01M228HWJXYXEEN10M444M6BH1",
+        "started_project_revision": 137,
+        "status": "completed"
+      },
+      {
+        "base_project_revision": 113,
+        "checkpoint_id": "01M224P67Y6EEHGBFB4E24DN0J",
+        "created_at": 1788925909244,
+        "id": "01M224P67W2MJVX7K8EK2N4M7P",
+        "started_project_revision": 114,
+        "status": "completed"
+      },
+      {
+        "base_project_revision": 104,
+        "checkpoint_id": "01M223WJXCE12BSSKB57DB18BS",
+        "created_at": 1788925070251,
+        "id": "01M223WJXBA70JDHTYRG4E8Y47",
+        "started_project_revision": 105,
+        "status": "completed"
+      },
+      {
+        "base_project_revision": 90,
+        "checkpoint_id": "01M221RY7F976FXCBXCGYFRVBH",
+        "created_at": 1788922853614,
+        "id": "01M221RY7E1EETN2HHCYMYH237",
+        "started_project_revision": 91,
+        "status": "completed"
+      },
+      {
+        "base_project_revision": 77,
+        "checkpoint_id": "01M22000PQ6KE0FQ4JB855MPEK",
+        "created_at": 1788920988374,
+        "id": "01M22000PPEY68JRW5413X27KW",
+        "started_project_revision": 78,
+        "status": "completed"
+      },
+      {
+        "base_project_revision": 47,
+        "checkpoint_id": "01M21X5STTN3K2KT8JK8R1F4SN",
+        "created_at": 1788918032217,
+        "id": "01M21X5STSEJSWRRFS6XHNAYAY",
+        "started_project_revision": 48,
+        "status": "completed"
+      }
+    ],
+    "incomplete_count": 0,
+    "limit": 20,
+    "may_have_more": false
+  },
+  "claims": [
+    {
+      "acquired_at": 1788917792669,
+      "agent_id": "xq-content-executor",
+      "branch_id": null,
+      "expires_at": 1788921392669,
+      "id": "01M21WYFWY9Y01GV8JVGXHJZBF",
+      "project_id": "01M21W3H8XNKD8AKP4N1JNQQTM",
+      "released_at": null,
+      "revision": 2,
+      "session_id": "01M21WYFWXQHZNK0BJTYVD8N1K",
+      "status": "expired",
+      "work_item_id": "01M21W3H924XZK5JAZCTWTQPJH"
+    },
+    {
+      "acquired_at": 1788922637213,
+      "agent_id": "xq-content-executor",
+      "branch_id": null,
+      "expires_at": 1788926237213,
+      "id": "01M221JAWYRPF6FC16FNKQ9S78",
+      "project_id": "01M21W3H8XNKD8AKP4N1JNQQTM",
+      "released_at": null,
+      "revision": 2,
+      "session_id": "01M21WYFWXQHZNK0BJTYVD8N1K",
+      "status": "expired",
+      "work_item_id": "01M21W3H924XZK5JAZCTWTQPJH"
+    },
+    {
+      "acquired_at": 1788929320521,
+      "agent_id": "xq-content-executor",
+      "branch_id": null,
+      "expires_at": 1788932920521,
+      "id": "01M227Y9JAEGT1EWRJ40TJ2A1J",
+      "project_id": "01M21W3H8XNKD8AKP4N1JNQQTM",
+      "released_at": 1788930020437,
+      "revision": 2,
+      "session_id": "01M21WYFWXQHZNK0BJTYVD8N1K",
+      "status": "released",
+      "work_item_id": "01M21W3H924XZK5JAZCTWTQPJH"
+    }
+  ],
+  "context_requires_refresh": true,
+  "freshness_basis": "runtime_database",
+  "inherited_checkpoint": null,
+  "inherited_checkpoint_save": null,
+  "ok": true,
+  "project_revision": 284,
+  "resumed_successor": null,
+  "session": {
+    "agent_id": "xq-content-executor",
+    "branch_id": null,
+    "end_project_revision": 165,
+    "ended_at": 1788931009617,
+    "id": "01M21WYFWXQHZNK0BJTYVD8N1K",
+    "last_checkpoint_id": "01M228HWJYC5RQZVC3M336VXAV",
+    "model": "gpt-5",
+    "project_id": "01M21W3H8XNKD8AKP4N1JNQQTM",
+    "provider": "codex",
+    "revision": 8,
+    "start_project_revision": 39,
+    "started_at": 1788917792669,
+    "status": "ended",
+    "work_item_id": "01M21W3H924XZK5JAZCTWTQPJH"
+  },
+  "source_refresh_performed": false
+}

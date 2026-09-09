@@ -1,0 +1,29 @@
+{
+  "kind": "actual_prior_business_turn",
+  "phase": "prelude-receipt-response",
+  "client_task_id": "01a083c0-2c0b-7fc1-ba7d-0b0721dfeb0f",
+  "actual_user_turn": {
+    "timestamp": "2026-09-09T02:51:56.946Z",
+    "text": "请根据校对同事指出的交接措辞问题，核对实际接收情况，修订内容安排中不准确的表述，并把当前处理结果更新到工作记录。尚未收到的确认要继续保留。"
+  },
+  "source_sha256": {
+    "project.toml": "d52670ea0470cd5d8ee1290f6fc5802ae5caadaea5a99d1641471fff8189238a",
+    "GOALS.md": "b4c7d4b82ee317c7fdd4186bed1abb78ba366ef98ac0866b09f85844e22fbf15",
+    "PLAN.md": "729e1a14fe3b11ed869252e5b8aa85d8a3854719865d1cb7b3602ef91aa90ed9",
+    "RULES.md": "31ac59aa580dc3f29f17cd1f532eebbaa0152a041ccd8e00ca74e6d4cd914e19",
+    "work-ledger.yaml": "13a426a9dff824fe1f20daa8f5a781ad3b61f814f6e8c0dd839877b87c046c12",
+    "AGENTS.md": "d0ca28ca18c438aefdada6a14cb847a0664e261f9e8e48abbfd8701720eb66a2",
+    "DELIVERABLES.md": "b81c90585753fd7d52390d4dd5fb338c4a4d71c4b7cc0bcfb17222be50a34766"
+  },
+  "artifact_sha256": {
+    "deliverables/xingqiao-collaboration-review.md": "21e564a7fa985cb67a842e1e836ed84f9a69db2865c86171e0edef4df891d5c0",
+    "deliverables/xingqiao-content.md": "42a801e823f1f0e510e054fa48f6e8a35e93f1874ddae1eadda09e87284eaaf3",
+    "deliverables/xingqiao-ownership.md": "52f5b4ffc113c40d46eb272d9de2aa002f878e8e8eb10d159e78eebd226c4a75",
+    "deliverables/xingqiao-venue.md": "3035f626d7ef00cd860d2fd4781513b76d9587b1e6c67924b549ce8865c828a6"
+  },
+  "native_transcript_sha256": "88939c1a563066f185ab5acae8cf3c880ac020a19eef90b91f3eab5f54620ffe",
+  "events_sha256": "b88afcc059f9062d5463d0f23782d938925f4c7ecba6071ef4dc5283000162b6",
+  "sealed_at": "2026-09-09T11:28:51+08:00",
+  "final_message": "已完成核对与修订。\n\n- 已确认收到现场保障方案；但 `C→V-01` 至 `C→V-04` 仅完成内容侧成稿，尚无实际发送、现场接收或确认的证据。\n- [内容安排](/Users/mac/Documents/originone/agent-work-running/.local/business-live-20260909-v1/parallel-ownership/project/deliverables/xingqiao-content.md:48) 已据此修正，并明确“计划对齐不等于交接完成”。\n- 90+10 边界、7/3 拆分、三组布局、投影实机、人员设备及物料等未确认事项均继续保留。\n- 当前结果已写入 AWR 检查点 `01M221RY7F976FXCBXCGYFRVBH`，状态保持“进行中”。校对会话仍持有同一工作项认领，因此未强行覆盖源台账摘要，冲突回执已保留。\n- 过时措辞检查和格式检查均通过；正式独立复核及现场确认尚未发生。",
+  "note": "Copied historical evidence, not newly authored business output or a review conclusion."
+}

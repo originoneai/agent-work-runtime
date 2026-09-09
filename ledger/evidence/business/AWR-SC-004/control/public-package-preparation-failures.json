@@ -1,0 +1,21 @@
+{
+  "kind": "public_package_operator_preparation_failures",
+  "recorded_at": "2026-09-09T17:07:03.678633+08:00",
+  "failures": [
+    {
+      "operation": "root pre-packaging check",
+      "exit_code": 1,
+      "cause": "The checker assumed all 16 native user records were business inputs. The existing audit correctly distinguishes 13 business inputs and 3 private host setup envelopes.",
+      "state": "Assertion failed before any output or business write."
+    },
+    {
+      "operation": "premature dependent packager invocation",
+      "exit_code": 1,
+      "cause": "Operator wrapper continued after the failed precheck and attempted to read a root plan that had not been created.",
+      "state": "FileNotFoundError occurred before the public output directory was created."
+    }
+  ],
+  "recovery": "Verified both candidate outputs and public case directory were absent, inspected the existing input classifications, and corrected only the read-only count assertion. Packaging is now a separate call after a successful check.",
+  "business_mutation": false,
+  "native_client_replayed": false
+}

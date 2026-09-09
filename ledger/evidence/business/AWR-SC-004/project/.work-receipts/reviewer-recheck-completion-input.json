@@ -1,0 +1,21 @@
+{
+  "version": 1,
+  "source_sha": "8f4031f40c096691df03099c2382cbb86112be19",
+  "acceptance": [
+    {
+      "criterion": "分别复核两个产物和合并后的时间设备约束。",
+      "evidence": [
+        "XQ-INDEPENDENT-RECHECK-20260909-V3"
+      ]
+    },
+    {
+      "criterion": "保留实际产物与来源引用，无法确认的内容显式说明。",
+      "evidence": [
+        "XQ-INDEPENDENT-RECHECK-20260909-V3"
+      ]
+    }
+  ],
+  "required_evidence": [
+    "XQ-INDEPENDENT-RECHECK-20260909-V3"
+  ]
+}

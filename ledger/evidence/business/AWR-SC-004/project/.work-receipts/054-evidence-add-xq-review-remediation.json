@@ -1,0 +1,28 @@
+{
+  "event_id": "01M22D9PRA3TQF3VTRQNPR6QYB",
+  "evidence": {
+    "branch_id": null,
+    "command": "rtk proxy sh .work-receipts/verify-xq-review-remediation.sh",
+    "evidence_type": "report",
+    "external_key": "XQ-MERGE-REVIEW-REMEDIATION-20260909",
+    "id": "01M22D9PRA3KMGHS7SF8KAWQ70",
+    "level": "locally_verified",
+    "locator": ".work-receipts/xq-review-remediation-evidence-report.json",
+    "project_id": "01M21W3H8XNKD8AKP4N1JNQQTM",
+    "revision": 1,
+    "scope": [
+      "XQ-MERGE"
+    ],
+    "sha256": "d4b216bf1ada3a613668895f0cab4ac77b25d63dd96ee27f9b434c9e0a6dd17e",
+    "source_ref": null,
+    "source_sha": "8f4031f40c096691df03099c2382cbb86112be19",
+    "summary": "已逐项回应首次独立复核 XQ-R01/XQ-R02，修正分工与四项工作现行文字，保留原稿、历次分工和失败记录，并形成仍待独立返检的固定筹备包。",
+    "verified_at": 1788934843955,
+    "work_item_id": "01M21W3H92RVAXHPQ6ZEDVXV4S"
+  },
+  "freshness_basis": "source_refresh",
+  "ok": true,
+  "project_revision": 237,
+  "source_refresh_performed": true,
+  "validation_basis": "caller_supplied_bindings"
+}

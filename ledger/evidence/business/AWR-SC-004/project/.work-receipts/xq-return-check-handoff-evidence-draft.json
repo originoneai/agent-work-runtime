@@ -1,0 +1,16 @@
+{
+  "external_key": "XQ-MERGE-RETURN-CHECK-HANDOFF-20260909",
+  "work_item_key": "XQ-MERGE",
+  "evidence_type": "report",
+  "level": "locally_verified",
+  "summary": "现行台账已与实际进展完全对齐：四项筹备工作 completed，XQ-REVIEW 可由不同独立参与者返检，XQ-DELIVER 在返检完成前继续阻断；原稿、分工和失败均保留。",
+  "locator": ".work-receipts/xq-return-check-handoff-evidence-report.json",
+  "sha256": "b6172c44c0625ff44add6ee41899db92ca298634f70325ca059a6b11868bfc20",
+  "source_sha": "8f4031f40c096691df03099c2382cbb86112be19",
+  "command": "rtk proxy sh .work-receipts/verify-xq-return-check-handoff.sh",
+  "scope": [
+    "XQ-MERGE"
+  ],
+  "branch_id": null,
+  "verified_at": 1788936130333
+}

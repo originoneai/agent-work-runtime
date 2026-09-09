@@ -1,0 +1,28 @@
+{
+  "event_id": "01M22AT425B4THN0KRYTE8A5V4",
+  "evidence": {
+    "branch_id": null,
+    "command": "rtk python .work-receipts/reviewer-verify.py",
+    "evidence_type": "completion_report",
+    "external_key": "XQ-INDEPENDENT-REVIEW-20260909",
+    "id": "01M22AT425XHA66YK5GAV1H24G",
+    "level": "locally_verified",
+    "locator": ".work-receipts/reviewer-completion-report.json",
+    "project_id": "01M21W3H8XNKD8AKP4N1JNQQTM",
+    "revision": 1,
+    "scope": [
+      "XQ-REVIEW"
+    ],
+    "sha256": "701e78e14fd895ab32e4538171cdf515dea691b1263cc50864c9e57a2fce7296",
+    "source_ref": null,
+    "source_sha": "8f4031f40c096691df03099c2382cbb86112be19",
+    "summary": "A different luna_worker independently reviewed both producer outputs and the merged constraints, verified the exact 147+10 published files, actual authorship, branch/conflict timeline, successor handoff and unknowns, and recorded XQ-R01/XQ-R02 as requires_executor_changes.",
+    "verified_at": 1788932310979,
+    "work_item_id": "01M21W3H924SNZ0DV020S3BM69"
+  },
+  "freshness_basis": "source_refresh",
+  "ok": true,
+  "project_revision": 174,
+  "source_refresh_performed": true,
+  "validation_basis": "caller_supplied_bindings"
+}

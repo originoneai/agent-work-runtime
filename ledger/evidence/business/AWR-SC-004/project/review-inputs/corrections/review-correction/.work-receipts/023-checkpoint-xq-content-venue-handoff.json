@@ -1,0 +1,55 @@
+{
+  "checkpoint": {
+    "changed_entities": [
+      "work_items:01M21W3H924XZK5JAZCTWTQPJH"
+    ],
+    "context_hash": "8de2574795efe7829cad543a6dceb0687d58d34ae42b8f29fb3bf9b61d9220f5",
+    "created_at": 1788925909246,
+    "digest": "已依据离岗通知建立现场保障接续包：原方案、检查点和证据保持不变，接续岗位、范围、首次动作与未决清单已明确；实际接续者尚未认领或确认接收。",
+    "id": "01M224P67Y6EEHGBFB4E24DN0J",
+    "next_action": "内容执行者继续准备交接包和内容物料；实际现场接续者到位后先核对原记录、建立 AWR 会话并逐项确认接收和负责范围。",
+    "open_loops": [
+      "现场接续岗位已定义，但实际人员、AWR 会话、认领和接收回执均未建立。",
+      "C→V-01 至 C→V-04 仍仅已成稿，实际发送、接收和执行确认均缺失。",
+      "额外 10 分钟与 90 分钟的边界、7/3 拆分和绝对开放时间仍待场地方确认。",
+      "投影实机、接口、线材、信号源、操作人、测试结果及三组桌面容量、视线和通道仍待核验。",
+      "人员、纸笔、扩声、供电、网络和物料仍待定；XQ-MERGE 与正式 XQ-REVIEW 尚未发生。"
+    ],
+    "project_revision": 113,
+    "revision": 1,
+    "session_id": "01M21WYFWXQHZNK0BJTYVD8N1K"
+  },
+  "checkpoint_save": {
+    "after_revision": 104,
+    "attempt_id": "01M224P67W2MJVX7K8EK2N4M7P",
+    "delta_bytes": 3483,
+    "delta_recorded": true,
+    "event_id": "01M224P67Y14Q9Y6GN768CG4GW",
+    "observed_changed_entity_count": 1,
+    "reported_changed_entity_count": 2,
+    "session_event_count": 1,
+    "source_observation_count": 2,
+    "through_revision": 113
+  },
+  "context_hash_basis": "caller_supplied_last_used_context",
+  "context_hash_verified": false,
+  "event": {
+    "artifact_id": null,
+    "branch_id": null,
+    "checkpoint_id": "01M224P67Y6EEHGBFB4E24DN0J",
+    "created_at": 1788925909246,
+    "id": "01M224P67Y14Q9Y6GN768CG4GW",
+    "importance": "normal",
+    "project_revision": 115,
+    "session_id": "01M21WYFWXQHZNK0BJTYVD8N1K",
+    "source_id": null,
+    "summary": "Saved session checkpoint and observed delta",
+    "type": "checkpoint.created",
+    "work_item_id": "01M21W3H924XZK5JAZCTWTQPJH"
+  },
+  "freshness_basis": "source_refresh",
+  "ok": true,
+  "project_revision": 115,
+  "save_status": "completed",
+  "source_refresh_performed": true
+}

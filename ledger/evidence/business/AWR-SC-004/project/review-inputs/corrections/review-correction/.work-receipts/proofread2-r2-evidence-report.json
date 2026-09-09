@@ -1,0 +1,52 @@
+{
+  "branch": {
+    "id": "01M21Z7CBNFNN0B7HVMY9WTVTC",
+    "name": "xq-content-proofread-2"
+  },
+  "checks": [
+    {
+      "name": "current_content_and_venue_snapshot",
+      "result": "passed",
+      "summary": "当前内容稿保持四环节、85 分钟活动体与场外 10 分钟准入边界，并已吸收单投影窗口、三组桌面和离线降级等现场条件。"
+    },
+    {
+      "name": "remaining_execution_facts",
+      "result": "open",
+      "summary": "场地绝对时刻、90+10 和 7/3 的场地方确认、实机、人数、接口、人员与物料仍缺实际闭环。"
+    },
+    {
+      "name": "handoff_acknowledgement",
+      "result": "coordination_required",
+      "summary": "内容稿已形成 C→V 回复，但尚未发现内容修订后的现场接收回执；记录为 COORD-06，不代替对方确认。"
+    },
+    {
+      "name": "ownership_and_review_boundary",
+      "result": "passed",
+      "summary": "未修改原内容稿或现场产物；XQ-CONTENT 仍由原内容负责人推进，本记录不是正式 XQ-REVIEW。"
+    }
+  ],
+  "command": "rtk proxy sh .work-receipts/verify-proofread2-r2.sh",
+  "evidence_level": "locally_verified",
+  "files": {
+    "content": {
+      "path": "deliverables/xingqiao-content.md",
+      "sha256": "36c1427fadcba2c7c7749a0cf98e1e0f7ed8d725faa5c298ad1aa8d1edf5e462"
+    },
+    "review": {
+      "path": "deliverables/xingqiao-collaboration-review.md",
+      "sha256": "41bc099d732235e9ad1dbeab0daf5bb4ddc8d8058470234430b739a1bd5f69c6"
+    },
+    "venue": {
+      "path": "deliverables/xingqiao-venue.md",
+      "sha256": "3035f626d7ef00cd860d2fd4781513b76d9587b1e6c67924b549ce8865c828a6"
+    },
+    "verifier": {
+      "path": ".work-receipts/verify-proofread2-r2.sh",
+      "sha256": "881bc1938f32299235fa08dae35b24bd0fd7142ba0eccc56518e56b8bb753b78"
+    }
+  },
+  "project_revision_observed": 79,
+  "source_sha": "8f4031f40c096691df03099c2382cbb86112be19",
+  "verified_at": 1788921417000,
+  "work_item_key": "XQ-CONTENT"
+}

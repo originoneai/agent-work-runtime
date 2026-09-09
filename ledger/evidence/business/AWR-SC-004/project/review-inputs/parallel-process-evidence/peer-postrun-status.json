@@ -1,0 +1,56 @@
+{
+  "blocked_count": 4,
+  "branch_id": null,
+  "counts": {
+    "completed": 2,
+    "in_progress": 1,
+    "planned": 3
+  },
+  "current": [
+    {
+      "blocker": null,
+      "external_key": "XQ-CONTENT",
+      "freshness": "fresh",
+      "id": "01M21W3H924XZK5JAZCTWTQPJH",
+      "milestone": "XQ-DELIVERY",
+      "next_action": "等待现场执行者回传 90+10 分钟边界、投影窗口及桌面切换时长，再修订内容安排。",
+      "owner": null,
+      "priority": "P0",
+      "raw_status": "in_progress",
+      "revision": 2,
+      "source_revision": 6,
+      "status": "in_progress",
+      "summary": "已形成 T+00 至 T+85 的四环节草稿，正在补齐投影、桌面切换和现场条件回执。",
+      "title": "整理活动内容安排"
+    }
+  ],
+  "current_total": 1,
+  "freshness_basis": "source_refresh",
+  "next_action": "等待现场执行者回传 90+10 分钟边界、投影窗口及桌面切换时长，再修订内容安排。",
+  "ok": true,
+  "project": "星桥活动筹备",
+  "project_id": "01M21W3H8XNKD8AKP4N1JNQQTM",
+  "project_revision": 60,
+  "read_only": false,
+  "ready_count": 0,
+  "source_issues": [],
+  "source_refresh_performed": true,
+  "source_warnings": 0,
+  "suggested_work": {
+    "blocker": null,
+    "external_key": "XQ-CONTENT",
+    "freshness": "fresh",
+    "id": "01M21W3H924XZK5JAZCTWTQPJH",
+    "milestone": "XQ-DELIVERY",
+    "next_action": "等待现场执行者回传 90+10 分钟边界、投影窗口及桌面切换时长，再修订内容安排。",
+    "owner": null,
+    "priority": "P0",
+    "raw_status": "in_progress",
+    "revision": 2,
+    "source_revision": 6,
+    "status": "in_progress",
+    "summary": "已形成 T+00 至 T+85 的四环节草稿，正在补齐投影、桌面切换和现场条件回执。",
+    "title": "整理活动内容安排"
+  },
+  "total": 6
+}

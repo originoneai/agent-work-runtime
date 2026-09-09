@@ -1,0 +1,108 @@
+{
+  "ok": true,
+  "code": "proposal_recorded",
+  "project_revision": 20,
+  "proposal": {
+    "id": "01M21WF007JQ5DA7BTVCF8XC90",
+    "project_id": "01M21W3H8XNKD8AKP4N1JNQQTM",
+    "work_item_id": "01M21W3H92ENNZNW0MQM61AZND",
+    "source_id": "01M21W3H91TRWQ6G4NPD4BJPHC",
+    "base_fingerprint": "sha256:e98cc65ea60c3740138c52d16e0e602153d9a5dbd262e6791ac53db31990e22f",
+    "expected_revision": 13,
+    "mutation_type": "work.progress",
+    "patch": {
+      "changes": {
+        "next_action": "验证共同约束与分工记录，注册证据后完成 XQ-INPUT。",
+        "status": "in_progress",
+        "summary": "已核对 85 分钟议程、90 分钟场地、额外 10 分钟、单投影和三组桌面约束。"
+      },
+      "intent": "共同约束和双执行者分派基线已形成",
+      "source_config": {
+        "adapter_options": {},
+        "adapter_version": 1,
+        "mapping_key": "ledger|work-ledger.yaml"
+      },
+      "target": {
+        "kind": "work_item",
+        "meta": {
+          "external_key": "XQ-INPUT",
+          "id": "01M21W3H92ENNZNW0MQM61AZND",
+          "revision": 1,
+          "source_ref": {
+            "end_line": null,
+            "locator": "file:///Users/mac/Documents/originone/agent-work-running/.local/business-live-20260909-v1/parallel-ownership/project/work-ledger.yaml",
+            "pointer": "/work_items/0",
+            "section_fingerprint": null,
+            "source_fingerprint": "sha256:e98cc65ea60c3740138c52d16e0e602153d9a5dbd262e6791ac53db31990e22f",
+            "source_id": "01M21W3H91TRWQ6G4NPD4BJPHC",
+            "source_revision": 1,
+            "start_line": null
+          }
+        }
+      },
+      "version": 1,
+      "work_action": {
+        "action": "progress",
+        "from": "ready",
+        "to": "in_progress"
+      }
+    },
+    "status": "applied",
+    "created_by_session": "01M21W6Z2DJWT1M8BK8H66KD5T",
+    "revision": 5
+  },
+  "event": {
+    "id": "01M21WF01MDZ2QZ6DVM7VSPX14",
+    "project_id": "01M21W3H8XNKD8AKP4N1JNQQTM",
+    "work_item_id": "01M21W3H92ENNZNW0MQM61AZND",
+    "session_id": null,
+    "branch_id": null,
+    "event_type": "work.progressed",
+    "importance": "normal",
+    "summary": "Verified source work action Progress",
+    "payload": {
+      "action_reason": "共同约束和双执行者分派基线已形成",
+      "actor": "dispatch-coordinator",
+      "after_fingerprint": "sha256:3e67fd64481aacf279f872a63a66c086b070a3657069f00915f2a60b3cbbff4a",
+      "attempt_event_id": "01M21WF010ATF9Y09ECDFJRJTK",
+      "before_fingerprint": "sha256:e98cc65ea60c3740138c52d16e0e602153d9a5dbd262e6791ac53db31990e22f",
+      "creating_session_id": "01M21W6Z2DJWT1M8BK8H66KD5T",
+      "proposal_id": "01M21WF007JQ5DA7BTVCF8XC90",
+      "reason": "共同约束和双执行者分派基线已形成",
+      "released_claim_ids": [],
+      "source_id": "01M21W3H91TRWQ6G4NPD4BJPHC",
+      "source_revision": 2,
+      "target_after_hash": "21a620baef7859453f1ef2d18493998b8ebc02ec9cb853a71114bd64b395056b",
+      "target_revision": 2,
+      "work_action": {
+        "action": "progress",
+        "from": "ready",
+        "to": "in_progress"
+      },
+      "write_plan_id": "01M21WF00D2ND3Y6EX3GT8FZC2"
+    },
+    "project_revision": 20,
+    "created_at": 1788917284916
+  },
+  "source_refresh_performed": true,
+  "source_write_performed": true,
+  "write_outcome": "applied",
+  "apply_attempt": {
+    "event_id": "01M21WF010ATF9Y09ECDFJRJTK",
+    "proposal_id": "01M21WF007JQ5DA7BTVCF8XC90",
+    "source_id": "01M21W3H91TRWQ6G4NPD4BJPHC",
+    "project_revision": 17,
+    "plan": {
+      "id": "01M21WF00D2ND3Y6EX3GT8FZC2",
+      "before_fingerprint": "sha256:e98cc65ea60c3740138c52d16e0e602153d9a5dbd262e6791ac53db31990e22f",
+      "after_fingerprint": "sha256:3e67fd64481aacf279f872a63a66c086b070a3657069f00915f2a60b3cbbff4a",
+      "before_size": 2837,
+      "after_size": 2962,
+      "target_after_hash": "21a620baef7859453f1ef2d18493998b8ebc02ec9cb853a71114bd64b395056b"
+    },
+    "resolved_event_id": "01M21WF01MDZ2QZ6DVM7VSPX14"
+  },
+  "recovery_directory": ".awr/mutations/01M21WF00D2ND3Y6EX3GT8FZC2",
+  "source_check": null,
+  "error": null
+}
