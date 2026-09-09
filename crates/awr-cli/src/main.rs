@@ -2,6 +2,7 @@ use awr_core::{Error, Result};
 use clap::{CommandFactory, Parser, Subcommand};
 use std::path::PathBuf;
 mod branch;
+mod capabilities;
 mod client;
 mod context;
 mod doctor;
@@ -36,6 +37,8 @@ struct Cli {
 
 #[derive(Debug, Subcommand)]
 enum Command {
+    /// Negotiate host capabilities without opening a project or its database.
+    Capabilities(capabilities::CapabilitiesArgs),
     /// Preview source authority mapping; --accept initializes using the reviewed mapping.
     Init(onboarding::InitArgs),
     /// Diagnose project organization and recheck readiness after source edits.
@@ -138,6 +141,7 @@ enum Command {
 
 fn run(cli: &Cli) -> Result<()> {
     match &cli.command {
+        Some(Command::Capabilities(args)) => capabilities::run(args, cli.json),
         Some(Command::Init(args)) => onboarding::run(&cli.project, args, cli.json),
         Some(Command::Intake { command }) => onboarding::inspect(&cli.project, command, cli.json),
         Some(Command::Client { command }) => client::run(&cli.project, command, cli.json),

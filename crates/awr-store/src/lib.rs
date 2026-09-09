@@ -40,7 +40,8 @@ pub use source_changes::{ProjectionChange, SourceState};
 use std::{path::Path, time::Duration};
 
 const APPLICATION_ID: i64 = 0x41575231;
-const SCHEMA_VERSION: i64 = 3;
+/// Schema written by this build. Exposed for offline host compatibility negotiation.
+pub const SCHEMA_VERSION: i64 = 3;
 const CATALOG_SQL: &str = include_str!("../migrations/001_catalog.sql");
 const DOMAIN_SQL: &str = include_str!("../migrations/002_domain.sql");
 const SEARCH_SQL: &str = include_str!("../migrations/003_search.sql");
