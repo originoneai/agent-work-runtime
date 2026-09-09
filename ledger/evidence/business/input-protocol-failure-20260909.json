@@ -1,0 +1,16 @@
+{
+  "kind": "actual_native_input_protocol_violation",
+  "recorded_at": "2026-09-09T11:59:14+08:00",
+  "scenario_id": "AWR-SC-008",
+  "run_namespace": "awr-v1/branch-handoff/awr-live-20260909-008",
+  "native_session_id": "session_6e556096-55b8-4651-8403-bd7cd4077593",
+  "actual_prompt_id": "msg_01M21X0AE5Q9Y1R70X3EJS1ECX",
+  "actual_wire_line": 720,
+  "actual_prompt_text": "不要使用 session resume 跨已完成的 work。请按 AWR 合同为 YL-REVISE 正常执行 session start，并通过前序 handoff/checkpoint 与 Git refs 保留关联；不要声明 resume 成功。",
+  "actual_native_wire_sha256": "75d0ed39745627110d1c44267ede663071a5bf160f8a545f7d9c7ebcae6a1b40",
+  "finding": "Operator technical guidance supplied an internal work key and explicit session state commands to the actual business client. Excluding that turn from the two canonical followups does not remove its effect from the same business chain.",
+  "hard_requirement": "Actual acceptance inputs must not disclose internal object identifiers, expected answers or state-machine steps.",
+  "classification": "This execution cannot pass the natural-client protocol; keep its actual CLI/MCP results as historical observations only.",
+  "e4_credit": false,
+  "recovery": "Create a fresh isolated project/namespace and fresh actual Codex and Kimi sessions from the original authored fixture. Re-run the complete natural business chain with all operator inputs checked, no state-command coaching and no previous business artifacts/results. Preserve this run and its original files unchanged."
+}

@@ -10,6 +10,33 @@ import yaml
 ROOT = Path(__file__).resolve().parents[3]
 BASE = Path(__file__).resolve().parent
 
+CLIENT_INPUT_POLICY_ID = 'awr-real-client-input-preflight'
+CLIENT_INPUT_POLICY_VERSION = '1.0.0'
+CLIENT_INPUT_KINDS = (
+    'canonical',
+    'prelude',
+    'technical-supplement',
+    'rework',
+    'final-delivery',
+)
+
+# These rules describe syntax classes, not scenario-specific answers. Exact
+# project/work/gate identifiers are added from the current contract and graphs.
+CLIENT_INPUT_PATTERNS = (
+    ('internal_scenario_id', r'(?<![0-9A-Za-z_-])AWR-SC-[0-9]+(?![0-9A-Za-z_-])'),
+    ('native_uuid', r'(?<![0-9A-Fa-f])[0-9A-Fa-f]{8}-(?:[0-9A-Fa-f]{4}-){3}[0-9A-Fa-f]{12}(?![0-9A-Fa-f])'),
+    ('native_ulid', r'(?<![0-9A-Za-z])[0-7][0-9A-HJKMNP-TV-Z]{25}(?![0-9A-Za-z])'),
+    ('native_item_id', r'(?<![0-9A-Za-z_])(?:item_[0-9]+|(?:call|tool)_[0-9A-Za-z_-]{6,})(?![0-9A-Za-z_-])'),
+    ('cli_state_parameter', r'--(?:expected-revision|session|agent|provider|model|claim|ttl-ms|context-hash|checkpoint|work|project|json)(?:\b|=)'),
+    ('awr_cli_state_command', r'(?<![0-9A-Za-z_])(?:rtk\s+(?:proxy\s+)?)?(?:[./0-9A-Za-z_-]+/)?awr\s+(?:(?:--project\s+\S+|--json)\s+)*(?:session\s+(?:start|resume|checkpoint|end)|work\s+(?:claim|progress|block|unblock|cancel|reopen|complete|release|handoff))\b'),
+    ('quoted_work_state_command', r'`\s*(?:awr\s+)?work\s+(?:claim|progress|block|unblock|cancel|reopen|complete|release|handoff)\b[^`]*`'),
+    ('direct_session_state_command', r'(?<![0-9A-Za-z_])/?session\s+(?:start|resume|checkpoint|end)\b'),
+    ('runtime_state_path', r'(?<![0-9A-Za-z_])(?:\.awr/)?state\.db(?![0-9A-Za-z_])'),
+    ('expected_answer', r'(?:预期|期望|正确)(?:答案|答复|回复)|expected\s+(?:answer|response)'),
+    ('reply_ok_only', r'(?:只|仅)(?:需|要)?回复\s*[`\'\"]?OK\b|(?:reply|respond\s+with)\s+[`\'\"]?OK[`\'\"]?\s+only\b'),
+    ('test_marker', r'测试(?:编号|用例(?:编号)?)|test\s*(?:case\s*)?id\b|\bE4\b'),
+)
+
 
 def require(condition, message):
     if not condition:
@@ -48,6 +75,143 @@ def read_yaml(path):
     return yaml.load(path.read_text(), Loader=UniqueLoader)
 
 
+def client_input_policy():
+    """Bind client-input checks to the current fixture contract and work graphs."""
+    fixture_contract_path = BASE / 'contract.json'
+    fixture_contract = read_json(fixture_contract_path)
+    authority_path = ROOT / fixture_contract['authority']['contract']
+    authority = read_json(authority_path)
+    require(fixture_contract['authority']['version'] == authority['version'],
+            'Client-input authority version mismatch')
+    require(fixture_contract['authority']['sha256'] == digest(authority_path),
+            'Client-input authority hash mismatch')
+
+    identifiers = {
+        'scenario_ids': set(),
+        'namespaces': set(),
+        'contract_work_keys': set(authority['scope']['required_work_item_ids']) |
+                              set(authority['scope']['preparation_work_item_ids']),
+        'graph_work_keys': set(),
+        'gate_ids': set(authority['completion']['scenario_required_gates']),
+    }
+    graph_bindings = []
+    for scenario in authority['scenarios']:
+        identifiers['scenario_ids'].add(scenario['id'])
+        identifiers['namespaces'].add(scenario['namespace'])
+        graph_path = ROOT / scenario['work_graph']
+        graph = read_yaml(graph_path)
+        identifiers['graph_work_keys'].update(node['key'] for node in graph['nodes'])
+        graph_bindings.append({
+            'path': str(graph_path.relative_to(ROOT)),
+            'sha256': digest(graph_path),
+        })
+
+    serializable_identifiers = {
+        key: sorted(values) for key, values in identifiers.items()
+    }
+    rule_sources = [
+        {'path': 'docs/RULES.md', 'sha256': digest(ROOT/'docs/RULES.md')},
+        {'path': 'docs/acceptance/README.md',
+         'sha256': digest(ROOT/'docs/acceptance/README.md')},
+    ]
+    implementation = {
+        'path': str(Path(__file__).resolve().relative_to(ROOT)),
+        'sha256': digest(Path(__file__).resolve()),
+    }
+    rules = {
+        'policy_id': CLIENT_INPUT_POLICY_ID,
+        'policy_version': CLIENT_INPUT_POLICY_VERSION,
+        'patterns': list(CLIENT_INPUT_PATTERNS),
+        'identifiers': serializable_identifiers,
+        'matching': 'case-insensitive exact identifiers plus syntax-class patterns',
+        'rule_sources': rule_sources,
+        'implementation': implementation,
+    }
+    rules_sha256 = hashlib.sha256(json.dumps(
+        rules, ensure_ascii=False, sort_keys=True, separators=(',', ':'),
+    ).encode()).hexdigest()
+    return {
+        **rules,
+        'rules_sha256': rules_sha256,
+        'fixture_contract': {
+            'path': str(fixture_contract_path.relative_to(ROOT)),
+            'version': fixture_contract['version'],
+            'sha256': digest(fixture_contract_path),
+        },
+        'authority_contract': {
+            'path': str(authority_path.relative_to(ROOT)),
+            'version': authority['version'],
+            'sha256': digest(authority_path),
+        },
+        'work_graphs': graph_bindings,
+    }
+
+
+def client_input_violations(text, policy=None):
+    """Return deterministic leak findings without submitting or mutating input."""
+    policy = policy or client_input_policy()
+    findings = []
+    if not isinstance(text, str) or not text.strip():
+        return [{
+            'code': 'empty_client_input',
+            'detail': 'Actual client input must contain natural business language.',
+        }]
+
+    for category, values in policy['identifiers'].items():
+        for identifier in values:
+            match = re.search(
+                r'(?<![0-9A-Za-z_/-])' + re.escape(identifier) +
+                r'(?![0-9A-Za-z_/-])',
+                text,
+                re.IGNORECASE,
+            )
+            if match:
+                findings.append({
+                    'code': 'known_internal_identifier',
+                    'category': category,
+                    'match': match.group(0),
+                    'detail': 'Known evaluator-side identifier must not be sent to the client.',
+                })
+
+    for code, expression in policy['patterns']:
+        for match in re.finditer(expression, text, re.IGNORECASE | re.MULTILINE):
+            findings.append({
+                'code': code,
+                'match': match.group(0),
+                'detail': {
+                    'internal_scenario_id': 'Internal scenario identifier must stay evaluator-side.',
+                    'native_uuid': 'Native UUID-shaped object identifier must stay evaluator-side.',
+                    'native_ulid': 'Native ULID-shaped object identifier must stay evaluator-side.',
+                    'native_item_id': 'Native transcript/tool item identifier must stay evaluator-side.',
+                    'cli_state_parameter': 'CLI runtime/state parameter must not instruct the actual client.',
+                    'awr_cli_state_command': 'AWR CLI state-machine command must not be embedded in business input.',
+                    'quoted_work_state_command': 'Quoted work state-machine command must not be embedded in business input.',
+                    'direct_session_state_command': 'Direct session state-machine command must not be embedded in business input.',
+                    'runtime_state_path': 'Runtime state database details must stay evaluator-side.',
+                    'expected_answer': 'Expected-answer language makes the input an evaluator probe.',
+                    'reply_ok_only': 'A forced OK-only response is an evaluator probe.',
+                    'test_marker': 'Test/evaluation marker must stay evaluator-side.',
+                }[code],
+            })
+
+    unique = []
+    seen = set()
+    for finding in findings:
+        identity = (finding['code'], finding.get('category'), finding.get('match'))
+        if identity not in seen:
+            seen.add(identity)
+            unique.append(finding)
+    return unique
+
+
+def validate_client_input(text, policy=None):
+    """Reject known evaluator leakage; independent review remains required."""
+    findings = client_input_violations(text, policy)
+    require(not findings, 'Evaluator detail leaked into client input: ' +
+            ', '.join(sorted({finding['code'] for finding in findings})))
+    return True
+
+
 def local_path(root, name, exists=True):
     relative = Path(name)
     require(not relative.is_absolute() and relative.parts and '..' not in relative.parts,
@@ -71,14 +235,16 @@ def validate_spec(spec, canonical, directory):
     require(spec['initial_request'] == canonical['initial_request'], 'Initial input changed')
     require([r['request'] for r in spec['followups']] == canonical['followups'], 'Two canonical business followups are required')
     require([r['number'] for r in spec['followups']] == [1, 2], 'Followup ordering changed')
-    require((directory/'prompts/initial.md').read_text().strip() == spec['initial_request'], 'Client prompt differs from its contract')
     texts = [spec['initial_request'], *(r['request'] for r in spec['followups'])]
     if spec.get('prelude'):
         texts.append(spec['prelude']['request'])
         require(len(spec['prelude']['required_live_preconditions']) >= 2, 'Prelude needs actual execution preconditions')
+    policy = client_input_policy()
+    for text in texts:
+        validate_client_input(text, policy)
+    require((directory/'prompts/initial.md').read_text().strip() == spec['initial_request'], 'Client prompt differs from its contract')
+    if spec.get('prelude'):
         require((directory/'prompts/prelude.md').read_text().strip() == texts[-1], 'Prelude input mismatch')
-    forbidden = re.compile(r'AWR-SC-\d|预期答案|测试编号|只回复\s*OK|Reply OK only|--expected-revision|state\.db', re.IGNORECASE)
-    require(not any(forbidden.search(text) for text in texts), 'Evaluator detail leaked into client input')
     project = directory / spec['project_directory']
     require(project.resolve() == (directory/'project').resolve() and not project.is_symlink(), 'Unexpected project source root')
     manifest = tomllib.loads((project/'project.toml').read_text())

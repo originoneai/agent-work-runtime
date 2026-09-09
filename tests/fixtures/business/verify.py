@@ -10,7 +10,17 @@ import subprocess
 import tempfile
 
 from prepare import create, output_path, publish_round
-from support import BASE, ROOT, coverage, digest, load_bundle, read_yaml, require, validate_spec
+from support import (
+    BASE,
+    ROOT,
+    client_input_policy,
+    coverage,
+    digest,
+    load_bundle,
+    read_yaml,
+    require,
+    validate_spec,
+)
 
 
 def render(contract, specs):
@@ -62,6 +72,7 @@ def main():
     binary=args.awr.resolve(strict=True)
     before=fingerprints()
     actual_ledger_before=digest(ROOT/'ledger/work-ledger.yaml')
+    input_policy=client_input_policy()
     report={'work_item':'AWR-QA-002','contract_id':contract['contract_id'],'contract_version':contract['version'],
             'contract_sha256':digest(BASE/'contract.json'),'checked_at':datetime.now().astimezone().isoformat(timespec='seconds'),
             'source_commit':subprocess.check_output(['rtk','proxy','git','rev-parse','HEAD'],cwd=ROOT,text=True).strip(),
@@ -69,7 +80,22 @@ def main():
             'clean_source':True,
             'fixture_input_sha256':before,'binary_sha256':digest(binary),'matrix':matrix,'passed':False,
             'definition_rejections':[],'fixtures':[],'e4_credit_from_this_run':0,'native_client_invoked':False,
-            'model_calls':0,'independent_business_review_performed':False}
+            'model_calls':0,'independent_business_review_performed':False,
+            'client_input_preflight':{
+                'policy_id':input_policy['policy_id'],'policy_version':input_policy['policy_version'],
+                'rules_sha256':input_policy['rules_sha256'],
+                'fixture_contract':input_policy['fixture_contract'],
+                'authority_contract':input_policy['authority_contract'],
+                'rule_sources':input_policy['rule_sources'],
+                'implementation':input_policy['implementation'],
+                'work_graphs':input_policy['work_graphs'],
+                'canonical_inputs_checked':sum(
+                    3 + (1 if spec.get('prelude') else 0)
+                    for spec,_,_ in specs.values()
+                ),
+                'supplemental_business_inputs_submitted':0,
+                'business_completed':False,'e4_credit':0,
+            }}
 
     def save():
         (output/'report.json').write_text(json.dumps(report,ensure_ascii=False,indent=2)+'\n')
@@ -77,21 +103,25 @@ def main():
     # Falsify the definition check with real missing contract elements, rather
     # than declaring a well-formed JSON document sufficient for a business loop.
     key=next(iter(specs))
-    original,directory,_=specs[key]
+    original,directory,definition=specs[key]
     canonical=next(c for c in authority['scenarios'] if c['id']==key)
     mutations={
-        'missing_followup':lambda s:s['followups'].pop(),
-        'missing_hard_gate':lambda s:s['required_gates'].pop(),
-        'reviewer_not_independent':lambda s:s['reviewer_distinct_from'].clear(),
-        'missing_required_artifact':lambda s:s['artifacts'].pop(0),
-        'changed_namespace':lambda s:s.update(namespace='reused/namespace'),
-        'leaked_evaluator_input':lambda s:s.update(initial_request=s['initial_request']+' AWR-SC-999'),
+        'missing_followup':lambda s,c:s['followups'].pop(),
+        'missing_hard_gate':lambda s,c:s['required_gates'].pop(),
+        'reviewer_not_independent':lambda s,c:s['reviewer_distinct_from'].clear(),
+        'missing_required_artifact':lambda s,c:s['artifacts'].pop(0),
+        'changed_namespace':lambda s,c:s.update(namespace='reused/namespace'),
+        'leaked_evaluator_input':lambda s,c:(
+            s.update(initial_request=s['initial_request']+' '+definition['work_keys'][0]),
+            c.update(initial_request=c['initial_request']+' '+definition['work_keys'][0]),
+        ),
     }
     for name,mutate in mutations.items():
         damaged=copy.deepcopy(original)
-        mutate(damaged)
+        damaged_canonical=copy.deepcopy(canonical)
+        mutate(damaged,damaged_canonical)
         try:
-            validate_spec(damaged,canonical,directory)
+            validate_spec(damaged,damaged_canonical,directory)
         except ValueError as error:
             report['definition_rejections'].append({'case':name,'rejected':True,'reason':str(error)})
         else:

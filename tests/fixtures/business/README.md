@@ -38,6 +38,31 @@ scenario's `prompts/` directory to the actual client, with the copied `project/`
 as its workspace. Do not paste evaluator JSON, expected criteria, internal IDs or
 the verification runner's commands into the client prompt.
 
+Before submitting **every** actual client input, validate a UTF-8 file containing
+exactly the text that will be sent. Canonical prompts, preludes, technical
+supplements, rework requests and final-delivery requests all use the same policy:
+
+```sh
+rtk proxy .venv/bin/python tests/fixtures/business/check_client_input.py \
+  --input .local/exact-client-input.md \
+  --kind technical-supplement \
+  --receipt .local/exact-client-input-preflight.json
+```
+
+The preflight derives current scenario and work identifiers from the fixture
+contract and its work graphs. It also rejects native object IDs, AWR/CLI session
+and work-state commands or parameters, expected-answer wording, forced OK-only
+responses, and test markers. A natural request to use the AWR MCP service is
+allowed: `MCP` is a client-visible service choice, not by itself a test command.
+A rejected input exits nonzero. The JSON receipt binds the input hash to the
+contract, graphs and policy rules; it does not invoke a model, submit the input,
+modify business state, complete a business turn or grant E4 credit.
+
+This deterministic preflight is necessary but cannot prove that prose is natural
+or find every form of answer pollution. An independent reviewer must still review
+the exact text. An extra or technical input remains supplemental evidence and
+must not be counted as a canonical business round merely because it passes.
+
 When the first result is retained and the client is paused, the fixture author can
 publish the next input, then submit the corresponding natural user followup:
 

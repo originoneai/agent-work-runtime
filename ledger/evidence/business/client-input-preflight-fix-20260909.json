@@ -1,0 +1,36 @@
+{
+  "kind": "shared_client_input_preflight_root_cause_fix",
+  "checked_at": "2026-09-09T12:25:44+08:00",
+  "source_base_commit": "8262273d2858d616038d0b4d6c5b8172a5132593",
+  "changed_files_sha256": {
+    "tests/fixtures/business/support.py": "d7817d26d5bb57ab08ffebf435c9165b2d7e741a60fc2fda5519a0bbcf646e1a",
+    "tests/fixtures/business/verify.py": "7777452d5fc321a432bb674a93ba05d02421bac34cae6404db4b00f088afefb8",
+    "tests/fixtures/business/README.md": "45814add3d6f0852ef2e67c1b9b3b81ab706c41a9749ee56a792002bc12ef365",
+    "tests/fixtures/business/check_client_input.py": "101367823ab17a130f36fa238bea79647f995419d27d8d15bb433684d52142b4",
+    "tests/fixtures/business/test_client_input.py": "f76557ebab4cf6893cddc564ec75bcf098d84a4e56d83279b2a79e95f5924832"
+  },
+  "trigger": "ledger/evidence/business/input-protocol-failure-20260909.json",
+  "root_cause": "Canonical fixture validation did not cover actual supplemental client inputs, permitting evaluator-side work identifiers and explicit session steps into an actual run.",
+  "fix": "One policy validates every submitted input kind, deriving current identifiers from the authority contract and work graphs and binding exact UTF-8 input, policy, rule documents and implementation hashes.",
+  "policy_rules_sha256": "6ef794db3c42904ad98f0dce374753872118b398e36df908176d6b9192e53ed5",
+  "validation": {
+    "root_review": "Reviewed implementation, exact old failure, tests and CLI receipt shape; no runtime policy or scenario threshold changed.",
+    "targeted_command": "rtk proxy .venv/bin/python tests/fixtures/business/test_client_input.py",
+    "targeted_exit_code": 0,
+    "targeted_tests_passed": 11,
+    "root_elapsed_seconds": 0.271,
+    "current_fixtures_validated": 8,
+    "canonical_and_prelude_inputs": 28,
+    "derived_work_keys": 40,
+    "git_diff_check_exit_code": 0,
+    "full_fixture_intake_verification": "pending exact committed source; this targeted result makes no intake or E4 claim"
+  },
+  "known_limitations": [
+    "Deterministic syntax and identifier checks cannot prove all naturalness or exclude implicit answer pollution.",
+    "Distinct reviewer judgment remains necessary; no additional human-only approval requirement is introduced.",
+    "The contaminated old cross-client run remains ineligible; passing this checker does not retroactively validate it."
+  ],
+  "native_client_invoked_by_checks": false,
+  "runtime_business_state_modified": false,
+  "e4_credit": 0
+}
