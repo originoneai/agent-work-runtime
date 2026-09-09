@@ -1,0 +1,104 @@
+name: npm and PyPI preview distributions
+
+on:
+  push:
+    branches: [codex/npm-pypi-release-prep]
+    paths: ['packaging/**', 'scripts/release/**', '.github/workflows/distributions.yml']
+  pull_request:
+    paths: ['packaging/**', 'scripts/release/**', '.github/workflows/distributions.yml']
+  workflow_dispatch:
+    inputs:
+      publish:
+        description: Publish the checked development preview to npm and PyPI
+        type: boolean
+        default: false
+
+permissions:
+  contents: read
+
+jobs:
+  build:
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - platform: darwin-arm64
+            runner: macos-15
+          - platform: linux-x64-gnu
+            runner: ubuntu-24.04
+          - platform: win32-x64
+            runner: windows-2025
+    runs-on: ${{ matrix.runner }}
+    timeout-minutes: 25
+    defaults:
+      run:
+        shell: bash
+    env:
+      PYTHONUTF8: '1'
+      CARGO_TERM_COLOR: never
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
+        with:
+          persist-credentials: false
+      - uses: actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97
+        with:
+          python-version: '3.12'
+      - uses: actions/setup-node@249970729cb0ef3589644e2896645e5dc5ba9c38
+        with:
+          node-version: '24'
+      - name: Install build tools
+        run: |
+          rustup toolchain install 1.93.1 --profile minimal
+          python -m pip install -r scripts/release/requirements.txt
+      - name: Install Linux wheel repair tools
+        if: runner.os == 'Linux'
+        run: python -m pip install auditwheel patchelf
+      - name: Build platform artifacts and include license notices
+        run: python scripts/release/build_packages.py --output .local/distribution
+      - name: Install both packages and exercise CLI and MCP
+        run: python scripts/release/smoke_install.py .local/distribution
+      - uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a
+        with:
+          name: distribution-${{ matrix.platform }}-${{ github.sha }}
+          path: |
+            .local/distribution/publish/
+            .local/distribution/manifest.json
+            .local/distribution/installation-checks.json
+            .local/distribution/SHA256SUMS
+          if-no-files-found: error
+          retention-days: 30
+
+  publish:
+    if: github.event_name == 'workflow_dispatch' && inputs.publish
+    needs: build
+    runs-on: ubuntu-24.04
+    environment: package-registries
+    permissions:
+      contents: read
+      id-token: write
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
+        with:
+          persist-credentials: false
+      - uses: actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97
+        with:
+          python-version: '3.12'
+      - uses: actions/setup-node@249970729cb0ef3589644e2896645e5dc5ba9c38
+        with:
+          node-version: '24'
+      - name: Install the npm CLI with trusted publishing support
+        run: npm install --global npm@11.19.1
+      - uses: actions/download-artifact@634f93cb2916e3fdff6788551b99b062d0335ce0
+        with:
+          pattern: distribution-*-${{ github.sha }}
+          path: .local/downloaded-distributions
+      - name: Verify all platform receipts and collect artifacts
+        env:
+          RELEASE_SHA: ${{ github.sha }}
+        run: python scripts/release/assemble_release.py .local/downloaded-distributions --output .local/release --expected-sha "$RELEASE_SHA"
+      - name: Publish npm platform packages followed by the command wrapper
+        run: python scripts/release/publish_npm.py .local/release --provenance
+      - name: Publish PyPI wheels with the configured trusted publisher
+        uses: pypa/gh-action-pypi-publish@dc37677b2e1c63e2034f94d8a5b11f265b73ba33
+        with:
+          packages-dir: .local/release/python/

@@ -1,8 +1,8 @@
 schema_version: 1
 contract_id: awr-v1
 contract_version: 1.0.1
-ledger_revision: 186
-updated_at: '2026-09-09T10:22:55+08:00'
+ledger_revision: 187
+updated_at: 2026-09-09T11:36:00+08:00
 project:
   name: Agent Work Runtime
   external_key: agent-work-runtime
@@ -1965,7 +1965,21 @@ work_items:
     evidence_level: none
   evidence: []
   blocker: null
-  next_action: 按交付物实现并验证：发布二进制、版本与校验文件
+  next_action: 在独立分支准备 npm/PyPI 预发布安装包；正式 V1 发布继续依赖既有验收。
+  distribution_preparation:
+    status: in_progress
+    owner: codex-side-conversation
+    branch: codex/npm-pypi-release-prep
+    user_request: 2026-09-09 用户要求注册账号和 originoneai 组织，并准备两个渠道推送版本。
+    scope:
+    - packaging/npm/
+    - packaging/python/
+    - packaging/licenses/
+    - scripts/release/
+    - docs/release/
+    - .github/workflows/distributions.yml
+    counted_as_v1_complete: false
+    next_action: macOS 双渠道安装检查已通过；推送独立分支运行三平台打包检查，并等待邮箱验证及组织设置完成。
 - id: AWR-P9-007
   title: V1 发布门槛与远端交付回执
   milestone: M10
