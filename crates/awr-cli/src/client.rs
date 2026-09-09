@@ -85,23 +85,31 @@ pub(crate) fn lock(root: &Path, area: &str, key: &str) -> Result<fs::File> {
     let dir = runtime.join(area);
     if let Err(error) = fs::create_dir(&dir) {
         if error.kind() != std::io::ErrorKind::AlreadyExists {
-            return Err(error.into());
+            return Err(Error::Storage(format!(
+                "creating runtime lock directory: {error}"
+            )));
         }
     }
     let directory = awr_source::open_dir_exact(&dir)?;
     let name = format!("{:x}.lock", Sha256::digest(key.as_bytes()));
-    let mut options = cap_options();
-    let file = directory
-        .open_with(&name, &mut options)
-        .map_err(|e| Error::Storage(e.to_string()))?
-        .into_std();
-    file.lock()?;
-    Ok(file)
-}
-fn cap_options() -> cap_std::fs::OpenOptions {
+    // Exclusive creation avoids a create/open race in capability path resolution when
+    // several processes encounter the same lock for the first time. Never unlink locks.
     let mut options = cap_std::fs::OpenOptions::new();
-    options.read(true).write(true).create(true);
-    options
+    options.read(true).write(true).create_new(true);
+    let file = match directory.open_with(&name, &options) {
+        Ok(file) => Ok(file),
+        Err(error) if error.kind() == std::io::ErrorKind::AlreadyExists => {
+            let mut existing = cap_std::fs::OpenOptions::new();
+            existing.read(true).write(true);
+            directory.open_with(&name, &existing)
+        }
+        Err(error) => Err(error),
+    }
+    .map_err(|e| Error::Storage(format!("opening runtime lock: {e}")))?
+    .into_std();
+    file.lock()
+        .map_err(|e| Error::Storage(format!("acquiring runtime lock: {e}")))?;
+    Ok(file)
 }
 fn save(
     store: &mut Store,

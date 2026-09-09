@@ -1,0 +1,48 @@
+{
+  "kind": "implementation",
+  "repository": "https://github.com/originoneai/agent-work-runtime",
+  "source_commit": "ca7d28c1ad1df8cccbb88e2e8d2923d9e05a4734",
+  "checked_at": "2026-09-09T06:04:16.709558+00:00",
+  "remote_receipt": {
+    "commit": "ca7d28c1ad1df8cccbb88e2e8d2923d9e05a4734",
+    "url": "https://github.com/originoneai/agent-work-runtime/commit/ca7d28c1ad1df8cccbb88e2e8d2923d9e05a4734",
+    "verified_at": "2026-09-09T06:04:16.709558+00:00"
+  },
+  "checks": [
+    {
+      "name": "client_continuity",
+      "passed": true,
+      "result": "7 CLI and shell integration checks passed; combined intake/source batch: 15 passed."
+    }
+  ],
+  "artifacts": [
+    "crates/awr-cli/src/client.rs",
+    "crates/awr-cli/tests/client_continuity.rs",
+    "crates/awr-store/src/client.rs",
+    "docs/integrations/codex.md",
+    "ledger/evidence/AWR-TAKE-002/checks.json"
+  ],
+  "work_items": {
+    "AWR-TAKE-002": {
+      "acceptance": [
+        {
+          "criterion": "客户端会话映射到唯一 AWR 会话；生命周期事件可自动保存检查点并提供恢复上下文。",
+          "passed": true
+        },
+        {
+          "criterion": "保存使用已持久化的下一步/遗留问题与真实运行事件；不能从不存在的聊天记忆制造事实。",
+          "passed": true
+        },
+        {
+          "criterion": "重复事件、并发修订、重启与不同客户端会话不会生成重复继承或串会话检查点；安装保留现有 hooks。",
+          "passed": true
+        }
+      ]
+    }
+  },
+  "limitations": [
+    "Native Codex hook activation requires trusted fresh-session verification; no host hook configuration was modified.",
+    "Native Kimi hook installation and native Windows activation are not verified.",
+    "Local integration evidence is not E4 or a package release."
+  ]
+}

@@ -8,6 +8,7 @@ mod client;
 mod delta;
 mod events;
 mod evidence;
+mod execution;
 mod handoff;
 mod mutation;
 mod mutation_apply;

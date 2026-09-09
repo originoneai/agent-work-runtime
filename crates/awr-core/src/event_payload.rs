@@ -25,9 +25,16 @@ pub const GENERIC_EVENT_ID_FIELDS: &[&str] =
     &["source_id", "artifact_id", "checkpoint_id", "evidence_id"];
 
 pub fn is_domain_event_type(kind: &str) -> bool {
-    ["source.", "checkpoint.", "proposal.", "branch.", "client."]
-        .iter()
-        .any(|prefix| kind.starts_with(prefix))
+    [
+        "source.",
+        "checkpoint.",
+        "proposal.",
+        "branch.",
+        "client.",
+        "execution.",
+    ]
+    .iter()
+    .any(|prefix| kind.starts_with(prefix))
         || matches!(
             kind,
             "session.started"
@@ -138,6 +145,10 @@ fn domain_fields(kind: &str, payload: &Value) -> Result<()> {
     } else {
         match kind {
             "client.bound" | "client.updated" | "client.checkpointed" => "binding",
+            "execution.registered"
+            | "execution.starting"
+            | "execution.running"
+            | "execution.finished" => "execution",
             "session.started" => {
                 "agent_id provider model start_project_revision claim_id expired_claim_ids expires_at"
             }
@@ -194,6 +205,10 @@ fn domain_fields(kind: &str, payload: &Value) -> Result<()> {
             "proposal_id source_id action to proposal_revision expected_revision"
         }
         "client.bound" | "client.updated" | "client.checkpointed" => "binding",
+        "execution.registered"
+        | "execution.starting"
+        | "execution.running"
+        | "execution.finished" => "execution",
         "session.started" => "agent_id provider model start_project_revision",
         "work.claimed" => "claim_id agent_id expired_claim_ids",
         "session.resumed" | "session.resumed_from" | "session.handoff_received" => {
@@ -250,8 +265,8 @@ fn domain_fields(kind: &str, payload: &Value) -> Result<()> {
             | "source_copied"
             | "git_write_performed"
             | "source_write_performed" => value.is_boolean(),
-            "binding" | "before" | "after" | "write_plan" | "work_action" | "draft"
-            | "session_delta" | "git_binding" | "selection" | "closure" | "original"
+            "execution" | "binding" | "before" | "after" | "write_plan" | "work_action"
+            | "draft" | "session_delta" | "git_binding" | "selection" | "closure" | "original"
             | "target_work" => value.is_object(),
             "changes" => value
                 .as_array()

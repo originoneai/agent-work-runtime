@@ -44,6 +44,23 @@ awr client bind --client generic --external-session NEW_CLIENT_ID \
 
 `generic` and `kimi` identities can use the normalized JSON receiver; automatic installation is currently provided for Codex only. The receiver accepts the documented `session_id`, `cwd`, `hook_event_name`, optional `turn_id` and `model` fields. Native mode emits only documented hook output fields; `--json` adds diagnostic AWR receipts. This does not start a native client or migrate its process memory.
 
-## Executions and recovery inspection
+## Executions
 
-Implementation and validation of these additions are tracked by AWR-TAKE-003 and AWR-TAKE-004. Their command reference and evidence will be added when delivered.
+```sh
+awr execution run --session AWR_SESSION_ID --key build-reviewed-report \
+  --purpose "Build the reviewed report" -- report-builder --output report.pdf
+awr execution list --work INTAKE-001
+awr execution show EXECUTION_ID
+awr execution register --session AWR_SESSION_ID --key external-report \
+  --purpose "Track the CI report build" --reference 'ci://build/42'
+```
+
+Intent is committed to the immutable event journal before dispatch. Each project-wide operation key identifies one exact intent and work/branch binding, even after a session handoff. Repeating it returns that execution; changing its intent is a conflict. A registered operation whose dispatch was interrupted is not automatically retried. This is at-most-once dispatch, not a promise of exactly-once effects across crashes.
+
+Managed commands run through a separate local AWR supervisor with null stdin and their argument vector unchanged. The invoking CLI can exit, and the AWR session can end, while the command continues. Start/end records, exit code or signal, stdout/stderr and an atomic result receipt are retained under `.awr/executions/`, excluded from Git. The supervisor records only its direct child's outcome; a command that backgrounds unrelated descendants does not transfer their lifecycle to AWR. Commands inherit the launch environment; AWR does not persist environment secrets or grant new permissions.
+
+External references remain unverified. Recording a PID, a URL or an asserted success does not produce a managed completion. There is no automatic takeover of arbitrary existing processes or client memory.
+
+## Recovery inspection
+
+Implementation and validation are tracked by AWR-TAKE-004. Its command reference and evidence will be added when delivered.
