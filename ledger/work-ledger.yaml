@@ -1,8 +1,8 @@
 schema_version: 1
 contract_id: awr-v1
 contract_version: 1.0.1
-ledger_revision: 186
-updated_at: '2026-09-09T10:22:55+08:00'
+ledger_revision: 187
+updated_at: '2026-09-09T11:43:14+08:00'
 project:
   name: Agent Work Runtime
   external_key: agent-work-runtime
@@ -12,12 +12,13 @@ project:
 current:
   milestone: M9
   work_item: AWR-QA-003
-  next_action: 接手简报已完成首轮整改并交回原独立复核者返检；来源变化的原客户端正在修订。长任务、证据补齐和跨客户端分支进入后续业务轮次；真实中断后的新客户端已恢复保存结果及三个待审核提案，正在补交接。并行协作已有实际不同运行时分支，继续核对共享工作归属与冲突。逐场完成复核、原客户端交付和独立远端回执后再计数。
+  next_action: 接手新项目场景已完成实际原客户端交付、独立复核与独立远端提交，当前 1/8。来源变化进入最终交付；长任务和中断恢复由不同参与者复核；受限资料原客户端整改。并行协作已取得真实 ClaimConflict 并完成自然发起，继续实际接续与两轮追问；证据补齐待独立复核，跨客户端分支继续补原生
+    MCP 业务证据及合并交付。
   open_loops:
   - 用户已明确授权本项目 Codex/Kimi 实际客户端及 luna_worker 并行执行/独立复核，后续同范围不重复询问；执行配置沿用既有模型和 hooks。
   - QA-003 已从保存 checkpoint 恢复并重新认领；八套本地新项目保留，逐场开展实际工具执行、两轮业务追问、独立复核和独立远端交付。
   - 10/10 指标已达标；六项 CLI p95 为 33.817084–135.13625 ms。原严格目标和失败基线保留。
-  - 真实 E4 仍为 0/8，尚未启动或未完成的实际客户端连接、会话、复核和产物不能据准备材料计为通过。
+  - 真实业务验收当前 1/8；只有 AWR-SC-001 已完成全部硬门槛，其他场景尚缺的复核、修订、原生 MCP、最终交付或独立远端回执继续执行，不能据准备状态计数。
 milestones:
 - id: M0
   status: completed
@@ -1731,7 +1732,8 @@ work_items:
   id: AWR-QA-003
   kind: quality
   milestone: M9
-  next_action: 接手简报已完成首轮整改并交回原独立复核者返检；来源变化的原客户端正在修订。长任务、证据补齐和跨客户端分支进入后续业务轮次；真实中断后的新客户端已恢复保存结果及三个待审核提案，正在补交接。并行协作已有实际不同运行时分支，继续核对共享工作归属与冲突。逐场完成复核、原客户端交付和独立远端回执后再计数。
+  next_action: 接手新项目场景已完成实际原客户端交付、独立复核与独立远端提交，当前 1/8。来源变化进入最终交付；长任务和中断恢复由不同参与者复核；受限资料原客户端整改。并行协作已取得真实 ClaimConflict 并完成自然发起，继续实际接续与两轮追问；证据补齐待独立复核，跨客户端分支继续补原生
+    MCP 业务证据及合并交付。
   owner: codex-primary
   priority: P2
   required_for_v1: true
@@ -1769,8 +1771,7 @@ work_items:
   id: AWR-QA-004
   kind: quality
   milestone: M9
-  next_action: 执行源码 d483766 的三平台原生 11/11、交付 eab85e7 与 Git/GitHub 回执已核实；完成写回、checkpoint/end 和 Doctor 零项复核通过，后续进入
-    AWR-P9-001。
+  next_action: 执行源码 d483766 的三平台原生 11/11、交付 eab85e7 与 Git/GitHub 回执已核实；完成写回、checkpoint/end 和 Doctor 零项复核通过，后续进入 AWR-P9-001。
   owner: codex-primary
   priority: P2
   required_for_v1: true
@@ -1877,8 +1878,8 @@ work_items:
     evidence_directory: ledger/evidence/AWR-P9-004
     evidence_level: locally_verified
     minimum: 证明本条验收行为；功能阶段运行必要的定向检查，系统测试在 M9 集中执行。
-    scope_adjustment: 首轮真实样本 L0 为 1232 tokens、L1 为 3182 tokens，Rust 与 Python o200k_base 一致。将通用 L0 展示精简及对应
-      CLI 回归纳入本条，保留全部规定的 L0 事实、原文硬规则和结构化来源绑定；不修改验收预算或分母。
+    scope_adjustment: 首轮真实样本 L0 为 1232 tokens、L1 为 3182 tokens，Rust 与 Python o200k_base 一致。将通用 L0 展示精简及对应 CLI 回归纳入本条，保留全部规定的
+      L0 事实、原文硬规则和结构化来源绑定；不修改验收预算或分母。
 - acceptance:
   - 固定硬件、数据规模与冷热缓存条件，记录 status/work/ready/compile/search/reindex 耗时。
   - 六项操作预热后至少 30 次按 p95 <1000 ms 验收；冷进程启动另报，原 20/20/50/100/100/500 ms 保留为后续优化目标。
@@ -1997,23 +1998,27 @@ work_items:
   next_action: 按交付物实现并验证：V1 发布门槛与远端交付回执
 scenarios:
 - id: AWR-SC-001
-  status: in_progress
+  status: completed
   executor: codex-cli:01a08379-ef89-7173-917d-274662891bcb
   reviewer: luna_worker:/root/source_change_client_run
-  evidence: []
+  evidence:
+  - ledger/evidence/business/AWR-SC-001/acceptance.json
   gates:
-    natural_client_initiation: false
-    tool_or_role_execution: false
-    real_artifact: false
-    business_followup_1: false
-    business_followup_2: false
-    independent_review: false
-    final_delivery: false
-    traceable_receipt: false
-    fixture_isolation: false
-    independent_commit_and_remote_sha: false
+    natural_client_initiation: true
+    tool_or_role_execution: true
+    real_artifact: true
+    business_followup_1: true
+    business_followup_2: true
+    independent_review: true
+    final_delivery: true
+    traceable_receipt: true
+    fixture_isolation: true
+    independent_commit_and_remote_sha: true
   blocker: null
-  delivery: null
+  delivery:
+    source_commit: 16ae833a42ae276cf95ace5faff57a89f2bf6d7f
+    url: https://github.com/originoneai/agent-work-runtime/commit/16ae833a42ae276cf95ace5faff57a89f2bf6d7f
+    verified_at: '2026-09-09T11:43:14+08:00'
 - id: AWR-SC-002
   status: in_progress
   executor: codex-cli:01a083b2-ae71-77a3-9cc9-977b6c656d5a

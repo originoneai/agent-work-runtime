@@ -1,0 +1,172 @@
+{
+  "kind": "business_acceptance",
+  "scenario_id": "AWR-SC-001",
+  "repository": "https://github.com/originoneai/agent-work-runtime",
+  "source_commit": "16ae833a42ae276cf95ace5faff57a89f2bf6d7f",
+  "runtime_source_commit": "4f6fd11c5283a4ddb52e6cb6fe8ef5a5fd8931aa",
+  "runtime_binary_sha256": "df3aee795905f87fe8bc0747a33b6e73c8a25cef0a072d0b2467e226d0d10217",
+  "business_fixture_seed_commit": "cd44a161471cee94fd4f797955327a4fd995cf3a",
+  "checked_at": "2026-09-09T11:43:14+08:00",
+  "executor": "codex-cli:01a08379-ef89-7173-917d-274662891bcb",
+  "reviewer": "luna_worker:/root/source_change_client_run",
+  "scope": "接手项目并交付当前工作简报、依赖、来源说明和未决事项移交；不是门户上线。",
+  "remote_receipt": {
+    "commit": "16ae833a42ae276cf95ace5faff57a89f2bf6d7f",
+    "url": "https://github.com/originoneai/agent-work-runtime/commit/16ae833a42ae276cf95ace5faff57a89f2bf6d7f",
+    "verified_at": "2026-09-09T11:43:14+08:00",
+    "git_ls_remote": {
+      "ref": "refs/heads/main",
+      "sha": "16ae833a42ae276cf95ace5faff57a89f2bf6d7f",
+      "actual_result": "16ae833a42ae276cf95ace5faff57a89f2bf6d7f\trefs/heads/main",
+      "exit_code": 0
+    },
+    "github_api": {
+      "endpoint": "repos/originoneai/agent-work-runtime/commits/main",
+      "sha": "16ae833a42ae276cf95ace5faff57a89f2bf6d7f",
+      "html_url": "https://github.com/originoneai/agent-work-runtime/commit/16ae833a42ae276cf95ace5faff57a89f2bf6d7f",
+      "exit_code": 0
+    },
+    "scope": "Single-case artifact commit independently observed through Git transport and GitHub API after successful push."
+  },
+  "gates": {
+    "natural_client_initiation": true,
+    "tool_or_role_execution": true,
+    "real_artifact": true,
+    "business_followup_1": true,
+    "business_followup_2": true,
+    "independent_review": true,
+    "final_delivery": true,
+    "traceable_receipt": true,
+    "fixture_isolation": true,
+    "independent_commit_and_remote_sha": true
+  },
+  "checks": [
+    {
+      "name": "natural_client_initiation",
+      "passed": true,
+      "result": "Exact natural project-takeover request is present once in the actual native user transcript; original native task and default client configuration are bound.",
+      "artifacts": [
+        "control/initial-sealed.json",
+        "control/initial-review-extract.json"
+      ]
+    },
+    {
+      "name": "tool_or_role_execution",
+      "passed": true,
+      "result": "Five actual Codex native business turns executed AWR commands and wrote business artifacts; two separate luna_worker review sessions are bound to the completed actual reviewer task.",
+      "artifacts": [
+        "control/final-native-metadata.json",
+        "control/initial-review-extract.json",
+        "control/final-delivery-review-extract.json"
+      ]
+    },
+    {
+      "name": "real_artifact",
+      "passed": true,
+      "result": "Actual plan, dependency inventory and context/source-version explanation are retained as exact bytes, with historical versions and hashes.",
+      "artifacts": [
+        "project/deliverables/qinghe-brief.md",
+        "project/deliverables/qinghe-dependencies.md",
+        "project/deliverables/qinghe-context-reference.md"
+      ]
+    },
+    {
+      "name": "business_followup_1",
+      "passed": true,
+      "result": "The half-day Wednesday window was published before the actual user followup; the client created a substantive prioritized executable checklist and retained domain/input uncertainty.",
+      "artifacts": [
+        "round-1-inputs.json",
+        "control/round-1-review-extract.json",
+        "history/round-1/deliverables/qinghe-brief.md"
+      ]
+    },
+    {
+      "name": "business_followup_2",
+      "passed": true,
+      "result": "The actual second followup consumed revised rules; the brief changed verified-title, personal-contact and domain-dependent switch-time treatment.",
+      "artifacts": [
+        "round-2-inputs.json",
+        "control/round-2-review-extract.json",
+        "history/round-2/deliverables/qinghe-brief.md"
+      ]
+    },
+    {
+      "name": "independent_review",
+      "passed": true,
+      "result": "A distinct actual luna_worker found five defects, the original native producer corrected them, and the original independent reviewer accepted the corrected takeover arrangement scope. Initial technical lookup deviation remains a process defect.",
+      "artifacts": [
+        "control/reviewer-identity-binding.json",
+        "control/re-reviewer-identity-binding.json",
+        "project/deliverables/qh-independent-review.md",
+        "project/deliverables/qh-review-response.md",
+        "project/deliverables/qh-independent-re-review.md"
+      ]
+    },
+    {
+      "name": "final_delivery",
+      "passed": true,
+      "result": "After independent re-review, the original native client delivered the final brief package and explicit unresolved handoffs. Root read the final document and all post-review core-artifact diffs, preserving the original review scope.",
+      "artifacts": [
+        "control/final-delivery-sealed.json",
+        "project/deliverables/qh-delivery.md",
+        "control/final-delivery-observation.json"
+      ]
+    },
+    {
+      "name": "traceable_receipt",
+      "passed": true,
+      "result": "Actual completion/source-write receipts, 40 evidence mappings, 12 close-out checks and 191 retained final receipt files match the original sealed bytes; session ended and all claims released.",
+      "artifacts": [
+        "project/.work-receipts/20260909-QH-DELIVER-complete.json",
+        "project/.work-receipts/20260909-QH-DELIVER-evidence-report-v2.json",
+        "project/.work-receipts/20260909-QH-DELIVER-post-close-verification.json",
+        "receipt-storage.json"
+      ]
+    },
+    {
+      "name": "fixture_isolation",
+      "passed": true,
+      "result": "The fresh project, namespace, actual work graph and artifacts are distinct across all eight runtime databases. All outputs were produced in this case. Independent inspection of the retained out-of-allowlist technical lookup found no observed cross-case business task/answer/result reuse; the lookup itself remains noncompliant and is not credited as evidence.",
+      "artifacts": [
+        "run.json",
+        "control/final-delivery-observation.json",
+        "project/review-inputs/reference-lookup-process-record.json",
+        "project/deliverables/qh-independent-re-review.md"
+      ]
+    },
+    {
+      "name": "independent_commit_and_remote_sha",
+      "passed": true,
+      "result": "The case-only artifact commit 16ae833a42ae276cf95ace5faff57a89f2bf6d7f contains 476 files under ledger/evidence/business/AWR-SC-001 only and was independently verified by git ls-remote and GitHub commits API."
+    }
+  ],
+  "artifacts": [
+    "ledger/evidence/business/AWR-SC-001/README.md",
+    "ledger/evidence/business/AWR-SC-001/manifest.json",
+    "ledger/evidence/business/AWR-SC-001/gate-review.json",
+    "ledger/evidence/business/AWR-SC-001/publication-review.json",
+    "ledger/evidence/business/AWR-SC-001/execution-record.json",
+    "ledger/evidence/business/AWR-SC-001/control/final-native-metadata.json",
+    "ledger/evidence/business/AWR-SC-001/control/final-delivery-observation.json",
+    "ledger/evidence/business/AWR-SC-001/control/independent-review.json",
+    "ledger/evidence/business/AWR-SC-001/control/independent-re-review.json",
+    "ledger/evidence/business/AWR-SC-001/project/deliverables/qh-delivery.md",
+    "ledger/evidence/business/AWR-SC-001/project/deliverables/qh-independent-review.md",
+    "ledger/evidence/business/AWR-SC-001/project/deliverables/qh-independent-re-review.md",
+    "ledger/evidence/business/AWR-SC-001/project/deliverables/qinghe-brief.md",
+    "ledger/evidence/business/AWR-SC-001/project/deliverables/qinghe-dependencies.md",
+    "ledger/evidence/business/AWR-SC-001/project/deliverables/qinghe-context-reference.md",
+    "ledger/evidence/business/AWR-SC-001/project/.work-receipts/20260909-QH-DELIVER-complete.json",
+    "ledger/evidence/business/AWR-SC-001/project/.work-receipts/20260909-QH-DELIVER-evidence-report-v2.json",
+    "ledger/evidence/business/AWR-SC-001/project/.work-receipts/20260909-QH-DELIVER-post-close-verification.json"
+  ],
+  "limitations": [
+    "The initial technical lookup scope violation is retained, receives no compliance credit, and is not converted into a clean execution history.",
+    "The accepted business scope is the original project-takeover request. Actual documents, titles, directory verification, domain access, cutover and production launch remain unknown transfers.",
+    "Full native global instructions, memory, reasoning, complete native event streams and local runtime databases are private; public extracts retain actual business inputs, command/output hashes, default client metadata and exact business artifacts/receipts.",
+    "The historic preparation record retains its preparation-time zero counts and unbound fields; it does not describe completed native execution.",
+    "Original raw JSON receipt EOF whitespace was retained byte-for-byte: git diff --cached --check returned 2 for 118 such warnings. publication-review.json records every warning; no clean whitespace result is claimed.",
+    "This acceptance binds the committed synthetic project-takeover business chain. It does not approve real portal deployment or unobserved external facts."
+  ],
+  "completion_claim": true
+}
