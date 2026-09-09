@@ -39,7 +39,17 @@
 
 ## 怎么用
 
-先安装 [Rust](https://www.rust-lang.org/tools/install)，从当前源码构建：
+任选 npm 或 pip 安装 **0.2.0 正式版**，均提供 `awr` 和 `awr-mcp`：
+
+```sh
+npm install -g @originoneai/agent-work-runtime@0.2.0
+# 或在 Python 虚拟环境内
+python -m pip install agent-work-runtime==0.2.0
+```
+
+预编译包支持 macOS 15+ arm64、Linux x64/glibc 2.39+、Windows x64；启动器需要 Node 22.14+ 或 Python 3.9+。详见[安装边界](docs/release/DISTRIBUTIONS.md)。
+
+也可安装 [Rust](https://www.rust-lang.org/tools/install)，选择源码构建：
 
 ```sh
 git clone https://github.com/originoneai/agent-work-runtime.git
@@ -73,7 +83,7 @@ awr --project /path/to/project intake inspect
 
 接入 MCP 时，让客户端启动 `awr-mcp --project /项目绝对路径`。详见 [MCP 配置](crates/awr-mcp/README.md)、[Codex 接入](docs/integrations/codex.md)、[检查点与恢复示例](examples/codex/README.md)、[项目接管指南](docs/TAKEOVER.md)。
 
-AWR 可托管自己启动的命令，并连接受支持的客户端生命周期事件。任意已有进程或客户端私有会话的恢复，需要对应客户端配合。旧的包仓库预览版可能不包含当前源码的全部命令。
+AWR 可托管自己启动的命令，并连接受支持的客户端生命周期事件。任意已有进程或客户端私有会话的恢复，需要对应客户端配合。
 
 ## 参与项目
 

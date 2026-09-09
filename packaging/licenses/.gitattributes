@@ -1,0 +1,2 @@
+*.txt -text
+sources.json text eol=lf

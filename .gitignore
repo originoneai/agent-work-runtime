@@ -50,3 +50,7 @@ __pycache__/
 /records/
 /evidence/
 /handoffs/
+
+# Superseded local preview promotion records
+/docs/release/preview-*.json
+/scripts/release/select_candidate.py

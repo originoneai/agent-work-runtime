@@ -54,7 +54,18 @@ On this Apple M3 Max / macOS run, context compilation took **108 ms at p95**
 
 ## Get started
 
-Build this source tree with [Rust](https://www.rust-lang.org/tools/install)
+Install **0.2.0** through either registry; both supply `awr` and `awr-mcp`:
+
+```sh
+npm install -g @originoneai/agent-work-runtime@0.2.0
+# or, in a Python virtual environment
+python -m pip install agent-work-runtime==0.2.0
+```
+
+Prebuilt targets: macOS 15+ arm64, Linux x64/glibc 2.39+, Windows x64.
+Launchers require Node 22.14+ or Python 3.9+. See [distribution details](docs/release/DISTRIBUTIONS.md).
+
+For an optional source build, use [Rust](https://www.rust-lang.org/tools/install)
 (the repository pins its toolchain):
 
 ```sh
@@ -101,8 +112,7 @@ after initialization. See the [MCP setup and eight tools](crates/awr-mcp/README.
 
 AWR can supervise commands it launches and bind supported client lifecycle events.
 Restoring an arbitrary existing process or the private memory of a native client
-requires that client's cooperation. Older registry prereleases may expose fewer
-commands than this source tree.
+requires that client's cooperation.
 
 ## Contribute
 

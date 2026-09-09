@@ -8,12 +8,12 @@ ROOT = Path(__file__).resolve().parents[1]
 PRIVATE_DIRS = (
     ".local/", ".venv/", ".awr/", "ledger/", "contracts/", "internal/", "planning/",
     "notes/", "records/", "evidence/", "handoffs/", "docs/design/",
-    "docs/decisions/", "docs/acceptance/",
+    "docs/decisions/", "docs/acceptance/", "docs/release/preview-",
 )
 PRIVATE_FILES = {
     ".awr/project.toml", "work-ledger.yaml", "LEDGER.md", "GOALS.md", "PLAN.md",
     "KICKOFF.md", "RULES.md", "docs/GOALS.md", "docs/PLAN.md", "docs/RULES.md",
-    "docs/KICKOFF.md", "scripts/check_ledger.py",
+    "docs/KICKOFF.md", "scripts/check_ledger.py", "scripts/release/select_candidate.py",
     "docs/benchmarks/compact-recovery.md", "docs/benchmarks/context.md",
     "docs/benchmarks/large-ledger.md", "docs/benchmarks/performance.md",
 }
