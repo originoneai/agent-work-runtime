@@ -1,0 +1,183 @@
+{
+  "kind": "business_acceptance",
+  "scenario_id": "AWR-SC-005",
+  "repository": "https://github.com/originoneai/agent-work-runtime",
+  "source_commit": "18c2ac9e13d3f66b2efd9dfc36aa2f69ca292ae4",
+  "runtime_source_commit": "4f6fd11c5283a4ddb52e6cb6fe8ef5a5fd8931aa",
+  "runtime_binary_sha256": "df3aee795905f87fe8bc0747a33b6e73c8a25cef0a072d0b2467e226d0d10217",
+  "business_fixture_seed_commit": "ed1368bf06806ff3227af899129d4914d5fe81e0",
+  "checked_at": "2026-09-09T13:17:26.706454+08:00",
+  "executor": "codex-cli:01a0839d-02e8-7b71-b9cf-2581edf080af",
+  "reviewer": "luna_worker:/root/client_handoff_setup",
+  "scope": "使用现有帮助材料处理三条请求，形成可执行说明、证据映射、独立复核与最终责任移交；实际外部系统操作仍未发生。",
+  "remote_receipt": {
+    "commit": "18c2ac9e13d3f66b2efd9dfc36aa2f69ca292ae4",
+    "url": "https://github.com/originoneai/agent-work-runtime/commit/18c2ac9e13d3f66b2efd9dfc36aa2f69ca292ae4",
+    "verified_at": "2026-09-09T13:17:26.706454+08:00",
+    "git_ls_remote": {
+      "ref": "refs/heads/main",
+      "sha": "18c2ac9e13d3f66b2efd9dfc36aa2f69ca292ae4",
+      "actual_result": "18c2ac9e13d3f66b2efd9dfc36aa2f69ca292ae4\trefs/heads/main",
+      "exit_code": 0
+    },
+    "github_api": {
+      "endpoint": "repos/originoneai/agent-work-runtime/commits/main",
+      "sha": "18c2ac9e13d3f66b2efd9dfc36aa2f69ca292ae4",
+      "html_url": "https://github.com/originoneai/agent-work-runtime/commit/18c2ac9e13d3f66b2efd9dfc36aa2f69ca292ae4",
+      "exit_code": 0
+    },
+    "scope": "Actual Git transport (execution 86037) and GitHub API (execution 92712) independently matched after successful push (43201); 411 files under this case only."
+  },
+  "gates": {
+    "natural_client_initiation": true,
+    "tool_or_role_execution": true,
+    "real_artifact": true,
+    "business_followup_1": true,
+    "business_followup_2": true,
+    "independent_review": true,
+    "final_delivery": true,
+    "traceable_receipt": true,
+    "fixture_isolation": true,
+    "independent_commit_and_remote_sha": true
+  },
+  "checks": [
+    {
+      "name": "natural_client_initiation",
+      "passed": true,
+      "result": "The exact natural request appears once in the actual native client. All six submitted business inputs are accounted for and manually reviewed, without internal IDs or state-machine coaching.",
+      "artifacts": [
+        "control/initial-sealed.json",
+        "control/native-input-audit.json"
+      ]
+    },
+    {
+      "name": "tool_or_role_execution",
+      "passed": true,
+      "result": "Six actual Codex business turns executed AWR and produced material. A distinct actual luna_worker performed independent review; its ended session and released claim were verified.",
+      "artifacts": [
+        "control/final-native-metadata.json",
+        "control/initial-review-extract.json",
+        "control/final-delivery-review-extract.json",
+        "control/reviewer-identity-binding.json"
+      ]
+    },
+    {
+      "name": "real_artifact",
+      "passed": true,
+      "result": "The actual help usage explanation, evidence-gap assessment and criterion-to-evidence mapping preserve source citations and unknown system facts.",
+      "artifacts": [
+        "project/deliverables/yunfan-usage-report.md",
+        "project/deliverables/yunfan-evidence-gaps.md",
+        "project/deliverables/yunfan-delivery-receipt.md"
+      ]
+    },
+    {
+      "name": "business_followup_1",
+      "passed": true,
+      "result": "A separate natural request asked for actual document-assisted usage. Three provided requests led to usable explanations and recorded revisions; six Agent-constructed checks are excluded from real user followup counts.",
+      "artifacts": [
+        "round-1-inputs.json",
+        "control/round-1-review-extract.json",
+        "history/round-1/deliverables/yunfan-usage-report.md"
+      ]
+    },
+    {
+      "name": "business_followup_2",
+      "passed": true,
+      "result": "A second separate natural request asked for evidence against every criterion and corrected completion claims. The client produced and revised the ten-row mapping; later factual correction preserves the original versions.",
+      "artifacts": [
+        "round-2-inputs.json",
+        "control/round-2-review-extract.json",
+        "history/round-2/deliverables/yunfan-delivery-receipt.md",
+        "control/usage-process-observation.json"
+      ]
+    },
+    {
+      "name": "independent_review",
+      "passed": true,
+      "result": "The distinct reviewer checked the fixed 94-file five-stage packet and process observations. It accepted the corrected document-assisted usage scope, preserving the distinction between real business turns, constructed questions and zero external-system operations.",
+      "artifacts": [
+        "control/independent-review.json",
+        "control/reviewer-identity-binding.json",
+        "project/deliverables/yf-independent-review.md"
+      ]
+    },
+    {
+      "name": "final_delivery",
+      "passed": true,
+      "result": "After independent review the original native client delivered current explanations, current and historical evidence mappings, failure history, unresolved facts and downstream owners. Root read the full final artifact and verified that reviewed producer and reviewer files remained unchanged.",
+      "artifacts": [
+        "control/final-delivery-sealed.json",
+        "control/final-delivery-observation.json",
+        "project/deliverables/yf-delivery.md"
+      ]
+    },
+    {
+      "name": "traceable_receipt",
+      "passed": true,
+      "result": "108 final receipt files, 19 JSON locator/hash bindings and 11 embedded table fingerprints match actual bytes. The applied completion event binds both acceptance criteria and the actual creating session. All five work items are completed, final session ended and all claims released at revision 492.",
+      "artifacts": [
+        "project/.work-receipts/yf-deliver-traceable-receipt.json",
+        "project/.work-receipts/yf-deliver-completion-event.json",
+        "project/deliverables/yf-delivery-verification.json",
+        "control/final-delivery-observation.json",
+        "receipt-storage.json"
+      ]
+    },
+    {
+      "name": "fixture_isolation",
+      "passed": true,
+      "result": "This independently prepared source repository, namespace, project and work graph have distinct runtime identities across all nine observed current/historical fixture databases. No reuse of another scenario business task, answer or result was observed in the reviewed execution and artifacts.",
+      "artifacts": [
+        "run.json",
+        "control/final-delivery-observation.json",
+        "control/independent-review.json"
+      ]
+    },
+    {
+      "name": "independent_commit_and_remote_sha",
+      "passed": true,
+      "result": "Case-only artifact commit 18c2ac9e13d3f66b2efd9dfc36aa2f69ca292ae4 independently observed through Git transport and GitHub API after successful push."
+    }
+  ],
+  "artifacts": [
+    "ledger/evidence/business/AWR-SC-005/control/final-delivery-observation.json",
+    "ledger/evidence/business/AWR-SC-005/control/final-delivery-review-extract.json",
+    "ledger/evidence/business/AWR-SC-005/control/final-delivery-sealed.json",
+    "ledger/evidence/business/AWR-SC-005/control/final-native-metadata.json",
+    "ledger/evidence/business/AWR-SC-005/control/independent-review.json",
+    "ledger/evidence/business/AWR-SC-005/control/initial-review-extract.json",
+    "ledger/evidence/business/AWR-SC-005/control/initial-sealed.json",
+    "ledger/evidence/business/AWR-SC-005/control/native-input-audit.json",
+    "ledger/evidence/business/AWR-SC-005/control/reviewer-identity-binding.json",
+    "ledger/evidence/business/AWR-SC-005/control/round-1-review-extract.json",
+    "ledger/evidence/business/AWR-SC-005/control/round-2-review-extract.json",
+    "ledger/evidence/business/AWR-SC-005/control/usage-process-observation.json",
+    "ledger/evidence/business/AWR-SC-005/gate-review.json",
+    "ledger/evidence/business/AWR-SC-005/history/round-1/deliverables/yunfan-usage-report.md",
+    "ledger/evidence/business/AWR-SC-005/history/round-2/deliverables/yunfan-delivery-receipt.md",
+    "ledger/evidence/business/AWR-SC-005/manifest.json",
+    "ledger/evidence/business/AWR-SC-005/project/.work-receipts/yf-deliver-completion-event.json",
+    "ledger/evidence/business/AWR-SC-005/project/.work-receipts/yf-deliver-traceable-receipt.json",
+    "ledger/evidence/business/AWR-SC-005/project/deliverables/yf-delivery-verification.json",
+    "ledger/evidence/business/AWR-SC-005/project/deliverables/yf-delivery.md",
+    "ledger/evidence/business/AWR-SC-005/project/deliverables/yf-independent-review.md",
+    "ledger/evidence/business/AWR-SC-005/project/deliverables/yunfan-delivery-receipt.md",
+    "ledger/evidence/business/AWR-SC-005/project/deliverables/yunfan-evidence-gaps.md",
+    "ledger/evidence/business/AWR-SC-005/project/deliverables/yunfan-usage-report.md",
+    "ledger/evidence/business/AWR-SC-005/publication-review.json",
+    "ledger/evidence/business/AWR-SC-005/receipt-storage.json",
+    "ledger/evidence/business/AWR-SC-005/round-1-inputs.json",
+    "ledger/evidence/business/AWR-SC-005/round-2-inputs.json",
+    "ledger/evidence/business/AWR-SC-005/run.json"
+  ],
+  "limitations": [
+    "This isolated synthetic business loop delivers usable help material; no external account creation, import or feedback operation and no customer-origin proof exist.",
+    "The six embedded diagnostic questions are Agent-authored. Only the two actual separate canonical business requests count as followups.",
+    "Original scope mistakes, wrong arrival chronology, attribution errors, incomplete sessions and failed verification/completion attempts remain retained.",
+    "Native full context, global instructions, memory, thinking and runtime databases stay private; business extracts retain command/output fingerprints.",
+    "run.json describes preparation history, not final model-call or participant statistics.",
+    "This acceptance covers the isolated document-assisted business loop and its actual canonical followups; it does not establish external system success or customer UAT."
+  ],
+  "completion_claim": true
+}

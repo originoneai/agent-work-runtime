@@ -1,8 +1,8 @@
 schema_version: 1
 contract_id: awr-v1
 contract_version: 1.0.1
-ledger_revision: 191
-updated_at: '2026-09-09T12:34:28+08:00'
+ledger_revision: 192
+updated_at: '2026-09-09T13:17:26.706454+08:00'
 project:
   name: Agent Work Runtime
   external_key: agent-work-runtime
@@ -12,13 +12,14 @@ project:
 current:
   milestone: M9
   work_item: AWR-QA-003
-  next_action: 真实业务交付 2/8：接手新项目与来源变化均已单场提交并通过 Git/GitHub 远端核验。继续长任务、帮助中心最终交付；中断恢复整改、受限资料返检；并行协作实际现场接续后开展第二轮追问，跨客户端全新 r2 按环境实际边界推进。
+  next_action: 真实业务交付 3/8：接手新项目、来源变化和帮助中心均已独立提交并通过 Git/GitHub 远端核验。继续长任务最终引用修订、受限资料与中断恢复最终交付、并行协作整改后的独立复核；跨客户端 r2
+    因实际 .git 只读边界保留未完成。
   open_loops:
   - 用户已明确授权本项目 Codex/Kimi 实际客户端及 luna_worker 并行执行/独立复核，后续同范围不重复询问；执行配置沿用既有模型和 hooks。
   - QA-003 已从保存 checkpoint 恢复并重新认领；八套本地新项目保留，逐场开展实际工具执行、两轮业务追问、独立复核和独立远端交付。
   - 10/10 指标已达标；六项 CLI p95 为 33.817084–135.13625 ms。原严格目标和失败基线保留。
-  - 真实业务验收当前 2/8；AWR-SC-001 与 AWR-SC-003 已完成全部硬门槛，其他场景尚缺的复核、修订、原生 MCP、最终交付或独立远端回执继续执行，不能据准备状态计数。
-  - 跨客户端旧轮保留真实 MCP 与内部步骤泄露记录但不计 E4；全新 r2 Codex 正常前序执行已发现 Git ref 环境限制，等待实际交接封存后按真实边界推进，不绕过。通用输入预检已实现，仍须独立审查精确业务输入。
+  - 真实业务验收当前 3/8；AWR-SC-001、003、005 已完成全部硬门槛；002、004、006、007 继续原客户端修订/复核/最终交付，未有独立远端回执不得计数。
+  - 跨客户端旧轮保留原生 MCP 与内部步骤泄露记录但不计 E4；全新 r2 的实际 turn_context 明确 project/.git 为只读且 approval never，真实工作 Git ref 尚未创建，保持未完成且不得旁路。通用输入预检已实现，仍须逐条自然语言审查。
 milestones:
 - id: M0
   status: completed
@@ -1738,7 +1739,8 @@ work_items:
   id: AWR-QA-003
   kind: quality
   milestone: M9
-  next_action: 真实业务交付 2/8：接手新项目与来源变化均已单场提交并通过 Git/GitHub 远端核验。继续长任务、帮助中心最终交付；中断恢复整改、受限资料返检；并行协作实际现场接续后开展第二轮追问，跨客户端全新 r2 按环境实际边界推进。
+  next_action: 真实业务交付 3/8：接手新项目、来源变化和帮助中心均已独立提交并通过 Git/GitHub 远端核验。继续长任务最终引用修订、受限资料与中断恢复最终交付、并行协作整改后的独立复核；跨客户端 r2
+    因实际 .git 只读边界保留未完成。
   owner: codex-primary
   priority: P2
   required_for_v1: true
@@ -1778,7 +1780,8 @@ work_items:
   id: AWR-QA-004
   kind: quality
   milestone: M9
-  next_action: 执行源码 d483766 的三平台原生 11/11、交付 eab85e7 与 Git/GitHub 回执已核实；完成写回、checkpoint/end 和 Doctor 零项复核通过，后续进入 AWR-P9-001。
+  next_action: 执行源码 d483766 的三平台原生 11/11、交付 eab85e7 与 Git/GitHub 回执已核实；完成写回、checkpoint/end 和 Doctor 零项复核通过，后续进入
+    AWR-P9-001。
   owner: codex-primary
   priority: P2
   required_for_v1: true
@@ -1885,7 +1888,8 @@ work_items:
     evidence_directory: ledger/evidence/AWR-P9-004
     evidence_level: locally_verified
     minimum: 证明本条验收行为；功能阶段运行必要的定向检查，系统测试在 M9 集中执行。
-    scope_adjustment: 首轮真实样本 L0 为 1232 tokens、L1 为 3182 tokens，Rust 与 Python o200k_base 一致。将通用 L0 展示精简及对应 CLI 回归纳入本条，保留全部规定的 L0 事实、原文硬规则和结构化来源绑定；不修改验收预算或分母。
+    scope_adjustment: 首轮真实样本 L0 为 1232 tokens、L1 为 3182 tokens，Rust 与 Python o200k_base 一致。将通用 L0 展示精简及对应 CLI 回归纳入本条，保留全部规定的
+      L0 事实、原文硬规则和结构化来源绑定；不修改验收预算或分母。
 - acceptance:
   - 固定硬件、数据规模与冷热缓存条件，记录 status/work/ready/compile/search/reindex 耗时。
   - 六项操作预热后至少 30 次按 p95 <1000 ms 验收；冷进程启动另报，原 20/20/50/100/100/500 ms 保留为后续优化目标。
@@ -2084,23 +2088,27 @@ scenarios:
   blocker: null
   delivery: null
 - id: AWR-SC-005
-  status: in_progress
+  status: completed
   executor: codex-cli:01a0839d-02e8-7b71-b9cf-2581edf080af
-  reviewer: null
-  evidence: []
+  reviewer: luna_worker:/root/client_handoff_setup
+  evidence:
+  - ledger/evidence/business/AWR-SC-005/acceptance.json
   gates:
-    natural_client_initiation: false
-    tool_or_role_execution: false
-    real_artifact: false
-    business_followup_1: false
-    business_followup_2: false
-    independent_review: false
-    final_delivery: false
-    traceable_receipt: false
-    fixture_isolation: false
-    independent_commit_and_remote_sha: false
+    natural_client_initiation: true
+    tool_or_role_execution: true
+    real_artifact: true
+    business_followup_1: true
+    business_followup_2: true
+    independent_review: true
+    final_delivery: true
+    traceable_receipt: true
+    fixture_isolation: true
+    independent_commit_and_remote_sha: true
   blocker: null
-  delivery: null
+  delivery:
+    source_commit: 18c2ac9e13d3f66b2efd9dfc36aa2f69ca292ae4
+    url: https://github.com/originoneai/agent-work-runtime/commit/18c2ac9e13d3f66b2efd9dfc36aa2f69ca292ae4
+    verified_at: '2026-09-09T13:17:26.706454+08:00'
 - id: AWR-SC-006
   status: in_progress
   executor: codex-cli:01a083d7-4073-7150-89cd-993a9899dcad
