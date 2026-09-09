@@ -1,8 +1,8 @@
 schema_version: 1
 contract_id: awr-v1
 contract_version: 1.0.1
-ledger_revision: 185
-updated_at: '2026-09-09T09:46:55+08:00'
+ledger_revision: 186
+updated_at: '2026-09-09T10:22:55+08:00'
 project:
   name: Agent Work Runtime
   external_key: agent-work-runtime
@@ -12,8 +12,7 @@ project:
 current:
   milestone: M9
   work_item: AWR-QA-003
-  next_action: 继续实际客户端的整改、两轮业务追问和独立复核。中断现场已验证真实 SIGKILL、三个待审核提案保留及来源完整，新客户端正在恢复；来源变化正在由不同 luna_worker
-    复核，公开资料等待另一位复核者。
+  next_action: 接手简报已完成首轮整改并交回原独立复核者返检；来源变化的原客户端正在修订。长任务、证据补齐和跨客户端分支进入后续业务轮次；真实中断后的新客户端已恢复保存结果及三个待审核提案，正在补交接。并行协作已有实际不同运行时分支，继续核对共享工作归属与冲突。逐场完成复核、原客户端交付和独立远端回执后再计数。
   open_loops:
   - 用户已明确授权本项目 Codex/Kimi 实际客户端及 luna_worker 并行执行/独立复核，后续同范围不重复询问；执行配置沿用既有模型和 hooks。
   - QA-003 已从保存 checkpoint 恢复并重新认领；八套本地新项目保留，逐场开展实际工具执行、两轮业务追问、独立复核和独立远端交付。
@@ -1732,8 +1731,7 @@ work_items:
   id: AWR-QA-003
   kind: quality
   milestone: M9
-  next_action: 继续实际客户端的整改、两轮业务追问和独立复核。中断现场已验证真实 SIGKILL、三个待审核提案保留及来源完整，新客户端正在恢复；来源变化正在由不同 luna_worker
-    复核，公开资料等待另一位复核者。
+  next_action: 接手简报已完成首轮整改并交回原独立复核者返检；来源变化的原客户端正在修订。长任务、证据补齐和跨客户端分支进入后续业务轮次；真实中断后的新客户端已恢复保存结果及三个待审核提案，正在补交接。并行协作已有实际不同运行时分支，继续核对共享工作归属与冲突。逐场完成复核、原客户端交付和独立远端回执后再计数。
   owner: codex-primary
   priority: P2
   required_for_v1: true
