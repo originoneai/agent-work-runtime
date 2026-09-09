@@ -1,8 +1,8 @@
 schema_version: 1
 contract_id: awr-v1
 contract_version: 1.0.1
-ledger_revision: 180
-updated_at: '2026-09-09T08:42:27+08:00'
+ledger_revision: 181
+updated_at: '2026-09-09T08:53:07+08:00'
 project:
   name: Agent Work Runtime
   external_key: agent-work-runtime
@@ -2123,7 +2123,7 @@ scenarios:
   delivery: null
 - id: AWR-SC-008
   status: in_progress
-  executor: codex-cli:01a08384-ab59-7de1-98f5-df7fbfae7dab
+  executor: kimi-code:session_6e556096-55b8-4651-8403-bd7cd4077593
   reviewer: null
   evidence: []
   gates:
