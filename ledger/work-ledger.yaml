@@ -1,8 +1,8 @@
 schema_version: 1
 contract_id: awr-v1
 contract_version: 1.0.1
-ledger_revision: 193
-updated_at: '2026-09-09T13:19:58.939743+08:00'
+ledger_revision: 194
+updated_at: '2026-09-09T13:36:30.467837+08:00'
 project:
   name: Agent Work Runtime
   external_key: agent-work-runtime
@@ -12,13 +12,13 @@ project:
 current:
   milestone: M9
   work_item: AWR-QA-003
-  next_action: 真实业务交付 3/8：接手新项目、来源变化和帮助中心均已独立提交并通过 Git/GitHub 远端核验。继续长任务最终引用修订、受限资料与中断恢复最终交付、并行协作整改后的独立复核；跨客户端 r2
-    因实际 .git 只读边界保留未完成。
+  next_action: 真实业务交付 4/8：接手新项目、长任务恢复、来源变化和帮助中心均已独立提交并通过 Git/GitHub 远端核验。继续受限资料最终核对、中断恢复最终交付与并行协作独立复核；跨客户端 r2 因实际
+    .git 只读边界保留阻塞。
   open_loops:
   - 用户已明确授权本项目 Codex/Kimi 实际客户端及 luna_worker 并行执行/独立复核，后续同范围不重复询问；执行配置沿用既有模型和 hooks。
   - QA-003 已从保存 checkpoint 恢复并重新认领；八套本地新项目保留，逐场开展实际工具执行、两轮业务追问、独立复核和独立远端交付。
   - 10/10 指标已达标；六项 CLI p95 为 33.817084–135.13625 ms。原严格目标和失败基线保留。
-  - 真实业务验收当前 3/8；AWR-SC-001、003、005 已完成全部硬门槛；002、004、006、007 继续原客户端修订/复核/最终交付，未有独立远端回执不得计数。
+  - 真实业务验收当前 4/8；AWR-SC-001、002、003、005 已完成全部硬门槛；004、006、007 继续复核/最终交付核对；008 因当前实际客户端 Git 元数据只读而阻塞，不旁路、不计数。
   - 跨客户端旧轮保留原生 MCP 与内部步骤泄露记录但不计 E4；全新 r2 的实际 turn_context 明确 project/.git 为只读且 approval never，真实工作 Git ref 尚未创建，保持未完成且不得旁路。通用输入预检已实现，仍须逐条自然语言审查。
 milestones:
 - id: M0
@@ -1739,8 +1739,8 @@ work_items:
   id: AWR-QA-003
   kind: quality
   milestone: M9
-  next_action: 真实业务交付 3/8：接手新项目、来源变化和帮助中心均已独立提交并通过 Git/GitHub 远端核验。继续长任务最终引用修订、受限资料与中断恢复最终交付、并行协作整改后的独立复核；跨客户端 r2
-    因实际 .git 只读边界保留未完成。
+  next_action: 真实业务交付 4/8：接手新项目、长任务恢复、来源变化和帮助中心均已独立提交并通过 Git/GitHub 远端核验。继续受限资料最终核对、中断恢复最终交付与并行协作独立复核；跨客户端 r2 因实际
+    .git 只读边界保留阻塞。
   owner: codex-primary
   priority: P2
   required_for_v1: true
@@ -2030,23 +2030,27 @@ scenarios:
     url: https://github.com/originoneai/agent-work-runtime/commit/16ae833a42ae276cf95ace5faff57a89f2bf6d7f
     verified_at: '2026-09-09T11:43:14+08:00'
 - id: AWR-SC-002
-  status: in_progress
+  status: completed
   executor: codex-cli:01a083b2-ae71-77a3-9cc9-977b6c656d5a
-  reviewer: null
-  evidence: []
+  reviewer: luna_worker:/root/restricted_material_client_run
+  evidence:
+  - ledger/evidence/business/AWR-SC-002/acceptance.json
   gates:
-    natural_client_initiation: false
-    tool_or_role_execution: false
-    real_artifact: false
-    business_followup_1: false
-    business_followup_2: false
-    independent_review: false
-    final_delivery: false
-    traceable_receipt: false
-    fixture_isolation: false
-    independent_commit_and_remote_sha: false
+    natural_client_initiation: true
+    tool_or_role_execution: true
+    real_artifact: true
+    business_followup_1: true
+    business_followup_2: true
+    independent_review: true
+    final_delivery: true
+    traceable_receipt: true
+    fixture_isolation: true
+    independent_commit_and_remote_sha: true
   blocker: null
-  delivery: null
+  delivery:
+    source_commit: 63ea0639a82fddf6eed9e7557d0cb62528c56daa
+    url: https://github.com/originoneai/agent-work-runtime/commit/63ea0639a82fddf6eed9e7557d0cb62528c56daa
+    verified_at: '2026-09-09T13:36:30.467837+08:00'
 - id: AWR-SC-003
   status: completed
   executor: codex-cli:01a08381-04a8-7871-9372-a3f55c2d8367
