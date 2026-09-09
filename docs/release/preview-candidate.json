@@ -1,0 +1,23 @@
+{
+  "version": "0.1.0-dev",
+  "source_sha": "fc9c78c967525d819c7843e2cdb70167bb7a4a58",
+  "platforms": [
+    "darwin-arm64",
+    "linux-x64-gnu",
+    "win32-x64"
+  ],
+  "artifacts": {
+    "agent_work_runtime-0.1.0.dev0-py3-none-win_amd64.whl": "5636ec910c41fa80cd40d5b68a5e625cdeffdbbb22e424c7c9cceb534eb7afee",
+    "originoneai-agent-work-runtime-0.1.0-dev.tgz": "a899bcde32df8c970d2c2317e0d78805c3a7b88b5b4aa4b54df3dca8c41ceca6",
+    "originoneai-agent-work-runtime-win32-x64-0.1.0-dev.tgz": "1d5b81c2e1754476ad5a938d429ebbd330056a1e2abfbf712461cdfa42574bf5",
+    "agent_work_runtime-0.1.0.dev0-py3-none-macosx_15_0_arm64.whl": "4abc54fbf239219d580b11e37fa9c69304793b2dc0c8709c82cc6ae854bd0385",
+    "originoneai-agent-work-runtime-darwin-arm64-0.1.0-dev.tgz": "5dffa4976e87dafb3f43366c628a9d2875930453c96a218179586f3ce6db2025",
+    "agent_work_runtime-0.1.0.dev0-py3-none-manylinux_2_39_x86_64.whl": "c5ae6af2943e29690e21c6978f272fb7eac8dd184f487cfc2e18919b3341fce5",
+    "originoneai-agent-work-runtime-linux-x64-gnu-0.1.0-dev.tgz": "d9104e0f7b444442843a8a6609cb04cb8f8e0378ca59d92caf701d39f0f9a2fa"
+  },
+  "repository": "originoneai/agent-work-runtime",
+  "python_version": "0.1.0.dev0",
+  "build_run_id": 34308446039,
+  "build_url": "https://github.com/originoneai/agent-work-runtime/actions/runs/34308446039",
+  "evidence_scope": "Three-platform npm and pip installation checks; not V1 business acceptance"
+}

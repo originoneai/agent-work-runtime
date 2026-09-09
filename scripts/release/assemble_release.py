@@ -14,6 +14,7 @@ def main():
     parser.add_argument("input", type=Path)
     parser.add_argument("--output", type=Path, required=True)
     parser.add_argument("--expected-sha", required=True)
+    parser.add_argument("--candidate", type=Path, help="also require the recorded candidate artifact hashes")
     args = parser.parse_args()
     manifests = list(args.input.rglob("manifest.json"))
     assert len(manifests) == 3, "three independent platform build manifests are required"
@@ -46,6 +47,11 @@ def main():
     assert set(selected) == PLATFORMS and len(versions) == 1
     assert sum(name.endswith(".whl") for name in files) == 3
     assert sum(name.endswith(".tgz") for name in files) == 4
+    if args.candidate:
+        candidate = json.loads(args.candidate.read_text())
+        assert candidate["source_sha"] == args.expected_sha
+        assert versions == {candidate["version"]}
+        assert candidate["artifacts"] == {name: sha for name, (_, sha) in files.items()}, "candidate artifact bytes differ"
     args.output.mkdir(parents=True, exist_ok=False)
     for ecosystem in ("npm", "python"):
         (args.output / ecosystem).mkdir()

@@ -3,6 +3,7 @@ name: npm and PyPI preview distributions
 on:
   push:
     branches: [codex/npm-pypi-release-prep]
+    tags: ['pypi-preview-*']
     paths: ['packaging/**', 'scripts/release/**', '.github/workflows/distributions.yml']
   pull_request:
     paths: ['packaging/**', 'scripts/release/**', '.github/workflows/distributions.yml']
@@ -18,6 +19,7 @@ permissions:
 
 jobs:
   build:
+    if: ${{ !startsWith(github.ref, 'refs/tags/pypi-preview-') }}
     strategy:
       fail-fast: false
       matrix:
@@ -99,6 +101,41 @@ jobs:
       - name: Publish npm platform packages followed by the command wrapper
         run: python scripts/release/publish_npm.py .local/release --provenance
       - name: Publish PyPI wheels with the configured trusted publisher
+        uses: pypa/gh-action-pypi-publish@dc37677b2e1c63e2034f94d8a5b11f265b73ba33
+        with:
+          packages-dir: .local/release/python/
+
+  promote_pypi_preview:
+    if: startsWith(github.ref, 'refs/tags/pypi-preview-')
+    runs-on: ubuntu-24.04
+    environment: package-registries
+    permissions:
+      contents: read
+      actions: read
+      id-token: write
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
+        with:
+          persist-credentials: false
+      - uses: actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97
+        with:
+          python-version: '3.12'
+      - name: Select the successful build recorded in the preview candidate
+        id: candidate
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: python scripts/release/select_candidate.py docs/release/preview-candidate.json --tag "$GITHUB_REF_NAME" --github-output "$GITHUB_OUTPUT"
+      - uses: actions/download-artifact@634f93cb2916e3fdff6788551b99b062d0335ce0
+        with:
+          github-token: ${{ github.token }}
+          run-id: ${{ steps.candidate.outputs.run_id }}
+          pattern: distribution-*-${{ steps.candidate.outputs.source_sha }}
+          path: .local/downloaded-distributions
+      - name: Verify the previously tested bytes against the candidate
+        env:
+          RELEASE_SHA: ${{ steps.candidate.outputs.source_sha }}
+        run: python scripts/release/assemble_release.py .local/downloaded-distributions --output .local/release --expected-sha "$RELEASE_SHA" --candidate docs/release/preview-candidate.json
+      - name: Publish the verified PyPI preview wheels
         uses: pypa/gh-action-pypi-publish@dc37677b2e1c63e2034f94d8a5b11f265b73ba33
         with:
           packages-dir: .local/release/python/

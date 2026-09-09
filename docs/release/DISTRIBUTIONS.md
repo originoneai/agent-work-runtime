@@ -78,7 +78,7 @@ installation checks, not real-agent business acceptance.
    free community eligibility must not be assumed just because code is open source.
    PyPI organizations do not provide scoped package names. An ordinary verified
    account can publish `agent-work-runtime` before an organization application is approved.
-4. After the workflow is reviewed and integrated, configure its trusted publishing
+4. After the workflow is reviewed, configure its trusted publishing
    identity using repository owner `originoneai`, repository `agent-work-runtime`,
    workflow `distributions.yml`, and environment `package-registries`.
    PyPI supports a pending trusted publisher for the new project. npm publisher
@@ -93,10 +93,32 @@ Official procedures: [npm organizations](https://docs.npmjs.com/creating-an-orga
 ## Build, collect, then publish
 
 The `npm and PyPI preview distributions` workflow builds and installs both packages
-on three native runners. Push/PR runs only build and check. A manual run also only
+on three native runners. Branch push/PR runs only build and check. A manual run also only
 builds by default. Its optional publish job requires the registry identities above.
 Before using manual dispatch, the workflow must exist on the repository's default
 branch; this preparation branch does not change that branch automatically.
+
+The first PyPI preview can promote an already verified build using a
+`pypi-preview-v<python-version>` tag on the independent preparation branch.
+`docs/release/preview-candidate.json` records the successful build run, source commit,
+versions, and all seven artifact hashes. `select_candidate.py` checks the run's
+repository, workflow, successful conclusion, source commit, and matching preview tag.
+The tag-triggered job downloads those exact build artifacts and checks both their
+installation receipts and the candidate hashes before uploading only the three
+Python wheels. It does not rebuild or re-upload the npm packages. The publishing
+workflow commit and the original binary build commit remain separately recorded.
+
+Before pushing the matching tag, configure the PyPI pending publisher and the
+`package-registries` GitHub environment. Restrict that environment to the `main`
+branch and `pypi-preview-*` tags. Review the candidate with:
+
+```sh
+python scripts/release/select_candidate.py docs/release/preview-candidate.json \
+  --tag pypi-preview-v0.1.0.dev0
+```
+
+The preview tag is a publication trigger and must only be pushed when publication
+is authorized. An ordinary branch push does not publish anything.
 
 Download the three `distribution-*` artifacts into separate subdirectories. Assemble
 them using the actual build commit:
