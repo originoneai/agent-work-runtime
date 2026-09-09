@@ -1,0 +1,201 @@
+{
+  "scenario_id": "AWR-SC-006",
+  "runtime_source_commit": "4f6fd11c5283a4ddb52e6cb6fe8ef5a5fd8931aa",
+  "runtime_binary_sha256": "df3aee795905f87fe8bc0747a33b6e73c8a25cef0a072d0b2467e226d0d10217",
+  "business_fixture_seed_commit": "8218b29c348b7eda3e57b541c3489e41b87b6679",
+  "executor": "codex-cli:01a083d7-4073-7150-89cd-993a9899dcad",
+  "reviewer": "luna_worker:/root/source_change_client_run",
+  "scope": "实际中断后恢复维护交接，处理保留提案与两轮确认，完成独立复核整改及有明确未决事项的最终交付。",
+  "kind": "business_acceptance",
+  "repository": "https://github.com/originoneai/agent-work-runtime",
+  "source_commit": "c518906ee888c155b0cb2043c327feedf0a9123f",
+  "checked_at": "2026-09-09T14:06:10.415367+08:00",
+  "remote_receipt": {
+    "commit": "c518906ee888c155b0cb2043c327feedf0a9123f",
+    "url": "https://github.com/originoneai/agent-work-runtime/commit/c518906ee888c155b0cb2043c327feedf0a9123f",
+    "verified_at": "2026-09-09T14:06:10.415367+08:00",
+    "git_ls_remote": {
+      "ref": "refs/heads/main",
+      "sha": "c518906ee888c155b0cb2043c327feedf0a9123f",
+      "actual_result": "c518906ee888c155b0cb2043c327feedf0a9123f\trefs/heads/main",
+      "exit_code": 0
+    },
+    "github_api": {
+      "endpoint": "repos/originoneai/agent-work-runtime/commits/main",
+      "sha": "c518906ee888c155b0cb2043c327feedf0a9123f",
+      "html_url": "https://github.com/originoneai/agent-work-runtime/commit/c518906ee888c155b0cb2043c327feedf0a9123f",
+      "exit_code": 0
+    },
+    "scope": "Actual Git transport 94467 and GitHub API 83474 independently matched after successful case-only push 74857; 771 case artifact files."
+  },
+  "gates": {
+    "natural_client_initiation": true,
+    "tool_or_role_execution": true,
+    "real_artifact": true,
+    "business_followup_1": true,
+    "business_followup_2": true,
+    "independent_review": true,
+    "final_delivery": true,
+    "traceable_receipt": true,
+    "fixture_isolation": true,
+    "independent_commit_and_remote_sha": true
+  },
+  "checks": [
+    {
+      "name": "natural_client_initiation",
+      "passed": true,
+      "result": "The fresh actual native client received the natural recovery request exactly once. All seven business inputs across the old and resumed clients are accounted for and manually reviewed without internal IDs, CLI steps or expected answers.",
+      "artifacts": [
+        "control/initial-sealed.json",
+        "control/native-input-audit.json"
+      ]
+    },
+    {
+      "name": "tool_or_role_execution",
+      "passed": true,
+      "result": "The first prelude exited normally. A later actual turn created three unapplied proposals before operator SIGKILL and native -9. A fresh actual client resumed the interrupted AWR session, released stale claims and continued from persisted files and proposals. The automatic observer did not inject the signal; the old session had no checkpoint.",
+      "artifacts": [
+        "control/prelude-sealed.json",
+        "control/prelude-proposals-business-extract.json",
+        "control/verified-interruption-binding.json",
+        "control/actual-recovery-binding.json",
+        "control/final-native-metadata.json"
+      ]
+    },
+    {
+      "name": "real_artifact",
+      "passed": true,
+      "result": "Actual diagnosis, proposal disposition, recovery and consistency artifacts bind confirmed requirements and unresolved facts; unpersisted information is not reconstructed.",
+      "artifacts": [
+        "project/deliverables/zhusheng-interruption-diagnosis.md",
+        "project/deliverables/zhusheng-recovery-work.md",
+        "project/deliverables/zhusheng-consistency.md"
+      ]
+    },
+    {
+      "name": "business_followup_1",
+      "passed": true,
+      "result": "The first separate natural followup required identifying saved and unapplied work. Authored archive confirmation led to recovery and handoff revisions, preserving missing implementation, access and integrity evidence.",
+      "artifacts": [
+        "round-1-inputs.json",
+        "control/round-1-review-extract.json",
+        "history/round-1/deliverables/zhusheng-recovery-work.md"
+      ]
+    },
+    {
+      "name": "business_followup_2",
+      "passed": true,
+      "result": "The second separate natural request required continuing work and checking loss or duplicate writes. Distinct role confirmation led to revised consistency and handoff artifacts; later independent findings required actual source corrections.",
+      "artifacts": [
+        "round-2-inputs.json",
+        "control/round-2-review-extract.json",
+        "history/round-2/deliverables/zhusheng-consistency.md"
+      ]
+    },
+    {
+      "name": "independent_review",
+      "passed": true,
+      "result": "A distinct actual reviewer rejected missing authoritative requirements and stale handoff state. The original producer applied the combined confirmation once and corrected state; independent recheck verified the 167-file correction packet. Root verified 79 retained re-review files and 121 archived review files unchanged.",
+      "artifacts": [
+        "control/independent-review.json",
+        "control/reviewer-identity-binding.json",
+        "control/independent-re-review.json",
+        "control/re-reviewer-identity-binding.json",
+        "project/deliverables/zs-independent-review.md",
+        "project/deliverables/zs-independent-re-review.md"
+      ]
+    },
+    {
+      "name": "final_delivery",
+      "passed": true,
+      "result": "After independent recheck the original resumed client delivered the final recovery handoff. Its actual final reply explicitly distinguishes five completed work items from the still in_progress milestone. Archive implementation, staffing and issue facts remain open. A narrow body-only clarity concern was reassessed against the hash-bound actual final reply and source receipts: the complete delivery already states the work-item/milestone boundary. The original concern and nonblocking addendum are both retained; no standard was changed.",
+      "artifacts": [
+        "control/final-delivery-sealed.json",
+        "control/final-delivery-review-extract.json",
+        "project/deliverables/zs-delivery.md",
+        "control/final-delivery-content-check.json",
+        "control/final-delivery-content-check-addendum.json",
+        "control/final-delivery-final.md"
+      ]
+    },
+    {
+      "name": "traceable_receipt",
+      "passed": true,
+      "result": "Root verified seven artifacts, 264 receipts, 55 file-manifest targets, five inline hashes and 12 JSON bindings. Read-only revision 235 shows five completed work items, no active sessions/claims, zero apply attempts for the three old proposals, and one resolved application for the confirmed combined proposal.",
+      "artifacts": [
+        "control/final-delivery-observation.json",
+        "project/.work-receipts/zs-deliver-work-complete.json",
+        "project/.work-receipts/zs-deliver-post-verification-v2.json",
+        "project/.work-receipts/zs-deliver-final-files.sha256",
+        "receipt-storage.json"
+      ]
+    },
+    {
+      "name": "fixture_isolation",
+      "passed": true,
+      "result": "Distinct namespace, seed, project and work IDs were checked against all observed scenario projects. Old and recovery clients are bound only to this actual interruption/resume chain; no prior-case task or result substitution was observed.",
+      "artifacts": [
+        "run.json",
+        "control/actual-recovery-binding.json",
+        "control/final-delivery-observation.json"
+      ]
+    },
+    {
+      "name": "independent_commit_and_remote_sha",
+      "passed": true,
+      "result": "Case-only artifact commit c518906ee888c155b0cb2043c327feedf0a9123f independently verified through Git and GitHub after push."
+    }
+  ],
+  "artifacts": [
+    "ledger/evidence/business/AWR-SC-006/control/actual-recovery-binding.json",
+    "ledger/evidence/business/AWR-SC-006/control/final-delivery-content-check-addendum.json",
+    "ledger/evidence/business/AWR-SC-006/control/final-delivery-content-check.json",
+    "ledger/evidence/business/AWR-SC-006/control/final-delivery-final.md",
+    "ledger/evidence/business/AWR-SC-006/control/final-delivery-observation.json",
+    "ledger/evidence/business/AWR-SC-006/control/final-delivery-review-extract.json",
+    "ledger/evidence/business/AWR-SC-006/control/final-delivery-sealed.json",
+    "ledger/evidence/business/AWR-SC-006/control/final-native-metadata.json",
+    "ledger/evidence/business/AWR-SC-006/control/independent-re-review.json",
+    "ledger/evidence/business/AWR-SC-006/control/independent-review.json",
+    "ledger/evidence/business/AWR-SC-006/control/initial-sealed.json",
+    "ledger/evidence/business/AWR-SC-006/control/native-input-audit.json",
+    "ledger/evidence/business/AWR-SC-006/control/prelude-proposals-business-extract.json",
+    "ledger/evidence/business/AWR-SC-006/control/prelude-sealed.json",
+    "ledger/evidence/business/AWR-SC-006/control/re-reviewer-identity-binding.json",
+    "ledger/evidence/business/AWR-SC-006/control/reviewer-identity-binding.json",
+    "ledger/evidence/business/AWR-SC-006/control/round-1-review-extract.json",
+    "ledger/evidence/business/AWR-SC-006/control/round-2-review-extract.json",
+    "ledger/evidence/business/AWR-SC-006/control/verified-interruption-binding.json",
+    "ledger/evidence/business/AWR-SC-006/gate-review.json",
+    "ledger/evidence/business/AWR-SC-006/history/round-1/deliverables/zhusheng-recovery-work.md",
+    "ledger/evidence/business/AWR-SC-006/history/round-2/deliverables/zhusheng-consistency.md",
+    "ledger/evidence/business/AWR-SC-006/manifest.json",
+    "ledger/evidence/business/AWR-SC-006/project/.work-receipts/zs-deliver-final-files.sha256",
+    "ledger/evidence/business/AWR-SC-006/project/.work-receipts/zs-deliver-post-verification-v2.json",
+    "ledger/evidence/business/AWR-SC-006/project/.work-receipts/zs-deliver-work-complete.json",
+    "ledger/evidence/business/AWR-SC-006/project/deliverables/zhusheng-consistency.md",
+    "ledger/evidence/business/AWR-SC-006/project/deliverables/zhusheng-interruption-diagnosis.md",
+    "ledger/evidence/business/AWR-SC-006/project/deliverables/zhusheng-recovery-work.md",
+    "ledger/evidence/business/AWR-SC-006/project/deliverables/zs-delivery.md",
+    "ledger/evidence/business/AWR-SC-006/project/deliverables/zs-independent-re-review.md",
+    "ledger/evidence/business/AWR-SC-006/project/deliverables/zs-independent-review.md",
+    "ledger/evidence/business/AWR-SC-006/publication-review.json",
+    "ledger/evidence/business/AWR-SC-006/receipt-storage.json",
+    "ledger/evidence/business/AWR-SC-006/round-1-inputs.json",
+    "ledger/evidence/business/AWR-SC-006/round-2-inputs.json",
+    "ledger/evidence/business/AWR-SC-006/run.json"
+  ],
+  "limitations": [
+    "Actual first prelude exited normally. The later operator SIGKILL is the interruption; the automatic observer did not inject it.",
+    "Old session never saved a checkpoint, so unpersisted work summaries cannot be claimed recovered.",
+    "Archive implementation, access and integrity, named people, duty, delegation, escalation and timing, and CR-03 facts remain unknown.",
+    "Milestone grouping remains in_progress; five work items are completed. No unsupported milestone mutation was used.",
+    "AWR actor and model labels are caller metadata; actual native model identity is separately bound.",
+    "The first invalid evidence input, original report, two post-completion command failures and first manifest blank-line warning remain historical; later corrected records are authoritative.",
+    "The completion proof is bounded recovery handoff, not archive implementation, staffing or milestone closure.",
+    "Native private context, memory, reasoning, full events and runtime databases remain local.",
+    "run.json is preparation history, not current model-call counts.",
+    "This acceptance binds the actual interrupted-recovery, business followups, independent correction/recheck and bounded maintenance handoff. It does not close the source milestone or establish operational deployment."
+  ],
+  "completion_claim": true
+}
