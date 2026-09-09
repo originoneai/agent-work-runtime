@@ -1,0 +1,33 @@
+{
+  "kind": "actual_prior_business_turn",
+  "phase": "round-1",
+  "client_task_id": "01a0839d-02e8-7b71-b9cf-2581edf080af",
+  "actual_user_turn": {
+    "timestamp": "2026-09-09T01:24:40.665Z",
+    "text": "现有报告只说明了本地结果，请补充实际使用过程的验证。"
+  },
+  "source_sha256": {
+    "project.toml": "f6a71b483010e06df6080321c15907bff3daa0ce592fae01405ed2fe98815b41",
+    "GOALS.md": "6422d45f96484905337108d38bd7077de94f0c8cf94f02a092eda6e04bb91d3f",
+    "PLAN.md": "0a7f619a201e82337b62680d8f7f9a869180e906f3c766081bc6a42e0cfdf8e1",
+    "RULES.md": "4205cb30134f1d5edbc8ee4837a6deaaf97ad23def6edb2fae11421bcadb2d28",
+    "work-ledger.yaml": "76991c89da1d8b6858e116c7615f96c63555172460243713340a0e494241a705",
+    "AGENTS.md": "d0ca28ca18c438aefdada6a14cb847a0664e261f9e8e48abbfd8701720eb66a2",
+    "DELIVERABLES.md": "990bb1e4842926fc666cfc0cd94598609d3280c6ca7924f73c5ac7f98be2e0a8"
+  },
+  "artifact_sha256": {
+    "deliverables/yunfan-delivery-receipt.md": "6ff2fa54a40711333e0bdfa968e4f7ec6b5a1d95e43ebd6d36f239c79b4f0caa",
+    "deliverables/yunfan-evidence-gaps-scope-correction-verification.json": "5a901d81478c4e2f691521c343a39bf1a18f0ef7daf6cc9ff5cee6371165c2fd",
+    "deliverables/yunfan-evidence-gaps-verification.json": "08857ad018402200a9e64d92adeb21ad2bebf2550cf70f35a888fb2a2e2b8593",
+    "deliverables/yunfan-evidence-gaps.md": "64cdf2bb1267c9f64bc2f6e16c5294557429181cfe7f4a7d3f4090f9a1a5e568",
+    "deliverables/yunfan-evidence-map-verification.json": "366996ae6999bf56479f41b13a10506d588054c9cf9f9e9739b060516f09f60f",
+    "deliverables/yunfan-provided-inputs-verification.json": "72e42d7eb94d562ffbe55040add5a827edfd4bb1a3cf4b4f7c02ca2e084720f0",
+    "deliverables/yunfan-usage-process-verification.json": "be2d9e7ec346ded69ed63199e7e6f9020fa70f8dcafae2509eb830547fb0d5cf",
+    "deliverables/yunfan-usage-report.md": "bfa30a29d86606a2723737f560c3c2751292130aab945324083e1b47d87af9c9"
+  },
+  "native_transcript_sha256": "82db6be60cb044b854539743cf34cd6c36be073838b7881460b22c410fd34481",
+  "events_sha256": "b04e52f4067f062514d8e1985e3c6dac0951f8bc93a2708cb84a6e5bd73753b6",
+  "sealed_at": "2026-09-09T10:12:09+08:00",
+  "final_message": "已补齐实际使用过程验证，但尚不能宣告最终交付。\n\n- 当前 Agent 已逐条处理项目提供的 3 个请求，每项保留首次回答、两轮返工、最终可执行说明及来源边界：[实际使用报告](/Users/mac/Documents/originone/agent-work-running/.local/business-live-20260909-v1/evidence-completion/project/deliverables/yunfan-usage-report.md:1)\n- 输入、输出及哈希已机器校验：[使用验证证据](/Users/mac/Documents/originone/agent-work-running/.local/business-live-20260909-v1/evidence-completion/project/deliverables/yunfan-provided-inputs-verification.json:1)\n- 10 条验收已逐条映射，缺证据项未宣告完成：[证据映射与状态回执](/Users/mac/Documents/originone/agent-work-running/.local/business-live-20260909-v1/evidence-completion/project/deliverables/yunfan-delivery-receipt.md:1)\n- AWR 当前为 `3/5 completed`，修订号 `201`；`doctor` 无异常、无活动会话。\n- 证据等级为 `locally_verified`。实际系统操作仍为 `0`，不能称为客户 UAT。\n- 剩余门槛是由不同参与者执行 `YF-REVIEW`；通过后才能推进 `YF-DELIVER`。本轮未伪造缺失字段，也未自签独立复核。\n- 未执行 Git 提交或推送。",
+  "note": "Copied historical evidence, not newly authored business output or a review conclusion."
+}

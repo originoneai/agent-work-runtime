@@ -1,0 +1,24 @@
+{
+  "event": {
+    "branch_id": null,
+    "created_at": 1788918740272,
+    "event_type": "evidence.recorded",
+    "id": "01M21XVD9GW2BJ3H5XHAYGV1N2",
+    "importance": "normal",
+    "payload": {
+      "evidence_id": "01M21XVD9G20DKXSZDSZ7520ZD",
+      "external_key": "YF-USE-PROVIDED-INPUTS-20260909",
+      "level": "locally_verified"
+    },
+    "project_id": "01M21SXMTAXZC58B2896N1076Y",
+    "project_revision": 172,
+    "session_id": null,
+    "summary": "Recorded evidence YF-USE-PROVIDED-INPUTS-20260909",
+    "work_item_id": "01M21SXMTFH2R9FBAZXVAMTK0T"
+  },
+  "freshness_basis": "runtime_database",
+  "ok": true,
+  "payload_included": true,
+  "project_revision": 198,
+  "source_refresh_performed": false
+}

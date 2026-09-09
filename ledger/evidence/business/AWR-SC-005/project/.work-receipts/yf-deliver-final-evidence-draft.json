@@ -1,0 +1,15 @@
+{
+  "work_item_key": "YF-DELIVER",
+  "external_key": "YF-DELIVER-FINAL-MATERIAL-PACKAGE-20260909",
+  "evidence_type": "report",
+  "level": "locally_verified",
+  "summary": "Final material package processes the independent no-rework conclusion, retains three guarded instructions, maps all ten criteria across their historical 6/4, post-review 8/2, and final 10/10 states, preserves corrected process history and failures, and assigns unresolved system facts. Real-system operations remain zero; customer UAT and whole-scenario E4 are not claimed.",
+  "locator": "deliverables/yf-delivery-verification.json",
+  "sha256": "316dbee7b66d7c23b4d8531760b2787b9022d5aa7fd7764736c08a1daeb73051",
+  "source_sha": "ed1368bf06806ff3227af899129d4914d5fe81e0",
+  "command": "rtk proxy python3 -c 'import hashlib,pathlib; P=pathlib.Path; h=lambda p:hashlib.sha256(P(p).read_bytes()).hexdigest(); expected={\"materials/help-draft.md\":\"bbb1980471ead2a84b1c641c0536ff81d547ec0beac7366db1439ad091520941\",\"materials/usage-inputs.csv\":\"b3fd3f7e16405a84fea59bbefb70d5ada50d7659a8cb7274d6f65be51897798f\",\"deliverables/yunfan-evidence-gaps.md\":\"60c9cdc0ad0ef3437c6666c94dbc9a5161c3bb0e370ef4b8a35d1a39899e6d14\",\"deliverables/yunfan-usage-report.md\":\"a8230b62891dbb0e2dc5eeafa302978692472ebb8fc7c04d2900de6d45420400\",\"deliverables/yunfan-delivery-receipt.md\":\"c8afa5315ea6594ac2c9ec9ec4766008eaa5b8ca82f7e0f6997327df7ed8ea10\",\"deliverables/yf-independent-review.md\":\"223f8d1727a2abc95c7210993e26b0b9ec82bf95627c33081ea29cfde33f4a79\",\".work-receipts/reviewer-report-verification-v2.json\":\"bea143eac208fc95cb49d01cd8d5410e3e03607eb8a56a5813d31f8704265d4d\",\"review-inputs/usage-process-observation.json\":\"29fa1f377f792204c13811480e515808563091f2b1f0691020d445f41e74093d\",\"deliverables/yf-delivery.md\":\"fa5acab77386abefebcab3cef9f190b2a1536592aeb7670ba63729b01186472c\"}; assert all(h(p)==v for p,v in expected.items()); s=P(\"deliverables/yf-delivery.md\").read_text(); rows=[\"G-1\",\"G-2\",\"U-1\",\"U-2\",\"M-1\",\"M-2\",\"R-1\",\"R-2\",\"D-1\",\"D-2\"]; assert all(s.count(\"| \"+x+\" |\")==1 for x in rows); assert all((P(\"review-inputs\")/x).is_dir() for x in [\"initial\",\"usage-scope-clarification\",\"round-1\",\"round-2\",\"process-correction\"]); assert all(x in s for x in [\"真实系统操作仍为 `0`\",\"使用者针对三条请求的后续追问 | `0`\",\"客户现场来源未知\",\"YF-DELIVER-FINAL-MATERIAL-PACKAGE-20260909\"]); print(\"PASS: final material delivery, provenance, mapping, history, responsibilities, and boundaries verified\")'",
+  "scope": [
+    "YF-DELIVER"
+  ],
+  "verified_at": 1788928154249
+}

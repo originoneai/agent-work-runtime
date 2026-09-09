@@ -1,0 +1,114 @@
+{
+  "kind": "actual_business_case_gate_review_before_remote_delivery",
+  "scenario_id": "AWR-SC-005",
+  "reviewed_at": "2026-09-09T13:12:12.307431+08:00",
+  "contract": "contracts/awr-v1.json",
+  "contract_sha256": "3ed22c45aa3fda0964fbcdd089a2d51d9779aee3c21d846f4c1b9d2a863666d9",
+  "fixture_contract_version": "1.0.1",
+  "runtime_source_commit": "4f6fd11c5283a4ddb52e6cb6fe8ef5a5fd8931aa",
+  "runtime_binary_sha256": "df3aee795905f87fe8bc0747a33b6e73c8a25cef0a072d0b2467e226d0d10217",
+  "business_fixture_seed_commit": "ed1368bf06806ff3227af899129d4914d5fe81e0",
+  "executor": "codex-cli:01a0839d-02e8-7b71-b9cf-2581edf080af",
+  "reviewer": "luna_worker:/root/client_handoff_setup",
+  "scope": "使用现有帮助材料处理三条请求，形成可执行说明、证据映射、独立复核与最终责任移交；实际外部系统操作仍未发生。",
+  "gates": {
+    "natural_client_initiation": {
+      "passed": true,
+      "evidence": [
+        "control/initial-sealed.json",
+        "control/native-input-audit.json"
+      ],
+      "result": "The exact natural request appears once in the actual native client. All six submitted business inputs are accounted for and manually reviewed, without internal IDs or state-machine coaching."
+    },
+    "tool_or_role_execution": {
+      "passed": true,
+      "evidence": [
+        "control/final-native-metadata.json",
+        "control/initial-review-extract.json",
+        "control/final-delivery-review-extract.json",
+        "control/reviewer-identity-binding.json"
+      ],
+      "result": "Six actual Codex business turns executed AWR and produced material. A distinct actual luna_worker performed independent review; its ended session and released claim were verified."
+    },
+    "real_artifact": {
+      "passed": true,
+      "evidence": [
+        "project/deliverables/yunfan-usage-report.md",
+        "project/deliverables/yunfan-evidence-gaps.md",
+        "project/deliverables/yunfan-delivery-receipt.md"
+      ],
+      "result": "The actual help usage explanation, evidence-gap assessment and criterion-to-evidence mapping preserve source citations and unknown system facts."
+    },
+    "business_followup_1": {
+      "passed": true,
+      "evidence": [
+        "round-1-inputs.json",
+        "control/round-1-review-extract.json",
+        "history/round-1/deliverables/yunfan-usage-report.md"
+      ],
+      "result": "A separate natural request asked for actual document-assisted usage. Three provided requests led to usable explanations and recorded revisions; six Agent-constructed checks are excluded from real user followup counts."
+    },
+    "business_followup_2": {
+      "passed": true,
+      "evidence": [
+        "round-2-inputs.json",
+        "control/round-2-review-extract.json",
+        "history/round-2/deliverables/yunfan-delivery-receipt.md",
+        "control/usage-process-observation.json"
+      ],
+      "result": "A second separate natural request asked for evidence against every criterion and corrected completion claims. The client produced and revised the ten-row mapping; later factual correction preserves the original versions."
+    },
+    "independent_review": {
+      "passed": true,
+      "evidence": [
+        "control/independent-review.json",
+        "control/reviewer-identity-binding.json",
+        "project/deliverables/yf-independent-review.md"
+      ],
+      "result": "The distinct reviewer checked the fixed 94-file five-stage packet and process observations. It accepted the corrected document-assisted usage scope, preserving the distinction between real business turns, constructed questions and zero external-system operations."
+    },
+    "final_delivery": {
+      "passed": true,
+      "evidence": [
+        "control/final-delivery-sealed.json",
+        "control/final-delivery-observation.json",
+        "project/deliverables/yf-delivery.md"
+      ],
+      "result": "After independent review the original native client delivered current explanations, current and historical evidence mappings, failure history, unresolved facts and downstream owners. Root read the full final artifact and verified that reviewed producer and reviewer files remained unchanged."
+    },
+    "traceable_receipt": {
+      "passed": true,
+      "evidence": [
+        "project/.work-receipts/yf-deliver-traceable-receipt.json",
+        "project/.work-receipts/yf-deliver-completion-event.json",
+        "project/deliverables/yf-delivery-verification.json",
+        "control/final-delivery-observation.json",
+        "receipt-storage.json"
+      ],
+      "result": "108 final receipt files, 19 JSON locator/hash bindings and 11 embedded table fingerprints match actual bytes. The applied completion event binds both acceptance criteria and the actual creating session. All five work items are completed, final session ended and all claims released at revision 492."
+    },
+    "fixture_isolation": {
+      "passed": true,
+      "evidence": [
+        "run.json",
+        "control/final-delivery-observation.json",
+        "control/independent-review.json"
+      ],
+      "result": "This independently prepared source repository, namespace, project and work graph have distinct runtime identities across all nine observed current/historical fixture databases. No reuse of another scenario business task, answer or result was observed in the reviewed execution and artifacts."
+    },
+    "independent_commit_and_remote_sha": {
+      "passed": false,
+      "evidence": [],
+      "result": "Pending a case-only artifact commit, matching independent Git/GitHub remote observations and a separate acceptance binding."
+    }
+  },
+  "limitations": [
+    "This isolated synthetic business loop delivers usable help material; no external account creation, import or feedback operation and no customer-origin proof exist.",
+    "The six embedded diagnostic questions are Agent-authored. Only the two actual separate canonical business requests count as followups.",
+    "Original scope mistakes, wrong arrival chronology, attribution errors, incomplete sessions and failed verification/completion attempts remain retained.",
+    "Native full context, global instructions, memory, thinking and runtime databases stay private; business extracts retain command/output fingerprints.",
+    "run.json describes preparation history, not final model-call or participant statistics.",
+    "No whole-case completion credit precedes separately verified remote delivery."
+  ],
+  "completion_claim": false
+}

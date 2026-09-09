@@ -1,0 +1,8 @@
+{
+  "ok": false,
+  "attempts": 3,
+  "command_shape": "awr session show --session <id>",
+  "error_code": "InvalidInput",
+  "error": "unexpected argument --session; session show requires positional ID",
+  "impact": "Read-only inspection failed; no runtime or producer source was changed. Retried with positional IDs."
+}

@@ -1,0 +1,24 @@
+{
+  "event": {
+    "branch_id": null,
+    "created_at": 1788921072257,
+    "event_type": "evidence.recorded",
+    "id": "01M2202JM1NP6G8R2YT37WRXNK",
+    "importance": "normal",
+    "payload": {
+      "evidence_id": "01M2202JM1P0G011K1XV50MBK6",
+      "external_key": "YF-GAPS-CURRENT-STATE-CORRECTION-V2-20260909",
+      "level": "locally_verified"
+    },
+    "project_id": "01M21SXMTAXZC58B2896N1076Y",
+    "project_revision": 221,
+    "session_id": null,
+    "summary": "Recorded evidence YF-GAPS-CURRENT-STATE-CORRECTION-V2-20260909",
+    "work_item_id": "01M21SXMTFP1XZKNNB49SCCTPE"
+  },
+  "freshness_basis": "runtime_database",
+  "ok": true,
+  "payload_included": true,
+  "project_revision": 228,
+  "source_refresh_performed": false
+}

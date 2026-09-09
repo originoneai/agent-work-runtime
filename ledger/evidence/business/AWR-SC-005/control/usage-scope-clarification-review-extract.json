@@ -1,0 +1,536 @@
+{
+  "kind": "sealed_native_client_turn_review_extract",
+  "phase": "usage-scope-clarification",
+  "client": "Codex CLI",
+  "client_task_id": "01a0839d-02e8-7b71-b9cf-2581edf080af",
+  "actual_user_turn": {
+    "timestamp": "2026-09-09T01:06:06.529Z",
+    "text": "这次验收的是交付文档在实际使用中的可用性：由当前 Agent 客户端根据文档处理使用者的问题，形成可执行的说明和可复查的过程记录，不需要登录另一个帮助中心网站。本轮先修正对验收范围和阻塞条件的理解，保留尚未执行的真实系统操作边界；具体使用请求稍后补充。"
+  },
+  "original_input_sha256": "919f6c2295222faf49620858c1aa97eb7d55ddff8774fd6efeecb9f3655740c0",
+  "native_transcript_snapshot_sha256": "b25782851b7c93315c7b29542954d847fd9c71f5ca9108aaff3410ce5e7040e1",
+  "events_sha256": "df64064d1b68250fcad21179ed3a098a36f2eb0f164e2b96a0ce550227c87305",
+  "final_message": "已完成验收范围与阻塞条件修正。\n\n- 当前 Agent 客户端已明确为实际使用客户端，无需登录其他帮助中心网站。\n- `YF-USE` 当前仅等待“具体使用请求”，不再等待入口、环境或账号。\n- 账号创建、CSV/JSON 导入、反馈提交均明确为尚未执行，说明文档不会冒充操作成功回执。\n- [使用验证报告](/Users/mac/Documents/originone/agent-work-running/.local/business-live-20260909-v1/evidence-completion/project/deliverables/yunfan-usage-report.md)及[证据缺口清单](/Users/mac/Documents/originone/agent-work-running/.local/business-live-20260909-v1/evidence-completion/project/deliverables/yunfan-evidence-gaps.md)已更新。\n- 新增[范围修正验证证据](/Users/mac/Documents/originone/agent-work-running/.local/business-live-20260909-v1/evidence-completion/project/deliverables/yunfan-evidence-gaps-scope-correction-verification.json)，SHA256 为 `5a901d81478c4e2f691521c343a39bf1a18f0ef7daf6cc9ff5cee6371165c2fd`。\n- `YF-GAPS` 已用修正证据重新完成；AWR 当前修订 `124`，Doctor 无异常、无活动认领。\n\n您稍后直接提供具体使用请求即可继续 `YF-USE`。",
+  "final_message_sha256": "47fb8ea18b9b444a0e7cc3eaaf9a4d40aeb9af2694a3a58a28af6d0cf10a89a6",
+  "project_sources_sha256": {
+    "project.toml": "f6a71b483010e06df6080321c15907bff3daa0ce592fae01405ed2fe98815b41",
+    "GOALS.md": "6422d45f96484905337108d38bd7077de94f0c8cf94f02a092eda6e04bb91d3f",
+    "PLAN.md": "0a7f619a201e82337b62680d8f7f9a869180e906f3c766081bc6a42e0cfdf8e1",
+    "RULES.md": "4205cb30134f1d5edbc8ee4837a6deaaf97ad23def6edb2fae11421bcadb2d28",
+    "work-ledger.yaml": "db17d5e73f5bda3e7a7513398e6f1fb7311c4440c30e1f07a3b1998612a29fc0",
+    "AGENTS.md": "d0ca28ca18c438aefdada6a14cb847a0664e261f9e8e48abbfd8701720eb66a2",
+    "DELIVERABLES.md": "990bb1e4842926fc666cfc0cd94598609d3280c6ca7924f73c5ac7f98be2e0a8"
+  },
+  "artifacts_sha256": {
+    "deliverables/yunfan-evidence-gaps-scope-correction-verification.json": "5a901d81478c4e2f691521c343a39bf1a18f0ef7daf6cc9ff5cee6371165c2fd",
+    "deliverables/yunfan-evidence-gaps-verification.json": "08857ad018402200a9e64d92adeb21ad2bebf2550cf70f35a888fb2a2e2b8593",
+    "deliverables/yunfan-evidence-gaps.md": "64cdf2bb1267c9f64bc2f6e16c5294557429181cfe7f4a7d3f4090f9a1a5e568",
+    "deliverables/yunfan-usage-report.md": "1dda2da89159a367f26c50ea2eea8c72f1decb47f9e542b6a8b785e1dd992d29"
+  },
+  "receipt_files": {
+    ".work-receipts/yf-gaps-completion-input.json": {
+      "sha256": "3f3db74d22ae767428d330bfce051983e539f0ef1aae9a7f04a525529009784e",
+      "bytes": 504
+    },
+    ".work-receipts/yf-gaps-completion.json": {
+      "sha256": "6206aa0cfa636d8c68c1aa63d48bcf53f54ab0fdfba622b3cb853b89632671ea",
+      "bytes": 6292
+    },
+    ".work-receipts/yf-gaps-evidence-add.json": {
+      "sha256": "4103b662e87b9a0c632a849abdaf7430c0f4a59b1fbedbc49e3bf379aa02455a",
+      "bytes": 1385
+    },
+    ".work-receipts/yf-gaps-evidence-draft.json": {
+      "sha256": "40a7dd405a13a25d4f8ccdc991d41bf56fb0c997f15dc6355819e087c11e76cf",
+      "bytes": 979
+    },
+    ".work-receipts/yf-gaps-scope-correction-completion-input.json": {
+      "sha256": "256cb8704375538a91fec6c97e706ba9ac0c2c4ee81930b94562562990da8211",
+      "bytes": 518
+    },
+    ".work-receipts/yf-gaps-scope-correction-completion.json": {
+      "sha256": "a7223e63a971f9b703ecdd53422b8ee1adf027a731e8380a4c3a57d523b91559",
+      "bytes": 6995
+    },
+    ".work-receipts/yf-gaps-scope-correction-evidence-add.json": {
+      "sha256": "a815a1fb5056420b1214aba7cd324b8c6b09e441f17d6e19a83eca5a718634fd",
+      "bytes": 1914
+    },
+    ".work-receipts/yf-gaps-scope-correction-evidence-draft.json": {
+      "sha256": "2278a39a48f97374aecc63a34596f40bc674a8067c6147f247d7e292c47ed36c",
+      "bytes": 1508
+    },
+    ".work-receipts/yf-use-block.json": {
+      "sha256": "1b3e0c579dac37d26a0577d680d84976f563761fc525de276e4ff7d2831de4ed",
+      "bytes": 4496
+    },
+    ".work-receipts/yf-use-scope-correction-block.json": {
+      "sha256": "0a3df91a75167a7d74bd0373c78180e4cfa5781b0ed728413a9509f31744dbbf",
+      "bytes": 4324
+    }
+  },
+  "commands": [
+    {
+      "event_line": 5,
+      "native_item_id": "item_1",
+      "exit_code": 0,
+      "command_sha256": "e1c79ba5ac376cc579b0c5e06cf7af1468beeb37f79b6d0877b218f01f228d8b",
+      "output_sha256": "6e22cc54cb02a5e98ae42d06d9d7292db0c1b43894831b32879beb0166b2aea7"
+    },
+    {
+      "event_line": 8,
+      "native_item_id": "item_3",
+      "exit_code": 0,
+      "command_sha256": "f3c5312855d725ca0b0c449dbbc86b869a5d43553325936ea0e54c77e2096944",
+      "output_sha256": "e0dc915f65f9e518278f3a51e579e8b65840fdff7b52a2a1fba3ce122f6829a3",
+      "business_tool_command": "/bin/zsh -lc 'rtk proxy <awr> work show YF-USE --project <business-project> --json'"
+    },
+    {
+      "event_line": 10,
+      "native_item_id": "item_4",
+      "exit_code": 0,
+      "command_sha256": "3f2a742384b50ea1659d1871412d9aca47062895544d45f0386bd927ab1f7687",
+      "output_sha256": "91e7c307b7363dacde0fc4b5f32bfa31d92cd1c8cc8004f38ca8699d1224fa22",
+      "business_tool_command": "/bin/zsh -lc 'rtk proxy <awr> status --project <business-project> --json'"
+    },
+    {
+      "event_line": 12,
+      "native_item_id": "item_5",
+      "exit_code": 0,
+      "command_sha256": "d98240baf110f3ad96138cb8ab405473c932ce90b3e8893f91e7176487172b51",
+      "output_sha256": "992b56b4457608c75377f1f1704cedca5028996f645685f115349d115e6b454e",
+      "business_tool_command": "/bin/zsh -lc 'rtk proxy <awr> work history YF-USE --project <business-project> --json'"
+    },
+    {
+      "event_line": 14,
+      "native_item_id": "item_6",
+      "exit_code": 0,
+      "command_sha256": "7aced30f80fcf4c953dab5e7838d900dcfca3f0bb30d8b638c0d42dcc219a7d6",
+      "output_sha256": "f2d437fb045caf8c3695b9784dec6999c77031c649efe4770bbb481354034547",
+      "business_tool_command": "/bin/zsh -lc 'rtk proxy <awr> session list --project <business-project> --json'"
+    },
+    {
+      "event_line": 16,
+      "native_item_id": "item_7",
+      "exit_code": 0,
+      "command_sha256": "c2d3c8bcf9219042daffabe866bcdc526a0a38fc137c158e8a8bd4d957eb7b37",
+      "output_sha256": "9fafbe76617fae06aff71041abfa84dfd6ddbb2818d449281f5fd0a7c9d74bb3"
+    },
+    {
+      "event_line": 18,
+      "native_item_id": "item_8",
+      "exit_code": 0,
+      "command_sha256": "77d396bfc276b3edacd94d71b02934bf83f1207940d7bd69d6a3049f1f060860",
+      "output_sha256": "60114d89ffec3caf786b23d1eaf769cfd723ee40e981b260c30e34f9e63c2cf1"
+    },
+    {
+      "event_line": 20,
+      "native_item_id": "item_9",
+      "exit_code": 0,
+      "command_sha256": "1aa71b4adee1cba7b261f2a8c48c0617c2245c380ce18f874eb02c743a438f4c",
+      "output_sha256": "8f9e94222c5dd73cb1338f8ed62450a26be30754badd0d11abe0b4fff7f37422"
+    },
+    {
+      "event_line": 22,
+      "native_item_id": "item_10",
+      "exit_code": 0,
+      "command_sha256": "0c743ec8e4449181c82d3c13c4f6b379c11333da19feff9c08bdf332d4b4c2e3",
+      "output_sha256": "1f4ee250941493c16f8dc087363cebb4414d7f0a850844826c89ae58f800077a"
+    },
+    {
+      "event_line": 25,
+      "native_item_id": "item_12",
+      "exit_code": 0,
+      "command_sha256": "72712d25fa081323b1c591978188b3cbb015985a2e41a5d2f5fb01fb1126c193",
+      "output_sha256": "67964cbd3c706a2a9dcab578544a3c345038ba8c485652fb2a63516cd2962d29",
+      "business_tool_command": "/bin/zsh -lc 'rtk proxy <awr> session resume --project <business-project> --from-session 01M21TEK3RJ1QV2YFW7K1QZWKQ --work YF-USE --agent codex-primary --provider openai --model gpt-5 --no-claim --budget 5000 --expected-revision 49 --json'"
+    },
+    {
+      "event_line": 27,
+      "native_item_id": "item_13",
+      "exit_code": 1,
+      "command_sha256": "5f6b21eba3c7599666bb80502da88687fb202e312bf8c1491912e5568b87b14a",
+      "output_sha256": "255f0d249f74afe235932e1ec34f6130005460c02c24292629a7cacda2f3485e",
+      "business_tool_command": "/bin/zsh -lc 'rtk proxy <awr> work unblock YF-USE --project <business-project> --session 01M21V96JS4PYZS8K2JWYYCWXQ --reason 用户已明确当前Agent客户端即实际使用客户端，不需要外部帮助中心入口或登录身份 --next-action 等待具体使用请求后由当前Agent根据交付文档形成可执行说明并保留可复查过程记录 --summary 已修正实际客户端定义并撤销错误的外部站点入口阻塞 --expected-revision 50 --json'"
+    },
+    {
+      "event_line": 30,
+      "native_item_id": "item_15",
+      "exit_code": 0,
+      "command_sha256": "4bd0b1fa82e26d16952704bbca04b6496ba86b28f88c0c4cd00c67c6b25fed08",
+      "output_sha256": "d79c272dec288124aba37aa8635eb657f434aa5e328e39a8faa6c3e75e50e656",
+      "business_tool_command": "/bin/zsh -lc 'rtk proxy <awr> work unblock YF-USE --project <business-project> --session 01M21V96JS4PYZS8K2JWYYCWXQ --reason 用户已明确当前Agent客户端即实际使用客户端，不需要外部帮助中心入口或登录身份 --next-action 等待具体使用请求后由当前Agent根据交付文档形成可执行说明并保留可复查过程记录 --expected-revision 50 --json'"
+    },
+    {
+      "event_line": 32,
+      "native_item_id": "item_16",
+      "exit_code": 0,
+      "command_sha256": "887ebdebf6e43b459ebab99879cd1c467a84d8e849f7345a1f0eea97e0abb136",
+      "output_sha256": "ccec7a185f13a20eaf21b0c08d24dddda8d235aea3e9be312b234c7aa8096f8e",
+      "business_tool_command": "/bin/zsh -lc 'rtk proxy <awr> work claim YF-USE --project <business-project> --session 01M21V96JS4PYZS8K2JWYYCWXQ --agent codex-primary --expected-revision 57 --json'"
+    },
+    {
+      "event_line": 34,
+      "native_item_id": "item_17",
+      "exit_code": 0,
+      "command_sha256": "139b29b9c3357dd2b0fd96f78e94308e9be39f76cc06b74ddc7b6076ec1c284d",
+      "output_sha256": "d624738f115b8457f8920cf539fc0d20c25548660cab5a26060527995b47bd88"
+    },
+    {
+      "event_line": 36,
+      "native_item_id": "item_18",
+      "exit_code": 0,
+      "command_sha256": "640a0a6474367194dcc6c4c975bce4fc588de6a12cf110a1a207ceba181e6d4a",
+      "output_sha256": "2cb2b4aa636f1b48ff8226625e20bc376e286dc25bd8f639eaa587da76a325a4"
+    },
+    {
+      "event_line": 38,
+      "native_item_id": "item_19",
+      "exit_code": 0,
+      "command_sha256": "239e3f7a47e4c9130861f2890fd90ecd9fc8713807e3aab291f582fa8417a29f",
+      "output_sha256": "c86d0d3f55b8b9e20134de4d4289128779d9e90d2b0a7c2c6b96ddd57d32c4e5"
+    },
+    {
+      "event_line": 40,
+      "native_item_id": "item_20",
+      "exit_code": 0,
+      "command_sha256": "66bb11db2ddf5432369ba3eab1a034f2457339ae35df809efc7f922ff3da1dbd",
+      "output_sha256": "1adda96c66111ef96cba013cdca944707f93fee557c5072ee34ec7282f757dae",
+      "business_tool_command": "/bin/zsh -lc 'rtk proxy <awr> work progress YF-USE --project <business-project> --session 01M21V96JS4PYZS8K2JWYYCWXQ --reason 根据用户澄清修正验收范围和当前等待条件 --next-action 等待具体使用请求后由当前Agent根据交付文档形成可执行说明并保留可复查过程记录 --summary 当前Agent客户端即实际使用客户端；本轮等待具体使用请求且不执行未授权的真实系统操作 --expected-revision 58 --json'"
+    },
+    {
+      "event_line": 42,
+      "native_item_id": "item_21",
+      "exit_code": 0,
+      "command_sha256": "9dfdde73bacc7bd4b5717603f076650823f5a91520d869d22ca8b4a9ddcd802f",
+      "output_sha256": "f6e4bf79cec7e21d0b344c90c3069aa2e9ddae15359d7139cf7674d7763c9a9d"
+    },
+    {
+      "event_line": 47,
+      "native_item_id": "item_24",
+      "exit_code": 0,
+      "command_sha256": "ae0441d9bf1284bad518be4b91b108b253bbdd64863f5afa144ee89bebc669da",
+      "output_sha256": "0a3df91a75167a7d74bd0373c78180e4cfa5781b0ed728413a9509f31744dbbf",
+      "business_tool_command": "/bin/zsh -lc 'rtk proxy <awr> work block YF-USE --project <business-project> --session 01M21V96JS4PYZS8K2JWYYCWXQ --reason 本轮仅修正验收范围与等待条件，具体使用请求将由用户稍后提供 --blocker 具体使用请求尚未提供，当前尚无可执行并留存问答与返工过程的真实输入 --next-action 用户提供具体使用请求后由当前Agent依据交付文档处理并记录原始问题、来源、回答、返工和未执行操作边界 --expected-revision 65 --json'"
+    },
+    {
+      "event_line": 49,
+      "native_item_id": "item_25",
+      "exit_code": 0,
+      "command_sha256": "0e3fd571d4c2b40ed36317981836200c4ee78b684bdd82aa69d020faa8c3df1d",
+      "output_sha256": "470b428a77044c6737d8c2acceb8c3559dec36cb0c1cbc196ab5daaf8c9e1626"
+    },
+    {
+      "event_line": 51,
+      "native_item_id": "item_26",
+      "exit_code": 0,
+      "command_sha256": "f3c5312855d725ca0b0c449dbbc86b869a5d43553325936ea0e54c77e2096944",
+      "output_sha256": "1c6e6d3fad37d78f4e95fd2c96191e7e7ef35ffc349bd6c8a63bb5d2ec01fcce",
+      "business_tool_command": "/bin/zsh -lc 'rtk proxy <awr> work show YF-USE --project <business-project> --json'"
+    },
+    {
+      "event_line": 53,
+      "native_item_id": "item_27",
+      "exit_code": 0,
+      "command_sha256": "3f2a742384b50ea1659d1871412d9aca47062895544d45f0386bd927ab1f7687",
+      "output_sha256": "b95544c420edd48687e7d6057bd830f3279e6af554591539ea23c9798ab3c7c2",
+      "business_tool_command": "/bin/zsh -lc 'rtk proxy <awr> status --project <business-project> --json'"
+    },
+    {
+      "event_line": 57,
+      "native_item_id": "item_29",
+      "exit_code": 0,
+      "command_sha256": "07321e6d839f7dc91f995db34c9bf81b7c68c5eae36b843eca3812b8ee00b2f1",
+      "output_sha256": "1c0e48679c769ccfb757a47a0b283eecf87051ca12c110ac1f495fe45134f24a",
+      "business_tool_command": "/bin/zsh -lc 'rtk proxy <awr> session checkpoint --project <business-project> --session 01M21V96JS4PYZS8K2JWYYCWXQ --work YF-USE --agent codex-primary --context-hash 152d935c3c58088ddcb1a1c70063a54c32817e92bf1121a173fff055993f10d8 --digest 已修正YF-USE验收范围：当前Agent为实际客户端，外部网站非前置条件 --next-action 用户提供具体使用请求后由当前Agent依据文档处理并保留问答、返工、来源与操作边界 --open-loop 具体使用请求尚未提供 --open-loop 真实系统操作仅在后续请求明确要求并获得相应授权时执行 --open-loop YF-REVIEW仍须由不同参与者完成 --changed-entity deliverables/yunfan-usage-report.md --expected-revision 72 --json'"
+    },
+    {
+      "event_line": 59,
+      "native_item_id": "item_30",
+      "exit_code": 0,
+      "command_sha256": "ccf624fe77713a60ec754678ea17e472084c6ec5d1ebc3003930fb5c49f6b723",
+      "output_sha256": "5a42b2852a5c8440b4dd7d395de1c77e5db382dc4ddbc59bd8c73c7e5d731e23",
+      "business_tool_command": "/bin/zsh -lc 'rtk proxy <awr> session end --project <business-project> --session 01M21V96JS4PYZS8K2JWYYCWXQ --agent codex-primary --work YF-USE --outcome incomplete --expected-revision 74 --json'"
+    },
+    {
+      "event_line": 62,
+      "native_item_id": "item_32",
+      "exit_code": 0,
+      "command_sha256": "5a635001e9b1b5af6e03be6f10888900200eb3bb40ea4c7a4cefc2be92423d22",
+      "output_sha256": "8951a677aa6fd38fe70709596356e6427966c26cd5dfe191a2aeac00279fd832",
+      "business_tool_command": "/bin/zsh -lc 'rtk proxy <awr> session start --project <business-project> --work YF-GAPS --agent codex-primary --provider openai --model gpt-5 --expected-revision 75 --json'"
+    },
+    {
+      "event_line": 64,
+      "native_item_id": "item_33",
+      "exit_code": 0,
+      "command_sha256": "cbefd65c3771e5062addbe8ebfbcc85ae1350304de4450c8e408c3ce055cae95",
+      "output_sha256": "74c3bf090a644309abaa2d8f9343415684eb07bcb6084e99cd829324600e4e17",
+      "business_tool_command": "/bin/zsh -lc 'rtk proxy <awr> context bootstrap --project <business-project> --session 01M21VMM2YDTBH08JCM59RR8BE --work YF-GAPS --agent codex-primary --budget 2000 --json'"
+    },
+    {
+      "event_line": 66,
+      "native_item_id": "item_34",
+      "exit_code": 0,
+      "command_sha256": "13990cd619023720bfe0e9b953b4533ce8d5dbfbb733693d0be2307c9f019ef0",
+      "output_sha256": "4b985cd5830ae5524f709292e321cd0d1b96a22439bea579be01a157555c4efc",
+      "business_tool_command": "/bin/zsh -lc 'rtk proxy <awr> context compile --project <business-project> --session 01M21VMM2YDTBH08JCM59RR8BE --work YF-GAPS --agent codex-primary --intent correct-acceptance-scope --budget 6000 --json'"
+    },
+    {
+      "event_line": 68,
+      "native_item_id": "item_35",
+      "exit_code": 0,
+      "command_sha256": "23d724533f86819800d9ebeb7669afb642d8c3b4fa1bd8a52fc632ee1cdce2d4",
+      "output_sha256": "00eb11e193956455e13b3e1dccdf27e4103c231effc4fd992155a98eb28f043e",
+      "business_tool_command": "/bin/zsh -lc 'rtk proxy <awr> work reopen YF-GAPS --project <business-project> --session 01M21VMM2YDTBH08JCM59RR8BE --reason 用户澄清当前Agent客户端即实际使用客户端，原证据缺口清单包含错误的外部客户端前置条件 --next-action 修正验收范围与缺口清单，新增验证证据后重新完成YF-GAPS --expected-revision 76 --json'"
+    },
+    {
+      "event_line": 70,
+      "native_item_id": "item_36",
+      "exit_code": 0,
+      "command_sha256": "18325bcf89ee4add31abf1c37a59e3974f548b725549faa0aabcb6db932472d7",
+      "output_sha256": "e8082c1213f0a0006ae7c40987f95d7167201b9775c7a1e1d3380dd6c968c413",
+      "business_tool_command": "/bin/zsh -lc 'rtk proxy <awr> work claim YF-GAPS --project <business-project> --session 01M21VMM2YDTBH08JCM59RR8BE --agent codex-primary --expected-revision 83 --json'"
+    },
+    {
+      "event_line": 72,
+      "native_item_id": "item_37",
+      "exit_code": 0,
+      "command_sha256": "b5639a5b5dfa621acfc20bff6ef88a69fb41c29c73d0c789aaa9c1abfa39b183",
+      "output_sha256": "392640f7707404d9949b888dfae0f941949bb3d6bfcc61857b71581ac6a0bb80",
+      "business_tool_command": "/bin/zsh -lc 'rtk proxy <awr> work progress YF-GAPS --project <business-project> --session 01M21VMM2YDTBH08JCM59RR8BE --reason 开始按用户澄清修正证据缺口清单和验证材料 --next-action 修正当前Agent客户端验收范围并验证具体请求等待条件与真实系统操作边界 --summary 正在以当前Agent为实际客户端修正证据缺口，不再要求外部帮助中心入口 --expected-revision 84 --json'"
+    },
+    {
+      "event_line": 76,
+      "native_item_id": "item_39",
+      "exit_code": 0,
+      "command_sha256": "3ac9086bfe1be974e56f22b7b4fae48a7dea6e3881f3c48686854fdaade399ca",
+      "output_sha256": "ccec31797354b335e5d8f5ca8b81c0a337a7f2f358f1a141c126bbc78d345aea"
+    },
+    {
+      "event_line": 78,
+      "native_item_id": "item_40",
+      "exit_code": 0,
+      "command_sha256": "a9dd8f014943cb0294d8e11fdd506d6d923010b1105f2011d84e7a7bc2918b2c",
+      "output_sha256": "1b220f3e0f26981b04bd31ca95519b18a6cac0427d73282fca6f67f6317ad75d"
+    },
+    {
+      "event_line": 80,
+      "native_item_id": "item_41",
+      "exit_code": 0,
+      "command_sha256": "9afcf9349e56bc75ea19dd8bd4f3bf062a538df8e231011ac7d2c1d83f6d13ba",
+      "output_sha256": "a0aea82ce9606f88882ec8d9c70f719c66a8fb3a4fa3d35aa8c5302fe661723f"
+    },
+    {
+      "event_line": 84,
+      "native_item_id": "item_43",
+      "exit_code": 0,
+      "command_sha256": "1365139dd901ef8defacac49596f52e53d53536c2f98b6322af32de8d7daefa8",
+      "output_sha256": "a17fcf0a2f50e2d495e4f90ce263410edc183add6c62699a2facbccf60410f74"
+    },
+    {
+      "event_line": 86,
+      "native_item_id": "item_44",
+      "exit_code": 0,
+      "command_sha256": "2fac457896b82f25bcdda4e9db87d6a45664a66e53d84288b4f33b6ec8316695",
+      "output_sha256": "7ee8b823fb28bd36ab149633f4f920dec1a66faec048a04274c951f1ffdf9b9c"
+    },
+    {
+      "event_line": 88,
+      "native_item_id": "item_45",
+      "exit_code": 0,
+      "command_sha256": "4d914bcab8936a8b1ed72b5d5348c8f304825ae6e9e1e8dbb3f3bd5c5e5b467b",
+      "output_sha256": "43406677117e9325a1014afaf7c092091c9a7455cba1cc8bd588137014988428"
+    },
+    {
+      "event_line": 92,
+      "native_item_id": "item_47",
+      "exit_code": 0,
+      "command_sha256": "85b244d88641d88ba15bbefa43a11d2af89103a1c601f6acba2e8274ffa747d5",
+      "output_sha256": "a17fcf0a2f50e2d495e4f90ce263410edc183add6c62699a2facbccf60410f74"
+    },
+    {
+      "event_line": 94,
+      "native_item_id": "item_48",
+      "exit_code": 0,
+      "command_sha256": "ab97699d042e7691853c97cd3b001398e730d2e3b5bd40041c9e0ce1f360c5e6",
+      "output_sha256": "a815a1fb5056420b1214aba7cd324b8c6b09e441f17d6e19a83eca5a718634fd",
+      "business_tool_command": "/bin/zsh -lc 'rtk proxy <awr> evidence add --project <business-project> --input .work-receipts/yf-gaps-scope-correction-evidence-draft.json --expected-revision 91 --json'"
+    },
+    {
+      "event_line": 99,
+      "native_item_id": "item_50",
+      "exit_code": 0,
+      "command_sha256": "9017081a1a5f715eebef9e246876bfbcc56cac7fface1ab12e9d7ed76d2766dd",
+      "output_sha256": "a17fcf0a2f50e2d495e4f90ce263410edc183add6c62699a2facbccf60410f74"
+    },
+    {
+      "event_line": 100,
+      "native_item_id": "item_51",
+      "exit_code": 0,
+      "command_sha256": "8c8ceba83b67c1d2aebd04874f72692b27797c4af512e0ad2f81b32d64bc56b9",
+      "output_sha256": "cd7c8609a86d7298b23c6743dce8a99a26b9df61b2d06ac5137d624cd4319bab",
+      "business_tool_command": "/bin/zsh -lc 'rtk proxy <awr> evidence show YF-GAPS-SCOPE-CORRECTION-20260909 --project <business-project> --source-sha ed1368bf06806ff3227af899129d4914d5fe81e0 --content --json'"
+    },
+    {
+      "event_line": 102,
+      "native_item_id": "item_52",
+      "exit_code": 0,
+      "command_sha256": "4d2b9eb895071b53b507596b877ec3aead1450010ef08d165cd3a76ac32e277d",
+      "output_sha256": "a17fcf0a2f50e2d495e4f90ce263410edc183add6c62699a2facbccf60410f74"
+    },
+    {
+      "event_line": 104,
+      "native_item_id": "item_53",
+      "exit_code": 0,
+      "command_sha256": "2e1ecf77d82bdbed3df6be632374e1824d448ac821c4df5a80c57a99a6d8b1b5",
+      "output_sha256": "cd58f2d2122efb7611d8acb8107241b3699c53dd6cd2fc18b9ae6b82bf4d07f8",
+      "business_tool_command": "/bin/zsh -lc 'rtk proxy <awr> work complete YF-GAPS --project <business-project> --session 01M21VMM2YDTBH08JCM59RR8BE --reason 已按用户澄清修正实际客户端范围、等待条件和真实系统操作边界并通过本地验证 --input <business-project>/.work-receipts/yf-gaps-scope-correction-completion-input.json --expected-revision 92 --json'"
+    },
+    {
+      "event_line": 109,
+      "native_item_id": "item_56",
+      "exit_code": 0,
+      "command_sha256": "3ac9086bfe1be974e56f22b7b4fae48a7dea6e3881f3c48686854fdaade399ca",
+      "output_sha256": "ccec31797354b335e5d8f5ca8b81c0a337a7f2f358f1a141c126bbc78d345aea"
+    },
+    {
+      "event_line": 111,
+      "native_item_id": "item_57",
+      "exit_code": 0,
+      "command_sha256": "fc6f14f6d3f76aa06126c4748c72782a754e29efe401826197a6639f43d45350",
+      "output_sha256": "a17fcf0a2f50e2d495e4f90ce263410edc183add6c62699a2facbccf60410f74"
+    },
+    {
+      "event_line": 113,
+      "native_item_id": "item_58",
+      "exit_code": 0,
+      "command_sha256": "653ec611151fe05afae963d27b31618554738a547721523e85adcb3f14e57f64",
+      "output_sha256": "2f63bbf03ee8535cb085ab727b7aec93d472c9b75a9ded468b63a4ae97a67055",
+      "business_tool_command": "/bin/zsh -lc 'rtk proxy <awr> work show YF-GAPS --project <business-project> --source-sha ed1368bf06806ff3227af899129d4914d5fe81e0 --json'"
+    },
+    {
+      "event_line": 116,
+      "native_item_id": "item_60",
+      "exit_code": 0,
+      "command_sha256": "a5fa438da22cb02c0229afd2b2a04acfc32ac288027fbc36e58c79b3221ab6d3",
+      "output_sha256": "9149a3617b9648535e2d89ec9077afa326ba8fb78ef622f9f1aca7a5dc40d311",
+      "business_tool_command": "/bin/zsh -lc 'rtk proxy <awr> work reopen YF-GAPS --project <business-project> --session 01M21VMM2YDTBH08JCM59RR8BE --reason 已完成修正但工作摘要和下一步仍为进行时，需要与当前事实一致 --next-action 固化已完成的范围修正摘要并以现有验证证据重新完成YF-GAPS --expected-revision 99 --json'"
+    },
+    {
+      "event_line": 118,
+      "native_item_id": "item_61",
+      "exit_code": 0,
+      "command_sha256": "aede5d3407f87aa2a9081d6e70f3727c96b6440dc630492e38aec4878db2b6d6",
+      "output_sha256": "4af3363f40a7a06bfd7e3f440400eec1a2698a5da6666e3a1cf81b279c958f8d",
+      "business_tool_command": "/bin/zsh -lc 'rtk proxy <awr> work claim YF-GAPS --project <business-project> --session 01M21VMM2YDTBH08JCM59RR8BE --agent codex-primary --expected-revision 106 --json'"
+    },
+    {
+      "event_line": 120,
+      "native_item_id": "item_62",
+      "exit_code": 0,
+      "command_sha256": "e40ef9950678776f24d69400f868f57b7cd275b068eb309892be54eed45e126a",
+      "output_sha256": "b42d35e378b46474093343d33403ec346f34660c9443dd522f1a1627f99a569f",
+      "business_tool_command": "/bin/zsh -lc 'rtk proxy <awr> work progress YF-GAPS --project <business-project> --session 01M21VMM2YDTBH08JCM59RR8BE --reason 固化范围修正后的最终摘要和后续动作 --next-action 等待用户提供具体使用请求后继续YF-USE，本项无需更多动作 --summary 已修正验收范围：当前Agent为实际客户端；具体请求待提供，真实系统操作保持未执行边界 --expected-revision 107 --json'"
+    },
+    {
+      "event_line": 122,
+      "native_item_id": "item_63",
+      "exit_code": 0,
+      "command_sha256": "5547e376526e7e09ef0d5402d644557a9eb60fa15443623d9db590c8235a15ba",
+      "output_sha256": "059f2696d0c745ea78b5ba9801314d0f07941b23692fee5aaf2594cd5dff401c",
+      "business_tool_command": "/bin/zsh -lc 'rtk proxy <awr> work complete YF-GAPS --project <business-project> --session 01M21VMM2YDTBH08JCM59RR8BE --reason 范围修正材料与最终摘要已一致并继续绑定已验证修正证据 --input <business-project>/.work-receipts/yf-gaps-scope-correction-completion-input.json --expected-revision 114 --json'"
+    },
+    {
+      "event_line": 124,
+      "native_item_id": "item_64",
+      "exit_code": 0,
+      "command_sha256": "424011b7ff42f73c19b3a35716209ab08a605d04e33b05ba4211cb8a54567a7c",
+      "output_sha256": "27a0f0be9e64164451be92db83bef6e52d3fb167f0cdc9b82a43abbaaa7612bd",
+      "business_tool_command": "/bin/zsh -lc 'rtk proxy <awr> session checkpoint --project <business-project> --session 01M21VMM2YDTBH08JCM59RR8BE --work YF-GAPS --agent codex-primary --context-hash f82ff3ce3b732a14ec69b10d80c05c2e21732cd78944b8cbbb20365caf508841 --digest YF-GAPS已按澄清后的范围重新完成并绑定修正验证证据 --next-action 等待用户提供具体使用请求后恢复YF-USE在当前Agent客户端执行 --open-loop 具体使用请求尚未提供 --open-loop 真实系统操作保持未执行，后续如需执行须按请求与授权另行核对 --open-loop YF-REVIEW仍须由不同参与者完成 --changed-entity deliverables/yunfan-evidence-gaps.md --changed-entity deliverables/yunfan-evidence-gaps-scope-correction-verification.json --expected-revision 121 --json'"
+    },
+    {
+      "event_line": 126,
+      "native_item_id": "item_65",
+      "exit_code": 0,
+      "command_sha256": "e5ae835ff8a17fcc9364b24c259c3b5c058d3148b14a2ec0cb889272c932871d",
+      "output_sha256": "a8904629ba6c03b9fbfcfbb855b6a5479a89d51ab27cc3a7706fda59dbae6e3e",
+      "business_tool_command": "/bin/zsh -lc 'rtk proxy <awr> session end --project <business-project> --session 01M21VMM2YDTBH08JCM59RR8BE --agent codex-primary --work YF-GAPS --outcome ended --expected-revision 123 --json'"
+    },
+    {
+      "event_line": 129,
+      "native_item_id": "item_67",
+      "exit_code": 0,
+      "command_sha256": "653ec611151fe05afae963d27b31618554738a547721523e85adcb3f14e57f64",
+      "output_sha256": "2b2d0bd4328570873abb85a800a562271dd05ab5471afe964fdf760bdb6daa60",
+      "business_tool_command": "/bin/zsh -lc 'rtk proxy <awr> work show YF-GAPS --project <business-project> --source-sha ed1368bf06806ff3227af899129d4914d5fe81e0 --json'"
+    },
+    {
+      "event_line": 131,
+      "native_item_id": "item_68",
+      "exit_code": 0,
+      "command_sha256": "3f2a742384b50ea1659d1871412d9aca47062895544d45f0386bd927ab1f7687",
+      "output_sha256": "0f59ab0bc6fbb6d6fce426a3777fe0de82e7d1bb1a6e79d323585da85cdd3e08",
+      "business_tool_command": "/bin/zsh -lc 'rtk proxy <awr> status --project <business-project> --json'"
+    },
+    {
+      "event_line": 133,
+      "native_item_id": "item_69",
+      "exit_code": 0,
+      "command_sha256": "96efd1affaf8a0bae99d441b31331365f8fbde6340a126517b99eb797ee0e37a",
+      "output_sha256": "8912cbea6efada84fd142af315c450e11173d8bed8b4f5aec48cf87ceefa9382",
+      "business_tool_command": "/bin/zsh -lc 'rtk proxy <awr> ready --project <business-project> --json'"
+    },
+    {
+      "event_line": 135,
+      "native_item_id": "item_70",
+      "exit_code": 0,
+      "command_sha256": "f3c5312855d725ca0b0c449dbbc86b869a5d43553325936ea0e54c77e2096944",
+      "output_sha256": "92072e1683b5cc403d9df474157d60acffd0868d9c7fb2fb538c2b90b51909b6",
+      "business_tool_command": "/bin/zsh -lc 'rtk proxy <awr> work show YF-USE --project <business-project> --json'"
+    },
+    {
+      "event_line": 137,
+      "native_item_id": "item_71",
+      "exit_code": 0,
+      "command_sha256": "7aced30f80fcf4c953dab5e7838d900dcfca3f0bb30d8b638c0d42dcc219a7d6",
+      "output_sha256": "0d3f00d07451a33673823bd61436959a4680f7643f3755f1020659126f2b3997",
+      "business_tool_command": "/bin/zsh -lc 'rtk proxy <awr> session list --project <business-project> --json'"
+    },
+    {
+      "event_line": 139,
+      "native_item_id": "item_72",
+      "exit_code": 0,
+      "command_sha256": "3ac9086bfe1be974e56f22b7b4fae48a7dea6e3881f3c48686854fdaade399ca",
+      "output_sha256": "ccec31797354b335e5d8f5ca8b81c0a337a7f2f358f1a141c126bbc78d345aea"
+    },
+    {
+      "event_line": 141,
+      "native_item_id": "item_73",
+      "exit_code": 0,
+      "command_sha256": "e134ee386af24890415d7dd819727f22c44a87188c5d67ff8277948a75857a23",
+      "output_sha256": "aa511af2416b153ebcb1dbaa4a5064a42c46421dde70086a792f00dda879a68d",
+      "business_tool_command": "/bin/zsh -lc 'rtk proxy <awr> doctor --project <business-project> --json'"
+    },
+    {
+      "event_line": 143,
+      "native_item_id": "item_74",
+      "exit_code": 0,
+      "command_sha256": "0c743ec8e4449181c82d3c13c4f6b379c11333da19feff9c08bdf332d4b4c2e3",
+      "output_sha256": "1f4ee250941493c16f8dc087363cebb4414d7f0a850844826c89ae58f800077a"
+    },
+    {
+      "event_line": 145,
+      "native_item_id": "item_75",
+      "exit_code": 0,
+      "command_sha256": "87896e506d9cb7594e7d15544db8714dc5df897196b38e830f360d89f7c31f0b",
+      "output_sha256": "fd53f75ec87ee5e28f478ad29842af086bb2404a67e33bd7b2fbfb147dd4a273"
+    }
+  ],
+  "original_recorded_at": "2026-09-09T09:24:27+08:00",
+  "all_snapshot_hashes_verified": true,
+  "limitations": [
+    "Extract only. Raw native context remains private. Independent review, later business revisions, final delivery and remote verification are separate requirements."
+  ],
+  "e4_completion_claim": false
+}

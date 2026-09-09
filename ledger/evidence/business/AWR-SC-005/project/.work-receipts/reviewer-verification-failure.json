@@ -1,0 +1,8 @@
+{
+  "ok": false,
+  "stage": "independent local verification",
+  "error_type": "FileNotFoundError",
+  "error": "control/review-input-publication.json",
+  "cause": "Path dot parent resolved to dot instead of the scenario parent",
+  "impact": "No review conclusion or producer file was written; rerun with an absolute resolved project path."
+}

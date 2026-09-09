@@ -1,0 +1,28 @@
+{
+  "event_id": "01M21VVJQ66881Q7X4ZQF1W7HR",
+  "evidence": {
+    "branch_id": null,
+    "command": "rtk proxy awk 'BEGIN{a=b=c=d=e=f=g=h=i=j=0;bad=0} /当前 Agent 客户端就是本轮实际使用客户端/{a=1} /不需要登录另一个帮助中心网站/{b=1} /具体使用请求.*尚未/{c=1} /真实系统操作尚未执行/{d=1} /文件存在检查/{e=1} /独立复核/{f=1} /实际使用客户端：当前 Agent 客户端/{g=1} /真实系统操作：`0`/{h=1} /不会将说明文档当作成功回执/{i=1} /用户提供具体使用请求后/{j=1} /实际客户端入口和验收身份未明确|当前没有可归属到本项目的客户端入口|云帆帮助中心的实际客户端名称与入口/{bad=1} END{if (!(a&&b&&c&&d&&e&&f&&g&&h&&i&&j) || bad) exit 1; print \"PASS: scope correction, evidence layers, waiting condition, and operation boundary are present\"}' deliverables/yunfan-evidence-gaps.md deliverables/yunfan-usage-report.md",
+    "evidence_type": "report",
+    "external_key": "YF-GAPS-SCOPE-CORRECTION-20260909",
+    "id": "01M21VVJQ6EXCHG68NJA0VDWMA",
+    "level": "locally_verified",
+    "locator": "deliverables/yunfan-evidence-gaps-scope-correction-verification.json",
+    "project_id": "01M21SXMTAXZC58B2896N1076Y",
+    "revision": 1,
+    "scope": [
+      "YF-GAPS"
+    ],
+    "sha256": "5a901d81478c4e2f691521c343a39bf1a18f0ef7daf6cc9ff5cee6371165c2fd",
+    "source_ref": null,
+    "source_sha": "ed1368bf06806ff3227af899129d4914d5fe81e0",
+    "summary": "Verified corrected acceptance scope: current Agent is the actual-use client, concrete requests remain pending, and real-system operations remain explicitly unexecuted.",
+    "verified_at": 1788916553000,
+    "work_item_id": "01M21SXMTFP1XZKNNB49SCCTPE"
+  },
+  "freshness_basis": "source_refresh",
+  "ok": true,
+  "project_revision": 92,
+  "source_refresh_performed": true,
+  "validation_basis": "caller_supplied_bindings"
+}

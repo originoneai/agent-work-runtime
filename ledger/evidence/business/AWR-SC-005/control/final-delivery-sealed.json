@@ -1,0 +1,55 @@
+{
+  "kind": "actual_client_turn_snapshot",
+  "recorded_at": "2026-09-09T13:05:04+08:00",
+  "phase": "final-delivery",
+  "client": "Codex CLI",
+  "client_task_id": "01a0839d-02e8-7b71-b9cf-2581edf080af",
+  "actual_user_turn": {
+    "timestamp": "2026-09-09T04:17:48.032Z",
+    "text": "请根据独立复核结论完成本次帮助中心材料交付，把当前说明、证据对应关系、复核结果和后续责任整理清楚，更新最终工作记录并给出可追溯回执。保留各轮原始版本及已纠正的过程问题，准确说明哪些只是文档协助使用、哪些实际系统操作尚未进行；仍然缺少的事实和待办继续明确移交。"
+  },
+  "input_sha256": "c89b033858539d6392d319966e5db0383f921fb90ea0ec61a9d7a19ddc1a2736",
+  "events_local": ".local/business-live-20260909-v1/evidence-completion/control/final-delivery-events.jsonl",
+  "events_sha256": "aad3017e8710497f621e8d5f7fc947588ebd66abfa66fb2517c0a8f1e304609e",
+  "native_transcript_snapshot_local": ".local/business-live-20260909-v1/evidence-completion/control/final-delivery-snapshot/native-transcript.jsonl",
+  "native_transcript_snapshot_sha256": "bf04851e896fc60144afe9dcf4488fefc4ceaf6220b22e9ecd120469041245af",
+  "final_message_sha256": "1b0055b8b3129a2fe20f51d9264f9f18a2f68243da401e018648d49d5883859d",
+  "project_sources_sha256": {
+    "project.toml": "f6a71b483010e06df6080321c15907bff3daa0ce592fae01405ed2fe98815b41",
+    "GOALS.md": "6422d45f96484905337108d38bd7077de94f0c8cf94f02a092eda6e04bb91d3f",
+    "PLAN.md": "0a7f619a201e82337b62680d8f7f9a869180e906f3c766081bc6a42e0cfdf8e1",
+    "RULES.md": "0d685c2f575e04fba4892a56ca4f7ff8caf9abeff2090c391f0490b9e28cec36",
+    "work-ledger.yaml": "5a7d87d474f0cc6c126f6c4332e1089712a9c398777c741199f02b8c71a695a1",
+    "AGENTS.md": "d0ca28ca18c438aefdada6a14cb847a0664e261f9e8e48abbfd8701720eb66a2",
+    "DELIVERABLES.md": "990bb1e4842926fc666cfc0cd94598609d3280c6ca7924f73c5ac7f98be2e0a8"
+  },
+  "artifacts_sha256": {
+    "deliverables/yf-delivery-verification.json": "316dbee7b66d7c23b4d8531760b2787b9022d5aa7fd7764736c08a1daeb73051",
+    "deliverables/yf-delivery.md": "fa5acab77386abefebcab3cef9f190b2a1536592aeb7670ba63729b01186472c",
+    "deliverables/yf-independent-review.md": "223f8d1727a2abc95c7210993e26b0b9ec82bf95627c33081ea29cfde33f4a79",
+    "deliverables/yunfan-delivery-receipt.md": "c8afa5315ea6594ac2c9ec9ec4766008eaa5b8ca82f7e0f6997327df7ed8ea10",
+    "deliverables/yunfan-evidence-gaps-current-v2-verification.json": "4a5f9383572157b0ff916e3f706cd9638db5372284f38d065a917abf250eca5e",
+    "deliverables/yunfan-evidence-gaps-current-v3-verification.json": "f8e25f0b5e8e7caec1a0af9fdb84f3f77e1fd51db8efd173dec9d0212fc34477",
+    "deliverables/yunfan-evidence-gaps-current-verification.json": "5c1ad73a0c13bf9835fc7df243106c3da7583a2d74c87986dcd8c929ae4e02c7",
+    "deliverables/yunfan-evidence-gaps-scope-correction-verification.json": "5a901d81478c4e2f691521c343a39bf1a18f0ef7daf6cc9ff5cee6371165c2fd",
+    "deliverables/yunfan-evidence-gaps-verification.json": "08857ad018402200a9e64d92adeb21ad2bebf2550cf70f35a888fb2a2e2b8593",
+    "deliverables/yunfan-evidence-gaps.md": "60c9cdc0ad0ef3437c6666c94dbc9a5161c3bb0e370ef4b8a35d1a39899e6d14",
+    "deliverables/yunfan-evidence-map-v2-verification.json": "bf927f45d3ec091cd7580afa9634d2b0600b1473705939f8b3734a5ca8ab6908",
+    "deliverables/yunfan-evidence-map-v3-verification.json": "69a659909671a6d02ef7feba6cc8c13e995b496e6bed676c1c2800d42c9543c0",
+    "deliverables/yunfan-evidence-map-verification.json": "366996ae6999bf56479f41b13a10506d588054c9cf9f9e9739b060516f09f60f",
+    "deliverables/yunfan-provided-inputs-v2-verification.json": "e259316cf0665826f10c8170995752495f567dfe4e0f25a5d4c6b97da5d65bd9",
+    "deliverables/yunfan-provided-inputs-verification.json": "72e42d7eb94d562ffbe55040add5a827edfd4bb1a3cf4b4f7c02ca2e084720f0",
+    "deliverables/yunfan-usage-process-verification.json": "be2d9e7ec346ded69ed63199e7e6f9020fa70f8dcafae2509eb830547fb0d5cf",
+    "deliverables/yunfan-usage-report.md": "a8230b62891dbb0e2dc5eeafa302978692472ebb8fc7c04d2900de6d45420400"
+  },
+  "tool_event_counts": {
+    "agent_message": 6,
+    "command_execution": 116,
+    "error": 1,
+    "file_change": 15
+  },
+  "command_executions": 116,
+  "nonzero_commands": 7,
+  "snapshot_local": ".local/business-live-20260909-v1/evidence-completion/control/final-delivery-snapshot",
+  "e4_completion_claim": false
+}

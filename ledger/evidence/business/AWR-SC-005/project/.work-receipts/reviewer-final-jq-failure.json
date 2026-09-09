@@ -1,0 +1,7 @@
+{
+  "ok": false,
+  "stage": "final JSON parse check",
+  "error": "jq parse error on deliverables/yf-independent-review.md",
+  "cause": "Markdown review report was mistakenly included in a jq JSON file list",
+  "impact": "The preceding independent Python assertions succeeded and wrote reviewer-final-verification.json; no artifact or runtime state changed. JSON-only retry follows."
+}

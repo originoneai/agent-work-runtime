@@ -1,0 +1,22 @@
+{
+  "blocked_count": 0,
+  "branch_id": null,
+  "counts": {
+    "completed": 5
+  },
+  "current": [],
+  "current_total": 0,
+  "freshness_basis": "source_refresh",
+  "next_action": "No nonterminal work remains in current source projections.",
+  "ok": true,
+  "project": "云帆帮助中心验收",
+  "project_id": "01M21SXMTAXZC58B2896N1076Y",
+  "project_revision": 482,
+  "read_only": false,
+  "ready_count": 0,
+  "source_issues": [],
+  "source_refresh_performed": true,
+  "source_warnings": 0,
+  "suggested_work": null,
+  "total": 5
+}

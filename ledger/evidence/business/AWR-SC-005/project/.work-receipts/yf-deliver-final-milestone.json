@@ -1,0 +1,45 @@
+{
+  "content_included": true,
+  "freshness_basis": "source_refresh",
+  "object": {
+    "acceptance": [],
+    "external_key": "YF-DELIVERY",
+    "id": "01M21SXMTFAB7EG7XFRN8QXVDZ",
+    "kind": "milestone",
+    "revision": 2,
+    "scope": [],
+    "source_ref": {
+      "end_line": null,
+      "locator": "file:///Users/mac/Documents/originone/agent-work-running/.local/business-live-20260909-v1/evidence-completion/project/work-ledger.yaml",
+      "pointer": "/milestones/0",
+      "section_fingerprint": null,
+      "source_fingerprint": "sha256:5a7d87d474f0cc6c126f6c4332e1089712a9c398777c741199f02b8c71a695a1",
+      "source_id": "01M21SXMTEKPF53VQJ6EZD036W",
+      "source_revision": 55,
+      "start_line": null
+    },
+    "status": "completed",
+    "summary": "",
+    "title": "云帆帮助中心验收交付"
+  },
+  "ok": true,
+  "project_revision": 492,
+  "source": {
+    "adapter": "yaml-ledger-v1",
+    "config": {
+      "adapter_options": {},
+      "adapter_version": 1,
+      "mapping_key": "ledger|work-ledger.yaml"
+    },
+    "domain": "ledger",
+    "fingerprint": "sha256:5a7d87d474f0cc6c126f6c4332e1089712a9c398777c741199f02b8c71a695a1",
+    "format": "yaml",
+    "freshness": "fresh",
+    "id": "01M21SXMTEKPF53VQJ6EZD036W",
+    "locator": "file:///Users/mac/Documents/originone/agent-work-running/.local/business-live-20260909-v1/evidence-completion/project/work-ledger.yaml",
+    "project_id": "01M21SXMTAXZC58B2896N1076Y",
+    "revision": 55,
+    "role": "primary"
+  },
+  "source_refresh_performed": true
+}

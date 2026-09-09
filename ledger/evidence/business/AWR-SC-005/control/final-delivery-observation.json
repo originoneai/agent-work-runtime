@@ -1,0 +1,326 @@
+{
+  "kind": "root_read_only_actual_final_delivery_observation",
+  "at": "2026-09-09T13:10:38.504186+08:00",
+  "native_task_id": "01a0839d-02e8-7b71-b9cf-2581edf080af",
+  "actual_exit_code": 0,
+  "final_artifact": {
+    "path": "deliverables/yf-delivery.md",
+    "sha256": "fa5acab77386abefebcab3cef9f190b2a1536592aeb7670ba63729b01186472c"
+  },
+  "receipt_files_verified": 108,
+  "current_artifacts_verified": 17,
+  "reviewed_producer_artifacts_unchanged": 14,
+  "independent_review_files_unchanged": 35,
+  "json_locator_hash_bindings": [
+    {
+      "path": "deliverables/yf-independent-review.md",
+      "sha256": "223f8d1727a2abc95c7210993e26b0b9ec82bf95627c33081ea29cfde33f4a79",
+      "observed_in": "deliverables/yf-delivery-verification.json"
+    },
+    {
+      "path": ".work-receipts/reviewer-report-verification-v2.json",
+      "sha256": "bea143eac208fc95cb49d01cd8d5410e3e03607eb8a56a5813d31f8704265d4d",
+      "observed_in": "deliverables/yf-delivery-verification.json"
+    },
+    {
+      "path": "materials/help-draft.md",
+      "sha256": "bbb1980471ead2a84b1c641c0536ff81d547ec0beac7366db1439ad091520941",
+      "observed_in": "deliverables/yf-delivery-verification.json"
+    },
+    {
+      "path": "materials/usage-inputs.csv",
+      "sha256": "b3fd3f7e16405a84fea59bbefb70d5ada50d7659a8cb7274d6f65be51897798f",
+      "observed_in": "deliverables/yf-delivery-verification.json"
+    },
+    {
+      "path": "deliverables/yunfan-evidence-gaps.md",
+      "sha256": "60c9cdc0ad0ef3437c6666c94dbc9a5161c3bb0e370ef4b8a35d1a39899e6d14",
+      "observed_in": "deliverables/yf-delivery-verification.json"
+    },
+    {
+      "path": "deliverables/yunfan-usage-report.md",
+      "sha256": "a8230b62891dbb0e2dc5eeafa302978692472ebb8fc7c04d2900de6d45420400",
+      "observed_in": "deliverables/yf-delivery-verification.json"
+    },
+    {
+      "path": "deliverables/yunfan-delivery-receipt.md",
+      "sha256": "c8afa5315ea6594ac2c9ec9ec4766008eaa5b8ca82f7e0f6997327df7ed8ea10",
+      "observed_in": "deliverables/yf-delivery-verification.json"
+    },
+    {
+      "path": "review-inputs/usage-process-observation.json",
+      "sha256": "29fa1f377f792204c13811480e515808563091f2b1f0691020d445f41e74093d",
+      "observed_in": "deliverables/yf-delivery-verification.json"
+    },
+    {
+      "path": "deliverables/yf-delivery.md",
+      "sha256": "fa5acab77386abefebcab3cef9f190b2a1536592aeb7670ba63729b01186472c",
+      "observed_in": "deliverables/yf-delivery-verification.json"
+    },
+    {
+      "path": "deliverables/yf-delivery.md",
+      "sha256": "fa5acab77386abefebcab3cef9f190b2a1536592aeb7670ba63729b01186472c",
+      "observed_in": ".work-receipts/yf-deliver-traceable-receipt.json"
+    },
+    {
+      "path": "deliverables/yf-delivery-verification.json",
+      "sha256": "316dbee7b66d7c23b4d8531760b2787b9022d5aa7fd7764736c08a1daeb73051",
+      "observed_in": ".work-receipts/yf-deliver-traceable-receipt.json"
+    },
+    {
+      "path": "deliverables/yf-independent-review.md",
+      "sha256": "223f8d1727a2abc95c7210993e26b0b9ec82bf95627c33081ea29cfde33f4a79",
+      "observed_in": ".work-receipts/yf-deliver-traceable-receipt.json"
+    },
+    {
+      "path": ".work-receipts/reviewer-report-verification-v2.json",
+      "sha256": "bea143eac208fc95cb49d01cd8d5410e3e03607eb8a56a5813d31f8704265d4d",
+      "observed_in": ".work-receipts/yf-deliver-traceable-receipt.json"
+    },
+    {
+      "path": ".work-receipts/yf-deliver-completion-event.json",
+      "sha256": "0458eef418860b98d9c90b94bcf59d02c089875480597b954ec6bbbc787c4f99",
+      "observed_in": ".work-receipts/yf-deliver-traceable-receipt.json"
+    },
+    {
+      "path": ".work-receipts/yf-deliver-final-status-r492.json",
+      "sha256": "cd619800860325a52ede48eeba4d7a862e69497d30e05b36c82b5e03bbc6d621",
+      "observed_in": ".work-receipts/yf-deliver-traceable-receipt.json"
+    },
+    {
+      "path": ".work-receipts/yf-deliver-final-milestone.json",
+      "sha256": "cb014dae6bbcb945437905162955c4c164ee58d437a6327c91bc285ab95e8c95",
+      "observed_in": ".work-receipts/yf-deliver-traceable-receipt.json"
+    },
+    {
+      "path": ".work-receipts/yf-deliver-doctor-r492.json",
+      "sha256": "6d117d48330bf81322d0bef1dad3971c0362101a0b5e8d2bc16d52f68b9ab6b0",
+      "observed_in": ".work-receipts/yf-deliver-traceable-receipt.json"
+    },
+    {
+      "path": ".work-receipts/yf-deliver-milestone-proposal-apply.json",
+      "sha256": "5962642c481ca18fb553d7f0d67aadce05a6ad18576607e4829e2e230e291f6e",
+      "observed_in": ".work-receipts/yf-deliver-traceable-receipt.json"
+    },
+    {
+      "path": ".work-receipts/yf-deliver-session-end.json",
+      "sha256": "146219630da6c3d0b2f59bdbbfc86a70edd4f398c0b401751924aa4fab088384",
+      "observed_in": ".work-receipts/yf-deliver-traceable-receipt.json"
+    }
+  ],
+  "embedded_table_hash_bindings_verified": [
+    "materials/help-draft.md",
+    "materials/usage-inputs.csv",
+    "deliverables/yunfan-evidence-gaps.md",
+    "deliverables/yunfan-evidence-gaps-current-v3-verification.json",
+    "deliverables/yunfan-usage-report.md",
+    "deliverables/yunfan-provided-inputs-v2-verification.json",
+    "deliverables/yunfan-delivery-receipt.md",
+    "deliverables/yunfan-evidence-map-v3-verification.json",
+    "deliverables/yf-independent-review.md",
+    ".work-receipts/reviewer-report-verification-v2.json",
+    "review-inputs/usage-process-observation.json"
+  ],
+  "project_revision": 492,
+  "works": [
+    {
+      "id": "01M21SXMTFP1XZKNNB49SCCTPE",
+      "external_key": "YF-GAPS",
+      "status": "completed"
+    },
+    {
+      "id": "01M21SXMTFH2R9FBAZXVAMTK0T",
+      "external_key": "YF-USE",
+      "status": "completed"
+    },
+    {
+      "id": "01M21SXMTFFQY17VMTREVGWSWQ",
+      "external_key": "YF-MAP",
+      "status": "completed"
+    },
+    {
+      "id": "01M21SXMTF2EE6WKF2GZ7EVC43",
+      "external_key": "YF-REVIEW",
+      "status": "completed"
+    },
+    {
+      "id": "01M21SXMTFW7Y503D3704QK3AV",
+      "external_key": "YF-DELIVER",
+      "status": "completed"
+    }
+  ],
+  "final_session": {
+    "id": "01M226DZ32RQK3N9Z25423FNHR",
+    "status": "ended",
+    "last_checkpoint_id": "01M2275BV3ND7RKSM67PAA9N58"
+  },
+  "claims": [
+    {
+      "id": "01M21SYQWCDQWCRKWS12EZ8V8F",
+      "status": "released",
+      "session_id": "01M21SYQWB4JHZNNCDMZXS0TZC"
+    },
+    {
+      "id": "01M21TEK3S0YW1BRJW191Y46C6",
+      "status": "released",
+      "session_id": "01M21TEK3RJ1QV2YFW7K1QZWKQ"
+    },
+    {
+      "id": "01M21VA91KT2HQGD6AWRQV3SSH",
+      "status": "released",
+      "session_id": "01M21V96JS4PYZS8K2JWYYCWXQ"
+    },
+    {
+      "id": "01M21VNSHQR845RPJH8437R9GF",
+      "status": "released",
+      "session_id": "01M21VMM2YDTBH08JCM59RR8BE"
+    },
+    {
+      "id": "01M21W3CSZJJDKMTM4DQ0MSY99",
+      "status": "released",
+      "session_id": "01M21VMM2YDTBH08JCM59RR8BE"
+    },
+    {
+      "id": "01M21WFX8HSHQG11J3FP76YASF",
+      "status": "released",
+      "session_id": "01M21WEX0N9SY8GB5BQ93EADQZ"
+    },
+    {
+      "id": "01M21XAD14TR4FS2M2DZJ1R0AE",
+      "status": "released",
+      "session_id": "01M21XAD13ZHWFB5A2NEDC080P"
+    },
+    {
+      "id": "01M21XF2MM30CM65YE9V8V3W93",
+      "status": "released",
+      "session_id": "01M21XDXGSVKPYN49DPNV4VTCK"
+    },
+    {
+      "id": "01M21XXXB8B9V3DR8CP4Q5GH1T",
+      "status": "released",
+      "session_id": "01M21XXXB7WXT30PEKQ7406DFD"
+    },
+    {
+      "id": "01M21ZD4N85520N13Y54B7ZTNV",
+      "status": "released",
+      "session_id": "01M21ZBSG1QAVFXWPQQZBDJWKJ"
+    },
+    {
+      "id": "01M2207SZ6WDCHPYRYPXP0VV1W",
+      "status": "released",
+      "session_id": "01M2206SDG6XMY4VAVC16Z0CTE"
+    },
+    {
+      "id": "01M220TC04JPBECDKS7GMWM91M",
+      "status": "released",
+      "session_id": "01M220TBHZH8J3S20W19W2YSWE"
+    },
+    {
+      "id": "01M220VCW4DVCZBM3FRM234Z8S",
+      "status": "released",
+      "session_id": "01M220VCE82QTMX248VFJ17CHX"
+    },
+    {
+      "id": "01M220WEGHK820Z3W38994ZJFS",
+      "status": "released",
+      "session_id": "01M220WE2EXE6PQ8QFXVBJ8R71"
+    },
+    {
+      "id": "01M221J0Q8ZXQD5XSK4EKEB5HY",
+      "status": "released",
+      "session_id": "01M221GCWERHQK678TY58PF390"
+    },
+    {
+      "id": "01M2222YHSCH4399D83T80C7D8",
+      "status": "released",
+      "session_id": "01M2221XVZXZADSY5YZYGQAM5R"
+    },
+    {
+      "id": "01M222DCB5NRMG6CNDSCMWMF2M",
+      "status": "released",
+      "session_id": "01M222CDB257Q5DN2VTJZQG2YH"
+    },
+    {
+      "id": "01M224VSS8FS9N4MKM8BFWBMTW",
+      "status": "released",
+      "session_id": "01M224VSS7GA3E7T9VF92TPQB3"
+    },
+    {
+      "id": "01M226DZ32DDGJWSWPKQ3C3BG9",
+      "status": "released",
+      "session_id": "01M226DZ32RQK3N9Z25423FNHR"
+    }
+  ],
+  "actual_work_completed_event": {
+    "id": "01M2273FEEQ2GWVEDC5M61W295",
+    "event_type": "work.completed",
+    "session_id": null,
+    "project_revision": 482,
+    "creating_session_id": "01M226DZ32RQK3N9Z25423FNHR",
+    "acceptance_mappings_verified": 2
+  },
+  "fixture_isolation": [
+    {
+      "run": ".local/business-live-20260909-v1/branch-handoff",
+      "project_id": "01M21RCT0BMJ03YZWEC6H0JGV8",
+      "distinct_work_items": 5
+    },
+    {
+      "run": ".local/business-live-20260909-v1/evidence-completion",
+      "project_id": "01M21SXMTAXZC58B2896N1076Y",
+      "distinct_work_items": 5
+    },
+    {
+      "run": ".local/business-live-20260909-v1/interrupted-write",
+      "project_id": "01M21VJFYF7E75EQ55DEH3D5TS",
+      "distinct_work_items": 5
+    },
+    {
+      "run": ".local/business-live-20260909-v1/long-task-resume",
+      "project_id": "01M21S7N6RNH8JE1KAP73K5576",
+      "distinct_work_items": 5
+    },
+    {
+      "run": ".local/business-live-20260909-v1/parallel-ownership",
+      "project_id": "01M21W3H8XNKD8AKP4N1JNQQTM",
+      "distinct_work_items": 6
+    },
+    {
+      "run": ".local/business-live-20260909-v1/project-onboarding",
+      "project_id": "01M21QQH4Z2YQCA7PQZDZ8STC9",
+      "distinct_work_items": 4
+    },
+    {
+      "run": ".local/business-live-20260909-v1/restricted-material",
+      "project_id": "01M21RM2NCQH6GQGRPZ32GMB0M",
+      "distinct_work_items": 5
+    },
+    {
+      "run": ".local/business-live-20260909-v1/source-change",
+      "project_id": "01M21R5CNDAT34RYH0ZM7SFMX6",
+      "distinct_work_items": 5
+    },
+    {
+      "run": ".local/business-live-20260909-v2/branch-handoff",
+      "project_id": "01M225JCPGD1D9FF03WTQS3XHE",
+      "distinct_work_items": 5
+    }
+  ],
+  "business_scope": "Actual Agent document-assisted help usage and material delivery; external system operations and customer-origin evidence remain absent.",
+  "process_facts": {
+    "project_requests": 3,
+    "agent_constructed_questions": 6,
+    "inner_user_followups": 0,
+    "source_material_edits": 0,
+    "explanation_revision_chains": 3,
+    "real_system_operations": 0,
+    "canonical_business_followups": 2
+  },
+  "failure_history_preserved": true,
+  "entire_final_artifact_read_by_root": true,
+  "operator_verification_attempts": [
+    "The first root read-only attempt expected a direct event.session_id binding and stopped. The event has session_id=null and binds the actual producer via payload.creating_session_id; that actual field and both acceptance mappings are now checked. No business state was changed."
+  ],
+  "runtime_mutation_performed": false,
+  "e4_completion_claim": false
+}

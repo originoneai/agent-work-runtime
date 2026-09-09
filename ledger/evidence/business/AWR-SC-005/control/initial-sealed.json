@@ -1,0 +1,42 @@
+{
+  "kind": "actual_client_turn_snapshot",
+  "recorded_at": "2026-09-09T09:05:20+08:00",
+  "phase": "initial",
+  "client": "Codex CLI",
+  "client_task_id": "01a0839d-02e8-7b71-b9cf-2581edf080af",
+  "actual_user_turn": {
+    "timestamp": "2026-09-09T00:41:44.377Z",
+    "text": "请检查这项工作是否已经具备交付条件，补齐必要的验证材料后完成交付。"
+  },
+  "input_sha256": "9e7c5348e5c5cfe60cfef7c912e0d229001bd9d8427321b47cafe2892d8b8713",
+  "events_local": ".local/business-live-20260909-v1/evidence-completion/control/initial-events.jsonl",
+  "events_sha256": "da47d041e210f137a94d10b975476032e0473552e07a241fd3ca7fd040ff0d7d",
+  "native_transcript_snapshot_local": ".local/business-live-20260909-v1/evidence-completion/control/initial-snapshot/native-transcript.jsonl",
+  "native_transcript_snapshot_sha256": "ce8595e160ab5c3eb97842830805f6934cfdad71572e9ed7432b9ecfa043dc1a",
+  "final_message_sha256": "1c46bd03642f38f9f79d388234f9bdf369222e8923b4cd328a28abeff1512e35",
+  "project_sources_sha256": {
+    "project.toml": "f6a71b483010e06df6080321c15907bff3daa0ce592fae01405ed2fe98815b41",
+    "GOALS.md": "6422d45f96484905337108d38bd7077de94f0c8cf94f02a092eda6e04bb91d3f",
+    "PLAN.md": "0a7f619a201e82337b62680d8f7f9a869180e906f3c766081bc6a42e0cfdf8e1",
+    "RULES.md": "4205cb30134f1d5edbc8ee4837a6deaaf97ad23def6edb2fae11421bcadb2d28",
+    "work-ledger.yaml": "9c6529797b58d77591690f592d6b4071a1f3d6b772846f055a64858893b2e1ac",
+    "AGENTS.md": "d0ca28ca18c438aefdada6a14cb847a0664e261f9e8e48abbfd8701720eb66a2",
+    "DELIVERABLES.md": "990bb1e4842926fc666cfc0cd94598609d3280c6ca7924f73c5ac7f98be2e0a8"
+  },
+  "artifacts_sha256": {
+    "deliverables/yunfan-evidence-gaps-verification.json": "08857ad018402200a9e64d92adeb21ad2bebf2550cf70f35a888fb2a2e2b8593",
+    "deliverables/yunfan-evidence-gaps.md": "5dfd3e70cd59d16f4713a126a10be01df7b3b9f3859bbc7ad805538a2c86dc28",
+    "deliverables/yunfan-usage-report.md": "003d4c5d1d9934ab5c53576e66a8b4103f6924e6215f3ea330f3188810983818"
+  },
+  "tool_event_counts": {
+    "error": 1,
+    "agent_message": 9,
+    "command_execution": 97,
+    "mcp_tool_call": 2,
+    "file_change": 7
+  },
+  "command_executions": 97,
+  "nonzero_commands": 1,
+  "snapshot_local": ".local/business-live-20260909-v1/evidence-completion/control/initial-snapshot",
+  "e4_completion_claim": false
+}

@@ -1,0 +1,20 @@
+{
+  "version": 1,
+  "source_sha": "ed1368bf06806ff3227af899129d4914d5fe81e0",
+  "minimum_level": "locally_verified",
+  "acceptance": [
+    {
+      "criterion": "每条验收有实际证据引用，缺证据时不得宣告完成。",
+      "evidence": [
+        "YF-MAP-CRITERIA-MATRIX-20260909"
+      ]
+    },
+    {
+      "criterion": "保留实际产物与来源引用，无法确认的内容显式说明。",
+      "evidence": [
+        "YF-MAP-CRITERIA-MATRIX-20260909"
+      ]
+    }
+  ],
+  "required_evidence": []
+}

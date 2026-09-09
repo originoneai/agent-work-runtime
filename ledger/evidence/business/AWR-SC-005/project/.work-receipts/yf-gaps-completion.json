@@ -1,0 +1,155 @@
+{
+  "ok": true,
+  "code": "proposal_recorded",
+  "project_revision": 28,
+  "proposal": {
+    "id": "01M21TC8ATK33QDVJ4XF7XW9YN",
+    "project_id": "01M21SXMTAXZC58B2896N1076Y",
+    "work_item_id": "01M21SXMTFP1XZKNNB49SCCTPE",
+    "source_id": "01M21SXMTEKPF53VQJ6EZD036W",
+    "base_fingerprint": "sha256:42e7e5caf9aabfd40cabe47f29cc5843162a4e3352c1f1e45373f60c7ec984b9",
+    "expected_revision": 21,
+    "mutation_type": "work.complete",
+    "patch": {
+      "changes": {
+        "evidence": [
+          "deliverables/yunfan-evidence-gaps-verification.json"
+        ],
+        "status": "completed",
+        "verification": {
+          "evidence_level": "locally_verified"
+        }
+      },
+      "intent": "已完成交付与证据缺口核对并以当前材料验证两条验收边界",
+      "source_config": {
+        "adapter_options": {},
+        "adapter_version": 1,
+        "mapping_key": "ledger|work-ledger.yaml"
+      },
+      "target": {
+        "kind": "work_item",
+        "meta": {
+          "external_key": "YF-GAPS",
+          "id": "01M21SXMTFP1XZKNNB49SCCTPE",
+          "revision": 2,
+          "source_ref": {
+            "end_line": null,
+            "locator": "file:///Users/mac/Documents/originone/agent-work-running/.local/business-live-20260909-v1/evidence-completion/project/work-ledger.yaml",
+            "pointer": "/work_items/0",
+            "section_fingerprint": null,
+            "source_fingerprint": "sha256:42e7e5caf9aabfd40cabe47f29cc5843162a4e3352c1f1e45373f60c7ec984b9",
+            "source_id": "01M21SXMTEKPF53VQJ6EZD036W",
+            "source_revision": 2,
+            "start_line": null
+          }
+        }
+      },
+      "version": 1,
+      "work_action": {
+        "action": "complete",
+        "completion": {
+          "acceptance": [
+            {
+              "criterion": "区分文件存在检查、实际使用验证和独立复核。",
+              "evidence": [
+                "01M21TAC3V3CC971WQRFC8JZHT"
+              ]
+            },
+            {
+              "criterion": "保留实际产物与来源引用，无法确认的内容显式说明。",
+              "evidence": [
+                "01M21TAC3V3CC971WQRFC8JZHT"
+              ]
+            }
+          ],
+          "evidence": [
+            {
+              "branch_id": null,
+              "command": "rtk proxy awk 'BEGIN{a=b=c=d=e=f=g=0} /文件存在检查/{a=1} /实际使用验证/{b=1} /独立复核/{c=1} /无法确认/{d=1} /materials\\/help-draft.md:1-3/{e=1} /materials\\/local-check.md:1-2/{f=1} /RULES.md:1-7/{g=1} END{if (!(a&&b&&c&&d&&e&&f&&g)) exit 1; print \"PASS: required evidence-boundary markers and source references are present\"}' deliverables/yunfan-evidence-gaps.md",
+              "evidence_type": "report",
+              "external_key": "YF-GAPS-READINESS-20260909",
+              "id": "01M21TAC3V3CC971WQRFC8JZHT",
+              "level": "locally_verified",
+              "locator": "deliverables/yunfan-evidence-gaps-verification.json",
+              "project_id": "01M21SXMTAXZC58B2896N1076Y",
+              "revision": 1,
+              "scope": [
+                "YF-GAPS"
+              ],
+              "sha256": "08857ad018402200a9e64d92adeb21ad2bebf2550cf70f35a888fb2a2e2b8593",
+              "source_ref": null,
+              "source_sha": "ed1368bf06806ff3227af899129d4914d5fe81e0",
+              "summary": "Verified delivery-readiness gap inventory with explicit evidence-tier boundaries, source references, and retained unknowns.",
+              "verified_at": 1788914950000,
+              "work_item_id": "01M21SXMTFP1XZKNNB49SCCTPE"
+            }
+          ],
+          "minimum_level": "locally_verified",
+          "source_sha": "ed1368bf06806ff3227af899129d4914d5fe81e0",
+          "version": 1
+        },
+        "from": "in_progress",
+        "to": "completed"
+      }
+    },
+    "status": "applied",
+    "created_by_session": "01M21SYQWB4JHZNNCDMZXS0TZC",
+    "revision": 5
+  },
+  "event": {
+    "id": "01M21TC8CE8V7ANNQ46EPBRJKD",
+    "project_id": "01M21SXMTAXZC58B2896N1076Y",
+    "work_item_id": "01M21SXMTFP1XZKNNB49SCCTPE",
+    "session_id": null,
+    "branch_id": null,
+    "event_type": "work.completed",
+    "importance": "normal",
+    "summary": "Verified source work action Complete",
+    "payload": {
+      "action_reason": "已完成交付与证据缺口核对并以当前材料验证两条验收边界",
+      "actor": "codex-primary",
+      "after_fingerprint": "sha256:704c91411843055685567cfb54ee57c66e0dfbf9b9f3241a260fd8231d4600a0",
+      "attempt_event_id": "01M21TC8BS265V8KF2X1YPYH3W",
+      "before_fingerprint": "sha256:42e7e5caf9aabfd40cabe47f29cc5843162a4e3352c1f1e45373f60c7ec984b9",
+      "creating_session_id": "01M21SYQWB4JHZNNCDMZXS0TZC",
+      "proposal_id": "01M21TC8ATK33QDVJ4XF7XW9YN",
+      "reason": "已完成交付与证据缺口核对并以当前材料验证两条验收边界",
+      "released_claim_ids": [
+        "01M21SYQWCDQWCRKWS12EZ8V8F"
+      ],
+      "source_id": "01M21SXMTEKPF53VQJ6EZD036W",
+      "source_revision": 3,
+      "target_after_hash": "905d8bf70f2633e9379b04616ed519a33b5e0f50d44b55e4b4dd86f2faf377d8",
+      "target_revision": 3,
+      "work_action": {
+        "action": "complete",
+        "from": "in_progress",
+        "to": "completed"
+      },
+      "write_plan_id": "01M21TC8B77TEN21350K6E30HV"
+    },
+    "project_revision": 28,
+    "created_at": 1788915097998
+  },
+  "source_refresh_performed": true,
+  "source_write_performed": true,
+  "write_outcome": "applied",
+  "apply_attempt": {
+    "event_id": "01M21TC8BS265V8KF2X1YPYH3W",
+    "proposal_id": "01M21TC8ATK33QDVJ4XF7XW9YN",
+    "source_id": "01M21SXMTEKPF53VQJ6EZD036W",
+    "project_revision": 25,
+    "plan": {
+      "id": "01M21TC8B77TEN21350K6E30HV",
+      "before_fingerprint": "sha256:42e7e5caf9aabfd40cabe47f29cc5843162a4e3352c1f1e45373f60c7ec984b9",
+      "after_fingerprint": "sha256:704c91411843055685567cfb54ee57c66e0dfbf9b9f3241a260fd8231d4600a0",
+      "before_size": 2566,
+      "after_size": 2629,
+      "target_after_hash": "905d8bf70f2633e9379b04616ed519a33b5e0f50d44b55e4b4dd86f2faf377d8"
+    },
+    "resolved_event_id": "01M21TC8CE8V7ANNQ46EPBRJKD"
+  },
+  "recovery_directory": ".awr/mutations/01M21TC8B77TEN21350K6E30HV",
+  "source_check": null,
+  "error": null
+}

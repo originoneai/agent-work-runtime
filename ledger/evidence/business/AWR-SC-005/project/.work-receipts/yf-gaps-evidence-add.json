@@ -1,0 +1,28 @@
+{
+  "event_id": "01M21TAC3WJPMPAGSRBWQDRKC0",
+  "evidence": {
+    "branch_id": null,
+    "command": "rtk proxy awk 'BEGIN{a=b=c=d=e=f=g=0} /文件存在检查/{a=1} /实际使用验证/{b=1} /独立复核/{c=1} /无法确认/{d=1} /materials\\/help-draft.md:1-3/{e=1} /materials\\/local-check.md:1-2/{f=1} /RULES.md:1-7/{g=1} END{if (!(a&&b&&c&&d&&e&&f&&g)) exit 1; print \"PASS: required evidence-boundary markers and source references are present\"}' deliverables/yunfan-evidence-gaps.md",
+    "evidence_type": "report",
+    "external_key": "YF-GAPS-READINESS-20260909",
+    "id": "01M21TAC3V3CC971WQRFC8JZHT",
+    "level": "locally_verified",
+    "locator": "deliverables/yunfan-evidence-gaps-verification.json",
+    "project_id": "01M21SXMTAXZC58B2896N1076Y",
+    "revision": 1,
+    "scope": [
+      "YF-GAPS"
+    ],
+    "sha256": "08857ad018402200a9e64d92adeb21ad2bebf2550cf70f35a888fb2a2e2b8593",
+    "source_ref": null,
+    "source_sha": "ed1368bf06806ff3227af899129d4914d5fe81e0",
+    "summary": "Verified delivery-readiness gap inventory with explicit evidence-tier boundaries, source references, and retained unknowns.",
+    "verified_at": 1788914950000,
+    "work_item_id": "01M21SXMTFP1XZKNNB49SCCTPE"
+  },
+  "freshness_basis": "source_refresh",
+  "ok": true,
+  "project_revision": 21,
+  "source_refresh_performed": true,
+  "validation_basis": "caller_supplied_bindings"
+}

@@ -1,0 +1,108 @@
+{
+  "ok": true,
+  "code": "proposal_recorded",
+  "project_revision": 475,
+  "proposal": {
+    "id": "01M2272TTXCFRA8YN4M5C4C0ZH",
+    "project_id": "01M21SXMTAXZC58B2896N1076Y",
+    "work_item_id": "01M21SXMTFW7Y503D3704QK3AV",
+    "source_id": "01M21SXMTEKPF53VQJ6EZD036W",
+    "base_fingerprint": "sha256:eb4e3e592af9daec58cdc14d6bebb506f3365ee2c29282ae45a3795d150cc919",
+    "expected_revision": 468,
+    "mutation_type": "work.progress",
+    "patch": {
+      "changes": {
+        "next_action": "材料交付完成后，由各责任方补齐系统事实；如需真实系统验收、客户UAT或整场E4，另立任务并保留真实回执",
+        "status": "in_progress",
+        "summary": "独立复核通过后已形成最终材料包、十条最终证据对应和责任移交；文档交付范围内可完成，真实系统操作仍为0，不授予客户UAT或整场E4"
+      },
+      "intent": "最终交付件及机器验证已形成并登记，更新完成摘要和后续责任",
+      "source_config": {
+        "adapter_options": {},
+        "adapter_version": 1,
+        "mapping_key": "ledger|work-ledger.yaml"
+      },
+      "target": {
+        "kind": "work_item",
+        "meta": {
+          "external_key": "YF-DELIVER",
+          "id": "01M21SXMTFW7Y503D3704QK3AV",
+          "revision": 2,
+          "source_ref": {
+            "end_line": null,
+            "locator": "file:///Users/mac/Documents/originone/agent-work-running/.local/business-live-20260909-v1/evidence-completion/project/work-ledger.yaml",
+            "pointer": "/work_items/4",
+            "section_fingerprint": null,
+            "source_fingerprint": "sha256:eb4e3e592af9daec58cdc14d6bebb506f3365ee2c29282ae45a3795d150cc919",
+            "source_id": "01M21SXMTEKPF53VQJ6EZD036W",
+            "source_revision": 52,
+            "start_line": null
+          }
+        }
+      },
+      "version": 1,
+      "work_action": {
+        "action": "progress",
+        "from": "in_progress",
+        "to": "in_progress"
+      }
+    },
+    "status": "applied",
+    "created_by_session": "01M226DZ32RQK3N9Z25423FNHR",
+    "revision": 5
+  },
+  "event": {
+    "id": "01M2272TWW9CS2CE4A2KPBKWH0",
+    "project_id": "01M21SXMTAXZC58B2896N1076Y",
+    "work_item_id": "01M21SXMTFW7Y503D3704QK3AV",
+    "session_id": null,
+    "branch_id": null,
+    "event_type": "work.progressed",
+    "importance": "normal",
+    "summary": "Verified source work action Progress",
+    "payload": {
+      "action_reason": "最终交付件及机器验证已形成并登记，更新完成摘要和后续责任",
+      "actor": "codex-primary",
+      "after_fingerprint": "sha256:c42fcf9d7c6a56a97e098a4e628545d7cce7dfb141860aa64771e206c136f95c",
+      "attempt_event_id": "01M2272TW6YX3R09WCY1VKXR66",
+      "before_fingerprint": "sha256:eb4e3e592af9daec58cdc14d6bebb506f3365ee2c29282ae45a3795d150cc919",
+      "creating_session_id": "01M226DZ32RQK3N9Z25423FNHR",
+      "proposal_id": "01M2272TTXCFRA8YN4M5C4C0ZH",
+      "reason": "最终交付件及机器验证已形成并登记，更新完成摘要和后续责任",
+      "released_claim_ids": [],
+      "source_id": "01M21SXMTEKPF53VQJ6EZD036W",
+      "source_revision": 53,
+      "target_after_hash": "7d7fcbfb289b45e328cddfb6adf581541f497a29de73efd8f54a788d42d23302",
+      "target_revision": 3,
+      "work_action": {
+        "action": "progress",
+        "from": "in_progress",
+        "to": "in_progress"
+      },
+      "write_plan_id": "01M2272TVFM54KRXMTCG1TKNS1"
+    },
+    "project_revision": 475,
+    "created_at": 1788928420764
+  },
+  "source_refresh_performed": true,
+  "source_write_performed": true,
+  "write_outcome": "applied",
+  "apply_attempt": {
+    "event_id": "01M2272TW6YX3R09WCY1VKXR66",
+    "proposal_id": "01M2272TTXCFRA8YN4M5C4C0ZH",
+    "source_id": "01M21SXMTEKPF53VQJ6EZD036W",
+    "project_revision": 472,
+    "plan": {
+      "id": "01M2272TVFM54KRXMTCG1TKNS1",
+      "before_fingerprint": "sha256:eb4e3e592af9daec58cdc14d6bebb506f3365ee2c29282ae45a3795d150cc919",
+      "after_fingerprint": "sha256:c42fcf9d7c6a56a97e098a4e628545d7cce7dfb141860aa64771e206c136f95c",
+      "before_size": 4084,
+      "after_size": 4190,
+      "target_after_hash": "7d7fcbfb289b45e328cddfb6adf581541f497a29de73efd8f54a788d42d23302"
+    },
+    "resolved_event_id": "01M2272TWW9CS2CE4A2KPBKWH0"
+  },
+  "recovery_directory": ".awr/mutations/01M2272TVFM54KRXMTCG1TKNS1",
+  "source_check": null,
+  "error": null
+}

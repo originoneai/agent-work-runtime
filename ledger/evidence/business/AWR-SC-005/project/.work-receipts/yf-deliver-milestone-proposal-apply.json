@@ -1,0 +1,93 @@
+{
+  "apply_attempt": {
+    "event_id": "01M227GJZRTKNP2NPZQFHZK7HS",
+    "plan": {
+      "after_fingerprint": "sha256:5a7d87d474f0cc6c126f6c4332e1089712a9c398777c741199f02b8c71a695a1",
+      "after_size": 4249,
+      "before_fingerprint": "sha256:93b6197154c9ba575b37115ba3fc8e7d3e79015371b99da12e16d112a18931a2",
+      "before_size": 4244,
+      "id": "01M227GJZ18NN5CJZVVRJTQYHF",
+      "target_after_hash": "4d4fdd9017f84b4c55e1012180f4f57ac7e034366f378d926af556d7fabd6010"
+    },
+    "project_revision": 489,
+    "proposal_id": "01M227FPEQGN583YAQKFQN239H",
+    "resolved_event_id": "01M227GK0DAV1C3TC38WNR5RWM",
+    "source_id": "01M21SXMTEKPF53VQJ6EZD036W"
+  },
+  "code": "proposal_recorded",
+  "error": null,
+  "event": {
+    "branch_id": null,
+    "created_at": 1788928871437,
+    "event_type": "proposal.applied",
+    "id": "01M227GK0DAV1C3TC38WNR5RWM",
+    "importance": "normal",
+    "payload": {
+      "actor": "codex-primary",
+      "after_fingerprint": "sha256:5a7d87d474f0cc6c126f6c4332e1089712a9c398777c741199f02b8c71a695a1",
+      "attempt_event_id": "01M227GJZRTKNP2NPZQFHZK7HS",
+      "before_fingerprint": "sha256:93b6197154c9ba575b37115ba3fc8e7d3e79015371b99da12e16d112a18931a2",
+      "proposal_id": "01M227FPEQGN583YAQKFQN239H",
+      "reason": "应用最终里程碑状态同步，保持真实系统与更高等级验收边界不变",
+      "source_id": "01M21SXMTEKPF53VQJ6EZD036W",
+      "source_revision": 55,
+      "target_after_hash": "4d4fdd9017f84b4c55e1012180f4f57ac7e034366f378d926af556d7fabd6010",
+      "target_revision": 2,
+      "write_plan_id": "01M227GJZ18NN5CJZVVRJTQYHF"
+    },
+    "project_id": "01M21SXMTAXZC58B2896N1076Y",
+    "project_revision": 492,
+    "session_id": null,
+    "summary": "Verified source mutation and projection",
+    "work_item_id": null
+  },
+  "ok": true,
+  "project_revision": 492,
+  "proposal": {
+    "base_fingerprint": "sha256:93b6197154c9ba575b37115ba3fc8e7d3e79015371b99da12e16d112a18931a2",
+    "created_by_session": null,
+    "expected_revision": 485,
+    "id": "01M227FPEQGN583YAQKFQN239H",
+    "mutation_type": "update_fields",
+    "patch": {
+      "changes": {
+        "status": "completed"
+      },
+      "intent": "五个工作项和十条材料验收均已有证据并完成，同步最终交付里程碑状态；真实系统、客户UAT和整场E4仍按交付件边界另行处理",
+      "source_config": {
+        "adapter_options": {},
+        "adapter_version": 1,
+        "mapping_key": "ledger|work-ledger.yaml"
+      },
+      "target": {
+        "kind": "plan",
+        "meta": {
+          "external_key": "YF-DELIVERY",
+          "id": "01M21SXMTFAB7EG7XFRN8QXVDZ",
+          "revision": 1,
+          "source_ref": {
+            "end_line": null,
+            "locator": "file:///Users/mac/Documents/originone/agent-work-running/.local/business-live-20260909-v1/evidence-completion/project/work-ledger.yaml",
+            "pointer": "/milestones/0",
+            "section_fingerprint": null,
+            "source_fingerprint": "sha256:93b6197154c9ba575b37115ba3fc8e7d3e79015371b99da12e16d112a18931a2",
+            "source_id": "01M21SXMTEKPF53VQJ6EZD036W",
+            "source_revision": 54,
+            "start_line": null
+          }
+        }
+      },
+      "version": 1
+    },
+    "project_id": "01M21SXMTAXZC58B2896N1076Y",
+    "revision": 5,
+    "source_id": "01M21SXMTEKPF53VQJ6EZD036W",
+    "status": "applied",
+    "work_item_id": null
+  },
+  "recovery_directory": ".awr/mutations/01M227GJZ18NN5CJZVVRJTQYHF",
+  "source_check": null,
+  "source_refresh_performed": true,
+  "source_write_performed": true,
+  "write_outcome": "applied"
+}

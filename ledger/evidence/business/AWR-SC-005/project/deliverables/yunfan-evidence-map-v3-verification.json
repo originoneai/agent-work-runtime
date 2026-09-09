@@ -1,0 +1,113 @@
+{
+  "version": 1,
+  "work_item": "YF-MAP",
+  "source_sha": "ed1368bf06806ff3227af899129d4914d5fe81e0",
+  "command": "rtk proxy awk 'BEGIN{rows=pass=unmet=execrows=versionrows=sourceindex=rulemap=corrections=notready=snapshot=real=agentq=userzero=sourcezero=zeroops=gapsv3=usev2=stale=0} /^[|] [GUMRD]-[12] [|]/{rows++; if($0 ~ /当前 Agent/ || $0 ~ /未执行/) execrows++; if($0 ~ /S-LEDGER@r47/) versionrows++; if($0 ~ /[|] [*][*]满足/) pass++; if($0 ~ /未满足，不宣告完成/) unmet++} /^## 来源版本索引$/{sourceindex=1} /^## 项目硬规则对应$/{rulemap=1} /^## 本轮修订的不准确结论$/{corrections=1} /当前交付判断：[*][*]尚不具备最终交付条件/{notready=1} /AWR 项目修订 `420`；权威工作台账来源 `r47`/{snapshot=1} /已处理 `3` 条真实收到的项目请求/{real=1} /后续 `6` 个检查问题均由 Agent/{agentq=1} /使用者参与的后续追问为 `0`/{userzero=1} /源材料修改为 `0`/{sourcezero=1} /真实系统操作 `0\\/3`/{zeroops=1} /YF-GAPS-CURRENT-STATE-CORRECTION-V3-20260909/{gapsv3=1} /YF-USE-PROVIDED-INPUTS-V2-20260909/{usev2=1} /S-LEDGER@r26|yunfan-evidence-gaps-current-v2-verification[.]json|yunfan-provided-inputs-verification[.]json/{stale++} END{if(rows!=10||pass!=6||unmet!=4||execrows!=10||versionrows!=10||!sourceindex||!rulemap||!corrections||!notready||!snapshot||!real||!agentq||!userzero||!sourcezero||!zeroops||!gapsv3||!usev2||stale!=0) exit 1; print 1}' deliverables/yunfan-delivery-receipt.md",
+  "scope": [
+    "YF-MAP"
+  ],
+  "verified_at": 1788923798000,
+  "checks": [
+    {
+      "name": "all ten criteria use corrected evidence attribution and explicit missing evidence",
+      "passed": true,
+      "details": "The receipt contains exactly ten criterion rows, each with evidence or explicit absence, execution method, frozen source version, evidence level, and judgment. Six executor-side criteria are satisfied and four independent-review/final-delivery criteria remain unmet. The GAPS and USE rows use the new versioned evidence keys.",
+      "criteria": [
+        "每条验收有实际证据引用，缺证据时不得宣告完成。"
+      ]
+    },
+    {
+      "name": "process facts provenance revisions and unknowns are retained",
+      "passed": true,
+      "details": "The receipt records that the input table pre-existed the prior round by user clarification, separates three real requests from six Agent-constructed checks and zero user follow-up rounds, records zero source-material edits and zero real-system operations, binds artifact/source versions, and preserves customer-origin, system, review, and final-delivery unknowns.",
+      "criteria": [
+        "保留实际产物与来源引用，无法确认的内容显式说明。"
+      ]
+    }
+  ],
+  "producer": {
+    "client": "current Agent client",
+    "role": "acceptance executor",
+    "method": "criterion-by-criterion crosswalk, corrected process attribution, source-version inventory, deterministic table assertion, artifact absence checks, JSON parse, and SHA-256 binding"
+  },
+  "mapping_summary": {
+    "criteria_total": 10,
+    "executor_side_satisfied": 6,
+    "unmet": 4,
+    "real_received_requests": 3,
+    "agent_constructed_check_questions": 6,
+    "user_follow_up_rounds": 0,
+    "source_material_edits": 0,
+    "real_system_operations": 0,
+    "independent_reviews": 0,
+    "final_delivery_ready": false
+  },
+  "source_versions": [
+    {
+      "locator": "GOALS.md",
+      "awr_revision": 1,
+      "sha256": "6422d45f96484905337108d38bd7077de94f0c8cf94f02a092eda6e04bb91d3f"
+    },
+    {
+      "locator": "PLAN.md",
+      "awr_revision": 1,
+      "sha256": "0a7f619a201e82337b62680d8f7f9a869180e906f3c766081bc6a42e0cfdf8e1"
+    },
+    {
+      "locator": "RULES.md",
+      "awr_revision": 2,
+      "sha256": "0d685c2f575e04fba4892a56ca4f7ff8caf9abeff2090c391f0490b9e28cec36"
+    },
+    {
+      "locator": "work-ledger.yaml",
+      "awr_revision": 47,
+      "sha256": "312fdc6154d9fcf8630817463d057c980caf88cad41529ed1de227842988a3da",
+      "note": "frozen mapping basis before the subsequent YF-MAP evidence-registration and completion mutations"
+    }
+  ],
+  "evidence_versions": [
+    {
+      "external_key": "YF-GAPS-CURRENT-STATE-CORRECTION-V3-20260909",
+      "locator": "deliverables/yunfan-evidence-gaps-current-v3-verification.json",
+      "sha256": "f8e25f0b5e8e7caec1a0af9fdb84f3f77e1fd51db8efd173dec9d0212fc34477"
+    },
+    {
+      "external_key": "YF-USE-PROVIDED-INPUTS-V2-20260909",
+      "locator": "deliverables/yunfan-provided-inputs-v2-verification.json",
+      "sha256": "e259316cf0665826f10c8170995752495f567dfe4e0f25a5d4c6b97da5d65bd9"
+    }
+  ],
+  "output": {
+    "locator": "deliverables/yunfan-delivery-receipt.md",
+    "sha256": "c8afa5315ea6594ac2c9ec9ec4766008eaa5b8ca82f7e0f6997327df7ed8ea10"
+  },
+  "auxiliary_checks": [
+    {
+      "command": "rtk proxy test ! -e deliverables/yf-independent-review.md",
+      "passed": true,
+      "meaning": "No independent-review artifact exists; this supports only the unmet judgment."
+    },
+    {
+      "command": "rtk proxy test ! -e deliverables/yf-delivery.md",
+      "passed": true,
+      "meaning": "No final-delivery artifact exists; this supports only the unmet judgment."
+    },
+    {
+      "command": "rtk proxy jq -e . deliverables/yunfan-evidence-map-v3-verification.json",
+      "passed": true,
+      "meaning": "The machine verification report parses as JSON."
+    }
+  ],
+  "limitations": [
+    "This report verifies the executor-authored mapping; it is not an independent review.",
+    "The prior-round input timing is based on the user's explicit clarification, not a reconstructed filesystem arrival timestamp.",
+    "The six Agent-constructed checks are not user messages and cannot prove user-participated multi-turn interaction.",
+    "The three processed inputs are project-provided, not proven customer-originated requests.",
+    "No real account, import, or issue-feedback operation was executed.",
+    "YF-REVIEW and YF-DELIVER remain unmet and cannot be completed by this evidence."
+  ],
+  "historical_evidence_retained": [
+    "deliverables/yunfan-evidence-map-verification.json",
+    "deliverables/yunfan-evidence-map-v2-verification.json"
+  ]
+}

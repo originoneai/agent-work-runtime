@@ -1,0 +1,38 @@
+{
+  "blocked_count": 1,
+  "branch_id": null,
+  "counts": {
+    "completed": 3,
+    "planned": 2
+  },
+  "current": [],
+  "current_total": 0,
+  "freshness_basis": "source_refresh",
+  "next_action": "独立复核验收结论，先核对当前来源和负责范围。",
+  "ok": true,
+  "project": "云帆帮助中心验收",
+  "project_id": "01M21SXMTAXZC58B2896N1076Y",
+  "project_revision": 201,
+  "read_only": false,
+  "ready_count": 1,
+  "source_issues": [],
+  "source_refresh_performed": true,
+  "source_warnings": 0,
+  "suggested_work": {
+    "blocker": null,
+    "external_key": "YF-REVIEW",
+    "freshness": "fresh",
+    "id": "01M21SXMTF2EE6WKF2GZ7EVC43",
+    "milestone": "YF-DELIVERY",
+    "next_action": "独立复核验收结论，先核对当前来源和负责范围。",
+    "owner": null,
+    "priority": "P0",
+    "raw_status": "planned",
+    "revision": 1,
+    "source_revision": 22,
+    "status": "planned",
+    "summary": "独立复核验收结论",
+    "title": "独立复核验收结论"
+  },
+  "total": 5
+}

@@ -1,0 +1,28 @@
+{
+  "event_id": "01M225SPF3S9W3B7DHJEMJ6V08",
+  "evidence": {
+    "branch_id": null,
+    "command": "rtk proxy python3 -c 'import json; d=json.load(open(\".work-receipts/reviewer-report-verification-v2.json\")); assert len(d[\"checks\"])==2 and all(c[\"passed\"] and c[\"criteria\"] for c in d[\"checks\"]); assert len(d[\"technical_checks\"])==7 and all(c[\"passed\"] for c in d[\"technical_checks\"]); assert d[\"assessment\"]=={\"producer_rework_required\":False,\"review_completed\":True,\"final_delivery_ready\":False,\"whole_scenario_e4_credit\":False}; print(\"PASS: independent review evidence and boundaries verified\")'",
+    "evidence_type": "report",
+    "external_key": "YF-REVIEW-INDEPENDENT-V3-20260909",
+    "id": "01M225SPF380NZEC1VKTGEMWX4",
+    "level": "locally_verified",
+    "locator": ".work-receipts/reviewer-report-verification-v2.json",
+    "project_id": "01M21SXMTAXZC58B2896N1076Y",
+    "revision": 1,
+    "scope": [
+      "YF-REVIEW"
+    ],
+    "sha256": "bea143eac208fc95cb49d01cd8d5410e3e03607eb8a56a5813d31f8704265d4d",
+    "source_ref": null,
+    "source_sha": "ed1368bf06806ff3227af899129d4914d5fe81e0",
+    "summary": "Independent luna_worker review verified the fixed 94-file publication, five actual historical turns, process observation, three corrected explanations, ten-criterion mapping, revision chain, producer hashes, and preserved failures. Current corrected artifacts need no producer rework; YF-DELIVER, final delivery, real-system UAT, and whole-scenario E4 remain unfulfilled.",
+    "verified_at": 1788927056566,
+    "work_item_id": "01M21SXMTF2EE6WKF2GZ7EVC43"
+  },
+  "freshness_basis": "source_refresh",
+  "ok": true,
+  "project_revision": 449,
+  "source_refresh_performed": true,
+  "validation_basis": "caller_supplied_bindings"
+}

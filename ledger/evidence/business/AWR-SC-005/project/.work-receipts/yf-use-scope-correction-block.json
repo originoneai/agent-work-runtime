@@ -1,0 +1,108 @@
+{
+  "ok": true,
+  "code": "proposal_recorded",
+  "project_revision": 72,
+  "proposal": {
+    "id": "01M21VGD2RRPJDQ86ENGTB959V",
+    "project_id": "01M21SXMTAXZC58B2896N1076Y",
+    "work_item_id": "01M21SXMTFH2R9FBAZXVAMTK0T",
+    "source_id": "01M21SXMTEKPF53VQJ6EZD036W",
+    "base_fingerprint": "sha256:435053d3060c19938154d1cb20eed284c994f827cbb46e39e7bef19792841119",
+    "expected_revision": 65,
+    "mutation_type": "work.block",
+    "patch": {
+      "changes": {
+        "blocker": "具体使用请求尚未提供，当前尚无可执行并留存问答与返工过程的真实输入",
+        "next_action": "用户提供具体使用请求后由当前Agent依据交付文档处理并记录原始问题、来源、回答、返工和未执行操作边界",
+        "status": "blocked"
+      },
+      "intent": "本轮仅修正验收范围与等待条件，具体使用请求将由用户稍后提供",
+      "source_config": {
+        "adapter_options": {},
+        "adapter_version": 1,
+        "mapping_key": "ledger|work-ledger.yaml"
+      },
+      "target": {
+        "kind": "work_item",
+        "meta": {
+          "external_key": "YF-USE",
+          "id": "01M21SXMTFH2R9FBAZXVAMTK0T",
+          "revision": 5,
+          "source_ref": {
+            "end_line": null,
+            "locator": "file:///Users/mac/Documents/originone/agent-work-running/.local/business-live-20260909-v1/evidence-completion/project/work-ledger.yaml",
+            "pointer": "/work_items/1",
+            "section_fingerprint": null,
+            "source_fingerprint": "sha256:435053d3060c19938154d1cb20eed284c994f827cbb46e39e7bef19792841119",
+            "source_id": "01M21SXMTEKPF53VQJ6EZD036W",
+            "source_revision": 7,
+            "start_line": null
+          }
+        }
+      },
+      "version": 1,
+      "work_action": {
+        "action": "block",
+        "from": "in_progress",
+        "to": "blocked"
+      }
+    },
+    "status": "applied",
+    "created_by_session": "01M21V96JS4PYZS8K2JWYYCWXQ",
+    "revision": 5
+  },
+  "event": {
+    "id": "01M21VGD3Z2ANNA5VE5DZFTAMV",
+    "project_id": "01M21SXMTAXZC58B2896N1076Y",
+    "work_item_id": "01M21SXMTFH2R9FBAZXVAMTK0T",
+    "session_id": null,
+    "branch_id": null,
+    "event_type": "work.blocked",
+    "importance": "normal",
+    "summary": "Verified source work action Block",
+    "payload": {
+      "action_reason": "本轮仅修正验收范围与等待条件，具体使用请求将由用户稍后提供",
+      "actor": "codex-primary",
+      "after_fingerprint": "sha256:505ce0f0974981969bd2687107c6cdab68ec7356abf45e800635739e1acb508e",
+      "attempt_event_id": "01M21VGD3FK6KSEEHFMDJ7X9BT",
+      "before_fingerprint": "sha256:435053d3060c19938154d1cb20eed284c994f827cbb46e39e7bef19792841119",
+      "creating_session_id": "01M21V96JS4PYZS8K2JWYYCWXQ",
+      "proposal_id": "01M21VGD2RRPJDQ86ENGTB959V",
+      "reason": "本轮仅修正验收范围与等待条件，具体使用请求将由用户稍后提供",
+      "released_claim_ids": [],
+      "source_id": "01M21SXMTEKPF53VQJ6EZD036W",
+      "source_revision": 8,
+      "target_after_hash": "8338a79f9a5bab4ed0da005746bc48c071fad6a5a8898fe2083825d326498c97",
+      "target_revision": 6,
+      "work_action": {
+        "action": "block",
+        "from": "in_progress",
+        "to": "blocked"
+      },
+      "write_plan_id": "01M21VGD2YNEHB647M2W5XH5FD"
+    },
+    "project_revision": 72,
+    "created_at": 1788916282495
+  },
+  "source_refresh_performed": true,
+  "source_write_performed": true,
+  "write_outcome": "applied",
+  "apply_attempt": {
+    "event_id": "01M21VGD3FK6KSEEHFMDJ7X9BT",
+    "proposal_id": "01M21VGD2RRPJDQ86ENGTB959V",
+    "source_id": "01M21SXMTEKPF53VQJ6EZD036W",
+    "project_revision": 69,
+    "plan": {
+      "id": "01M21VGD2YNEHB647M2W5XH5FD",
+      "before_fingerprint": "sha256:435053d3060c19938154d1cb20eed284c994f827cbb46e39e7bef19792841119",
+      "after_fingerprint": "sha256:505ce0f0974981969bd2687107c6cdab68ec7356abf45e800635739e1acb508e",
+      "before_size": 2820,
+      "after_size": 2946,
+      "target_after_hash": "8338a79f9a5bab4ed0da005746bc48c071fad6a5a8898fe2083825d326498c97"
+    },
+    "resolved_event_id": "01M21VGD3Z2ANNA5VE5DZFTAMV"
+  },
+  "recovery_directory": ".awr/mutations/01M21VGD2YNEHB647M2W5XH5FD",
+  "source_check": null,
+  "error": null
+}

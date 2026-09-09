@@ -1,0 +1,16 @@
+{
+  "external_key": "YF-USE-ACTUAL-AGENT-PROCESS-20260909",
+  "work_item_key": "YF-USE",
+  "evidence_type": "report",
+  "level": "locally_verified",
+  "summary": "Current Agent actual-use process: three executor-generated representative inputs, two meaningful rework rounds per case, final guarded instructions, source citations, unknowns, and zero real-system operations.",
+  "locator": "deliverables/yunfan-usage-process-verification.json",
+  "sha256": "be2d9e7ec346ded69ed63199e7e6f9020fa70f8dcafae2509eb830547fb0d5cf",
+  "source_sha": "ed1368bf06806ff3227af899129d4914d5fe81e0",
+  "command": "rtk proxy awk 'BEGIN{cases=initial=first=f1=r1=f2=final=boundary=unknown=unexecuted=0;client=inputsrc=matrix=ops=review=notcustomer=account=imports=feedback=0} /^### Case U-/{cases++} /^#### 1[.] 初始输入$/{initial++} /^#### 2[.] 首次回答$/{first++} /^#### 3[.] 追问一$/{f1++} /^#### 4[.] 修订回答$/{r1++} /^#### 5[.] 追问二$/{f2++} /^#### 6[.] 最终回答$/{final++} /^#### 7[.] 来源与边界$/{boundary++} /^- 无法确认：/{unknown++} /^- 未执行：/{unexecuted++} /执行客户端：当前 Agent 客户端/{client=1} /输入来源：验收执行者/{inputsrc=1} index($0,\"3/3\") && /代表性输入/{matrix=1} /真实系统操作：/{ops=1} /独立复核：尚未执行/{review=1} /这些输入不是实际客户请求/{notcustomer=1} /草案明确：账号申请栏目必须说明申请者和审核者的职责/{account=1} /草案明确：支持 CSV 与 JSON/{imports=1} /草案明确：反馈内容必须包括复现步骤和联系角色/{feedback=1} END{if(cases!=3||initial!=3||first!=3||f1!=3||r1!=3||f2!=3||final!=3||boundary!=3||unknown!=3||unexecuted!=3||!client||!inputsrc||!matrix||!ops||!review||!notcustomer||!account||!imports||!feedback) exit 1; print 1}' deliverables/yunfan-usage-report.md",
+  "scope": [
+    "YF-USE"
+  ],
+  "branch_id": null,
+  "verified_at": 1788917799000
+}

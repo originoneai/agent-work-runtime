@@ -1,0 +1,41 @@
+{
+  "kind": "actual_client_turn_snapshot",
+  "recorded_at": "2026-09-09T09:24:27+08:00",
+  "phase": "usage-scope-clarification",
+  "client": "Codex CLI",
+  "client_task_id": "01a0839d-02e8-7b71-b9cf-2581edf080af",
+  "actual_user_turn": {
+    "timestamp": "2026-09-09T01:06:06.529Z",
+    "text": "这次验收的是交付文档在实际使用中的可用性：由当前 Agent 客户端根据文档处理使用者的问题，形成可执行的说明和可复查的过程记录，不需要登录另一个帮助中心网站。本轮先修正对验收范围和阻塞条件的理解，保留尚未执行的真实系统操作边界；具体使用请求稍后补充。"
+  },
+  "input_sha256": "919f6c2295222faf49620858c1aa97eb7d55ddff8774fd6efeecb9f3655740c0",
+  "events_local": ".local/business-live-20260909-v1/evidence-completion/control/usage-scope-clarification-events.jsonl",
+  "events_sha256": "df64064d1b68250fcad21179ed3a098a36f2eb0f164e2b96a0ce550227c87305",
+  "native_transcript_snapshot_local": ".local/business-live-20260909-v1/evidence-completion/control/usage-scope-clarification-snapshot/native-transcript.jsonl",
+  "native_transcript_snapshot_sha256": "b25782851b7c93315c7b29542954d847fd9c71f5ca9108aaff3410ce5e7040e1",
+  "final_message_sha256": "47fb8ea18b9b444a0e7cc3eaaf9a4d40aeb9af2694a3a58a28af6d0cf10a89a6",
+  "project_sources_sha256": {
+    "project.toml": "f6a71b483010e06df6080321c15907bff3daa0ce592fae01405ed2fe98815b41",
+    "GOALS.md": "6422d45f96484905337108d38bd7077de94f0c8cf94f02a092eda6e04bb91d3f",
+    "PLAN.md": "0a7f619a201e82337b62680d8f7f9a869180e906f3c766081bc6a42e0cfdf8e1",
+    "RULES.md": "4205cb30134f1d5edbc8ee4837a6deaaf97ad23def6edb2fae11421bcadb2d28",
+    "work-ledger.yaml": "db17d5e73f5bda3e7a7513398e6f1fb7311c4440c30e1f07a3b1998612a29fc0",
+    "AGENTS.md": "d0ca28ca18c438aefdada6a14cb847a0664e261f9e8e48abbfd8701720eb66a2",
+    "DELIVERABLES.md": "990bb1e4842926fc666cfc0cd94598609d3280c6ca7924f73c5ac7f98be2e0a8"
+  },
+  "artifacts_sha256": {
+    "deliverables/yunfan-evidence-gaps-scope-correction-verification.json": "5a901d81478c4e2f691521c343a39bf1a18f0ef7daf6cc9ff5cee6371165c2fd",
+    "deliverables/yunfan-evidence-gaps-verification.json": "08857ad018402200a9e64d92adeb21ad2bebf2550cf70f35a888fb2a2e2b8593",
+    "deliverables/yunfan-evidence-gaps.md": "64cdf2bb1267c9f64bc2f6e16c5294557429181cfe7f4a7d3f4090f9a1a5e568",
+    "deliverables/yunfan-usage-report.md": "1dda2da89159a367f26c50ea2eea8c72f1decb47f9e542b6a8b785e1dd992d29"
+  },
+  "tool_event_counts": {
+    "agent_message": 10,
+    "command_execution": 60,
+    "file_change": 7
+  },
+  "command_executions": 60,
+  "nonzero_commands": 1,
+  "snapshot_local": ".local/business-live-20260909-v1/evidence-completion/control/usage-scope-clarification-snapshot",
+  "e4_completion_claim": false
+}

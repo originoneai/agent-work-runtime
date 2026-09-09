@@ -1,0 +1,27 @@
+{
+  "kind": "actual_usage_process_observation",
+  "observed_at": "2026-09-09T10:14:25+08:00",
+  "phase": "round-1",
+  "publication_receipt": "round-1-inputs.json",
+  "published_at": "2026-09-09T09:24:27+08:00",
+  "actual_native_user_turns_in_phase": [
+    {
+      "timestamp": "2026-09-09T01:24:40.665Z",
+      "text": "现有报告只说明了本地结果，请补充实际使用过程的验证。"
+    }
+  ],
+  "snapshot": "control/round-1-sealed.json",
+  "snapshot_sha256": "b652156c2b7e85545b98aad2abd8fc6574740ca8f536b1de641974512f529d06",
+  "findings": [
+    {
+      "id": "usage_input_timing",
+      "observation": "The provided CSV was published before the actual canonical round-1 user turn. The producer discovered it later during that turn; descriptions that the file was added after representative inputs were first executed do not match operator publication timing."
+    },
+    {
+      "id": "generated_inner_dialogue",
+      "observation": "The three usage report dialogues and their quoted inner followups were authored within this single native turn. They are not separate actual user/client exchanges. Preserve their status as executor-authored illustration/revision; independent review must judge whether the actual document use and revisions satisfy YF-USE without claiming those quotes as real external followups."
+    }
+  ],
+  "independent_assessment": "pending",
+  "e4_credit": false
+}

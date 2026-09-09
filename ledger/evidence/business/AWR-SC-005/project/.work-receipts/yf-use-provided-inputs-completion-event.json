@@ -1,0 +1,83 @@
+{
+  "event": {
+    "branch_id": null,
+    "created_at": 1788918778237,
+    "event_type": "work.completed",
+    "id": "01M21XWJBXW0N2K6KJWDB7DBDP",
+    "importance": "normal",
+    "payload": {
+      "action_reason": "已用materials/usage-inputs.csv中三条原始请求替换自拟输入作为当前完成依据；每条均有当前Agent回答、两轮返工、最终产物、来源哈希、未知项和未执行边界",
+      "actor": "codex-primary",
+      "after_fingerprint": "sha256:edb0f94c23678cb2c630d7e7856953839bbde2000bb2f07fa00abf23e777a10c",
+      "attempt_event_id": "01M21XWJB54R2PYZ134GS7AB1F",
+      "before_fingerprint": "sha256:b89538f582f7ead6cc3147ad6bee14b138cc2c8ac99a73bde87df212bbf40419",
+      "creating_session_id": "01M21XDXGSVKPYN49DPNV4VTCK",
+      "proposal_id": "01M21XWJA0JKX9BGY4AEYYSVM6",
+      "reason": "已用materials/usage-inputs.csv中三条原始请求替换自拟输入作为当前完成依据；每条均有当前Agent回答、两轮返工、最终产物、来源哈希、未知项和未执行边界",
+      "released_claim_ids": [
+        "01M21XF2MM30CM65YE9V8V3W93"
+      ],
+      "source_id": "01M21SXMTEKPF53VQJ6EZD036W",
+      "source_revision": 20,
+      "target_after_hash": "c9becd0413eed384e52844084bc66da6b9680ff58684b9efcf87e4ec0dc22dea",
+      "target_revision": 12,
+      "work_action": {
+        "action": "complete",
+        "completion": {
+          "acceptance": [
+            {
+              "criterion": "在实际客户端中使用交付文档完成输入案例，保留过程及返工。",
+              "evidence": [
+                "01M21XVD9G20DKXSZDSZ7520ZD"
+              ]
+            },
+            {
+              "criterion": "保留实际产物与来源引用，无法确认的内容显式说明。",
+              "evidence": [
+                "01M21XVD9G20DKXSZDSZ7520ZD"
+              ]
+            }
+          ],
+          "evidence": [
+            {
+              "branch_id": null,
+              "command": "rtk proxy awk 'BEGIN{cases=initial=first=f1=r1=f2=final=boundary=unknown=unexecuted=0;in1=in2=in3=source=sourcehash=provided=matrix=ops=review=account=csv=feedback=0} /^### Case U-/{cases++} /^#### 1[.] 初始输入$/{initial++} /^#### 2[.] 首次回答$/{first++} /^#### 3[.] 追问一$/{f1++} /^#### 4[.] 修订回答$/{r1++} /^#### 5[.] 追问二$/{f2++} /^#### 6[.] 最终回答$/{final++} /^#### 7[.] 来源与边界$/{boundary++} /^- 无法确认：/{unknown++} /^- 未执行：/{unexecuted++} /^> 说明账号申请的分工$/{in1=1} /^> 准备一个 CSV 导入说明$/{in2=1} /^> 整理问题反馈所需材料$/{in3=1} /usage-inputs[.]csv:2-4/{source=1} /b3fd3f7e16405a84fea59bbefb70d5ada50d7659a8cb7274d6f65be51897798f/{sourcehash=1} /不是验收执行者自拟问题/{provided=1} index($0,\"3/3\") && /项目提供输入/{matrix=1} /真实系统操作：/{ops=1} /独立复核：尚未执行/{review=1} /草案明确：账号申请栏目必须说明申请者和审核者的职责/{account=1} /草案明确：支持 CSV 与 JSON/{csv=1} /草案明确：反馈内容必须包括复现步骤和联系角色/{feedback=1} END{if(cases!=3||initial!=3||first!=3||f1!=3||r1!=3||f2!=3||final!=3||boundary!=3||unknown!=3||unexecuted!=3||!in1||!in2||!in3||!source||!sourcehash||!provided||!matrix||!ops||!review||!account||!csv||!feedback) exit 1; print 1}' deliverables/yunfan-usage-report.md",
+              "evidence_type": "report",
+              "external_key": "YF-USE-PROVIDED-INPUTS-20260909",
+              "id": "01M21XVD9G20DKXSZDSZ7520ZD",
+              "level": "locally_verified",
+              "locator": "deliverables/yunfan-provided-inputs-verification.json",
+              "project_id": "01M21SXMTAXZC58B2896N1076Y",
+              "revision": 1,
+              "scope": [
+                "YF-USE"
+              ],
+              "sha256": "72e42d7eb94d562ffbe55040add5a827edfd4bb1a3cf4b4f7c02ca2e084720f0",
+              "source_ref": null,
+              "source_sha": "ed1368bf06806ff3227af899129d4914d5fe81e0",
+              "summary": "Current Agent processed all three exact requests from materials/usage-inputs.csv with two rework rounds, final guarded outputs, source hashes, explicit unknowns, and zero real-system operations.",
+              "verified_at": 1788918596000,
+              "work_item_id": "01M21SXMTFH2R9FBAZXVAMTK0T"
+            }
+          ],
+          "minimum_level": "locally_verified",
+          "source_sha": "ed1368bf06806ff3227af899129d4914d5fe81e0",
+          "version": 1
+        },
+        "from": "in_progress",
+        "to": "completed"
+      },
+      "write_plan_id": "01M21XWJAJ1HA6SK0X0TKX28T2"
+    },
+    "project_id": "01M21SXMTAXZC58B2896N1076Y",
+    "project_revision": 179,
+    "session_id": null,
+    "summary": "Verified source work action Complete",
+    "work_item_id": "01M21SXMTFH2R9FBAZXVAMTK0T"
+  },
+  "freshness_basis": "runtime_database",
+  "ok": true,
+  "payload_included": true,
+  "project_revision": 198,
+  "source_refresh_performed": false
+}

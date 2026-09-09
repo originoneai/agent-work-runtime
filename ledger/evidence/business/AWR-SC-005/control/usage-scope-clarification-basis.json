@@ -1,0 +1,10 @@
+{
+  "kind": "additional_natural_business_scope_clarification",
+  "prepared_at": "2026-09-09T09:06:02+08:00",
+  "basis": "Existing YF-USE source acceptance: 在实际客户端中使用交付文档完成输入案例，保留过程及返工。 The scope clarification does not replace actual client tool execution, per-case artifacts, rework, source references, independent review or delivery.",
+  "preserved_initial_snapshot": "control/initial-sealed.json",
+  "canonical_followups_replaced": false,
+  "canonical_case_inputs_published": false,
+  "external_system_operation_claims_allowed": false,
+  "e4_credit": false
+}

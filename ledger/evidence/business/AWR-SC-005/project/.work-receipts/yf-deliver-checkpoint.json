@@ -1,0 +1,55 @@
+{
+  "checkpoint": {
+    "changed_entities": [
+      "evidence:01M2273FE62X59V0Q5XYE69YTS",
+      "work_items:01M21SXMTFW7Y503D3704QK3AV"
+    ],
+    "context_hash": "ee0a6fa7110ac003854068cfa69e2afb9adc21a0f72d5d646c474525ce6c14f2",
+    "created_at": 1788928503651,
+    "digest": "已处理独立复核并完成材料交付：新增yf-delivery.md和机器验证，十条材料验收均有证据；保留3/6/0过程事实、历史版本与失败，真实系统操作仍为0",
+    "id": "01M2275BV3ND7RKSM67PAA9N58",
+    "next_action": "由已列责任方补齐系统事实；如需真实系统、客户UAT或整场E4，另立任务执行并保留真实回执",
+    "open_loops": [
+      "账号入口、字段、审核者、规则、时限和紧急规则待系统负责人确认",
+      "CSV schema、编码、限制、去重、回滚、环境、数据授权和成功标准待责任方确认",
+      "反馈渠道、联系人、SLA、数据共享政策和关闭标准待责任方确认",
+      "客户现场来源、客户UAT和整场E4未验证"
+    ],
+    "project_revision": 482,
+    "revision": 1,
+    "session_id": "01M226DZ32RQK3N9Z25423FNHR"
+  },
+  "checkpoint_save": {
+    "after_revision": 459,
+    "attempt_id": "01M2275BV27HB5QZ2X8XD7E3Z3",
+    "delta_bytes": 8908,
+    "delta_recorded": true,
+    "event_id": "01M2275BV3JNTMMDC7XF84S26F",
+    "observed_changed_entity_count": 2,
+    "reported_changed_entity_count": 0,
+    "session_event_count": 4,
+    "source_observation_count": 6,
+    "through_revision": 482
+  },
+  "context_hash_basis": "caller_supplied_last_used_context",
+  "context_hash_verified": false,
+  "event": {
+    "artifact_id": null,
+    "branch_id": null,
+    "checkpoint_id": "01M2275BV3ND7RKSM67PAA9N58",
+    "created_at": 1788928503651,
+    "id": "01M2275BV3JNTMMDC7XF84S26F",
+    "importance": "normal",
+    "project_revision": 484,
+    "session_id": "01M226DZ32RQK3N9Z25423FNHR",
+    "source_id": null,
+    "summary": "Saved session checkpoint and observed delta",
+    "type": "checkpoint.created",
+    "work_item_id": "01M21SXMTFW7Y503D3704QK3AV"
+  },
+  "freshness_basis": "source_refresh",
+  "ok": true,
+  "project_revision": 484,
+  "save_status": "completed",
+  "source_refresh_performed": true
+}

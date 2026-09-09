@@ -1,0 +1,94 @@
+{
+  "version": 1,
+  "work_item": "YF-MAP",
+  "source_sha": "ed1368bf06806ff3227af899129d4914d5fe81e0",
+  "command": "rtk proxy awk 'BEGIN{rows=pass=unmet=execrows=versionrows=sourceindex=rulemap=corrections=notready=zeroops=0} /^[|] [GUMRD]-[12] [|]/{rows++; if($0 ~ /当前 Agent/ || $0 ~ /未执行/) execrows++; if($0 ~ /S-LEDGER@r26/) versionrows++; if($0 ~ /[|] [*][*]满足/) pass++; if($0 ~ /未满足，不宣告完成/) unmet++} /^## 来源版本索引$/{sourceindex=1} /^## 项目硬规则对应$/{rulemap=1} /^## 本轮修订的不准确结论$/{corrections=1} /当前交付判断：[*][*]尚不具备最终交付条件/{notready=1} /真实系统操作 `0\\/3`/{zeroops=1} END{if(rows!=10||pass!=6||unmet!=4||execrows!=10||versionrows!=10||!sourceindex||!rulemap||!corrections||!notready||!zeroops) exit 1; print 1}' deliverables/yunfan-delivery-receipt.md",
+  "scope": [
+    "YF-MAP"
+  ],
+  "verified_at": 1788921571000,
+  "checks": [
+    {
+      "name": "all ten acceptance requirements are mapped with execution method and source version",
+      "passed": true,
+      "details": "The receipt has exactly ten criterion rows from the ledger. Each row records actual evidence or its absence, how the check or Agent use was executed, a frozen source-version reference, evidence level and judgment. Six executor-side criteria are satisfied; four review/delivery criteria remain explicitly unmet.",
+      "criteria": [
+        "每条验收有实际证据引用，缺证据时不得宣告完成。"
+      ]
+    },
+    {
+      "name": "artifacts provenance corrections and unknowns are retained",
+      "passed": true,
+      "details": "The receipt inventories authoritative AWR source revisions and artifact hashes, records the corrected stale conclusions, preserves customer-origin and real-system unknowns, and states that executor verification cannot replace independent review or final delivery.",
+      "criteria": [
+        "保留实际产物与来源引用，无法确认的内容显式说明。"
+      ]
+    }
+  ],
+  "producer": {
+    "client": "current Agent client",
+    "role": "acceptance executor",
+    "method": "criterion-by-criterion crosswalk, source-version inventory, deterministic table assertion, artifact absence checks, JSON parse and SHA-256 binding"
+  },
+  "mapping_summary": {
+    "criteria_total": 10,
+    "executor_side_satisfied": 6,
+    "unmet": 4,
+    "real_system_operations": 0,
+    "independent_reviews": 0,
+    "final_delivery_ready": false
+  },
+  "source_versions": [
+    {
+      "locator": "GOALS.md",
+      "awr_revision": 1,
+      "sha256": "6422d45f96484905337108d38bd7077de94f0c8cf94f02a092eda6e04bb91d3f"
+    },
+    {
+      "locator": "PLAN.md",
+      "awr_revision": 1,
+      "sha256": "0a7f619a201e82337b62680d8f7f9a869180e906f3c766081bc6a42e0cfdf8e1"
+    },
+    {
+      "locator": "RULES.md",
+      "awr_revision": 2,
+      "sha256": "0d685c2f575e04fba4892a56ca4f7ff8caf9abeff2090c391f0490b9e28cec36"
+    },
+    {
+      "locator": "work-ledger.yaml",
+      "awr_revision": 26,
+      "sha256": "7f20a24d8c34894f9b9a9cb6e598b5928c5340b5c58106843042b87f71c4ce59",
+      "note": "frozen mapping basis before the subsequent YF-MAP progress and evidence-registration mutations"
+    }
+  ],
+  "output": {
+    "locator": "deliverables/yunfan-delivery-receipt.md",
+    "sha256": "a372b92eff1a59854b9421613334d9c42412e5987b04a92e639f3fa750849c7c"
+  },
+  "auxiliary_checks": [
+    {
+      "command": "rtk proxy test ! -e deliverables/yf-independent-review.md",
+      "passed": true,
+      "meaning": "No independent-review artifact exists; this supports only the unmet judgment."
+    },
+    {
+      "command": "rtk proxy test ! -e deliverables/yf-delivery.md",
+      "passed": true,
+      "meaning": "No final-delivery artifact exists; this supports only the unmet judgment."
+    },
+    {
+      "command": "rtk proxy jq -e . deliverables/yunfan-evidence-map-v2-verification.json",
+      "passed": true,
+      "meaning": "The machine verification report parses as JSON."
+    }
+  ],
+  "limitations": [
+    "This report verifies the executor-authored mapping; it is not an independent review.",
+    "The three processed inputs are project-provided, not proven customer-originated requests.",
+    "No real account, import, or issue-feedback operation was executed.",
+    "YF-REVIEW and YF-DELIVER remain unmet and cannot be completed by this evidence."
+  ],
+  "historical_evidence_retained": [
+    "deliverables/yunfan-evidence-map-verification.json"
+  ]
+}

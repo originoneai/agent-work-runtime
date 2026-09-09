@@ -1,0 +1,114 @@
+{
+  "acceptance": [
+    "处理复核意见并生成可追溯完成回执。",
+    "保留实际产物与来源引用，无法确认的内容显式说明。"
+  ],
+  "decisions": [],
+  "dependency_cycles": [],
+  "evidence": [
+    {
+      "currency": "current",
+      "external_key": "YF-DELIVER-FINAL-MATERIAL-PACKAGE-20260909",
+      "level": "locally_verified",
+      "locator": "deliverables/yf-delivery-verification.json",
+      "missing_bindings": [],
+      "reasons": [],
+      "source_sha": "ed1368bf06806ff3227af899129d4914d5fe81e0",
+      "summary": "Final material package processes the independent no-rework conclusion, retains three guarded instructions, maps all ten criteria across their historical 6/4, post-review 8/2, and final 10/10 states, preserves corrected process history and f…"
+    },
+    {
+      "currency": "unknown",
+      "external_key": "YF-DELIVER/evidence/deliverables/yf-delivery-verification.json",
+      "level": "unknown",
+      "locator": "deliverables/yf-delivery-verification.json",
+      "missing_bindings": [
+        "sha256",
+        "source_sha",
+        "command",
+        "verified_at"
+      ],
+      "reasons": [
+        "both recorded and requested source SHA are needed to determine currency"
+      ],
+      "source_sha": null,
+      "summary": "Evidence reference; not yet verified by AWR"
+    }
+  ],
+  "evidence_currency_basis": {
+    "branch_id": null,
+    "requested_source_sha": "ed1368bf06806ff3227af899129d4914d5fe81e0"
+  },
+  "freshness_basis": "source_refresh",
+  "missing_dependencies": [],
+  "ok": true,
+  "project_revision": 482,
+  "read_only": false,
+  "required_dependencies": [
+    {
+      "external_key": "YF-GAPS",
+      "freshness": "fresh",
+      "revision": 19,
+      "source_revision": 54,
+      "status": "completed"
+    },
+    {
+      "external_key": "YF-MAP",
+      "freshness": "fresh",
+      "revision": 13,
+      "source_revision": 54,
+      "status": "completed"
+    },
+    {
+      "external_key": "YF-REVIEW",
+      "freshness": "fresh",
+      "revision": 3,
+      "source_revision": 54,
+      "status": "completed"
+    },
+    {
+      "external_key": "YF-USE",
+      "freshness": "fresh",
+      "revision": 19,
+      "source_revision": 54,
+      "status": "completed"
+    }
+  ],
+  "source_issues": [],
+  "source_ref": {
+    "end_line": null,
+    "locator": "file:///Users/mac/Documents/originone/agent-work-running/.local/business-live-20260909-v1/evidence-completion/project/work-ledger.yaml",
+    "pointer": "/work_items/4",
+    "section_fingerprint": null,
+    "source_fingerprint": "sha256:93b6197154c9ba575b37115ba3fc8e7d3e79015371b99da12e16d112a18931a2",
+    "source_id": "01M21SXMTEKPF53VQJ6EZD036W",
+    "source_revision": 54,
+    "start_line": null
+  },
+  "source_refresh_performed": true,
+  "source_warnings": 0,
+  "work": {
+    "active_claims": [],
+    "blocker": null,
+    "diagnostics": [
+      {
+        "code": "status_not_selectable",
+        "detail": "source status is completed",
+        "work_item_key": "YF-DELIVER"
+      }
+    ],
+    "external_key": "YF-DELIVER",
+    "freshness": "fresh",
+    "id": "01M21SXMTFW7Y503D3704QK3AV",
+    "milestone": "YF-DELIVERY",
+    "next_action": "材料交付完成后，由各责任方补齐系统事实；如需真实系统验收、客户UAT或整场E4，另立任务并保留真实回执",
+    "owner": null,
+    "priority": "P0",
+    "raw_status": "completed",
+    "ready": false,
+    "revision": 4,
+    "source_revision": 54,
+    "status": "completed",
+    "summary": "独立复核通过后已形成最终材料包、十条最终证据对应和责任移交；文档交付范围内可完成，真实系统操作仍为0，不授予客户UAT或整场E4",
+    "title": "完成帮助中心交付"
+  }
+}

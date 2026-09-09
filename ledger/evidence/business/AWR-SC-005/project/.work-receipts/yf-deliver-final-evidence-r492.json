@@ -1,0 +1,30 @@
+{
+  "currency": "current",
+  "evidence": {
+    "branch_id": null,
+    "command": "rtk proxy python3 -c 'import hashlib,pathlib; P=pathlib.Path; h=lambda p:hashlib.sha256(P(p).read_bytes()).hexdigest(); expected={\"materials/help-draft.md\":\"bbb1980471ead2a84b1c641c0536ff81d547ec0beac7366db1439ad091520941\",\"materials/usage-…",
+    "external_key": "YF-DELIVER-FINAL-MATERIAL-PACKAGE-20260909",
+    "freshness": null,
+    "id": "01M2271FJZ93JYBT6W5N48KMQE",
+    "level": "locally_verified",
+    "locator": "deliverables/yf-delivery-verification.json",
+    "revision": 1,
+    "scope": [
+      "YF-DELIVER"
+    ],
+    "scope_total": 1,
+    "sha256": "316dbee7b66d7c23b4d8531760b2787b9022d5aa7fd7764736c08a1daeb73051",
+    "source_ref": null,
+    "source_sha": "ed1368bf06806ff3227af899129d4914d5fe81e0",
+    "summary": "Final material package processes the independent no-rework conclusion, retains three guarded instructions, maps all ten criteria across their historical 6/4, post-review 8/2, and final 10/10 states, preserves corrected process history and f…",
+    "type": "report",
+    "verified_at": 1788928154249,
+    "work_item_id": "01M21SXMTFW7Y503D3704QK3AV"
+  },
+  "freshness_basis": "source_refresh",
+  "missing_bindings": [],
+  "ok": true,
+  "project_revision": 492,
+  "reasons": [],
+  "source_refresh_performed": true
+}

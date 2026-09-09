@@ -1,0 +1,32 @@
+{
+  "ok": true,
+  "control": {
+    "path": "../control/independent-review.json",
+    "sha256": "582258647165f0ab94bc99d3b17edf07151040c2451f29c12d24577b5c868341"
+  },
+  "report": {
+    "path": "deliverables/yf-independent-review.md",
+    "sha256": "223f8d1727a2abc95c7210993e26b0b9ec82bf95627c33081ea29cfde33f4a79"
+  },
+  "completion_report": {
+    "path": ".work-receipts/reviewer-report-verification-v2.json",
+    "sha256": "bea143eac208fc95cb49d01cd8d5410e3e03607eb8a56a5813d31f8704265d4d"
+  },
+  "producer_artifacts_unchanged": true,
+  "preserved_failure_records": 5,
+  "awr": {
+    "project_revision": 459,
+    "counts": {
+      "completed": 4,
+      "planned": 1
+    },
+    "current_total": 0,
+    "session_status": "ended",
+    "claim_released_by_completion": true,
+    "ready": [
+      "YF-DELIVER"
+    ]
+  },
+  "final_delivery_completed": false,
+  "whole_scenario_e4_credit": false
+}

@@ -1,0 +1,36 @@
+{
+  "kind": "actual_prior_business_turn",
+  "phase": "round-2",
+  "client_task_id": "01a0839d-02e8-7b71-b9cf-2581edf080af",
+  "actual_user_turn": {
+    "timestamp": "2026-09-09T02:13:50.282Z",
+    "text": "把每条验收要求对应到证据，修订不准确的结论，再确认完成状态。"
+  },
+  "source_sha256": {
+    "project.toml": "f6a71b483010e06df6080321c15907bff3daa0ce592fae01405ed2fe98815b41",
+    "GOALS.md": "6422d45f96484905337108d38bd7077de94f0c8cf94f02a092eda6e04bb91d3f",
+    "PLAN.md": "0a7f619a201e82337b62680d8f7f9a869180e906f3c766081bc6a42e0cfdf8e1",
+    "RULES.md": "0d685c2f575e04fba4892a56ca4f7ff8caf9abeff2090c391f0490b9e28cec36",
+    "work-ledger.yaml": "45102089a313b6df673c6a99097f6a32170f5250fdffa2d1ccc05976739e70c5",
+    "AGENTS.md": "d0ca28ca18c438aefdada6a14cb847a0664e261f9e8e48abbfd8701720eb66a2",
+    "DELIVERABLES.md": "990bb1e4842926fc666cfc0cd94598609d3280c6ca7924f73c5ac7f98be2e0a8"
+  },
+  "artifact_sha256": {
+    "deliverables/yunfan-delivery-receipt.md": "a372b92eff1a59854b9421613334d9c42412e5987b04a92e639f3fa750849c7c",
+    "deliverables/yunfan-evidence-gaps-current-v2-verification.json": "4a5f9383572157b0ff916e3f706cd9638db5372284f38d065a917abf250eca5e",
+    "deliverables/yunfan-evidence-gaps-current-verification.json": "5c1ad73a0c13bf9835fc7df243106c3da7583a2d74c87986dcd8c929ae4e02c7",
+    "deliverables/yunfan-evidence-gaps-scope-correction-verification.json": "5a901d81478c4e2f691521c343a39bf1a18f0ef7daf6cc9ff5cee6371165c2fd",
+    "deliverables/yunfan-evidence-gaps-verification.json": "08857ad018402200a9e64d92adeb21ad2bebf2550cf70f35a888fb2a2e2b8593",
+    "deliverables/yunfan-evidence-gaps.md": "08b47a96b29995466b106232b3289df8552a4e53d89a88e82437980d98ddd4da",
+    "deliverables/yunfan-evidence-map-v2-verification.json": "bf927f45d3ec091cd7580afa9634d2b0600b1473705939f8b3734a5ca8ab6908",
+    "deliverables/yunfan-evidence-map-verification.json": "366996ae6999bf56479f41b13a10506d588054c9cf9f9e9739b060516f09f60f",
+    "deliverables/yunfan-provided-inputs-verification.json": "72e42d7eb94d562ffbe55040add5a827edfd4bb1a3cf4b4f7c02ca2e084720f0",
+    "deliverables/yunfan-usage-process-verification.json": "be2d9e7ec346ded69ed63199e7e6f9020fa70f8dcafae2509eb830547fb0d5cf",
+    "deliverables/yunfan-usage-report.md": "bfa30a29d86606a2723737f560c3c2751292130aab945324083e1b47d87af9c9"
+  },
+  "native_transcript_sha256": "181fd64475f0ffa40a78982dcbab45b4240e0bc93ab2c3c2e45fac5dc2da37b1",
+  "events_sha256": "8a2af50e137946ff2d4775d170d2f86039d6ac4dffc3ff0e10bb1e06a22bac76",
+  "sealed_at": "2026-09-09T10:50:11+08:00",
+  "final_message": "已完成逐条证据映射和结论修订，但整体仍不具备最终交付条件。\n\n- 10/10 条验收要求已映射：6 条满足，4 条明确未满足。\n- 已修正“请求尚未提供”、旧 AWR 状态、`YF-MAP` 待登记等过时结论。\n- AWR 当前修订 `336`：`YF-GAPS`、`YF-USE`、`YF-MAP` 完成；`YF-REVIEW` 待不同参与者执行；`YF-DELIVER` 被其阻塞。\n- 实际 Agent 使用记录为 3/3，真实系统操作为 0/3，不构成客户 UAT。\n- 新版证据均为 `locally_verified` 且 AWR 判定为 current；结构校验、JSON 解析、哈希检查、`git diff --check` 和 AWR doctor 均通过。\n- 按验证纪律保留了旧哈希证据，修订内容通过新版本证据登记，没有覆盖历史记录。\n\n主要材料：\n\n- [逐条验收映射与状态回执](/Users/mac/Documents/originone/agent-work-running/.local/business-live-20260909-v1/evidence-completion/project/deliverables/yunfan-delivery-receipt.md:1)\n- [实际使用过程报告](/Users/mac/Documents/originone/agent-work-running/.local/business-live-20260909-v1/evidence-completion/project/deliverables/yunfan-usage-report.md:1)\n- [修订后的证据缺口清单](/Users/mac/Documents/originone/agent-work-running/.local/business-live-20260909-v1/evidence-completion/project/deliverables/yunfan-evidence-gaps.md:1)\n- [新版映射机器验证](/Users/mac/Documents/originone/agent-work-running/.local/business-live-20260909-v1/evidence-completion/project/deliverables/yunfan-evidence-map-v2-verification.json:1)\n- [AWR 最终状态回执](/Users/mac/Documents/originone/agent-work-running/.local/business-live-20260909-v1/evidence-completion/project/.work-receipts/yf-current-status-r336.json:1)\n\n当前准确结论是：材料已经具备提交独立复核的条件，但尚不能宣告最终交付完成。",
+  "note": "Copied historical evidence, not newly authored business output or a review conclusion."
+}
