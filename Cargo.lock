@@ -111,6 +111,7 @@ dependencies = [
  "serde_yaml_ng",
  "sha2",
  "toml",
+ "windows-sys 0.61.2",
 ]
 
 [[package]]

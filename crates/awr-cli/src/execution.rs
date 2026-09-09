@@ -151,8 +151,7 @@ pub fn run(root: &Path, command: &ExecutionCommand, _json_output: bool) -> Resul
                     .stdin(Stdio::null())
                     .stdout(Stdio::null())
                     .stderr(Stdio::null());
-                detach(&mut worker);
-                if let Err(error) = worker.spawn() {
+                if let Err(error) = detach(&mut worker).and_then(|_| worker.spawn()) {
                     dispatch_error = Some(format!(
                         "supervisor spawn failed ({:?}); intent remains registered, no automatic retry",
                         error.kind()
@@ -215,7 +214,7 @@ pub(crate) fn read_state(root: &Path) -> Result<(Store, Project)> {
     Ok((store, project))
 }
 
-fn detach(command: &mut Command) {
+fn detach(command: &mut Command) -> std::io::Result<()> {
     #[cfg(unix)]
     {
         use std::os::unix::process::CommandExt;
@@ -223,9 +222,35 @@ fn detach(command: &mut Command) {
     }
     #[cfg(windows)]
     {
+        use std::os::windows::io::AsRawHandle;
         use std::os::windows::process::CommandExt;
+        use windows_sys::Win32::{
+            Foundation::{HANDLE_FLAG_INHERIT, SetHandleInformation},
+            Storage::FileSystem::{FILE_TYPE_PIPE, GetFileType},
+        };
+        // Rust 1.93 CreateProcess inherits every inheritable handle, even when the new
+        // standard streams are NUL. Do not let the supervisor retain our caller's pipe
+        // endpoints: output() would otherwise wait for the entire background command.
+        // These borrowed handles remain owned and open in this short-lived CLI process;
+        // changing their inherit bit neither closes them nor affects the caller's copy.
+        for handle in [
+            std::io::stdin().as_raw_handle(),
+            std::io::stdout().as_raw_handle(),
+            std::io::stderr().as_raw_handle(),
+        ] {
+            // SAFETY: std supplies live borrowed standard handles. GetFileType accepts
+            // absent/invalid handles; SetHandleInformation is called only for valid pipes.
+            unsafe {
+                if GetFileType(handle) == FILE_TYPE_PIPE
+                    && SetHandleInformation(handle, HANDLE_FLAG_INHERIT, 0) == 0
+                {
+                    return Err(std::io::Error::last_os_error());
+                }
+            }
+        }
         command.creation_flags(0x00000200 | 0x08000000);
     }
+    Ok(())
 }
 
 fn new_log(dir: &cap_std::fs::Dir, name: &str) -> Result<fs::File> {

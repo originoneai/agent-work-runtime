@@ -97,6 +97,16 @@ impl Project {
 }
 impl Drop for Project {
     fn drop(&mut self) {
+        // Release an owned controlled fixture even if its parent's assertion failed.
+        if self.0.join("child-waiting").exists() {
+            let _ = fs::write(self.0.join("release-child"), "release");
+            let start = Instant::now();
+            while !self.0.join("controlled-child-finished").exists()
+                && start.elapsed() < Duration::from_secs(3)
+            {
+                std::thread::sleep(Duration::from_millis(25));
+            }
+        }
         let _ = fs::remove_dir_all(&self.0);
     }
 }
@@ -130,8 +140,18 @@ fn failed_child() {
 #[test]
 #[ignore = "owned child process fixture for recovery while work remains running"]
 fn slow_child() {
-    std::thread::sleep(Duration::from_secs(6));
+    let root = PathBuf::from(std::env::var_os("AWR_EXECUTION_TEST_ROOT").unwrap());
+    fs::write(root.join("child-waiting"), "waiting for the test parent").unwrap();
+    let start = Instant::now();
+    while !root.join("release-child").exists() {
+        assert!(
+            start.elapsed() < Duration::from_secs(30),
+            "launcher did not return while its managed command was running"
+        );
+        std::thread::sleep(Duration::from_millis(25));
+    }
     successful_child();
+    fs::write(root.join("controlled-child-finished"), "finished").unwrap();
 }
 
 #[test]
@@ -228,6 +248,7 @@ fn resume_and_client_context_include_live_work_and_completed_results() {
         .unwrap();
     assert!(text.contains("owned_supervisor_identity_and_live_child_probe"));
     assert!(text.contains(failed_id));
+    fs::write(p.0.join("release-child"), "release").unwrap();
     p.wait(live_id, &["succeeded"]);
     let completed = p.ok(&["execution", "inspect", live_id]);
     assert_eq!(completed["observation"]["state"], "succeeded");
@@ -245,6 +266,7 @@ fn a_result_receipt_survives_a_failed_final_journal_write_and_rejects_wrong_iden
     let conn = rusqlite::Connection::open(p.0.join(".awr/state.db")).unwrap();
     conn.execute_batch("CREATE TRIGGER fixture_fail_finish BEFORE INSERT ON events WHEN NEW.event_type='execution.finished' BEGIN SELECT RAISE(ABORT,'injected final journal write failure'); END;").unwrap();
     drop(conn);
+    fs::write(p.0.join("release-child"), "release").unwrap();
     let path = p.0.join(running["receipt"].as_str().unwrap());
     let start = Instant::now();
     while !path.is_file() {
@@ -307,6 +329,7 @@ fn missing_supervisor_is_unknown_and_inspection_neither_restarts_nor_kills_child
     );
     let duplicate = p.launch(&s, "interrupted-report", "slow_child");
     assert_eq!(duplicate["created"], false);
+    fs::write(p.0.join("release-child"), "release").unwrap();
     let begin = Instant::now();
     while !p.0.join("report.txt").exists() {
         assert!(begin.elapsed() < Duration::from_secs(15));
@@ -330,7 +353,7 @@ fn missing_supervisor_is_unknown_and_inspection_neither_restarts_nor_kills_child
 fn managed_command_outlives_calling_session_and_keeps_result_logs() {
     let p = Project::new();
     let s = p.bind("first");
-    let launched = p.launch(&s, "report-one", "successful_child");
+    let launched = p.launch(&s, "report-one", "slow_child");
     let id = launched["execution"]["id"].as_str().unwrap();
     assert_eq!(launched["execution"]["state"], "registered");
     assert_eq!(launched["created"], true);
@@ -344,6 +367,7 @@ fn managed_command_outlives_calling_session_and_keeps_result_logs() {
         "--expected-revision",
         &rev,
     ]);
+    fs::write(p.0.join("release-child"), "release").unwrap();
     let finished = p.wait(id, &["succeeded", "failed"]);
     assert_eq!(finished["state"], "succeeded");
     assert_eq!(finished["exit_code"], 0);
@@ -359,7 +383,7 @@ fn managed_command_outlives_calling_session_and_keeps_result_logs() {
     assert_eq!(receipt["execution_id"], id);
     assert_eq!(receipt["success"], true);
     let next = p.bind("next");
-    let duplicate = p.launch(&next, "report-one", "successful_child");
+    let duplicate = p.launch(&next, "report-one", "slow_child");
     assert_eq!(duplicate["created"], false);
     assert_eq!(duplicate["execution"]["id"], id);
     assert_eq!(
