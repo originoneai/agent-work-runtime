@@ -34,20 +34,23 @@ Your project sources → AWR index + checkpoints → focused context → coding 
 
 On the [reproducible public benchmark](docs/benchmarks/README.md), reading all
 sources costs **18,955 tokens**. The largest rendered work packet across **all 39
-active tasks** costs **4,999 tokens: 73.6% less input**. Exact checks preserve
+active tasks** costs **4,998 tokens: 73.6% less input**. Exact checks preserve
 **676/676 required facts** across those tasks.
 
 | What reaches the reader | Maximum tokens | Reduction vs. full-source read |
 | --- | ---: | ---: |
 | Full Markdown/YAML source corpus | 18,955 | — |
-| AWR rendered work context | 4,999 | 73.6% |
-| AWR complete CLI JSON response | 12,723 | 32.9% |
+| AWR rendered work context | 4,998 | 73.6% |
+| AWR complete CLI JSON response | 12,748 | 32.7% |
 
 The sample has 150 synthetic tasks. Counts use `o200k_base`; context budget is
 5,000. This compares against reading every source file, not another product or an
 optimized search workflow. JSON metadata is larger than rendered context. These
 numbers **do not establish model quality or end-to-end billing savings**; chat
 history, model output and MCP framing are excluded.
+
+On this Apple M3 Max / macOS run, context compilation took **108 ms at p95**
+(30 sequential CLI calls after warmup). This is a single-host measurement.
 
 ## Get started
 

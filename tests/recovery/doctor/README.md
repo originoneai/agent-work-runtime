@@ -1,7 +1,6 @@
 # Doctor and database recovery
 
-`contract.json` version 1.0.0 defines 24 component, process and CLI conditions for
-AWR-SEC-005. It includes database ownership, schema definitions, migration
+`contract.json` version 1.0.0 defines 24 component, process and CLI conditions for its isolated fixtures. It includes database ownership, schema definitions, migration
 rollback, diagnostic findings, WAL recovery, source projection rebuild and
 restoring runtime data from a coherent backup.
 

@@ -42,6 +42,8 @@ def main():
     args.output.parent.mkdir(parents=True, exist_ok=True)
     for extension in ("svg", "png"):
         fig.savefig(args.output.with_suffix("."+extension), facecolor=fig.get_facecolor(), metadata={"Creator": "AWR public benchmark"} if extension == "svg" else None)
+    svg = args.output.with_suffix(".svg")
+    svg.write_text("\n".join(line.rstrip() for line in svg.read_text().splitlines()) + "\n")
     plt.close(fig)
 
 

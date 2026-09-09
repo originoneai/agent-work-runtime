@@ -1,7 +1,6 @@
 # Event, claim and branch isolation matrix
 
-`contract.json` version 1.1.0 fixes 20 component/process conditions for
-AWR-SEC-004. Run the whole contract from the repository root with a new receipt:
+`contract.json` version 1.1.0 fixes 20 component/process conditions for its isolated fixtures. Run the whole contract from the repository root with a new receipt:
 
 ```sh
 python3 tests/concurrency/verify.py --report .local/isolation-check-001.json

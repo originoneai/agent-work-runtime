@@ -27,6 +27,19 @@ stdout capture and exit; parsing and file writes are outside the timed interval.
 Filesystem/SQLite caches are warm. The summary records CPU, OS, toolchain, input
 hashes and binary hash. It does not measure concurrent-agent scaling.
 
+## Recorded result
+
+| Operation | p95, milliseconds |
+| --- | ---: |
+| Project status | 34.927 |
+| Work detail | 38.079 |
+| Context compilation | 108.065 |
+
+Apple M3 Max, macOS; 30 sequential samples per operation. Exact OS/toolchain and
+source bindings are in the summary. The token chart reports 18,955 baseline tokens,
+a maximum of 4,998 rendered L1 tokens, and 12,748 full CLI JSON tokens.
+All 676 exact-fact assertions passed across 39 active tasks.
+
 ## Run it
 
 Use Python 3.11+ with a virtual environment. From the repository root:
@@ -60,5 +73,4 @@ and absolute source locators affect tokenization, so reruns can differ slightly.
   There are zero model calls in this benchmark; no answer-quality or business-success
   claim follows from its exact-fact checks.
 - Older optional private-workload protocols under `tests/long-ledger`,
-  `tests/compact-recovery` and `tests/benchmarks` need their own locally supplied
-  source snapshots. They are not prerequisites for reproducing this public result.
+  `tests/compact-recovery` and `tests/benchmarks` need separately reviewed local source bindings. They are not prerequisites for reproducing this public result.
