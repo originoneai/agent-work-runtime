@@ -79,7 +79,9 @@ def exercise(awr, mcp, scratch, version):
                               "--work", "EXAMPLE-001", "--goal", "goal#demo"]).stdout)
     assert context["completeness"]["complete"] and "EXAMPLE-001" in context["work_context"]["rendered_context"]
     diagnosis = json.loads(run([awr, "--project", project, "--json", "intake", "inspect"]).stdout)
-    assert diagnosis["organization"]["state"] == "ready"
+    organization = diagnosis["organization"]
+    assert organization["state"] == "ready", organization
+    assert organization["business_execution_ready"] and "EXAMPLE-001" in organization["executable_work"], organization
     names = check_mcp(mcp, project)
     return {"version_and_help": True, "exit_code_and_stderr": True,
             "unicode_space_project_init_and_status": True, "task_context_and_intake": True, "mcp_stdio_tools": names}

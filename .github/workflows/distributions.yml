@@ -62,7 +62,7 @@ jobs:
           python scripts/release/test_release.py
       - name: Install build tools
         run: |
-          rustup toolchain install 1.93.1 --profile minimal
+          rustup toolchain install 1.93.1 --profile minimal --component rustfmt --component clippy
           python -m pip install -r scripts/release/requirements.txt
       - name: Install Linux wheel repair tools
         if: runner.os == 'Linux'
