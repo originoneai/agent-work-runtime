@@ -1,0 +1,184 @@
+{
+  "contract_id": "awr-native-platforms",
+  "contract_version": "1.0.1",
+  "contract_sha256": "636a1e221103ee84bb46465b2ecea8bfa25095e5343bfe1be7c0058d4ffa5246",
+  "platform_id": "linux-x64",
+  "source_commit": "b4dbe740d538d03df1e37ce41853a381a854c959",
+  "started_at": "2026-09-09T06:48:01+00:00",
+  "finished_at": "2026-09-09T06:52:35+00:00",
+  "passed": true,
+  "gates_passed": 11,
+  "target_gates": 11,
+  "e4_completed": 0,
+  "model_calls": 0,
+  "native_agent_client_invoked": false,
+  "binary_sha256": {
+    "awr": "f5642955400afa3a9ba3b759466bb0a6748c04750d1c70497cf8374184c9e926",
+    "awr-mcp": "1e6203ea8c9b8dc5c91da5030b77318d26781ad7510702d89fda51c0fc2cf5c7"
+  },
+  "workflow_run": "https://github.com/originoneai/agent-work-runtime/actions/runs/34320693608",
+  "head_commit": "553884a58c553f3105d98fad6a9e6abea617bbf9",
+  "source_tree_sha": "9a28d0cb06595a54e217f488007a58cd60c39e86",
+  "head_tree_sha": "9a28d0cb06595a54e217f488007a58cd60c39e86",
+  "artifact_name": "platform-linux-x64-b4dbe740d538d03df1e37ce41853a381a854c959-1",
+  "scope": "Native platform contract verification, without native agent activation or E4 credit.",
+  "gates": [
+    {
+      "id": "environment",
+      "passed": true
+    },
+    {
+      "id": "build",
+      "passed": true,
+      "command": [
+        "cargo",
+        "build",
+        "--workspace",
+        "--all-targets",
+        "--locked"
+      ],
+      "exit_code": 0,
+      "duration_seconds": 77.118,
+      "log_sha256": "cee8f60a27712a864c92e91c919c4725ec4fb3754fe68f8f9490f4846bffb7b4"
+    },
+    {
+      "id": "ignored_inventory",
+      "passed": true,
+      "command": [
+        "cargo",
+        "test",
+        "--workspace",
+        "--all-targets",
+        "--locked",
+        "--",
+        "--ignored",
+        "--list"
+      ],
+      "exit_code": 0,
+      "duration_seconds": 1.428,
+      "log_sha256": "fbd1e6fb5cade800e8b91a891b8a54c70de44fb7da055e2de6f9c884fde94c12"
+    },
+    {
+      "id": "workspace",
+      "passed": true,
+      "command": [
+        "cargo",
+        "test",
+        "--workspace",
+        "--all-targets",
+        "--no-fail-fast",
+        "--locked"
+      ],
+      "exit_code": 0,
+      "duration_seconds": 151.866,
+      "test_functions_passed": 296,
+      "test_functions_ignored": 7,
+      "log_sha256": "f78fb20b1175a1498797797e22d23819cb91e0095bc1129d63d3cb4cefaf9dfd"
+    },
+    {
+      "id": "doctests",
+      "passed": true,
+      "command": [
+        "cargo",
+        "test",
+        "--workspace",
+        "--doc",
+        "--no-fail-fast",
+        "--locked"
+      ],
+      "exit_code": 0,
+      "duration_seconds": 1.017,
+      "test_functions_passed": 2,
+      "test_functions_ignored": 0,
+      "log_sha256": "7849e1a303e61cc4a13a6c36f0838e4840ccbb276b83a10030b5f6df739dfc65"
+    },
+    {
+      "id": "crash_recovery",
+      "passed": true,
+      "command": [
+        "cargo",
+        "test",
+        "-p",
+        "awr-runtime",
+        "--lib",
+        "--locked",
+        "mutation_apply::recovery_tests::cli_recovery_after_process_death_binds_original_attempt_and_resolves_once",
+        "--",
+        "--ignored",
+        "--exact",
+        "--test-threads=1"
+      ],
+      "exit_code": 0,
+      "duration_seconds": 19.095,
+      "test_functions_passed": 1,
+      "test_functions_ignored": 0,
+      "log_sha256": "61e5c2951634b9f69c8a28c27555a603abc6ae42c8a5ff682ff14ae2c0f0d001"
+    },
+    {
+      "id": "cli_mcp_parity",
+      "passed": true,
+      "command": [
+        "/opt/hostedtoolcache/Python/3.12.14/x64/bin/python",
+        "crates/awr-mcp/tests/cli_parity.py",
+        "--awr",
+        "/home/runner/work/agent-work-runtime/agent-work-runtime/target/debug/awr",
+        "--mcp",
+        "/home/runner/work/agent-work-runtime/agent-work-runtime/target/debug/awr-mcp",
+        "--report",
+        "/home/runner/work/agent-work-runtime/agent-work-runtime/.local/platform-linux-x64/evidence/cli_mcp_parity.json"
+      ],
+      "exit_code": 0,
+      "duration_seconds": 15.752,
+      "log_sha256": "4fba38789cf1870b9a44f94de4abefd45cf07e5e735e701a74088940e725703d"
+    },
+    {
+      "id": "cli_lifecycle",
+      "passed": true,
+      "command": [
+        "/opt/hostedtoolcache/Python/3.12.14/x64/bin/python",
+        "examples/codex/lifecycle.py",
+        "--awr",
+        "/home/runner/work/agent-work-runtime/agent-work-runtime/target/debug/awr",
+        "--output",
+        "/home/runner/work/agent-work-runtime/agent-work-runtime/.local/platform-linux-x64/fixtures/lifecycle"
+      ],
+      "exit_code": 0,
+      "duration_seconds": 4.377,
+      "log_sha256": "8e38793e912206699628f19640a3e91b03965016c25286f5c80037153e96a228"
+    },
+    {
+      "id": "native_cli",
+      "passed": true,
+      "command": [
+        "/opt/hostedtoolcache/Python/3.12.14/x64/bin/python",
+        "tests/platform/native_cli.py",
+        "--awr",
+        "/home/runner/work/agent-work-runtime/agent-work-runtime/target/debug/awr",
+        "--output",
+        "/home/runner/work/agent-work-runtime/agent-work-runtime/.local/platform-linux-x64/fixtures/native",
+        "--report",
+        "/home/runner/work/agent-work-runtime/agent-work-runtime/.local/platform-linux-x64/evidence/native_cli/report.json"
+      ],
+      "exit_code": 0,
+      "duration_seconds": 2.069,
+      "log_sha256": "4bdc4104404b1a83fb73b29100fe86fd7993330b885ac5bef1d415457915ab5b"
+    },
+    {
+      "id": "format",
+      "passed": true,
+      "command": [
+        "cargo",
+        "fmt",
+        "--all",
+        "--check"
+      ],
+      "exit_code": 0,
+      "duration_seconds": 0.666,
+      "log_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "id": "source_unchanged",
+      "passed": true
+    }
+  ]
+}

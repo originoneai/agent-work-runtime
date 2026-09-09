@@ -1,0 +1,74 @@
+{
+  "kind": "implementation",
+  "repository": "https://github.com/originoneai/agent-work-runtime",
+  "source_commit": "553884a58c553f3105d98fad6a9e6abea617bbf9",
+  "checked_at": "2026-09-09T06:59:06.183168+00:00",
+  "remote_receipt": {
+    "commit": "553884a58c553f3105d98fad6a9e6abea617bbf9",
+    "url": "https://github.com/originoneai/agent-work-runtime/commit/553884a58c553f3105d98fad6a9e6abea617bbf9",
+    "verified_at": "2026-09-09T06:59:06.183168+00:00"
+  },
+  "checks": [
+    {
+      "name": "native_platform_matrix",
+      "passed": true,
+      "result": "macOS arm64, Linux x64 and Windows x64 each passed all 11 native contract gates. The tested PR merge tree equals the implementation head tree."
+    },
+    {
+      "name": "controlled_background_continuation",
+      "passed": true,
+      "result": "Controlled child processes wait for their caller to release them, proving piped launch returns while work remains running; execution, recovery and receipt checks passed on each applicable native platform."
+    }
+  ],
+  "artifacts": [
+    "ledger/evidence/AWR-TAKE-004/ci-macos-arm64.json",
+    "ledger/evidence/AWR-TAKE-004/ci-linux-x64.json",
+    "ledger/evidence/AWR-TAKE-004/ci-windows-x64.json",
+    "crates/awr-cli/src/execution.rs",
+    "crates/awr-cli/tests/execution_registry.rs",
+    "tests/platform/contract.json"
+  ],
+  "work_items": {
+    "AWR-TAKE-003": {
+      "acceptance": [
+        {
+          "criterion": "运行任务在执行前持久登记，绑定项目、工作、会话、执行器与唯一操作标识。",
+          "passed": true
+        },
+        {
+          "criterion": "受管本地命令记录启动/结束、退出码及日志产物；调用会话退出后仍可查询结果。",
+          "passed": true
+        },
+        {
+          "criterion": "相同操作标识不会重复执行；外部任务只登记可验证引用，不因 PID 存在或调用者声称成功认定完成。",
+          "passed": true
+        }
+      ]
+    },
+    "AWR-TAKE-004": {
+      "acceptance": [
+        {
+          "criterion": "恢复区分受管任务运行中、已成功、已失败、无法确认；每项有核实依据和观察时间。",
+          "passed": true
+        },
+        {
+          "criterion": "核实命令不自动重跑或杀进程；完成结果与仍运行任务进入接续上下文，避免静默遗漏。",
+          "passed": true
+        },
+        {
+          "criterion": "以真实短命令验证跨会话运行、结果收取、失败、中断未知和重复登记；保留原有 checkpoint/resume 行为。",
+          "passed": true
+        }
+      ]
+    }
+  },
+  "native_run": "https://github.com/originoneai/agent-work-runtime/actions/runs/34320693608",
+  "tested_commit": "b4dbe740d538d03df1e37ce41853a381a854c959",
+  "tested_tree_sha": "9a28d0cb06595a54e217f488007a58cd60c39e86",
+  "review_url": "https://github.com/originoneai/agent-work-runtime/pull/2",
+  "limitations": [
+    "Windows-specific caller pipe inheritance was corrected after the initial native failure. Initial failure evidence remains identified in the compatibility record and Actions history.",
+    "Unix-only fixture supervisor termination checks are not credited on Windows.",
+    "Native agent hook activation, full business E4 and a new npm/PyPI release remain separate steps."
+  ]
+}

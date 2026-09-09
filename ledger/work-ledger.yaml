@@ -1,8 +1,8 @@
 schema_version: 1
 contract_id: awr-v1
 contract_version: 1.1.0
-ledger_revision: 202
-updated_at: '2026-09-09T06:45:09.651753+00:00'
+ledger_revision: 203
+updated_at: '2026-09-09T06:59:06.183168+00:00'
 project:
   name: Agent Work Runtime
   external_key: agent-work-runtime
@@ -45,7 +45,7 @@ milestones:
 - id: M10
   status: planned
 - id: M11
-  status: in_progress
+  status: completed
 work_items:
 - id: AWR-BOOT-001
   title: 公开仓库、Apache 2.0 与原始方案基线
@@ -2083,7 +2083,7 @@ work_items:
   priority: P0
   kind: feature
   required_for_v1: true
-  status: in_progress
+  status: completed
   owner: codex-side-conversation
   depends_on:
   - AWR-P3-002
@@ -2107,15 +2107,16 @@ work_items:
     evidence_level: locally_verified
   evidence:
   - ledger/deliveries/AWR-TAKE-003.json
+  - ledger/deliveries/takeover-native-followup.json
   blocker: null
-  next_action: 修复 Windows 受管执行对调用端管道的继承，并复验原生平台。
+  next_action: '实现与三平台原生验证已通过，见草稿 PR #2；原生客户端激活、合并与发版分开交付。'
 - id: AWR-TAKE-004
   title: 恢复时核实执行现场并整合接续
   milestone: M11
   priority: P0
   kind: feature
   required_for_v1: true
-  status: blocked
+  status: completed
   owner: codex-side-conversation
   depends_on:
   - AWR-TAKE-002
@@ -2143,8 +2144,9 @@ work_items:
     evidence_level: locally_verified
   evidence:
   - ledger/deliveries/AWR-TAKE-004.json
-  blocker: Windows CI 发现受管执行继承调用端管道，等待 AWR-TAKE-003 修复及原生复验。
-  next_action: 保留既有本地证据；执行修复完成后恢复接续验收状态。
+  - ledger/deliveries/takeover-native-followup.json
+  blocker: null
+  next_action: '实现与三平台原生验证已通过，见草稿 PR #2；原生客户端激活、合并与发版分开交付。'
 scenarios:
 - id: AWR-SC-001
   status: completed
