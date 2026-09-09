@@ -179,32 +179,28 @@ impl SourceAdapter for MarkdownDirectoryAdapter {
         let text = snapshot.text()?;
         let sections = markdown_sections(snapshot)?;
         let header = sections.iter().find(|section| section.level > 0);
-        let metadata = frontmatter(text)?;
+        let mut metadata = frontmatter(text)?;
         let mut warnings = vec![];
         let header_fields = header
             .map(|h| header_fields(&h.body))
             .transpose()?
             .unwrap_or_default();
-        if let (Some(a), Some(b)) = (
-            metadata_string(&metadata, "status")?,
-            header_fields.get("status"),
-        ) {
-            if a.trim().to_lowercase() != b.trim().to_lowercase() {
-                return Err(Error::SourceConflict(
-                    "conflicting ADR status declarations".into(),
-                ));
-            }
+        for (key, raw) in header_fields {
+            let value = if ["affected_keys", "paths"].contains(&key.as_str()) {
+                Value::Array(
+                    raw.split([',', '，', ';', '；'])
+                        .map(str::trim)
+                        .filter(|s| !s.is_empty())
+                        .map(|s| Value::String(s.into()))
+                        .collect(),
+                )
+            } else {
+                Value::String(raw)
+            };
+            insert_metadata(&mut metadata, &key, value)?;
         }
-        let raw_status = metadata_string(&metadata, "status")?
-            .or_else(|| header_fields.get("status").cloned())
-            .unwrap_or_default();
-        let status = match raw_status.trim().to_lowercase().as_str() {
-            "proposed" => DecisionStatus::Proposed,
-            "accepted" => DecisionStatus::Accepted,
-            "superseded" => DecisionStatus::Superseded,
-            "rejected" => DecisionStatus::Rejected,
-            _ => DecisionStatus::Unknown,
-        };
+        let raw_status = metadata_string(&metadata, "status")?.unwrap_or_default();
+        let status = decision_status(&raw_status);
         if status == DecisionStatus::Unknown {
             warnings.push(format!("decision status unresolved: {raw_status:?}"));
         }
@@ -351,7 +347,7 @@ fn git_files(root: &Path, revision: &str, path: &Path, recursive: bool) -> Resul
 fn frontmatter(text: &str) -> Result<Value> {
     let mut lines = text.split_inclusive('\n');
     if lines.next().is_none_or(|line| line.trim() != "---") {
-        return Ok(Value::Null);
+        return Ok(serde_json::json!({}));
     }
     let mut body = String::new();
     for line in lines {
@@ -362,7 +358,12 @@ fn frontmatter(text: &str) -> Result<Value> {
             if !value.is_object() {
                 return Err(Error::InvalidInput("ADR metadata must be a mapping".into()));
             }
-            return Ok(value);
+            let mut metadata = serde_json::json!({});
+            for (key, value) in value.as_object().unwrap() {
+                let canonical = metadata_key(key).unwrap_or(key);
+                insert_metadata(&mut metadata, canonical, value.clone())?;
+            }
+            return Ok(metadata);
         }
         body.push_str(line);
     }
@@ -398,15 +399,11 @@ fn header_fields(body: &str) -> Result<BTreeMap<String, String>> {
         if line.trim().is_empty() {
             continue;
         }
-        let Some((key, value)) = line.split_once(':') else {
+        let Some((key, value)) = header_field(line) else {
             break;
         };
-        let key = key.trim().to_lowercase();
-        if !["status", "date", "deciders"].contains(&key.as_str()) {
-            break;
-        }
-        if let Some(previous) = fields.insert(key, value.trim().to_owned()) {
-            if previous != value.trim() {
+        if let Some(previous) = fields.insert(key.to_owned(), value.to_owned()) {
+            if !metadata_equal(key, &Value::String(previous), &Value::String(value.into())) {
                 return Err(Error::SourceConflict(
                     "conflicting ADR header fields".into(),
                 ));
@@ -419,12 +416,77 @@ fn without_header_fields(body: &str) -> String {
     let lines: Vec<_> = body.lines().collect();
     let start = lines
         .iter()
-        .position(|line| {
-            !line.trim().is_empty()
-                && !line.split_once(':').is_some_and(|(key, _)| {
-                    ["status", "date", "deciders"].contains(&key.trim().to_lowercase().as_str())
-                })
-        })
+        .position(|line| !line.trim().is_empty() && header_field(line).is_none())
         .unwrap_or(lines.len());
     lines[start..].join("\n").trim().into()
+}
+
+fn decision_status(raw: &str) -> DecisionStatus {
+    match raw.trim().to_lowercase().as_str() {
+        "proposed" | "提议" | "拟议" | "提議" | "擬議" | "草案" => {
+            DecisionStatus::Proposed
+        }
+        "accepted" | "已接受" | "已采纳" | "已採納" | "已通过" | "已通過" => {
+            DecisionStatus::Accepted
+        }
+        "superseded" | "已取代" | "已替代" => DecisionStatus::Superseded,
+        "rejected" | "已拒绝" | "已拒絕" | "已否决" | "已否決" => {
+            DecisionStatus::Rejected
+        }
+        _ => DecisionStatus::Unknown,
+    }
+}
+fn metadata_key(key: &str) -> Option<&'static str> {
+    match key.trim().to_lowercase().as_str() {
+        "status" | "状态" | "狀態" => Some("status"),
+        "date" | "日期" => Some("date"),
+        "deciders" | "决策者" | "決策者" => Some("deciders"),
+        "id" | "编号" | "編號" => Some("id"),
+        "title" | "标题" | "標題" => Some("title"),
+        "decision" | "决策" | "決策" | "决定" | "決定" => Some("decision"),
+        "rationale" | "理由" => Some("rationale"),
+        "affected_keys" | "关联任务" | "關聯任務" => Some("affected_keys"),
+        "paths" | "路径" | "路徑" => Some("paths"),
+        _ => None,
+    }
+}
+fn header_field(line: &str) -> Option<(&'static str, &str)> {
+    let line = line.trim();
+    let line = ["- ", "* ", "+ "]
+        .iter()
+        .find_map(|prefix| line.strip_prefix(prefix))
+        .unwrap_or(line)
+        .trim();
+    let (key, value) = line.split_once([':', '：'])?;
+    let key = key.trim();
+    // Both **Status**: Accepted and **Status:** Accepted are common ADR headers.
+    let value = if key.starts_with("**") && !key.ends_with("**") {
+        value.trim().strip_prefix("**").unwrap_or(value)
+    } else {
+        value
+    };
+    let key = metadata_key(key.trim_matches(['*', '_', '`']))?;
+    Some((key, value.trim().trim_matches('`').trim()))
+}
+fn metadata_equal(key: &str, left: &Value, right: &Value) -> bool {
+    if key == "status"
+        && let (Some(a), Some(b)) = (left.as_str(), right.as_str())
+    {
+        return a.trim().eq_ignore_ascii_case(b.trim())
+            || (decision_status(a) != DecisionStatus::Unknown
+                && decision_status(a) == decision_status(b));
+    }
+    left == right
+}
+fn insert_metadata(metadata: &mut Value, key: &str, value: Value) -> Result<()> {
+    if let Some(previous) = metadata.get(key) {
+        if !metadata_equal(key, previous, &value) {
+            return Err(Error::SourceConflict(
+                "conflicting ADR metadata declarations".into(),
+            ));
+        }
+    } else {
+        metadata[key] = value;
+    }
+    Ok(())
 }

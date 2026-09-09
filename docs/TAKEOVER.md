@@ -2,6 +2,21 @@
 
 This addition covers project intake and organization, client checkpoints, execution registration, and recovery inspection. It extends the existing AWR work runtime; it does not transfer arbitrary process memory or reconstruct unrecorded conversations.
 
+## Existing project vocabularies
+
+Keep the existing ledger's filenames, columns and state words. Init discovers conventional Markdown ledgers including `*-ledger.md`; multiple candidates require choosing the authority. Common columns such as `工作项`, `Owner 角色`, `完成硬门槛`, and `当前证据 / 下一动作` are recognized. Custom columns and YAML work fields can be mapped explicitly:
+
+```sh
+awr init --status-map pending=planned --status-map complete=completed
+awr init --status-map pending=planned --status-map complete=completed --accept
+# If the title column/key is nonstandard, add --field-map title=事项.
+awr intake inspect --json
+```
+
+These flags appear in the preview and accepted manifest. Status maps interpret source-declared facts, not evidence of completion. Unknown states retain a diagnostic; the Agent can resolve the mapping in `.awr/project.toml` and reindex. Mapped YAML writes retain original keys/status spellings and obey existing claim, revision and completion checks. Markdown remains read-only through AWR; edits continue in the authoritative file. A combined evidence/next-action column supplies its literal text, without inferring completed verification.
+
+Chinese ADR list metadata such as `- 状态：Accepted`, bold labels and Chinese YAML front matter are supported. Conflicting declarations fail. Credential-free JSON/YAML schema and authentication definitions can be indexed alongside the documents; actual values inside defaults/examples or extra fields still trigger the shared boundary. See the [YAML mapping reference](../adapters/yaml-ledger/README.md), [ADR reference](../adapters/markdown-directory/README.md), and [data boundary](reference/secret-boundaries.md).
+
 ## Intake
 
 Run `awr --project /absolute/project init` to inspect the inventory and proposed source mapping. Nothing is initialized until `--accept` is supplied. Conventional YAML sources are retained; Markdown task tables and checklists can be projected with the read-only `markdown-ledger-v1` adapter. Existing Markdown remains the authority and is edited in its original file, then reindexed.

@@ -91,8 +91,7 @@ fn entries<'a>(document: &'a Value, field: &str) -> Result<Vec<Entry<'a>>> {
             if !value.is_object() {
                 return Err(Error::InvalidInput(format!("{pointer} must be a mapping")));
             }
-            let key = string(&value["external_key"], &pointer)?
-                .or(string(&value["id"], &pointer)?)
+            let key = string(alias(value, "external_key", "id")?, &pointer)?
                 .or(fallback.map(str::to_owned))
                 .filter(|s| !s.trim().is_empty())
                 .ok_or_else(|| {
@@ -143,15 +142,12 @@ impl SourceAdapter for YamlLedgerAdapter {
                 "yaml-ledger-v1 requires the ledger domain".into(),
             ));
         }
-        if !spec.options.is_empty() {
-            return Err(Error::Unsupported(
-                "yaml-ledger-v1 has no custom field mapping options yet".into(),
-            ));
-        }
+        let mapping = crate::LedgerMapping::from_spec(spec)?;
         let yaml: serde_yaml_ng::Value = serde_yaml_ng::from_str(snapshot.text()?)
             .map_err(|_| Error::InvalidInput("invalid YAML ledger document".into()))?;
         let document = serde_json::to_value(yaml)?;
         awr_core::ensure_public_value(&document)?;
+        let document = mapping.document(document)?;
         if !document.is_object()
             || !["work_items", "milestones", "goals"]
                 .iter()
@@ -219,7 +215,7 @@ impl SourceAdapter for YamlLedgerAdapter {
         } in entries(&document, "work_items")?
         {
             let raw_status = string(&value["status"], &pointer)?.unwrap_or_default();
-            let status = WorkStatus::normalize(&raw_status);
+            let status = mapping.status(&raw_status);
             if status == WorkStatus::Unknown {
                 batch.warnings.push(format!(
                     "{pointer}/status: unknown raw status {raw_status:?}; no transition inferred"
@@ -323,7 +319,10 @@ impl SourceAdapter for YamlLedgerAdapter {
                 } else {
                     "dependencies"
                 };
-                reference.pointer = Some(format!("{pointer}/{field}/{index}"));
+                reference.pointer = Some(format!(
+                    "{pointer}/{}/{index}",
+                    escape(mapping.source_field(field))
+                ));
                 batch.edges.push(edge(
                     context,
                     &key,
@@ -336,7 +335,10 @@ impl SourceAdapter for YamlLedgerAdapter {
             }
             if let Some(milestone) = &work.milestone {
                 let mut reference = work.meta.source_ref.clone();
-                reference.pointer = Some(format!("{pointer}/milestone"));
+                reference.pointer = Some(format!(
+                    "{pointer}/{}",
+                    escape(mapping.source_field("milestone"))
+                ));
                 batch.edges.push(edge(
                     context,
                     &key,
@@ -351,11 +353,11 @@ impl SourceAdapter for YamlLedgerAdapter {
                 let mut reference = work.meta.source_ref.clone();
                 reference.pointer = Some(format!(
                     "{pointer}/{}",
-                    if value.get("goal").is_some() {
+                    escape(mapping.source_field(if value.get("goal").is_some() {
                         "goal"
                     } else {
                         "goals"
-                    }
+                    }))
                 ));
                 batch.edges.push(edge(
                     context,

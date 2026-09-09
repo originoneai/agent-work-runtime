@@ -148,6 +148,45 @@ fn directory_inventory_reports_added_modified_removed() {
 }
 
 #[test]
+fn chinese_list_metadata_frontmatter_and_conflicts() {
+    for header in [
+        "- 状态：Accepted",
+        "* **状态**：`Accepted`",
+        "+ **狀態：** 已採納",
+        "- Status: Accepted",
+    ] {
+        let text = format!(
+            "# 决策\n\n{header}\n- 日期：2026-09-09\n- 关联任务：W1，W2\n- 路径：src/one;src/two\n\n## 决策\n保留当前工作树。\n\n## 背景\n避免搬迁。\n"
+        );
+        let b = parse(&text).unwrap();
+        let d = &b.decisions[0];
+        assert_eq!(d.status, DecisionStatus::Accepted, "{header}");
+        assert!(b.warnings.is_empty());
+        assert_eq!(d.affected_keys, ["W1", "W2"]);
+        assert_eq!(d.paths, ["src/one", "src/two"]);
+        assert!(d.decision.contains("保留当前工作树"));
+        assert!(d.rationale.contains("避免搬迁"));
+        assert_eq!(d.meta.source_ref.start_line, Some(1));
+    }
+    let b=parse("---\n编号: ADR-甲\n标题: 保留来源\n状态: 已采纳\nstatus: accepted\n关联任务: [W]\n---\n# 原始标题\n\n- Status: Accepted\n\n## 决策\n原文件权威。\n").unwrap();
+    assert_eq!(b.decisions[0].meta.external_key, "ADR-甲");
+    assert_eq!(b.decisions[0].title, "保留来源");
+    for text in [
+        "# 冲突\n\n- 状态：Accepted\n- Status: Rejected\n",
+        "---\nstatus: accepted\n状态: 已拒绝\n---\n# 冲突\n",
+        "---\nid: ONE\n---\n# 冲突\n\n- 编号：TWO\n",
+    ] {
+        assert!(
+            matches!(parse(text), Err(Error::SourceConflict(_))),
+            "{text}"
+        );
+    }
+    let b = parse("# 未决\n\n- 状态：仍在讨论\n\n尚未决策。\n").unwrap();
+    assert_eq!(b.decisions[0].status, DecisionStatus::Unknown);
+    assert_eq!(b.decisions[0].raw_status, "仍在讨论");
+}
+
+#[test]
 fn git_directory_pins_reads_and_preserves_ref_identity() {
     let fixture = Fixture::new();
     git(&fixture.0, &["init", "--initial-branch=main"]);

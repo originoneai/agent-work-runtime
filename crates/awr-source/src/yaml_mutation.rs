@@ -215,16 +215,21 @@ pub fn read_yaml_mutation_record(
             "completion requires a writable YAML ledger source",
         ));
     }
-    let (_, _, snapshot) = inspect_mutation_source(root, source, patch)?;
+    let (_, spec, snapshot) = inspect_mutation_source(root, source, patch)?;
     if snapshot.fingerprint != patch.target.meta.source_ref.source_fingerprint {
         return Err(Error::SourceConflict(
             "source changed while reading its record".into(),
         ));
     }
-    document(&snapshot)?
+    let record = document(&snapshot)?
         .pointer(patch.target.meta.source_ref.pointer.as_deref().unwrap())
         .cloned()
-        .ok_or_else(|| Error::SourceConflict("exact YAML record is missing".into()))
+        .ok_or_else(|| Error::SourceConflict("exact YAML record is missing".into()))?;
+    if patch.target.kind == EntityKind::WorkItem {
+        crate::LedgerMapping::from_spec(&spec)?.record(&record)
+    } else {
+        Ok(record)
+    }
 }
 fn allowed(kind: EntityKind, field: &str) -> bool {
     match kind {
@@ -332,6 +337,11 @@ pub fn prepare_yaml_mutation(
     }
     let pointer = patch.target.meta.source_ref.pointer.as_deref().unwrap();
     let original = document(&before)?;
+    let mapping = if patch.target.kind == EntityKind::WorkItem {
+        crate::LedgerMapping::from_spec(&spec)?
+    } else {
+        crate::LedgerMapping::default()
+    };
     if let Some(binding) = patch
         .work_action
         .as_ref()
@@ -340,7 +350,7 @@ pub fn prepare_yaml_mutation(
         let record = original
             .pointer(pointer)
             .ok_or_else(|| unsupported("exact YAML record is missing"))?;
-        if patch.changes != completion_source_changes(record, binding)? {
+        if patch.changes != completion_source_changes(&mapping.record(record)?, binding)? {
             return Err(Error::InvalidInput("completion patch must preserve existing evidence and verification metadata exactly".into()));
         }
     }
@@ -350,7 +360,15 @@ pub fn prepare_yaml_mutation(
         .and_then(Value::as_object_mut)
         .ok_or_else(|| unsupported("the exact YAML record is not a mapping"))?;
     for (key, value) in changes {
-        record.insert(key.clone(), value.clone());
+        let original_record = original.pointer(pointer).unwrap();
+        record.insert(
+            mapping.source_field(key).into(),
+            if patch.target.kind == EntityKind::WorkItem {
+                mapping.write_value(key, value, original_record)?
+            } else {
+                value.clone()
+            },
+        );
     }
     if expected == original {
         return Err(Error::InvalidInput(

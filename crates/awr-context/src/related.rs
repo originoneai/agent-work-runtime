@@ -74,13 +74,10 @@ pub struct RelatedWorkContext {
     pub source_revisions: Vec<SourceVersion>,
     pub source_issues: Vec<String>,
 }
-fn summary(text: &str) -> String {
-    let text = text.split_whitespace().collect::<Vec<_>>().join(" ");
-    if text.chars().count() > 240 {
-        format!("{}…", text.chars().take(240).collect::<String>())
-    } else {
-        text
-    }
+fn summary(text: &str) -> Result<String> {
+    awr_core::public_summary(text, 240).map_err(|_| {
+        Error::ContextIncomplete("selected evidence summary contains sensitive content".into())
+    })
 }
 
 /// Select related facts from one refreshed project revision without opening raw bodies.
@@ -280,7 +277,7 @@ impl RelatedSelection {
                 external_key: item.external_key,
                 evidence_type: item.evidence_type,
                 level: item.level,
-                summary: summary(&item.summary),
+                summary: summary(&item.summary)?,
                 locator: item.locator,
                 sha256: item.sha256,
                 source_sha: item.source_sha,

@@ -1,0 +1,168 @@
+{
+  "schema_version": 1,
+  "work_item": "AWR-TAKE-006",
+  "checked_at": "2026-09-09T08:59:26.626022+00:00",
+  "platform": "Darwin arm64",
+  "evidence_level": "locally_verified",
+  "commands": [
+    {
+      "command": "cargo test -p awr-core -p awr-source -p awr-context",
+      "passed": 54,
+      "suites": 18
+    },
+    {
+      "command": "cargo test -p awr-core -p awr-source -p awr-context -p awr-cli --test heterogeneous_intake_cli --test organization_cli --test work_action_cli --test takeover_init -p awr-mcp --test stdio",
+      "passed": 44,
+      "suites": 5,
+      "note": "Explicit test selection executes the four CLI suites and MCP stdio; core/source/context tests are covered by the separate command above."
+    },
+    {
+      "command": "cargo build -p awr-cli -p awr-mcp --locked",
+      "passed": true
+    },
+    {
+      "command": "python3 tests/security/payloads/verify_secrets.py --report .local/take006/secrets-v3-r3.json",
+      "passed": true,
+      "verified_conditions": 16,
+      "contract_version": "1.5.0",
+      "test_groups": [
+        {
+          "command": [
+            "cargo",
+            "test",
+            "-p",
+            "awr-core",
+            "--lib",
+            "secrets::tests",
+            "--locked"
+          ],
+          "passed": true,
+          "test_functions_passed": 9,
+          "log_sha256": "cf74fb311a5aead3abd57e457629a3609fbcf9feb8e1cc168f916018b3c878bb"
+        },
+        {
+          "command": [
+            "cargo",
+            "test",
+            "-p",
+            "awr-runtime",
+            "--test",
+            "security_secrets",
+            "--locked",
+            "--",
+            "--nocapture"
+          ],
+          "passed": true,
+          "test_functions_passed": 11,
+          "log_sha256": "3e8b6784a0d8729bd7b60538b40911be45b591238f1dd85162ab2739a1e5273a"
+        },
+        {
+          "command": [
+            "/opt/homebrew/opt/python@3.14/bin/python3.14",
+            "crates/awr-mcp/tests/security_secrets.py",
+            "--awr",
+            "target/debug/awr",
+            "--mcp",
+            "target/debug/awr-mcp"
+          ],
+          "passed": true,
+          "test_functions_passed": 3,
+          "log_sha256": "36dd22391815e433109f6cc1cc15c9b3925aecd4ccd731ea08f181489a7da872"
+        }
+      ]
+    },
+    {
+      "command": "cargo test -p awr-cli --test session_cli --test doctor_cli --test heterogeneous_intake_cli --locked",
+      "passed": 12,
+      "suites": 3
+    },
+    {
+      "command": "python3 crates/awr-mcp/tests/cli_parity.py --awr target/debug/awr --mcp target/debug/awr-mcp --report .local/take006/parity-final.json",
+      "passed": true,
+      "tests_passed": 8,
+      "report_sha256": "1519c1e68d141742cf6747b8150ec4c02ae5388e17d36ea364341ef2eaee5194"
+    },
+    {
+      "command": "cargo fmt --all --check",
+      "passed": true
+    },
+    {
+      "command": "git diff --check",
+      "passed": true
+    },
+    {
+      "command": "python scripts/check_ledger.py",
+      "passed": true,
+      "note": "Planning metadata only."
+    },
+    {
+      "command": "cargo test --workspace --all-targets --no-fail-fast --locked",
+      "passed": true,
+      "test_functions_passed": 321,
+      "suites": 80,
+      "ignored": 7,
+      "ignored_entrypoints": [
+        "test fixture_wal_writer ... ignored, Private live writer for the temporary WAL fixtures",
+        "test failed_child ... ignored, owned child process fixture, launched explicitly by integration checks",
+        "test slow_child ... ignored, owned child process fixture for recovery while work remains running",
+        "test successful_child ... ignored, owned child process fixture, launched explicitly by integration checks",
+        "test mutation_apply::recovery_tests::cli_recovery_after_process_death_binds_original_attempt_and_resolves_once ... ignored, Requires AWR_RECOVERY_CLI from tests/recovery/mutations/verify.py",
+        "test mutation_apply::recovery_tests::fixture_worker ... ignored, Child-process fixture, invoked explicitly by the recovery cases",
+        "test fixture_contender ... ignored, Private live OS process fixture; parent cases supply its temporary project"
+      ],
+      "log_sha256": "29816da4be803eba1c79067b4b231b26167ea11fa4d1c0e47f284875fb45b130"
+    },
+    {
+      "command": "cargo test -p awr-cli --test proposal_cli --locked",
+      "passed": 14,
+      "suites": 1
+    },
+    {
+      "command": "cargo check --workspace --locked",
+      "passed": true
+    }
+  ],
+  "reference_probe": {
+    "kind": "local_parser_check_on_unmodified_source_copies",
+    "source_files": 20,
+    "work_items": 48,
+    "decisions": 19,
+    "unrecognized_statuses": 0,
+    "all_source_bytes_preserved": true,
+    "original_project_written": false,
+    "note": "Reference source text, private repository identifiers and original paths are excluded; equivalent synthetic fixtures are versioned in the source/CLI tests."
+  },
+  "coverage": [
+    "Explicit field/status maps preserve original vocabulary and exact relationship pointers",
+    "Mapping conflicts and invalid canonical redefinitions fail; unknown values remain diagnostic",
+    "Mapped YAML claim/progress writeback and stale mapping rejection",
+    "Chinese ADR metadata, bullet/bold/full-width syntax, equivalent bilingual declarations and conflicts",
+    "Public JSON/YAML authentication/schema definitions, hidden values and duplicate-key concealment",
+    "Full input validation before display-summary truncation; no false incomplete context for public definitions",
+    "Old FTS caches and source parsing configurations are invalidated by policy/version changes",
+    "Doctor shares the exact profile/options/parser-version identity with indexing and mutations; real configuration changes remain diagnostic until reindex.",
+    "Proposal configuration-drift fixture uses a valid status map; obsolete unsupported options are rejected by manifest validation, while actual valid mapping changes still produce SourceConflict."
+  ],
+  "limitations": [
+    "Local programmatic integration evidence, not E4 or release acceptance.",
+    "No original reference project files or runtime state were modified.",
+    "Mappings cover supported ledger fields; arbitrary root schema transformations and Markdown writes are outside this change.",
+    "Secret detection covers declared shapes/labels, not arbitrary unlabelled private text.",
+    "Test command counts overlap and are not summed as unique coverage."
+  ],
+  "prior_ci_followup": {
+    "run_url": "https://github.com/originoneai/agent-work-runtime/actions/runs/34326285821",
+    "findings": [
+      "Doctor duplicated a stale configuration shape and reported unchanged minimal-profile sources as changed; now uses shared source_configuration.",
+      "CLI/MCP parity expected the pre-organization top-level status error; assertions now verify the structured error, non-ready organization and unknown total without relaxing SourceStale."
+    ],
+    "local_rechecks": "12 session/doctor/mapped-intake tests and 8 CLI/MCP parity tests passed; new native CI remains separate."
+  },
+  "main_state_preservation": {
+    "base_commit": "a222e32d8d3491d41d3a0e8dd0c5d5ed176f528b",
+    "current": true,
+    "scenarios": true,
+    "metrics": true,
+    "qa_and_release_items": true
+  }
+}

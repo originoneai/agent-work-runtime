@@ -9,7 +9,25 @@
 - `evidence` accepts locator strings or `{locator/path, summary}` records. These are unverified references (`source_reference`, level `unknown`), linked to the work item. Reading a reference does not prove its contents or promote a validation level.
 - Every object and relationship retains an exact JSON pointer into the source and the indexed fingerprint/revision. Repeat indexing of an unchanged, fresh source is a no-op; previous entity IDs survive changes.
 
-Custom field mapping options are currently rejected explicitly. Source runtime state, claims and events cannot be imported as work history. User-facing source commands arrive with the source CLI ledger item; the development example can index a local ledger now:
+Work fields and statuses can be mapped without editing the authoritative file. In the relevant `[[sources]]` entry:
+
+```toml
+[sources.options.field_map]
+id = "ticket"
+title = "name"
+status = "phase"
+next_action = "next"
+[sources.options.status_map]
+Pending = "planned"
+Doing = "in_progress"
+Done = "completed"
+```
+
+`field_map` is canonical field → original YAML key. Supported work fields are `id`, `title`, `status`, `kind`, `owner`, `priority`, `required`, `summary`, `next_action`, `blocker`, `acceptance`, `depends_on`, `goal`, `milestone`, `tags`, and `paths`. Root collections remain `work_items`, `goals`, and `milestones`; this is not an arbitrary schema transformation engine. A mapped field and a competing canonical source key cannot coexist. Existing built-in aliases remain subject to conflict checks. Evidence/verification metadata cannot be renamed through this mapping.
+
+`status_map` is original status → canonical status. Lookup ignores surrounding whitespace and case, while `raw_status` retains the source value. Unknown values stay unknown until explicitly mapped; canonical states cannot be redefined. Initialization flags `--status-map pending=planned` and `--field-map title=name` populate the reviewable source configuration. On initialized projects, edit `.awr/project.toml` and run `awr source reindex`. Options are bound to source revisions and mutation proposals.
+
+Source runtime state, claims and events cannot be imported as work history. The development example can index a local ledger:
 
 ```sh
 cargo run -p awr-source --example index_yaml -- . ledger/work-ledger.yaml .local/intake.db
@@ -19,7 +37,7 @@ Create the output directory first. The example reads the named project files and
 
 ## Approved local file updates
 
-Use `awr proposal create`, `submit`, `approve`, then `apply` as described in the [CLI reference](../../README.md). The immutable binding includes the exact JSON pointer and original file fingerprint. A patch names source fields directly; aliases are not translated silently and conflicting aliases fail validation.
+Use `awr proposal create`, `submit`, `approve`, then `apply` as described in the [CLI reference](../../README.md). The immutable binding includes the exact JSON pointer, file fingerprint and mapping configuration. Work patches name canonical fields; configured mappings write the original keys. Status writes preserve the current spelling when its meaning is unchanged, otherwise use the sole configured spelling for the target state, falling back to a canonical status only when none is configured. Multiple configured target spellings require resolving the mapping or editing the source explicitly. Source reads remain possible in that case. Mappings do not bypass domain actions or completion checks.
 
 | Target | Supported field replacements |
 | --- | --- |

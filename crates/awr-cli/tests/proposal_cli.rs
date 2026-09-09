@@ -291,9 +291,13 @@ fn mapping_changes_conflict_and_unreadable_sources_fail_without_fabricating_writ
     let id = created["proposal"]["id"].as_str().unwrap();
     let path = f.0.join(".awr/project.toml");
     let mut manifest = awr_source::Manifest::load(&f.0).unwrap();
-    manifest.sources[0]
-        .options
-        .insert("root_key".into(), toml::Value::String("work_items".into()));
+    manifest.sources[0].options.insert(
+        "status_map".into(),
+        toml::Value::Table(toml::Table::from_iter([(
+            "pending".into(),
+            toml::Value::String("planned".into()),
+        )])),
+    );
     fs::write(&path, toml::to_string(&manifest).unwrap()).unwrap();
     let conflict = f.review("submit", id);
     f.error(&conflict, "SourceConflict");

@@ -1,7 +1,7 @@
 {
   "schema_version": 1,
   "contract_id": "awr-security-payloads",
-  "version": "1.4.0",
+  "version": "1.5.0",
   "work_item": "AWR-SEC-002",
   "target_cases": 32,
   "evidence_level": "local_component_and_cli",
@@ -180,6 +180,6 @@
       "expected": "reject_or_withhold_sensitive_fixture_values_and_keep_ordinary_business_text_usable"
     }
   ],
-  "secret_policy_version": 2,
+  "secret_policy_version": 3,
   "secret_policy_reference": "docs/reference/secret-boundaries.md"
 }

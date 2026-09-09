@@ -93,12 +93,8 @@ impl QueryProject {
 }
 
 pub(crate) fn short(text: &str) -> String {
-    let clean = text.split_whitespace().collect::<Vec<_>>().join(" ");
-    if clean.chars().count() > 240 {
-        format!("{}…", clean.chars().take(240).collect::<String>())
-    } else {
-        clean
-    }
+    awr_core::public_summary(text, 240)
+        .unwrap_or_else(|_| awr_core::SENSITIVE_CONTENT_WITHHELD.into())
 }
 
 fn brief(work: &Projected<WorkItem>) -> Value {

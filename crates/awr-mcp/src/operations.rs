@@ -34,12 +34,8 @@ fn branch(store: &Store, project: &Project, reference: Option<&str>) -> Result<O
     }
 }
 fn short(text: &str) -> String {
-    let text = text.split_whitespace().collect::<Vec<_>>().join(" ");
-    if text.chars().count() > 240 {
-        format!("{}…", text.chars().take(240).collect::<String>())
-    } else {
-        text
-    }
+    awr_core::public_summary(text, 240)
+        .unwrap_or_else(|_| awr_core::SENSITIVE_CONTENT_WITHHELD.into())
 }
 fn brief(work: &Projected<WorkItem>) -> Value {
     json!({"id":work.item.meta.id,"external_key":work.item.meta.external_key,"title":work.item.title,

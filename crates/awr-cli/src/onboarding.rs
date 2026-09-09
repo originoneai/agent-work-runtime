@@ -22,6 +22,12 @@ pub struct InitArgs {
     /// User-stated project goal; otherwise the initial work is to establish one.
     #[arg(long, conflicts_with = "manifest")]
     pub goal: Option<String>,
+    /// Interpret an existing ledger status without changing it: --status-map pending=planned.
+    #[arg(long, conflicts_with_all=["manifest","from_draft"])]
+    pub status_map: Vec<String>,
+    /// Map a canonical work field to its original source key/column: --field-map title=事项.
+    #[arg(long, conflicts_with_all=["manifest","from_draft"])]
+    pub field_map: Vec<String>,
     /// Save a reviewable JSON draft without initializing the project.
     #[arg(long, conflicts_with_all=["manifest","accept","from_draft"])]
     pub write_draft: Option<PathBuf>,
@@ -252,14 +258,13 @@ fn draft(root: &Path, goal: Option<&str>) -> Result<IntakeDraft> {
         let found: Vec<_> = files
             .iter()
             .filter(|f| {
-                names.contains(
-                    &Path::new(&f.path)
-                        .file_name()
-                        .unwrap_or_default()
-                        .to_string_lossy()
-                        .to_lowercase()
-                        .as_str(),
-                )
+                let basename = Path::new(&f.path)
+                    .file_name()
+                    .unwrap_or_default()
+                    .to_string_lossy()
+                    .to_lowercase();
+                names.contains(&basename.as_str())
+                    || (domain == "ledger" && basename.ends_with("-ledger.md"))
             })
             .collect();
         if found.len() == 1 {
@@ -353,6 +358,11 @@ fn draft(root: &Path, goal: Option<&str>) -> Result<IntakeDraft> {
 
 pub fn run(root: &Path, args: &InitArgs, json_output: bool) -> Result<()> {
     let root = root.canonicalize()?;
+    if root.join(".awr/project.toml").exists()
+        && (!args.field_map.is_empty() || !args.status_map.is_empty())
+    {
+        return Err(Error::InvalidInput("project already has a manifest; edit its source options and run source reindex to update mappings".into()));
+    }
     if args.manifest.is_some()
         || (root.join(".awr/project.toml").exists()
             && args.from_draft.is_none()
@@ -366,7 +376,7 @@ pub fn run(root: &Path, args: &InitArgs, json_output: bool) -> Result<()> {
             json_output,
         );
     }
-    let candidate = if let Some(path) = &args.from_draft {
+    let mut candidate = if let Some(path) = &args.from_draft {
         let bytes = awr_source::read_source_capped(&path.canonicalize()?, 4 * 1024 * 1024)?;
         let value: IntakeDraft = serde_json::from_slice(&bytes)
             .map_err(|_| Error::InvalidInput("invalid intake draft JSON".into()))?;
@@ -380,6 +390,44 @@ pub fn run(root: &Path, args: &InitArgs, json_output: bool) -> Result<()> {
     } else {
         draft(&root, args.goal.as_deref())?
     };
+    if !args.field_map.is_empty() || !args.status_map.is_empty() {
+        let ledgers: Vec<_> = candidate
+            .authority_mapping
+            .sources
+            .iter_mut()
+            .filter(|s| s.domain == "ledger" && s.role == "primary")
+            .collect();
+        if ledgers.len() != 1 || candidate.ambiguous_domains.iter().any(|d| d == "ledger") {
+            return Err(Error::InvalidInput("mapping flags require exactly one primary ledger; resolve the draft or supply a manifest".into()));
+        }
+        let spec = ledgers.into_iter().next().unwrap();
+        for (name, entries) in [
+            ("field_map", &args.field_map),
+            ("status_map", &args.status_map),
+        ] {
+            if entries.is_empty() {
+                continue;
+            }
+            let mut table = toml::Table::new();
+            for entry in entries {
+                let (key, value) = entry
+                    .split_once('=')
+                    .filter(|(k, v)| !k.trim().is_empty() && !v.trim().is_empty())
+                    .ok_or_else(|| {
+                        Error::InvalidInput(format!("{name} entries must use KEY=VALUE"))
+                    })?;
+                if table
+                    .insert(key.trim().into(), toml::Value::String(value.trim().into()))
+                    .is_some()
+                {
+                    return Err(Error::SourceConflict(format!("duplicate {name} entry")));
+                }
+            }
+            spec.options.insert(name.into(), toml::Value::Table(table));
+        }
+        awr_source::LedgerMapping::from_spec(spec)?;
+        candidate.observations.push("Explicit ledger field/status mappings interpret source values without rewriting the original documents.".into());
+    }
     awr_core::ensure_public_data(&candidate)?;
     if let Some(path) = &args.write_draft {
         let bytes = serde_json::to_vec_pretty(&candidate)?;

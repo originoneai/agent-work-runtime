@@ -11,7 +11,7 @@ use serde::Serialize;
 use serde_json::Value;
 use std::{borrow::Cow, sync::LazyLock};
 
-pub const SECRET_POLICY_VERSION: u32 = 2;
+pub const SECRET_POLICY_VERSION: u32 = 3;
 pub const SENSITIVE_CONTENT_WITHHELD: &str = "[sensitive content withheld]";
 const REJECTION: &str =
     "sensitive content is not accepted; remove secret values or use explicit redacted placeholders";
@@ -22,10 +22,14 @@ static KNOWN: LazyLock<Regex> = LazyLock::new(|| {
         r"xox[baprs]-[a-z0-9-]{12,}|\b(?:AKIA|ASIA)[A-Z0-9]{16}\b|",
         r"\beyJ[a-z0-9_-]{8,}\.[a-z0-9_-]{8,}\.[a-z0-9_-]{8,}|",
         r"-----BEGIN (?:[A-Z0-9]+ )?PRIVATE KEY-----|",
-        r"\bbearer[\s]+[a-z0-9+/_=-]{8,}|",
         r"[a-z][a-z0-9+.-]*://[^\s/@:]+:[^\s/@]+@)"
     ))
     .expect("fixed credential pattern")
+});
+
+static BEARER_AUTH: LazyLock<Regex> = LazyLock::new(|| {
+    Regex::new(r"(?i)(?:^|[^\p{L}\p{N}_])bearer[\s]+([a-z0-9+/_=-]+)")
+        .expect("fixed Bearer pattern")
 });
 
 static BASIC_AUTH: LazyLock<Regex> = LazyLock::new(|| {
@@ -39,7 +43,7 @@ static ASSIGNMENT: LazyLock<Regex> = LazyLock::new(|| {
     r"(?:api[\s_-]*key|access[\s_-]*token|refresh[\s_-]*token|id[\s_-]*token|",
     r"client[\s_-]*secret|password|passwd|pwd|secret|token|authorization|",
     r"private[\s_-]*prompt|密码|密碼|口令|令牌|密钥|密鑰|私有提示词|私有提示詞|私有[\s_-]*prompt)",
-    r#"[\s\"'`]*[:=][\s]*"#
+    r#"[\s\"'`]*[:=]"#
 )).expect("fixed secret assignment pattern")
 });
 
@@ -149,6 +153,18 @@ fn has_value(rest: &str) -> bool {
 pub fn contains_sensitive_text(text: &str) -> bool {
     let text = normalized(text);
     KNOWN.is_match(&text)
+        || BEARER_AUTH.captures_iter(&text).any(|capture| {
+            let value = &capture[1];
+            // An unlabelled ordinary word is prose, not proof of an opaque token.
+            // Actual Authorization assignments/headers below reject values of ANY shape/length.
+            value.len() >= 32
+                || (value.len() >= 8
+                    && (value
+                        .bytes()
+                        .any(|b| b.is_ascii_digit() || b"+/_=-".contains(&b))
+                        || (value.bytes().skip(1).any(|b| b.is_ascii_uppercase())
+                            && value.bytes().any(|b| b.is_ascii_lowercase()))))
+        })
         || BASIC_AUTH.captures_iter(&text).any(|capture| {
             // RFC 7617 section 2 encodes user-id:password, not ordinary words
             // following "basic". Accept omitted padding for detection as well.
@@ -160,10 +176,10 @@ pub fn contains_sensitive_text(text: &str) -> bool {
         })
         || ASSIGNMENT
             .find_iter(&text)
-            .any(|m| has_value(&text[m.end()..]))
+            .any(|m| has_value(&text[m.end()..]) && !definition_after_assignment(&text[m.end()..]))
         || ENV_ASSIGNMENT
             .find_iter(&text)
-            .any(|m| has_value(&text[m.end()..]))
+            .any(|m| has_value(&text[m.end()..]) && !definition_after_assignment(&text[m.end()..]))
         || PRIVATE_BLOCK
             .find_iter(&text)
             .any(|m| has_value(&text[m.end()..]))
@@ -171,7 +187,9 @@ pub fn contains_sensitive_text(text: &str) -> bool {
             let rest = &text[m.end()..];
             let value = rest.trim_start();
             let whitespace = &rest[..rest.len() - value.len()];
-            (value.starts_with(['{', '[']) || whitespace.contains('\n')) && has_value(value)
+            (value.starts_with(['{', '[']) || whitespace.contains('\n'))
+                && has_value(value)
+                && !definition_after_assignment(rest)
         })
 }
 
@@ -245,16 +263,133 @@ fn has_json_value(value: &Value) -> bool {
         _ => true,
     }
 }
+
+/// A definition carries structure, never a credential value. Extra fields are not ignored:
+/// default/example/enum values must be absent, empty or explicitly redacted. This applies
+/// equally to JSON Schema, YAML schema fragments and OpenAPI authentication schemes.
+fn public_definition(value: &Value) -> bool {
+    let Some(fields) = value.as_object() else {
+        return false;
+    };
+    if !fields.contains_key("type") && !fields.contains_key("$ref") {
+        return false;
+    }
+    fields.iter().all(|(key, value)| match key.as_str() {
+        "type" => value.as_str().is_some_and(|s| {
+            [
+                "null",
+                "boolean",
+                "object",
+                "array",
+                "number",
+                "string",
+                "integer",
+                "http",
+                "apiKey",
+                "oauth2",
+                "openIdConnect",
+            ]
+            .contains(&s)
+        }),
+        "scheme" => value.as_str().is_some_and(|s| {
+            ["bearer", "basic", "digest", "negotiate"].contains(&s.to_ascii_lowercase().as_str())
+        }),
+        "in" => value
+            .as_str()
+            .is_some_and(|s| ["header", "query", "cookie"].contains(&s)),
+        "$ref" | "$schema" | "title" | "description" | "format" | "pattern" | "name"
+        | "bearerFormat" | "openIdConnectUrl" => {
+            value.as_str().is_some_and(|s| !contains_sensitive_text(s))
+        }
+        "properties" | "$defs" | "definitions" => value.as_object().is_some_and(|o| {
+            o.iter()
+                .all(|(k, v)| !contains_sensitive_text(k) && public_definition(v))
+        }),
+        "items" => public_definition(value),
+        "additionalProperties" => value.is_boolean() || public_definition(value),
+        "required" => value.as_array().is_some_and(|a| {
+            a.iter()
+                .all(|v| v.as_str().is_some_and(|s| !contains_sensitive_text(s)))
+        }),
+        "minLength" | "maxLength" | "minItems" | "maxItems" => value.as_u64().is_some(),
+        "minimum" | "maximum" | "exclusiveMinimum" | "exclusiveMaximum" | "multipleOf" => {
+            value.is_number()
+        }
+        "readOnly" | "writeOnly" | "deprecated" | "nullable" | "uniqueItems" => value.is_boolean(),
+        "default" | "example" | "const" => !has_json_value(value),
+        "examples" | "enum" => value
+            .as_array()
+            .is_some_and(|a| a.iter().all(|v| !has_json_value(v))),
+        _ => false,
+    })
+}
+fn definition_after_assignment(rest: &str) -> bool {
+    const LIMIT: usize = 16 * 1024;
+    let trimmed = rest.trim_start();
+    if trimmed.starts_with('{') {
+        let mut cap = trimmed.len().min(LIMIT);
+        while !trimmed.is_char_boundary(cap) {
+            cap -= 1;
+        }
+        let mut values = serde_json::Deserializer::from_str(&trimmed[..cap]).into_iter::<Value>();
+        if let Some(Ok(value)) = values.next() {
+            let end = values.byte_offset();
+            let tail = &trimmed[end..];
+            return end <= LIMIT
+                && (tail.is_empty()
+                    || tail.starts_with(|c: char| c.is_whitespace() || ",;}])`".contains(c)))
+                && public_definition(&value)
+                // JSON Value keeps the last duplicate key. A raw definition must not
+                // hide an earlier default/example by replacing that key with null.
+                && yaml_definition(&trimmed[..end]);
+        }
+        // YAML flow mappings use unquoted keys. Parse only the bounded line, without
+        // consuming following prose or accepting trailing non-schema material.
+        let line = trimmed.lines().next().unwrap_or("");
+        if line.len() <= LIMIT {
+            return yaml_definition(line);
+        }
+    } else if rest[..rest.len() - trimmed.len()].contains('\n') {
+        let mut lines = rest.lines().skip_while(|line| line.trim().is_empty());
+        if let Some(first) = lines.next() {
+            let indent = first.len() - first.trim_start().len();
+            if indent == 0 {
+                return false;
+            }
+            let mut block = first.to_owned();
+            for line in lines {
+                if !line.trim().is_empty() && line.len() - line.trim_start().len() < indent {
+                    break;
+                }
+                if block.len() + line.len() + 1 > LIMIT {
+                    return false;
+                }
+                block.push('\n');
+                block.push_str(line);
+            }
+            return block.len() <= LIMIT && yaml_definition(&block);
+        }
+    }
+    false
+}
+fn yaml_definition(text: &str) -> bool {
+    serde_yaml_ng::from_str::<serde_yaml_ng::Value>(text)
+        .ok()
+        .and_then(|v| serde_json::to_value(v).ok())
+        .is_some_and(|v| public_definition(&v))
+}
+fn sensitive_field(key: &str, value: &Value) -> bool {
+    (secret_key(key) || (env_key(key) && (value.is_object() || value.is_array())))
+        && has_json_value(value)
+        && !public_definition(value)
+}
 pub fn contains_sensitive_value(value: &Value) -> bool {
     match value {
         Value::String(s) => contains_sensitive_text(s),
         Value::Array(values) => values.iter().any(contains_sensitive_value),
         Value::Object(values) => values.iter().any(|(key, value)| {
             contains_sensitive_text(key)
-                || (secret_key(key) && has_json_value(value))
-                || (env_key(key)
-                    && (value.is_object() || value.is_array())
-                    && has_json_value(value))
+                || sensitive_field(key, value)
                 || contains_sensitive_value(value)
         }),
         _ => false,
@@ -290,6 +425,30 @@ pub fn ensure_public_value(value: &Value) -> Result<()> {
 pub fn ensure_public_data<T: Serialize + ?Sized>(value: &T) -> Result<()> {
     ensure_public_value(&serde_json::to_value(value)?)
 }
+/// Validate the complete source before shortening optional display text. Whitespace
+/// folding/truncation can split an otherwise public schema; back up to a word boundary
+/// in that case. Callers retain a source reference for the complete original content.
+pub fn public_summary(text: &str, limit: usize) -> Result<String> {
+    ensure_public_text(text)?;
+    if limit == 0 {
+        return Ok(String::new());
+    }
+    let clean = text.split_whitespace().collect::<Vec<_>>().join(" ");
+    if clean.chars().count() <= limit && !contains_sensitive_text(&clean) {
+        return Ok(clean);
+    }
+    let mut prefix: String = clean.chars().take(limit.saturating_sub(1)).collect();
+    loop {
+        let shortened = format!("{}…", prefix.trim_end());
+        if !contains_sensitive_text(&shortened) {
+            return Ok(shortened);
+        }
+        match prefix.rfind(char::is_whitespace) {
+            Some(end) => prefix.truncate(end),
+            None => prefix.clear(),
+        }
+    }
+}
 pub fn safe_diagnostic(text: &str) -> String {
     if contains_sensitive_text(text) {
         SENSITIVE_CONTENT_WITHHELD.into()
@@ -311,8 +470,7 @@ pub fn redact_sensitive_value(value: Value) -> Value {
                 values
                     .into_iter()
                     .map(|(key, value)| {
-                        let value = if (secret_key(&key) || env_key(&key)) && has_json_value(&value)
-                        {
+                        let value = if sensitive_field(&key, &value) {
                             Value::String(SENSITIVE_CONTENT_WITHHELD.into())
                         } else {
                             redact_sensitive_value(value)
@@ -391,6 +549,86 @@ mod tests {
             ensure_public_text(text).unwrap();
             ensure_public_value(&json!({"summary": text})).unwrap();
             assert_eq!(safe_diagnostic(text), text);
+        }
+    }
+
+    #[test]
+    fn public_schema_and_authentication_definitions_are_not_values() {
+        for text in [
+            "Bearer authentication and bearer authorization are protocol concepts.",
+            "Discuss Bearer credentials and Bearer authentication requirements.",
+            r#"{"token":{"type":"string","pattern":"^[a-z][a-z0-9_.-]{1,63}$"}}"#,
+            r#"{"authorization":{"type":"http","scheme":"bearer"}}"#,
+            "# Schema\n```json\n{\"password\":{\"type\":\"string\",\"format\":\"password\",\"description\":\"Supplied at runtime\"}}\n```\n",
+            "# Schema\n```yaml\ntoken:\n  type: string\n  description: Supplied at runtime\n```\n",
+            "password: {type: string, format: password}\n",
+            "TOKEN={\"type\":\"string\"}\n",
+        ] {
+            ensure_public_text(text).unwrap_or_else(|e| panic!("{text}: {e}"));
+            ensure_public_bytes(text.as_bytes()).unwrap();
+            ensure_public_value(&json!({"body":text})).unwrap();
+            assert_eq!(safe_diagnostic(text), text);
+        }
+        for value in [
+            json!({"token":{"type":"string"}}),
+            json!({"type":"object","properties":{"password":{"type":"string","format":"password"}},"required":["password"]}),
+            json!({"authorization":{"type":"http","scheme":"bearer"}}),
+            json!({"token":{"type":"string","default":"[redacted]"}}),
+        ] {
+            ensure_public_value(&value).unwrap();
+            assert_eq!(redact_sensitive_value(value.clone()), value);
+        }
+        let text = format!(
+            "{}Schema: {{\"token\":{{\"type\":\"string\"}}}}",
+            "Public discussion. ".repeat(12)
+        );
+        let short = public_summary(&text, 240).unwrap();
+        assert!(short.chars().count() <= 240);
+        ensure_public_text(&short).unwrap();
+        assert!(
+            public_summary(
+                &format!("{}password: fixture-value", "Public. ".repeat(80)),
+                240
+            )
+            .is_err()
+        );
+    }
+
+    #[test]
+    fn definitions_cannot_hide_credentials_or_data_values() {
+        for value in [
+            json!({"token":{"type":"string","default":"fixture-value"}}),
+            json!({"token":{"type":"string","example":"fixture-value"}}),
+            json!({"token":{"type":"string","enum":["fixture-value"]}}),
+            json!({"authorization":{"type":"http","scheme":"bearer","value":"fixture-value"}}),
+            json!({"token":{"type":"object","properties":{"client_secret":{"type":"string","default":"fixture-value"}}}}),
+            json!({"token":{"type":"string"},"password":"fixture-value"}),
+            json!({"token":"{\"type\":\"string\"}"}),
+        ] {
+            assert!(ensure_public_value(&value).is_err(), "{value}");
+            assert!(
+                ensure_public_bytes(&serde_json::to_vec(&value).unwrap()).is_err(),
+                "{value}"
+            );
+            assert!(
+                !redact_sensitive_value(value)
+                    .to_string()
+                    .contains("fixture-value")
+            );
+        }
+        for text in [
+            "Authorization: Bearer word",
+            "Authorization: Bearer authentication",
+            "Bearer fixture-token-1234",
+            "Bearer aBcdEfgHijKlmNopQrStUvWxyz",
+            "token: {type: string, default: fixture-value}\n",
+            "token:\n  type: string\n  default: fixture-value\n",
+            "token: {\"type\":\"string\"}fixture-value",
+            "token: {\"type\":\"string\"}\npassword: fixture-value",
+            "token: {\"type\":\"string\",\"default\":\"fixture-value\",\"default\":null}",
+            "token:\n  type: string\n  default: fixture-value\n  default: null\n",
+        ] {
+            assert!(ensure_public_text(text).is_err(), "{text}");
         }
     }
     #[test]

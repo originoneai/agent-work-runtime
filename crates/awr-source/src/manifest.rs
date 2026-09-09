@@ -129,6 +129,12 @@ impl Manifest {
                     "each source needs exactly one path or locator".into(),
                 ));
             }
+            if matches!(
+                source.adapter.as_str(),
+                "yaml-ledger-v1" | "markdown-ledger-v1"
+            ) {
+                crate::LedgerMapping::from_spec(source)?;
+            }
             if source
                 .path
                 .as_ref()

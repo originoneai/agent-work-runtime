@@ -14,19 +14,22 @@ pub struct MarkdownLedgerAdapter;
 fn column(s: &str) -> &str {
     match s.trim() {
         "ID" | "编号" | "任务编号" | "任务ID" => "id",
-        "任务" | "功能" | "工作" | "标题" | "名称" => "title",
+        "任务" | "功能" | "工作" | "工作项" | "标题" | "名称" => "title",
         "状态" | "进度" => "status",
-        "负责人" | "执行者" => "owner",
+        "负责人" | "执行者" | "Owner 角色" => "owner",
         "优先级" => "priority",
         "依赖" => "depends_on",
-        "下一步" | "后续动作" => "next_action",
-        "验收" | "验收标准" => "acceptance",
+        "下一步" | "后续动作" | "当前证据 / 下一动作" => "next_action",
+        "验收" | "验收标准" | "完成硬门槛" => "acceptance",
         "目标" | "关联目标" | "goals" => "goal",
         other => other,
     }
 }
 
-fn normalized(raw: &str) -> WorkStatus {
+fn normalized(raw: &str, mapping: &crate::LedgerMapping) -> WorkStatus {
+    if mapping.status(raw) != WorkStatus::Unknown {
+        return mapping.status(raw);
+    }
     WorkStatus::normalize(match raw.trim() {
         "待开始" | "未开始" | "计划中" | "[ ]" => "planned",
         "就绪" => "ready",
@@ -56,11 +59,12 @@ impl SourceAdapter for MarkdownLedgerAdapter {
         context: &ParseContext<'_>,
         spec: &SourceSpec,
     ) -> Result<ProjectionBatch> {
-        if spec.domain != "ledger" || !spec.options.is_empty() {
+        if spec.domain != "ledger" {
             return Err(Error::InvalidInput(
-                "Markdown ledger requires domain ledger and no custom options".into(),
+                "Markdown ledger requires domain ledger".into(),
             ));
         }
+        let mapping = crate::LedgerMapping::from_spec(spec)?;
         let text = snapshot.text()?;
         awr_core::ensure_public_text(text)?;
         let mut rows: Vec<(usize, BTreeMap<String, String>)> = vec![];
@@ -87,7 +91,15 @@ impl SourceAdapter for MarkdownLedgerAdapter {
                     in_cell = false;
                 }
                 Event::End(TagEnd::TableHead) => {
-                    headers = cells.iter().map(|s| column(s).to_lowercase()).collect();
+                    headers = cells
+                        .iter()
+                        .map(|s| {
+                            mapping
+                                .column(s)
+                                .unwrap_or_else(|| column(s))
+                                .to_lowercase()
+                        })
+                        .collect();
                     if headers.iter().collect::<BTreeSet<_>>().len() != headers.len() {
                         return Err(Error::SourceConflict(
                             "duplicate Markdown ledger columns".into(),
@@ -166,7 +178,7 @@ impl SourceAdapter for MarkdownLedgerAdapter {
                     "duplicate Markdown task ID/title; add explicit unique IDs".into(),
                 ));
             }
-            let status = normalized(get("status"));
+            let status = normalized(get("status"), &mapping);
             if status == WorkStatus::Unknown {
                 batch.warnings.push(format!(
                     "line {line}: unrecognized status; retained as unknown"

@@ -1,8 +1,8 @@
 schema_version: 1
 contract_id: awr-v1
-contract_version: 1.2.0
-ledger_revision: 207
-updated_at: '2026-09-09T07:54:36.170077+00:00'
+contract_version: 1.3.0
+ledger_revision: 208
+updated_at: '2026-09-09T08:59:26.626022+00:00'
 project:
   name: Agent Work Runtime
   external_key: agent-work-runtime
@@ -46,7 +46,7 @@ milestones:
 - id: M10
   status: planned
 - id: M11
-  status: completed
+  status: in_progress
 work_items:
 - id: AWR-BOOT-001
   title: 公开仓库、Apache 2.0 与原始方案基线
@@ -2185,6 +2185,42 @@ work_items:
   - ledger/deliveries/AWR-TAKE-005.json
   blocker: null
   next_action: 已推送源码并核实远端回执，纳入草稿 PR 2；后续合并、原生跨平台 CI 和发版分别记录。
+- id: AWR-TAKE-006
+  title: 异构项目来源适配与无凭据资料误报修复
+  milestone: M11
+  priority: P0
+  kind: feature
+  required_for_v1: true
+  status: in_progress
+  owner: codex-side-conversation
+  depends_on: [AWR-TAKE-005]
+  source_sections: [8, 9, 16, 28, 35, 40]
+  deliverables:
+  - crates/awr-source/
+  - crates/awr-core/
+  - crates/awr-cli/
+  - crates/awr-mcp/
+  - crates/awr-context/src/related.rs
+  - crates/awr-store/src/search.rs
+  - crates/awr-runtime/src/organization.rs
+  - crates/awr-runtime/src/doctor.rs
+  - tests/security/payloads/
+  - adapters/
+  - docs/TAKEOVER.md
+  - docs/reference/secret-boundaries.md
+  - examples/takeover/
+  acceptance:
+  - 支持可审阅的来源字段及状态映射，保留原始状态和来源；未知值保留诊断、配置冲突明确报错，接入无需重写原台账。
+  - ADR 支持中文与英文元数据、列表格式和全角冒号，保留原文及来源；相互冲突声明不能静默覆盖。
+  - 不含凭据的认证说明与结构定义可以接入；标签下的实际值及形似凭据、伪装夹带和旧数据出口仍受到检测。
+  - CLI 接入及复检覆盖异构台账和中文 ADR，并验证映射变更使缓存失效；doctor 与索引共享配置口径，定向回归和独立临时项目保留原文件。
+  verification:
+    minimum: 定向来源解析、CLI 接入/写回及凭据检测回归；在临时目录验证异构资料原样接入，不修改用户 Fabric 项目。
+    evidence_directory: ledger/evidence/AWR-TAKE-006
+    evidence_level: locally_verified
+  evidence: []
+  blocker: null
+  next_action: 本地全工作区 321 项、CLI/MCP 一致性及定向凭据检查通过；提交源码并核实远端回执后完成交付登记。
 scenarios:
 - id: AWR-SC-001
   status: in_progress

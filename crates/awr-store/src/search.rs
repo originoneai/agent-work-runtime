@@ -8,7 +8,7 @@ use rusqlite::{Connection, OptionalExtension, TransactionBehavior, params};
 use serde::{Deserialize, Serialize};
 
 // Secret policy 2 changes Basic credential/prose classification in derived text.
-const POLICY_VERSION: i64 = 4;
+const POLICY_VERSION: i64 = 5;
 const KINDS: &[&str] = &[
     "goal",
     "plan",

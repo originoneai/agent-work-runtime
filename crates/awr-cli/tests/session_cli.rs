@@ -28,7 +28,12 @@ impl Fixture {
     }
     fn ok(&self, args: &[&str]) -> Value {
         let r = self.run(args);
-        assert!(r.status.success(), "{}", String::from_utf8_lossy(&r.stderr));
+        assert!(
+            r.status.success(),
+            "{args:?}: {} {}",
+            String::from_utf8_lossy(&r.stdout),
+            String::from_utf8_lossy(&r.stderr)
+        );
         serde_json::from_slice(&r.stdout).unwrap()
     }
     fn error(&self, args: &[&str], code: &str) {

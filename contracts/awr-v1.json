@@ -1,7 +1,7 @@
 {
   "schema_version": 1,
   "contract_id": "awr-v1",
-  "version": "1.2.0",
+  "version": "1.3.0",
   "effective_date": "2026-09-09",
   "product": {
     "name": "Agent Work Runtime",
@@ -88,7 +88,8 @@
       "AWR-TAKE-002",
       "AWR-TAKE-003",
       "AWR-TAKE-004",
-      "AWR-TAKE-005"
+      "AWR-TAKE-005",
+      "AWR-TAKE-006"
     ],
     "preparation_work_item_ids": [
       "AWR-BOOT-001",
@@ -96,7 +97,7 @@
       "AWR-BOOT-003"
     ],
     "targets": {
-      "v1_work_items": 64,
+      "v1_work_items": 65,
       "preparation_work_items": 3,
       "business_scenarios": 8,
       "metrics": 10
@@ -773,7 +774,8 @@
     {
       "section": 8,
       "work_item_ids": [
-        "AWR-P1-001"
+        "AWR-P1-001",
+        "AWR-TAKE-006"
       ]
     },
     {
@@ -783,7 +785,8 @@
         "AWR-P1-003",
         "AWR-P1-004",
         "AWR-P1-005",
-        "AWR-P6-002"
+        "AWR-P6-002",
+        "AWR-TAKE-006"
       ]
     },
     {
@@ -844,7 +847,8 @@
         "AWR-P4-004",
         "AWR-P4-005",
         "AWR-P4-007",
-        "AWR-TAKE-005"
+        "AWR-TAKE-005",
+        "AWR-TAKE-006"
       ]
     },
     {
@@ -960,7 +964,8 @@
         "AWR-P7-003",
         "AWR-P8-004",
         "AWR-TAKE-001",
-        "AWR-TAKE-005"
+        "AWR-TAKE-005",
+        "AWR-TAKE-006"
       ]
     },
     {
@@ -1030,7 +1035,8 @@
         "AWR-P1-006",
         "AWR-P1-007",
         "AWR-TAKE-001",
-        "AWR-TAKE-005"
+        "AWR-TAKE-005",
+        "AWR-TAKE-006"
       ]
     },
     {
@@ -1074,7 +1080,8 @@
         "AWR-P4-002",
         "AWR-P4-008",
         "AWR-P8-004",
-        "AWR-TAKE-005"
+        "AWR-TAKE-005",
+        "AWR-TAKE-006"
       ]
     },
     {

@@ -436,6 +436,7 @@ pub fn inspect_organization(
         }
         if work.status == WorkStatus::Unknown {
             missing.push("recognized status");
+            result.gap("work_status_unmapped", key, "The source status has no confirmed interpretation. Configure sources.options.status_map in .awr/project.toml, retaining the original ledger vocabulary, then reindex. For first intake use init --status-map SOURCE=CANONICAL. Do not infer completion from an unknown value.", vec![work.meta.source_ref.clone()], "sources");
         }
         if validate_criteria(&work.acceptance).is_err() {
             missing.push("nonempty unique acceptance");
