@@ -1,0 +1,38 @@
+{
+  "blocked_count": 1,
+  "branch_id": "01M22EN2F2JN2NW2FEJJRYK13E",
+  "counts": {
+    "completed": 3,
+    "planned": 2
+  },
+  "current": [],
+  "current_total": 0,
+  "freshness_basis": "source_refresh",
+  "next_action": "独立复核公开范围，先核对当前来源和负责范围。",
+  "ok": true,
+  "project": "澄川周报公开版",
+  "project_id": "01M22EKENQDCDHSKNTMS6A83VA",
+  "project_revision": 128,
+  "read_only": false,
+  "ready_count": 1,
+  "source_issues": [],
+  "source_refresh_performed": true,
+  "source_warnings": 0,
+  "suggested_work": {
+    "blocker": null,
+    "external_key": "CC-REVIEW",
+    "freshness": "fresh",
+    "id": "01M22EKENW8CGQJ9MKAYC84QGD",
+    "milestone": "CC-DELIVERY",
+    "next_action": "独立复核公开范围，先核对当前来源和负责范围。",
+    "owner": null,
+    "priority": "P0",
+    "raw_status": "planned",
+    "revision": 1,
+    "source_revision": 13,
+    "status": "planned",
+    "summary": "独立复核公开范围",
+    "title": "独立复核公开范围"
+  },
+  "total": 5
+}

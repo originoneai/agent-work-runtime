@@ -1,0 +1,53 @@
+{
+  "checkpoint": {
+    "changed_entities": [
+      "evidence:01M22MF7AXJBGG4J5SNW2N723N",
+      "work_items:01M22EKENW8CGQJ9MKAYC84QGD"
+    ],
+    "context_hash": "f7d3ebf4a410570ff2c89c0742e7f5516c48693b51c2aa82810c4aa6ced82d5a",
+    "created_at": 1788942501260,
+    "digest": "独立复核已完成：公开日志统计经流式重算，三轮固定输入与六项生产物哈希一致，公开引用和敏感边界合规，未知事实保持未确认。CC-REVIEW 已绑定 locally_verified 报告并完成。",
+    "id": "01M22MGHCCM4ARHPV9SMZ20T54",
+    "next_action": "由 root 复查独立复核证据，再由原生产执行者处理 CC-DELIVER；不得把本复核视为最终交付或 E4。",
+    "open_loops": [
+      "报告周期日期/时区、指标和流程定义、重试原因、周四延迟原因/影响/最终处置仍缺公开材料。",
+      "AWR 中另存的 locator-only 来源投影继续显示 Unknown/历史分支缺口；当前显式绑定证据保持 locally_verified，二者不得混同。"
+    ],
+    "project_revision": 145,
+    "revision": 1,
+    "session_id": "01M22KH8BB7AY4PCKFF7Z51N7R"
+  },
+  "checkpoint_save": {
+    "after_revision": 128,
+    "attempt_id": "01M22MGHCBVT328MFYG91KPC8Q",
+    "delta_bytes": 6641,
+    "delta_recorded": true,
+    "event_id": "01M22MGHCCE46TECWYF02P7AHV",
+    "observed_changed_entity_count": 2,
+    "reported_changed_entity_count": 3,
+    "session_event_count": 3,
+    "source_observation_count": 4,
+    "through_revision": 145
+  },
+  "context_hash_basis": "caller_supplied_last_used_context",
+  "context_hash_verified": false,
+  "event": {
+    "artifact_id": null,
+    "branch_id": "01M22EN2F2JN2NW2FEJJRYK13E",
+    "checkpoint_id": "01M22MGHCCM4ARHPV9SMZ20T54",
+    "created_at": 1788942501260,
+    "id": "01M22MGHCCE46TECWYF02P7AHV",
+    "importance": "normal",
+    "project_revision": 147,
+    "session_id": "01M22KH8BB7AY4PCKFF7Z51N7R",
+    "source_id": null,
+    "summary": "Saved session checkpoint and observed delta",
+    "type": "checkpoint.created",
+    "work_item_id": "01M22EKENW8CGQJ9MKAYC84QGD"
+  },
+  "freshness_basis": "source_refresh",
+  "ok": true,
+  "project_revision": 147,
+  "save_status": "completed",
+  "source_refresh_performed": true
+}

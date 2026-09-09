@@ -1,0 +1,40 @@
+{
+  "version": 1,
+  "kind": "actual_client_source_boundary",
+  "run_id": "awr-live-20260909-007-r2",
+  "scenario_id": "AWR-SC-007",
+  "namespace": "awr-v1/restricted-material/awr-live-20260909-007-r2",
+  "client_project_root": "/Users/mac/Documents/originone/agent-work-running/.local/business-live-20260909-v2/restricted-material/project",
+  "allowed_business_sources": [
+    "project/README.md",
+    "project/GOALS.md",
+    "project/PLAN.md",
+    "project/RULES.md",
+    "project/work-ledger.yaml",
+    "project/project.toml",
+    "project/DELIVERABLES.md",
+    "project/materials/* when currently present",
+    "state and receipts created by the actual client's own normal AWR and project work"
+  ],
+  "allowed_external_technical_references": [
+    "/Users/mac/Documents/originone/agent-work-running/README.md",
+    "/Users/mac/Documents/originone/agent-work-running/docs/reference/cli-mcp-contract.md",
+    "/Users/mac/Documents/originone/agent-work-running/target/release/awr --help and applicable subcommand --help"
+  ],
+  "prohibited_reads": [
+    "parent repository tests/",
+    "parent repository crates/",
+    "parent repository docs/design/",
+    "parent repository ledger/",
+    "parent repository .local/ except the actual project root",
+    "other scenarios or business runs",
+    "source fixture definitions and evaluator material",
+    "the sibling control/ directory, including restricted-note.md, operations.jsonl, operator receipts and future prompts",
+    "global memories, credentials and private configuration"
+  ],
+  "publication_rule": "Future-round material is authorized only after prepare.py publishes it into the client project.",
+  "operator_does_not_supply_expected_log_counts": true,
+  "native_client_started": false,
+  "business_state_modified_by_operator": false,
+  "e4_completed": 0
+}

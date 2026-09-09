@@ -1,0 +1,31 @@
+{
+  "kind": "actual_prior_business_turn",
+  "phase": "round-2",
+  "client_task_id": "01a084e7-f762-77e2-8018-ecee36da6ff7",
+  "actual_user_turn": {
+    "timestamp": "2026-09-09T07:25:54.964Z",
+    "text": "给我一份可对外分享的版本，核实引用范围和敏感内容处理结果。"
+  },
+  "source_sha256": {
+    "project.toml": "7551fa5fa9824e12f51982eac745714cc6180133f6f02901307d17d1546bcd44",
+    "GOALS.md": "6acc82d527807f5daa3e30aa53305ea788df181cea5069f82b2b98e72cf6c276",
+    "PLAN.md": "38cd2ffee2ed18c9b5055c7ea4e2fc97a13b600dbd98ce83a9951ffd097a18a4",
+    "RULES.md": "1cb74e953069b0da793cdc35e4b5b2eb0d7cab6e15d60619ed0d9ed8eaed11b0",
+    "work-ledger.yaml": "3efb83814a792c8e835eccf8ca024576333423718e2a6f8b9e5180c224e7aea6",
+    "AGENTS.md": "d85fa4e06c4ddfae24860fe28c2d16bbb6a3f90b1ed61218aa2621077d73906b",
+    "DELIVERABLES.md": "8611977f1d9a35c12243aae2d455b7426f8dc8567d365e3c3d89b9bb281a5265"
+  },
+  "artifact_sha256": {
+    "deliverables/cc-log-verification.json": "7f41d6372f52e9253d57a739892627498ca322498bfb1d3e351c72403ffe8d52",
+    "deliverables/cc-public-verification.json": "0224aa41b5782194b43eb38c928187ebfdd25991943e4ea0a0bb3d4a84257bd8",
+    "deliverables/cc-scope-verification.json": "afa14236c6dbf43deffbf8c794d9b7106733a7f92ba3047a3a3f6ea7e0ea324c",
+    "deliverables/chengchuan-access-gaps.md": "40894d584f7ec6dc6a55841040b8c2c4b992adce7b98cd3fa3b4891da981c597",
+    "deliverables/chengchuan-log-summary.md": "e005adca6899f6eb68d4697821147f0d9d4ff0aac7eeaaaec80e300cce886c50",
+    "deliverables/chengchuan-public-report.md": "e09f87db8531d11d4fda7f7ce5e05440b978d4089be056d5ac1b9c5abfc39ecf"
+  },
+  "native_transcript_sha256": "a0bb19810d20e268626012335c1ee0d6d33171115c9616724ee9243f19c0d457",
+  "events_sha256": "da6f41c70449d1367558a30ce162317e6030a63e9891bf96914d190ffed96932",
+  "sealed_at": "2026-09-09T15:41:29+08:00",
+  "final_message": "已生成可对外分享正文：[澄川运行周报（公开版）](/Users/mac/Documents/originone/agent-work-running/.local/business-live-20260909-v2/restricted-material/project/deliverables/chengchuan-public-report.md:1)。\n\n核实结果：\n\n- 引用仅限 3 个公开来源：`public-summary.csv`、`log-notice.md`、`operations.jsonl`；运行日志仅用于聚合核验，未披露逐行内容。\n- 正文只保留 47 个批次、12/10/14/11 的日分布、处理状态及已核实流程结论。\n- 敏感扫描结果：`forbidden_matches=0`。内部运行/批次 ID、源码哈希、绝对路径、AWR/台账信息、阶段耗时、凭据、邮箱、手机号和 IP 均未进入正文。\n- 受限原件及未授权内部备注未被读取、引用或纳入报告。\n- 周四两次延迟的原因、影响范围和最终处置仍缺公开材料，已明确列为缺口。\n\n完整校验记录：[cc-public-verification.json](/Users/mac/Documents/originone/agent-work-running/.local/business-live-20260909-v2/restricted-material/project/deliverables/cc-public-verification.json:1)。正文 SHA-256：`e09f87db8531d11d4fda7f7ce5e05440b978d4089be056d5ac1b9c5abfc39ecf`。\n\n当前证据等级为执行者本地核验通过；正式对外发布前仍需由不同执行者完成独立复核，不能将当前状态表述为“已独立审定”。",
+  "note": "Copied historical evidence, not newly authored business output or a review conclusion."
+}

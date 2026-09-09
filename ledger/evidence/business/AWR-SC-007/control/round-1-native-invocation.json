@@ -1,0 +1,48 @@
+{
+  "version": 1,
+  "kind": "business_client_native_invocation",
+  "recorded_at": "2026-09-09T15:24:37+08:00",
+  "run_id": "awr-live-20260909-007-r2",
+  "scenario_id": "AWR-SC-007",
+  "phase": "round-1",
+  "status": "completed",
+  "project_cwd": "/Users/mac/Documents/originone/agent-work-running/.local/business-live-20260909-v2/restricted-material/project",
+  "native_thread_id": "01a084e7-f762-77e2-8018-ecee36da6ff7",
+  "operator_exec_handle": 28462,
+  "thread_started_observed": true,
+  "input": {
+    "path": "control/followup-1-input.md",
+    "sha256": "1e4849b92d2b08628362e50e24b213b345949a84b9178f3c232de88d3b4e0c6f",
+    "stdin_exact_file": true,
+    "submission_count": 1
+  },
+  "source_publication": {
+    "receipt": "round-1-inputs.json",
+    "receipt_sha256": "7a4f57649f0f1b3924a67bb2380044b12e8afae578367664494fd274ff00d868",
+    "materials": {
+      "materials/log-notice.md": "5651b4898510fda4da4211855415d4833f90acfc2ab20debdc0b4d8a366ea83d",
+      "materials/operations.jsonl": "058e7a7ed4c472d8e2e868e9e6aa57216944fe513bf3cb303d5bb31d73f35cf1"
+    }
+  },
+  "outputs": {
+    "events": "control/round-1-events.jsonl",
+    "final": "control/round-1-final.md",
+    "stderr": "control/round-1-stderr.log",
+    "events_sha256": "a0a333317a2d54db711148ba5f48a4ec261564987df9bf573bd19243f5baca47",
+    "final_sha256": "5cb4f4c7941d8b958355b7425d08a3012051d59d81b21fea9059002fd4bd3abc",
+    "stderr_sha256": "3c8423581eed1d557675bf0ed4d412c0a1432b7ff275159cd8e5fe62ab1df003",
+    "seal": "control/round-1-sealed.json",
+    "seal_sha256": "8cac7c9b4d6f9261e9491523420996802bfa529da03e8245326285ebaf0ac9cb",
+    "review_extract": "control/round-1-review-extract.json",
+    "review_extract_sha256": "3d2cfb8e3845a247f93bd7697752394bb591e73e37df34881c7b1ccfaccdb976"
+  },
+  "launch": {
+    "client": "codex exec resume",
+    "resumed_native_thread": true,
+    "model_or_reasoning_override": false,
+    "permission_hook_trust_override": false
+  },
+  "operator_note": "The sole round-1 follow-up exited 0 and was sealed. Its submitted input must not be replayed or restarted.",
+  "exit_code": 0,
+  "turn_completed_observed": true
+}

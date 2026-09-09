@@ -1,0 +1,108 @@
+{
+  "ok": true,
+  "code": "proposal_recorded",
+  "project_revision": 136,
+  "proposal": {
+    "id": "01M22KK92JJT08F1RZSQWD8258",
+    "project_id": "01M22EKENQDCDHSKNTMS6A83VA",
+    "work_item_id": "01M22EKENW8CGQJ9MKAYC84QGD",
+    "source_id": "01M22EKENVZ27GCNA5JPEN5F8K",
+    "base_fingerprint": "sha256:3efb83814a792c8e835eccf8ca024576333423718e2a6f8b9e5180c224e7aea6",
+    "expected_revision": 129,
+    "mutation_type": "work.progress",
+    "patch": {
+      "changes": {
+        "next_action": "逐条重算公开日志统计并比对三轮修订和引用范围，形成独立结论与返工要求。",
+        "status": "in_progress",
+        "summary": "独立复核进行中：仅使用项目公开来源、materials、固定review-inputs和真实AWR回执，保留未知原因与缺失材料。"
+      },
+      "intent": "已接手独立复核，开始核对三轮公开来源、六项生产产物、大日志可重现统计、公开引用和敏感边界。",
+      "source_config": {
+        "adapter_options": {},
+        "adapter_version": 1,
+        "mapping_key": "ledger|work-ledger.yaml"
+      },
+      "target": {
+        "kind": "work_item",
+        "meta": {
+          "external_key": "CC-REVIEW",
+          "id": "01M22EKENW8CGQJ9MKAYC84QGD",
+          "revision": 1,
+          "source_ref": {
+            "end_line": null,
+            "locator": "file:///Users/mac/Documents/originone/agent-work-running/.local/business-live-20260909-v2/restricted-material/project/work-ledger.yaml",
+            "pointer": "/work_items/3",
+            "section_fingerprint": null,
+            "source_fingerprint": "sha256:3efb83814a792c8e835eccf8ca024576333423718e2a6f8b9e5180c224e7aea6",
+            "source_id": "01M22EKENVZ27GCNA5JPEN5F8K",
+            "source_revision": 13,
+            "start_line": null
+          }
+        }
+      },
+      "version": 1,
+      "work_action": {
+        "action": "progress",
+        "from": "planned",
+        "to": "in_progress"
+      }
+    },
+    "status": "applied",
+    "created_by_session": "01M22KH8BB7AY4PCKFF7Z51N7R",
+    "revision": 5
+  },
+  "event": {
+    "id": "01M22KK945YYCJ11KCVB9Z0YCM",
+    "project_id": "01M22EKENQDCDHSKNTMS6A83VA",
+    "work_item_id": "01M22EKENW8CGQJ9MKAYC84QGD",
+    "session_id": null,
+    "branch_id": "01M22EN2F2JN2NW2FEJJRYK13E",
+    "event_type": "work.progressed",
+    "importance": "normal",
+    "summary": "Verified source work action Progress",
+    "payload": {
+      "action_reason": "已接手独立复核，开始核对三轮公开来源、六项生产产物、大日志可重现统计、公开引用和敏感边界。",
+      "actor": "luna_worker:/root/source_change_client_run",
+      "after_fingerprint": "sha256:5eace212ecc198fce5fa243a97dd0a16fb5567bce08134b8a8c1afa3dc36ffd9",
+      "attempt_event_id": "01M22KK93JVF8QKNAWXHBGF58D",
+      "before_fingerprint": "sha256:3efb83814a792c8e835eccf8ca024576333423718e2a6f8b9e5180c224e7aea6",
+      "creating_session_id": "01M22KH8BB7AY4PCKFF7Z51N7R",
+      "proposal_id": "01M22KK92JJT08F1RZSQWD8258",
+      "reason": "已接手独立复核，开始核对三轮公开来源、六项生产产物、大日志可重现统计、公开引用和敏感边界。",
+      "released_claim_ids": [],
+      "source_id": "01M22EKENVZ27GCNA5JPEN5F8K",
+      "source_revision": 14,
+      "target_after_hash": "f9501230386bde94890f415aecb60b4f78a1d22d8479e9ef268a6c4511daa934",
+      "target_revision": 2,
+      "work_action": {
+        "action": "progress",
+        "from": "planned",
+        "to": "in_progress"
+      },
+      "write_plan_id": "01M22KK92WJ3WRA9Z3EAS4F5X3"
+    },
+    "project_revision": 136,
+    "created_at": 1788941542533
+  },
+  "source_refresh_performed": true,
+  "source_write_performed": true,
+  "write_outcome": "applied",
+  "apply_attempt": {
+    "event_id": "01M22KK93JVF8QKNAWXHBGF58D",
+    "proposal_id": "01M22KK92JJT08F1RZSQWD8258",
+    "source_id": "01M22EKENVZ27GCNA5JPEN5F8K",
+    "project_revision": 133,
+    "plan": {
+      "id": "01M22KK92WJ3WRA9Z3EAS4F5X3",
+      "before_fingerprint": "sha256:3efb83814a792c8e835eccf8ca024576333423718e2a6f8b9e5180c224e7aea6",
+      "after_fingerprint": "sha256:5eace212ecc198fce5fa243a97dd0a16fb5567bce08134b8a8c1afa3dc36ffd9",
+      "before_size": 2948,
+      "after_size": 3151,
+      "target_after_hash": "f9501230386bde94890f415aecb60b4f78a1d22d8479e9ef268a6c4511daa934"
+    },
+    "resolved_event_id": "01M22KK945YYCJ11KCVB9Z0YCM"
+  },
+  "recovery_directory": ".awr/mutations/01M22KK92WJ3WRA9Z3EAS4F5X3",
+  "source_check": null,
+  "error": null
+}

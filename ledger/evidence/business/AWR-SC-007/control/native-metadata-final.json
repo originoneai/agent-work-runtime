@@ -1,0 +1,15 @@
+{
+  "kind": "actual_native_client_metadata",
+  "clients": [
+    {
+      "client": "Codex CLI",
+      "native_task_id": "01a084e7-f762-77e2-8018-ecee36da6ff7",
+      "cli_version": "0.153.4",
+      "model": "gpt-5.6-sol",
+      "effort": "max",
+      "model_override": false,
+      "private_native_sha256": "b8fc76752a1f464109850fb11272b6a8229e3789417e1a442731f956d19660d8"
+    }
+  ],
+  "source": "Sealed actual session_meta and turn_context; native context is private."
+}

@@ -1,0 +1,138 @@
+{
+  "kind": "cc_independent_reviewer_log_recompute",
+  "recorded_at": "2026-09-09T16:14:30+08:00",
+  "reviewer_identity": "luna_worker:/root/source_change_client_run",
+  "source": {
+    "path": "materials/operations.jsonl",
+    "bytes": 3145837,
+    "sha256": "058e7a7ed4c472d8e2e868e9e6aa57216944fe513bf3cb303d5bb31d73f35cf1",
+    "lines": 18717
+  },
+  "method": "Single-pass JSONL parse and bounded aggregation; no full-log output. A second small CSV read cross-checks published day totals.",
+  "structure": {
+    "parse_error_count": 0,
+    "field_issue_count": 0,
+    "type_issue_count": 0,
+    "required_fields": [
+      "batch",
+      "day",
+      "elapsed_ms",
+      "event",
+      "note",
+      "result",
+      "stage"
+    ],
+    "event_unique_count": 18717,
+    "event_number_min": 0,
+    "event_number_max": 18716,
+    "event_numbers_contiguous": true
+  },
+  "aggregate": {
+    "record_count": 18717,
+    "unique_batch_count": 47,
+    "day_record_counts": {
+      "1": 4787,
+      "2": 3980,
+      "3": 5572,
+      "4": 4378
+    },
+    "day_unique_batch_counts": {
+      "1": 12,
+      "2": 10,
+      "3": 14,
+      "4": 11
+    },
+    "result_counts": {
+      "ok": 18714,
+      "retry": 1,
+      "delayed": 2
+    },
+    "stage_counts": {
+      "queued": 6239,
+      "parsed": 6239,
+      "recorded": 6239
+    },
+    "elapsed_ms": {
+      "min": 20,
+      "max": 50,
+      "mean": 34.99551210129828
+    },
+    "note_unique_count": 1,
+    "batch_record_count_distribution": {
+      "399": 11,
+      "398": 36
+    },
+    "batch_cross_day_count": 0
+  },
+  "non_ok_records": [
+    {
+      "line": 18,
+      "event": "awr-live-20260909-007-r2-17",
+      "day": 2,
+      "batch": "public-batch-18",
+      "stage": "recorded",
+      "result": "retry",
+      "elapsed_ms": 37,
+      "later_ok_observed": true,
+      "later_ok_first_line": 65
+    },
+    {
+      "line": 46,
+      "event": "awr-live-20260909-007-r2-45",
+      "day": 4,
+      "batch": "public-batch-46",
+      "stage": "queued",
+      "result": "delayed",
+      "elapsed_ms": 34,
+      "later_ok_observed": true,
+      "later_ok_first_line": 93
+    },
+    {
+      "line": 47,
+      "event": "awr-live-20260909-007-r2-46",
+      "day": 4,
+      "batch": "public-batch-47",
+      "stage": "parsed",
+      "result": "delayed",
+      "elapsed_ms": 35,
+      "later_ok_observed": true,
+      "later_ok_first_line": 94
+    }
+  ],
+  "public_summary_cross_check": {
+    "rows": 4,
+    "expected_unique_batches_by_day": {
+      "1": 12,
+      "2": 10,
+      "3": 14,
+      "4": 11
+    },
+    "computed_unique_batches_by_day": {
+      "1": 12,
+      "2": 10,
+      "3": 14,
+      "4": 11
+    },
+    "matches": true,
+    "total_from_csv": 47,
+    "total_unique_batches_from_log": 47
+  },
+  "producer_claims_recomputed": {
+    "records_18717": true,
+    "batches_47": true,
+    "day_batches_12_10_14_11": true,
+    "results_18714_1_2": true,
+    "stages_6239_each": true,
+    "batch_records_36x398_11x399": true,
+    "elapsed_20_50": true,
+    "mean_approx_34_996": true
+  },
+  "interpretation_boundary": {
+    "later_ok_is_not_recovery_proof": true,
+    "reason": "The public log has no timestamps, lifecycle relation or closure marker; later ok is an observation only.",
+    "retry_completion_basis": "Public summary says one retry then completion; log alone is not used to infer completion.",
+    "delay_cause_known": false,
+    "delay_impact_known": false,
+    "delay_final_disposition_known": false
+  }
+}

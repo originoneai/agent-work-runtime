@@ -1,0 +1,95 @@
+{
+  "version": 1,
+  "work_item": "CC-DELIVER",
+  "source_sha": "ac17b38d944eb3ec219ec7053db179cbd3c818b1",
+  "command": "rtk ruby .work-receipts/verify-cc-delivery.rb",
+  "verifier": {
+    "path": ".work-receipts/verify-cc-delivery.rb",
+    "sha256": "464bf9446f63aaebe0e62b14f6d1a3182f9cce80c9d08f24bc980d245f080b08"
+  },
+  "scope": [
+    "CC-DELIVER"
+  ],
+  "verified_at": 1788944802999,
+  "checks": [
+    {
+      "name": "review-addressed-and-public-package-bounded",
+      "passed": true,
+      "details": "The independent review verdict is pass with no producer rework required. The ZIP contains exactly the delivery manifest, the byte-identical reviewed public report, the public batch summary and the public log notice. It excludes the row-level operations log, restricted originals, producer verification records and reviewer receipts.",
+      "criteria": [
+        "处理复核意见并交付公开版本及剩余资料缺口。"
+      ]
+    },
+    {
+      "name": "citations-gaps-and-responsibilities-retained",
+      "passed": true,
+      "details": "The delivery manifest has ten allowlisted and resolving references, zero sensitive-pattern matches, explicit external-use limits, five unresolved-fact categories and role-based follow-up responsibilities. Internal source and review records remain linked for audit but are not included in the default external ZIP.",
+      "criteria": [
+        "保留实际产物与来源引用，无法确认的内容显式说明。"
+      ]
+    }
+  ],
+  "package": {
+    "manifest": {
+      "path": "deliverables/cc-delivery.md",
+      "sha256": "273cf67e16a54cc73ff2182b5f5d07a014b7901052a0dc05742e8acac6682e4b"
+    },
+    "archive": {
+      "path": "deliverables/chengchuan-public-delivery.zip",
+      "sha256": "2d46994cf19f6314d3e81e583f7b10e0f2abe4a53f6cd7dda124f09b200c862e",
+      "member_count": 4,
+      "members": [
+        "deliverables/cc-delivery.md",
+        "deliverables/chengchuan-public-report.md",
+        "materials/public-summary.csv",
+        "materials/log-notice.md"
+      ]
+    },
+    "external_primary": {
+      "path": "deliverables/chengchuan-public-report.md",
+      "sha256": "e09f87db8531d11d4fda7f7ce5e05440b978d4089be056d5ac1b9c5abfc39ecf"
+    }
+  },
+  "review_binding": {
+    "verdict": "pass",
+    "producer_rework_required": false,
+    "report": {
+      "path": "deliverables/cc-independent-review.md",
+      "sha256": "e7b52be7f59614f54271915dbea878504858ba476c52768360eaf860de612bd8"
+    },
+    "verification": {
+      "path": ".work-receipts/reviewer-independent-verification.json",
+      "sha256": "aaedb7933db5c343854333c1fac71c4329cd4eadc19f92c1892c0e21611b10a4"
+    }
+  },
+  "source_bindings": [
+    {
+      "path": "materials/access-register.md",
+      "sha256": "b6e4e023be4e205b5a9ec6bae4c4f6a20d8d85b61b96d46e9245781f97decaf9",
+      "distribution": "internal audit reference"
+    },
+    {
+      "path": "materials/public-summary.csv",
+      "sha256": "8465ff50f822730007c279f0f522f706dd37d879ca87ac87dab4cd219f25a2a5",
+      "distribution": "included public attachment"
+    },
+    {
+      "path": "materials/log-notice.md",
+      "sha256": "5651b4898510fda4da4211855415d4833f90acfc2ab20debdc0b4d8a366ea83d",
+      "distribution": "included public attachment"
+    },
+    {
+      "path": "materials/operations.jsonl",
+      "sha256": "058e7a7ed4c472d8e2e868e9e6aa57216944fe513bf3cb303d5bb31d73f35cf1",
+      "distribution": "aggregate verification only; excluded from external archive"
+    }
+  ],
+  "unresolved_categories": [
+    "calendar period, cutoff and timezone",
+    "metric and processing-stage definitions",
+    "Tuesday retry cause, duration and impact",
+    "Thursday delay causes, impact, recovery and final disposition",
+    "public processing lifecycle and SLA rules"
+  ],
+  "evidence_tier": "final package locally verified after distinct independent review"
+}

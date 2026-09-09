@@ -1,0 +1,54 @@
+{
+  "kind": "retrospective_actual_native_input_audit",
+  "at": "2026-09-09T16:08:09.753503+08:00",
+  "native_clients": [
+    {
+      "client": "Codex CLI",
+      "native_task_id": "01a084e7-f762-77e2-8018-ecee36da6ff7",
+      "cli_version": "0.153.4",
+      "model": "gpt-5.6-sol",
+      "effort": "max",
+      "model_override": false,
+      "private_native_sha256": "a0bb19810d20e268626012335c1ee0d6d33171115c9616724ee9243f19c0d457"
+    }
+  ],
+  "policy_rules_sha256": "6ef794db3c42904ad98f0dce374753872118b398e36df908176d6b9192e53ed5",
+  "inputs": [
+    {
+      "native_client": "01a084e7-f762-77e2-8018-ecee36da6ff7",
+      "timestamp": "2026-09-09T06:43:15.157Z",
+      "sha256": "abd4a632991b467c73d0e305b8ae63bed593d26b27b91643fc57cee693beafa8",
+      "kind": "host_setup_envelope",
+      "raw_content_private": true
+    },
+    {
+      "native_client": "01a084e7-f762-77e2-8018-ecee36da6ff7",
+      "timestamp": "2026-09-09T06:43:15.236Z",
+      "sha256": "c6839908d239440f5421aae6523572fc2aa4d94a9be218d4480aff41f81d33f1",
+      "kind": "actual_business_input",
+      "phase": "initial",
+      "text": "请利用这个项目允许访问的资料完成工作简报，并列出仍然缺少的材料。",
+      "input_policy_passed": true
+    },
+    {
+      "native_client": "01a084e7-f762-77e2-8018-ecee36da6ff7",
+      "timestamp": "2026-09-09T07:04:38.647Z",
+      "sha256": "1e4849b92d2b08628362e50e24b213b345949a84b9178f3c232de88d3b4e0c6f",
+      "kind": "actual_business_input",
+      "phase": "round-1",
+      "text": "补充分析这份很长的运行记录，保留对当前任务真正有用的结论。",
+      "input_policy_passed": true
+    },
+    {
+      "native_client": "01a084e7-f762-77e2-8018-ecee36da6ff7",
+      "timestamp": "2026-09-09T07:25:54.964Z",
+      "sha256": "7277d250ea4e8ee6cf70e843a9281f173d7a1bce1b25492845a6048e98340a91",
+      "kind": "actual_business_input",
+      "phase": "round-2",
+      "text": "给我一份可对外分享的版本，核实引用范围和敏感内容处理结果。",
+      "input_policy_passed": true
+    }
+  ],
+  "all_business_inputs_accounted_for": true,
+  "limitation": "Exact read-only retrospective input inventory; root natural-language review is separate. Fixed host setup remains private."
+}

@@ -1,0 +1,49 @@
+{
+  "kind": "cc_independent_reviewer_final_verification",
+  "recorded_at": "2026-09-09T16:30:32+08:00",
+  "reviewer_identity": "luna_worker:/root/source_change_client_run",
+  "checks": {
+    "report_sha_matches_managed_artifact": true,
+    "verification_sha_matches_registered_evidence": true,
+    "registered_evidence_work_bound": true,
+    "registered_evidence_branch_bound": true,
+    "completion_succeeded": true,
+    "completion_released_review_claim": true,
+    "work_completed": true,
+    "session_ended": true,
+    "claim_released": true,
+    "checkpoint_bound": true,
+    "fixed_review_inputs_unchanged": true,
+    "six_producer_outputs_unchanged": true,
+    "fixed_review_input_count_45": true,
+    "producer_output_count_6": true,
+    "report_links_resolve": true,
+    "final_project_revision_148": true,
+    "cc_deliver_ready": true,
+    "milestone_still_in_progress": true,
+    "final_work_counts_expected": true
+  },
+  "report_links": [],
+  "report": {
+    "path": "deliverables/cc-independent-review.md",
+    "sha256": "e7b52be7f59614f54271915dbea878504858ba476c52768360eaf860de612bd8",
+    "bytes": 5633
+  },
+  "registered_verification": {
+    "path": ".work-receipts/reviewer-independent-verification.json",
+    "sha256": "aaedb7933db5c343854333c1fac71c4329cd4eadc19f92c1892c0e21611b10a4",
+    "evidence_id": "01M22MEM0T1WWHKTD2FMMGXKC3",
+    "evidence_external_key": "CC-INDEPENDENT-REVIEW-R2-20260909"
+  },
+  "runtime": {
+    "project_revision": 148,
+    "work_status": "completed",
+    "session_status": "ended",
+    "claim_status": "released",
+    "next_ready": [
+      "CC-DELIVER"
+    ]
+  },
+  "verdict": "pass",
+  "scope_boundary": "CC-REVIEW only; no CC-DELIVER, milestone, publication, Git push, or E4 conclusion."
+}

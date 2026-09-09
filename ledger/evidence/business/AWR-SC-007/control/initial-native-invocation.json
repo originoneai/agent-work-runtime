@@ -1,0 +1,40 @@
+{
+  "version": 1,
+  "kind": "business_client_native_invocation",
+  "recorded_at": "2026-09-09T15:02:54+08:00",
+  "run_id": "awr-live-20260909-007-r2",
+  "scenario_id": "AWR-SC-007",
+  "phase": "initial",
+  "status": "completed",
+  "project_cwd": "/Users/mac/Documents/originone/agent-work-running/.local/business-live-20260909-v2/restricted-material/project",
+  "native_thread_id": "01a084e7-f762-77e2-8018-ecee36da6ff7",
+  "operator_exec_handle": 35853,
+  "thread_started_observed": true,
+  "input": {
+    "path": "control/initial-input.md",
+    "sha256": "c6839908d239440f5421aae6523572fc2aa4d94a9be218d4480aff41f81d33f1",
+    "stdin_exact_file": true,
+    "submission_count": 1
+  },
+  "outputs": {
+    "events": "control/initial-events.jsonl",
+    "final": "control/initial-final.md",
+    "stderr": "control/initial-stderr.log",
+    "events_sha256": "66041ad6555871826e6d53ee4b460b22eac733c3d21521f81d9df412f23d5800",
+    "final_sha256": "6a44b116e17a781e0cf6c912e846e204bb11be6ee5a3ad00be6e8e5e9a9279d6",
+    "stderr_sha256": "12351e25854c30cdd7160056f98a0d979a453e423d76eb832b668203ba62b11b",
+    "seal": "control/initial-sealed.json",
+    "seal_sha256": "906781573f3e0a116292f63bd7bca8e30b525a985a84827d0173e58c2ec6c1d5",
+    "review_extract": "control/initial-review-extract.json",
+    "review_extract_sha256": "a23af90c4895627b145d44e412c1c232f36ebd2180bef3bed5cb381bbe39dfa1"
+  },
+  "launch": {
+    "client": "codex exec",
+    "new_native_thread": true,
+    "model_or_reasoning_override": false,
+    "permission_hook_trust_override": false
+  },
+  "operator_note": "The sole initial native turn exited 0 and was sealed. Its submitted input must not be replayed or restarted.",
+  "exit_code": 0,
+  "turn_completed_observed": true
+}

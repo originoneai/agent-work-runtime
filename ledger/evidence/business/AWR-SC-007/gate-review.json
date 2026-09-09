@@ -1,0 +1,95 @@
+{
+  "kind": "actual_business_gate_review_before_remote_delivery",
+  "scenario_id": "AWR-SC-007",
+  "run_id": "awr-live-20260909-007-r2",
+  "recorded_at": "2026-09-09T17:51:50.701458+08:00",
+  "reviewer": "codex-primary with two distinct luna_worker review roles",
+  "scope": "Public synthetic business fixtures through the actual Codex client; no restricted originals, production or release claim.",
+  "gates": {
+    "natural_client_initiation": {
+      "passed": true,
+      "evidence": [
+        "control/initial-sealed.json"
+      ]
+    },
+    "tool_or_role_execution": {
+      "passed": true,
+      "evidence": [
+        "control/initial-review-extract.json",
+        "control/round-1-review-extract.json",
+        "control/round-2-review-extract.json"
+      ]
+    },
+    "real_artifact": {
+      "passed": true,
+      "evidence": [
+        "control/round-2-sealed.json"
+      ]
+    },
+    "business_followup_1": {
+      "passed": true,
+      "evidence": [
+        "round-1-inputs.json",
+        "control/round-1-sealed.json"
+      ]
+    },
+    "business_followup_2": {
+      "passed": true,
+      "evidence": [
+        "round-2-inputs.json",
+        "control/round-2-sealed.json"
+      ]
+    },
+    "independent_review": {
+      "passed": true,
+      "evidence": [
+        "control/independent-review.json",
+        "control/independent-review-root-binding.json",
+        "project/deliverables/cc-independent-review.md"
+      ]
+    },
+    "final_delivery": {
+      "passed": true,
+      "evidence": [
+        "control/final-delivery-sealed.json",
+        "control/final-delivery-root-binding.json",
+        "control/final-delivery-independent-check.json",
+        "project/deliverables/cc-delivery.md",
+        "project/deliverables/chengchuan-public-delivery.zip"
+      ]
+    },
+    "traceable_receipt": {
+      "passed": true,
+      "evidence": [
+        "control/initial-sealed.json",
+        "control/round-1-sealed.json",
+        "control/round-2-sealed.json",
+        "control/initial-client-boundary-verification.json",
+        "control/round-1-client-boundary-verification.json",
+        "control/round-2-client-boundary-verification.json",
+        "control/native-input-audit-final.json",
+        "control/final-delivery-bounded-command-receipts.json"
+      ]
+    },
+    "fixture_isolation": {
+      "passed": true,
+      "evidence": [
+        "run.json",
+        "control/client-boundary.json",
+        "control/preparation-verification.json"
+      ]
+    },
+    "independent_commit_and_remote_sha": {
+      "passed": false,
+      "evidence": []
+    }
+  },
+  "completion_claim": false,
+  "large_log_policy": "omitted-materials.json",
+  "final_reference_boundary": {
+    "public_report_archive_links": "2/2",
+    "delivery_document_project_links": "10/10",
+    "delivery_document_archive_links": "3/10",
+    "seven_excluded_references": "explicitly excluded row-level log and internal audit references; not a self-contained archive claim"
+  }
+}

@@ -1,0 +1,20 @@
+{
+  "version": 1,
+  "source_sha": "ac17b38d944eb3ec219ec7053db179cbd3c818b1",
+  "minimum_level": "locally_verified",
+  "acceptance": [
+    {
+      "criterion": "独立核对资料范围、日志结论和公开内容。",
+      "evidence": [
+        "CC-INDEPENDENT-REVIEW-R2-20260909"
+      ]
+    },
+    {
+      "criterion": "保留实际产物与来源引用，无法确认的内容显式说明。",
+      "evidence": [
+        "CC-INDEPENDENT-REVIEW-R2-20260909"
+      ]
+    }
+  ],
+  "required_evidence": []
+}

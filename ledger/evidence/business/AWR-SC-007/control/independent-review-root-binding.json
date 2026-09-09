@@ -1,0 +1,115 @@
+{
+  "kind": "actual_independent_business_review_root_binding",
+  "recorded_at": "2026-09-09T16:55:39.503131+08:00",
+  "actual_agent_task": "/root/source_change_client_run",
+  "actual_agent_type": "luna_worker",
+  "reviewer_identity": "luna_worker:/root/source_change_client_run",
+  "actual_task_completed": true,
+  "caller_model_and_agent_labels_are_not_native_identity_proof": true,
+  "control_report_sha256": "98351e005c74bf3e9efdd64463eb20fd33c6e5e631d47c678f3ee5bc9eb8ef75",
+  "session": {
+    "id": "01M22KH8BB7AY4PCKFF7Z51N7R",
+    "status": "ended",
+    "last_checkpoint_id": "01M22MGHCCM4ARHPV9SMZ20T54"
+  },
+  "claim": {
+    "id": "01M22KH8BBGQJ19GHAM3TK208K",
+    "session_id": "01M22KH8BB7AY4PCKFF7Z51N7R",
+    "status": "released"
+  },
+  "completion_event": "01M22MF7B4DV68QE0DZ7KC8871",
+  "evidence": {
+    "id": "01M22MEM0T1WWHKTD2FMMGXKC3",
+    "external_key": "CC-INDEPENDENT-REVIEW-R2-20260909",
+    "locator": ".work-receipts/reviewer-independent-verification.json",
+    "sha256": "aaedb7933db5c343854333c1fac71c4329cd4eadc19f92c1892c0e21611b10a4",
+    "source_sha": "ac17b38d944eb3ec219ec7053db179cbd3c818b1"
+  },
+  "fixed_input_files_verified": 45,
+  "producer_artifacts_unchanged": {
+    "deliverables/cc-log-verification.json": "7f41d6372f52e9253d57a739892627498ca322498bfb1d3e351c72403ffe8d52",
+    "deliverables/cc-public-verification.json": "0224aa41b5782194b43eb38c928187ebfdd25991943e4ea0a0bb3d4a84257bd8",
+    "deliverables/cc-scope-verification.json": "afa14236c6dbf43deffbf8c794d9b7106733a7f92ba3047a3a3f6ea7e0ea324c",
+    "deliverables/chengchuan-access-gaps.md": "40894d584f7ec6dc6a55841040b8c2c4b992adce7b98cd3fa3b4891da981c597",
+    "deliverables/chengchuan-log-summary.md": "e005adca6899f6eb68d4697821147f0d9d4ff0aac7eeaaaec80e300cce886c50",
+    "deliverables/chengchuan-public-report.md": "e09f87db8531d11d4fda7f7ce5e05440b978d4089be056d5ac1b9c5abfc39ecf"
+  },
+  "producer_receipts_unchanged": 0,
+  "retained_review_files_sha256": {
+    ".work-receipts/reviewer-artifact-add.json": "9cc2ff708573d536fd7280e1e02959e8ae4cdfdb76b9328827c673a5650a8c5b",
+    ".work-receipts/reviewer-checkpoint.json": "ca992d0482935276ebc37035490f762714b694172af7cb3f0fef8b1f7f18670b",
+    ".work-receipts/reviewer-completion-input.json": "080171a41cd70263b0a716715c2752edd03488c0a3429dde83a0ec1a2a3892b8",
+    ".work-receipts/reviewer-context-bootstrap.json": "257aa1a719948333647a210c5a407115bc12494f0838eb3c71978b4678ddea3a",
+    ".work-receipts/reviewer-context-compile.json": "2860f0769063f6353d7f221f134e795472a62b884f6b1c2356ec762686a131fd",
+    ".work-receipts/reviewer-context-final.json": "c6ad093f00cca007b11268d96ea47f63c610547c2615d2f6530b9bd50d474220",
+    ".work-receipts/reviewer-evidence-add.json": "ce5039965a799084311fe321570b42d0e7d77d4e395a3c4d44d69130b7a56487",
+    ".work-receipts/reviewer-evidence-draft.json": "0d7bb78b184b514f88851c12ef2e2975146e376c0b3e6bd267ac0d50b95e8c7f",
+    ".work-receipts/reviewer-final-verification.json": "7413039b6007b99f17efb33f8d510762451754ca801529866b5a7fc290d452bf",
+    ".work-receipts/reviewer-history-consistency.json": "ae95855d20470e6b3cf7eededda23554b846c2aaeb20bb18f73b0ed4653fa2bb",
+    ".work-receipts/reviewer-independent-verification.json": "aaedb7933db5c343854333c1fac71c4329cd4eadc19f92c1892c0e21611b10a4",
+    ".work-receipts/reviewer-input-hashes-after.json": "01602fe49c35d0ce44e8b29007100800ae421a8c8430836e116972f175c82f27",
+    ".work-receipts/reviewer-input-hashes-before.json": "af4e950e8af036fe157bd57fd294156e4ba4bfcf6996094a6d0edc08f0378b29",
+    ".work-receipts/reviewer-log-recompute.json": "85eeafc89bce26e9f363b4ae662da46fa4d60d27808f302471a532899f75d47b",
+    ".work-receipts/reviewer-public-scope-scan.json": "16ccd8289a61eb10829520da4db76058a4a43ea008a37bcbf9fe803ae98dc27f",
+    ".work-receipts/reviewer-ready-before.json": "302819b4670ce24282097eb35caa98515be23f6a6ea254311c86b6e6beb458a6",
+    ".work-receipts/reviewer-ready-final.json": "fa85cb8c8e1b5f095c586a9751ad939d36e222eb43a638a91c65b66fe8150f6e",
+    ".work-receipts/reviewer-session-end.json": "570b530ce48f00f61fe27e7d8bd1eade6fa1ce76680408f35b03e392135906c8",
+    ".work-receipts/reviewer-session-final.json": "a72d753a5687f96345b7325eedc017e74621407294560944960dea81fc6c30ad",
+    ".work-receipts/reviewer-session-start.json": "c934bc3af0bae3884f715dfc9dba290cd30d337f051fdc56fe62626c1f934608",
+    ".work-receipts/reviewer-source-list.json": "2667ef8a68c63d86091622b6ecef43c1c0e79d555ed87fac124a9befd98a376e",
+    ".work-receipts/reviewer-status-before.json": "9733ad305d3c703b04b4c8f5272b7125bf797e18714cfc7106cab99f4bcedb5e",
+    ".work-receipts/reviewer-status-final.json": "273440074162c3eb1b6d4e02d16998cb6afbc67c788b8bd7a41ff6a89ea59ddb",
+    ".work-receipts/reviewer-tool-failures.json": "d3ff9a09e41a47c746fa1c2dad9f58f69a8fc9b79415fe049d4ed8ad64849669",
+    ".work-receipts/reviewer-work-cc-log.json": "f880f7d24f588ef243964ae1a4b2973a49f09d5604090c55cb9070a96c92638b",
+    ".work-receipts/reviewer-work-cc-public.json": "fb18d9f3e439f4a6dbf3bbd6130dc21b07f340067ca46ba22619a2733f0cf3c3",
+    ".work-receipts/reviewer-work-cc-review.json": "cfabc9eafd5ed62a957af46953bb3cfe31044f440d8c07b796039de03efa730c",
+    ".work-receipts/reviewer-work-cc-scope.json": "f3c9fd06042e8a05312e4dc4ca57af9017b2844e4843158820e1c2a60b81e9ab",
+    ".work-receipts/reviewer-work-complete.json": "00acd4890d1c360a7b98d2dfdeb2432826a6bdb3bb5923eff6fdfcaab9d91cd3",
+    ".work-receipts/reviewer-work-final.json": "a3177cd32d4c93765cd4cbd3eac38aa5f12dd6e113e0d34a9c070e4564ed5bb1",
+    ".work-receipts/reviewer-work-progress.json": "cc4234dc86fe95dc45414288897eeaeff1043d42dc3a47f8613c7ff672484375",
+    "deliverables/cc-independent-review.md": "e7b52be7f59614f54271915dbea878504858ba476c52768360eaf860de612bd8"
+  },
+  "runtime_observation": {
+    "project_revision": 148,
+    "active_sessions": 0,
+    "active_claims": 0,
+    "work_items": [
+      {
+        "external_key": "CC-SCOPE",
+        "status": "completed",
+        "summary": "已形成当前公开数据快照、授权边界和八项材料或复核缺口",
+        "next_action": "按两条验收标准绑定已登记证据并完成范围核对"
+      },
+      {
+        "external_key": "CC-LOG",
+        "status": "completed",
+        "summary": "已分析18717条公开事件记录并确认47个批次、1次retry、2次delayed及仍未核实的延迟原因",
+        "next_action": "等待第二版来源及公开内容规则发布后开展CC-PUBLIC"
+      },
+      {
+        "external_key": "CC-PUBLIC",
+        "status": "completed",
+        "summary": "已形成仅含47批次、处理状态、已核实流程结论及延迟缺口的公开版本，引用与敏感扫描通过",
+        "next_action": "提交不同执行者独立复核公开范围"
+      },
+      {
+        "external_key": "CC-REVIEW",
+        "status": "completed",
+        "summary": "独立复核进行中：仅使用项目公开来源、materials、固定review-inputs和真实AWR回执，保留未知原因与缺失材料。",
+        "next_action": "逐条重算公开日志统计并比对三轮修订和引用范围，形成独立结论与返工要求。"
+      },
+      {
+        "external_key": "CC-DELIVER",
+        "status": "planned",
+        "summary": "",
+        "next_action": "交付公开周报，先核对当前来源和负责范围。"
+      }
+    ]
+  },
+  "source_ledger_sha256": "5d7e0994e14df8c43ed3ee831bd7080dffc75c171f26311de1321ba63d424c03",
+  "business_git_head": "ac17b38d944eb3ec219ec7053db179cbd3c818b1",
+  "verdict": "passed_for_cc_review_scope",
+  "final_delivery_not_started": true,
+  "runtime_mutation_performed": false,
+  "e4_credit": false
+}

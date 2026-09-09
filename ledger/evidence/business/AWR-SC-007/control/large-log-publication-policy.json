@@ -1,0 +1,46 @@
+{
+  "kind": "exact_r2_large_generated_public_material_policy",
+  "recorded_at": "2026-09-09T17:25:06.791769+08:00",
+  "scenario_id": "AWR-SC-007",
+  "run_id": "awr-live-20260909-007-r2",
+  "omit_exact_sha256": {
+    "058e7a7ed4c472d8e2e868e9e6aa57216944fe513bf3cb303d5bb31d73f35cf1": {
+      "bytes": 3145837,
+      "reason": "Exact large generated public log bytes are omitted from public Git while the originals remain available in sealed actual business inputs. The portable reproducer creates identical bytes for independent fingerprint verification.",
+      "reproduction": {
+        "script": "control/reproduce-large-public-log.py",
+        "script_sha256": "8bab6bdef1667926601e1b108c7107ddef47fa94531eae9f4c27380da63ec097",
+        "command": "python3 control/reproduce-large-public-log.py --output /absolute/existing-parent/new-public-log.jsonl",
+        "run_id": "awr-live-20260909-007-r2",
+        "expected_sha256": "058e7a7ed4c472d8e2e868e9e6aa57216944fe513bf3cb303d5bb31d73f35cf1",
+        "expected_bytes": 3145837
+      }
+    }
+  },
+  "generator_source": {
+    "path": "tests/fixtures/business/prepare.py",
+    "sha256": "324780d11ca30353eb77151be7b04d6cf3332c2d55070555fe35191644b85017",
+    "repository_commit": "c1dd7ec196cbce069f4847e89b3db83594a66468",
+    "lines": [
+      63,
+      78
+    ]
+  },
+  "reproduction_check": {
+    "actual_exit_code": 0,
+    "sha256": "058e7a7ed4c472d8e2e868e9e6aa57216944fe513bf3cb303d5bb31d73f35cf1",
+    "bytes": 3145837,
+    "records": 18717,
+    "all_bound_original_and_reproduced_files_match": [
+      "control/operations.jsonl",
+      "project/materials/operations.jsonl",
+      "control/round-1-snapshot/materials/operations.jsonl",
+      "control/round-2-snapshot/materials/operations.jsonl",
+      "control/reproduced-public-log-for-hash-check.jsonl"
+    ]
+  },
+  "source_inputs_or_seals_modified": false,
+  "client_input_injected": false,
+  "business_runtime_modified": false,
+  "e4_credit": false
+}

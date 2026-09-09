@@ -1,0 +1,58 @@
+{
+  "format": "awr-business-run-1",
+  "scenario_id": "AWR-SC-007",
+  "fixture_contract_version": "1.0.1",
+  "fixture_contract_sha256": "ed7b94e4bb086b569f7b7191b0c6281c7fe8d2c2a910394b310d1b0c430b9049",
+  "fixture_files_sha256": {
+    "project/.gitignore": "6a53f49e42cd698827d93a42132da508bbfe893dd2688aee6db092adb261b663",
+    "project/GOALS.md": "6acc82d527807f5daa3e30aa53305ea788df181cea5069f82b2b98e72cf6c276",
+    "project/PLAN.md": "38cd2ffee2ed18c9b5055c7ea4e2fc97a13b600dbd98ce83a9951ffd097a18a4",
+    "project/README.md": "7e0a078bcc87ecbc7f106f9510cd8652f0f37a30545e1d16ad0e99734c897ad8",
+    "project/RULES.md": "027c33c13e43b106ecb0a1ebf5178b364ea4b95e53b73f279868c1a59abc149d",
+    "project/materials/access-register.md": "b6e4e023be4e205b5a9ec6bae4c4f6a20d8d85b61b96d46e9245781f97decaf9",
+    "project/materials/public-summary.csv": "8465ff50f822730007c279f0f522f706dd37d879ca87ac87dab4cd219f25a2a5",
+    "project/project.toml": "d4c6d9759fddd2d889a68ebd11573ed304d259179ac7c943bc9614a10d634f95",
+    "project/work-ledger.yaml": "a519ff8a2c10386fbec9e5fb7a209548990ef42d38cc5b383cff3e2c5cb25de7",
+    "prompts/followup-1.md": "1e4849b92d2b08628362e50e24b213b345949a84b9178f3c232de88d3b4e0c6f",
+    "prompts/followup-2.md": "7277d250ea4e8ee6cf70e843a9281f173d7a1bce1b25492845a6048e98340a91",
+    "prompts/initial.md": "c6839908d239440f5421aae6523572fc2aa4d94a9be218d4480aff41f81d33f1",
+    "scenario.json": "4f8e3138685e2791f35310416bd8cf93a5d902194ad2f2e083af984d131d1736",
+    "updates/round-1/materials/log-notice.md": "5651b4898510fda4da4211855415d4833f90acfc2ab20debdc0b4d8a366ea83d",
+    "updates/round-2/RULES.md": "1cb74e953069b0da793cdc35e4b5b2eb0d7cab6e15d60619ed0d9ed8eaed11b0",
+    "work-graph.yaml": "ae9aaa8fc43edf4b964aa5aa195f21c2cb075c735f13f79f490cae1d6d5abf32"
+  },
+  "created_at": "2026-09-09T14:31:22+08:00",
+  "run_id": "awr-live-20260909-007-r2",
+  "namespace": "awr-v1/restricted-material/awr-live-20260909-007-r2",
+  "project_root": "/Users/mac/Documents/originone/agent-work-running/.local/business-live-20260909-v2/restricted-material/project",
+  "phase": "ready",
+  "published_rounds": [
+    1,
+    2
+  ],
+  "model_calls": 0,
+  "e4_completed": 0,
+  "participants_bound": false,
+  "live_preconditions_satisfied": false,
+  "generated_material": {
+    "source": "control/operations.jsonl",
+    "target": "materials/operations.jsonl",
+    "sha256": "058e7a7ed4c472d8e2e868e9e6aa57216944fe513bf3cb303d5bb31d73f35cf1",
+    "size_bytes": 3145837,
+    "records": 18717,
+    "restricted_source": "control/restricted-note.md",
+    "restricted_sha256": "063aabd22da39bfad530c6489e9e05e53c938202e810b948a063c41fc33c3dfa"
+  },
+  "seed_commit": "b5af93cc608fa49928a465c8a35b0baf34a0216c",
+  "project_source_sha256": {
+    ".gitignore": "6a53f49e42cd698827d93a42132da508bbfe893dd2688aee6db092adb261b663",
+    "GOALS.md": "6acc82d527807f5daa3e30aa53305ea788df181cea5069f82b2b98e72cf6c276",
+    "PLAN.md": "38cd2ffee2ed18c9b5055c7ea4e2fc97a13b600dbd98ce83a9951ffd097a18a4",
+    "README.md": "7e0a078bcc87ecbc7f106f9510cd8652f0f37a30545e1d16ad0e99734c897ad8",
+    "RULES.md": "027c33c13e43b106ecb0a1ebf5178b364ea4b95e53b73f279868c1a59abc149d",
+    "materials/access-register.md": "b6e4e023be4e205b5a9ec6bae4c4f6a20d8d85b61b96d46e9245781f97decaf9",
+    "materials/public-summary.csv": "8465ff50f822730007c279f0f522f706dd37d879ca87ac87dab4cd219f25a2a5",
+    "project.toml": "7551fa5fa9824e12f51982eac745714cc6180133f6f02901307d17d1546bcd44",
+    "work-ledger.yaml": "a519ff8a2c10386fbec9e5fb7a209548990ef42d38cc5b383cff3e2c5cb25de7"
+  }
+}

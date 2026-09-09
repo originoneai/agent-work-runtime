@@ -1,0 +1,438 @@
+{
+  "kind": "cc_independent_review_run_record",
+  "recorded_at": "2026-09-09T16:32:06+08:00",
+  "scenario_run": "business-live-20260909-v2/restricted-material",
+  "reviewer": {
+    "actual_identity": "luna_worker:/root/source_change_client_run",
+    "role": "independent business reviewer",
+    "distinct_from_producer_native_id": "01a084e7-f762-77e2-8018-ecee36da6ff7",
+    "identity_note": "Provider/model values are AWR caller metadata only; the actual reviewer identity is the luna_worker task path above.",
+    "provider_metadata": "openai",
+    "model_metadata": "gpt-6"
+  },
+  "authorization_boundary": {
+    "read_basis": [
+      "project public root sources",
+      "project materials",
+      "45 fixed review-input files",
+      "real AWR public state and reviewer-owned receipts"
+    ],
+    "excluded": [
+      "restricted originals",
+      "internal notes",
+      "producer private native context",
+      "old run",
+      "parent tests/crates/design/ledger",
+      "other projects",
+      "operator private context"
+    ],
+    "restricted_original_read": false,
+    "producer_artifacts_modified": false,
+    "fixed_review_inputs_modified": false,
+    "git_commit_or_push": false,
+    "final_delivery_written": false,
+    "whole_scenario_e4_claimed": false
+  },
+  "verdict": {
+    "work_item": "CC-REVIEW",
+    "result": "pass",
+    "producer_rework_required": false,
+    "basis": "Public facts, citations, sensitive-content boundary, long-log aggregation and all three business revisions were independently reproduced from authorized materials.",
+    "acceptance": [
+      {
+        "criterion": "独立核对资料范围、日志结论和公开内容。",
+        "verdict": "pass"
+      },
+      {
+        "criterion": "保留实际产物与来源引用，无法确认的内容显式说明。",
+        "verdict": "pass"
+      }
+    ],
+    "scope_limit": "CC-REVIEW only. CC-DELIVER is ready but unperformed; CC-DELIVERY remains in progress and no publication/E4 conclusion is made."
+  },
+  "findings": [
+    {
+      "id": "CC-R01",
+      "verdict": "pass",
+      "summary": "Daily public counts and total 47 match the allowed CSV; public citations remain inside materials."
+    },
+    {
+      "id": "CC-R02",
+      "verdict": "pass",
+      "summary": "Streaming recomputation reproduced 18,717 records, 47 batches, 12/10/14/11 daily batches, and 18,714 ok / 1 retry / 2 delayed."
+    },
+    {
+      "id": "CC-R03",
+      "verdict": "pass",
+      "summary": "Record and batch counts are not conflated; retry completion uses both public sources; delayed batches are not falsely closed by later ok observations."
+    },
+    {
+      "id": "CC-R04",
+      "verdict": "pass",
+      "summary": "No restricted or sensitive values were detected in the public report; the inaccessible restricted original remained unread."
+    },
+    {
+      "id": "CC-R05",
+      "verdict": "pass",
+      "summary": "Three fixed revisions and six current producer artifacts have consistent hashes and revision relationships."
+    },
+    {
+      "id": "CC-R06",
+      "verdict": "pass",
+      "summary": "Missing period/timezone, definitions, causes, impact and final delay disposition remain explicit unknowns."
+    },
+    {
+      "id": "CC-R07",
+      "verdict": "pass_with_runtime_observation",
+      "summary": "Current explicit reports are locally_verified while separate locator-only Unknown/historical projections remain visible."
+    }
+  ],
+  "unresolved_business_facts": [
+    "calendar dates, reporting cutoff and timezone",
+    "formal definitions for processed batch, stages, results and elapsed_ms",
+    "public retry cause and handling detail",
+    "public delay cause, impact, recovery or closure evidence",
+    "public workflow/lifecycle definition"
+  ],
+  "fixed_inputs": {
+    "count": 45,
+    "before_receipt": {
+      "path": "project/.work-receipts/reviewer-input-hashes-before.json",
+      "sha256": "af4e950e8af036fe157bd57fd294156e4ba4bfcf6996094a6d0edc08f0378b29",
+      "bytes": 11201
+    },
+    "after_receipt": {
+      "path": "project/.work-receipts/reviewer-input-hashes-after.json",
+      "sha256": "01602fe49c35d0ce44e8b29007100800ae421a8c8430836e116972f175c82f27",
+      "bytes": 9700
+    },
+    "content_manifest_digest_before": "804208de9eaac2b54b9f639a854197ca51712d5bbdde6f7904b15eb3859d6869",
+    "content_manifest_digest_after": "804208de9eaac2b54b9f639a854197ca51712d5bbdde6f7904b15eb3859d6869",
+    "unchanged": true
+  },
+  "producer_artifacts": {
+    "count": 6,
+    "manifest": [
+      {
+        "path": "deliverables/chengchuan-access-gaps.md",
+        "sha256": "40894d584f7ec6dc6a55841040b8c2c4b992adce7b98cd3fa3b4891da981c597",
+        "bytes": 5953
+      },
+      {
+        "path": "deliverables/chengchuan-log-summary.md",
+        "sha256": "e005adca6899f6eb68d4697821147f0d9d4ff0aac7eeaaaec80e300cce886c50",
+        "bytes": 6425
+      },
+      {
+        "path": "deliverables/chengchuan-public-report.md",
+        "sha256": "e09f87db8531d11d4fda7f7ce5e05440b978d4089be056d5ac1b9c5abfc39ecf",
+        "bytes": 1520
+      },
+      {
+        "path": "deliverables/cc-scope-verification.json",
+        "sha256": "afa14236c6dbf43deffbf8c794d9b7106733a7f92ba3047a3a3f6ea7e0ea324c",
+        "bytes": 1518
+      },
+      {
+        "path": "deliverables/cc-log-verification.json",
+        "sha256": "7f41d6372f52e9253d57a739892627498ca322498bfb1d3e351c72403ffe8d52",
+        "bytes": 2303
+      },
+      {
+        "path": "deliverables/cc-public-verification.json",
+        "sha256": "0224aa41b5782194b43eb38c928187ebfdd25991943e4ea0a0bb3d4a84257bd8",
+        "bytes": 3940
+      }
+    ],
+    "content_manifest_digest_before": "be36f0f71e4388bd2e8199f4dce16646fe37f08b7d83df936665353257b5c2bc",
+    "content_manifest_digest_after": "be36f0f71e4388bd2e8199f4dce16646fe37f08b7d83df936665353257b5c2bc",
+    "unchanged": true
+  },
+  "review_outputs": {
+    "report": {
+      "path": "project/deliverables/cc-independent-review.md",
+      "sha256": "e7b52be7f59614f54271915dbea878504858ba476c52768360eaf860de612bd8",
+      "bytes": 5633
+    },
+    "verification_report": {
+      "path": "project/.work-receipts/reviewer-independent-verification.json",
+      "sha256": "aaedb7933db5c343854333c1fac71c4329cd4eadc19f92c1892c0e21611b10a4",
+      "bytes": 4980
+    },
+    "log_recompute": {
+      "path": "project/.work-receipts/reviewer-log-recompute.json",
+      "sha256": "85eeafc89bce26e9f363b4ae662da46fa4d60d27808f302471a532899f75d47b",
+      "bytes": 3465
+    },
+    "public_scope_scan": {
+      "path": "project/.work-receipts/reviewer-public-scope-scan.json",
+      "sha256": "16ccd8289a61eb10829520da4db76058a4a43ea008a37bcbf9fe803ae98dc27f",
+      "bytes": 1391
+    },
+    "history_consistency": {
+      "path": "project/.work-receipts/reviewer-history-consistency.json",
+      "sha256": "ae95855d20470e6b3cf7eededda23554b846c2aaeb20bb18f73b0ed4653fa2bb",
+      "bytes": 26289
+    },
+    "final_verification": {
+      "path": "project/.work-receipts/reviewer-final-verification.json",
+      "sha256": "7413039b6007b99f17efb33f8d510762451754ca801529866b5a7fc290d452bf",
+      "bytes": 1743
+    }
+  },
+  "awr_runtime": {
+    "source_sha": "ac17b38d944eb3ec219ec7053db179cbd3c818b1",
+    "branch_id": "01M22EN2F2JN2NW2FEJJRYK13E",
+    "session_id": "01M22KH8BB7AY4PCKFF7Z51N7R",
+    "claim_id": "01M22KH8BBGQJ19GHAM3TK208K",
+    "session_start_project_revision": 128,
+    "progress_project_revision": 136,
+    "artifact_id": "01M22MDJFHSSRA4FNB14RNEPD2",
+    "artifact_event_id": "01M22MDJFH57JA5J0RV015H3RQ",
+    "evidence_id": "01M22MEM0T1WWHKTD2FMMGXKC3",
+    "evidence_external_key": "CC-INDEPENDENT-REVIEW-R2-20260909",
+    "evidence_event_id": "01M22MEM0T34BDGSXY3XHTQGJQ",
+    "completion_proposal_id": "01M22MF799T22Q7TC3T1NNNG42",
+    "completion_event_id": "01M22MF7B4DV68QE0DZ7KC8871",
+    "completion_project_revision": 145,
+    "completion_source_revision": 15,
+    "completion_before_fingerprint": "sha256:5eace212ecc198fce5fa243a97dd0a16fb5567bce08134b8a8c1afa3dc36ffd9",
+    "completion_after_fingerprint": "sha256:5d7e0994e14df8c43ed3ee831bd7080dffc75c171f26311de1321ba63d424c03",
+    "completion_released_claim_ids": [
+      "01M22KH8BBGQJ19GHAM3TK208K"
+    ],
+    "checkpoint_id": "01M22MGHCCM4ARHPV9SMZ20T54",
+    "checkpoint_context_hash": "f7d3ebf4a410570ff2c89c0742e7f5516c48693b51c2aa82810c4aa6ced82d5a",
+    "session_end_event_id": "01M22MGW4T5RB8T7QE1ACYER4R",
+    "final_project_revision": 148,
+    "final_work_status": "completed",
+    "final_session_status": "ended",
+    "final_claim_status": "released",
+    "next_ready_work": [
+      "CC-DELIVER"
+    ],
+    "status_counts": {
+      "completed": 4,
+      "planned": 1
+    }
+  },
+  "actual_failures": {
+    "kind": "cc_independent_reviewer_tool_failures",
+    "recorded_at": "2026-09-09T16:24:17+08:00",
+    "reviewer_identity": "luna_worker:/root/source_change_client_run",
+    "scope": "Reviewer-side tool/orchestration diagnostics and published producer-history observations; none is treated as business evidence or a successful AWR action.",
+    "reviewer_side": [
+      {
+        "stage": "setup-display",
+        "tool": "functions.wait",
+        "result": "error",
+        "detail": "exec cell ? not found",
+        "impact": "No project command ran; no business or AWR state changed."
+      },
+      {
+        "stage": "setup-read",
+        "tool": "functions.exec",
+        "result": "error",
+        "detail": "exec pragma JSON parse failed before shell execution",
+        "impact": "No shell command ran; the read was subsequently issued correctly."
+      },
+      {
+        "stage": "status-ready-session-display",
+        "tool": "functions.exec JavaScript orchestration",
+        "result": "error",
+        "detail": "ReferenceError: results is not defined after command orchestration",
+        "impact": "Outputs were not retained by that wrapper; authoritative AWR receipts were then captured with separate read-only/status commands. No duplicate session was started."
+      },
+      {
+        "stage": "status-ready-session-display",
+        "tool": "rtk jq",
+        "result": "error",
+        "detail": "jq input/break expression failed while combining already-written receipts",
+        "impact": "Display-only failure; reviewer-session-start.json remained intact and proves the single session/claim."
+      },
+      {
+        "stage": "evidence-format-lookup",
+        "tool": "rtk find",
+        "result": "error",
+        "detail": "rtk find does not support compound predicates or actions",
+        "impact": "Read-only path lookup returned no project content and changed no state; the reviewer used rtk rg --files instead."
+      }
+    ],
+    "awr_cli_failures": [
+      {
+        "stage": "artifact-registration",
+        "command": "awr artifact add .local/business-live-20260909-v2/restricted-material/project/deliverables/cc-independent-review.md --project .local/business-live-20260909-v2/restricted-material/project ...",
+        "result": "error",
+        "error": {
+          "code": "Io",
+          "message": "No such file or directory (os error 2)"
+        },
+        "cause": "The artifact path was supplied as a repository-relative path while artifact resolution was rooted at the selected project.",
+        "impact": "No artifact, event, project revision, source, business artifact, session, or claim was changed. The same existing report will be registered once with absolute paths."
+      }
+    ],
+    "published_producer_history_only": [
+      {
+        "source": "deliverables/chengchuan-access-gaps.md",
+        "observation": "The producer recorded an initial SourceUnavailable before project initialization and an invalid rtk test invocation that only printed shell usage; neither was counted as business proof."
+      }
+    ]
+  },
+  "receipt_manifest": [
+    {
+      "path": "project/.work-receipts/reviewer-artifact-add.json",
+      "sha256": "9cc2ff708573d536fd7280e1e02959e8ae4cdfdb76b9328827c673a5650a8c5b",
+      "bytes": 566
+    },
+    {
+      "path": "project/.work-receipts/reviewer-checkpoint.json",
+      "sha256": "ca992d0482935276ebc37035490f762714b694172af7cb3f0fef8b1f7f18670b",
+      "bytes": 2234
+    },
+    {
+      "path": "project/.work-receipts/reviewer-completion-input.json",
+      "sha256": "080171a41cd70263b0a716715c2752edd03488c0a3429dde83a0ec1a2a3892b8",
+      "bytes": 512
+    },
+    {
+      "path": "project/.work-receipts/reviewer-context-bootstrap.json",
+      "sha256": "257aa1a719948333647a210c5a407115bc12494f0838eb3c71978b4678ddea3a",
+      "bytes": 7713
+    },
+    {
+      "path": "project/.work-receipts/reviewer-context-compile.json",
+      "sha256": "2860f0769063f6353d7f221f134e795472a62b884f6b1c2356ec762686a131fd",
+      "bytes": 16638
+    },
+    {
+      "path": "project/.work-receipts/reviewer-context-final.json",
+      "sha256": "c6ad093f00cca007b11268d96ea47f63c610547c2615d2f6530b9bd50d474220",
+      "bytes": 22146
+    },
+    {
+      "path": "project/.work-receipts/reviewer-evidence-add.json",
+      "sha256": "ce5039965a799084311fe321570b42d0e7d77d4e395a3c4d44d69130b7a56487",
+      "bytes": 1267
+    },
+    {
+      "path": "project/.work-receipts/reviewer-evidence-draft.json",
+      "sha256": "0d7bb78b184b514f88851c12ef2e2975146e376c0b3e6bd267ac0d50b95e8c7f",
+      "bytes": 862
+    },
+    {
+      "path": "project/.work-receipts/reviewer-final-verification.json",
+      "sha256": "7413039b6007b99f17efb33f8d510762451754ca801529866b5a7fc290d452bf",
+      "bytes": 1743
+    },
+    {
+      "path": "project/.work-receipts/reviewer-history-consistency.json",
+      "sha256": "ae95855d20470e6b3cf7eededda23554b846c2aaeb20bb18f73b0ed4653fa2bb",
+      "bytes": 26289
+    },
+    {
+      "path": "project/.work-receipts/reviewer-independent-verification.json",
+      "sha256": "aaedb7933db5c343854333c1fac71c4329cd4eadc19f92c1892c0e21611b10a4",
+      "bytes": 4980
+    },
+    {
+      "path": "project/.work-receipts/reviewer-input-hashes-after.json",
+      "sha256": "01602fe49c35d0ce44e8b29007100800ae421a8c8430836e116972f175c82f27",
+      "bytes": 9700
+    },
+    {
+      "path": "project/.work-receipts/reviewer-input-hashes-before.json",
+      "sha256": "af4e950e8af036fe157bd57fd294156e4ba4bfcf6996094a6d0edc08f0378b29",
+      "bytes": 11201
+    },
+    {
+      "path": "project/.work-receipts/reviewer-log-recompute.json",
+      "sha256": "85eeafc89bce26e9f363b4ae662da46fa4d60d27808f302471a532899f75d47b",
+      "bytes": 3465
+    },
+    {
+      "path": "project/.work-receipts/reviewer-public-scope-scan.json",
+      "sha256": "16ccd8289a61eb10829520da4db76058a4a43ea008a37bcbf9fe803ae98dc27f",
+      "bytes": 1391
+    },
+    {
+      "path": "project/.work-receipts/reviewer-ready-before.json",
+      "sha256": "302819b4670ce24282097eb35caa98515be23f6a6ea254311c86b6e6beb458a6",
+      "bytes": 1727
+    },
+    {
+      "path": "project/.work-receipts/reviewer-ready-final.json",
+      "sha256": "fa85cb8c8e1b5f095c586a9751ad939d36e222eb43a638a91c65b66fe8150f6e",
+      "bytes": 927
+    },
+    {
+      "path": "project/.work-receipts/reviewer-session-end.json",
+      "sha256": "570b530ce48f00f61fe27e7d8bd1eade6fa1ce76680408f35b03e392135906c8",
+      "bytes": 1131
+    },
+    {
+      "path": "project/.work-receipts/reviewer-session-final.json",
+      "sha256": "a72d753a5687f96345b7325eedc017e74621407294560944960dea81fc6c30ad",
+      "bytes": 3182
+    },
+    {
+      "path": "project/.work-receipts/reviewer-session-start.json",
+      "sha256": "c934bc3af0bae3884f715dfc9dba290cd30d337f051fdc56fe62626c1f934608",
+      "bytes": 1522
+    },
+    {
+      "path": "project/.work-receipts/reviewer-source-list.json",
+      "sha256": "2667ef8a68c63d86091622b6ecef43c1c0e79d555ed87fac124a9befd98a376e",
+      "bytes": 3491
+    },
+    {
+      "path": "project/.work-receipts/reviewer-status-before.json",
+      "sha256": "9733ad305d3c703b04b4c8f5272b7125bf797e18714cfc7106cab99f4bcedb5e",
+      "bytes": 1047
+    },
+    {
+      "path": "project/.work-receipts/reviewer-status-final.json",
+      "sha256": "273440074162c3eb1b6d4e02d16998cb6afbc67c788b8bd7a41ff6a89ea59ddb",
+      "bytes": 1024
+    },
+    {
+      "path": "project/.work-receipts/reviewer-tool-failures.json",
+      "sha256": "d3ff9a09e41a47c746fa1c2dad9f58f69a8fc9b79415fe049d4ed8ad64849669",
+      "bytes": 2956
+    },
+    {
+      "path": "project/.work-receipts/reviewer-work-cc-log.json",
+      "sha256": "f880f7d24f588ef243964ae1a4b2973a49f09d5604090c55cb9070a96c92638b",
+      "bytes": 3001
+    },
+    {
+      "path": "project/.work-receipts/reviewer-work-cc-public.json",
+      "sha256": "fb18d9f3e439f4a6dbf3bbd6130dc21b07f340067ca46ba22619a2733f0cf3c3",
+      "bytes": 3117
+    },
+    {
+      "path": "project/.work-receipts/reviewer-work-cc-review.json",
+      "sha256": "cfabc9eafd5ed62a957af46953bb3cfe31044f440d8c07b796039de03efa730c",
+      "bytes": 2837
+    },
+    {
+      "path": "project/.work-receipts/reviewer-work-cc-scope.json",
+      "sha256": "f3c9fd06042e8a05312e4dc4ca57af9017b2844e4843158820e1c2a60b81e9ab",
+      "bytes": 2780
+    },
+    {
+      "path": "project/.work-receipts/reviewer-work-complete.json",
+      "sha256": "00acd4890d1c360a7b98d2dfdeb2432826a6bdb3bb5923eff6fdfcaab9d91cd3",
+      "bytes": 8344
+    },
+    {
+      "path": "project/.work-receipts/reviewer-work-final.json",
+      "sha256": "a3177cd32d4c93765cd4cbd3eac38aa5f12dd6e113e0d34a9c070e4564ed5bb1",
+      "bytes": 3502
+    },
+    {
+      "path": "project/.work-receipts/reviewer-work-progress.json",
+      "sha256": "cc4234dc86fe95dc45414288897eeaeff1043d42dc3a47f8613c7ff672484375",
+      "bytes": 4554
+    }
+  ]
+}

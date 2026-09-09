@@ -1,0 +1,23 @@
+{
+  "kind": "root_fresh_producer_packet_verification",
+  "recorded_at": "2026-09-09T16:06:54.710621+08:00",
+  "native_thread_id": "01a084e7-f762-77e2-8018-ecee36da6ff7",
+  "source_records": {
+    "operator-state.json": "4d91454ce1f2e41f85a309b5f2305e224c4e214094b0995a4fc77319a91f1f61",
+    "producer-chain-completion.json": "e8f0d291748f77944dfbcd3f5907aff52e254cb7d4a6066e1fa164c713084d14",
+    "review-input-publication.json": "859097533a71200ac5f5ae38f3faad13aaa3096ac9c721efd45d1bf16fe11e0b"
+  },
+  "fixed_review_files": 45,
+  "producer_artifacts": 6,
+  "actual_commands": 226,
+  "nonzero_commands_retained": 7,
+  "all_source_and_artifact_hashes_match_latest_seal": true,
+  "no_active_producer_sessions_or_claims": true,
+  "independent_review_or_final_started": false,
+  "business_or_runtime_mutation": false,
+  "whole_scenario_completion": false,
+  "prior_operator_readonly_failure": {
+    "error": "sqlite3.OperationalError: no such table: work_claims",
+    "effect": "Stopped before writing verification; read-only sqlite_master showed the actual table is claims. Corrected only the verification query. No native turn or business action replayed."
+  }
+}

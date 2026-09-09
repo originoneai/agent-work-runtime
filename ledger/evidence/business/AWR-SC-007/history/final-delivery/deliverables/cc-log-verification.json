@@ -1,0 +1,36 @@
+{
+  "version": 1,
+  "work_item": "CC-LOG",
+  "source_sha": "ac17b38d944eb3ec219ec7053db179cbd3c818b1",
+  "command": "rtk jq -s -e 'length==18717 and (map(.event)|unique|length)==18717 and (map(.batch)|unique|length)==47 and ([group_by(.day)[]|(map(.batch)|unique|length)]==[12,10,14,11]) and ([.[]|select(.result==\"ok\")]|length)==18714 and ([.[]|select(.result==\"retry\")]|length)==1 and ([.[]|select(.result==\"delayed\")]|length)==2 and ([group_by(.stage)[]|length]|sort)==[6239,6239,6239] and ((group_by(.batch)|map(length)|sort|group_by(.)|map({key:(.[0]|tostring),value:length})|from_entries)=={\"398\":36,\"399\":11}) and ((map(keys|sort)|unique)==[[\"batch\",\"day\",\"elapsed_ms\",\"event\",\"note\",\"result\",\"stage\"]])' materials/operations.jsonl",
+  "scope": [
+    "CC-LOG"
+  ],
+  "verified_at": 1788938169000,
+  "checks": [
+    {
+      "name": "bounded-public-log-analysis",
+      "passed": true,
+      "details": "Parsed and aggregated all 18,717 public JSONL records without reproducing the log. Verified 47 unique batches, day batch counts 12/10/14/11, result counts 18,714 ok, 1 retry and 2 delayed, and three equal stage counts of 6,239.",
+      "criteria": [
+        "在读取预算内归纳日志并保留可复查依据，不能直接输出整份日志。"
+      ]
+    },
+    {
+      "name": "artifact-citations-and-unresolved-facts",
+      "passed": true,
+      "details": "The report at deliverables/chengchuan-log-summary.md has SHA-256 e005adca6899f6eb68d4697821147f0d9d4ff0aac7eeaaaec80e300cce886c50, cites the publication notice, public summary and three anomaly lines, records source hashes and method, and explicitly withholds calendar, metric, root-cause, recovery, SLA and final-delivery claims.",
+      "criteria": [
+        "保留实际产物与来源引用，无法确认的内容显式说明。"
+      ]
+    }
+  ],
+  "producer": {
+    "agent": "codex-root",
+    "artifact": "deliverables/chengchuan-log-summary.md",
+    "artifact_sha256": "e005adca6899f6eb68d4697821147f0d9d4ff0aac7eeaaaec80e300cce886c50",
+    "operations_sha256": "058e7a7ed4c472d8e2e868e9e6aa57216944fe513bf3cb303d5bb31d73f35cf1",
+    "read_scope": "all records aggregated; only three non-ok records extracted",
+    "evidence_tier": "public synthetic operations-log local verification"
+  }
+}

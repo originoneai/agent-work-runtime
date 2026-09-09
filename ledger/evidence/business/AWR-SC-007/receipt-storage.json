@@ -1,0 +1,135 @@
+{
+  "initial": {},
+  "round-1": {},
+  "round-2": {},
+  "final-delivery": {
+    ".work-receipts/reviewer-artifact-add.json": {
+      "sha256": "9cc2ff708573d536fd7280e1e02959e8ae4cdfdb76b9328827c673a5650a8c5b",
+      "public_path": "project/.work-receipts/reviewer-artifact-add.json"
+    },
+    ".work-receipts/reviewer-checkpoint.json": {
+      "sha256": "ca992d0482935276ebc37035490f762714b694172af7cb3f0fef8b1f7f18670b",
+      "public_path": "project/.work-receipts/reviewer-checkpoint.json"
+    },
+    ".work-receipts/reviewer-completion-input.json": {
+      "sha256": "080171a41cd70263b0a716715c2752edd03488c0a3429dde83a0ec1a2a3892b8",
+      "public_path": "project/.work-receipts/reviewer-completion-input.json"
+    },
+    ".work-receipts/reviewer-context-bootstrap.json": {
+      "sha256": "257aa1a719948333647a210c5a407115bc12494f0838eb3c71978b4678ddea3a",
+      "public_path": "project/.work-receipts/reviewer-context-bootstrap.json"
+    },
+    ".work-receipts/reviewer-context-compile.json": {
+      "sha256": "2860f0769063f6353d7f221f134e795472a62b884f6b1c2356ec762686a131fd",
+      "public_path": "project/.work-receipts/reviewer-context-compile.json"
+    },
+    ".work-receipts/reviewer-context-final.json": {
+      "sha256": "c6ad093f00cca007b11268d96ea47f63c610547c2615d2f6530b9bd50d474220",
+      "public_path": "project/.work-receipts/reviewer-context-final.json"
+    },
+    ".work-receipts/reviewer-evidence-add.json": {
+      "sha256": "ce5039965a799084311fe321570b42d0e7d77d4e395a3c4d44d69130b7a56487",
+      "public_path": "project/.work-receipts/reviewer-evidence-add.json"
+    },
+    ".work-receipts/reviewer-evidence-draft.json": {
+      "sha256": "0d7bb78b184b514f88851c12ef2e2975146e376c0b3e6bd267ac0d50b95e8c7f",
+      "public_path": "project/.work-receipts/reviewer-evidence-draft.json"
+    },
+    ".work-receipts/reviewer-final-verification.json": {
+      "sha256": "7413039b6007b99f17efb33f8d510762451754ca801529866b5a7fc290d452bf",
+      "public_path": "project/.work-receipts/reviewer-final-verification.json"
+    },
+    ".work-receipts/reviewer-history-consistency.json": {
+      "sha256": "ae95855d20470e6b3cf7eededda23554b846c2aaeb20bb18f73b0ed4653fa2bb",
+      "public_path": "project/.work-receipts/reviewer-history-consistency.json"
+    },
+    ".work-receipts/reviewer-independent-verification.json": {
+      "sha256": "aaedb7933db5c343854333c1fac71c4329cd4eadc19f92c1892c0e21611b10a4",
+      "public_path": "project/.work-receipts/reviewer-independent-verification.json"
+    },
+    ".work-receipts/reviewer-input-hashes-after.json": {
+      "sha256": "01602fe49c35d0ce44e8b29007100800ae421a8c8430836e116972f175c82f27",
+      "public_path": "project/.work-receipts/reviewer-input-hashes-after.json"
+    },
+    ".work-receipts/reviewer-input-hashes-before.json": {
+      "sha256": "af4e950e8af036fe157bd57fd294156e4ba4bfcf6996094a6d0edc08f0378b29",
+      "public_path": "project/.work-receipts/reviewer-input-hashes-before.json"
+    },
+    ".work-receipts/reviewer-log-recompute.json": {
+      "sha256": "85eeafc89bce26e9f363b4ae662da46fa4d60d27808f302471a532899f75d47b",
+      "public_path": "project/.work-receipts/reviewer-log-recompute.json"
+    },
+    ".work-receipts/reviewer-public-scope-scan.json": {
+      "sha256": "16ccd8289a61eb10829520da4db76058a4a43ea008a37bcbf9fe803ae98dc27f",
+      "public_path": "project/.work-receipts/reviewer-public-scope-scan.json"
+    },
+    ".work-receipts/reviewer-ready-before.json": {
+      "sha256": "302819b4670ce24282097eb35caa98515be23f6a6ea254311c86b6e6beb458a6",
+      "public_path": "project/.work-receipts/reviewer-ready-before.json"
+    },
+    ".work-receipts/reviewer-ready-final.json": {
+      "sha256": "fa85cb8c8e1b5f095c586a9751ad939d36e222eb43a638a91c65b66fe8150f6e",
+      "public_path": "project/.work-receipts/reviewer-ready-final.json"
+    },
+    ".work-receipts/reviewer-session-end.json": {
+      "sha256": "570b530ce48f00f61fe27e7d8bd1eade6fa1ce76680408f35b03e392135906c8",
+      "public_path": "project/.work-receipts/reviewer-session-end.json"
+    },
+    ".work-receipts/reviewer-session-final.json": {
+      "sha256": "a72d753a5687f96345b7325eedc017e74621407294560944960dea81fc6c30ad",
+      "public_path": "project/.work-receipts/reviewer-session-final.json"
+    },
+    ".work-receipts/reviewer-session-start.json": {
+      "sha256": "c934bc3af0bae3884f715dfc9dba290cd30d337f051fdc56fe62626c1f934608",
+      "public_path": "project/.work-receipts/reviewer-session-start.json"
+    },
+    ".work-receipts/reviewer-source-list.json": {
+      "sha256": "2667ef8a68c63d86091622b6ecef43c1c0e79d555ed87fac124a9befd98a376e",
+      "public_path": "project/.work-receipts/reviewer-source-list.json"
+    },
+    ".work-receipts/reviewer-status-before.json": {
+      "sha256": "9733ad305d3c703b04b4c8f5272b7125bf797e18714cfc7106cab99f4bcedb5e",
+      "public_path": "project/.work-receipts/reviewer-status-before.json"
+    },
+    ".work-receipts/reviewer-status-final.json": {
+      "sha256": "273440074162c3eb1b6d4e02d16998cb6afbc67c788b8bd7a41ff6a89ea59ddb",
+      "public_path": "project/.work-receipts/reviewer-status-final.json"
+    },
+    ".work-receipts/reviewer-tool-failures.json": {
+      "sha256": "d3ff9a09e41a47c746fa1c2dad9f58f69a8fc9b79415fe049d4ed8ad64849669",
+      "public_path": "project/.work-receipts/reviewer-tool-failures.json"
+    },
+    ".work-receipts/reviewer-work-cc-log.json": {
+      "sha256": "f880f7d24f588ef243964ae1a4b2973a49f09d5604090c55cb9070a96c92638b",
+      "public_path": "project/.work-receipts/reviewer-work-cc-log.json"
+    },
+    ".work-receipts/reviewer-work-cc-public.json": {
+      "sha256": "fb18d9f3e439f4a6dbf3bbd6130dc21b07f340067ca46ba22619a2733f0cf3c3",
+      "public_path": "project/.work-receipts/reviewer-work-cc-public.json"
+    },
+    ".work-receipts/reviewer-work-cc-review.json": {
+      "sha256": "cfabc9eafd5ed62a957af46953bb3cfe31044f440d8c07b796039de03efa730c",
+      "public_path": "project/.work-receipts/reviewer-work-cc-review.json"
+    },
+    ".work-receipts/reviewer-work-cc-scope.json": {
+      "sha256": "f3c9fd06042e8a05312e4dc4ca57af9017b2844e4843158820e1c2a60b81e9ab",
+      "public_path": "project/.work-receipts/reviewer-work-cc-scope.json"
+    },
+    ".work-receipts/reviewer-work-complete.json": {
+      "sha256": "00acd4890d1c360a7b98d2dfdeb2432826a6bdb3bb5923eff6fdfcaab9d91cd3",
+      "public_path": "project/.work-receipts/reviewer-work-complete.json"
+    },
+    ".work-receipts/reviewer-work-final.json": {
+      "sha256": "a3177cd32d4c93765cd4cbd3eac38aa5f12dd6e113e0d34a9c070e4564ed5bb1",
+      "public_path": "project/.work-receipts/reviewer-work-final.json"
+    },
+    ".work-receipts/reviewer-work-progress.json": {
+      "sha256": "cc4234dc86fe95dc45414288897eeaeff1043d42dc3a47f8613c7ff672484375",
+      "public_path": "project/.work-receipts/reviewer-work-progress.json"
+    },
+    ".work-receipts/verify-cc-delivery.rb": {
+      "sha256": "464bf9446f63aaebe0e62b14f6d1a3182f9cce80c9d08f24bc980d245f080b08",
+      "public_path": "project/.work-receipts/verify-cc-delivery.rb"
+    }
+  }
+}

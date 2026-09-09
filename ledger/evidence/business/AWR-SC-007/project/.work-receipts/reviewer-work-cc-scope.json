@@ -1,0 +1,85 @@
+{
+  "acceptance": [
+    "列明允许资料、受限原件及无法确认的内容。",
+    "保留实际产物与来源引用，无法确认的内容显式说明。"
+  ],
+  "decisions": [],
+  "dependency_cycles": [],
+  "evidence": [
+    {
+      "currency": "current",
+      "external_key": "CC-SCOPE-PUBLIC-GAPS-20260909",
+      "level": "locally_verified",
+      "locator": "deliverables/cc-scope-verification.json",
+      "missing_bindings": [],
+      "reasons": [],
+      "source_sha": "ac17b38d944eb3ec219ec7053db179cbd3c818b1",
+      "summary": "Authorized-source scope and missing-materials brief verified against the current public project files."
+    },
+    {
+      "currency": "historical",
+      "external_key": "CC-SCOPE/evidence/deliverables/cc-scope-verification.json",
+      "level": "unknown",
+      "locator": "deliverables/cc-scope-verification.json",
+      "missing_bindings": [
+        "sha256",
+        "source_sha",
+        "command",
+        "verified_at"
+      ],
+      "reasons": [
+        "evidence belongs to a different branch"
+      ],
+      "source_sha": null,
+      "summary": "Evidence reference; not yet verified by AWR"
+    }
+  ],
+  "evidence_currency_basis": {
+    "branch_id": "01M22EN2F2JN2NW2FEJJRYK13E",
+    "requested_source_sha": "ac17b38d944eb3ec219ec7053db179cbd3c818b1"
+  },
+  "freshness_basis": "source_refresh",
+  "missing_dependencies": [],
+  "ok": true,
+  "project_revision": 136,
+  "read_only": false,
+  "required_dependencies": [],
+  "source_issues": [],
+  "source_ref": {
+    "end_line": null,
+    "locator": "file:///Users/mac/Documents/originone/agent-work-running/.local/business-live-20260909-v2/restricted-material/project/work-ledger.yaml",
+    "pointer": "/work_items/0",
+    "section_fingerprint": null,
+    "source_fingerprint": "sha256:5eace212ecc198fce5fa243a97dd0a16fb5567bce08134b8a8c1afa3dc36ffd9",
+    "source_id": "01M22EKENVZ27GCNA5JPEN5F8K",
+    "source_revision": 14,
+    "start_line": null
+  },
+  "source_refresh_performed": true,
+  "source_warnings": 0,
+  "work": {
+    "active_claims": [],
+    "blocker": null,
+    "diagnostics": [
+      {
+        "code": "status_not_selectable",
+        "detail": "source status is completed",
+        "work_item_key": "CC-SCOPE"
+      }
+    ],
+    "external_key": "CC-SCOPE",
+    "freshness": "fresh",
+    "id": "01M22EKENW003X0RDAXFAG1J02",
+    "milestone": "CC-DELIVERY",
+    "next_action": "按两条验收标准绑定已登记证据并完成范围核对",
+    "owner": null,
+    "priority": "P0",
+    "raw_status": "completed",
+    "ready": false,
+    "revision": 3,
+    "source_revision": 14,
+    "status": "completed",
+    "summary": "已形成当前公开数据快照、授权边界和八项材料或复核缺口",
+    "title": "核对可用资料和缺口"
+  }
+}

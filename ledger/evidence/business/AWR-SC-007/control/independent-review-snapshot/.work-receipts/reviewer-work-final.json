@@ -1,0 +1,107 @@
+{
+  "acceptance": [
+    "独立核对资料范围、日志结论和公开内容。",
+    "保留实际产物与来源引用，无法确认的内容显式说明。"
+  ],
+  "decisions": [],
+  "dependency_cycles": [],
+  "evidence": [
+    {
+      "currency": "current",
+      "external_key": "CC-INDEPENDENT-REVIEW-R2-20260909",
+      "level": "locally_verified",
+      "locator": ".work-receipts/reviewer-independent-verification.json",
+      "missing_bindings": [],
+      "reasons": [],
+      "source_sha": "ac17b38d944eb3ec219ec7053db179cbd3c818b1",
+      "summary": "Distinct luna_worker independently reproduced the public-log aggregates, checked the three fixed revisions and public citations, preserved unknown facts and restricted-material boundaries, and passed CC-REVIEW only."
+    },
+    {
+      "currency": "historical",
+      "external_key": "CC-REVIEW/evidence/.work-receipts/reviewer-independent-verification.json",
+      "level": "unknown",
+      "locator": ".work-receipts/reviewer-independent-verification.json",
+      "missing_bindings": [
+        "sha256",
+        "source_sha",
+        "command",
+        "verified_at"
+      ],
+      "reasons": [
+        "evidence belongs to a different branch"
+      ],
+      "source_sha": null,
+      "summary": "Evidence reference; not yet verified by AWR"
+    }
+  ],
+  "evidence_currency_basis": {
+    "branch_id": "01M22EN2F2JN2NW2FEJJRYK13E",
+    "requested_source_sha": "ac17b38d944eb3ec219ec7053db179cbd3c818b1"
+  },
+  "freshness_basis": "source_refresh",
+  "missing_dependencies": [],
+  "ok": true,
+  "project_revision": 148,
+  "read_only": false,
+  "required_dependencies": [
+    {
+      "external_key": "CC-LOG",
+      "freshness": "fresh",
+      "revision": 6,
+      "source_revision": 15,
+      "status": "completed"
+    },
+    {
+      "external_key": "CC-PUBLIC",
+      "freshness": "fresh",
+      "revision": 6,
+      "source_revision": 15,
+      "status": "completed"
+    },
+    {
+      "external_key": "CC-SCOPE",
+      "freshness": "fresh",
+      "revision": 3,
+      "source_revision": 15,
+      "status": "completed"
+    }
+  ],
+  "source_issues": [],
+  "source_ref": {
+    "end_line": null,
+    "locator": "file:///Users/mac/Documents/originone/agent-work-running/.local/business-live-20260909-v2/restricted-material/project/work-ledger.yaml",
+    "pointer": "/work_items/3",
+    "section_fingerprint": null,
+    "source_fingerprint": "sha256:5d7e0994e14df8c43ed3ee831bd7080dffc75c171f26311de1321ba63d424c03",
+    "source_id": "01M22EKENVZ27GCNA5JPEN5F8K",
+    "source_revision": 15,
+    "start_line": null
+  },
+  "source_refresh_performed": true,
+  "source_warnings": 0,
+  "work": {
+    "active_claims": [],
+    "blocker": null,
+    "diagnostics": [
+      {
+        "code": "status_not_selectable",
+        "detail": "source status is completed",
+        "work_item_key": "CC-REVIEW"
+      }
+    ],
+    "external_key": "CC-REVIEW",
+    "freshness": "fresh",
+    "id": "01M22EKENW8CGQJ9MKAYC84QGD",
+    "milestone": "CC-DELIVERY",
+    "next_action": "逐条重算公开日志统计并比对三轮修订和引用范围，形成独立结论与返工要求。",
+    "owner": null,
+    "priority": "P0",
+    "raw_status": "completed",
+    "ready": false,
+    "revision": 3,
+    "source_revision": 15,
+    "status": "completed",
+    "summary": "独立复核进行中：仅使用项目公开来源、materials、固定review-inputs和真实AWR回执，保留未知原因与缺失材料。",
+    "title": "独立复核公开范围"
+  }
+}

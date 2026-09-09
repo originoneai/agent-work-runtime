@@ -1,0 +1,481 @@
+{
+  "version": 1,
+  "kind": "restricted_material_final_delivery_independent_read_only_check",
+  "recorded_at": "2026-09-09T17:44:45+08:00",
+  "scenario_run": "business-live-20260909-v2/restricted-material",
+  "checker": {
+    "actual_identity": "codex_subagent:/root/client_handoff_setup",
+    "role": "independent read-only final-delivery checker",
+    "distinct_from_producer_native_id": "01a084e7-f762-77e2-8018-ecee36da6ff7",
+    "distinct_from_business_reviewer": "luna_worker:/root/source_change_client_run"
+  },
+  "authorization_boundary": {
+    "only_new_file": "control/final-delivery-independent-check.json",
+    "runtime_database_access": "sqlite URI mode=ro",
+    "private_native_snapshot_opened": false,
+    "private_native_snapshot_sha256_binding": "b8fc76752a1f464109850fb11272b6a8229e3789417e1a442731f956d19660d8",
+    "model_client_or_subagent_started": false,
+    "awr_session_or_claim_started": false,
+    "business_or_source_files_modified": false,
+    "git_commit_push_or_external_send": false
+  },
+  "verdict": {
+    "result": "pass_with_explicit_archive_reference_boundary",
+    "final_delivery_scope_passed": true,
+    "requires_executor_changes": false,
+    "basis": "The locally delivered four-file archive, public report, independent-review binding, source hashes, receipts and AWR runtime state are consistent. Unknown facts and role-based next responsibilities remain explicit.",
+    "scope_limit": "Read-only local final-delivery check only; this is not remote verification, publication, production acceptance or whole-scenario E4 credit.",
+    "e4_credit": 0
+  },
+  "native_execution": {
+    "client": "Codex CLI",
+    "native_thread_id": "01a084e7-f762-77e2-8018-ecee36da6ff7",
+    "actual_user_turn_sha256": "2d1d474c55d47a8d642727e4f4b69ea7543aa2e8795d4b943d7546e8bc00acb5",
+    "expected_input_sha256": "2d1d474c55d47a8d642727e4f4b69ea7543aa2e8795d4b943d7546e8bc00acb5",
+    "single_turn_evidence": {
+      "thread_started": 1,
+      "turn_started": 1,
+      "turn_completed": 1
+    },
+    "events": {
+      "path": "control/final-delivery-events.jsonl",
+      "sha256": "49bc7783f9739554114c0afaf914a975880fd1faccd2fd199e8ad5dd420cf710"
+    },
+    "sealed": {
+      "path": "control/final-delivery-sealed.json",
+      "sha256": "e1f11175a26ef3c399b334090b48595147cd3d03690dc0b6fca2ae095bc3fbca"
+    },
+    "bounded_extract": {
+      "path": "control/final-delivery-review-extract.json",
+      "sha256": "52ac83d7b9bc5984bef46ae57930a243f27c1622d985b9b7917fd4478d70bd37",
+      "all_snapshot_hashes_verified": true
+    },
+    "actual_final_reply": {
+      "path": "control/final-delivery-final.md",
+      "sha256": "80602758fc7a42a5d8a24d2d4d5691306820b9c0fb7ec647b2d7c6bbfa998fd1"
+    },
+    "private_snapshot_note": "Hash binding only. Private system, memory, reasoning and transcript bytes were not opened, copied or published."
+  },
+  "command_and_read_scope": {
+    "completed_commands": 30,
+    "bounded_extract_bindings_match_events": true,
+    "completed_file_changes": 8,
+    "file_changes_outside_business_project": [],
+    "prohibited_read_or_search_hits": [],
+    "allowed_external_technical_activity_observed": [
+      "AWR executable commands and session/work help"
+    ],
+    "parent_read_boundaries_checked": [
+      "tests",
+      "crates implementation",
+      "docs/design",
+      "parent ledger",
+      "other runs",
+      "restricted originals",
+      "sibling control",
+      "unpublished future inputs"
+    ],
+    "host_governance_boundary": "Higher-priority host instructions are an execution boundary, not business evidence. No final-delivery command read a host governance file; the bounded command set remained inside the project plus AWR CLI/help."
+  },
+  "actual_failures": [
+    {
+      "native_item_id": "item_22",
+      "exit_code": 1,
+      "output_sha256": "24990713a5220074f8610b11edddbaf334e2beecffd27190418b810729028b96",
+      "error": [
+        "true",
+        "zsh: unmatched single quote"
+      ],
+      "classification": "read-only verification invocation failed after rtk output replay",
+      "partial_business_or_awr_write_observed": false,
+      "correction": "The verifier was subsequently invoked directly; item_27 and the complete item_29 verification chain exited 0."
+    },
+    {
+      "native_item_id": "item_25",
+      "exit_code": 1,
+      "output_sha256": "cd5ab2759bb4ce64699cc3dc890d37df57910b73e62d5045a5cd969c1d428b69",
+      "error": "Ruby NoMethodError: Hash#filter_map unavailable",
+      "classification": "local read-only verifier compatibility failure",
+      "partial_business_or_awr_write_observed": false,
+      "correction": "Only the reviewer-owned verifier script was revised from filter_map to each_with_object; item_27 and item_29 then exited 0, and final item_43 reran the verifier successfully."
+    }
+  ],
+  "source_and_artifact_hash_validation": {
+    "source_commit": "ac17b38d944eb3ec219ec7053db179cbd3c818b1",
+    "business_git_head_matches_source_commit": true,
+    "current_source_hashes": {
+      "project.toml": "7551fa5fa9824e12f51982eac745714cc6180133f6f02901307d17d1546bcd44",
+      "GOALS.md": "6acc82d527807f5daa3e30aa53305ea788df181cea5069f82b2b98e72cf6c276",
+      "PLAN.md": "38cd2ffee2ed18c9b5055c7ea4e2fc97a13b600dbd98ce83a9951ffd097a18a4",
+      "RULES.md": "1cb74e953069b0da793cdc35e4b5b2eb0d7cab6e15d60619ed0d9ed8eaed11b0",
+      "work-ledger.yaml": "955ecfdc305a82600a175aa778d4552c82e6f52b3cb6935dee540f74e36e5b3b",
+      "AGENTS.md": "d85fa4e06c4ddfae24860fe28c2d16bbb6a3f90b1ed61218aa2621077d73906b",
+      "DELIVERABLES.md": "8611977f1d9a35c12243aae2d455b7426f8dc8567d365e3c3d89b9bb281a5265"
+    },
+    "source_mismatches": {},
+    "sealed_artifact_count": 10,
+    "sealed_artifact_hashes": {
+      "deliverables/cc-delivery-verification.json": "f8addf2cd5ec3fcee318a698eeae994902d35ed7eac3070766f9db01c0742e88",
+      "deliverables/cc-delivery.md": "273cf67e16a54cc73ff2182b5f5d07a014b7901052a0dc05742e8acac6682e4b",
+      "deliverables/cc-independent-review.md": "e7b52be7f59614f54271915dbea878504858ba476c52768360eaf860de612bd8",
+      "deliverables/cc-log-verification.json": "7f41d6372f52e9253d57a739892627498ca322498bfb1d3e351c72403ffe8d52",
+      "deliverables/cc-public-verification.json": "0224aa41b5782194b43eb38c928187ebfdd25991943e4ea0a0bb3d4a84257bd8",
+      "deliverables/cc-scope-verification.json": "afa14236c6dbf43deffbf8c794d9b7106733a7f92ba3047a3a3f6ea7e0ea324c",
+      "deliverables/chengchuan-access-gaps.md": "40894d584f7ec6dc6a55841040b8c2c4b992adce7b98cd3fa3b4891da981c597",
+      "deliverables/chengchuan-log-summary.md": "e005adca6899f6eb68d4697821147f0d9d4ff0aac7eeaaaec80e300cce886c50",
+      "deliverables/chengchuan-public-delivery.zip": "2d46994cf19f6314d3e81e583f7b10e0f2abe4a53f6cd7dda124f09b200c862e",
+      "deliverables/chengchuan-public-report.md": "e09f87db8531d11d4fda7f7ce5e05440b978d4089be056d5ac1b9c5abfc39ecf"
+    },
+    "artifact_mismatches": {},
+    "receipt_count": 32,
+    "receipt_manifest_digest_sha256": "3c687397f48f777e49af763ed8f674fdd81d80f7a0783ab8660326b818d93c1d",
+    "receipt_mismatches": {}
+  },
+  "independent_review_binding": {
+    "reviewer_identity": "luna_worker:/root/source_change_client_run",
+    "reviewer_report_sha256": "e7b52be7f59614f54271915dbea878504858ba476c52768360eaf860de612bd8",
+    "control_report_sha256": "98351e005c74bf3e9efdd64463eb20fd33c6e5e631d47c678f3ee5bc9eb8ef75",
+    "root_identity_binding_sha256": "09fb376384ba43e879a49c12bca9167a0c4bf9cd5559687555d18bc52e31601a",
+    "verdict": "pass",
+    "producer_rework_required": false,
+    "fixed_review_inputs": {
+      "count": 45,
+      "before_digest": "804208de9eaac2b54b9f639a854197ca51712d5bbdde6f7904b15eb3859d6869",
+      "after_digest": "804208de9eaac2b54b9f639a854197ca51712d5bbdde6f7904b15eb3859d6869",
+      "current_matches_both_receipts": true
+    },
+    "producer_outputs": {
+      "count": 6,
+      "recorded_digest_before": "be36f0f71e4388bd2e8199f4dce16646fe37f08b7d83df936665353257b5c2bc",
+      "recorded_digest_after": "be36f0f71e4388bd2e8199f4dce16646fe37f08b7d83df936665353257b5c2bc",
+      "current_matches_both_receipts": true,
+      "current_hashes": {
+        "deliverables/chengchuan-access-gaps.md": "40894d584f7ec6dc6a55841040b8c2c4b992adce7b98cd3fa3b4891da981c597",
+        "deliverables/chengchuan-log-summary.md": "e005adca6899f6eb68d4697821147f0d9d4ff0aac7eeaaaec80e300cce886c50",
+        "deliverables/chengchuan-public-report.md": "e09f87db8531d11d4fda7f7ce5e05440b978d4089be056d5ac1b9c5abfc39ecf",
+        "deliverables/cc-scope-verification.json": "afa14236c6dbf43deffbf8c794d9b7106733a7f92ba3047a3a3f6ea7e0ea324c",
+        "deliverables/cc-log-verification.json": "7f41d6372f52e9253d57a739892627498ca322498bfb1d3e351c72403ffe8d52",
+        "deliverables/cc-public-verification.json": "0224aa41b5782194b43eb38c928187ebfdd25991943e4ea0a0bb3d4a84257bd8"
+      }
+    },
+    "retained_review_files": {
+      "count": 32,
+      "manifest_digest_sha256": "36d0e67a5362fa8caf36df8d5c77642f0721ee3a35d8ea3aa50be586cdf8f837",
+      "project_and_snapshot_match_root_binding": true,
+      "mismatches": {}
+    },
+    "snapshot_note": "independent-review-snapshot has 34 files total: the 32 retained review files plus the control report and the review-time source-ledger snapshot."
+  },
+  "public_log_recomputation": {
+    "path": "materials/operations.jsonl",
+    "sha256": "058e7a7ed4c472d8e2e868e9e6aa57216944fe513bf3cb303d5bb31d73f35cf1",
+    "bytes": 3145837,
+    "records": 18717,
+    "unique_events": 18717,
+    "unique_batches": 47,
+    "daily_record_counts": {
+      "1": 4787,
+      "2": 3980,
+      "3": 5572,
+      "4": 4378
+    },
+    "daily_unique_batches": {
+      "1": 12,
+      "2": 10,
+      "3": 14,
+      "4": 11
+    },
+    "public_summary_counts": [
+      12,
+      10,
+      14,
+      11
+    ],
+    "results": {
+      "ok": 18714,
+      "retry": 1,
+      "delayed": 2
+    },
+    "stages": {
+      "queued": 6239,
+      "parsed": 6239,
+      "recorded": 6239
+    },
+    "batch_record_multiplicity": {
+      "399": 11,
+      "398": 36
+    },
+    "non_ok_records": [
+      {
+        "line": 18,
+        "day": 2,
+        "stage": "recorded",
+        "result": "retry"
+      },
+      {
+        "line": 46,
+        "day": 4,
+        "stage": "queued",
+        "result": "delayed"
+      },
+      {
+        "line": 47,
+        "day": 4,
+        "stage": "parsed",
+        "result": "delayed"
+      }
+    ],
+    "unique_public_note_values": 1,
+    "elapsed_ms": {
+      "min": 20,
+      "max": 50,
+      "average": 34.99551210129828
+    },
+    "business_boundary": "Counts are reproducible. The log does not establish calendar dates, formal metric definitions, causes, impact, recovery, closure or SLA."
+  },
+  "archive_validation": {
+    "path": "deliverables/chengchuan-public-delivery.zip",
+    "sha256": "2d46994cf19f6314d3e81e583f7b10e0f2abe4a53f6cd7dda124f09b200c862e",
+    "bytes": 4022,
+    "member_count": 4,
+    "members": [
+      {
+        "path": "deliverables/cc-delivery.md",
+        "bytes": 4956,
+        "compressed_bytes": 2313,
+        "crc32": "7b907ece",
+        "sha256": "273cf67e16a54cc73ff2182b5f5d07a014b7901052a0dc05742e8acac6682e4b",
+        "source_sha256": "273cf67e16a54cc73ff2182b5f5d07a014b7901052a0dc05742e8acac6682e4b",
+        "byte_identical_to_source": true,
+        "safe_relative_path": true
+      },
+      {
+        "path": "deliverables/chengchuan-public-report.md",
+        "bytes": 1520,
+        "compressed_bytes": 834,
+        "crc32": "1cc2323a",
+        "sha256": "e09f87db8531d11d4fda7f7ce5e05440b978d4089be056d5ac1b9c5abfc39ecf",
+        "source_sha256": "e09f87db8531d11d4fda7f7ce5e05440b978d4089be056d5ac1b9c5abfc39ecf",
+        "byte_identical_to_source": true,
+        "safe_relative_path": true
+      },
+      {
+        "path": "materials/public-summary.csv",
+        "bytes": 146,
+        "compressed_bytes": 125,
+        "crc32": "82905ce8",
+        "sha256": "8465ff50f822730007c279f0f522f706dd37d879ca87ac87dab4cd219f25a2a5",
+        "source_sha256": "8465ff50f822730007c279f0f522f706dd37d879ca87ac87dab4cd219f25a2a5",
+        "byte_identical_to_source": true,
+        "safe_relative_path": true
+      },
+      {
+        "path": "materials/log-notice.md",
+        "bytes": 202,
+        "compressed_bytes": 188,
+        "crc32": "6bdac3a1",
+        "sha256": "5651b4898510fda4da4211855415d4833f90acfc2ab20debdc0b4d8a366ea83d",
+        "source_sha256": "5651b4898510fda4da4211855415d4833f90acfc2ab20debdc0b4d8a366ea83d",
+        "byte_identical_to_source": true,
+        "safe_relative_path": true
+      }
+    ],
+    "all_members_byte_identical_to_sources": true,
+    "all_member_paths_safe": true,
+    "sensitive_pattern_matches": {
+      "deliverables/cc-delivery.md": 0,
+      "deliverables/chengchuan-public-report.md": 0,
+      "materials/public-summary.csv": 0,
+      "materials/log-notice.md": 0
+    },
+    "public_report_links": {
+      "count": 2,
+      "resolving_in_archive": 2,
+      "details": [
+        {
+          "reference": "../materials/log-notice.md",
+          "archive_target": "materials/log-notice.md",
+          "resolves_in_archive": true,
+          "resolves_in_project": true
+        },
+        {
+          "reference": "../materials/public-summary.csv",
+          "archive_target": "materials/public-summary.csv",
+          "resolves_in_archive": true,
+          "resolves_in_project": true
+        }
+      ]
+    },
+    "delivery_manifest_links": {
+      "count": 10,
+      "resolving_in_project": 10,
+      "resolving_in_archive": 3,
+      "archive_missing_targets": [
+        ".work-receipts/reviewer-independent-verification.json",
+        "materials/access-register.md",
+        "materials/operations.jsonl",
+        "deliverables/cc-independent-review.md",
+        "deliverables/cc-public-verification.json",
+        "deliverables/chengchuan-access-gaps.md",
+        "deliverables/chengchuan-log-summary.md"
+      ]
+    },
+    "reference_boundary_finding": "All ten unique cc-delivery.md references resolve in the live project. Three resolve within the four-file ZIP. The other seven are the explicitly excluded row-level log or internal audit sources. The external primary report has two references and both resolve inside the ZIP. This supports the current minimal-package scope but the phrase ten references all resolve must be understood as project-local, not ZIP-self-contained."
+  },
+  "runtime_read_only_validation": {
+    "database_uri_mode": "ro",
+    "project": {
+      "id": "01M22EKENQDCDHSKNTMS6A83VA",
+      "external_key": "awr-v1/restricted-material/awr-live-20260909-007-r2",
+      "authority_mode": "source_first",
+      "current_branch_id": "01M22EN2F2JN2NW2FEJJRYK13E",
+      "project_revision": 176
+    },
+    "work_items": [
+      {
+        "external_key": "CC-DELIVER",
+        "status": "completed",
+        "raw_status": "completed",
+        "revision": 4,
+        "source_revision": 18,
+        "summary": "已形成含交付说明、已复核公开报告及两份最小公开附件的4文件交付包，明确外发范围、五类未核实事项、后续责任和内部审计引用",
+        "next_action": "按两条验收标准绑定交付证据并完成CC-DELIVER",
+        "blocker": null
+      },
+      {
+        "external_key": "CC-LOG",
+        "status": "completed",
+        "raw_status": "completed",
+        "revision": 6,
+        "source_revision": 18,
+        "summary": "已分析18717条公开事件记录并确认47个批次、1次retry、2次delayed及仍未核实的延迟原因",
+        "next_action": "等待第二版来源及公开内容规则发布后开展CC-PUBLIC",
+        "blocker": null
+      },
+      {
+        "external_key": "CC-PUBLIC",
+        "status": "completed",
+        "raw_status": "completed",
+        "revision": 6,
+        "source_revision": 18,
+        "summary": "已形成仅含47批次、处理状态、已核实流程结论及延迟缺口的公开版本，引用与敏感扫描通过",
+        "next_action": "提交不同执行者独立复核公开范围",
+        "blocker": null
+      },
+      {
+        "external_key": "CC-REVIEW",
+        "status": "completed",
+        "raw_status": "completed",
+        "revision": 3,
+        "source_revision": 18,
+        "summary": "独立复核进行中：仅使用项目公开来源、materials、固定review-inputs和真实AWR回执，保留未知原因与缺失材料。",
+        "next_action": "逐条重算公开日志统计并比对三轮修订和引用范围，形成独立结论与返工要求。",
+        "blocker": null
+      },
+      {
+        "external_key": "CC-SCOPE",
+        "status": "completed",
+        "raw_status": "completed",
+        "revision": 3,
+        "source_revision": 18,
+        "summary": "已形成当前公开数据快照、授权边界和八项材料或复核缺口",
+        "next_action": "按两条验收标准绑定已登记证据并完成范围核对",
+        "blocker": null
+      }
+    ],
+    "status_counts": {
+      "completed": 5
+    },
+    "final_session": {
+      "id": "01M22PCC4GG4ZA7BGVBY2K3P7P",
+      "work_item_id": "01M22EKENW0R8J3MRBADE2G9QG",
+      "branch_id": "01M22EN2F2JN2NW2FEJJRYK13E",
+      "agent_id": "codex-root",
+      "provider": "openai",
+      "model": "gpt-5",
+      "status": "ended",
+      "start_project_revision": 148,
+      "end_project_revision": 176,
+      "last_checkpoint_id": "01M22Q781BBCFXEDJD26DF7Q7S",
+      "revision": 3
+    },
+    "final_claim": {
+      "id": "01M22PCC4H3G3A7GQNF9Z544YC",
+      "work_item_id": "01M22EKENW0R8J3MRBADE2G9QG",
+      "session_id": "01M22PCC4GG4ZA7BGVBY2K3P7P",
+      "agent_id": "codex-root",
+      "status": "released",
+      "revision": 2
+    },
+    "final_checkpoint": {
+      "id": "01M22Q781BBCFXEDJD26DF7Q7S",
+      "session_id": "01M22PCC4GG4ZA7BGVBY2K3P7P",
+      "project_revision": 173,
+      "context_hash": "1e5d970dd7a63ff9edbe4100bc9156eddc6ae9386046f66a2fdb255db6ae5cd6",
+      "next_action": "当前5个工作项均完成；按cc-delivery.md限定范围使用ZIP，新增公开材料时另起修订并再次独立复核",
+      "open_loops_json": "[\"仍缺报告公历周期/截止时间/时区、指标和阶段定义、周二重试原因与影响、周四延迟根因/影响/恢复/最终处置、可公开处理生命周期与SLA规则\"]",
+      "changed_entities_json": "[\"evidence:01M22Q5R6WZ4BT8THK838WPPJJ\",\"work_items:01M22EKENW0R8J3MRBADE2G9QG\"]",
+      "revision": 1
+    },
+    "completion_event": {
+      "id": "01M22Q5R747Y91ZJCBQQEK5YV3",
+      "project_revision": 173,
+      "released_claim_ids": [
+        "01M22PCC4H3G3A7GQNF9Z544YC"
+      ]
+    },
+    "session_end_event": {
+      "id": "01M22Q7GBZT1Z31EZHMVVRAC92",
+      "project_revision": 176
+    },
+    "final_evidence": {
+      "id": "01M22Q3V54AKY0EEQMNFDP03W0",
+      "external_key": "CC-FINAL-DELIVERY-PACKAGE-20260909",
+      "level": "locally_verified",
+      "locator": "deliverables/cc-delivery-verification.json",
+      "sha256": "f8addf2cd5ec3fcee318a698eeae994902d35ed7eac3070766f9db01c0742e88",
+      "source_sha": "ac17b38d944eb3ec219ec7053db179cbd3c818b1",
+      "revision": 1
+    },
+    "registered_final_artifacts": [
+      {
+        "id": "01M22Q45TQ1BZM4EW846511KMG",
+        "artifact_type": "report",
+        "locator": ".awr/artifacts/01M22Q45TG1056Y7NA2A2XSQ6Y",
+        "sha256": "273cf67e16a54cc73ff2182b5f5d07a014b7901052a0dc05742e8acac6682e4b",
+        "size": 4956,
+        "mime": "text/markdown",
+        "source_event_id": "01M22Q3V55ZRSXSH9HD8D57NDB",
+        "revision": 1
+      },
+      {
+        "id": "01M22Q4E8SHEFX3A1MAA53WWQY",
+        "artifact_type": "archive",
+        "locator": ".awr/artifacts/01M22Q4E8GH6RZXKHPZGWHJVRV",
+        "sha256": "2d46994cf19f6314d3e81e583f7b10e0f2abe4a53f6cd7dda124f09b200c862e",
+        "size": 4022,
+        "mime": "application/zip",
+        "source_event_id": "01M22Q3V55ZRSXSH9HD8D57NDB",
+        "revision": 1
+      }
+    ],
+    "active_sessions": [],
+    "active_claims": [],
+    "interpretation": "Five source work items are completed and the final session/claim are closed. Historical next_action and milestone text remains in source records; it is not treated as evidence of unfinished final-delivery execution or as whole-scenario/E4 completion."
+  },
+  "unresolved_business_facts": [
+    "calendar dates, reporting cutoff and timezone",
+    "formal definitions for processed batch, stages, results and elapsed_ms",
+    "public retry cause and handling detail",
+    "public delay cause, impact, recovery or closure evidence",
+    "public workflow/lifecycle definition"
+  ],
+  "release_boundary": {
+    "external_send_performed": false,
+    "remote_receipt_verified": false,
+    "git_delivery_performed": false,
+    "production_or_uat_claimed": false,
+    "whole_scenario_e4_claimed": false,
+    "independent_review_reperformed": false
+  }
+}

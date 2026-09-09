@@ -1,0 +1,144 @@
+{
+  "version": 1,
+  "kind": "actual_client_fixture_preparation_verification",
+  "recorded_at": "2026-09-09T14:35:21+08:00",
+  "scenario_id": "AWR-SC-007",
+  "run_id": "awr-live-20260909-007-r2",
+  "namespace": "awr-v1/restricted-material/awr-live-20260909-007-r2",
+  "run_root": "/Users/mac/Documents/originone/agent-work-running/.local/business-live-20260909-v2/restricted-material",
+  "project_root": "/Users/mac/Documents/originone/agent-work-running/.local/business-live-20260909-v2/restricted-material/project",
+  "preparation_command": "rtk proxy .venv/bin/python tests/fixtures/business/prepare.py create --scenario AWR-SC-007 --output .local/business-live-20260909-v2/restricted-material --run-id awr-live-20260909-007-r2",
+  "preparation_exit_code": 0,
+  "fixture_contract": {
+    "version": "1.0.1",
+    "sha256": "ed7b94e4bb086b569f7b7191b0c6281c7fe8d2c2a910394b310d1b0c430b9049"
+  },
+  "git_setup": {
+    "seed_commit": "b5af93cc608fa49928a465c8a35b0baf34a0216c",
+    "client_boundary_commit": "ac17b38d944eb3ec219ec7053db179cbd3c818b1",
+    "checked_out_branch": "main",
+    "worktree_clean": true,
+    "files_added_after_seed": [
+      {
+        "path": "project/AGENTS.md",
+        "sha256": "d85fa4e06c4ddfae24860fe28c2d16bbb6a3f90b1ed61218aa2621077d73906b"
+      },
+      {
+        "path": "project/DELIVERABLES.md",
+        "sha256": "8611977f1d9a35c12243aae2d455b7426f8dc8567d365e3c3d89b9bb281a5265"
+      }
+    ]
+  },
+  "work_graph": {
+    "definition_path": "tests/fixtures/business/restricted-material/work-graph.yaml",
+    "definition_sha256": "ae9aaa8fc43edf4b964aa5aa195f21c2cb075c735f13f79f490cae1d6d5abf32",
+    "source_ledger": "project/work-ledger.yaml",
+    "source_ledger_sha256": "a519ff8a2c10386fbec9e5fb7a209548990ef42d38cc5b383cff3e2c5cb25de7",
+    "entry_work": "CC-SCOPE",
+    "sequence": [
+      "CC-SCOPE",
+      "CC-LOG",
+      "CC-PUBLIC",
+      "CC-REVIEW",
+      "CC-DELIVER"
+    ],
+    "reviewer_distinct_from_executor": true
+  },
+  "generated_material": {
+    "public_log_control_path": "control/operations.jsonl",
+    "public_log_target_when_round_1_is_published": "project/materials/operations.jsonl",
+    "public_log_sha256": "058e7a7ed4c472d8e2e868e9e6aa57216944fe513bf3cb303d5bb31d73f35cf1",
+    "public_log_size_bytes": 3145837,
+    "public_log_records": 18717,
+    "restricted_source_control_path": "control/restricted-note.md",
+    "restricted_source_sha256": "063aabd22da39bfad530c6489e9e05e53c938202e810b948a063c41fc33c3dfa",
+    "public_log_published": false,
+    "restricted_source_inside_project": false,
+    "operator_counts_must_not_be_given_to_client": true
+  },
+  "inputs": [
+    {
+      "round": "initial",
+      "path": "control/initial-input.md",
+      "sha256": "c6839908d239440f5421aae6523572fc2aa4d94a9be218d4480aff41f81d33f1",
+      "preflight": "control/initial-input-preflight.json",
+      "preflight_sha256": "92f185879c70b8ab732f428dcea32f4978940245a1e9efa1a90ac42c0fbea20e",
+      "preflight_passed": true,
+      "published_business_sources_required_before_submit": []
+    },
+    {
+      "round": 1,
+      "path": "control/followup-1-input.md",
+      "sha256": "1e4849b92d2b08628362e50e24b213b345949a84b9178f3c232de88d3b4e0c6f",
+      "preflight": "control/followup-1-input-preflight.json",
+      "preflight_sha256": "aa860a9dfb5d6326bec53e4d7aa4ee987432bc278a600e6058f2726f089548c4",
+      "preflight_passed": true,
+      "published_business_sources_required_before_submit": [
+        "project/materials/log-notice.md",
+        "project/materials/operations.jsonl"
+      ]
+    },
+    {
+      "round": 2,
+      "path": "control/followup-2-input.md",
+      "sha256": "7277d250ea4e8ee6cf70e843a9281f173d7a1bce1b25492845a6048e98340a91",
+      "preflight": "control/followup-2-input-preflight.json",
+      "preflight_sha256": "3cf6cc76d0b08dd6a4fd144e948d39e917ebccfb2baaba01695ebc73881c44aa",
+      "preflight_passed": true,
+      "published_business_sources_required_before_submit": [
+        "project/RULES.md revision published in round 2"
+      ]
+    }
+  ],
+  "input_preflight_policy": {
+    "id": "awr-real-client-input-preflight",
+    "version": "1.0.0",
+    "rules_sha256": "6ef794db3c42904ad98f0dce374753872118b398e36df908176d6b9192e53ed5",
+    "all_inputs_passed": true,
+    "limitation": "The deterministic preflight does not prove naturalness or detect every form of answer pollution; exact submitted text remains subject to independent review."
+  },
+  "client_source_boundary": {
+    "path": "control/client-boundary.json",
+    "sha256": "54e0045d8d65d60089618ec6d7211e4b03377e1a4af9383e8d58884043d3abf2",
+    "project_instruction_path": "project/AGENTS.md",
+    "prohibits_broad_parent_search": true,
+    "prohibits_parent_tests": true,
+    "prohibits_parent_crates": true,
+    "prohibits_design_originals": true,
+    "prohibits_other_scenarios": true,
+    "prohibits_operator_control": true,
+    "prohibits_restricted_source": true
+  },
+  "checks": {
+    "new_target_was_absent_before_create": true,
+    "run_ready": true,
+    "namespace_isolated": true,
+    "published_rounds_empty": true,
+    "project_worktree_clean": true,
+    "runtime_not_initialized": true,
+    "awr_directory_absent": true,
+    "work_receipts_directory_absent": true,
+    "historical_sessions_claims_events_and_checkpoints_absent": true,
+    "participants_unbound": true,
+    "live_preconditions_unsatisfied": true,
+    "public_log_not_in_project": true,
+    "round_1_log_notice_not_in_project": true,
+    "initial_materials_are_only_access_register_and_public_summary": true,
+    "initial_authority_has_no_path_to_control_log_or_restricted_note": true,
+    "restricted_note_outside_project": true,
+    "deliverables_absent": true,
+    "native_client_not_started": true,
+    "model_calls": 0,
+    "e4_completed": 0
+  },
+  "operator_read_only_check_corrections": [
+    {
+      "check": "project Git porcelain status",
+      "initial_result": "The token-filtered `rtk git status --porcelain` wrapper returned the literal summary `ok`, so an equality-to-empty assertion failed.",
+      "corrected_check": "rtk proxy git status --porcelain",
+      "corrected_result": "empty output; project worktree is clean",
+      "state_change": false
+    }
+  ],
+  "next_action": "Await operator review. After approval, submit only control/initial-input.md through stdin to one new native Codex session rooted at the project; do not publish round 1 beforehand."
+}

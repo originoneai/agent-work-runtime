@@ -1,0 +1,49 @@
+{
+  "claim": {
+    "acquired_at": 1788941476203,
+    "agent_id": "luna_worker:/root/source_change_client_run",
+    "branch_id": "01M22EN2F2JN2NW2FEJJRYK13E",
+    "expires_at": 1788945076203,
+    "id": "01M22KH8BBGQJ19GHAM3TK208K",
+    "project_id": "01M22EKENQDCDHSKNTMS6A83VA",
+    "released_at": null,
+    "revision": 1,
+    "session_id": "01M22KH8BB7AY4PCKFF7Z51N7R",
+    "status": "active",
+    "work_item_id": "01M22EKENW8CGQJ9MKAYC84QGD"
+  },
+  "event": {
+    "artifact_id": null,
+    "branch_id": "01M22EN2F2JN2NW2FEJJRYK13E",
+    "checkpoint_id": null,
+    "created_at": 1788941476203,
+    "id": "01M22KH8BB87YA55XKZ9FQJJQ6",
+    "importance": "normal",
+    "project_revision": 129,
+    "session_id": "01M22KH8BB7AY4PCKFF7Z51N7R",
+    "source_id": null,
+    "summary": "Started agent work session",
+    "type": "session.started",
+    "work_item_id": "01M22EKENW8CGQJ9MKAYC84QGD"
+  },
+  "freshness_basis": "source_refresh",
+  "ok": true,
+  "project_revision": 129,
+  "session": {
+    "agent_id": "luna_worker:/root/source_change_client_run",
+    "branch_id": "01M22EN2F2JN2NW2FEJJRYK13E",
+    "end_project_revision": null,
+    "ended_at": null,
+    "id": "01M22KH8BB7AY4PCKFF7Z51N7R",
+    "last_checkpoint_id": null,
+    "model": "gpt-6",
+    "project_id": "01M22EKENQDCDHSKNTMS6A83VA",
+    "provider": "openai",
+    "revision": 1,
+    "start_project_revision": 128,
+    "started_at": 1788941476203,
+    "status": "active",
+    "work_item_id": "01M22EKENW8CGQJ9MKAYC84QGD"
+  },
+  "source_refresh_performed": true
+}

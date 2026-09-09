@@ -1,0 +1,38 @@
+{
+  "blocked_count": 0,
+  "branch_id": "01M22EN2F2JN2NW2FEJJRYK13E",
+  "counts": {
+    "completed": 4,
+    "planned": 1
+  },
+  "current": [],
+  "current_total": 0,
+  "freshness_basis": "source_refresh",
+  "next_action": "交付公开周报，先核对当前来源和负责范围。",
+  "ok": true,
+  "project": "澄川周报公开版",
+  "project_id": "01M22EKENQDCDHSKNTMS6A83VA",
+  "project_revision": 148,
+  "read_only": false,
+  "ready_count": 1,
+  "source_issues": [],
+  "source_refresh_performed": true,
+  "source_warnings": 0,
+  "suggested_work": {
+    "blocker": null,
+    "external_key": "CC-DELIVER",
+    "freshness": "fresh",
+    "id": "01M22EKENW0R8J3MRBADE2G9QG",
+    "milestone": "CC-DELIVERY",
+    "next_action": "交付公开周报，先核对当前来源和负责范围。",
+    "owner": null,
+    "priority": "P0",
+    "raw_status": "planned",
+    "revision": 1,
+    "source_revision": 15,
+    "status": "planned",
+    "summary": "交付公开周报",
+    "title": "交付公开周报"
+  },
+  "total": 5
+}
