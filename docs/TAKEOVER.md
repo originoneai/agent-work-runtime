@@ -12,6 +12,38 @@ For a blank project, state its purpose with `awr init --goal "Deliver a document
 
 The scanner records filenames, sizes, document hashes and observed Git state. It skips hidden/vendor/build directories and symlinks and has explicit resource limits. It does not infer business completion from code filenames or Git commits. Arbitrary spreadsheet/Word/PDF ledgers still require conversion or an explicit adapter; unrecognized states remain unknown.
 
-## Client checkpoints, executions and recovery
+## Client checkpoints
 
-Implementation and validation of these three additions are tracked by AWR-TAKE-002 through AWR-TAKE-004. Their command reference and evidence will be added when delivered. Existing manual checkpoint/resume remains available.
+The Codex project adapter is installed with:
+
+```sh
+awr client install --client codex --work INTAKE-001
+awr client install --client codex --work INTAKE-001 --accept
+```
+
+It merges `SessionStart`, `PreCompact`, `PostCompact`, `Stop`, `SessionEnd` and `Interrupt` handlers into the project's `.codex/hooks.json`, preserving existing handlers and config. Review and trust the exact definitions in a fresh client's `/hooks` view. Installation always reports `activation_verified: false`; a generated file or a synthetic receiver call is not proof that a native client activated the hooks. The adapter follows the [official lifecycle contract](https://learn.chatgpt.com/docs/hooks).
+
+The receiver binds a native conversation ID to a work-bound AWR session. SessionStart/PostCompact return recovery context. Stop/PreCompact/SessionEnd/Interrupt save the persisted next action, open loops and actual AWR event/source delta. Shutdown hooks are advisory and do not terminate sessions, release claims or kill processes. Explicit session end/handoff retains those responsibilities.
+
+Record a changed next action before it is lost from the client:
+
+```sh
+awr client progress --client codex --external-session CLIENT_ID \
+  --next-action "Apply the reviewer corrections" --open-loop "Independent review remains"
+awr client show --client codex --external-session CLIENT_ID
+```
+
+The adapter does not read transcript bodies or infer facts from assistant prose. A binding command returns the compiled context; its hash identifies that snapshot, not proof that a model consumed it. Duplicate events with unchanged work reuse their checkpoint. A continued turn with changed persisted progress creates a new checkpoint. Process locks release automatically on crashes. A checkpoint completed before a lost client receipt is recovered by its delivery key; incomplete saves are never credited.
+
+For explicit cross-client handoff, bind a new native conversation to a predecessor:
+
+```sh
+awr client bind --client generic --external-session NEW_CLIENT_ID \
+  --work INTAKE-001 --from-session AWR_PREDECESSOR_ID
+```
+
+`generic` and `kimi` identities can use the normalized JSON receiver; automatic installation is currently provided for Codex only. The receiver accepts the documented `session_id`, `cwd`, `hook_event_name`, optional `turn_id` and `model` fields. Native mode emits only documented hook output fields; `--json` adds diagnostic AWR receipts. This does not start a native client or migrate its process memory.
+
+## Executions and recovery inspection
+
+Implementation and validation of these additions are tracked by AWR-TAKE-003 and AWR-TAKE-004. Their command reference and evidence will be added when delivered.

@@ -4,6 +4,7 @@ mod branch_close;
 mod catalog;
 mod checkpoint;
 mod checkpoint_save;
+mod client;
 mod delta;
 mod events;
 mod evidence;

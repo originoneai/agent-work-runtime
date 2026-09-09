@@ -30,3 +30,6 @@ pub fn now_millis() -> Result<i64> {
         .map_err(|e| Error::InvalidInput(e.to_string()))?;
     i64::try_from(elapsed.as_millis()).map_err(|_| Error::InvalidInput("timestamp overflow".into()))
 }
+
+mod client;
+pub use client::ClientBinding;

@@ -103,6 +103,7 @@ dependencies = [
  "awr-runtime",
  "awr-source",
  "awr-store",
+ "cap-std",
  "clap",
  "rusqlite",
  "serde",

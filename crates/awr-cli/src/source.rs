@@ -140,6 +140,7 @@ pub fn initialize(
         ".awr/artifacts/",
         ".awr/mutations/",
         ".awr/cache/",
+        ".awr/clients/",
     ];
     let missing: Vec<_> = needed
         .iter()

@@ -211,13 +211,14 @@ Multiple matching command hooks may run concurrently. `SessionEnd` is advisory,
 has a short timeout, and does not fire immediately just because the user switches
 away from a conversation. [Official hook documentation](https://learn.chatgpt.com/docs/hooks)
 
-This integration supplies manual checkpoint/resume and an
-[agent-instruction snippet](../../examples/codex/AGENTS.snippet.md). It does not
-install hooks or claim automatic lifecycle persistence. Any later hook adapter
-must map the client's conversation to an AWR session, retain the last consumed
-context hash and user-visible next action, handle concurrent revisions, and
-prove actual trigger delivery in that client. Preserve existing hooks and their
-trust requirements. Configuration presence alone is insufficient evidence.
+This integration supplies manual checkpoint/resume, an
+[agent-instruction snippet](../../examples/codex/AGENTS.snippet.md), and a
+[project-local lifecycle adapter](../TAKEOVER.md#client-checkpoints). Use `awr client install`
+to preview its exact configuration before `--accept`. The receiver maps each native
+conversation to an AWR session and checkpoints persisted continuity on lifecycle events.
+Installation preserves existing hooks and never approves their trust automatically.
+Verify actual trigger delivery in the receiving client; configuration presence and
+synthetic receiver checks alone are insufficient evidence of native activation.
 
 Verification is dated **2026-09-08**:
 
@@ -227,7 +228,7 @@ Verification is dated **2026-09-08**:
 | AWR CLI lifecycle | [Executable fixture walkthrough](../../examples/codex/README.md), plus manual bootstrap/context/checkpoint/resume on this repository's development work. |
 | AWR stdio protocol | Eight-tool transport and domain checks in P8-001; developer stdio self-use is recorded separately from native Codex activation. |
 | Native Codex MCP activation | Not verified by this delivery; requires a live `/mcp` connection and an actual tool call in the receiving client. |
-| Automatic Codex hooks | Documented client capability; no installed/active AWR hook or automatic compact/end recovery is claimed. |
+| Automatic Codex hooks | Project adapter and receiver implemented with local shell/protocol checks; native activation still requires exact hook trust and actual client trigger evidence. |
 | Real business acceptance/release | Not established by configuration, lifecycle demos or development self-use. |
 
 The versioned verification and source/remote bindings are maintained in

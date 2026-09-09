@@ -2,6 +2,7 @@ use awr_core::{Error, Result};
 use clap::{CommandFactory, Parser, Subcommand};
 use std::path::PathBuf;
 mod branch;
+mod client;
 mod context;
 mod doctor;
 mod drill;
@@ -35,6 +36,11 @@ struct Cli {
 enum Command {
     /// Preview source authority mapping; --accept initializes using the reviewed mapping.
     Init(onboarding::InitArgs),
+    /// Bind client conversations and persist lifecycle checkpoints.
+    Client {
+        #[command(subcommand)]
+        command: client::ClientCommand,
+    },
     /// List, scan or index authoritative project sources.
     Source {
         #[command(subcommand)]
@@ -113,6 +119,7 @@ enum Command {
 fn run(cli: &Cli) -> Result<()> {
     match &cli.command {
         Some(Command::Init(args)) => onboarding::run(&cli.project, args, cli.json),
+        Some(Command::Client { command }) => client::run(&cli.project, command, cli.json),
         Some(Command::Source { command }) => source::run(&cli.project, command, cli.json),
         Some(Command::Status { branch }) => {
             query::status(&cli.project, branch.as_deref(), cli.json)

@@ -1,8 +1,8 @@
 schema_version: 1
 contract_id: awr-v1
 contract_version: 1.1.0
-ledger_revision: 194
-updated_at: 2026-09-09T13:29:04+08:00
+ledger_revision: 195
+updated_at: 2026-09-09T05:40:33.287344+00:00
 project:
   name: Agent Work Runtime
   external_key: agent-work-runtime
@@ -11,7 +11,7 @@ project:
   release_status: not_released
 current:
   milestone: M11
-  work_item: AWR-TAKE-001
+  work_item: AWR-TAKE-002
   next_action: 在独立分支补齐通用项目 Init，再依次完成客户端检查点、执行登记和恢复核实。
   open_loops:
   - 本分支仅执行用户新增的四项能力；主线程 AWR-QA-003 的实际业务验收继续独立推进，已有证据不计入新增功能。
@@ -2010,7 +2010,7 @@ work_items:
   priority: P0
   kind: feature
   required_for_v1: true
-  status: in_progress
+  status: completed
   owner: codex-side-conversation
   depends_on:
   - AWR-P1-007
@@ -2031,8 +2031,9 @@ work_items:
   verification:
     minimum: 运行覆盖本条直接行为与恢复边界的真实 CLI/集成检查；不将本地检查视为 E4。
     evidence_directory: ledger/evidence/AWR-TAKE-001
-    evidence_level: none
-  evidence: []
+    evidence_level: locally_verified
+  evidence:
+  - ledger/deliveries/AWR-TAKE-001.json
   blocker: null
   next_action: 在 codex/project-takeover 独立分支实现并验证；不操作主线程工作区。
 - id: AWR-TAKE-002
@@ -2041,8 +2042,8 @@ work_items:
   priority: P0
   kind: feature
   required_for_v1: true
-  status: planned
-  owner: null
+  status: in_progress
+  owner: codex-side-conversation
   depends_on:
   - AWR-P5-002
   - AWR-P8-002
