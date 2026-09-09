@@ -11,6 +11,7 @@ mod execution;
 mod fs_sync;
 mod mutation;
 mod mutation_apply;
+mod organization;
 mod read;
 mod resume;
 mod work_action;
@@ -26,6 +27,7 @@ pub use mutation::{
     CreateProposalRequest, ProposalReport, ReviewProposalAction, ReviewProposalRequest,
     create_proposal, review_proposal,
 };
+pub use organization::{OrganizationReport, OrganizationState, inspect_organization};
 pub use resume::{ResumeReport, ResumeRequest, resume_session};
 pub use work_action::{WorkActionRequest, perform_work_action};
 

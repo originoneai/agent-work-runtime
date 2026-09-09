@@ -21,6 +21,7 @@ fn column(s: &str) -> &str {
         "依赖" => "depends_on",
         "下一步" | "后续动作" => "next_action",
         "验收" | "验收标准" => "acceptance",
+        "目标" | "关联目标" | "goals" => "goal",
         other => other,
     }
 }
@@ -179,6 +180,24 @@ impl SourceAdapter for MarkdownLedgerAdapter {
                 Some((line, line)),
             )?;
             let source_ref = meta.source_ref.clone();
+            for goal in get("goal")
+                .split([',', '，', ';', '；'])
+                .map(str::trim)
+                .filter(|s| !s.is_empty() && *s != "—" && *s != "-")
+            {
+                batch.edges.push(Edge {
+                    id: awr_core::Id::new(),
+                    project_id: context.source.project_id,
+                    from_kind: EntityKind::WorkItem,
+                    from_key: key.clone(),
+                    to_kind: EntityKind::Goal,
+                    to_key: goal.into(),
+                    relation: "supports".into(),
+                    required: true,
+                    revision: 1,
+                    source_ref: source_ref.clone(),
+                });
+            }
             batch.work_items.push(WorkItem {meta,title:title.into(),kind:None,owner:(!get("owner").is_empty()).then(||get("owner").into()),required:false,
                 raw_status:get("status").into(),status,priority:(!get("priority").is_empty()).then(||get("priority").into()),milestone:None,score:None,evidence_level:None,
                 summary:"Imported from source-declared Markdown; completion evidence has not been inferred.".into(),next_action:get("next_action").into(),blocker:None,

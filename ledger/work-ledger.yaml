@@ -1,8 +1,8 @@
 schema_version: 1
 contract_id: awr-v1
-contract_version: 1.1.0
-ledger_revision: 203
-updated_at: '2026-09-09T06:59:06.183168+00:00'
+contract_version: 1.2.0
+ledger_revision: 204
+updated_at: '2026-09-09T07:08:05.093046+00:00'
 project:
   name: Agent Work Runtime
   external_key: agent-work-runtime
@@ -45,7 +45,7 @@ milestones:
 - id: M10
   status: planned
 - id: M11
-  status: completed
+  status: in_progress
 work_items:
 - id: AWR-BOOT-001
   title: 公开仓库、Apache 2.0 与原始方案基线
@@ -2147,6 +2147,39 @@ work_items:
   - ledger/deliveries/takeover-native-followup.json
   blocker: null
   next_action: '实现与三平台原生验证已通过，见草稿 PR #2；原生客户端激活、合并与发版分开交付。'
+- id: AWR-TAKE-005
+  title: 项目整理引导与开工就绪诊断
+  milestone: M11
+  priority: P0
+  kind: feature
+  required_for_v1: true
+  status: in_progress
+  owner: codex-side-conversation
+  depends_on:
+  - AWR-TAKE-001
+  source_sections: [16, 17, 28, 29, 31, 35, 40]
+  deliverables:
+  - crates/awr-context/
+  - crates/awr-runtime/
+  - crates/awr-store/
+  - crates/awr-cli/
+  - crates/awr-mcp/
+  - crates/awr-source/
+  - docs/TAKEOVER.md
+  - examples/takeover/
+  - README.md
+  acceptance:
+  - 区分未初始化、来源不可读、待整理、可执行、受阻、待验收和已结束；空台账及取消任务不能推导为项目完成。
+  - CLI 和 MCP 返回结构化缺项、来源引用、有序整理动作、最小字段与明确复检入口；异常不伪装就绪。
+  - 简单项目仅需目标和任务，已有方案及权威材料复用；生成占位目标和接入任务不自动表示业务可开工。
+  - 复检核实目标关联、验收、下一步与依赖；候选目标、源声明完成与验证证据分开表达，语义判断边界明确。
+  verification:
+    minimum: 定向 CLI 与共享诊断/MCP 回归验证整理-复检闭环、来源失败和不制造完成；本地验证不计 E4 或发版。
+    evidence_directory: ledger/evidence/AWR-TAKE-005
+    evidence_level: locally_verified
+  evidence: []
+  blocker: null
+  next_action: 功能与本地定向检查通过；提交到独立分支并核实远端 SHA 后绑定交付回执，保留主线 QA 当前项。
 scenarios:
 - id: AWR-SC-001
   status: completed

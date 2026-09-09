@@ -6,6 +6,7 @@ use serde_json::Value;
 #[serde(deny_unknown_fields)]
 pub(crate) struct StatusArgs {
     pub branch: Option<String>,
+    pub source_sha: Option<String>,
 }
 
 #[derive(Deserialize)]

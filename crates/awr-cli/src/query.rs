@@ -126,13 +126,52 @@ pub(crate) fn branch(
     }
 }
 
-pub fn status(root: &Path, reference: Option<&str>, json_output: bool) -> Result<()> {
-    let query = QueryProject::open(root)?;
+pub fn status(
+    root: &Path,
+    reference: Option<&str>,
+    source_sha: Option<&str>,
+    json_output: bool,
+) -> Result<()> {
+    if source_sha.is_some_and(|s| !is_source_sha(s)) {
+        return Err(Error::InvalidInput(
+            "--source-sha requires a full source SHA".into(),
+        ));
+    }
+    let root = root.canonicalize()?;
+    let query = match QueryProject::open(&root) {
+        Ok(query) => query,
+        Err(error) => {
+            let initialized =
+                root.join(".awr/project.toml").exists() || root.join(".awr/state.db").exists();
+            let organization =
+                awr_runtime::OrganizationReport::unavailable(initialized, &error.report().message);
+            if json_output {
+                println!(
+                    "{}",
+                    serde_json::to_string_pretty(
+                        &json!({"ok":false,"total":null,"organization":organization,"next_action":organization.next_action,"error":error.report()})
+                    )?
+                );
+            } else {
+                println!("{}", organization.rendered());
+            }
+            return Err(error);
+        }
+    };
     let branch_id = branch(&query.store, &query.project, reference)?;
     let works = query.store.work_items(query.project.id)?;
     let report = query
         .store
         .ready_work(query.project.id, branch_id, now_millis()?)?;
+    let organization = awr_runtime::inspect_organization(
+        &query.store,
+        &query.project,
+        branch_id,
+        source_sha,
+        query.refresh.ok,
+        &works,
+        &report,
+    )?;
     let mut counts = BTreeMap::<String, usize>::new();
     for work in &works {
         *counts
@@ -150,19 +189,33 @@ pub fn status(root: &Path, reference: Option<&str>, json_output: bool) -> Result
         .collect::<Vec<_>>();
     current.sort_by_key(|w| (&w.item.priority, &w.item.meta.external_key));
     let focus = current
-        .first()
+        .iter()
+        .find(|w| {
+            organization
+                .executable_work
+                .contains(&w.item.meta.external_key)
+        })
         .copied()
-        .or_else(|| report.ready.first().map(|w| &w.work));
-    let next = focus
+        .or_else(|| {
+            report
+                .ready
+                .iter()
+                .find(|w| {
+                    organization
+                        .executable_work
+                        .contains(&w.work.item.meta.external_key)
+                })
+                .map(|w| &w.work)
+        });
+    let work_next = focus
         .map(|w| w.item.next_action.clone())
         .filter(|s| !s.trim().is_empty())
-        .unwrap_or_else(|| {
-            if report.blocked.is_empty() {
-                "No nonterminal work remains in current source projections.".into()
-            } else {
-                "Inspect readiness diagnostics and resolve the blocking prerequisite.".into()
-            }
-        });
+        .unwrap_or_else(|| organization.next_action.clone());
+    let next = if organization.business_execution_ready {
+        work_next
+    } else {
+        organization.next_action.clone()
+    };
     let mut value = query.metadata();
     value["project"] = json!(query.project.name);
     value["project_id"] = json!(query.project.id);
@@ -175,6 +228,7 @@ pub fn status(root: &Path, reference: Option<&str>, json_output: bool) -> Result
     value["blocked_count"] = json!(report.blocked.len());
     value["next_action"] = json!(next);
     value["suggested_work"] = focus.map(brief).unwrap_or(Value::Null);
+    value["organization"] = json!(organization);
     query.check_revision()?;
     if json_output {
         println!("{}", serde_json::to_string_pretty(&value)?);
@@ -201,6 +255,7 @@ pub fn status(root: &Path, reference: Option<&str>, json_output: bool) -> Result
             value["source_warnings"],
             query.refresh.issues.len()
         );
+        println!("{}", organization.rendered());
     }
     query.finish()
 }
@@ -214,6 +269,15 @@ pub fn ready(root: &Path, limit: usize, reference: Option<&str>, json_output: bo
     let report = query
         .store
         .ready_work(query.project.id, branch_id, now_millis()?)?;
+    let organization = awr_runtime::inspect_organization(
+        &query.store,
+        &query.project,
+        branch_id,
+        None,
+        query.refresh.ok,
+        &query.store.work_items(query.project.id)?,
+        &report,
+    )?;
     let mut counts = BTreeMap::<String, usize>::new();
     for work in &report.blocked {
         for code in work
@@ -227,6 +291,7 @@ pub fn ready(root: &Path, limit: usize, reference: Option<&str>, json_output: bo
     }
     let mut value = query.metadata();
     value["branch_id"] = json!(branch_id);
+    value["organization"] = json!(organization);
     value["ready"] = json!(
         report
             .ready
@@ -263,8 +328,8 @@ pub fn ready(root: &Path, limit: usize, reference: Option<&str>, json_output: bo
                 work.work.item.meta.external_key, work.work.item.title, work.work.item.next_action
             );
         }
-        if report.ready.is_empty() {
-            println!("Next: inspect a blocked item with work show <id>.");
+        if report.ready.is_empty() || !organization.business_execution_ready {
+            println!("Next: {}", organization.next_action);
         }
         println!("Blocking reasons: {}", serde_json::to_string(&counts)?);
         if report.ready.len() > limit {

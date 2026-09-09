@@ -1,16 +1,71 @@
 # Project intake and work continuity
 
-This addition covers four separately verified capabilities: project intake, client checkpoints, execution registration, and recovery inspection. It extends the existing AWR work runtime; it does not transfer arbitrary process memory or reconstruct unrecorded conversations.
+This addition covers project intake and organization, client checkpoints, execution registration, and recovery inspection. It extends the existing AWR work runtime; it does not transfer arbitrary process memory or reconstruct unrecorded conversations.
 
 ## Intake
 
 Run `awr --project /absolute/project init` to inspect the inventory and proposed source mapping. Nothing is initialized until `--accept` is supplied. Conventional YAML sources are retained; Markdown task tables and checklists can be projected with the read-only `markdown-ledger-v1` adapter. Existing Markdown remains the authority and is edited in its original file, then reindexed.
 
-Missing goals, plans, rules and task ledgers are proposed under `.awr/intake/`. These are source files, not disposable runtime state. The first work item establishes the project baseline. Plan headings create planned review tasks; they do not assert that implementation is missing or completed. Existing project files are never overwritten.
+Only missing goals and task ledgers are proposed under `.awr/intake/`. These are source files, not disposable runtime state. Existing goals inside a primary YAML ledger are reused. Separate plan/rule files are optional; existing ones remain authoritative. The first work item has `kind: intake` and organizes the project baseline. Plan headings create planned review tasks; they do not assert that implementation is missing or completed. Existing project files are never overwritten.
 
 For a blank project, state its purpose with `awr init --goal "Deliver a document portal" --accept`. For a project with complex requirements, save a JSON draft with `awr init --write-draft /outside/project/intake.json`. An agent or owner can use the inventory and original documents to replace the generated work with concrete actions, dependencies and acceptance criteria. Apply the reviewed draft with `awr init --from-draft /outside/project/intake.json --accept`. A changed input inventory requires a new review. Generated paths are limited to the four owned intake source files.
 
 The scanner records filenames, sizes, document hashes and observed Git state. It skips hidden/vendor/build directories and symlinks and has explicit resource limits. It does not infer business completion from code filenames or Git commits. Arbitrary spreadsheet/Word/PDF ledgers still require conversion or an explicit adapter; unrecognized states remain unknown.
+
+## Organize and recheck
+
+```sh
+awr --project /absolute/project init
+awr --project /absolute/project init --accept
+awr --project /absolute/project intake inspect --json
+# The Coding Agent edits the authoritative sources using the returned actions.
+awr --project /absolute/project intake inspect --json
+```
+
+Init preview, accepted initialization, `status`, `ready`, and MCP `awr_project_status`/`awr_work_ready` expose the same `organization` report. Its ordered `actions` describe the material to inspect, required fields and completion conditions. `sources` and `goals[].source_ref` identify authority; `goals[].key` is the exact key to use in task links, including the locator prefix for Markdown headings. `gaps` retains source references and task keys. Missing input is not replaced with invented intent. Diagnostics are sampled at 100 entries with exact totals and `truncated`; fix the sample and recheck to reveal remaining findings.
+
+| State | Meaning |
+| --- | --- |
+| `not_initialized` | No usable project runtime has been established. Preview Init first. |
+| `source_unreadable` | Manifest/source/cache verification failed. Inspect the accompanying error or `source_issues`; retained projections cannot authorize readiness. |
+| `needs_organization` | Goals, links, work fields or concrete business work are missing/unconfirmed. An empty ledger is not completion. |
+| `ready` | At least one task appears in `executable_work` with a source-declared goal, acceptance, next action and resolved prerequisites. Other findings remain open. |
+| `blocked` | Work structure is present but dependencies, status or blockers prevent execution. |
+| `awaiting_verification` | Source tasks say completed; actual current acceptance reports have not all been verified. |
+| `completed` | All non-cancelled ledger work has validated reports for an explicit source SHA; required cancelled scope prevents this state. This is scoped to the ledger and evidence, not release or real-client business acceptance. |
+| `closed_without_completion` | Work is cancelled, or required scope was cancelled. It cannot be credited as project completion. |
+
+`ready`/`ready_count` in the existing scheduling API still describe dependency selection. `organization.business_execution_ready` and `executable_work` add the goal/structure check; inspect context and acquire the appropriate session claim before execution. Organization tasks remain claimable even when business execution is not ready. An unrelated candidate goal does not prevent well-defined work from proceeding.
+
+The Coding Agent compares user intent, README, implementation and development history, then records the goal and its provenance. Use `draft`, `candidate` or `needs_confirmation` for uncertain goals; use `active`/`confirmed` when supported by the source material or user instruction. AWR checks the declaration; it does not certify semantic agreement. Ask for business intent only when the available material cannot establish it. Init without `--goal` creates a draft goal; accepting the files does not confirm that goal. A generic intake task never makes business execution ready.
+
+New intake drafts explicitly select `[project] context_profile = "minimal"` in their reviewable manifest. This permits absent rule/milestone sources in L0/L1 for small projects; every configured rule, source failure, acceptance criterion and dependency is still checked. The profile is bound to source configuration revisions and L1 context content. Existing manifests default to `standard` and are preserved; changing their profile is an explicit source-configuration edit. Unresolved goal scope or a ledger containing only completed intake tasks still requires organization.
+
+A small project can keep everything in one `work-ledger.yaml`:
+
+```yaml
+goals:
+  - id: search
+    title: Let readers find documents
+    status: active
+    summary: The user requested search in the existing portal; see README.md.
+    success_criteria: [Readers find a requested document]
+work_items:
+  - id: search-api
+    title: Add document search
+    status: ready
+    goal: search
+    acceptance: [A matching query returns the requested document]
+    next_action: Implement the search handler using the current document index
+```
+
+For existing Markdown ledgers, add `goal`/`目标`/`关联目标`, `acceptance`/`验收标准`, and `next_action`/`下一步` columns in the original table. A checklist without this information remains a useful source observation and produces organization actions. AWR does not rewrite the Markdown or replace it with a second ledger.
+
+CLI inspection refreshes only the rebuildable projection cache; it does not change goals, task files, claims or execution state. MCP remains read-only: after source edits run `awr source reindex`, then call `awr_project_status` again. A stale MCP snapshot returns a structured error plus repair guidance, never a cached success. Keep both error/exit status and `organization` when integrating an Agent.
+
+The MCP server can bind an uninitialized project directory so `awr_project_status` can return `not_initialized` and intake guidance. Starting it or querying status creates no runtime files; mutations still require a valid initialized project and their normal revision/session checks. Initialization remains an explicit CLI operation.
+
+To verify source-declared completion, use `awr intake inspect --source-sha FULL_SHA --json` or supply `source_sha` to MCP `awr_project_status`. AWR validates registered local completion reports against their hashes, work identity, SHA, command, scope, time and every current acceptance criterion at the required evidence level. It does not run the recorded command. Missing, changed, failing, historical or mismatched reports leave completion unverified. Validation is bounded to 1 MiB per report and 16 MiB per inspection; exhausted budgets remain explicit. `source_completed` and `verified_completed` remain separate counts.
 
 ## Client checkpoints
 

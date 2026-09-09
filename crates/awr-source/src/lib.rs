@@ -22,7 +22,7 @@ pub use indexer::{
 pub use limits::{MARKDOWN_READ_CAP, YAML_READ_CAP, source_read_cap};
 pub use locator::{Locator, SourceSnapshot, fingerprint, read_capped, read_source_capped};
 mod safe_fs;
-pub use manifest::{Manifest, ProjectConfig, SourceSpec};
+pub use manifest::{ContextProfile, Manifest, ProjectConfig, SourceSpec, minimal_context};
 pub use markdown::{
     MarkdownHeadingAdapter, MarkdownRulesAdapter, MarkdownSection, markdown_sections,
 };

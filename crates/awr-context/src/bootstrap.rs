@@ -347,11 +347,12 @@ fn bootstrap_selected(
                 "next action is not declared",
             );
         }
-        if work
-            .item
-            .milestone
-            .as_deref()
-            .is_none_or(|s| s.trim().is_empty())
+        if !awr_source::minimal_context(&sources)
+            && work
+                .item
+                .milestone
+                .as_deref()
+                .is_none_or(|s| s.trim().is_empty())
         {
             gap(
                 &mut gaps,
@@ -375,7 +376,7 @@ fn bootstrap_selected(
             );
         }
     }
-    if !sources.iter().any(|s| s.domain == "rules") {
+    if !sources.iter().any(|s| s.domain == "rules") && !awr_source::minimal_context(&sources) {
         gap(
             &mut gaps,
             "rules_source_missing",

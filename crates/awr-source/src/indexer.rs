@@ -200,6 +200,7 @@ fn process_project(
                 &locator,
                 &identity,
                 mode,
+                manifest.project.context_profile == crate::ContextProfile::Minimal,
             );
             match outcome {
                 Ok((source, indexed, warnings)) => {
@@ -269,6 +270,7 @@ fn index_one(
     locator: &Locator,
     identity: &str,
     mode: Option<bool>,
+    minimal_context: bool,
 ) -> Result<(Source, Option<bool>, Vec<String>)> {
     let project = store.project_by_root(root)?;
     let source = store.register_source(
@@ -285,10 +287,11 @@ fn index_one(
             adapter: &spec.adapter,
         },
     )?;
-    let source = store.configure_source(
-        &source,
-        json!({"mapping_key":key,"adapter_options":spec.options,"adapter_version":1}),
-    )?;
+    let mut config = json!({"mapping_key":key,"adapter_options":spec.options,"adapter_version":1});
+    if minimal_context {
+        config["context_profile"] = json!("minimal");
+    }
+    let source = store.configure_source(&source, config)?;
     let cap = crate::source_read_cap(&spec.adapter)?;
     let observed = observe_source(store, &source, root, locator, cap)?;
     if let Some(error) = observed.error {

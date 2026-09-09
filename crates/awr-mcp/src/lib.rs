@@ -19,11 +19,15 @@ pub struct AwrServer {
     operation: Arc<Mutex<()>>,
 }
 impl AwrServer {
-    /// Bind one initialized project at startup; clients cannot select another root.
+    /// Bind one project directory. Each operation validates its database/source state;
+    /// status can explain how to initialize or repair a project before a database exists.
     pub fn open(root: &Path) -> Result<Self> {
         let root = root.canonicalize()?;
-        let store = awr_store::Store::open_readonly(&project::database(&root)?)?;
-        store.project_by_root(&root)?;
+        if !root.is_dir() {
+            return Err(Error::InvalidInput(
+                "MCP project root must be a directory".into(),
+            ));
+        }
         Ok(Self {
             root: Arc::new(root),
             operation: Arc::new(Mutex::new(())),
@@ -35,7 +39,7 @@ impl ServerHandler for AwrServer {
     fn get_info(&self) -> ServerInfo {
         ServerInfo::new(ServerCapabilities::builder().enable_tools().build())
             .with_server_info(Implementation::new("awr-mcp", env!("CARGO_PKG_VERSION")))
-            .with_instructions("AWR is source-first. Read tools never persist changes. On SourceStale, run awr source reindex explicitly and inspect again. Use awr session start --claim before source transitions. Mutations require a reviewed expected_revision; completion also requires bound evidence. Command/report metadata is never executed. Inspect durable receipts before retrying an interrupted mutation.")
+            .with_instructions("AWR is source-first. Start with awr_project_status and follow organization.actions; an empty ledger or an intake draft is not business readiness. AWR diagnoses structure; the Coding Agent organizes source-backed goals and work and keeps uncertain intent explicit. Read tools never persist changes. On SourceStale, run awr source reindex explicitly and inspect again. Use awr session start --claim before source transitions. Mutations require a reviewed expected_revision; completion also requires bound evidence. Command/report metadata is never executed. Inspect durable receipts before retrying an interrupted mutation.")
     }
     async fn list_tools(
         &self,

@@ -182,6 +182,51 @@ fn action(f: &Fixture, session: Id, action: &str) -> Value {
 }
 
 #[tokio::test]
+async fn project_organization_guides_repairs_and_preserves_readonly_mcp_state() {
+    let f = Fixture::new();
+    fs::write(
+        f.root.join(".awr/project.toml"),
+        MANIFEST.replace("[project]\n", "[project]\ncontext_profile='minimal'\n"),
+    )
+    .unwrap();
+    f.reindex();
+    let client = f.client().await;
+    let before = f.logical_state();
+    let initial = success(call(&client, "awr_project_status", json!({})).await);
+    assert_eq!(initial["organization"]["state"], "needs_organization");
+    assert!(
+        initial["organization"]["gaps"]
+            .as_array()
+            .unwrap()
+            .iter()
+            .any(|g| g["code"] == "work_goal_missing")
+    );
+    assert_eq!(initial["organization"]["business_execution_ready"], false);
+    assert_eq!(f.logical_state(), before);
+
+    let goal = initial["organization"]["goals"][0]["key"].as_str().unwrap();
+    fs::write(f.root.join("work.yaml"), format!("work_items:\n- id: W\n  title: Deliver customer analysis\n  status: ready\n  goal: {goal}\n  acceptance: [Deliver the reviewed analysis]\n  next_action: Draft the requested analysis\n")).unwrap();
+    let unchanged = f.logical_state();
+    let stale = error(
+        call(&client, "awr_project_status", json!({})).await,
+        "SourceStale",
+    );
+    assert_eq!(stale["organization"]["state"], "source_unreadable");
+    assert_eq!(stale["organization"]["business_execution_ready"], false);
+    assert_eq!(f.logical_state(), unchanged);
+    f.reindex();
+    let before = f.logical_state();
+    let ready = success(call(&client, "awr_project_status", json!({})).await);
+    assert_eq!(ready["organization"]["state"], "ready");
+    assert_eq!(ready["organization"]["executable_work"], json!(["W"]));
+    assert_eq!(ready["suggested_work"]["external_key"], "W");
+    let work_ready = success(call(&client, "awr_work_ready", json!({})).await);
+    assert_eq!(work_ready["organization"]["state"], "ready");
+    assert_eq!(f.logical_state(), before);
+    client.cancel().await.unwrap();
+}
+
+#[tokio::test]
 async fn stdio_discovers_exactly_eight_tools_and_survives_protocol_and_argument_errors() {
     let f = Fixture::new();
     let before = f.logical_state();
@@ -597,15 +642,36 @@ fn snapshot_limit_and_startup_do_not_initialize_or_modify_a_project() {
     assert_eq!(f.logical_state(), before);
     let empty = f.root.join("empty");
     fs::create_dir(&empty).unwrap();
-    let output = std::process::Command::new(env!("CARGO_BIN_EXE_awr-mcp"))
-        .arg("--project")
-        .arg(&empty)
-        .output()
-        .unwrap();
-    assert!(!output.status.success());
-    assert!(output.stdout.is_empty());
-    assert!(serde_json::from_slice::<Value>(&output.stderr).unwrap()["code"].is_string());
+    assert!(awr_mcp::AwrServer::open(&empty).is_ok());
     assert!(!empty.join(".awr").exists());
+}
+
+#[tokio::test]
+async fn uninitialized_mcp_project_returns_intake_guidance_without_creating_state() {
+    let root = std::env::temp_dir().join(format!("awr-mcp-empty-{}", Id::new()));
+    fs::create_dir(&root).unwrap();
+    let f = Fixture {
+        root: root.canonicalize().unwrap(),
+    };
+    let client = f.client().await;
+    let status = error(
+        call(&client, "awr_project_status", json!({})).await,
+        "NotFound",
+    );
+    assert_eq!(status["organization"]["state"], "not_initialized");
+    assert_eq!(status["organization"]["business_execution_ready"], false);
+    assert!(status["total"].is_null());
+    assert!(
+        status["organization"]["actions"]
+            .as_array()
+            .unwrap()
+            .iter()
+            .any(|a| a["id"] == "sources")
+    );
+    assert!(!f.root.join(".awr").exists());
+    error(call(&client,"awr_work_transition",json!({"action":"progress","work":"W","session":Id::new(),"expected_revision":0,"reason":"Record current progress","next_action":"Continue the task"})).await,"NotFound");
+    assert!(!f.root.join(".awr").exists());
+    client.cancel().await.unwrap();
 }
 
 #[tokio::test]

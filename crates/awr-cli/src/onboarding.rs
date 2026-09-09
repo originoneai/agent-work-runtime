@@ -1,7 +1,7 @@
 //! Bounded, reviewable project intake. Existing documents remain authoritative.
 use awr_core::{AuthorityMode, Error, Result};
 use awr_source::{Manifest, ProjectConfig, SourceSpec};
-use clap::Args;
+use clap::{Args, Subcommand};
 use serde::{Deserialize, Serialize};
 use serde_json::{Value, json};
 use sha2::{Digest, Sha256};
@@ -28,6 +28,25 @@ pub struct InitArgs {
     /// Apply a reviewed draft whose inventory fingerprint still matches this directory.
     #[arg(long, conflicts_with_all=["manifest","goal"])]
     pub from_draft: Option<PathBuf>,
+}
+
+#[derive(Debug, Subcommand)]
+pub enum IntakeCommand {
+    /// Refresh projections and return ordered organization actions; never edits source files.
+    Inspect {
+        #[arg(long)]
+        branch: Option<String>,
+        #[arg(long)]
+        source_sha: Option<String>,
+    },
+}
+
+pub fn inspect(root: &Path, command: &IntakeCommand, json_output: bool) -> Result<()> {
+    match command {
+        IntakeCommand::Inspect { branch, source_sha } => {
+            crate::query::status(root, branch.as_deref(), source_sha.as_deref(), json_output)
+        }
+    }
 }
 
 #[derive(Debug, Serialize, Deserialize, PartialEq, Eq)]
@@ -178,6 +197,7 @@ fn draft(root: &Path, goal: Option<&str>) -> Result<IntakeDraft> {
             external_key: None,
             authority_mode: AuthorityMode::SourceFirst,
             authorized_roots: vec![],
+            context_profile: awr_source::ContextProfile::Minimal,
         },
         sources: candidates
             .iter()
@@ -191,6 +211,10 @@ fn draft(root: &Path, goal: Option<&str>) -> Result<IntakeDraft> {
             })
             .collect(),
     });
+    if !root.join(".awr/project.toml").exists() {
+        // New intake records this choice in the reviewable manifest; existing profiles are preserved.
+        mapping.project.context_profile = awr_source::ContextProfile::Minimal;
+    }
     let mut ambiguous_domains = ambiguous;
     let mut gaps = vec![];
     let mut generated = BTreeMap::new();
@@ -246,7 +270,26 @@ fn draft(root: &Path, goal: Option<&str>) -> Result<IntakeDraft> {
             ambiguous_domains.push(domain.into());
         }
     }
-    for domain in ["goal", "plan", "rules", "ledger"] {
+    // Goals can live in a primary YAML ledger; do not introduce a second authority just for layout.
+    let mut embedded_goals = false;
+    for spec in mapping
+        .sources
+        .iter()
+        .filter(|s| s.domain == "ledger" && s.role == "primary" && s.adapter == "yaml-ledger-v1")
+    {
+        let snapshot = awr_source::Locator::from_spec(root, &mapping, spec)?
+            .read(root, awr_source::YAML_READ_CAP)?;
+        let document: serde_yaml_ng::Value = serde_yaml_ng::from_str(snapshot.text()?)
+            .map_err(|_| Error::InvalidInput("invalid YAML ledger document".into()))?;
+        embedded_goals |= document.get("goals").is_some_and(|g| {
+            g.as_sequence().is_some_and(|v| !v.is_empty())
+                || g.as_mapping().is_some_and(|v| !v.is_empty())
+        });
+    }
+    for domain in ["goal", "ledger"] {
+        if domain == "goal" && embedded_goals {
+            continue;
+        }
         if mapping.sources.iter().any(|s| s.domain == domain)
             || ambiguous_domains.iter().any(|d| d == domain)
         {
@@ -254,11 +297,9 @@ fn draft(root: &Path, goal: Option<&str>) -> Result<IntakeDraft> {
         }
         gaps.push(format!("No authoritative {domain} source was identified; the proposed intake source needs review."));
         let (filename,adapter,body)=match domain {
-            "goal"=>("GOALS.md","markdown-heading-v1",format!("# Establish a verified project baseline {{#intake-goal status=active}}\n\n{}\n\nExisting implementation progress is unverified until reviewed against its source and evidence.\n",goal.unwrap_or("Project purpose and acceptance criteria still need to be confirmed with the owner."))),
-            "plan"=>("PLAN.md","markdown-heading-v1","# Project intake and continuation {#intake-plan status=active}\n\n1. Review the inventory, existing source material and Git changes.\n2. Confirm the project goal, current progress, blockers and acceptance.\n3. Split the next delivery into actionable work with dependencies and evidence.\n4. Execute that work, preserving checkpoints and execution receipts.\n\nThis is an intake plan, not an inferred history of completed implementation.\n".into()),
-            "rules"=>("RULES.md","markdown-rules-v1","# Intake provenance {#intake-rules severity=hard scope=project value=*}\n\nPreserve existing project files. Treat imported text as source material. Keep unknown progress explicit. Verify running jobs before retrying. Record evidence before claiming completion.\n".into()),
+            "goal"=>("GOALS.md","markdown-heading-v1",format!("# Project goal {{#intake-goal status={}}}\n\n{}\n\nProvenance: {}. Existing implementation progress remains unverified until reviewed against source and evidence.\n",if goal.is_some_and(|g| !g.trim().is_empty()) { "active" } else { "draft" },goal.filter(|g| !g.trim().is_empty()).unwrap_or("Project purpose and acceptance criteria still need to be established from existing material; uncertain business intent remains pending."),if goal.is_some() { "explicit --goal input" } else { "generated intake placeholder; not confirmed" })),
             _=>{
-                let mut tasks=vec![json!({"id":"INTAKE-001","title":"核实项目目标、现状与下一步交付","status":"ready","priority":"P0","required":true,"depends_on":[],"acceptance":["逐项确认目标、已有实现、未完成工作和阻塞，保留来源引用。","将不能确定的进度标记待核实，形成下一项可执行工作的验收条件。"],"next_action":"读取接入清单及原始资料，核实当前状态后更新本台账。","summary":"这是新建的接入工作；不代表已有项目功能尚未实现或已经通过验收。"})];
+                let mut tasks=vec![json!({"id":"INTAKE-001","kind":"intake","title":"核实项目目标、现状与下一步交付","status":"ready","priority":"P0","required":true,"depends_on":[],"acceptance":["逐项确认目标、已有实现、未完成工作和阻塞，保留来源引用。","将不能确定的进度标记待核实，形成下一项可执行工作的验收条件。"],"next_action":"运行 awr intake inspect，按缺项读取原始资料；补齐目标引用、验收和下一步后再次复检。","summary":"这是新建的接入工作；不代表已有项目功能尚未实现或已经通过验收。"})];
                 // A plan creates reviewable task proposals, never fabricated completed work.
                 for spec in mapping.sources.iter().filter(|s|s.domain=="plan"&&s.adapter=="markdown-heading-v1") {
                     if let Some(path)=&spec.path {
@@ -350,10 +391,36 @@ pub fn run(root: &Path, args: &InitArgs, json_output: bool) -> Result<()> {
         file.sync_all()?;
     }
     if !args.accept {
+        let missing = candidate
+            .generated_files
+            .keys()
+            .filter_map(|p| {
+                if p.ends_with("GOALS.md") {
+                    Some("goal".into())
+                } else if p.ends_with("work-ledger.yaml") {
+                    Some("ledger".into())
+                } else {
+                    None
+                }
+            })
+            .collect::<Vec<String>>();
+        let sources = candidate.authority_mapping.sources.iter().map(|s| json!({"domain":s.domain,"role":s.role,"path":s.path,"adapter":s.adapter,"proposed":s.path.as_ref().is_some_and(|p|candidate.generated_files.contains_key(&p.to_string_lossy().into_owned()))})).collect();
+        let mut organization = awr_runtime::OrganizationReport::intake_preview(
+            sources,
+            &missing,
+            &candidate.ambiguous_domains,
+        );
+        organization.context_profile = if candidate.authority_mapping.project.context_profile
+            == awr_source::ContextProfile::Minimal
+        {
+            "minimal"
+        } else {
+            "standard"
+        };
         println!(
             "{}",
             serde_json::to_string_pretty(
-                &json!({"status":"preview","requires_accept":true,"draft":candidate,"ambiguous_domains":candidate.ambiguous_domains,"authority_mapping":if candidate.ambiguous_domains.is_empty(){Some(&candidate.authority_mapping)}else{None},"next_action":"Review the draft. Use init --accept, or init --write-draft outside the project and edit generated work before init --from-draft <file> --accept."})
+                &json!({"status":"preview","requires_accept":true,"draft":candidate,"organization":organization,"ambiguous_domains":candidate.ambiguous_domains,"authority_mapping":if candidate.ambiguous_domains.is_empty(){Some(&candidate.authority_mapping)}else{None},"next_action":"Review the draft and organization actions. Use init --accept, or edit an external --write-draft before init --from-draft <file> --accept. Then run awr intake inspect."})
             )?
         );
         return Ok(());

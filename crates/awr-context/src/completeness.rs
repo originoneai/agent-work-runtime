@@ -225,7 +225,8 @@ pub(crate) fn assess_completeness(facts: CompletenessFacts<'_>) -> Result<Contex
         .iter()
         .filter(|s| s.domain == "rules")
         .collect::<Vec<_>>();
-    if rule_sources.is_empty() {
+    let minimal = awr_source::minimal_context(sources);
+    if rule_sources.is_empty() && !minimal {
         issue(
             "rules_complete",
             "rules_source_missing",
@@ -244,7 +245,7 @@ pub(crate) fn assess_completeness(facts: CompletenessFacts<'_>) -> Result<Contex
         }
     }
     let rules_complete = hard.is_some_and(|h| h.unresolved.is_empty())
-        && !rule_sources.is_empty()
+        && (!rule_sources.is_empty() || minimal)
         && !domain_failed("rules")
         && rule_sources.iter().all(|s| s.freshness == Freshness::Fresh);
     let mut dependencies_complete = related.is_some();
