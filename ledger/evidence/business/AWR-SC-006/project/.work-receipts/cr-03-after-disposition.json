@@ -1,0 +1,54 @@
+{
+  "apply_attempt": null,
+  "ok": true,
+  "patch_included": true,
+  "project_revision": 73,
+  "proposal": {
+    "base_fingerprint": "sha256:83d49fc17c8d12f487c59687df314093e8d3c360bf55847b9b5a98cfb8d0abf8",
+    "created_by_session": null,
+    "expected_revision": 43,
+    "id": "01M21X67QFPQ55YSMJEX96HYV7",
+    "mutation_type": "update_fields",
+    "patch": {
+      "changes": {
+        "acceptance": [
+          "处理待应用改动，保留重试或恢复的证据，避免重复写入。",
+          "保留实际产物与来源引用，无法确认的内容显式说明。",
+          "遗留问题保留已知影响和下一步；具体问题清单须经执行者核对后才可应用。"
+        ]
+      },
+      "intent": "CR-03 遗留问题：建议保留已知影响和下一步；具体问题清单须经执行者核对。仅提交审核，不批准或应用。",
+      "source_config": {
+        "adapter_options": {},
+        "adapter_version": 1,
+        "mapping_key": "ledger|work-ledger.yaml"
+      },
+      "target": {
+        "kind": "work_item",
+        "meta": {
+          "external_key": "ZS-RECOVER",
+          "id": "01M21VJFYMD4Q7P3HFNFATQBCZ",
+          "revision": 1,
+          "source_ref": {
+            "end_line": null,
+            "locator": "file:///Users/mac/Documents/originone/agent-work-running/.local/business-live-20260909-v1/interrupted-write/project/work-ledger.yaml",
+            "pointer": "/work_items/2",
+            "section_fingerprint": null,
+            "source_fingerprint": "sha256:83d49fc17c8d12f487c59687df314093e8d3c360bf55847b9b5a98cfb8d0abf8",
+            "source_id": "01M21VJFYKQHY3PPK3TBPPYNPT",
+            "source_revision": 4,
+            "start_line": null
+          }
+        }
+      },
+      "version": 1
+    },
+    "project_id": "01M21VJFYF7E75EQ55DEH3D5TS",
+    "revision": 3,
+    "source_id": "01M21VJFYKQHY3PPK3TBPPYNPT",
+    "status": "rejected",
+    "work_item_id": "01M21VJFYMD4Q7P3HFNFATQBCZ"
+  },
+  "read_only": true,
+  "source_refresh_performed": false
+}

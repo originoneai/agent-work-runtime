@@ -1,0 +1,34 @@
+{
+  "content": "{\n  \"version\": 1,\n  \"work_item\": \"ZS-DIAG\",\n  \"source_sha\": \"8218b29c348b7eda3e57b541c3489e41b87b6679\",\n  \"command\": \"rtk proxy sh .work-receipts/verify-zs-diag.sh\",\n  \"scope\": [\n    \"ZS-DIAG\"\n  ],\n  \"verified_at\": 1788916969000,\n  \"artifact\": {\n    \"locator\": \"deliverables/zhusheng-interruption-diagnosis.md\",\n    \"sha256\": \"a7feebb26b5f65e7da1eb34b0774393fb06b9835c4b4537b64028b247920a196\"\n  },\n  \"checks\": [\n    {\n      \"name\": \"saved-pending-source-state\",\n      \"passed\": true,\n      \"details\": \"诊断稿分别列出了两份已保存材料、三类未应用建议、四个权威来源及当前 AWR 流程边界；材料内容与基线提交一致。\",\n      \"criteria\": [\n        \"列清真实保存的产物、待应用变更及当前来源状态。\"\n      ]\n    },\n    {\n      \"name\": \"provenance-and-unknowns\",\n      \"passed\": true,\n      \"details\": \"诊断稿保留材料路径、行号、Git 提交和 SHA-256；对缺失的三个目录值、角色分配、遗留问题明细及未落盘内容均明确标为未知或待确认。\",\n      \"criteria\": [\n        \"保留实际产物与来源引用，无法确认的内容显式说明。\"\n      ]\n    },\n    {\n      \"name\": \"authority-boundary\",\n      \"passed\": true,\n      \"details\": \"原材料未改动，三条业务建议未出现在 work-ledger.yaml；AWR 对台账的写入仅涉及 ZS-DIAG 流程状态和下一动作。\",\n      \"criteria\": []\n    }\n  ]\n}\n",
+  "content_hash_verified": true,
+  "currency": "unknown",
+  "evidence": {
+    "branch_id": null,
+    "command": "rtk proxy sh .work-receipts/verify-zs-diag.sh",
+    "external_key": "zs-diag-local-20260909",
+    "freshness": null,
+    "id": "01M21WA4RGS320KYPVHCYCA23B",
+    "level": "locally_verified",
+    "locator": ".work-receipts/zs-diag-evidence-report.json",
+    "revision": 1,
+    "scope": [
+      "ZS-DIAG"
+    ],
+    "scope_total": 1,
+    "sha256": "1daefa254cd85b8a1e502693abcfa82817b1649bc7b0dd28b4d8543bff5a0b6c",
+    "source_ref": null,
+    "source_sha": "8218b29c348b7eda3e57b541c3489e41b87b6679",
+    "summary": "本地核对确认诊断稿列清已保存材料、未应用建议、当前来源状态和未知项，且建议未进入权威台账。",
+    "type": "verification_report",
+    "verified_at": 1788916969000,
+    "work_item_id": "01M21VJFYMK83N0YHVXMRVXJNK"
+  },
+  "freshness_basis": "source_refresh",
+  "missing_bindings": [],
+  "ok": true,
+  "project_revision": 31,
+  "reasons": [
+    "both recorded and requested source SHA are needed to determine currency"
+  ],
+  "source_refresh_performed": true
+}

@@ -1,0 +1,25 @@
+milestones:
+- id: ZS-DELIVERY
+  title: 竹声维护交接交付
+  status: in_progress
+work_items:
+- {"acceptance":["列清真实保存的产物、待应用变更及当前来源状态。","保留实际产物与来源引用，无法确认的内容显式说明。"],"depends_on":[],"evidence":[".work-receipts/zs-diag-evidence-report.json"],"goal":"goal#zs","id":"ZS-DIAG","milestone":"ZS-DELIVERY","next_action":"整理已保存内容、待补事项和未应用建议，并保留来源与未知项。","owner":null,"priority":"P0","status":"completed","title":"核实中断前保留结果","verification":{"evidence_level":"locally_verified"}}
+- {"acceptance":["用实际回执解释哪些变更已提交，哪些仍待处理。","保留实际产物与来源引用，无法确认的内容显式说明。"],"depends_on":["ZS-DIAG"],"evidence":[".work-receipts/zs-compare-completion-evidence-report.json"],"goal":"goal#zs","id":"ZS-COMPARE","milestone":"ZS-DELIVERY","next_action":"创建并提交逐项可审阅的待审核提案，核对提案状态和权威源未被应用。","owner":null,"priority":"P0","status":"completed","title":"比对已保存与未生效内容","verification":{"evidence_level":"locally_verified"}}
+- {"acceptance":["处理待应用改动，保留重试或恢复的证据，避免重复写入。","保留实际产物与来源引用，无法确认的内容显式说明。"],"depends_on":["ZS-COMPARE"],"evidence":[".work-receipts/zs-recover-evidence-report.json"],"goal":"goal#zs","id":"ZS-RECOVER","milestone":"ZS-DELIVERY","next_action":"根据归档与角色确认形成无重复的合并变更；取得具体遗留问题清单、影响和下一步后再提交并应用，随后验证来源前后和回执数量。","owner":null,"priority":"P0","status":"completed","title":"恢复并推进交接工作","verification":{"evidence_level":"locally_verified"}}
+- {"acceptance":["核对来源前后与事件回执，确认未丢失结果或重复交付。","保留实际产物与来源引用，无法确认的内容显式说明。"],"depends_on":["ZS-RECOVER"],"evidence":[".work-receipts/reviewer-completion-report.json"],"goal":"goal#zs","id":"ZS-REVIEW","milestone":"ZS-DELIVERY","next_action":"完成逐项判定，形成独立复核报告；阻断项交回原生产者，不代改其产物。","owner":null,"priority":"P0","status":"completed","summary":"已固定复核前生产者文件哈希并验证 56 个历史文件与 6 个中断取证文件；继续核对是否存在应生效但从未应用的业务修订。","title":"独立复核恢复一致性","verification":{"evidence_level":"locally_verified"}}
+- id: ZS-DELIVER
+  title: 交付恢复后的维护交接
+  status: planned
+  owner: null
+  priority: P0
+  milestone: ZS-DELIVERY
+  goal: goal#zs
+  acceptance:
+  - 交付最终交接说明及未决事项。
+  - 保留实际产物与来源引用，无法确认的内容显式说明。
+  depends_on:
+  - ZS-REVIEW
+  next_action: 交付恢复后的维护交接，先核对当前来源和负责范围。
+  evidence: []
+  verification:
+    evidence_level: none

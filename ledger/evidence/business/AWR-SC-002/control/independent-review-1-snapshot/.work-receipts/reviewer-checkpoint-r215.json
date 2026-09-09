@@ -1,0 +1,54 @@
+{
+  "checkpoint": {
+    "changed_entities": [
+      "evidence:01M224M1G1BZHCPK1PTFVR4AVM",
+      "work_items:01M21S7N6Y4AC19Z03M6G1K5TW"
+    ],
+    "context_hash": "52759342ed902efc6cdd8fc83c5c05be10326cdec65c47c5d6cbb40ea6eaaf25",
+    "created_at": 1788925889562,
+    "digest": "独立复核报告已形成并通过AWR验收映射；业务范围有条件通过，101文件固定包和20份生产者产物哈希一致，过程范围偏离与六个非零命令已保留。",
+    "id": "01M224NK0TBZ99TJDP9D3JM7MM",
+    "next_action": "由原生产者读取wh-independent-review.md，保留七项业务缺口和过程偏离，另行形成实际wh-delivery.md；操作方核对陈旧execution-record，E4继续未完成。",
+    "open_loops": [
+      "原生产者尚未形成实际wh-delivery.md；不得把wanghai-final-delivery.md或本复核记录当作最终交付。",
+      "三次MEMORY.md检索和一次过宽docs检索是不可追认的过程范围偏离；当前未观察到外部业务内容污染。",
+      "execution-record.json仍含旧授权/身份阻塞和空gates，须由操作方后续核对，复核者不改写。"
+    ],
+    "project_revision": 215,
+    "revision": 1,
+    "session_id": "01M223E7S897SM2ADAAQ1AX25Q"
+  },
+  "checkpoint_save": {
+    "after_revision": 197,
+    "attempt_id": "01M224NK0SZE3VBXRBKADR3S39",
+    "delta_bytes": 6391,
+    "delta_recorded": true,
+    "event_id": "01M224NK0TF90G6D6VG79FNJ2W",
+    "observed_changed_entity_count": 2,
+    "reported_changed_entity_count": 0,
+    "session_event_count": 3,
+    "source_observation_count": 4,
+    "through_revision": 215
+  },
+  "context_hash_basis": "caller_supplied_last_used_context",
+  "context_hash_verified": false,
+  "event": {
+    "artifact_id": null,
+    "branch_id": null,
+    "checkpoint_id": "01M224NK0TBZ99TJDP9D3JM7MM",
+    "created_at": 1788925889562,
+    "id": "01M224NK0TF90G6D6VG79FNJ2W",
+    "importance": "normal",
+    "project_revision": 217,
+    "session_id": "01M223E7S897SM2ADAAQ1AX25Q",
+    "source_id": null,
+    "summary": "Saved session checkpoint and observed delta",
+    "type": "checkpoint.created",
+    "work_item_id": "01M21S7N6Y4AC19Z03M6G1K5TW"
+  },
+  "freshness_basis": "source_refresh",
+  "ok": true,
+  "project_revision": 217,
+  "save_status": "completed",
+  "source_refresh_performed": true
+}

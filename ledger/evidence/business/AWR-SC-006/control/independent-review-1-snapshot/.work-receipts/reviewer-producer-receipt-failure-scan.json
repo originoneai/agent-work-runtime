@@ -1,0 +1,18 @@
+{
+  "version": 1,
+  "reviewer": "luna_worker",
+  "verified_at": "2026-09-09T11:36:57.742366+08:00",
+  "producer_json_receipts_checked": 83,
+  "invalid_json": [],
+  "top_level_failure_receipts": [
+    {
+      "path": ".work-receipts/cr-01-create-session-mismatch-error.json",
+      "sha256": "2da5594bb5f7d0bafd90676da4102ae106bf4407949fdd39dd1adb65cde10310",
+      "details": {
+        "code": "InvalidInput",
+        "message": "invalid input: work target conflicts with the creating session"
+      }
+    }
+  ],
+  "note": "Top-level JSON scan only; preserved native command failures may also be represented in sealed turn metadata or non-JSON logs."
+}

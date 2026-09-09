@@ -1,0 +1,93 @@
+{
+  "checkpoint": {
+    "changed_entities": [],
+    "context_hash": "e21573e00a75b1c220fe449c557273a0a6f1a334acd349c5d1e82c136be81dbb",
+    "created_at": 1788920578251,
+    "digest": "已按 Git、AWR 流程状态和业务提案状态查清保存与生效边界；新增归档确认只补足三个目录名称，未进入 Git 或权威台账。已补齐一致性说明、更新提案索引、运行本地校验并注册 ZS-COMPARE 的 locally_verified 证据；三份提案仍为 ready、绑定有效且无 apply attempt。",
+    "id": "01M21ZKG6BHDJKBSNTN4SVB466",
+    "next_action": "写入 work-ledger.yaml 前先重查三份提案 binding_valid；以归档确认审阅 CR-01，并补齐目录根路径、权限和迁移状态，同时向协调者和执行者收集 CR-02、CR-03 所需事实，再决定提案合并、重建或应用。",
+    "open_loops": [
+      "materials/archive-confirmation.md 已保存但未进入 Git；它未提供目录根路径、权限、迁移执行或完整性验证。",
+      "CR-01、CR-02、CR-03 均未批准或应用；具体角色与职责边界、遗留问题明细及影响和下一步仍缺确认。",
+      "任何 work-ledger.yaml 写入都可能使共享旧指纹上的提案绑定失效，必须先复查并保留旧回执。",
+      "独立复核与最终交付尚未发生，须由不同执行者完成复核。"
+    ],
+    "project_revision": 49,
+    "revision": 1,
+    "session_id": "01M21XP8VZ1YJRNSS6BJH2V4HB"
+  },
+  "checkpoint_save": {
+    "after_revision": 46,
+    "attempt_id": "01M21ZKG6A1SKSEPBYDDMTAFG9",
+    "delta_bytes": 1064,
+    "delta_recorded": true,
+    "event_id": "01M21ZKG6BEQCC87V3F76S9JRH",
+    "observed_changed_entity_count": 0,
+    "reported_changed_entity_count": 4,
+    "session_event_count": 0,
+    "source_observation_count": 0,
+    "through_revision": 49
+  },
+  "checkpoint_saves": {
+    "attempts": [
+      {
+        "base_project_revision": 49,
+        "checkpoint_id": "01M21ZKG6BHDJKBSNTN4SVB466",
+        "created_at": 1788920578250,
+        "id": "01M21ZKG6A1SKSEPBYDDMTAFG9",
+        "started_project_revision": 50,
+        "status": "completed"
+      },
+      {
+        "base_project_revision": 46,
+        "checkpoint_id": "01M21Y1W5N3N6VEEC0AQGGT2N9",
+        "created_at": 1788918952116,
+        "id": "01M21Y1W5M5WQAJQVRVBAMV2ME",
+        "started_project_revision": 47,
+        "status": "completed"
+      }
+    ],
+    "incomplete_count": 0,
+    "limit": 20,
+    "may_have_more": false
+  },
+  "claims": [
+    {
+      "acquired_at": 1788918571903,
+      "agent_id": "codex-primary",
+      "branch_id": null,
+      "expires_at": 1788922171903,
+      "id": "01M21XP8VZ19C36AM6A0HG2QRW",
+      "project_id": "01M21VJFYF7E75EQ55DEH3D5TS",
+      "released_at": null,
+      "revision": 1,
+      "session_id": "01M21XP8VZ1YJRNSS6BJH2V4HB",
+      "status": "active",
+      "work_item_id": "01M21VJFYMCA78QW9DEWGQ4ZV6"
+    }
+  ],
+  "context_requires_refresh": true,
+  "freshness_basis": "runtime_database",
+  "inherited_checkpoint": null,
+  "inherited_checkpoint_save": null,
+  "ok": true,
+  "project_revision": 51,
+  "resumed_successor": null,
+  "session": {
+    "agent_id": "codex-primary",
+    "branch_id": null,
+    "end_project_revision": null,
+    "ended_at": null,
+    "id": "01M21XP8VZ1YJRNSS6BJH2V4HB",
+    "last_checkpoint_id": "01M21ZKG6BHDJKBSNTN4SVB466",
+    "model": "gpt-5",
+    "project_id": "01M21VJFYF7E75EQ55DEH3D5TS",
+    "provider": "openai",
+    "revision": 3,
+    "start_project_revision": 45,
+    "started_at": 1788918571903,
+    "status": "active",
+    "work_item_id": "01M21VJFYMCA78QW9DEWGQ4ZV6"
+  },
+  "source_refresh_performed": false
+}

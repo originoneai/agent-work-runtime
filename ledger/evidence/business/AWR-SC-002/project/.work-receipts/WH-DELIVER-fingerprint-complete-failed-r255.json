@@ -1,0 +1,11 @@
+{
+  "code": "EvidenceMissing",
+  "message": "required evidence missing: verification report disagrees with its work, source SHA, command, scope or verification-time binding",
+  "work_item": "WH-DELIVER",
+  "project_revision_before": 255,
+  "project_revision_after": 255,
+  "evidence_external_key": "WH-DELIVER-FINGERPRINT-RELATIONSHIP-V3-20260909",
+  "evidence_id": "01M22900SWF2ZZF6SFQDMGZ1D1",
+  "diagnosis": "The evidence registration scope contained the reviewed manual, v3 source verification, and independent review, while the v3 report scope omitted those three paths.",
+  "recovery": "Preserve the v3 report and this rejection. Register a v4 report whose work item, source SHA, command, scope, and verified-at fields exactly match its evidence draft."
+}

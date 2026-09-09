@@ -1,0 +1,196 @@
+{
+  "ok": true,
+  "code": "proposal_recorded",
+  "project_revision": 100,
+  "proposal": {
+    "id": "01M224BCFFTXY6R352TVPXGBC2",
+    "project_id": "01M21VJFYF7E75EQ55DEH3D5TS",
+    "work_item_id": "01M21VJFYMSXG6YEVAE8TW7WHA",
+    "source_id": "01M21VJFYKQHY3PPK3TBPPYNPT",
+    "base_fingerprint": "sha256:d06d0576864115d75552955b98d3e1dc4b2d1b88bcec50a0f396fa99800e98d6",
+    "expected_revision": 93,
+    "mutation_type": "work.complete",
+    "patch": {
+      "changes": {
+        "evidence": [
+          ".work-receipts/reviewer-completion-report.json"
+        ],
+        "status": "completed",
+        "verification": {
+          "evidence_level": "locally_verified"
+        }
+      },
+      "intent": "独立复核已逐项完成并形成来源绑定报告；发现确认后的业务修订未一次性生效且恢复状态与剩余动作冲突，需原生产者整改后返检。",
+      "source_config": {
+        "adapter_options": {},
+        "adapter_version": 1,
+        "mapping_key": "ledger|work-ledger.yaml"
+      },
+      "target": {
+        "kind": "work_item",
+        "meta": {
+          "external_key": "ZS-REVIEW",
+          "id": "01M21VJFYMSXG6YEVAE8TW7WHA",
+          "revision": 2,
+          "source_ref": {
+            "end_line": null,
+            "locator": "file:///Users/mac/Documents/originone/agent-work-running/.local/business-live-20260909-v1/interrupted-write/project/work-ledger.yaml",
+            "pointer": "/work_items/3",
+            "section_fingerprint": null,
+            "source_fingerprint": "sha256:d06d0576864115d75552955b98d3e1dc4b2d1b88bcec50a0f396fa99800e98d6",
+            "source_id": "01M21VJFYKQHY3PPK3TBPPYNPT",
+            "source_revision": 8,
+            "start_line": null
+          }
+        }
+      },
+      "version": 1,
+      "work_action": {
+        "action": "complete",
+        "completion": {
+          "acceptance": [
+            {
+              "criterion": "核对来源前后与事件回执，确认未丢失结果或重复交付。",
+              "evidence": [
+                "01M224AV59ARCF17S9SH4092HG"
+              ]
+            },
+            {
+              "criterion": "保留实际产物与来源引用，无法确认的内容显式说明。",
+              "evidence": [
+                "01M224AV59ARCF17S9SH4092HG"
+              ]
+            }
+          ],
+          "evidence": [
+            {
+              "branch_id": null,
+              "command": "rtk proxy /Users/mac/Documents/originone/agent-work-running/.venv/bin/python .work-receipts/reviewer-verify.py",
+              "evidence_type": "verification_report",
+              "external_key": "zs-independent-review-20260909-v1",
+              "id": "01M224AV59ARCF17S9SH4092HG",
+              "level": "locally_verified",
+              "locator": ".work-receipts/reviewer-completion-report.json",
+              "project_id": "01M21VJFYF7E75EQ55DEH3D5TS",
+              "revision": 1,
+              "scope": [
+                "ZS-REVIEW"
+              ],
+              "sha256": "2972837d45de156d80980ece2eed4d497a5bdcac5a5d467db4805a4e8e8c3ead",
+              "source_ref": null,
+              "source_sha": "8218b29c348b7eda3e57b541c3489e41b87b6679",
+              "summary": "独立复核已核对中断恢复、来源前后、提案处置和保存结果；报告记录需原生产者整改的业务生效缺口并保留未知项。",
+              "verified_at": 1788925529818,
+              "work_item_id": "01M21VJFYMSXG6YEVAE8TW7WHA"
+            }
+          ],
+          "minimum_level": "locally_verified",
+          "source_sha": "8218b29c348b7eda3e57b541c3489e41b87b6679",
+          "version": 1
+        },
+        "from": "in_progress",
+        "to": "completed"
+      }
+    },
+    "status": "applied",
+    "created_by_session": "01M223JC0DGNZACGCB1GK9FWQR",
+    "revision": 5
+  },
+  "event": {
+    "id": "01M224BCHBEX83P3CAMENM9EQQ",
+    "project_id": "01M21VJFYF7E75EQ55DEH3D5TS",
+    "work_item_id": "01M21VJFYMSXG6YEVAE8TW7WHA",
+    "session_id": null,
+    "branch_id": null,
+    "event_type": "work.completed",
+    "importance": "normal",
+    "summary": "Verified source work action Complete",
+    "payload": {
+      "action_reason": "独立复核已逐项完成并形成来源绑定报告；发现确认后的业务修订未一次性生效且恢复状态与剩余动作冲突，需原生产者整改后返检。",
+      "actor": "luna_worker",
+      "after_fingerprint": "sha256:e3c53f814b4bdb4c8c712cd11e0273dbc53ef810d8c6e6d94e63df97c7c470e4",
+      "attempt_event_id": "01M224BCGKAHEDF8JHE5SGXKQ9",
+      "before_fingerprint": "sha256:d06d0576864115d75552955b98d3e1dc4b2d1b88bcec50a0f396fa99800e98d6",
+      "creating_session_id": "01M223JC0DGNZACGCB1GK9FWQR",
+      "proposal_id": "01M224BCFFTXY6R352TVPXGBC2",
+      "reason": "独立复核已逐项完成并形成来源绑定报告；发现确认后的业务修订未一次性生效且恢复状态与剩余动作冲突，需原生产者整改后返检。",
+      "released_claim_ids": [
+        "01M223JC0DMZEZAF591R4QH2BC"
+      ],
+      "source_id": "01M21VJFYKQHY3PPK3TBPPYNPT",
+      "source_revision": 9,
+      "target_after_hash": "d289653a65be000ab9fc78f23f8aad76b301f6e5851c5335016b1690602dbc8a",
+      "target_revision": 3,
+      "work_action": {
+        "action": "complete",
+        "completion": {
+          "acceptance": [
+            {
+              "criterion": "核对来源前后与事件回执，确认未丢失结果或重复交付。",
+              "evidence": [
+                "01M224AV59ARCF17S9SH4092HG"
+              ]
+            },
+            {
+              "criterion": "保留实际产物与来源引用，无法确认的内容显式说明。",
+              "evidence": [
+                "01M224AV59ARCF17S9SH4092HG"
+              ]
+            }
+          ],
+          "evidence": [
+            {
+              "branch_id": null,
+              "command": "rtk proxy /Users/mac/Documents/originone/agent-work-running/.venv/bin/python .work-receipts/reviewer-verify.py",
+              "evidence_type": "verification_report",
+              "external_key": "zs-independent-review-20260909-v1",
+              "id": "01M224AV59ARCF17S9SH4092HG",
+              "level": "locally_verified",
+              "locator": ".work-receipts/reviewer-completion-report.json",
+              "project_id": "01M21VJFYF7E75EQ55DEH3D5TS",
+              "revision": 1,
+              "scope": [
+                "ZS-REVIEW"
+              ],
+              "sha256": "2972837d45de156d80980ece2eed4d497a5bdcac5a5d467db4805a4e8e8c3ead",
+              "source_ref": null,
+              "source_sha": "8218b29c348b7eda3e57b541c3489e41b87b6679",
+              "summary": "独立复核已核对中断恢复、来源前后、提案处置和保存结果；报告记录需原生产者整改的业务生效缺口并保留未知项。",
+              "verified_at": 1788925529818,
+              "work_item_id": "01M21VJFYMSXG6YEVAE8TW7WHA"
+            }
+          ],
+          "minimum_level": "locally_verified",
+          "source_sha": "8218b29c348b7eda3e57b541c3489e41b87b6679",
+          "version": 1
+        },
+        "from": "in_progress",
+        "to": "completed"
+      },
+      "write_plan_id": "01M224BCFYWKBRQH8ZDR5ZTYKZ"
+    },
+    "project_revision": 100,
+    "created_at": 1788925555243
+  },
+  "source_refresh_performed": true,
+  "source_write_performed": true,
+  "write_outcome": "applied",
+  "apply_attempt": {
+    "event_id": "01M224BCGKAHEDF8JHE5SGXKQ9",
+    "proposal_id": "01M224BCFFTXY6R352TVPXGBC2",
+    "source_id": "01M21VJFYKQHY3PPK3TBPPYNPT",
+    "project_revision": 97,
+    "plan": {
+      "id": "01M224BCFYWKBRQH8ZDR5ZTYKZ",
+      "before_fingerprint": "sha256:d06d0576864115d75552955b98d3e1dc4b2d1b88bcec50a0f396fa99800e98d6",
+      "after_fingerprint": "sha256:e3c53f814b4bdb4c8c712cd11e0273dbc53ef810d8c6e6d94e63df97c7c470e4",
+      "before_size": 3037,
+      "after_size": 3095,
+      "target_after_hash": "d289653a65be000ab9fc78f23f8aad76b301f6e5851c5335016b1690602dbc8a"
+    },
+    "resolved_event_id": "01M224BCHBEX83P3CAMENM9EQQ"
+  },
+  "recovery_directory": ".awr/mutations/01M224BCFYWKBRQH8ZDR5ZTYKZ",
+  "source_check": null,
+  "error": null
+}

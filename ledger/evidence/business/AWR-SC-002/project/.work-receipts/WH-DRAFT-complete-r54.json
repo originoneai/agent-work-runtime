@@ -1,0 +1,198 @@
+{
+  "ok": true,
+  "code": "proposal_recorded",
+  "project_revision": 54,
+  "proposal": {
+    "id": "01M21VY3VVBRPXM3NWQT8PF7A9",
+    "project_id": "01M21S7N6RNH8JE1KAP73K5576",
+    "work_item_id": "01M21S7N6YYPKRACNR0J5S9B3K",
+    "source_id": "01M21S7N6XEZK9D9F0CRFZYEMJ",
+    "base_fingerprint": "sha256:e8850a8e3af00d100fac579a867e9bc64c743abd865ab403b50081200fda1cf1",
+    "expected_revision": 47,
+    "mutation_type": "work.complete",
+    "patch": {
+      "changes": {
+        "evidence": [
+          "deliverables/wh-draft-verification-v2.json"
+        ],
+        "status": "completed",
+        "verification": {
+          "evidence_level": "locally_verified"
+        }
+      },
+      "intent": "三章运营手册工作稿已形成，推进顺序、来源引用、未知项及恢复条件均已通过本地核对",
+      "source_config": {
+        "adapter_options": {},
+        "adapter_version": 1,
+        "mapping_key": "ledger|work-ledger.yaml"
+      },
+      "target": {
+        "kind": "work_item",
+        "meta": {
+          "external_key": "WH-DRAFT",
+          "id": "01M21S7N6YYPKRACNR0J5S9B3K",
+          "revision": 2,
+          "source_ref": {
+            "end_line": null,
+            "locator": "file:///Users/mac/Documents/originone/agent-work-running/.local/business-live-20260909-v1/long-task-resume/project/work-ledger.yaml",
+            "pointer": "/work_items/1",
+            "section_fingerprint": null,
+            "source_fingerprint": "sha256:e8850a8e3af00d100fac579a867e9bc64c743abd865ab403b50081200fda1cf1",
+            "source_id": "01M21S7N6XEZK9D9F0CRFZYEMJ",
+            "source_revision": 4,
+            "start_line": null
+          }
+        }
+      },
+      "version": 1,
+      "work_action": {
+        "action": "complete",
+        "completion": {
+          "acceptance": [
+            {
+              "criterion": "依据保留的工作记录推进手册，解释当前推进顺序。",
+              "evidence": [
+                "01M21VXK1KZPXKCA4M67ZDVVN9"
+              ]
+            },
+            {
+              "criterion": "保留实际产物与来源引用，无法确认的内容显式说明。",
+              "evidence": [
+                "01M21VXK1KZPXKCA4M67ZDVVN9"
+              ]
+            }
+          ],
+          "evidence": [
+            {
+              "branch_id": null,
+              "command": "rtk rg -n '^#|^##|GAP-0[1-7]|SRC-0[1-4]|待确认|恢复条件|WH-LINKS|WH-REVIEW|WH-DELIVER' deliverables/wanghai-operations-manual-draft.md",
+              "evidence_type": "report",
+              "external_key": "WH-DRAFT-WORKING-MANUAL-VERIFY-V2-20260909",
+              "id": "01M21VXK1KZPXKCA4M67ZDVVN9",
+              "level": "locally_verified",
+              "locator": "deliverables/wh-draft-verification-v2.json",
+              "project_id": "01M21S7N6RNH8JE1KAP73K5576",
+              "revision": 1,
+              "scope": [
+                "WH-DRAFT",
+                "deliverables/wanghai-operations-manual-draft.md"
+              ],
+              "sha256": "37ee738b5a56e89b78c29815b17c240eeef8d60e719bc84d838260bd1963bbd0",
+              "source_ref": null,
+              "source_sha": "f9c654a16e66079e1e47558860dbc411b622c3fd",
+              "summary": "三章运营手册工作稿已依据保留记录续写，推进顺序、来源边界、未知项和恢复条件已完成本地核对",
+              "verified_at": 1788916641000,
+              "work_item_id": "01M21S7N6YYPKRACNR0J5S9B3K"
+            }
+          ],
+          "minimum_level": "locally_verified",
+          "source_sha": "f9c654a16e66079e1e47558860dbc411b622c3fd",
+          "version": 1
+        },
+        "from": "in_progress",
+        "to": "completed"
+      }
+    },
+    "status": "applied",
+    "created_by_session": "01M21VAYWH5J13AEPREX0HGE8R",
+    "revision": 5
+  },
+  "event": {
+    "id": "01M21VY3XFKA9T932DF86BSCBC",
+    "project_id": "01M21S7N6RNH8JE1KAP73K5576",
+    "work_item_id": "01M21S7N6YYPKRACNR0J5S9B3K",
+    "session_id": null,
+    "branch_id": null,
+    "event_type": "work.completed",
+    "importance": "normal",
+    "summary": "Verified source work action Complete",
+    "payload": {
+      "action_reason": "三章运营手册工作稿已形成，推进顺序、来源引用、未知项及恢复条件均已通过本地核对",
+      "actor": "codex-root",
+      "after_fingerprint": "sha256:ddfbeddbf559967d42f9f15ae75e3910716bf90432baa149349e64dabf594e96",
+      "attempt_event_id": "01M21VY3WS59YPF83W5BA21KHX",
+      "before_fingerprint": "sha256:e8850a8e3af00d100fac579a867e9bc64c743abd865ab403b50081200fda1cf1",
+      "creating_session_id": "01M21VAYWH5J13AEPREX0HGE8R",
+      "proposal_id": "01M21VY3VVBRPXM3NWQT8PF7A9",
+      "reason": "三章运营手册工作稿已形成，推进顺序、来源引用、未知项及恢复条件均已通过本地核对",
+      "released_claim_ids": [
+        "01M21VAYWJ6YCZ7H33XYSMR4V3"
+      ],
+      "source_id": "01M21S7N6XEZK9D9F0CRFZYEMJ",
+      "source_revision": 5,
+      "target_after_hash": "24e135850982903fe0a0ea45fcb7e34dccc7ccd7877499f4f56f518fa3deb5cf",
+      "target_revision": 3,
+      "work_action": {
+        "action": "complete",
+        "completion": {
+          "acceptance": [
+            {
+              "criterion": "依据保留的工作记录推进手册，解释当前推进顺序。",
+              "evidence": [
+                "01M21VXK1KZPXKCA4M67ZDVVN9"
+              ]
+            },
+            {
+              "criterion": "保留实际产物与来源引用，无法确认的内容显式说明。",
+              "evidence": [
+                "01M21VXK1KZPXKCA4M67ZDVVN9"
+              ]
+            }
+          ],
+          "evidence": [
+            {
+              "branch_id": null,
+              "command": "rtk rg -n '^#|^##|GAP-0[1-7]|SRC-0[1-4]|待确认|恢复条件|WH-LINKS|WH-REVIEW|WH-DELIVER' deliverables/wanghai-operations-manual-draft.md",
+              "evidence_type": "report",
+              "external_key": "WH-DRAFT-WORKING-MANUAL-VERIFY-V2-20260909",
+              "id": "01M21VXK1KZPXKCA4M67ZDVVN9",
+              "level": "locally_verified",
+              "locator": "deliverables/wh-draft-verification-v2.json",
+              "project_id": "01M21S7N6RNH8JE1KAP73K5576",
+              "revision": 1,
+              "scope": [
+                "WH-DRAFT",
+                "deliverables/wanghai-operations-manual-draft.md"
+              ],
+              "sha256": "37ee738b5a56e89b78c29815b17c240eeef8d60e719bc84d838260bd1963bbd0",
+              "source_ref": null,
+              "source_sha": "f9c654a16e66079e1e47558860dbc411b622c3fd",
+              "summary": "三章运营手册工作稿已依据保留记录续写，推进顺序、来源边界、未知项和恢复条件已完成本地核对",
+              "verified_at": 1788916641000,
+              "work_item_id": "01M21S7N6YYPKRACNR0J5S9B3K"
+            }
+          ],
+          "minimum_level": "locally_verified",
+          "source_sha": "f9c654a16e66079e1e47558860dbc411b622c3fd",
+          "version": 1
+        },
+        "from": "in_progress",
+        "to": "completed"
+      },
+      "write_plan_id": "01M21VY3W8TDQ6GECY5N5S5DVB"
+    },
+    "project_revision": 54,
+    "created_at": 1788916731823
+  },
+  "source_refresh_performed": true,
+  "source_write_performed": true,
+  "write_outcome": "applied",
+  "apply_attempt": {
+    "event_id": "01M21VY3WS59YPF83W5BA21KHX",
+    "proposal_id": "01M21VY3VVBRPXM3NWQT8PF7A9",
+    "source_id": "01M21S7N6XEZK9D9F0CRFZYEMJ",
+    "project_revision": 51,
+    "plan": {
+      "id": "01M21VY3W8TDQ6GECY5N5S5DVB",
+      "before_fingerprint": "sha256:e8850a8e3af00d100fac579a867e9bc64c743abd865ab403b50081200fda1cf1",
+      "after_fingerprint": "sha256:ddfbeddbf559967d42f9f15ae75e3910716bf90432baa149349e64dabf594e96",
+      "before_size": 2666,
+      "after_size": 2720,
+      "target_after_hash": "24e135850982903fe0a0ea45fcb7e34dccc7ccd7877499f4f56f518fa3deb5cf"
+    },
+    "resolved_event_id": "01M21VY3XFKA9T932DF86BSCBC"
+  },
+  "recovery_directory": ".awr/mutations/01M21VY3W8TDQ6GECY5N5S5DVB",
+  "source_check": null,
+  "error": null
+}

@@ -1,0 +1,21 @@
+{
+  "external_key": "WH-DRAFT-ACCEPTANCE-REVISION-VERIFY-20260909",
+  "work_item_key": "WH-DRAFT",
+  "evidence_type": "report",
+  "level": "locally_verified",
+  "summary": "新增验收要求已落实到不可变v3工作稿，六章均附出处，三个业务章节逐项保留未确认内容的影响、负责角色和恢复条件",
+  "locator": "deliverables/wh-draft-verification-v4.json",
+  "sha256": "65dae1927fad7215977afe3a8edff2a0f660c2aabacfee9740643db6f4b7ec4e",
+  "source_sha": "f9c654a16e66079e1e47558860dbc411b622c3fd",
+  "command": "rtk rg -n '^## |本章资料出处|未确认内容责任与影响|影响范围|负责角色及当前状态|最终说明' deliverables/wanghai-operations-manual-draft-v3.md",
+  "scope": [
+    "WH-DRAFT",
+    "deliverables/wanghai-operations-manual-draft-v3.md",
+    "RULES.md",
+    "materials/manual-outline.md",
+    "materials/open-questions.csv",
+    "materials/duty-notes.md"
+  ],
+  "branch_id": null,
+  "verified_at": 1788919844000
+}

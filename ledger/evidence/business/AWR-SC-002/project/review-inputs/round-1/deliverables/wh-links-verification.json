@@ -1,0 +1,39 @@
+{
+  "version": 1,
+  "work_item": "WH-LINKS",
+  "source_sha": "f9c654a16e66079e1e47558860dbc411b622c3fd",
+  "command": "rtk rg -n '每日启动检查来源核对|值班交接来源核对|常见问题处理来源核对|三章核对汇总|缺失|恢复条件|待独立复核' deliverables/wanghai-source-verification.md",
+  "scope": [
+    "WH-LINKS",
+    "deliverables/wanghai-source-verification.md",
+    "deliverables/wanghai-operations-manual-draft.md"
+  ],
+  "verified_at": 1788917024000,
+  "artifact": {
+    "locator": "deliverables/wanghai-source-verification.md",
+    "sha256": "9a34cdefb4a0aa684a70f7d79d958680f9512ca2a4b79ce1371536e95dcf2e19"
+  },
+  "checks": [
+    {
+      "name": "三章材料引用与未决问题",
+      "passed": true,
+      "details": "来源核对记录分别检查每日启动检查、值班交接和常见问题处理；每章均覆盖文件存在、内容对应、版本适用和责任明确四个维度，并列出仍需确认的问题与恢复条件。",
+      "criteria": [
+        "检查三个章节的材料引用和仍需确认的问题。"
+      ]
+    },
+    {
+      "name": "实际产物、来源引用和未知项",
+      "passed": true,
+      "details": "核对记录绑定两份现有业务材料、前序交接/接续记录及工作稿哈希；8个去重后的本地Markdown引用均可定位，材料目录仅有两份文件，三章真实操作材料均明确判为不完整。",
+      "criteria": [
+        "保留实际产物与来源引用，无法确认的内容显式说明。"
+      ]
+    },
+    {
+      "name": "证据边界",
+      "passed": true,
+      "details": "记录明确WH-LINKS完成仅表示来源核对动作完成，不表示材料齐全、链接有效、手册可执行、独立复核或最终验收通过；git diff --check无输出。"
+    }
+  ]
+}

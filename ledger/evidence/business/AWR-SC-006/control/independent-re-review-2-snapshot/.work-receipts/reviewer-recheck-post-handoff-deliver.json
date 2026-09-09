@@ -1,0 +1,80 @@
+{
+  "acceptance": [
+    "交付最终交接说明及未决事项。",
+    "保留实际产物与来源引用，无法确认的内容显式说明。"
+  ],
+  "decisions": [],
+  "dependency_cycles": [],
+  "evidence": [],
+  "evidence_currency_basis": {
+    "branch_id": null,
+    "requested_source_sha": null
+  },
+  "freshness_basis": "source_refresh",
+  "missing_dependencies": [],
+  "ok": true,
+  "project_revision": 209,
+  "read_only": false,
+  "required_dependencies": [
+    {
+      "external_key": "ZS-COMPARE",
+      "freshness": "fresh",
+      "revision": 3,
+      "source_revision": 20,
+      "status": "completed"
+    },
+    {
+      "external_key": "ZS-DIAG",
+      "freshness": "fresh",
+      "revision": 3,
+      "source_revision": 20,
+      "status": "completed"
+    },
+    {
+      "external_key": "ZS-RECOVER",
+      "freshness": "fresh",
+      "revision": 9,
+      "source_revision": 20,
+      "status": "completed"
+    },
+    {
+      "external_key": "ZS-REVIEW",
+      "freshness": "fresh",
+      "revision": 8,
+      "source_revision": 20,
+      "status": "completed"
+    }
+  ],
+  "source_issues": [],
+  "source_ref": {
+    "end_line": null,
+    "locator": "file:///Users/mac/Documents/originone/agent-work-running/.local/business-live-20260909-v1/interrupted-write/project/work-ledger.yaml",
+    "pointer": "/work_items/4",
+    "section_fingerprint": null,
+    "source_fingerprint": "sha256:c1ae9edabad4bcb9ec0cd7d2c6143b61817bfe4db880065fd5b430d3855111e5",
+    "source_id": "01M21VJFYKQHY3PPK3TBPPYNPT",
+    "source_revision": 20,
+    "start_line": null
+  },
+  "source_refresh_performed": true,
+  "source_warnings": 0,
+  "work": {
+    "active_claims": [],
+    "blocker": null,
+    "diagnostics": [],
+    "external_key": "ZS-DELIVER",
+    "freshness": "fresh",
+    "id": "01M21VJFYMX50ZQZKG1A17EYVP",
+    "milestone": "ZS-DELIVERY",
+    "next_action": "交付恢复后的维护交接，先核对当前来源和负责范围。",
+    "owner": null,
+    "priority": "P0",
+    "raw_status": "planned",
+    "ready": true,
+    "revision": 1,
+    "source_revision": 20,
+    "status": "planned",
+    "summary": "交付恢复后的维护交接",
+    "title": "交付恢复后的维护交接"
+  }
+}

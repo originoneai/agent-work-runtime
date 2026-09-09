@@ -1,0 +1,29 @@
+{
+  "kind": "actual_prior_business_turn",
+  "phase": "round-2",
+  "client_task_id": "01a083d7-4073-7150-89cd-993a9899dcad",
+  "actual_user_turn": {
+    "timestamp": "2026-09-09T02:28:15.571Z",
+    "text": "继续处理剩余工作，确认没有重复写入或丢失结果后交付。"
+  },
+  "source_sha256": {
+    "project.toml": "15caf8be661c1b9dd77c8474d449e5e5e2f019bcaecb51602a62f14366e2a008",
+    "GOALS.md": "254aec11ac1dd7abe79a2b6f8c3dd45be84633765af2ebd74ecbeeaea1ef4152",
+    "PLAN.md": "eda91c43584652bed15afb4d61f2598d379641610db0883a1b0435fa66185995",
+    "RULES.md": "4c28d3a308958136b8449d9c61c59da81e0d5f7dcbfd9075b32c87d61a0cb606",
+    "work-ledger.yaml": "18f18e0fe31ae9c1a5951f6aad176be41cba613c0fd7a6d0fa65435b7395e846",
+    "AGENTS.md": "d0ca28ca18c438aefdada6a14cb847a0664e261f9e8e48abbfd8701720eb66a2",
+    "DELIVERABLES.md": "4781518d79092e826bb9d506b39afa3f828e1f6aeefd150dc783a03b3a5e71bd"
+  },
+  "artifact_sha256": {
+    "deliverables/zhusheng-change-proposals.md": "576da8467d953ae91a4652460410375b53becdacf46507480b14351987b5ba39",
+    "deliverables/zhusheng-consistency.md": "a4b0e68ba92833cade1877458a7e029fd1b9ecca9035080d9d0358b096ca19fa",
+    "deliverables/zhusheng-interruption-diagnosis.md": "a7feebb26b5f65e7da1eb34b0774393fb06b9835c4b4537b64028b247920a196",
+    "deliverables/zhusheng-recovery-work.md": "365af74d286ae37c080b689f8f54904ad98468a5051b9939ae544567010cab03"
+  },
+  "native_transcript_sha256": "0f9d60809c636aabbf22c5eb5b3dbf4403ced460b813a2c853c57befa2e04ddf",
+  "events_sha256": "9e973c26eae24efa606b462b65445cd5c4f632f0974c5083afe7094dca176e1e",
+  "sealed_at": "2026-09-09T11:28:50+08:00",
+  "final_message": "恢复阶段已完成，但尚不能宣称最终交付完成：项目要求独立复核必须由不同执行者完成，目前不存在 `deliverables/zs-independent-review.md`，我不能代签或绕过该门槛。\n\n当前结果：\n\n- AWR revision `84`，`ZS-DIAG`、`ZS-COMPARE`、`ZS-RECOVER` 共 3 项已完成。\n- 三个旧提案 ID 各仅一条，均已明确处置为 `rejected`，全部 `apply_attempt: null`；原 patch、失败及拒绝回执均保留。\n- 原始材料哈希未变，归档和角色确认材料均已纳入交接说明。\n- 16 个复核输入文件的哈希校验全部通过。\n- AWR Doctor 为 `ok`，数据库完整、无外键/schema 问题、无活动会话或待处理提案。\n- `ZS-REVIEW` 已处于可认领状态；`ZS-DELIVER` 正确等待其完成。\n- 具体遗留问题清单仍未提供，已明确保留为未决项。\n- 工作树仍未提交，本次没有误报为 Git 已提交或正式发布。\n\n关键材料：\n\n- [恢复及防重复记录](/Users/mac/Documents/originone/agent-work-running/.local/business-live-20260909-v1/interrupted-write/project/deliverables/zhusheng-recovery-work.md)\n- [当前一致性说明](/Users/mac/Documents/originone/agent-work-running/.local/business-live-20260909-v1/interrupted-write/project/deliverables/zhusheng-consistency.md)\n- [独立复核输入清单](/Users/mac/Documents/originone/agent-work-running/.local/business-live-20260909-v1/interrupted-write/project/.work-receipts/zs-independent-review-inputs.sha256)\n- [复核输入校验脚本](/Users/mac/Documents/originone/agent-work-running/.local/business-live-20260909-v1/interrupted-write/project/.work-receipts/verify-zs-independent-review-inputs.sh)\n- [恢复完成回执](/Users/mac/Documents/originone/agent-work-running/.local/business-live-20260909-v1/interrupted-write/project/.work-receipts/zs-recover-completion-receipt.json)\n\n下一步必须由另一位执行者认领 `ZS-REVIEW`、运行复核输入校验并形成独立复核记录；该结果到位后才能继续 `ZS-DELIVER`。",
+  "note": "Copied historical evidence, not newly authored business output or a review conclusion."
+}

@@ -1,0 +1,161 @@
+{
+  "acceptance": [
+    "处理复核意见，交付可继续追溯的手册及交接说明。",
+    "保留实际产物与来源引用，无法确认的内容显式说明。"
+  ],
+  "decisions": [],
+  "dependency_cycles": [],
+  "evidence": [
+    {
+      "currency": "current",
+      "external_key": "WH-DELIVER-FINAL-VERIFY-20260909",
+      "level": "locally_verified",
+      "locator": ".work-receipts/WH-DELIVER-final-verification.json",
+      "missing_bindings": [],
+      "reasons": [],
+      "source_sha": "f9c654a16e66079e1e47558860dbc411b622c3fd",
+      "summary": "最终资料交付验证：实际wh-delivery、最终工作记录和最终交接已形成；当前及历史哈希一致，35个本地链接可解析，七项缺口、范围偏离和实际失败均保留"
+    },
+    {
+      "currency": "current",
+      "external_key": "WH-DELIVER-FINAL-VERIFY-V2-20260909",
+      "level": "locally_verified",
+      "locator": ".work-receipts/WH-DELIVER-final-verification-v2.json",
+      "missing_bindings": [],
+      "reasons": [],
+      "source_sha": "f9c654a16e66079e1e47558860dbc411b622c3fd",
+      "summary": "v2最终资料交付验证符合完成证据契约：复核意见已映射处理，当前与历史哈希一致，35个本地链接可解析，七项缺口、范围偏离和生产者及复核者失败均保留"
+    },
+    {
+      "currency": "current",
+      "external_key": "WH-DELIVER-FINGERPRINT-RELATIONSHIP-V3-20260909",
+      "level": "locally_verified",
+      "locator": ".work-receipts/WH-DELIVER-fingerprint-relationship-verification-v3.json",
+      "missing_bindings": [],
+      "reasons": [],
+      "source_sha": "f9c654a16e66079e1e47558860dbc411b622c3fd",
+      "summary": "交付清单指纹关系修正核验：原清单稳定检出1项工作记录指纹不一致；当前v2机器清单28项、人读权威表29行和36个本地链接全部一致，历史版本、漏检记录、已复核手册及七项未闭环缺口均保留"
+    },
+    {
+      "currency": "current",
+      "external_key": "WH-DELIVER-FINGERPRINT-RELATIONSHIP-V4-20260909",
+      "level": "locally_verified",
+      "locator": ".work-receipts/WH-DELIVER-fingerprint-relationship-verification-v4.json",
+      "missing_bindings": [],
+      "reasons": [],
+      "source_sha": "f9c654a16e66079e1e47558860dbc411b622c3fd",
+      "summary": "v4交付指纹关系证据：原清单稳定检出1项工作记录指纹错误；当前v2机器清单28项、人读权威表29行及36个本地链接零不一致，并保留原交付、既有漏检、当前AWR绑定失败、已复核手册和七项业务缺口"
+    },
+    {
+      "currency": "unknown",
+      "external_key": "WH-DELIVER/evidence/.work-receipts/WH-DELIVER-final-verification-v2.json",
+      "level": "unknown",
+      "locator": ".work-receipts/WH-DELIVER-final-verification-v2.json",
+      "missing_bindings": [
+        "sha256",
+        "source_sha",
+        "command",
+        "verified_at"
+      ],
+      "reasons": [
+        "both recorded and requested source SHA are needed to determine currency"
+      ],
+      "source_sha": null,
+      "summary": "Evidence reference; not yet verified by AWR"
+    },
+    {
+      "currency": "unknown",
+      "external_key": "WH-DELIVER/evidence/.work-receipts/WH-DELIVER-fingerprint-relationship-verification-v4.json",
+      "level": "unknown",
+      "locator": ".work-receipts/WH-DELIVER-fingerprint-relationship-verification-v4.json",
+      "missing_bindings": [
+        "sha256",
+        "source_sha",
+        "command",
+        "verified_at"
+      ],
+      "reasons": [
+        "both recorded and requested source SHA are needed to determine currency"
+      ],
+      "source_sha": null,
+      "summary": "Evidence reference; not yet verified by AWR"
+    }
+  ],
+  "evidence_currency_basis": {
+    "branch_id": null,
+    "requested_source_sha": "f9c654a16e66079e1e47558860dbc411b622c3fd"
+  },
+  "freshness_basis": "source_refresh",
+  "missing_dependencies": [],
+  "ok": true,
+  "project_revision": 266,
+  "read_only": false,
+  "required_dependencies": [
+    {
+      "external_key": "WH-DRAFT",
+      "freshness": "fresh",
+      "revision": 9,
+      "source_revision": 27,
+      "status": "completed"
+    },
+    {
+      "external_key": "WH-LINKS",
+      "freshness": "fresh",
+      "revision": 9,
+      "source_revision": 27,
+      "status": "completed"
+    },
+    {
+      "external_key": "WH-OPEN",
+      "freshness": "fresh",
+      "revision": 3,
+      "source_revision": 27,
+      "status": "completed"
+    },
+    {
+      "external_key": "WH-REVIEW",
+      "freshness": "fresh",
+      "revision": 4,
+      "source_revision": 27,
+      "status": "completed"
+    }
+  ],
+  "source_issues": [],
+  "source_ref": {
+    "end_line": null,
+    "locator": "file:///Users/mac/Documents/originone/agent-work-running/.local/business-live-20260909-v1/long-task-resume/project/work-ledger.yaml",
+    "pointer": "/work_items/4",
+    "section_fingerprint": null,
+    "source_fingerprint": "sha256:07660631cae653fd55191b940c8b3a00362cfdb157fc715faaa146334c9b9eb1",
+    "source_id": "01M21S7N6XEZK9D9F0CRFZYEMJ",
+    "source_revision": 27,
+    "start_line": null
+  },
+  "source_refresh_performed": true,
+  "source_warnings": 0,
+  "work": {
+    "active_claims": [],
+    "blocker": null,
+    "diagnostics": [
+      {
+        "code": "status_not_selectable",
+        "detail": "source status is completed",
+        "work_item_key": "WH-DELIVER"
+      }
+    ],
+    "external_key": "WH-DELIVER",
+    "freshness": "fresh",
+    "id": "01M21S7N6Y3EAGEX2SW3DXVW2S",
+    "milestone": "WH-DELIVERY",
+    "next_action": "冻结原wh-delivery和既有漏检报告，新增wh-delivery-v2、修订记录、机器清单及能复现旧缺陷并验证新版本的核对报告",
+    "owner": null,
+    "priority": "P0",
+    "raw_status": "completed",
+    "ready": false,
+    "revision": 6,
+    "source_revision": 27,
+    "status": "completed",
+    "summary": "正在修正交付清单内声明指纹与实际文件不一致，并补建逐项路径、链接目标、声明SHA和实际SHA的回归核验",
+    "title": "交付手册和交接说明"
+  }
+}

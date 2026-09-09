@@ -1,0 +1,85 @@
+{
+  "checkpoint": {
+    "changed_entities": [
+      "evidence:01M21WAZSWDWP9929SD5CZ7H7R",
+      "work_items:01M21VJFYMK83N0YHVXMRVXJNK"
+    ],
+    "context_hash": "49b318faf0071e238fd39e60b92c4ebd0e047de164d5909affffa0fd4771c95b",
+    "created_at": 1788917222561,
+    "digest": "完成 ZS-DIAG：形成中断诊断与待补清单，保留两份原材料和三条未应用建议，登记本地验证证据；未开展比对、恢复或独立复核。",
+    "id": "01M21WD351G0PMR5F2BFT0P2GK",
+    "next_action": "取得三个归档目录、角色分工和遗留问题明细的确认后，再认领 ZS-COMPARE；在此之前保持建议不进入权威台账。",
+    "open_loops": [
+      "三个归档目录具体值、值班与资料角色、遗留问题明细仍未知；业务建议未应用；独立复核及最终交付均未开始。"
+    ],
+    "project_revision": 28,
+    "revision": 1,
+    "session_id": "01M21VM2HAAYJ0B93NMZYXVV4V"
+  },
+  "checkpoint_save": {
+    "after_revision": 12,
+    "attempt_id": "01M21WD351SM01DGZDYR05197S",
+    "delta_bytes": 6421,
+    "delta_recorded": true,
+    "event_id": "01M21WD351J2ZV0Q26H4CCXS0N",
+    "observed_changed_entity_count": 2,
+    "reported_changed_entity_count": 1,
+    "session_event_count": 3,
+    "source_observation_count": 4,
+    "through_revision": 28
+  },
+  "checkpoint_saves": {
+    "attempts": [
+      {
+        "base_project_revision": 28,
+        "checkpoint_id": "01M21WD351G0PMR5F2BFT0P2GK",
+        "created_at": 1788917222561,
+        "id": "01M21WD351SM01DGZDYR05197S",
+        "started_project_revision": 29,
+        "status": "completed"
+      }
+    ],
+    "incomplete_count": 0,
+    "limit": 20,
+    "may_have_more": false
+  },
+  "claims": [
+    {
+      "acquired_at": 1788916402730,
+      "agent_id": "codex-primary",
+      "branch_id": null,
+      "expires_at": 1788920002730,
+      "id": "01M21VM2HB0PJGY39Z96TNN9WQ",
+      "project_id": "01M21VJFYF7E75EQ55DEH3D5TS",
+      "released_at": 1788917153601,
+      "revision": 2,
+      "session_id": "01M21VM2HAAYJ0B93NMZYXVV4V",
+      "status": "released",
+      "work_item_id": "01M21VJFYMK83N0YHVXMRVXJNK"
+    }
+  ],
+  "context_requires_refresh": true,
+  "freshness_basis": "runtime_database",
+  "inherited_checkpoint": null,
+  "inherited_checkpoint_save": null,
+  "ok": true,
+  "project_revision": 31,
+  "resumed_successor": null,
+  "session": {
+    "agent_id": "codex-primary",
+    "branch_id": null,
+    "end_project_revision": 31,
+    "ended_at": 1788917231269,
+    "id": "01M21VM2HAAYJ0B93NMZYXVV4V",
+    "last_checkpoint_id": "01M21WD351G0PMR5F2BFT0P2GK",
+    "model": "gpt-5",
+    "project_id": "01M21VJFYF7E75EQ55DEH3D5TS",
+    "provider": "openai",
+    "revision": 3,
+    "start_project_revision": 12,
+    "started_at": 1788916402730,
+    "status": "ended",
+    "work_item_id": "01M21VJFYMK83N0YHVXMRVXJNK"
+  },
+  "source_refresh_performed": false
+}

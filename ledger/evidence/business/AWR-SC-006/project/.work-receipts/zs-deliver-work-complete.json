@@ -1,0 +1,197 @@
+{
+  "ok": true,
+  "code": "proposal_recorded",
+  "project_revision": 232,
+  "proposal": {
+    "id": "01M22AR6YG28VEMAZZZ8ME9QNW",
+    "project_id": "01M21VJFYF7E75EQ55DEH3D5TS",
+    "work_item_id": "01M21VJFYMX50ZQZKG1A17EYVP",
+    "source_id": "01M21VJFYKQHY3PPK3TBPPYNPT",
+    "base_fingerprint": "sha256:d3b5c1afee5019211e177a2450ebcfe6e9f07c1d6344f7b753e3dc7ba9f90d95",
+    "expected_revision": 225,
+    "mutation_type": "work.complete",
+    "patch": {
+      "changes": {
+        "evidence": [
+          ".work-receipts/zs-deliver-completion-report-v2.json"
+        ],
+        "status": "completed",
+        "verification": {
+          "evidence_level": "locally_verified"
+        }
+      },
+      "intent": "依据独立返检通过结论和 70 项本地核验，完成竹声中断恢复最终交接；未知事项与交付边界继续保留。",
+      "source_config": {
+        "adapter_options": {},
+        "adapter_version": 1,
+        "mapping_key": "ledger|work-ledger.yaml"
+      },
+      "target": {
+        "kind": "work_item",
+        "meta": {
+          "external_key": "ZS-DELIVER",
+          "id": "01M21VJFYMX50ZQZKG1A17EYVP",
+          "revision": 3,
+          "source_ref": {
+            "end_line": null,
+            "locator": "file:///Users/mac/Documents/originone/agent-work-running/.local/business-live-20260909-v1/interrupted-write/project/work-ledger.yaml",
+            "pointer": "/work_items/4",
+            "section_fingerprint": null,
+            "source_fingerprint": "sha256:d3b5c1afee5019211e177a2450ebcfe6e9f07c1d6344f7b753e3dc7ba9f90d95",
+            "source_id": "01M21VJFYKQHY3PPK3TBPPYNPT",
+            "source_revision": 22,
+            "start_line": null
+          }
+        }
+      },
+      "version": 1,
+      "work_action": {
+        "action": "complete",
+        "completion": {
+          "acceptance": [
+            {
+              "criterion": "交付最终交接说明及未决事项。",
+              "evidence": [
+                "01M22ANMPA7J6GTMRMDN0Z8MPS"
+              ]
+            },
+            {
+              "criterion": "保留实际产物与来源引用，无法确认的内容显式说明。",
+              "evidence": [
+                "01M22ANMPA7J6GTMRMDN0Z8MPS"
+              ]
+            }
+          ],
+          "evidence": [
+            {
+              "branch_id": null,
+              "command": "rtk proxy /Users/mac/Documents/originone/agent-work-running/.venv/bin/python .work-receipts/verify-zs-delivery.py --phase pre",
+              "evidence_type": "verification_report",
+              "external_key": "zs-final-recovery-delivery-20260909-v2",
+              "id": "01M22ANMPA7J6GTMRMDN0Z8MPS",
+              "level": "locally_verified",
+              "locator": ".work-receipts/zs-deliver-completion-report-v2.json",
+              "project_id": "01M21VJFYF7E75EQ55DEH3D5TS",
+              "revision": 1,
+              "scope": [
+                "ZS-DELIVER"
+              ],
+              "sha256": "746610addd54f1f3e5e6d21b055a184baaec79b57c65c091df11e820d411d340",
+              "source_ref": null,
+              "source_sha": "8218b29c348b7eda3e57b541c3489e41b87b6679",
+              "summary": "最终交接说明已形成并经 70 项本地核验：中断恢复、确认要求、新旧提案、归档和角色级安排、失败及未知项均已分层；首次登记失败已保留，不扩展为 Git、发布或 E4。",
+              "verified_at": 1788932066021,
+              "work_item_id": "01M21VJFYMX50ZQZKG1A17EYVP"
+            }
+          ],
+          "minimum_level": "locally_verified",
+          "source_sha": "8218b29c348b7eda3e57b541c3489e41b87b6679",
+          "version": 1
+        },
+        "from": "in_progress",
+        "to": "completed"
+      }
+    },
+    "status": "applied",
+    "created_by_session": "01M229PEPFG7KC962FP55GCRMX",
+    "revision": 5
+  },
+  "event": {
+    "id": "01M22AR70DZQ28FM465Z8V0ZGX",
+    "project_id": "01M21VJFYF7E75EQ55DEH3D5TS",
+    "work_item_id": "01M21VJFYMX50ZQZKG1A17EYVP",
+    "session_id": null,
+    "branch_id": null,
+    "event_type": "work.completed",
+    "importance": "normal",
+    "summary": "Verified source work action Complete",
+    "payload": {
+      "action_reason": "依据独立返检通过结论和 70 项本地核验，完成竹声中断恢复最终交接；未知事项与交付边界继续保留。",
+      "actor": "codex-primary",
+      "after_fingerprint": "sha256:d27d51cfc9c3f733a3db94b13c12b668afe22ab1d28b0728c4df8e331f9f31fa",
+      "attempt_event_id": "01M22AR6ZM8WTZC6PVWGSVY1G1",
+      "before_fingerprint": "sha256:d3b5c1afee5019211e177a2450ebcfe6e9f07c1d6344f7b753e3dc7ba9f90d95",
+      "creating_session_id": "01M229PEPFG7KC962FP55GCRMX",
+      "proposal_id": "01M22AR6YG28VEMAZZZ8ME9QNW",
+      "reason": "依据独立返检通过结论和 70 项本地核验，完成竹声中断恢复最终交接；未知事项与交付边界继续保留。",
+      "released_claim_ids": [
+        "01M229PEPGF7QHSCBV1ACMH6CJ"
+      ],
+      "source_id": "01M21VJFYKQHY3PPK3TBPPYNPT",
+      "source_revision": 23,
+      "target_after_hash": "db59ac6b218d42d15fc52caf5497aaa80514a19fed46d2e8c050e7c759e0f33c",
+      "target_revision": 4,
+      "work_action": {
+        "action": "complete",
+        "completion": {
+          "acceptance": [
+            {
+              "criterion": "交付最终交接说明及未决事项。",
+              "evidence": [
+                "01M22ANMPA7J6GTMRMDN0Z8MPS"
+              ]
+            },
+            {
+              "criterion": "保留实际产物与来源引用，无法确认的内容显式说明。",
+              "evidence": [
+                "01M22ANMPA7J6GTMRMDN0Z8MPS"
+              ]
+            }
+          ],
+          "evidence": [
+            {
+              "branch_id": null,
+              "command": "rtk proxy /Users/mac/Documents/originone/agent-work-running/.venv/bin/python .work-receipts/verify-zs-delivery.py --phase pre",
+              "evidence_type": "verification_report",
+              "external_key": "zs-final-recovery-delivery-20260909-v2",
+              "id": "01M22ANMPA7J6GTMRMDN0Z8MPS",
+              "level": "locally_verified",
+              "locator": ".work-receipts/zs-deliver-completion-report-v2.json",
+              "project_id": "01M21VJFYF7E75EQ55DEH3D5TS",
+              "revision": 1,
+              "scope": [
+                "ZS-DELIVER"
+              ],
+              "sha256": "746610addd54f1f3e5e6d21b055a184baaec79b57c65c091df11e820d411d340",
+              "source_ref": null,
+              "source_sha": "8218b29c348b7eda3e57b541c3489e41b87b6679",
+              "summary": "最终交接说明已形成并经 70 项本地核验：中断恢复、确认要求、新旧提案、归档和角色级安排、失败及未知项均已分层；首次登记失败已保留，不扩展为 Git、发布或 E4。",
+              "verified_at": 1788932066021,
+              "work_item_id": "01M21VJFYMX50ZQZKG1A17EYVP"
+            }
+          ],
+          "minimum_level": "locally_verified",
+          "source_sha": "8218b29c348b7eda3e57b541c3489e41b87b6679",
+          "version": 1
+        },
+        "from": "in_progress",
+        "to": "completed"
+      },
+      "write_plan_id": "01M22AR6Z1KGZ3F156VB3SGRV7"
+    },
+    "project_revision": 232,
+    "created_at": 1788932267021
+  },
+  "source_refresh_performed": true,
+  "source_write_performed": true,
+  "write_outcome": "applied",
+  "apply_attempt": {
+    "event_id": "01M22AR6ZM8WTZC6PVWGSVY1G1",
+    "proposal_id": "01M22AR6YG28VEMAZZZ8ME9QNW",
+    "source_id": "01M21VJFYKQHY3PPK3TBPPYNPT",
+    "project_revision": 229,
+    "plan": {
+      "id": "01M22AR6Z1KGZ3F156VB3SGRV7",
+      "before_fingerprint": "sha256:d3b5c1afee5019211e177a2450ebcfe6e9f07c1d6344f7b753e3dc7ba9f90d95",
+      "after_fingerprint": "sha256:d27d51cfc9c3f733a3db94b13c12b668afe22ab1d28b0728c4df8e331f9f31fa",
+      "before_size": 4334,
+      "after_size": 4397,
+      "target_after_hash": "db59ac6b218d42d15fc52caf5497aaa80514a19fed46d2e8c050e7c759e0f33c"
+    },
+    "resolved_event_id": "01M22AR70DZQ28FM465Z8V0ZGX"
+  },
+  "recovery_directory": ".awr/mutations/01M22AR6Z1KGZ3F156VB3SGRV7",
+  "source_check": null,
+  "error": null
+}
+

@@ -1,0 +1,32 @@
+{
+  "version": 1,
+  "source_sha": "8218b29c348b7eda3e57b541c3489e41b87b6679",
+  "minimum_level": "locally_verified",
+  "acceptance": [
+    {
+      "criterion": "处理待应用改动，保留重试或恢复的证据，避免重复写入。",
+      "evidence": [
+        "zs-recover-remediation-20260909-v1"
+      ]
+    },
+    {
+      "criterion": "保留实际产物与来源引用，无法确认的内容显式说明。",
+      "evidence": [
+        "zs-recover-remediation-20260909-v1"
+      ]
+    },
+    {
+      "criterion": "资料归档按“使用说明、交接记录、问题跟踪”三个内容类型目录执行，并保留资料管理员确认来源（materials/archive-confirmation.md）；目录根路径、权限、迁移与完整性未明确时继续列为未决。",
+      "evidence": [
+        "zs-recover-remediation-20260909-v1"
+      ]
+    },
+    {
+      "criterion": "角色职责按协调者确认执行：值班人员维护交接记录、资料管理员维护使用说明、问题负责人维护问题跟踪，并保留确认来源（materials/role-confirmation.md）；具体人员、值班表、代理/升级路径和交接时限未明确时继续列为未决。",
+      "evidence": [
+        "zs-recover-remediation-20260909-v1"
+      ]
+    }
+  ],
+  "required_evidence": []
+}

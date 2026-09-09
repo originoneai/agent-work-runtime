@@ -1,0 +1,1876 @@
+{
+  "version": 1,
+  "kind": "independent_remediation_recheck_verification",
+  "reviewer": "luna_worker",
+  "recorded_at": "2026-09-09T12:52:25+08:00",
+  "checks_passed": 247,
+  "checks_failed": 0,
+  "checks": [
+    {
+      "name": "published-file-count",
+      "passed": true,
+      "actual": 167,
+      "expected": 167,
+      "evidence": "control/review-correction-publication.json"
+    },
+    {
+      "name": "published-file-set",
+      "passed": true,
+      "actual": [
+        ".work-receipts/cr-01-after-disposition.json",
+        ".work-receipts/cr-01-archive.patch.json",
+        ".work-receipts/cr-01-create-session-mismatch-error.json",
+        ".work-receipts/cr-01-create.json",
+        ".work-receipts/cr-01-rejected-superseded.json",
+        ".work-receipts/cr-01-show-full.json",
+        ".work-receipts/cr-01-submit.json",
+        ".work-receipts/cr-02-after-disposition.json",
+        ".work-receipts/cr-02-create.json",
+        ".work-receipts/cr-02-rejected-superseded.json",
+        ".work-receipts/cr-02-roles.patch.json",
+        ".work-receipts/cr-02-show-full.json",
+        ".work-receipts/cr-02-submit.json",
+        ".work-receipts/cr-03-after-disposition.json",
+        ".work-receipts/cr-03-create.json",
+        ".work-receipts/cr-03-open-issues.patch.json",
+        ".work-receipts/cr-03-rejected-superseded.json",
+        ".work-receipts/cr-03-show-full.json",
+        ".work-receipts/cr-03-submit.json",
+        ".work-receipts/preserved-handover-inputs.sha256",
+        ".work-receipts/proposal-ready-list.json",
+        ".work-receipts/reviewer-bootstrap.json",
+        ".work-receipts/reviewer-checkpoint.json",
+        ".work-receipts/reviewer-completion-input.json",
+        ".work-receipts/reviewer-completion-report.json",
+        ".work-receipts/reviewer-context.json",
+        ".work-receipts/reviewer-control-verification.json",
+        ".work-receipts/reviewer-cr-01-current.json",
+        ".work-receipts/reviewer-cr-02-current.json",
+        ".work-receipts/reviewer-cr-03-current.json",
+        ".work-receipts/reviewer-evidence-add.json",
+        ".work-receipts/reviewer-evidence-draft.json",
+        ".work-receipts/reviewer-final-doctor.json",
+        ".work-receipts/reviewer-final-history.json",
+        ".work-receipts/reviewer-final-ready.json",
+        ".work-receipts/reviewer-final-session.json",
+        ".work-receipts/reviewer-final-status.json",
+        ".work-receipts/reviewer-git-diff-check.log",
+        ".work-receipts/reviewer-git-status.txt",
+        ".work-receipts/reviewer-old-session.json",
+        ".work-receipts/reviewer-post-close-verification.json",
+        ".work-receipts/reviewer-producer-files-after.sha256",
+        ".work-receipts/reviewer-producer-files-before.sha256",
+        ".work-receipts/reviewer-producer-final-session.json",
+        ".work-receipts/reviewer-producer-input-verification.log",
+        ".work-receipts/reviewer-producer-receipt-failure-scan.json",
+        ".work-receipts/reviewer-proposal-inventory-current.json",
+        ".work-receipts/reviewer-recovery-session.json",
+        ".work-receipts/reviewer-review-inputs-verification.json",
+        ".work-receipts/reviewer-reviewed-files.sha256",
+        ".work-receipts/reviewer-session-end.json",
+        ".work-receipts/reviewer-session-start.json",
+        ".work-receipts/reviewer-source-diff.patch",
+        ".work-receipts/reviewer-state-audit.json",
+        ".work-receipts/reviewer-tool-failures.json",
+        ".work-receipts/reviewer-verification-run.log",
+        ".work-receipts/reviewer-verification.json",
+        ".work-receipts/reviewer-verify.py",
+        ".work-receipts/reviewer-work-complete.json",
+        ".work-receipts/reviewer-work-progress.json",
+        ".work-receipts/reviewer-zs-compare-history.json",
+        ".work-receipts/reviewer-zs-recover-history.json",
+        ".work-receipts/verify-zs-change-proposals.sh",
+        ".work-receipts/verify-zs-compare-handover.sh",
+        ".work-receipts/verify-zs-compare-ready-for-completion.sh",
+        ".work-receipts/verify-zs-diag.sh",
+        ".work-receipts/verify-zs-independent-review-inputs.sh",
+        ".work-receipts/verify-zs-recover.sh",
+        ".work-receipts/verify-zs-recovery-state.sh",
+        ".work-receipts/verify-zs-remediation-recheck-inputs.py",
+        ".work-receipts/verify-zs-remediation.py",
+        ".work-receipts/zs-compare-completion-context.json",
+        ".work-receipts/zs-compare-completion-evidence-add.json",
+        ".work-receipts/zs-compare-completion-evidence-draft.json",
+        ".work-receipts/zs-compare-completion-evidence-report.json",
+        ".work-receipts/zs-compare-completion-input.json",
+        ".work-receipts/zs-compare-completion-receipt.json",
+        ".work-receipts/zs-compare-context-after-evidence.json",
+        ".work-receipts/zs-compare-context-current-evidence.json",
+        ".work-receipts/zs-compare-cr-01-current.json",
+        ".work-receipts/zs-compare-cr-02-current.json",
+        ".work-receipts/zs-compare-cr-03-current.json",
+        ".work-receipts/zs-compare-current-history.json",
+        ".work-receipts/zs-compare-evidence-add.json",
+        ".work-receipts/zs-compare-evidence-draft.json",
+        ".work-receipts/zs-compare-evidence-report.json",
+        ".work-receipts/zs-compare-evidence-show.json",
+        ".work-receipts/zs-compare-final-checkpoint.json",
+        ".work-receipts/zs-compare-git-diff.patch",
+        ".work-receipts/zs-compare-git-status.txt",
+        ".work-receipts/zs-compare-handover-checkpoint.json",
+        ".work-receipts/zs-compare-handover-context.json",
+        ".work-receipts/zs-compare-handover-final-evidence.json",
+        ".work-receipts/zs-compare-handover-final-proposals.json",
+        ".work-receipts/zs-compare-handover-final-session.json",
+        ".work-receipts/zs-compare-handover-final-status.json",
+        ".work-receipts/zs-compare-handover-status.json",
+        ".work-receipts/zs-compare-history-after-completion.json",
+        ".work-receipts/zs-compare-interrupted-session-after-resume.json",
+        ".work-receipts/zs-compare-proposals-after-evidence.json",
+        ".work-receipts/zs-compare-ready-proposals-after-resume.json",
+        ".work-receipts/zs-compare-recovered-session.json",
+        ".work-receipts/zs-compare-recovery-bootstrap.json",
+        ".work-receipts/zs-compare-recovery-checkpoint.json",
+        ".work-receipts/zs-compare-recovery-context.json",
+        ".work-receipts/zs-compare-recovery-final-bootstrap.json",
+        ".work-receipts/zs-compare-recovery-final-proposals.json",
+        ".work-receipts/zs-compare-recovery-final-session.json",
+        ".work-receipts/zs-compare-recovery-final-status.json",
+        ".work-receipts/zs-compare-session-end.json",
+        ".work-receipts/zs-compare-status-after-resume.json",
+        ".work-receipts/zs-diag-checkpoint-show.json",
+        ".work-receipts/zs-diag-completion.json",
+        ".work-receipts/zs-diag-current-history.json",
+        ".work-receipts/zs-diag-evidence-draft.json",
+        ".work-receipts/zs-diag-evidence-report.json",
+        ".work-receipts/zs-diag-evidence-show.json",
+        ".work-receipts/zs-diag-final-status.json",
+        ".work-receipts/zs-diag-session-show.json",
+        ".work-receipts/zs-diag-work-history.json",
+        ".work-receipts/zs-independent-review-inputs.sha256",
+        ".work-receipts/zs-recover-after-proposals.json",
+        ".work-receipts/zs-recover-bootstrap.json",
+        ".work-receipts/zs-recover-completion-context.json",
+        ".work-receipts/zs-recover-completion-input.json",
+        ".work-receipts/zs-recover-completion-receipt.json",
+        ".work-receipts/zs-recover-context.json",
+        ".work-receipts/zs-recover-evidence-add.json",
+        ".work-receipts/zs-recover-evidence-draft.json",
+        ".work-receipts/zs-recover-evidence-report.json",
+        ".work-receipts/zs-recover-final-checkpoint.json",
+        ".work-receipts/zs-recover-history-current.json",
+        ".work-receipts/zs-recover-progress.json",
+        ".work-receipts/zs-recover-proposal-inventory.json",
+        ".work-receipts/zs-recover-session-end.json",
+        ".work-receipts/zs-recover-session-start.json",
+        ".work-receipts/zs-recover-work-current.json",
+        ".work-receipts/zs-recovery-final-doctor.log",
+        ".work-receipts/zs-remediation-acceptance-patch.json",
+        ".work-receipts/zs-remediation-completion-input.json",
+        ".work-receipts/zs-remediation-evidence-draft.json",
+        ".work-receipts/zs-remediation-evidence-report.json",
+        ".work-receipts/zs-remediation-operation-index.json",
+        ".work-receipts/zs-remediation-recheck-bundle-v2.sha256",
+        ".work-receipts/zs-remediation-recheck-bundle.sha256",
+        ".work-receipts/zs-remediation-recheck-inputs-v2.sha256",
+        ".work-receipts/zs-remediation-recheck-inputs.sha256",
+        ".work-receipts/zs-remediation-recheck-preflight-v2.json",
+        ".work-receipts/zs-remediation-recheck-preflight.json",
+        ".work-receipts/zs-remediation-recover-handoff-patch.json",
+        ".work-receipts/zs-remediation-review-handoff-patch.json",
+        ".work-receipts/zs-remediation-tool-failures.json",
+        "deliverables/zhusheng-change-proposals.md",
+        "deliverables/zhusheng-consistency.md",
+        "deliverables/zhusheng-interruption-diagnosis.md",
+        "deliverables/zhusheng-recovery-work.md",
+        "deliverables/zs-independent-review.md",
+        "review-correction-final.md",
+        "review-correction-review-extract.json",
+        "review-correction-sealed.json",
+        "sources/AGENTS.md",
+        "sources/DELIVERABLES.md",
+        "sources/GOALS.md",
+        "sources/PLAN.md",
+        "sources/RULES.md",
+        "sources/project.toml",
+        "sources/work-ledger.yaml"
+      ],
+      "expected": [
+        ".work-receipts/cr-01-after-disposition.json",
+        ".work-receipts/cr-01-archive.patch.json",
+        ".work-receipts/cr-01-create-session-mismatch-error.json",
+        ".work-receipts/cr-01-create.json",
+        ".work-receipts/cr-01-rejected-superseded.json",
+        ".work-receipts/cr-01-show-full.json",
+        ".work-receipts/cr-01-submit.json",
+        ".work-receipts/cr-02-after-disposition.json",
+        ".work-receipts/cr-02-create.json",
+        ".work-receipts/cr-02-rejected-superseded.json",
+        ".work-receipts/cr-02-roles.patch.json",
+        ".work-receipts/cr-02-show-full.json",
+        ".work-receipts/cr-02-submit.json",
+        ".work-receipts/cr-03-after-disposition.json",
+        ".work-receipts/cr-03-create.json",
+        ".work-receipts/cr-03-open-issues.patch.json",
+        ".work-receipts/cr-03-rejected-superseded.json",
+        ".work-receipts/cr-03-show-full.json",
+        ".work-receipts/cr-03-submit.json",
+        ".work-receipts/preserved-handover-inputs.sha256",
+        ".work-receipts/proposal-ready-list.json",
+        ".work-receipts/reviewer-bootstrap.json",
+        ".work-receipts/reviewer-checkpoint.json",
+        ".work-receipts/reviewer-completion-input.json",
+        ".work-receipts/reviewer-completion-report.json",
+        ".work-receipts/reviewer-context.json",
+        ".work-receipts/reviewer-control-verification.json",
+        ".work-receipts/reviewer-cr-01-current.json",
+        ".work-receipts/reviewer-cr-02-current.json",
+        ".work-receipts/reviewer-cr-03-current.json",
+        ".work-receipts/reviewer-evidence-add.json",
+        ".work-receipts/reviewer-evidence-draft.json",
+        ".work-receipts/reviewer-final-doctor.json",
+        ".work-receipts/reviewer-final-history.json",
+        ".work-receipts/reviewer-final-ready.json",
+        ".work-receipts/reviewer-final-session.json",
+        ".work-receipts/reviewer-final-status.json",
+        ".work-receipts/reviewer-git-diff-check.log",
+        ".work-receipts/reviewer-git-status.txt",
+        ".work-receipts/reviewer-old-session.json",
+        ".work-receipts/reviewer-post-close-verification.json",
+        ".work-receipts/reviewer-producer-files-after.sha256",
+        ".work-receipts/reviewer-producer-files-before.sha256",
+        ".work-receipts/reviewer-producer-final-session.json",
+        ".work-receipts/reviewer-producer-input-verification.log",
+        ".work-receipts/reviewer-producer-receipt-failure-scan.json",
+        ".work-receipts/reviewer-proposal-inventory-current.json",
+        ".work-receipts/reviewer-recovery-session.json",
+        ".work-receipts/reviewer-review-inputs-verification.json",
+        ".work-receipts/reviewer-reviewed-files.sha256",
+        ".work-receipts/reviewer-session-end.json",
+        ".work-receipts/reviewer-session-start.json",
+        ".work-receipts/reviewer-source-diff.patch",
+        ".work-receipts/reviewer-state-audit.json",
+        ".work-receipts/reviewer-tool-failures.json",
+        ".work-receipts/reviewer-verification-run.log",
+        ".work-receipts/reviewer-verification.json",
+        ".work-receipts/reviewer-verify.py",
+        ".work-receipts/reviewer-work-complete.json",
+        ".work-receipts/reviewer-work-progress.json",
+        ".work-receipts/reviewer-zs-compare-history.json",
+        ".work-receipts/reviewer-zs-recover-history.json",
+        ".work-receipts/verify-zs-change-proposals.sh",
+        ".work-receipts/verify-zs-compare-handover.sh",
+        ".work-receipts/verify-zs-compare-ready-for-completion.sh",
+        ".work-receipts/verify-zs-diag.sh",
+        ".work-receipts/verify-zs-independent-review-inputs.sh",
+        ".work-receipts/verify-zs-recover.sh",
+        ".work-receipts/verify-zs-recovery-state.sh",
+        ".work-receipts/verify-zs-remediation-recheck-inputs.py",
+        ".work-receipts/verify-zs-remediation.py",
+        ".work-receipts/zs-compare-completion-context.json",
+        ".work-receipts/zs-compare-completion-evidence-add.json",
+        ".work-receipts/zs-compare-completion-evidence-draft.json",
+        ".work-receipts/zs-compare-completion-evidence-report.json",
+        ".work-receipts/zs-compare-completion-input.json",
+        ".work-receipts/zs-compare-completion-receipt.json",
+        ".work-receipts/zs-compare-context-after-evidence.json",
+        ".work-receipts/zs-compare-context-current-evidence.json",
+        ".work-receipts/zs-compare-cr-01-current.json",
+        ".work-receipts/zs-compare-cr-02-current.json",
+        ".work-receipts/zs-compare-cr-03-current.json",
+        ".work-receipts/zs-compare-current-history.json",
+        ".work-receipts/zs-compare-evidence-add.json",
+        ".work-receipts/zs-compare-evidence-draft.json",
+        ".work-receipts/zs-compare-evidence-report.json",
+        ".work-receipts/zs-compare-evidence-show.json",
+        ".work-receipts/zs-compare-final-checkpoint.json",
+        ".work-receipts/zs-compare-git-diff.patch",
+        ".work-receipts/zs-compare-git-status.txt",
+        ".work-receipts/zs-compare-handover-checkpoint.json",
+        ".work-receipts/zs-compare-handover-context.json",
+        ".work-receipts/zs-compare-handover-final-evidence.json",
+        ".work-receipts/zs-compare-handover-final-proposals.json",
+        ".work-receipts/zs-compare-handover-final-session.json",
+        ".work-receipts/zs-compare-handover-final-status.json",
+        ".work-receipts/zs-compare-handover-status.json",
+        ".work-receipts/zs-compare-history-after-completion.json",
+        ".work-receipts/zs-compare-interrupted-session-after-resume.json",
+        ".work-receipts/zs-compare-proposals-after-evidence.json",
+        ".work-receipts/zs-compare-ready-proposals-after-resume.json",
+        ".work-receipts/zs-compare-recovered-session.json",
+        ".work-receipts/zs-compare-recovery-bootstrap.json",
+        ".work-receipts/zs-compare-recovery-checkpoint.json",
+        ".work-receipts/zs-compare-recovery-context.json",
+        ".work-receipts/zs-compare-recovery-final-bootstrap.json",
+        ".work-receipts/zs-compare-recovery-final-proposals.json",
+        ".work-receipts/zs-compare-recovery-final-session.json",
+        ".work-receipts/zs-compare-recovery-final-status.json",
+        ".work-receipts/zs-compare-session-end.json",
+        ".work-receipts/zs-compare-status-after-resume.json",
+        ".work-receipts/zs-diag-checkpoint-show.json",
+        ".work-receipts/zs-diag-completion.json",
+        ".work-receipts/zs-diag-current-history.json",
+        ".work-receipts/zs-diag-evidence-draft.json",
+        ".work-receipts/zs-diag-evidence-report.json",
+        ".work-receipts/zs-diag-evidence-show.json",
+        ".work-receipts/zs-diag-final-status.json",
+        ".work-receipts/zs-diag-session-show.json",
+        ".work-receipts/zs-diag-work-history.json",
+        ".work-receipts/zs-independent-review-inputs.sha256",
+        ".work-receipts/zs-recover-after-proposals.json",
+        ".work-receipts/zs-recover-bootstrap.json",
+        ".work-receipts/zs-recover-completion-context.json",
+        ".work-receipts/zs-recover-completion-input.json",
+        ".work-receipts/zs-recover-completion-receipt.json",
+        ".work-receipts/zs-recover-context.json",
+        ".work-receipts/zs-recover-evidence-add.json",
+        ".work-receipts/zs-recover-evidence-draft.json",
+        ".work-receipts/zs-recover-evidence-report.json",
+        ".work-receipts/zs-recover-final-checkpoint.json",
+        ".work-receipts/zs-recover-history-current.json",
+        ".work-receipts/zs-recover-progress.json",
+        ".work-receipts/zs-recover-proposal-inventory.json",
+        ".work-receipts/zs-recover-session-end.json",
+        ".work-receipts/zs-recover-session-start.json",
+        ".work-receipts/zs-recover-work-current.json",
+        ".work-receipts/zs-recovery-final-doctor.log",
+        ".work-receipts/zs-remediation-acceptance-patch.json",
+        ".work-receipts/zs-remediation-completion-input.json",
+        ".work-receipts/zs-remediation-evidence-draft.json",
+        ".work-receipts/zs-remediation-evidence-report.json",
+        ".work-receipts/zs-remediation-operation-index.json",
+        ".work-receipts/zs-remediation-recheck-bundle-v2.sha256",
+        ".work-receipts/zs-remediation-recheck-bundle.sha256",
+        ".work-receipts/zs-remediation-recheck-inputs-v2.sha256",
+        ".work-receipts/zs-remediation-recheck-inputs.sha256",
+        ".work-receipts/zs-remediation-recheck-preflight-v2.json",
+        ".work-receipts/zs-remediation-recheck-preflight.json",
+        ".work-receipts/zs-remediation-recover-handoff-patch.json",
+        ".work-receipts/zs-remediation-review-handoff-patch.json",
+        ".work-receipts/zs-remediation-tool-failures.json",
+        "deliverables/zhusheng-change-proposals.md",
+        "deliverables/zhusheng-consistency.md",
+        "deliverables/zhusheng-interruption-diagnosis.md",
+        "deliverables/zhusheng-recovery-work.md",
+        "deliverables/zs-independent-review.md",
+        "review-correction-final.md",
+        "review-correction-review-extract.json",
+        "review-correction-sealed.json",
+        "sources/AGENTS.md",
+        "sources/DELIVERABLES.md",
+        "sources/GOALS.md",
+        "sources/PLAN.md",
+        "sources/RULES.md",
+        "sources/project.toml",
+        "sources/work-ledger.yaml"
+      ]
+    },
+    {
+      "name": "published-hash:.work-receipts/cr-01-after-disposition.json",
+      "passed": true,
+      "actual": "ec2565d53d6cd3c2e104a901dd639d6d3dcad144663d736129b4181882e872b1",
+      "expected": "ec2565d53d6cd3c2e104a901dd639d6d3dcad144663d736129b4181882e872b1"
+    },
+    {
+      "name": "published-hash:.work-receipts/cr-01-archive.patch.json",
+      "passed": true,
+      "actual": "8ca0ba1a9ba9e990061898e4fdb22de4f486757b1cb57937e35cbb9c242e0c07",
+      "expected": "8ca0ba1a9ba9e990061898e4fdb22de4f486757b1cb57937e35cbb9c242e0c07"
+    },
+    {
+      "name": "published-hash:.work-receipts/cr-01-create-session-mismatch-error.json",
+      "passed": true,
+      "actual": "2da5594bb5f7d0bafd90676da4102ae106bf4407949fdd39dd1adb65cde10310",
+      "expected": "2da5594bb5f7d0bafd90676da4102ae106bf4407949fdd39dd1adb65cde10310"
+    },
+    {
+      "name": "published-hash:.work-receipts/cr-01-create.json",
+      "passed": true,
+      "actual": "e4fa3abc2482d7d680cfb8c10c86dce66facd5aaa74605bab302f4032e5f5edb",
+      "expected": "e4fa3abc2482d7d680cfb8c10c86dce66facd5aaa74605bab302f4032e5f5edb"
+    },
+    {
+      "name": "published-hash:.work-receipts/cr-01-rejected-superseded.json",
+      "passed": true,
+      "actual": "f7ea52acd9e922ef43612e6866d1d93e595b2cce2862b621a616927644b42d1e",
+      "expected": "f7ea52acd9e922ef43612e6866d1d93e595b2cce2862b621a616927644b42d1e"
+    },
+    {
+      "name": "published-hash:.work-receipts/cr-01-show-full.json",
+      "passed": true,
+      "actual": "60de99410ed521c7fc7b21b7b92c897f1a8c75a1d7d0e54fee8dba376bb1e1a8",
+      "expected": "60de99410ed521c7fc7b21b7b92c897f1a8c75a1d7d0e54fee8dba376bb1e1a8"
+    },
+    {
+      "name": "published-hash:.work-receipts/cr-01-submit.json",
+      "passed": true,
+      "actual": "3a2138ba49871d5febf75d16a8c18b8970801abcf4bf39baffd53acb3caff06c",
+      "expected": "3a2138ba49871d5febf75d16a8c18b8970801abcf4bf39baffd53acb3caff06c"
+    },
+    {
+      "name": "published-hash:.work-receipts/cr-02-after-disposition.json",
+      "passed": true,
+      "actual": "e45eeb0a4699640cbec9635cd0a4469e03ac108cebd68a426ee66e61e4c840e9",
+      "expected": "e45eeb0a4699640cbec9635cd0a4469e03ac108cebd68a426ee66e61e4c840e9"
+    },
+    {
+      "name": "published-hash:.work-receipts/cr-02-create.json",
+      "passed": true,
+      "actual": "5ad8ebf756801339101dca6b71a8b752d6c54601e141911cb76d0862442b5378",
+      "expected": "5ad8ebf756801339101dca6b71a8b752d6c54601e141911cb76d0862442b5378"
+    },
+    {
+      "name": "published-hash:.work-receipts/cr-02-rejected-superseded.json",
+      "passed": true,
+      "actual": "822c1cb4ea2800ad9ac362b323f3b8b16cd3598c9644ac128a5a7b73460632b1",
+      "expected": "822c1cb4ea2800ad9ac362b323f3b8b16cd3598c9644ac128a5a7b73460632b1"
+    },
+    {
+      "name": "published-hash:.work-receipts/cr-02-roles.patch.json",
+      "passed": true,
+      "actual": "083f18691c6fb16a78a8a5c77f7b85771aaa11c9638b7ecf778d2c578660abbc",
+      "expected": "083f18691c6fb16a78a8a5c77f7b85771aaa11c9638b7ecf778d2c578660abbc"
+    },
+    {
+      "name": "published-hash:.work-receipts/cr-02-show-full.json",
+      "passed": true,
+      "actual": "47fbb15bd9bbe9f5864b5ff7699834b9f302f7333dfd5d90b217f08dce05b100",
+      "expected": "47fbb15bd9bbe9f5864b5ff7699834b9f302f7333dfd5d90b217f08dce05b100"
+    },
+    {
+      "name": "published-hash:.work-receipts/cr-02-submit.json",
+      "passed": true,
+      "actual": "640366a734bb6caca6b5e40b4df051aa59e0639958a00316d3ce7c63d667e0cb",
+      "expected": "640366a734bb6caca6b5e40b4df051aa59e0639958a00316d3ce7c63d667e0cb"
+    },
+    {
+      "name": "published-hash:.work-receipts/cr-03-after-disposition.json",
+      "passed": true,
+      "actual": "ff6fea719ccc3c0247f998c0d1bbb44b14ea882d0d7ff7a279735e9158f7dff4",
+      "expected": "ff6fea719ccc3c0247f998c0d1bbb44b14ea882d0d7ff7a279735e9158f7dff4"
+    },
+    {
+      "name": "published-hash:.work-receipts/cr-03-create.json",
+      "passed": true,
+      "actual": "9d5b4930a2869855e8dfcd850b4ed2929b2655c8e9eecff9af597e1d668fcfcb",
+      "expected": "9d5b4930a2869855e8dfcd850b4ed2929b2655c8e9eecff9af597e1d668fcfcb"
+    },
+    {
+      "name": "published-hash:.work-receipts/cr-03-open-issues.patch.json",
+      "passed": true,
+      "actual": "48e101f9c20678475845b39f3f68a39bc18fbf514db269b2ad60607ec7e05068",
+      "expected": "48e101f9c20678475845b39f3f68a39bc18fbf514db269b2ad60607ec7e05068"
+    },
+    {
+      "name": "published-hash:.work-receipts/cr-03-rejected-superseded.json",
+      "passed": true,
+      "actual": "35e0575eb65e9c722a3786bce7d4c6e0f4b1acc6b8c2325e12a2d766b85b0733",
+      "expected": "35e0575eb65e9c722a3786bce7d4c6e0f4b1acc6b8c2325e12a2d766b85b0733"
+    },
+    {
+      "name": "published-hash:.work-receipts/cr-03-show-full.json",
+      "passed": true,
+      "actual": "c749a2179ee73f1851e79a7b4b9da5617b223edb66ae2bceec9c64dc94a59aab",
+      "expected": "c749a2179ee73f1851e79a7b4b9da5617b223edb66ae2bceec9c64dc94a59aab"
+    },
+    {
+      "name": "published-hash:.work-receipts/cr-03-submit.json",
+      "passed": true,
+      "actual": "7ceed948359afafb89cb938040300a1beeea5cde649d1c3202962067cdb628dd",
+      "expected": "7ceed948359afafb89cb938040300a1beeea5cde649d1c3202962067cdb628dd"
+    },
+    {
+      "name": "published-hash:.work-receipts/preserved-handover-inputs.sha256",
+      "passed": true,
+      "actual": "0fe5a3ca16660ebc0b09b7fbe2c80fe9c97051dc538cbb6bbd705acafa4600b3",
+      "expected": "0fe5a3ca16660ebc0b09b7fbe2c80fe9c97051dc538cbb6bbd705acafa4600b3"
+    },
+    {
+      "name": "published-hash:.work-receipts/proposal-ready-list.json",
+      "passed": true,
+      "actual": "bca5f2509aee402bf737d5017b9c6070e4ea83941d264d4b7c8b65b19dd9739c",
+      "expected": "bca5f2509aee402bf737d5017b9c6070e4ea83941d264d4b7c8b65b19dd9739c"
+    },
+    {
+      "name": "published-hash:.work-receipts/reviewer-bootstrap.json",
+      "passed": true,
+      "actual": "36140aad3f69a828767eaf1b82eb8e0deb4a46076d98b5304c17a374065c23d9",
+      "expected": "36140aad3f69a828767eaf1b82eb8e0deb4a46076d98b5304c17a374065c23d9"
+    },
+    {
+      "name": "published-hash:.work-receipts/reviewer-checkpoint.json",
+      "passed": true,
+      "actual": "ee3dc193fda05e627b3df92e9a295ae30f41a81acfd5fdbae53f1e3e32baf7e3",
+      "expected": "ee3dc193fda05e627b3df92e9a295ae30f41a81acfd5fdbae53f1e3e32baf7e3"
+    },
+    {
+      "name": "published-hash:.work-receipts/reviewer-completion-input.json",
+      "passed": true,
+      "actual": "91f465fbbfe65773dd01b8687889fb017cd8df05f8d617d94f73d539b52381ae",
+      "expected": "91f465fbbfe65773dd01b8687889fb017cd8df05f8d617d94f73d539b52381ae"
+    },
+    {
+      "name": "published-hash:.work-receipts/reviewer-completion-report.json",
+      "passed": true,
+      "actual": "2972837d45de156d80980ece2eed4d497a5bdcac5a5d467db4805a4e8e8c3ead",
+      "expected": "2972837d45de156d80980ece2eed4d497a5bdcac5a5d467db4805a4e8e8c3ead"
+    },
+    {
+      "name": "published-hash:.work-receipts/reviewer-context.json",
+      "passed": true,
+      "actual": "aebe7059890345af5d236ae9d5ec37f4ebfe8cb73ee7ea3dbe816c6dccd104d4",
+      "expected": "aebe7059890345af5d236ae9d5ec37f4ebfe8cb73ee7ea3dbe816c6dccd104d4"
+    },
+    {
+      "name": "published-hash:.work-receipts/reviewer-control-verification.json",
+      "passed": true,
+      "actual": "d684e3086f7ed22c2cb3716b876bed31739cef7fbc46a38fece36c6ce6d13b13",
+      "expected": "d684e3086f7ed22c2cb3716b876bed31739cef7fbc46a38fece36c6ce6d13b13"
+    },
+    {
+      "name": "published-hash:.work-receipts/reviewer-cr-01-current.json",
+      "passed": true,
+      "actual": "9bc077ae474bc41c750a8f3217823e35ed2eb8e09e84adf26e96bb99bc5eca80",
+      "expected": "9bc077ae474bc41c750a8f3217823e35ed2eb8e09e84adf26e96bb99bc5eca80"
+    },
+    {
+      "name": "published-hash:.work-receipts/reviewer-cr-02-current.json",
+      "passed": true,
+      "actual": "9cf1fdeb959c4e3f511efa92cafe588a493022210e30c67eb90f42cf976c419a",
+      "expected": "9cf1fdeb959c4e3f511efa92cafe588a493022210e30c67eb90f42cf976c419a"
+    },
+    {
+      "name": "published-hash:.work-receipts/reviewer-cr-03-current.json",
+      "passed": true,
+      "actual": "97cec5b9f18288a3b281a6f0ffcd1b090cb58bdf1bd2976a9e726ff2f1333ca1",
+      "expected": "97cec5b9f18288a3b281a6f0ffcd1b090cb58bdf1bd2976a9e726ff2f1333ca1"
+    },
+    {
+      "name": "published-hash:.work-receipts/reviewer-evidence-add.json",
+      "passed": true,
+      "actual": "2d7aa0fa5e3bd01f1c3b388e15494637bea9ad0fe9fd8fae2c545e577fb3755f",
+      "expected": "2d7aa0fa5e3bd01f1c3b388e15494637bea9ad0fe9fd8fae2c545e577fb3755f"
+    },
+    {
+      "name": "published-hash:.work-receipts/reviewer-evidence-draft.json",
+      "passed": true,
+      "actual": "f602a42ccaf3f53f6c8bebea45eaccc375b5478dca40c16ac460709f095f0010",
+      "expected": "f602a42ccaf3f53f6c8bebea45eaccc375b5478dca40c16ac460709f095f0010"
+    },
+    {
+      "name": "published-hash:.work-receipts/reviewer-final-doctor.json",
+      "passed": true,
+      "actual": "b58a4e6f5ec284b342c31690fa3cf3e76315291da052aff3098481987a8b63d9",
+      "expected": "b58a4e6f5ec284b342c31690fa3cf3e76315291da052aff3098481987a8b63d9"
+    },
+    {
+      "name": "published-hash:.work-receipts/reviewer-final-history.json",
+      "passed": true,
+      "actual": "4faf2131d36c98c7b494dec63e20ec899aa527cb72ff49bf432cca87a7449407",
+      "expected": "4faf2131d36c98c7b494dec63e20ec899aa527cb72ff49bf432cca87a7449407"
+    },
+    {
+      "name": "published-hash:.work-receipts/reviewer-final-ready.json",
+      "passed": true,
+      "actual": "b649c0d3b05e6ff513b7d712f192ba033316d2c1f7e21cd7650f120c19fa6411",
+      "expected": "b649c0d3b05e6ff513b7d712f192ba033316d2c1f7e21cd7650f120c19fa6411"
+    },
+    {
+      "name": "published-hash:.work-receipts/reviewer-final-session.json",
+      "passed": true,
+      "actual": "f13e0d952184e4b5216d69622a283f7b707f9bac6f8e759175e02a93ad79bf33",
+      "expected": "f13e0d952184e4b5216d69622a283f7b707f9bac6f8e759175e02a93ad79bf33"
+    },
+    {
+      "name": "published-hash:.work-receipts/reviewer-final-status.json",
+      "passed": true,
+      "actual": "92d73d57c978c5c4b314a62bad7b8fd83cdf17f22663d0779a2b721eecebdf0a",
+      "expected": "92d73d57c978c5c4b314a62bad7b8fd83cdf17f22663d0779a2b721eecebdf0a"
+    },
+    {
+      "name": "published-hash:.work-receipts/reviewer-git-diff-check.log",
+      "passed": true,
+      "actual": "01ba4719c80b6fe911b091a7c05124b64eeece964e09c058ef8f9805daca546b",
+      "expected": "01ba4719c80b6fe911b091a7c05124b64eeece964e09c058ef8f9805daca546b"
+    },
+    {
+      "name": "published-hash:.work-receipts/reviewer-git-status.txt",
+      "passed": true,
+      "actual": "3250b7d37efe32027aa117bcbfe958c9ade108f709d6ab19c5ef8f0d2a169215",
+      "expected": "3250b7d37efe32027aa117bcbfe958c9ade108f709d6ab19c5ef8f0d2a169215"
+    },
+    {
+      "name": "published-hash:.work-receipts/reviewer-old-session.json",
+      "passed": true,
+      "actual": "8eaa86f0fcd0fc1c4c4f981affbaee925aabffc877a3622a5595fe1efb57dd01",
+      "expected": "8eaa86f0fcd0fc1c4c4f981affbaee925aabffc877a3622a5595fe1efb57dd01"
+    },
+    {
+      "name": "published-hash:.work-receipts/reviewer-post-close-verification.json",
+      "passed": true,
+      "actual": "f68cbe8c11ae209c4766756d710ac1311f64b272e2dc9333a3db99913b6da2cd",
+      "expected": "f68cbe8c11ae209c4766756d710ac1311f64b272e2dc9333a3db99913b6da2cd"
+    },
+    {
+      "name": "published-hash:.work-receipts/reviewer-producer-files-after.sha256",
+      "passed": true,
+      "actual": "e8eb96d70679c99ddfc17740fa68871444ef71138f2a8b76008541aa6d29b0ae",
+      "expected": "e8eb96d70679c99ddfc17740fa68871444ef71138f2a8b76008541aa6d29b0ae"
+    },
+    {
+      "name": "published-hash:.work-receipts/reviewer-producer-files-before.sha256",
+      "passed": true,
+      "actual": "e8eb96d70679c99ddfc17740fa68871444ef71138f2a8b76008541aa6d29b0ae",
+      "expected": "e8eb96d70679c99ddfc17740fa68871444ef71138f2a8b76008541aa6d29b0ae"
+    },
+    {
+      "name": "published-hash:.work-receipts/reviewer-producer-final-session.json",
+      "passed": true,
+      "actual": "207888cc2ce4d65ddc495131d934e057a7e3a5cceda325cd024b670de43f5745",
+      "expected": "207888cc2ce4d65ddc495131d934e057a7e3a5cceda325cd024b670de43f5745"
+    },
+    {
+      "name": "published-hash:.work-receipts/reviewer-producer-input-verification.log",
+      "passed": true,
+      "actual": "788e4ca8a36f456e96908fa6bb39fa7ee95a9e5223fc0b918717b4d96a7439ed",
+      "expected": "788e4ca8a36f456e96908fa6bb39fa7ee95a9e5223fc0b918717b4d96a7439ed"
+    },
+    {
+      "name": "published-hash:.work-receipts/reviewer-producer-receipt-failure-scan.json",
+      "passed": true,
+      "actual": "60d9b4b5a1f0bf86c52aa2046f767857eaeca3b35643f27a3217583a28e21d45",
+      "expected": "60d9b4b5a1f0bf86c52aa2046f767857eaeca3b35643f27a3217583a28e21d45"
+    },
+    {
+      "name": "published-hash:.work-receipts/reviewer-proposal-inventory-current.json",
+      "passed": true,
+      "actual": "0b944f8aaee2589b08af01edc80f0c321ad61a58148128b65f145d8c2742baa8",
+      "expected": "0b944f8aaee2589b08af01edc80f0c321ad61a58148128b65f145d8c2742baa8"
+    },
+    {
+      "name": "published-hash:.work-receipts/reviewer-recovery-session.json",
+      "passed": true,
+      "actual": "84d5c2790a4d22a7fc95cd2f19c0bac74a633beb01037eea5ced798418f9ab4c",
+      "expected": "84d5c2790a4d22a7fc95cd2f19c0bac74a633beb01037eea5ced798418f9ab4c"
+    },
+    {
+      "name": "published-hash:.work-receipts/reviewer-review-inputs-verification.json",
+      "passed": true,
+      "actual": "bfba760e753922b650b3099516f74ba3c4b6a9903bae4ad6372c518e4940f6cb",
+      "expected": "bfba760e753922b650b3099516f74ba3c4b6a9903bae4ad6372c518e4940f6cb"
+    },
+    {
+      "name": "published-hash:.work-receipts/reviewer-reviewed-files.sha256",
+      "passed": true,
+      "actual": "f3e2ec7c91a99c1bc94690c8b4ed916745b0103b77be37fd724732fe7357d4bb",
+      "expected": "f3e2ec7c91a99c1bc94690c8b4ed916745b0103b77be37fd724732fe7357d4bb"
+    },
+    {
+      "name": "published-hash:.work-receipts/reviewer-session-end.json",
+      "passed": true,
+      "actual": "fc9b9c87116d5f9a03ae0c42aebc316545ed3a05af7a4c50feb3ef16e4c77876",
+      "expected": "fc9b9c87116d5f9a03ae0c42aebc316545ed3a05af7a4c50feb3ef16e4c77876"
+    },
+    {
+      "name": "published-hash:.work-receipts/reviewer-session-start.json",
+      "passed": true,
+      "actual": "927968c8548f290d32243f2b63eb78bab0fd3eae44b4b35a5a45a39f46b781ac",
+      "expected": "927968c8548f290d32243f2b63eb78bab0fd3eae44b4b35a5a45a39f46b781ac"
+    },
+    {
+      "name": "published-hash:.work-receipts/reviewer-source-diff.patch",
+      "passed": true,
+      "actual": "ca20a661b801a6887d2dbf7e510262b0964635ac8b9c58cffa9b3b1b6cff4c28",
+      "expected": "ca20a661b801a6887d2dbf7e510262b0964635ac8b9c58cffa9b3b1b6cff4c28"
+    },
+    {
+      "name": "published-hash:.work-receipts/reviewer-state-audit.json",
+      "passed": true,
+      "actual": "79d6fabaa3461a5e675b88bbca872599c8bc60f37d9b6877969c4e7838779402",
+      "expected": "79d6fabaa3461a5e675b88bbca872599c8bc60f37d9b6877969c4e7838779402"
+    },
+    {
+      "name": "published-hash:.work-receipts/reviewer-tool-failures.json",
+      "passed": true,
+      "actual": "fe3044ed954e2bcd4b59d8c4b0448d449284d82c208d3180dabdafb01f9ee6d9",
+      "expected": "fe3044ed954e2bcd4b59d8c4b0448d449284d82c208d3180dabdafb01f9ee6d9"
+    },
+    {
+      "name": "published-hash:.work-receipts/reviewer-verification-run.log",
+      "passed": true,
+      "actual": "5d8b50621a83edb76578b72c47da6a8014e5217d26895ba3ed645118ba1bf0bc",
+      "expected": "5d8b50621a83edb76578b72c47da6a8014e5217d26895ba3ed645118ba1bf0bc"
+    },
+    {
+      "name": "published-hash:.work-receipts/reviewer-verification.json",
+      "passed": true,
+      "actual": "625c53924c5d37abaf7148c2ec2158b7086a1aecaa4fa8132c2765650589f5b5",
+      "expected": "625c53924c5d37abaf7148c2ec2158b7086a1aecaa4fa8132c2765650589f5b5"
+    },
+    {
+      "name": "published-hash:.work-receipts/reviewer-verify.py",
+      "passed": true,
+      "actual": "61c22cc6fcaa93119a779cbf39bc1ec4d73f1c7ea667ecec596a920fca94a35d",
+      "expected": "61c22cc6fcaa93119a779cbf39bc1ec4d73f1c7ea667ecec596a920fca94a35d"
+    },
+    {
+      "name": "published-hash:.work-receipts/reviewer-work-complete.json",
+      "passed": true,
+      "actual": "51d5d567cb3f110950acedb359d9e7510fcadf938a0e534a1e977c7fc7a1a54d",
+      "expected": "51d5d567cb3f110950acedb359d9e7510fcadf938a0e534a1e977c7fc7a1a54d"
+    },
+    {
+      "name": "published-hash:.work-receipts/reviewer-work-progress.json",
+      "passed": true,
+      "actual": "cae7a4d473e7e1225a9d03edb27fbc1b6f63e8137f96f8cb63dd6f141675a699",
+      "expected": "cae7a4d473e7e1225a9d03edb27fbc1b6f63e8137f96f8cb63dd6f141675a699"
+    },
+    {
+      "name": "published-hash:.work-receipts/reviewer-zs-compare-history.json",
+      "passed": true,
+      "actual": "ef31dd8088376e25f607d7abe3cbdcf0db7874c46113aeee0880470cc2153b46",
+      "expected": "ef31dd8088376e25f607d7abe3cbdcf0db7874c46113aeee0880470cc2153b46"
+    },
+    {
+      "name": "published-hash:.work-receipts/reviewer-zs-recover-history.json",
+      "passed": true,
+      "actual": "693c2b9f6fb1e29e523352c662297209c66064cd58162254366e8f724b0486f0",
+      "expected": "693c2b9f6fb1e29e523352c662297209c66064cd58162254366e8f724b0486f0"
+    },
+    {
+      "name": "published-hash:.work-receipts/verify-zs-change-proposals.sh",
+      "passed": true,
+      "actual": "3c714f61427a1aa8c4c57a554d02b23872c984555ec14f29e8b3dec828ef0876",
+      "expected": "3c714f61427a1aa8c4c57a554d02b23872c984555ec14f29e8b3dec828ef0876"
+    },
+    {
+      "name": "published-hash:.work-receipts/verify-zs-compare-handover.sh",
+      "passed": true,
+      "actual": "70a0e2a5b05bd1317dc9bee30ca35e0a8cd9cf20c6f6c03b9c8f20a70a9fdd1f",
+      "expected": "70a0e2a5b05bd1317dc9bee30ca35e0a8cd9cf20c6f6c03b9c8f20a70a9fdd1f"
+    },
+    {
+      "name": "published-hash:.work-receipts/verify-zs-compare-ready-for-completion.sh",
+      "passed": true,
+      "actual": "ea5459abb15dfaa5ab4561ab13eaaf4d921faa9b0605f23c9b5ce19e3296f1e6",
+      "expected": "ea5459abb15dfaa5ab4561ab13eaaf4d921faa9b0605f23c9b5ce19e3296f1e6"
+    },
+    {
+      "name": "published-hash:.work-receipts/verify-zs-diag.sh",
+      "passed": true,
+      "actual": "8acf61b1de608009e84a4e906da82aba10211e53f6c0493603f8069146eca901",
+      "expected": "8acf61b1de608009e84a4e906da82aba10211e53f6c0493603f8069146eca901"
+    },
+    {
+      "name": "published-hash:.work-receipts/verify-zs-independent-review-inputs.sh",
+      "passed": true,
+      "actual": "d9ca5ee94063ae7ba85bc53bf491fd4d2a3b4eb9526eb0ff8dd8a5326d930fee",
+      "expected": "d9ca5ee94063ae7ba85bc53bf491fd4d2a3b4eb9526eb0ff8dd8a5326d930fee"
+    },
+    {
+      "name": "published-hash:.work-receipts/verify-zs-recover.sh",
+      "passed": true,
+      "actual": "aecbf9c768d972387ffdc6583950b8dba2006d9cb4cd4ed997f81d2594761b02",
+      "expected": "aecbf9c768d972387ffdc6583950b8dba2006d9cb4cd4ed997f81d2594761b02"
+    },
+    {
+      "name": "published-hash:.work-receipts/verify-zs-recovery-state.sh",
+      "passed": true,
+      "actual": "f27dfa22d7f2433e1bc960e8fd53b4541b90df5568e7331af5af7665f26c3c6a",
+      "expected": "f27dfa22d7f2433e1bc960e8fd53b4541b90df5568e7331af5af7665f26c3c6a"
+    },
+    {
+      "name": "published-hash:.work-receipts/verify-zs-remediation-recheck-inputs.py",
+      "passed": true,
+      "actual": "284b5d235c75eef2d246c041b73ad07848178590412f7b8f4c5edfc13869f249",
+      "expected": "284b5d235c75eef2d246c041b73ad07848178590412f7b8f4c5edfc13869f249"
+    },
+    {
+      "name": "published-hash:.work-receipts/verify-zs-remediation.py",
+      "passed": true,
+      "actual": "b082e7c51f2dea40da771d80522053019f5bdc84b180c9f36688716fbf630db8",
+      "expected": "b082e7c51f2dea40da771d80522053019f5bdc84b180c9f36688716fbf630db8"
+    },
+    {
+      "name": "published-hash:.work-receipts/zs-compare-completion-context.json",
+      "passed": true,
+      "actual": "9bf1d0e32629d9aed787fa8e4728530936e5accd4543f379e40c613be059a1dd",
+      "expected": "9bf1d0e32629d9aed787fa8e4728530936e5accd4543f379e40c613be059a1dd"
+    },
+    {
+      "name": "published-hash:.work-receipts/zs-compare-completion-evidence-add.json",
+      "passed": true,
+      "actual": "18daef454d0eaccbf483f77bf2bb44fe1fa01555dead85ca1128a8d46595e3d7",
+      "expected": "18daef454d0eaccbf483f77bf2bb44fe1fa01555dead85ca1128a8d46595e3d7"
+    },
+    {
+      "name": "published-hash:.work-receipts/zs-compare-completion-evidence-draft.json",
+      "passed": true,
+      "actual": "75ccc1f7bf053f9ed8b28f2648b4b3f0fc5d76f49468eca0fec07a78e1df558c",
+      "expected": "75ccc1f7bf053f9ed8b28f2648b4b3f0fc5d76f49468eca0fec07a78e1df558c"
+    },
+    {
+      "name": "published-hash:.work-receipts/zs-compare-completion-evidence-report.json",
+      "passed": true,
+      "actual": "99e991e8ffc5758922e0fa4f6b0ff719c39cb069eed3e2624dee3ac67380fb53",
+      "expected": "99e991e8ffc5758922e0fa4f6b0ff719c39cb069eed3e2624dee3ac67380fb53"
+    },
+    {
+      "name": "published-hash:.work-receipts/zs-compare-completion-input.json",
+      "passed": true,
+      "actual": "a43aec560174ea4b7e7af0a92caa8fe436781774d9645866a77c4e86a963ac57",
+      "expected": "a43aec560174ea4b7e7af0a92caa8fe436781774d9645866a77c4e86a963ac57"
+    },
+    {
+      "name": "published-hash:.work-receipts/zs-compare-completion-receipt.json",
+      "passed": true,
+      "actual": "45fd1dc66b8f243a74f525360f3e6e973cb9ab32820dcb8cac60c921cc123338",
+      "expected": "45fd1dc66b8f243a74f525360f3e6e973cb9ab32820dcb8cac60c921cc123338"
+    },
+    {
+      "name": "published-hash:.work-receipts/zs-compare-context-after-evidence.json",
+      "passed": true,
+      "actual": "45a1a52d87512f74572e30cb10e088142eaaf765e8f58b0078abc1406b7fa5a0",
+      "expected": "45a1a52d87512f74572e30cb10e088142eaaf765e8f58b0078abc1406b7fa5a0"
+    },
+    {
+      "name": "published-hash:.work-receipts/zs-compare-context-current-evidence.json",
+      "passed": true,
+      "actual": "cd30357f02996497833c62da3ce0c80ff28c4aaeaa5054c433e4bc201fefb8e2",
+      "expected": "cd30357f02996497833c62da3ce0c80ff28c4aaeaa5054c433e4bc201fefb8e2"
+    },
+    {
+      "name": "published-hash:.work-receipts/zs-compare-cr-01-current.json",
+      "passed": true,
+      "actual": "c49c00d9db7ca5a058dbd67e9af3bb38a04a558da3c40795ca558e788c7bb24e",
+      "expected": "c49c00d9db7ca5a058dbd67e9af3bb38a04a558da3c40795ca558e788c7bb24e"
+    },
+    {
+      "name": "published-hash:.work-receipts/zs-compare-cr-02-current.json",
+      "passed": true,
+      "actual": "fdd774a191c3edfa281823c25107ccc1817a3d79f347a851becac2954a988e06",
+      "expected": "fdd774a191c3edfa281823c25107ccc1817a3d79f347a851becac2954a988e06"
+    },
+    {
+      "name": "published-hash:.work-receipts/zs-compare-cr-03-current.json",
+      "passed": true,
+      "actual": "2b42f16a13a398164283b58f7b1eece52e13fb38f236226186fd9525ae22fd8c",
+      "expected": "2b42f16a13a398164283b58f7b1eece52e13fb38f236226186fd9525ae22fd8c"
+    },
+    {
+      "name": "published-hash:.work-receipts/zs-compare-current-history.json",
+      "passed": true,
+      "actual": "68c83f21d022da84099c963cdc1c44f6f204756aa1471c7ca293210056000781",
+      "expected": "68c83f21d022da84099c963cdc1c44f6f204756aa1471c7ca293210056000781"
+    },
+    {
+      "name": "published-hash:.work-receipts/zs-compare-evidence-add.json",
+      "passed": true,
+      "actual": "86e75d7d7d03edb60b517d232289842451c3278b17390b8b730bba7c195f9783",
+      "expected": "86e75d7d7d03edb60b517d232289842451c3278b17390b8b730bba7c195f9783"
+    },
+    {
+      "name": "published-hash:.work-receipts/zs-compare-evidence-draft.json",
+      "passed": true,
+      "actual": "82fee977eea5055782cec71a35ee9e2b13ca8cf4f287a1167f529b7ee4c0f0e1",
+      "expected": "82fee977eea5055782cec71a35ee9e2b13ca8cf4f287a1167f529b7ee4c0f0e1"
+    },
+    {
+      "name": "published-hash:.work-receipts/zs-compare-evidence-report.json",
+      "passed": true,
+      "actual": "79260e32596a6bafbdc9bff0890f74b31c7148546ab826a7765f2acb5883c7c8",
+      "expected": "79260e32596a6bafbdc9bff0890f74b31c7148546ab826a7765f2acb5883c7c8"
+    },
+    {
+      "name": "published-hash:.work-receipts/zs-compare-evidence-show.json",
+      "passed": true,
+      "actual": "f735537e14c12bb80ee12bd0a46e8eb344dc7acba80db6a87106da6879c5f5ab",
+      "expected": "f735537e14c12bb80ee12bd0a46e8eb344dc7acba80db6a87106da6879c5f5ab"
+    },
+    {
+      "name": "published-hash:.work-receipts/zs-compare-final-checkpoint.json",
+      "passed": true,
+      "actual": "1af369f14382d154658a4ccb11e450dfc0fbcf7ae48251bf1f2e72e255da9ff8",
+      "expected": "1af369f14382d154658a4ccb11e450dfc0fbcf7ae48251bf1f2e72e255da9ff8"
+    },
+    {
+      "name": "published-hash:.work-receipts/zs-compare-git-diff.patch",
+      "passed": true,
+      "actual": "123228be36b2cb32875c4b208fabe6b19da31852632bc9f8f0a69014fc953f4f",
+      "expected": "123228be36b2cb32875c4b208fabe6b19da31852632bc9f8f0a69014fc953f4f"
+    },
+    {
+      "name": "published-hash:.work-receipts/zs-compare-git-status.txt",
+      "passed": true,
+      "actual": "4d2b572252fefdcf1e648ac534de6ebb40c6e78910363e44b97a0581539d33fa",
+      "expected": "4d2b572252fefdcf1e648ac534de6ebb40c6e78910363e44b97a0581539d33fa"
+    },
+    {
+      "name": "published-hash:.work-receipts/zs-compare-handover-checkpoint.json",
+      "passed": true,
+      "actual": "b6876ec38ff05ffa4b9915c4b4c6b9e50f47defaa230606b14da21f8d72528f8",
+      "expected": "b6876ec38ff05ffa4b9915c4b4c6b9e50f47defaa230606b14da21f8d72528f8"
+    },
+    {
+      "name": "published-hash:.work-receipts/zs-compare-handover-context.json",
+      "passed": true,
+      "actual": "58086dce53a8b48358eb379752c9507bdc51e1b83130588517dff7f737f0dbdc",
+      "expected": "58086dce53a8b48358eb379752c9507bdc51e1b83130588517dff7f737f0dbdc"
+    },
+    {
+      "name": "published-hash:.work-receipts/zs-compare-handover-final-evidence.json",
+      "passed": true,
+      "actual": "8ae28da5433432e1018399e32a6ec61a4c18ebd6e80a4225e2fcd30c9e7e33de",
+      "expected": "8ae28da5433432e1018399e32a6ec61a4c18ebd6e80a4225e2fcd30c9e7e33de"
+    },
+    {
+      "name": "published-hash:.work-receipts/zs-compare-handover-final-proposals.json",
+      "passed": true,
+      "actual": "8708a7c16c802ed8c0d1deec38d8f0580c86cc10158dcef5a04ed82c889fae99",
+      "expected": "8708a7c16c802ed8c0d1deec38d8f0580c86cc10158dcef5a04ed82c889fae99"
+    },
+    {
+      "name": "published-hash:.work-receipts/zs-compare-handover-final-session.json",
+      "passed": true,
+      "actual": "015c04db2883ddeab9c90dbf217f4b43277593a21c64bcdda1f6c103a2385f87",
+      "expected": "015c04db2883ddeab9c90dbf217f4b43277593a21c64bcdda1f6c103a2385f87"
+    },
+    {
+      "name": "published-hash:.work-receipts/zs-compare-handover-final-status.json",
+      "passed": true,
+      "actual": "8bd86b0d6b1cb885878bb4ef5c85347d8db27bf7f1b0a89f82855602c62bdab2",
+      "expected": "8bd86b0d6b1cb885878bb4ef5c85347d8db27bf7f1b0a89f82855602c62bdab2"
+    },
+    {
+      "name": "published-hash:.work-receipts/zs-compare-handover-status.json",
+      "passed": true,
+      "actual": "5052395e5d8d7e68603acd4aac46ff5fbdfbe08a2d573c9217c45ee2be5462bc",
+      "expected": "5052395e5d8d7e68603acd4aac46ff5fbdfbe08a2d573c9217c45ee2be5462bc"
+    },
+    {
+      "name": "published-hash:.work-receipts/zs-compare-history-after-completion.json",
+      "passed": true,
+      "actual": "4e566f7d25e75d1d1a9349acc2170f237fe5ceb5a4b4ae2dc51295cd60d106ec",
+      "expected": "4e566f7d25e75d1d1a9349acc2170f237fe5ceb5a4b4ae2dc51295cd60d106ec"
+    },
+    {
+      "name": "published-hash:.work-receipts/zs-compare-interrupted-session-after-resume.json",
+      "passed": true,
+      "actual": "6a3fb15e157da7092e2150b36469ecd0b843a69bdbab575525f49c5f17f5657e",
+      "expected": "6a3fb15e157da7092e2150b36469ecd0b843a69bdbab575525f49c5f17f5657e"
+    },
+    {
+      "name": "published-hash:.work-receipts/zs-compare-proposals-after-evidence.json",
+      "passed": true,
+      "actual": "b3af161a0a9898e91244081c10e37eaec01e97f480510d602be263129f361f3a",
+      "expected": "b3af161a0a9898e91244081c10e37eaec01e97f480510d602be263129f361f3a"
+    },
+    {
+      "name": "published-hash:.work-receipts/zs-compare-ready-proposals-after-resume.json",
+      "passed": true,
+      "actual": "2fdefba09c38d26a9f262eba825a47df630e4b62bf91139c47fc269668b49498",
+      "expected": "2fdefba09c38d26a9f262eba825a47df630e4b62bf91139c47fc269668b49498"
+    },
+    {
+      "name": "published-hash:.work-receipts/zs-compare-recovered-session.json",
+      "passed": true,
+      "actual": "c3ef7d7b4d7583834daa784469453a058c806d5cd602bb25838106601e7352c4",
+      "expected": "c3ef7d7b4d7583834daa784469453a058c806d5cd602bb25838106601e7352c4"
+    },
+    {
+      "name": "published-hash:.work-receipts/zs-compare-recovery-bootstrap.json",
+      "passed": true,
+      "actual": "028fd2f3e8c610bbf96a6ce4fbd430d7ea1458840cf1c7142a5a8bb4e37b5c12",
+      "expected": "028fd2f3e8c610bbf96a6ce4fbd430d7ea1458840cf1c7142a5a8bb4e37b5c12"
+    },
+    {
+      "name": "published-hash:.work-receipts/zs-compare-recovery-checkpoint.json",
+      "passed": true,
+      "actual": "57e6205fafeabc44e94e213498bb88b8730768b1c3e4c99f3e92d68ce4cfda57",
+      "expected": "57e6205fafeabc44e94e213498bb88b8730768b1c3e4c99f3e92d68ce4cfda57"
+    },
+    {
+      "name": "published-hash:.work-receipts/zs-compare-recovery-context.json",
+      "passed": true,
+      "actual": "4ef2c97fcc1389a2e7ed7aea6b00c35c5733899570f57500f21a49f42d755f91",
+      "expected": "4ef2c97fcc1389a2e7ed7aea6b00c35c5733899570f57500f21a49f42d755f91"
+    },
+    {
+      "name": "published-hash:.work-receipts/zs-compare-recovery-final-bootstrap.json",
+      "passed": true,
+      "actual": "f8e1a9b7710a2f0860f34b75616de58e17559590121a5b0d3ed1b70f2fc81ff4",
+      "expected": "f8e1a9b7710a2f0860f34b75616de58e17559590121a5b0d3ed1b70f2fc81ff4"
+    },
+    {
+      "name": "published-hash:.work-receipts/zs-compare-recovery-final-proposals.json",
+      "passed": true,
+      "actual": "0ff71330b5e114d1399df61f9f2236d7a987859765b67fca619d9d68a12fb80f",
+      "expected": "0ff71330b5e114d1399df61f9f2236d7a987859765b67fca619d9d68a12fb80f"
+    },
+    {
+      "name": "published-hash:.work-receipts/zs-compare-recovery-final-session.json",
+      "passed": true,
+      "actual": "bf272689d2ca1aefeddb4e764239d94cfb6fbbef08f3cd3fa4210a762a76ef6e",
+      "expected": "bf272689d2ca1aefeddb4e764239d94cfb6fbbef08f3cd3fa4210a762a76ef6e"
+    },
+    {
+      "name": "published-hash:.work-receipts/zs-compare-recovery-final-status.json",
+      "passed": true,
+      "actual": "5052395e5d8d7e68603acd4aac46ff5fbdfbe08a2d573c9217c45ee2be5462bc",
+      "expected": "5052395e5d8d7e68603acd4aac46ff5fbdfbe08a2d573c9217c45ee2be5462bc"
+    },
+    {
+      "name": "published-hash:.work-receipts/zs-compare-session-end.json",
+      "passed": true,
+      "actual": "ef003c54816d89b1be3646ef59555a00b8625c988a52189921e1ad846cf1524f",
+      "expected": "ef003c54816d89b1be3646ef59555a00b8625c988a52189921e1ad846cf1524f"
+    },
+    {
+      "name": "published-hash:.work-receipts/zs-compare-status-after-resume.json",
+      "passed": true,
+      "actual": "611924f8ea53740547c9a98645b8e0bb74250793dcf506446de8ce0e0938727c",
+      "expected": "611924f8ea53740547c9a98645b8e0bb74250793dcf506446de8ce0e0938727c"
+    },
+    {
+      "name": "published-hash:.work-receipts/zs-diag-checkpoint-show.json",
+      "passed": true,
+      "actual": "d189d92e85f550d248e1c0c021fd1ee86a403b5627166ef4d38a1c5c85b75b84",
+      "expected": "d189d92e85f550d248e1c0c021fd1ee86a403b5627166ef4d38a1c5c85b75b84"
+    },
+    {
+      "name": "published-hash:.work-receipts/zs-diag-completion.json",
+      "passed": true,
+      "actual": "9b445f7ec2629a2e904492931fb1b7c002e3efe926290a9f22dfd8654f6cf1e4",
+      "expected": "9b445f7ec2629a2e904492931fb1b7c002e3efe926290a9f22dfd8654f6cf1e4"
+    },
+    {
+      "name": "published-hash:.work-receipts/zs-diag-current-history.json",
+      "passed": true,
+      "actual": "0e008acceede024d32297055cf3dcf7d6f69852e637ed1b266a137f54baf5f5b",
+      "expected": "0e008acceede024d32297055cf3dcf7d6f69852e637ed1b266a137f54baf5f5b"
+    },
+    {
+      "name": "published-hash:.work-receipts/zs-diag-evidence-draft.json",
+      "passed": true,
+      "actual": "89fab3d5e804ae3ad4add930ded2305c69bacac32241f5aed0a68e41294d5e4a",
+      "expected": "89fab3d5e804ae3ad4add930ded2305c69bacac32241f5aed0a68e41294d5e4a"
+    },
+    {
+      "name": "published-hash:.work-receipts/zs-diag-evidence-report.json",
+      "passed": true,
+      "actual": "1daefa254cd85b8a1e502693abcfa82817b1649bc7b0dd28b4d8543bff5a0b6c",
+      "expected": "1daefa254cd85b8a1e502693abcfa82817b1649bc7b0dd28b4d8543bff5a0b6c"
+    },
+    {
+      "name": "published-hash:.work-receipts/zs-diag-evidence-show.json",
+      "passed": true,
+      "actual": "44ba188ca5a7dc911ae71405bca66fd3b072d4c9cdf36e780e021536223f7a5e",
+      "expected": "44ba188ca5a7dc911ae71405bca66fd3b072d4c9cdf36e780e021536223f7a5e"
+    },
+    {
+      "name": "published-hash:.work-receipts/zs-diag-final-status.json",
+      "passed": true,
+      "actual": "7df881fdf2a8fe8e45684a55c9f4ba1152e8a7b95d508e926ffc215832725357",
+      "expected": "7df881fdf2a8fe8e45684a55c9f4ba1152e8a7b95d508e926ffc215832725357"
+    },
+    {
+      "name": "published-hash:.work-receipts/zs-diag-session-show.json",
+      "passed": true,
+      "actual": "d2793f83bca2a9e1f194581402b1846b3e3ff91004d2ab30fdc346f1daec4b6b",
+      "expected": "d2793f83bca2a9e1f194581402b1846b3e3ff91004d2ab30fdc346f1daec4b6b"
+    },
+    {
+      "name": "published-hash:.work-receipts/zs-diag-work-history.json",
+      "passed": true,
+      "actual": "eeff9c46abcd16c8d349a07c60f5324219e664f543efdf4e8a49527fd4e6bd1c",
+      "expected": "eeff9c46abcd16c8d349a07c60f5324219e664f543efdf4e8a49527fd4e6bd1c"
+    },
+    {
+      "name": "published-hash:.work-receipts/zs-independent-review-inputs.sha256",
+      "passed": true,
+      "actual": "411b8d108dc1602c4a82c3780ae57f9b6ae21ab8aec501aa5d4fa8328ec09ce6",
+      "expected": "411b8d108dc1602c4a82c3780ae57f9b6ae21ab8aec501aa5d4fa8328ec09ce6"
+    },
+    {
+      "name": "published-hash:.work-receipts/zs-recover-after-proposals.json",
+      "passed": true,
+      "actual": "34e825fb044b9fe0f7a931668e573c7ef0ef272825c4da6b596929e756ad7748",
+      "expected": "34e825fb044b9fe0f7a931668e573c7ef0ef272825c4da6b596929e756ad7748"
+    },
+    {
+      "name": "published-hash:.work-receipts/zs-recover-bootstrap.json",
+      "passed": true,
+      "actual": "73b4a84da529a8d409402f880dae852267c091141689e0d4eca601bb39c37bfb",
+      "expected": "73b4a84da529a8d409402f880dae852267c091141689e0d4eca601bb39c37bfb"
+    },
+    {
+      "name": "published-hash:.work-receipts/zs-recover-completion-context.json",
+      "passed": true,
+      "actual": "525dedc58cd5701ea60941522f9724573daebe75c8a67e42a1b89d352b8a965f",
+      "expected": "525dedc58cd5701ea60941522f9724573daebe75c8a67e42a1b89d352b8a965f"
+    },
+    {
+      "name": "published-hash:.work-receipts/zs-recover-completion-input.json",
+      "passed": true,
+      "actual": "dc33a9e52b72344cf418b270242973fe59f4c0cc828c66815b5c248b118f6435",
+      "expected": "dc33a9e52b72344cf418b270242973fe59f4c0cc828c66815b5c248b118f6435"
+    },
+    {
+      "name": "published-hash:.work-receipts/zs-recover-completion-receipt.json",
+      "passed": true,
+      "actual": "c0aadcf644a95ae9e4c2b3f134d5c8a40a2a77f389750264a58b43d15cf957c9",
+      "expected": "c0aadcf644a95ae9e4c2b3f134d5c8a40a2a77f389750264a58b43d15cf957c9"
+    },
+    {
+      "name": "published-hash:.work-receipts/zs-recover-context.json",
+      "passed": true,
+      "actual": "4e882aa9b35d9fcfac5730ed39b618c2d7aa5f846e3b00c082e8565dd09bdadc",
+      "expected": "4e882aa9b35d9fcfac5730ed39b618c2d7aa5f846e3b00c082e8565dd09bdadc"
+    },
+    {
+      "name": "published-hash:.work-receipts/zs-recover-evidence-add.json",
+      "passed": true,
+      "actual": "dac90b325dee7cdce4252fb650116d9fa68d7fd3385f2fe90b90efdb46e668e1",
+      "expected": "dac90b325dee7cdce4252fb650116d9fa68d7fd3385f2fe90b90efdb46e668e1"
+    },
+    {
+      "name": "published-hash:.work-receipts/zs-recover-evidence-draft.json",
+      "passed": true,
+      "actual": "1596be48fe1eed25aaf46dc7420ef0ae42760f96a8ae2bad62b7580058d9a698",
+      "expected": "1596be48fe1eed25aaf46dc7420ef0ae42760f96a8ae2bad62b7580058d9a698"
+    },
+    {
+      "name": "published-hash:.work-receipts/zs-recover-evidence-report.json",
+      "passed": true,
+      "actual": "052c7f5df7244f8de57e83cab5d85ca98ac0fb204e9eaf015d9986f4faadb84a",
+      "expected": "052c7f5df7244f8de57e83cab5d85ca98ac0fb204e9eaf015d9986f4faadb84a"
+    },
+    {
+      "name": "published-hash:.work-receipts/zs-recover-final-checkpoint.json",
+      "passed": true,
+      "actual": "250e2bfb2d039285b45a22e14b2954ed1e6c54875f971912e654a57557047720",
+      "expected": "250e2bfb2d039285b45a22e14b2954ed1e6c54875f971912e654a57557047720"
+    },
+    {
+      "name": "published-hash:.work-receipts/zs-recover-history-current.json",
+      "passed": true,
+      "actual": "2a7e70f428543c8a7409d7ab888ef6d6d7bb7e381e45aa28ff6cb4c1d3854669",
+      "expected": "2a7e70f428543c8a7409d7ab888ef6d6d7bb7e381e45aa28ff6cb4c1d3854669"
+    },
+    {
+      "name": "published-hash:.work-receipts/zs-recover-progress.json",
+      "passed": true,
+      "actual": "1da24c0d9c70da18b4b88803b4bc6148277fccdff638b197da104f66c75f5b0a",
+      "expected": "1da24c0d9c70da18b4b88803b4bc6148277fccdff638b197da104f66c75f5b0a"
+    },
+    {
+      "name": "published-hash:.work-receipts/zs-recover-proposal-inventory.json",
+      "passed": true,
+      "actual": "b78b100392f7793c066143021529724faa6209c5e51fc72306c342d723fdf79b",
+      "expected": "b78b100392f7793c066143021529724faa6209c5e51fc72306c342d723fdf79b"
+    },
+    {
+      "name": "published-hash:.work-receipts/zs-recover-session-end.json",
+      "passed": true,
+      "actual": "c137e95b1d5e9e28d0847c4222e67296161858f0fa83910325560bbf1477e44e",
+      "expected": "c137e95b1d5e9e28d0847c4222e67296161858f0fa83910325560bbf1477e44e"
+    },
+    {
+      "name": "published-hash:.work-receipts/zs-recover-session-start.json",
+      "passed": true,
+      "actual": "15c3d7c1636453d350c74a41bb7e689d6b265f706852ef5d5dc8a3d1cb719daf",
+      "expected": "15c3d7c1636453d350c74a41bb7e689d6b265f706852ef5d5dc8a3d1cb719daf"
+    },
+    {
+      "name": "published-hash:.work-receipts/zs-recover-work-current.json",
+      "passed": true,
+      "actual": "4c062b91b8977085e6200219c8566a43a8778f051849ae606fb8e2b09fdfcde7",
+      "expected": "4c062b91b8977085e6200219c8566a43a8778f051849ae606fb8e2b09fdfcde7"
+    },
+    {
+      "name": "published-hash:.work-receipts/zs-recovery-final-doctor.log",
+      "passed": true,
+      "actual": "43dc792d961dbc93a5f2a2a0b9316e922dfe3309ccc4a57ecb0294a2a4dcbdef",
+      "expected": "43dc792d961dbc93a5f2a2a0b9316e922dfe3309ccc4a57ecb0294a2a4dcbdef"
+    },
+    {
+      "name": "published-hash:.work-receipts/zs-remediation-acceptance-patch.json",
+      "passed": true,
+      "actual": "51a0b52a8cf09b766e4c2869f641dd66ae49c1e770cd647d8576f011306c58d1",
+      "expected": "51a0b52a8cf09b766e4c2869f641dd66ae49c1e770cd647d8576f011306c58d1"
+    },
+    {
+      "name": "published-hash:.work-receipts/zs-remediation-completion-input.json",
+      "passed": true,
+      "actual": "e25b84a7f6ce753309fe167f2a28caab3a6e272401ca71e03184fbe43e829f1b",
+      "expected": "e25b84a7f6ce753309fe167f2a28caab3a6e272401ca71e03184fbe43e829f1b"
+    },
+    {
+      "name": "published-hash:.work-receipts/zs-remediation-evidence-draft.json",
+      "passed": true,
+      "actual": "1a5676e9c4de7c1e6731846f42da699558da7024dc0b940b7309623748db4a9e",
+      "expected": "1a5676e9c4de7c1e6731846f42da699558da7024dc0b940b7309623748db4a9e"
+    },
+    {
+      "name": "published-hash:.work-receipts/zs-remediation-evidence-report.json",
+      "passed": true,
+      "actual": "ebc0f5461ec9d4381d29f97629a19264fac8ca72318b51b1edbcac752605c7a6",
+      "expected": "ebc0f5461ec9d4381d29f97629a19264fac8ca72318b51b1edbcac752605c7a6"
+    },
+    {
+      "name": "published-hash:.work-receipts/zs-remediation-operation-index.json",
+      "passed": true,
+      "actual": "1e60587b050b51d47a135e7625ebe64ffea3bfc19826c043afd0d2aa80e7b53c",
+      "expected": "1e60587b050b51d47a135e7625ebe64ffea3bfc19826c043afd0d2aa80e7b53c"
+    },
+    {
+      "name": "published-hash:.work-receipts/zs-remediation-recheck-bundle-v2.sha256",
+      "passed": true,
+      "actual": "e03fa870126dfb57c396781f3914e42e5a9e50bf5b0885a50af348ec90290c2d",
+      "expected": "e03fa870126dfb57c396781f3914e42e5a9e50bf5b0885a50af348ec90290c2d"
+    },
+    {
+      "name": "published-hash:.work-receipts/zs-remediation-recheck-bundle.sha256",
+      "passed": true,
+      "actual": "35bd501ddbadab7be7af8580b84162ae9a6da98cecf213934efe67b98e3f6a37",
+      "expected": "35bd501ddbadab7be7af8580b84162ae9a6da98cecf213934efe67b98e3f6a37"
+    },
+    {
+      "name": "published-hash:.work-receipts/zs-remediation-recheck-inputs-v2.sha256",
+      "passed": true,
+      "actual": "f29d41605f39baf37d9c62ebb3a0fae0d771f4cc29a7ddc4c97bfeaa0aec88bd",
+      "expected": "f29d41605f39baf37d9c62ebb3a0fae0d771f4cc29a7ddc4c97bfeaa0aec88bd"
+    },
+    {
+      "name": "published-hash:.work-receipts/zs-remediation-recheck-inputs.sha256",
+      "passed": true,
+      "actual": "440c56b5258dbaa595d611630910df7b91c046ce46e25826e0bfac4691a6715d",
+      "expected": "440c56b5258dbaa595d611630910df7b91c046ce46e25826e0bfac4691a6715d"
+    },
+    {
+      "name": "published-hash:.work-receipts/zs-remediation-recheck-preflight-v2.json",
+      "passed": true,
+      "actual": "2c8586133eca16d988555d6c83b2a834f2993e2ca7cfccdaa5e4bff749dcc4d3",
+      "expected": "2c8586133eca16d988555d6c83b2a834f2993e2ca7cfccdaa5e4bff749dcc4d3"
+    },
+    {
+      "name": "published-hash:.work-receipts/zs-remediation-recheck-preflight.json",
+      "passed": true,
+      "actual": "0e740d70845a7f3a3cb170024c3a66bea65c9d97cd5f276c4299267d3018188f",
+      "expected": "0e740d70845a7f3a3cb170024c3a66bea65c9d97cd5f276c4299267d3018188f"
+    },
+    {
+      "name": "published-hash:.work-receipts/zs-remediation-recover-handoff-patch.json",
+      "passed": true,
+      "actual": "e237d3b008b89ba97f27239760823681d7d5a49ed5a9926f90c3bfc3d276ba08",
+      "expected": "e237d3b008b89ba97f27239760823681d7d5a49ed5a9926f90c3bfc3d276ba08"
+    },
+    {
+      "name": "published-hash:.work-receipts/zs-remediation-review-handoff-patch.json",
+      "passed": true,
+      "actual": "49db417226622fa6e919f71e3288b379f63793f929aea73a3bddaba1391c6edc",
+      "expected": "49db417226622fa6e919f71e3288b379f63793f929aea73a3bddaba1391c6edc"
+    },
+    {
+      "name": "published-hash:.work-receipts/zs-remediation-tool-failures.json",
+      "passed": true,
+      "actual": "b444915b9b326aaf0b246812ecca763fa720beb9e1bd2c761d2cd352803e5c61",
+      "expected": "b444915b9b326aaf0b246812ecca763fa720beb9e1bd2c761d2cd352803e5c61"
+    },
+    {
+      "name": "published-hash:deliverables/zhusheng-change-proposals.md",
+      "passed": true,
+      "actual": "e00e5e4e98db2476d0321fc86af82e93aa0a218edfab66c1b568f64335304a05",
+      "expected": "e00e5e4e98db2476d0321fc86af82e93aa0a218edfab66c1b568f64335304a05"
+    },
+    {
+      "name": "published-hash:deliverables/zhusheng-consistency.md",
+      "passed": true,
+      "actual": "ddb10a828a04059aea355186b98a685167ac738aee77902d587b6506b585260e",
+      "expected": "ddb10a828a04059aea355186b98a685167ac738aee77902d587b6506b585260e"
+    },
+    {
+      "name": "published-hash:deliverables/zhusheng-interruption-diagnosis.md",
+      "passed": true,
+      "actual": "a7feebb26b5f65e7da1eb34b0774393fb06b9835c4b4537b64028b247920a196",
+      "expected": "a7feebb26b5f65e7da1eb34b0774393fb06b9835c4b4537b64028b247920a196"
+    },
+    {
+      "name": "published-hash:deliverables/zhusheng-recovery-work.md",
+      "passed": true,
+      "actual": "46bfc0ea1ac8396b10280e06b3ed55a72a69242555010218974f8b4ece64fb31",
+      "expected": "46bfc0ea1ac8396b10280e06b3ed55a72a69242555010218974f8b4ece64fb31"
+    },
+    {
+      "name": "published-hash:deliverables/zs-independent-review.md",
+      "passed": true,
+      "actual": "c580b03404518ac99436ef3f7f3ccfdb78315a7a493b3c53c18448bd685072b5",
+      "expected": "c580b03404518ac99436ef3f7f3ccfdb78315a7a493b3c53c18448bd685072b5"
+    },
+    {
+      "name": "published-hash:review-correction-final.md",
+      "passed": true,
+      "actual": "4bff6b1094e0e1c81d6f7da1ccf274b6105719cfc5200ec51f4b425c65848b2d",
+      "expected": "4bff6b1094e0e1c81d6f7da1ccf274b6105719cfc5200ec51f4b425c65848b2d"
+    },
+    {
+      "name": "published-hash:review-correction-review-extract.json",
+      "passed": true,
+      "actual": "0182fb532d3761dc6c93bceecdea6601dbccf28980d7ed8f4f5cd90a47b7db13",
+      "expected": "0182fb532d3761dc6c93bceecdea6601dbccf28980d7ed8f4f5cd90a47b7db13"
+    },
+    {
+      "name": "published-hash:review-correction-sealed.json",
+      "passed": true,
+      "actual": "cf40c337f459e4b778b5d62514e427dfd96b6ae420d4bc83e077fd92fd1f127f",
+      "expected": "cf40c337f459e4b778b5d62514e427dfd96b6ae420d4bc83e077fd92fd1f127f"
+    },
+    {
+      "name": "published-hash:sources/AGENTS.md",
+      "passed": true,
+      "actual": "d0ca28ca18c438aefdada6a14cb847a0664e261f9e8e48abbfd8701720eb66a2",
+      "expected": "d0ca28ca18c438aefdada6a14cb847a0664e261f9e8e48abbfd8701720eb66a2"
+    },
+    {
+      "name": "published-hash:sources/DELIVERABLES.md",
+      "passed": true,
+      "actual": "4781518d79092e826bb9d506b39afa3f828e1f6aeefd150dc783a03b3a5e71bd",
+      "expected": "4781518d79092e826bb9d506b39afa3f828e1f6aeefd150dc783a03b3a5e71bd"
+    },
+    {
+      "name": "published-hash:sources/GOALS.md",
+      "passed": true,
+      "actual": "254aec11ac1dd7abe79a2b6f8c3dd45be84633765af2ebd74ecbeeaea1ef4152",
+      "expected": "254aec11ac1dd7abe79a2b6f8c3dd45be84633765af2ebd74ecbeeaea1ef4152"
+    },
+    {
+      "name": "published-hash:sources/PLAN.md",
+      "passed": true,
+      "actual": "eda91c43584652bed15afb4d61f2598d379641610db0883a1b0435fa66185995",
+      "expected": "eda91c43584652bed15afb4d61f2598d379641610db0883a1b0435fa66185995"
+    },
+    {
+      "name": "published-hash:sources/RULES.md",
+      "passed": true,
+      "actual": "4c28d3a308958136b8449d9c61c59da81e0d5f7dcbfd9075b32c87d61a0cb606",
+      "expected": "4c28d3a308958136b8449d9c61c59da81e0d5f7dcbfd9075b32c87d61a0cb606"
+    },
+    {
+      "name": "published-hash:sources/project.toml",
+      "passed": true,
+      "actual": "15caf8be661c1b9dd77c8474d449e5e5e2f019bcaecb51602a62f14366e2a008",
+      "expected": "15caf8be661c1b9dd77c8474d449e5e5e2f019bcaecb51602a62f14366e2a008"
+    },
+    {
+      "name": "published-hash:sources/work-ledger.yaml",
+      "passed": true,
+      "actual": "910155627fdf6131e7aed88c5297cc9c61a97c60aa4beec9a7c08475de8e4a37",
+      "expected": "910155627fdf6131e7aed88c5297cc9c61a97c60aa4beec9a7c08475de8e4a37"
+    },
+    {
+      "name": "manifest:zs-remediation-recheck-inputs-v2.sha256:work-ledger.yaml",
+      "passed": true,
+      "actual": "910155627fdf6131e7aed88c5297cc9c61a97c60aa4beec9a7c08475de8e4a37",
+      "expected": "910155627fdf6131e7aed88c5297cc9c61a97c60aa4beec9a7c08475de8e4a37"
+    },
+    {
+      "name": "manifest:zs-remediation-recheck-inputs-v2.sha256:materials/handover-draft.md",
+      "passed": true,
+      "actual": "4cbac09bd7a59e47e245a2d5f76e6c18a694680be26c411f97c503972df62361",
+      "expected": "4cbac09bd7a59e47e245a2d5f76e6c18a694680be26c411f97c503972df62361"
+    },
+    {
+      "name": "manifest:zs-remediation-recheck-inputs-v2.sha256:materials/change-requests.csv",
+      "passed": true,
+      "actual": "0872b48bc80817d733fd80b799d50e850406949f805db81b83aaa54eba433ee2",
+      "expected": "0872b48bc80817d733fd80b799d50e850406949f805db81b83aaa54eba433ee2"
+    },
+    {
+      "name": "manifest:zs-remediation-recheck-inputs-v2.sha256:materials/archive-confirmation.md",
+      "passed": true,
+      "actual": "03fd800c15f3571df42ec52f69073f9230425e0eb1aaa6019ec5fdfa5b60cf5c",
+      "expected": "03fd800c15f3571df42ec52f69073f9230425e0eb1aaa6019ec5fdfa5b60cf5c"
+    },
+    {
+      "name": "manifest:zs-remediation-recheck-inputs-v2.sha256:materials/role-confirmation.md",
+      "passed": true,
+      "actual": "8117dffe9cf6088adf357e9d0c404d1f4f547c430dd520cf1095d8cb27bf1da5",
+      "expected": "8117dffe9cf6088adf357e9d0c404d1f4f547c430dd520cf1095d8cb27bf1da5"
+    },
+    {
+      "name": "manifest:zs-remediation-recheck-inputs-v2.sha256:deliverables/zhusheng-interruption-diagnosis.md",
+      "passed": true,
+      "actual": "a7feebb26b5f65e7da1eb34b0774393fb06b9835c4b4537b64028b247920a196",
+      "expected": "a7feebb26b5f65e7da1eb34b0774393fb06b9835c4b4537b64028b247920a196"
+    },
+    {
+      "name": "manifest:zs-remediation-recheck-inputs-v2.sha256:deliverables/zhusheng-change-proposals.md",
+      "passed": true,
+      "actual": "e00e5e4e98db2476d0321fc86af82e93aa0a218edfab66c1b568f64335304a05",
+      "expected": "e00e5e4e98db2476d0321fc86af82e93aa0a218edfab66c1b568f64335304a05"
+    },
+    {
+      "name": "manifest:zs-remediation-recheck-inputs-v2.sha256:deliverables/zhusheng-recovery-work.md",
+      "passed": true,
+      "actual": "46bfc0ea1ac8396b10280e06b3ed55a72a69242555010218974f8b4ece64fb31",
+      "expected": "46bfc0ea1ac8396b10280e06b3ed55a72a69242555010218974f8b4ece64fb31"
+    },
+    {
+      "name": "manifest:zs-remediation-recheck-inputs-v2.sha256:deliverables/zhusheng-consistency.md",
+      "passed": true,
+      "actual": "ddb10a828a04059aea355186b98a685167ac738aee77902d587b6506b585260e",
+      "expected": "ddb10a828a04059aea355186b98a685167ac738aee77902d587b6506b585260e"
+    },
+    {
+      "name": "manifest:zs-remediation-recheck-inputs-v2.sha256:deliverables/zs-independent-review.md",
+      "passed": true,
+      "actual": "c580b03404518ac99436ef3f7f3ccfdb78315a7a493b3c53c18448bd685072b5",
+      "expected": "c580b03404518ac99436ef3f7f3ccfdb78315a7a493b3c53c18448bd685072b5"
+    },
+    {
+      "name": "manifest:zs-remediation-recheck-inputs-v2.sha256:.work-receipts/zs-remediation-evidence-report.json",
+      "passed": true,
+      "actual": "ebc0f5461ec9d4381d29f97629a19264fac8ca72318b51b1edbcac752605c7a6",
+      "expected": "ebc0f5461ec9d4381d29f97629a19264fac8ca72318b51b1edbcac752605c7a6"
+    },
+    {
+      "name": "manifest:zs-remediation-recheck-inputs-v2.sha256:.work-receipts/zs-remediation-tool-failures.json",
+      "passed": true,
+      "actual": "b444915b9b326aaf0b246812ecca763fa720beb9e1bd2c761d2cd352803e5c61",
+      "expected": "b444915b9b326aaf0b246812ecca763fa720beb9e1bd2c761d2cd352803e5c61"
+    },
+    {
+      "name": "manifest:zs-remediation-recheck-inputs-v2.sha256:.work-receipts/verify-zs-remediation.py",
+      "passed": true,
+      "actual": "b082e7c51f2dea40da771d80522053019f5bdc84b180c9f36688716fbf630db8",
+      "expected": "b082e7c51f2dea40da771d80522053019f5bdc84b180c9f36688716fbf630db8"
+    },
+    {
+      "name": "manifest:zs-remediation-recheck-inputs-v2.sha256:.work-receipts/verify-zs-remediation-recheck-inputs.py",
+      "passed": true,
+      "actual": "284b5d235c75eef2d246c041b73ad07848178590412f7b8f4c5edfc13869f249",
+      "expected": "284b5d235c75eef2d246c041b73ad07848178590412f7b8f4c5edfc13869f249"
+    },
+    {
+      "name": "manifest:zs-remediation-recheck-inputs-v2.sha256:.work-receipts/cr-01-create-session-mismatch-error.json",
+      "passed": true,
+      "actual": "2da5594bb5f7d0bafd90676da4102ae106bf4407949fdd39dd1adb65cde10310",
+      "expected": "2da5594bb5f7d0bafd90676da4102ae106bf4407949fdd39dd1adb65cde10310"
+    },
+    {
+      "name": "manifest:zs-remediation-recheck-inputs-v2.sha256:.work-receipts/reviewer-tool-failures.json",
+      "passed": true,
+      "actual": "fe3044ed954e2bcd4b59d8c4b0448d449284d82c208d3180dabdafb01f9ee6d9",
+      "expected": "fe3044ed954e2bcd4b59d8c4b0448d449284d82c208d3180dabdafb01f9ee6d9"
+    },
+    {
+      "name": "manifest:zs-remediation-recheck-inputs-v2.sha256:.work-receipts/zs-recovery-final-doctor.log",
+      "passed": true,
+      "actual": "43dc792d961dbc93a5f2a2a0b9316e922dfe3309ccc4a57ecb0294a2a4dcbdef",
+      "expected": "43dc792d961dbc93a5f2a2a0b9316e922dfe3309ccc4a57ecb0294a2a4dcbdef"
+    },
+    {
+      "name": "manifest:zs-remediation-recheck-bundle-v2.sha256:.work-receipts/zs-remediation-recheck-inputs-v2.sha256",
+      "passed": true,
+      "actual": "f29d41605f39baf37d9c62ebb3a0fae0d771f4cc29a7ddc4c97bfeaa0aec88bd",
+      "expected": "f29d41605f39baf37d9c62ebb3a0fae0d771f4cc29a7ddc4c97bfeaa0aec88bd"
+    },
+    {
+      "name": "manifest:zs-remediation-recheck-bundle-v2.sha256:review-inputs/remediation/producer-file-diff-v2.json",
+      "passed": true,
+      "actual": "7f40eec2cc56d7efaf8721e3ecaa13b5d926b06aa181e0150f5c204e851292f5",
+      "expected": "7f40eec2cc56d7efaf8721e3ecaa13b5d926b06aa181e0150f5c204e851292f5"
+    },
+    {
+      "name": "manifest:zs-remediation-recheck-bundle-v2.sha256:review-inputs/remediation/LATEST.md",
+      "passed": true,
+      "actual": "8f4b438f51da6495534d487bd98f7117109626be28709e93a60ca0de509f0875",
+      "expected": "8f4b438f51da6495534d487bd98f7117109626be28709e93a60ca0de509f0875"
+    },
+    {
+      "name": "manifest:zs-remediation-recheck-bundle-v2.sha256:review-inputs/remediation/turn-record-v2.json",
+      "passed": true,
+      "actual": "84aed186c546ef4fd8d421e959b39b5e24cd96ae75501665aa217c45ae2e6308",
+      "expected": "84aed186c546ef4fd8d421e959b39b5e24cd96ae75501665aa217c45ae2e6308"
+    },
+    {
+      "name": "current-source-equals-fixed:AGENTS.md",
+      "passed": true,
+      "actual": "d0ca28ca18c438aefdada6a14cb847a0664e261f9e8e48abbfd8701720eb66a2",
+      "expected": "d0ca28ca18c438aefdada6a14cb847a0664e261f9e8e48abbfd8701720eb66a2"
+    },
+    {
+      "name": "current-source-equals-fixed:DELIVERABLES.md",
+      "passed": true,
+      "actual": "4781518d79092e826bb9d506b39afa3f828e1f6aeefd150dc783a03b3a5e71bd",
+      "expected": "4781518d79092e826bb9d506b39afa3f828e1f6aeefd150dc783a03b3a5e71bd"
+    },
+    {
+      "name": "current-source-equals-fixed:GOALS.md",
+      "passed": true,
+      "actual": "254aec11ac1dd7abe79a2b6f8c3dd45be84633765af2ebd74ecbeeaea1ef4152",
+      "expected": "254aec11ac1dd7abe79a2b6f8c3dd45be84633765af2ebd74ecbeeaea1ef4152"
+    },
+    {
+      "name": "current-source-equals-fixed:PLAN.md",
+      "passed": true,
+      "actual": "eda91c43584652bed15afb4d61f2598d379641610db0883a1b0435fa66185995",
+      "expected": "eda91c43584652bed15afb4d61f2598d379641610db0883a1b0435fa66185995"
+    },
+    {
+      "name": "current-source-equals-fixed:RULES.md",
+      "passed": true,
+      "actual": "4c28d3a308958136b8449d9c61c59da81e0d5f7dcbfd9075b32c87d61a0cb606",
+      "expected": "4c28d3a308958136b8449d9c61c59da81e0d5f7dcbfd9075b32c87d61a0cb606"
+    },
+    {
+      "name": "current-source-equals-fixed:project.toml",
+      "passed": true,
+      "actual": "15caf8be661c1b9dd77c8474d449e5e5e2f019bcaecb51602a62f14366e2a008",
+      "expected": "15caf8be661c1b9dd77c8474d449e5e5e2f019bcaecb51602a62f14366e2a008"
+    },
+    {
+      "name": "current-source-equals-fixed:work-ledger.yaml",
+      "passed": true,
+      "actual": "910155627fdf6131e7aed88c5297cc9c61a97c60aa4beec9a7c08475de8e4a37",
+      "expected": "910155627fdf6131e7aed88c5297cc9c61a97c60aa4beec9a7c08475de8e4a37"
+    },
+    {
+      "name": "current-deliverable-equals-fixed:zhusheng-interruption-diagnosis.md",
+      "passed": true,
+      "actual": "a7feebb26b5f65e7da1eb34b0774393fb06b9835c4b4537b64028b247920a196",
+      "expected": "a7feebb26b5f65e7da1eb34b0774393fb06b9835c4b4537b64028b247920a196"
+    },
+    {
+      "name": "current-deliverable-equals-fixed:zhusheng-change-proposals.md",
+      "passed": true,
+      "actual": "e00e5e4e98db2476d0321fc86af82e93aa0a218edfab66c1b568f64335304a05",
+      "expected": "e00e5e4e98db2476d0321fc86af82e93aa0a218edfab66c1b568f64335304a05"
+    },
+    {
+      "name": "current-deliverable-equals-fixed:zhusheng-recovery-work.md",
+      "passed": true,
+      "actual": "46bfc0ea1ac8396b10280e06b3ed55a72a69242555010218974f8b4ece64fb31",
+      "expected": "46bfc0ea1ac8396b10280e06b3ed55a72a69242555010218974f8b4ece64fb31"
+    },
+    {
+      "name": "current-deliverable-equals-fixed:zhusheng-consistency.md",
+      "passed": true,
+      "actual": "ddb10a828a04059aea355186b98a685167ac738aee77902d587b6506b585260e",
+      "expected": "ddb10a828a04059aea355186b98a685167ac738aee77902d587b6506b585260e"
+    },
+    {
+      "name": "current-deliverable-equals-fixed:zs-independent-review.md",
+      "passed": true,
+      "actual": "c580b03404518ac99436ef3f7f3ccfdb78315a7a493b3c53c18448bd685072b5",
+      "expected": "c580b03404518ac99436ef3f7f3ccfdb78315a7a493b3c53c18448bd685072b5"
+    },
+    {
+      "name": "recover-acceptance-exact-four",
+      "passed": true,
+      "actual": [
+        "处理待应用改动，保留重试或恢复的证据，避免重复写入。",
+        "保留实际产物与来源引用，无法确认的内容显式说明。",
+        "资料归档按“使用说明、交接记录、问题跟踪”三个内容类型目录执行，并保留资料管理员确认来源（materials/archive-confirmation.md）；目录根路径、权限、迁移与完整性未明确时继续列为未决。",
+        "角色职责按协调者确认执行：值班人员维护交接记录、资料管理员维护使用说明、问题负责人维护问题跟踪，并保留确认来源（materials/role-confirmation.md）；具体人员、值班表、代理/升级路径和交接时限未明确时继续列为未决。"
+      ],
+      "expected": [
+        "处理待应用改动，保留重试或恢复的证据，避免重复写入。",
+        "保留实际产物与来源引用，无法确认的内容显式说明。",
+        "资料归档按“使用说明、交接记录、问题跟踪”三个内容类型目录执行，并保留资料管理员确认来源（materials/archive-confirmation.md）；目录根路径、权限、迁移与完整性未明确时继续列为未决。",
+        "角色职责按协调者确认执行：值班人员维护交接记录、资料管理员维护使用说明、问题负责人维护问题跟踪，并保留确认来源（materials/role-confirmation.md）；具体人员、值班表、代理/升级路径和交接时限未明确时继续列为未决。"
+      ]
+    },
+    {
+      "name": "recover-status",
+      "passed": true,
+      "actual": "completed",
+      "expected": "completed"
+    },
+    {
+      "name": "recover-next-action-is-review-handoff",
+      "passed": true,
+      "actual": true,
+      "expected": true
+    },
+    {
+      "name": "review-status-before-recheck",
+      "passed": true,
+      "actual": "planned",
+      "expected": "planned"
+    },
+    {
+      "name": "deliver-status-before-recheck",
+      "passed": true,
+      "actual": "planned",
+      "expected": "planned"
+    },
+    {
+      "name": "final-delivery-artifact-absent",
+      "passed": true,
+      "actual": false,
+      "expected": false
+    },
+    {
+      "name": "proposal-inventory-unique:01M21X4H7GSP7DY19MTHYDBXST",
+      "passed": true,
+      "actual": 1,
+      "expected": 1
+    },
+    {
+      "name": "proposal-inventory-unique:01M21X5MHW7RFN8PBE4J86GACM",
+      "passed": true,
+      "actual": 1,
+      "expected": 1
+    },
+    {
+      "name": "proposal-inventory-unique:01M21X67QFPQ55YSMJEX96HYV7",
+      "passed": true,
+      "actual": 1,
+      "expected": 1
+    },
+    {
+      "name": "proposal-inventory-unique:01M225AVE1BFYY0W4T2EKRV88C",
+      "passed": true,
+      "actual": 1,
+      "expected": 1
+    },
+    {
+      "name": "old-proposal-status:01M21X4H7GSP7DY19MTHYDBXST",
+      "passed": true,
+      "actual": "rejected",
+      "expected": "rejected"
+    },
+    {
+      "name": "old-proposal-apply-attempt:01M21X4H7GSP7DY19MTHYDBXST",
+      "passed": true,
+      "actual": null,
+      "expected": null
+    },
+    {
+      "name": "old-proposal-status:01M21X5MHW7RFN8PBE4J86GACM",
+      "passed": true,
+      "actual": "rejected",
+      "expected": "rejected"
+    },
+    {
+      "name": "old-proposal-apply-attempt:01M21X5MHW7RFN8PBE4J86GACM",
+      "passed": true,
+      "actual": null,
+      "expected": null
+    },
+    {
+      "name": "old-proposal-status:01M21X67QFPQ55YSMJEX96HYV7",
+      "passed": true,
+      "actual": "rejected",
+      "expected": "rejected"
+    },
+    {
+      "name": "old-proposal-apply-attempt:01M21X67QFPQ55YSMJEX96HYV7",
+      "passed": true,
+      "actual": null,
+      "expected": null
+    },
+    {
+      "name": "combined-proposal-status",
+      "passed": true,
+      "actual": "applied",
+      "expected": "applied"
+    },
+    {
+      "name": "combined-proposal-id",
+      "passed": true,
+      "actual": "01M225AVE1BFYY0W4T2EKRV88C",
+      "expected": "01M225AVE1BFYY0W4T2EKRV88C"
+    },
+    {
+      "name": "combined-proposal-acceptance",
+      "passed": true,
+      "actual": [
+        "处理待应用改动，保留重试或恢复的证据，避免重复写入。",
+        "保留实际产物与来源引用，无法确认的内容显式说明。",
+        "资料归档按“使用说明、交接记录、问题跟踪”三个内容类型目录执行，并保留资料管理员确认来源（materials/archive-confirmation.md）；目录根路径、权限、迁移与完整性未明确时继续列为未决。",
+        "角色职责按协调者确认执行：值班人员维护交接记录、资料管理员维护使用说明、问题负责人维护问题跟踪，并保留确认来源（materials/role-confirmation.md）；具体人员、值班表、代理/升级路径和交接时限未明确时继续列为未决。"
+      ],
+      "expected": [
+        "处理待应用改动，保留重试或恢复的证据，避免重复写入。",
+        "保留实际产物与来源引用，无法确认的内容显式说明。",
+        "资料归档按“使用说明、交接记录、问题跟踪”三个内容类型目录执行，并保留资料管理员确认来源（materials/archive-confirmation.md）；目录根路径、权限、迁移与完整性未明确时继续列为未决。",
+        "角色职责按协调者确认执行：值班人员维护交接记录、资料管理员维护使用说明、问题负责人维护问题跟踪，并保留确认来源（materials/role-confirmation.md）；具体人员、值班表、代理/升级路径和交接时限未明确时继续列为未决。"
+      ]
+    },
+    {
+      "name": "combined-apply-attempt-event",
+      "passed": true,
+      "actual": "01M225BCXTY18AWZSRG0B9WT1P",
+      "expected": "01M225BCXTY18AWZSRG0B9WT1P"
+    },
+    {
+      "name": "combined-resolved-event",
+      "passed": true,
+      "actual": "01M225BCYBY571X8FPBY8TGME8",
+      "expected": "01M225BCYBY571X8FPBY8TGME8"
+    },
+    {
+      "name": "combined-write-before",
+      "passed": true,
+      "actual": "sha256:6ac1624435b6b626e32af360e94acb9bbcd406e9a2dfe0e3bf3926474fac612a",
+      "expected": "sha256:6ac1624435b6b626e32af360e94acb9bbcd406e9a2dfe0e3bf3926474fac612a"
+    },
+    {
+      "name": "combined-write-after",
+      "passed": true,
+      "actual": "sha256:83f9e1a0a4cb7b598e5ac0e60b712273b4c85f8e75a246ad59b11225c8ba17a0",
+      "expected": "sha256:83f9e1a0a4cb7b598e5ac0e60b712273b4c85f8e75a246ad59b11225c8ba17a0"
+    },
+    {
+      "name": "recover-metadata-fields",
+      "passed": true,
+      "actual": [
+        "next_action",
+        "summary"
+      ],
+      "expected": [
+        "next_action",
+        "summary"
+      ]
+    },
+    {
+      "name": "review-metadata-fields",
+      "passed": true,
+      "actual": [
+        "summary"
+      ],
+      "expected": [
+        "summary"
+      ]
+    },
+    {
+      "name": "recover-metadata-no-acceptance",
+      "passed": true,
+      "actual": false,
+      "expected": false
+    },
+    {
+      "name": "review-metadata-no-acceptance",
+      "passed": true,
+      "actual": false,
+      "expected": false
+    },
+    {
+      "name": "awr-recover-status",
+      "passed": true,
+      "actual": "completed",
+      "expected": "completed"
+    },
+    {
+      "name": "awr-recover-source-revision",
+      "passed": true,
+      "actual": 17,
+      "expected": 17
+    },
+    {
+      "name": "awr-recover-acceptance",
+      "passed": true,
+      "actual": [
+        "处理待应用改动，保留重试或恢复的证据，避免重复写入。",
+        "保留实际产物与来源引用，无法确认的内容显式说明。",
+        "资料归档按“使用说明、交接记录、问题跟踪”三个内容类型目录执行，并保留资料管理员确认来源（materials/archive-confirmation.md）；目录根路径、权限、迁移与完整性未明确时继续列为未决。",
+        "角色职责按协调者确认执行：值班人员维护交接记录、资料管理员维护使用说明、问题负责人维护问题跟踪，并保留确认来源（materials/role-confirmation.md）；具体人员、值班表、代理/升级路径和交接时限未明确时继续列为未决。"
+      ],
+      "expected": [
+        "处理待应用改动，保留重试或恢复的证据，避免重复写入。",
+        "保留实际产物与来源引用，无法确认的内容显式说明。",
+        "资料归档按“使用说明、交接记录、问题跟踪”三个内容类型目录执行，并保留资料管理员确认来源（materials/archive-confirmation.md）；目录根路径、权限、迁移与完整性未明确时继续列为未决。",
+        "角色职责按协调者确认执行：值班人员维护交接记录、资料管理员维护使用说明、问题负责人维护问题跟踪，并保留确认来源（materials/role-confirmation.md）；具体人员、值班表、代理/升级路径和交接时限未明确时继续列为未决。"
+      ]
+    },
+    {
+      "name": "awr-project-revision-before",
+      "passed": true,
+      "actual": 181,
+      "expected": 181
+    },
+    {
+      "name": "awr-source-clean",
+      "passed": true,
+      "actual": [],
+      "expected": []
+    },
+    {
+      "name": "review-ready-before",
+      "passed": true,
+      "actual": [
+        "ZS-REVIEW"
+      ],
+      "expected": [
+        "ZS-REVIEW"
+      ]
+    },
+    {
+      "name": "active-sessions-before",
+      "passed": true,
+      "actual": [],
+      "expected": []
+    },
+    {
+      "name": "business-narrative-retains:目录根路径、访问权限、资料迁移与完整性",
+      "passed": true,
+      "actual": true,
+      "expected": true
+    },
+    {
+      "name": "business-narrative-retains:具体人员、值班表、代理/升级路径和交接时限",
+      "passed": true,
+      "actual": true,
+      "expected": true
+    },
+    {
+      "name": "business-narrative-retains:具体遗留问题清单及逐项影响、负责人、下一步和完成条件",
+      "passed": true,
+      "actual": true,
+      "expected": true
+    },
+    {
+      "name": "business-narrative-retains:旧 patch 应用 0 次",
+      "passed": true,
+      "actual": true,
+      "expected": true
+    },
+    {
+      "name": "business-narrative-retains:新合并提案应用 1 次",
+      "passed": true,
+      "actual": true,
+      "expected": true
+    },
+    {
+      "name": "prelude-normal-exit",
+      "passed": true,
+      "actual": 0,
+      "expected": 0
+    },
+    {
+      "name": "actual-sigkill",
+      "passed": true,
+      "actual": "SIGKILL",
+      "expected": "SIGKILL"
+    },
+    {
+      "name": "actual-sigkill-sent",
+      "passed": true,
+      "actual": true,
+      "expected": true
+    },
+    {
+      "name": "native-interruption-return-code",
+      "passed": true,
+      "actual": -9,
+      "expected": -9
+    },
+    {
+      "name": "old-checkpoint-absent",
+      "passed": true,
+      "actual": null,
+      "expected": null
+    },
+    {
+      "name": "different-native-recovery",
+      "passed": true,
+      "actual": true,
+      "expected": true
+    }
+  ],
+  "source_revision": 17,
+  "source_sha256": "910155627fdf6131e7aed88c5297cc9c61a97c60aa4beec9a7c08475de8e4a37",
+  "verdict_basis": "Independent checks of fixed hashes, current authority, full proposal records, interruption receipts, and current AWR reads; producer self-check results were not used as verdict authority."
+}

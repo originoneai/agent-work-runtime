@@ -1,0 +1,28 @@
+{
+  "kind": "actual_interruption_recovery_binding",
+  "verified_at": "2026-09-09T10:10:54+08:00",
+  "crash_receipt": "control/verified-interruption-binding.json",
+  "crash_receipt_sha256": "34685d72fd533f4c2f306698928ea2a37199ed5d27f87af971eb34cf44765477",
+  "prior_native_task_id": "01a083b6-aa5f-7ba0-9135-c128ada421a2",
+  "recovery_native_task_id": "01a083d7-4073-7150-89cd-993a9899dcad",
+  "actual_resume_items": [
+    "item_55"
+  ],
+  "old_awr_session_id": "01M21WZXPSGZ77369CSGXCB8CX",
+  "new_awr_session_id": "01M21XP8VZ1YJRNSS6BJH2V4HB",
+  "old_session_interrupted": true,
+  "old_claims_released": true,
+  "session_receipt": ".work-receipts/zs-compare-interrupted-session-after-resume.json",
+  "session_receipt_sha256": "6a3fb15e157da7092e2150b36469ecd0b843a69bdbab575525f49c5f17f5657e",
+  "pending_receipt": ".work-receipts/zs-compare-ready-proposals-after-resume.json",
+  "pending_receipt_sha256": "2fdefba09c38d26a9f262eba825a47df630e4b62bf91139c47fc269668b49498",
+  "retained_ready_proposal_ids": [
+    "01M21X67QFPQ55YSMJEX96HYV7",
+    "01M21X5MHW7RFN8PBE4J86GACM",
+    "01M21X4H7GSP7DY19MTHYDBXST"
+  ],
+  "prior_checkpoint": null,
+  "recovery_limitation": "The old session never saved a checkpoint; unpersisted summaries and open loops cannot be recovered. AWR model fields are caller metadata, not actual native model identity.",
+  "initial_snapshot": "control/initial-sealed.json",
+  "e4_credit": false
+}

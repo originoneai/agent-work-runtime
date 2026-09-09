@@ -1,0 +1,65 @@
+{
+  "apply_attempt": {
+    "event_id": "01M226ED6NBFD9JHNY0RD8E2G7",
+    "plan": {
+      "after_fingerprint": "sha256:1e9381596fe3a510c9963bd42bb2e9c5360e9fa54275c4212635d42a6dc03176",
+      "after_size": 4028,
+      "before_fingerprint": "sha256:b195f025130db4cd317e0124810767d519cbf9ddb2075b6131f74ffeafb34cc7",
+      "before_size": 4055,
+      "id": "01M226ED60JZX6NGBNHPWF42XQ",
+      "target_after_hash": "d4cbe84d357c3053bf9d82de06b8d5fa09b0220963e11a11625e510e719176ee"
+    },
+    "project_revision": 160,
+    "proposal_id": "01M226DVJZNTTSTGZ20CHGQDWD",
+    "resolved_event_id": "01M226ED79VHW84RE1E7MA8SP5",
+    "source_id": "01M21VJFYKQHY3PPK3TBPPYNPT"
+  },
+  "ok": true,
+  "patch_included": true,
+  "project_revision": 182,
+  "proposal": {
+    "base_fingerprint": "sha256:b195f025130db4cd317e0124810767d519cbf9ddb2075b6131f74ffeafb34cc7",
+    "created_by_session": "01M226CTEP6MA2G1438HNM6J1K",
+    "expected_revision": 156,
+    "id": "01M226DVJZNTTSTGZ20CHGQDWD",
+    "mutation_type": "update_fields",
+    "patch": {
+      "changes": {
+        "next_action": "等待不同参与者完成 ZS-REVIEW 整改后返检；返检须核对 ZS-F01 至 ZS-F03、固定文件前后哈希并保留原报告。返检通过后才可推进 ZS-DELIVER。",
+        "summary": "整改已完成并提交返检：CR-01/CR-02 由新合并提案一次生效，三个旧 patch 零应用，CR-03 与其他未知事实及全部失败历史继续保留。"
+      },
+      "intent": "同步整改完成后的恢复摘要与下一步：已完成的证据和返检门槛写为历史事实，当前动作改为等待不同参与者返检；不修改 acceptance。",
+      "source_config": {
+        "adapter_options": {},
+        "adapter_version": 1,
+        "mapping_key": "ledger|work-ledger.yaml"
+      },
+      "target": {
+        "kind": "work_item",
+        "meta": {
+          "external_key": "ZS-RECOVER",
+          "id": "01M21VJFYMD4Q7P3HFNFATQBCZ",
+          "revision": 8,
+          "source_ref": {
+            "end_line": null,
+            "locator": "file:///Users/mac/Documents/originone/agent-work-running/.local/business-live-20260909-v1/interrupted-write/project/work-ledger.yaml",
+            "pointer": "/work_items/2",
+            "section_fingerprint": null,
+            "source_fingerprint": "sha256:b195f025130db4cd317e0124810767d519cbf9ddb2075b6131f74ffeafb34cc7",
+            "source_id": "01M21VJFYKQHY3PPK3TBPPYNPT",
+            "source_revision": 15,
+            "start_line": null
+          }
+        }
+      },
+      "version": 1
+    },
+    "project_id": "01M21VJFYF7E75EQ55DEH3D5TS",
+    "revision": 5,
+    "source_id": "01M21VJFYKQHY3PPK3TBPPYNPT",
+    "status": "applied",
+    "work_item_id": "01M21VJFYMD4Q7P3HFNFATQBCZ"
+  },
+  "read_only": true,
+  "source_refresh_performed": false
+}

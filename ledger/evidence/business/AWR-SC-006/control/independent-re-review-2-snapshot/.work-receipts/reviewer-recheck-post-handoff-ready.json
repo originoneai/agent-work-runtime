@@ -1,0 +1,36 @@
+{
+  "blocked_sample": [],
+  "blocked_total": 0,
+  "branch_id": null,
+  "diagnostic_counts": {},
+  "freshness_basis": "source_refresh",
+  "ok": true,
+  "project_revision": 209,
+  "read_only": false,
+  "ready": [
+    {
+      "active_claims": [],
+      "blocker": null,
+      "diagnostics": [],
+      "external_key": "ZS-DELIVER",
+      "freshness": "fresh",
+      "id": "01M21VJFYMX50ZQZKG1A17EYVP",
+      "milestone": "ZS-DELIVERY",
+      "next_action": "交付恢复后的维护交接，先核对当前来源和负责范围。",
+      "owner": null,
+      "priority": "P0",
+      "raw_status": "planned",
+      "ready": true,
+      "revision": 1,
+      "source_revision": 20,
+      "status": "planned",
+      "summary": "交付恢复后的维护交接",
+      "title": "交付恢复后的维护交接"
+    }
+  ],
+  "ready_total": 1,
+  "source_issues": [],
+  "source_refresh_performed": true,
+  "source_warnings": 0,
+  "truncated": false
+}

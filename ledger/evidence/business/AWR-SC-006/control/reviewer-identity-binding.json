@@ -1,0 +1,45 @@
+{
+  "kind": "actual_independent_reviewer_identity_binding",
+  "verified_at": "2026-09-09T11:56:12+08:00",
+  "actual_agent_task": "/root/source_change_client_run",
+  "actual_agent_type": "luna_worker",
+  "actual_task_completed": true,
+  "awr_session_id": "01M223JC0DGNZACGCB1GK9FWQR",
+  "awr_claim_id": "01M223JC0DMZEZAF591R4QH2BC",
+  "verified_receipts": 40,
+  "verified_unchanged_producer_files": 8,
+  "review_receipt_sha256": "599adccfd39a849475548f7913baf438651c8945b9c31067be74962c0fa58b2d",
+  "review_verdict": "requires_executor_changes",
+  "runtime_observation": {
+    "session": {
+      "id": "01M223JC0DGNZACGCB1GK9FWQR",
+      "project_id": "01M21VJFYF7E75EQ55DEH3D5TS",
+      "work_item_id": "01M21VJFYMSXG6YEVAE8TW7WHA",
+      "branch_id": null,
+      "agent_id": "luna_worker",
+      "provider": "openai",
+      "model": "gpt-5.6-sol",
+      "status": "ended",
+      "started_at": 1788924735501,
+      "ended_at": 1788925613766,
+      "start_project_revision": 84,
+      "end_project_revision": 103,
+      "last_checkpoint_id": "01M224CJ5J56S2WV8MPDNWGQVM",
+      "revision": 3
+    },
+    "claim": {
+      "id": "01M223JC0DMZEZAF591R4QH2BC",
+      "project_id": "01M21VJFYF7E75EQ55DEH3D5TS",
+      "work_item_id": "01M21VJFYMSXG6YEVAE8TW7WHA",
+      "session_id": "01M223JC0DGNZACGCB1GK9FWQR",
+      "agent_id": "luna_worker",
+      "branch_id": null,
+      "status": "released",
+      "acquired_at": 1788924735501,
+      "expires_at": 1788928335501,
+      "released_at": 1788925555243,
+      "revision": 2
+    }
+  },
+  "e4_credit": false
+}

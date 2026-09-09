@@ -1,0 +1,109 @@
+{
+  "ok": true,
+  "code": "proposal_recorded",
+  "project_revision": 217,
+  "proposal": {
+    "id": "01M229TFNZC3XXMQ511NB7HY8C",
+    "project_id": "01M21VJFYF7E75EQ55DEH3D5TS",
+    "work_item_id": "01M21VJFYMX50ZQZKG1A17EYVP",
+    "source_id": "01M21VJFYKQHY3PPK3TBPPYNPT",
+    "base_fingerprint": "sha256:c1ae9edabad4bcb9ec0cd7d2c6143b61817bfe4db880065fd5b430d3855111e5",
+    "expected_revision": 210,
+    "mutation_type": "work.progress",
+    "patch": {
+      "changes": {
+        "next_action": "形成 zs-delivery.md，核验来源、提案、返检、未知项和 Git 边界，登记证据后完成 ZS-DELIVER。",
+        "status": "in_progress",
+        "summary": "独立整改返检已通过；最终交付正在依据当前权威来源整理，原版本、失败、未持久化缺口和未知事项继续保留。"
+      },
+      "intent": "独立整改返检已通过，开始形成最终交接并绑定可追溯证据。",
+      "source_config": {
+        "adapter_options": {},
+        "adapter_version": 1,
+        "mapping_key": "ledger|work-ledger.yaml"
+      },
+      "target": {
+        "kind": "work_item",
+        "meta": {
+          "external_key": "ZS-DELIVER",
+          "id": "01M21VJFYMX50ZQZKG1A17EYVP",
+          "revision": 1,
+          "source_ref": {
+            "end_line": null,
+            "locator": "file:///Users/mac/Documents/originone/agent-work-running/.local/business-live-20260909-v1/interrupted-write/project/work-ledger.yaml",
+            "pointer": "/work_items/4",
+            "section_fingerprint": null,
+            "source_fingerprint": "sha256:c1ae9edabad4bcb9ec0cd7d2c6143b61817bfe4db880065fd5b430d3855111e5",
+            "source_id": "01M21VJFYKQHY3PPK3TBPPYNPT",
+            "source_revision": 20,
+            "start_line": null
+          }
+        }
+      },
+      "version": 1,
+      "work_action": {
+        "action": "progress",
+        "from": "planned",
+        "to": "in_progress"
+      }
+    },
+    "status": "applied",
+    "created_by_session": "01M229PEPFG7KC962FP55GCRMX",
+    "revision": 5
+  },
+  "event": {
+    "id": "01M229TFQND213THPY19C7PS23",
+    "project_id": "01M21VJFYF7E75EQ55DEH3D5TS",
+    "work_item_id": "01M21VJFYMX50ZQZKG1A17EYVP",
+    "session_id": null,
+    "branch_id": null,
+    "event_type": "work.progressed",
+    "importance": "normal",
+    "summary": "Verified source work action Progress",
+    "payload": {
+      "action_reason": "独立整改返检已通过，开始形成最终交接并绑定可追溯证据。",
+      "actor": "codex-primary",
+      "after_fingerprint": "sha256:24991ec1bcef5551f3895b694151c94f2cf1e1297e0e14ea1d77227a82eb7843",
+      "attempt_event_id": "01M229TFQ0YVETNNTE840A3EDQ",
+      "before_fingerprint": "sha256:c1ae9edabad4bcb9ec0cd7d2c6143b61817bfe4db880065fd5b430d3855111e5",
+      "creating_session_id": "01M229PEPFG7KC962FP55GCRMX",
+      "proposal_id": "01M229TFNZC3XXMQ511NB7HY8C",
+      "reason": "独立整改返检已通过，开始形成最终交接并绑定可追溯证据。",
+      "released_claim_ids": [],
+      "source_id": "01M21VJFYKQHY3PPK3TBPPYNPT",
+      "source_revision": 21,
+      "target_after_hash": "221f8ac90672d6d4c13a55d7af17857e7492216bb281ab38c5ed878d6da2a4d9",
+      "target_revision": 2,
+      "work_action": {
+        "action": "progress",
+        "from": "planned",
+        "to": "in_progress"
+      },
+      "write_plan_id": "01M229TFPB8CFQH0Z8GR7SZ2TQ"
+    },
+    "project_revision": 217,
+    "created_at": 1788931292917
+  },
+  "source_refresh_performed": true,
+  "source_write_performed": true,
+  "write_outcome": "applied",
+  "apply_attempt": {
+    "event_id": "01M229TFQ0YVETNNTE840A3EDQ",
+    "proposal_id": "01M229TFNZC3XXMQ511NB7HY8C",
+    "source_id": "01M21VJFYKQHY3PPK3TBPPYNPT",
+    "project_revision": 214,
+    "plan": {
+      "id": "01M229TFPB8CFQH0Z8GR7SZ2TQ",
+      "before_fingerprint": "sha256:c1ae9edabad4bcb9ec0cd7d2c6143b61817bfe4db880065fd5b430d3855111e5",
+      "after_fingerprint": "sha256:24991ec1bcef5551f3895b694151c94f2cf1e1297e0e14ea1d77227a82eb7843",
+      "before_size": 4027,
+      "after_size": 4245,
+      "target_after_hash": "221f8ac90672d6d4c13a55d7af17857e7492216bb281ab38c5ed878d6da2a4d9"
+    },
+    "resolved_event_id": "01M229TFQND213THPY19C7PS23"
+  },
+  "recovery_directory": ".awr/mutations/01M229TFPB8CFQH0Z8GR7SZ2TQ",
+  "source_check": null,
+  "error": null
+}
+

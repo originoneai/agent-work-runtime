@@ -1,0 +1,207 @@
+{
+  "version": 2,
+  "package_id": "WH-DELIVER-CURRENT-V2-20260909",
+  "date": "2026-09-09",
+  "scope": "traceable_document_delivery",
+  "current_human_manifest": "deliverables/wh-delivery-v2.md",
+  "current_human_manifest_binding": "Bound externally by the v3 fingerprint relationship verification to avoid a circular self-hash.",
+  "entry_count": 28,
+  "entries": [
+    {
+      "path": "deliverables/wanghai-operations-manual-draft-v3.md",
+      "category": "current",
+      "role": "reviewed_manual_work_draft",
+      "sha256": "b09950015623422d6ae287dd6295abbd83b6ea47970f7da64835d3957f222e68"
+    },
+    {
+      "path": "deliverables/wanghai-source-verification-v3.md",
+      "category": "current",
+      "role": "reviewed_source_verification",
+      "sha256": "267dae9476a283a3bdaeb2539a9912e1849294e22db5bb16d300ae3f5459dbba"
+    },
+    {
+      "path": "deliverables/wanghai-progress-handoff-v3.md",
+      "category": "current",
+      "role": "reviewed_pre_delivery_handoff",
+      "sha256": "526fe9513c657c927ff71a6d887f353508612ab0b29b2afe32ba7f8d2feb3bff"
+    },
+    {
+      "path": "deliverables/wh-independent-review.md",
+      "category": "current",
+      "role": "independent_review",
+      "sha256": "17d9efb27e766de37c1bc8ed84f1140f644f80238d0c23360beec55f549af602"
+    },
+    {
+      "path": "deliverables/wanghai-final-work-record.md",
+      "category": "current",
+      "role": "final_work_record",
+      "sha256": "3ebbb2b6b37d172a67af13b9982b34721b7b489793e4514651dea0bb64b552de"
+    },
+    {
+      "path": "deliverables/wanghai-final-handoff.md",
+      "category": "current",
+      "role": "final_handoff",
+      "sha256": "2ab5dadaad92985bb8477bd397a25cf9db03abe5203a087deedd4b92b632c15c"
+    },
+    {
+      "path": "deliverables/wanghai-delivery-fingerprint-correction-v2.md",
+      "category": "current",
+      "role": "fingerprint_correction_record",
+      "sha256": "02198a92e0a640c756a70bbe982a5c37266a1c4d2eb15c10dfb343c665ca1963"
+    },
+    {
+      "path": "deliverables/wanghai-before-handoff.md",
+      "category": "history",
+      "role": "original_pause_handoff",
+      "sha256": "f4c58c9422f8452f3c0bd148859be94d2ecceebe670fe7c62c21401292773efc"
+    },
+    {
+      "path": "deliverables/wanghai-resumed-work.md",
+      "category": "history",
+      "role": "resume_record",
+      "sha256": "c143afbe7e3c32d61c1e31587407cfb42b322b8fab483a29efea719996dd1576"
+    },
+    {
+      "path": "deliverables/wanghai-operations-manual-draft.md",
+      "category": "history",
+      "role": "manual_v1",
+      "sha256": "813bd164add4ed663223d083e56b76a9f57a2c372906236bcad713712c2b0545"
+    },
+    {
+      "path": "deliverables/wanghai-operations-manual-draft-v2.md",
+      "category": "history",
+      "role": "manual_v2",
+      "sha256": "16011e71b8d4bb2b0f588c93b325f07491b3d33bea4052c89ad6c751bbe65438"
+    },
+    {
+      "path": "deliverables/wanghai-source-verification.md",
+      "category": "history",
+      "role": "source_verification_v1",
+      "sha256": "9a34cdefb4a0aa684a70f7d79d958680f9512ca2a4b79ce1371536e95dcf2e19"
+    },
+    {
+      "path": "deliverables/wanghai-source-verification-v2.md",
+      "category": "history",
+      "role": "source_verification_v2",
+      "sha256": "9019b11cf6558543b2741a63870556a166dfc2daac8abebdf75f2427f8857892"
+    },
+    {
+      "path": "deliverables/wanghai-progress-handoff.md",
+      "category": "history",
+      "role": "progress_handoff_v1",
+      "sha256": "b4b606c662296ebd99c4d695395f4a0d26f73a773bc5c848749324945c70add6"
+    },
+    {
+      "path": "deliverables/wanghai-progress-handoff-v2.md",
+      "category": "history",
+      "role": "progress_handoff_v2",
+      "sha256": "9ed1028c36b4fa525424f79bb17aa61157384582961dd34ad7743ee9cd93d341"
+    },
+    {
+      "path": "deliverables/wanghai-final-delivery.md",
+      "category": "history",
+      "role": "pre_review_delivery_candidate",
+      "sha256": "ad31de837d2d7be3d2cb22fb6cc8acf2de55b3ddc7ae4cb1a1c5c4765bec48f0"
+    },
+    {
+      "path": "deliverables/wh-delivery.md",
+      "category": "history",
+      "role": "original_delivery_with_preserved_stale_internal_fingerprint",
+      "sha256": "e29908a4ccd1c9547f009890ff63896c1957e1cba43c714ad08f0a6f5ae52c49"
+    },
+    {
+      "path": ".work-receipts/WH-DELIVER-traceable-delivery-receipt.json",
+      "category": "history",
+      "role": "original_trace_receipt",
+      "sha256": "aef26b2c1eefc4350f8c4f62059c45a1027feee1c93bb48c91aaa1102786a525"
+    },
+    {
+      "path": ".work-receipts/reviewer-package-verification.json",
+      "category": "audit",
+      "role": "independent_review_package_verification",
+      "sha256": "0c23db3697a1d3a2f953487c592cf40e381a00cbf5e3cf007ef566c04585fe3e"
+    },
+    {
+      "path": ".work-receipts/reviewer-final-verification.json",
+      "category": "audit",
+      "role": "independent_review_final_verification",
+      "sha256": "1b573e2d59670b697440f077a0753bc1012ae10a67466da63dd4eaac34483bc8"
+    },
+    {
+      "path": ".work-receipts/WH-DELIVER-final-verification.json",
+      "category": "audit",
+      "role": "first_delivery_verification_preserved",
+      "sha256": "9f0b5c3a130ef1c075b7db3bc5f73be64238bd5afec77f1f41b47791181a4831"
+    },
+    {
+      "path": ".work-receipts/WH-DELIVER-final-verification-v2.json",
+      "category": "audit",
+      "role": "second_delivery_verification_with_preserved_relationship_false_negative",
+      "sha256": "61972fed04aba465f8ab105ad4f0b756cd517e1cc6688bf42b7367a7f5181ce0"
+    },
+    {
+      "path": ".work-receipts/WH-DELIVER-complete-failed-r227.json",
+      "category": "audit",
+      "role": "first_delivery_completion_failure",
+      "sha256": "ac1c6a5533012bebe3a05d70f86f32c407f164dc74833df954729499a57c7de4"
+    },
+    {
+      "path": ".work-receipts/WH-DELIVER-repair-scope-and-tool-failures.json",
+      "category": "audit",
+      "role": "current_repair_process_failures",
+      "sha256": "77fc29b9a8450e191efe13df16ce0f77a3ab5c4ae4d2d73b01e8424f47e8f568"
+    },
+    {
+      "path": "materials/manual-outline.md",
+      "category": "source",
+      "role": "manual_structure_source",
+      "sha256": "47a3a73e7b11cc8759a0c81addd7040169299591d2b7db0a0d0159fa1f465693"
+    },
+    {
+      "path": "materials/open-questions.csv",
+      "category": "source",
+      "role": "business_gap_source",
+      "sha256": "a61c84473cebead6658e1fc1bfbfd4fe344ebfb87f1d1c7850f5da5c4fc6b812"
+    },
+    {
+      "path": "materials/duty-notes.md",
+      "category": "source",
+      "role": "partial_duty_fact_source",
+      "sha256": "eda536064f05aea30bc45c43079e8470074414cd8b2a56271ace283db20b9875"
+    },
+    {
+      "path": "RULES.md",
+      "category": "source",
+      "role": "acceptance_and_disclosure_rules",
+      "sha256": "f1562e163d17cbbcd5f43af3356c2d4e9076063712c010a9495c54f17466876e"
+    }
+  ],
+  "relationships": {
+    "original_delivery": "deliverables/wh-delivery.md",
+    "current_delivery": "deliverables/wh-delivery-v2.md",
+    "correction_record": "deliverables/wanghai-delivery-fingerprint-correction-v2.md",
+    "negative_control": {
+      "manifest": "deliverables/wh-delivery.md",
+      "target": "deliverables/wanghai-final-work-record.md",
+      "declared_sha256": "36835245017f9a6e6bfb99c02465a4975885c0eeb1806bcd659cfa49813fa0a0",
+      "actual_sha256": "3ebbb2b6b37d172a67af13b9982b34721b7b489793e4514651dea0bb64b552de",
+      "expected_result": "mismatch_detected"
+    },
+    "manual_review_boundary": {
+      "manual": "deliverables/wanghai-operations-manual-draft-v3.md",
+      "source_verification": "deliverables/wanghai-source-verification-v3.md",
+      "review": "deliverables/wh-independent-review.md",
+      "fully_closed_business_gaps": 0
+    }
+  },
+  "constraints": {
+    "paths_are_project_relative": true,
+    "paths_are_unique": true,
+    "sha256_is_lowercase_hex_64": true,
+    "entries_are_immutable_for_this_package": true,
+    "business_approval_claimed": false,
+    "real_operation_claimed": false,
+    "effective_manual_claimed": false,
+    "e4_claimed": false
+  }
+}

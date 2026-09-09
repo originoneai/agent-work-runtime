@@ -1,0 +1,35 @@
+{
+  "event_id": "01M224K64G06F8D4RJWQ17VHSK",
+  "evidence": {
+    "branch_id": null,
+    "command": "rtk python3 .work-receipts/reviewer-final-verify.py",
+    "evidence_type": "report",
+    "external_key": "WH-REVIEW-INDEPENDENT-VERIFY-V3-20260909",
+    "id": "01M224K64F16761XEH9RT1E1ZQ",
+    "level": "locally_verified",
+    "locator": ".work-receipts/reviewer-final-verification.json",
+    "project_id": "01M21S7N6RNH8JE1KAP73K5576",
+    "revision": 1,
+    "scope": [
+      "WH-REVIEW",
+      "deliverables/wh-independent-review.md",
+      "review-inputs/",
+      ".work-receipts/WH-DRAFT-session-resume-r36.json",
+      "deliverables/wanghai-operations-manual-draft-v3.md",
+      "deliverables/wanghai-source-verification-v3.md",
+      "deliverables/wanghai-progress-handoff-v3.md",
+      "deliverables/wanghai-final-delivery.md"
+    ],
+    "sha256": "1b573e2d59670b697440f077a0753bc1012ae10a67466da63dd4eaac34483bc8",
+    "source_ref": null,
+    "source_sha": "f9c654a16e66079e1e47558860dbc411b622c3fd",
+    "summary": "独立复核验证报告逐条映射WH-REVIEW验收；恢复链、三轮修订、六章出处、责任影响矩阵和候选边界通过，过程偏离与失败继续披露",
+    "verified_at": 1788925785886,
+    "work_item_id": "01M21S7N6Y4AC19Z03M6G1K5TW"
+  },
+  "freshness_basis": "source_refresh",
+  "ok": true,
+  "project_revision": 208,
+  "source_refresh_performed": true,
+  "validation_basis": "caller_supplied_bindings"
+}

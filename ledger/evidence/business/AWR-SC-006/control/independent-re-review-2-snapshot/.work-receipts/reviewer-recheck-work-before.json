@@ -1,0 +1,103 @@
+{
+  "acceptance": [
+    "核对来源前后与事件回执，确认未丢失结果或重复交付。",
+    "保留实际产物与来源引用，无法确认的内容显式说明。"
+  ],
+  "decisions": [],
+  "dependency_cycles": [],
+  "evidence": [
+    {
+      "currency": "unknown",
+      "external_key": "ZS-REVIEW/evidence/.work-receipts/reviewer-completion-report.json",
+      "level": "unknown",
+      "locator": ".work-receipts/reviewer-completion-report.json",
+      "missing_bindings": [
+        "sha256",
+        "source_sha",
+        "command",
+        "verified_at"
+      ],
+      "reasons": [
+        "both recorded and requested source SHA are needed to determine currency"
+      ],
+      "source_sha": null,
+      "summary": "Evidence reference; not yet verified by AWR"
+    },
+    {
+      "currency": "unknown",
+      "external_key": "zs-independent-review-20260909-v1",
+      "level": "locally_verified",
+      "locator": ".work-receipts/reviewer-completion-report.json",
+      "missing_bindings": [],
+      "reasons": [
+        "both recorded and requested source SHA are needed to determine currency"
+      ],
+      "source_sha": "8218b29c348b7eda3e57b541c3489e41b87b6679",
+      "summary": "独立复核已核对中断恢复、来源前后、提案处置和保存结果；报告记录需原生产者整改的业务生效缺口并保留未知项。"
+    }
+  ],
+  "evidence_currency_basis": {
+    "branch_id": null,
+    "requested_source_sha": null
+  },
+  "freshness_basis": "source_refresh",
+  "missing_dependencies": [],
+  "ok": true,
+  "project_revision": 181,
+  "read_only": false,
+  "required_dependencies": [
+    {
+      "external_key": "ZS-COMPARE",
+      "freshness": "fresh",
+      "revision": 3,
+      "source_revision": 17,
+      "status": "completed"
+    },
+    {
+      "external_key": "ZS-DIAG",
+      "freshness": "fresh",
+      "revision": 3,
+      "source_revision": 17,
+      "status": "completed"
+    },
+    {
+      "external_key": "ZS-RECOVER",
+      "freshness": "fresh",
+      "revision": 9,
+      "source_revision": 17,
+      "status": "completed"
+    }
+  ],
+  "source_issues": [],
+  "source_ref": {
+    "end_line": null,
+    "locator": "file:///Users/mac/Documents/originone/agent-work-running/.local/business-live-20260909-v1/interrupted-write/project/work-ledger.yaml",
+    "pointer": "/work_items/3",
+    "section_fingerprint": null,
+    "source_fingerprint": "sha256:910155627fdf6131e7aed88c5297cc9c61a97c60aa4beec9a7c08475de8e4a37",
+    "source_id": "01M21VJFYKQHY3PPK3TBPPYNPT",
+    "source_revision": 17,
+    "start_line": null
+  },
+  "source_refresh_performed": true,
+  "source_warnings": 0,
+  "work": {
+    "active_claims": [],
+    "blocker": null,
+    "diagnostics": [],
+    "external_key": "ZS-REVIEW",
+    "freshness": "fresh",
+    "id": "01M21VJFYMSXG6YEVAE8TW7WHA",
+    "milestone": "ZS-DELIVERY",
+    "next_action": "由不同参与者认领 ZS-REVIEW，固定整改后生产者文件和 AWR 来源哈希，逐项返检 ZS-F01 至 ZS-F03；保留原复核报告，仅追加返检结论。返检通过前不得推进 ZS-DELIVER。",
+    "owner": null,
+    "priority": "P0",
+    "raw_status": "planned",
+    "ready": true,
+    "revision": 5,
+    "source_revision": 17,
+    "status": "planned",
+    "summary": "旧独立复核已确认需整改；生产者现已提交并固定整改后快照。ZS-REVIEW 等待不同参与者返检，原报告保留，返检尚未发生。",
+    "title": "独立复核恢复一致性"
+  }
+}

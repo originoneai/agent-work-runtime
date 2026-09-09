@@ -1,0 +1,24 @@
+{
+  "version": 1,
+  "manifest": {
+    "locator": ".work-receipts/zs-deliver-final-files.sha256",
+    "sha256": "c1f4813719511520dff75d122bfc3261f1dff2b3e4d561779baaab3b12eb018c",
+    "entries": 55
+  },
+  "first_check": {
+    "locator": ".work-receipts/zs-deliver-final-files-verification.log",
+    "sha256": "c5c7fe56beff7c7df9be32289028f20290d05e2a31b87accda09293dc89fd04a",
+    "exit_code": 0,
+    "targets_ok": 55,
+    "warning": "one improperly formatted trailing blank line"
+  },
+  "correction": "Removed only the trailing blank line from the manifest; no listed file path or hash changed.",
+  "final_check": {
+    "locator": ".work-receipts/zs-deliver-final-files-verification-v2.log",
+    "sha256": "a7bd17451d25853e2f185f0900581c5b117df7ee93912ea56352c70649ab40ef",
+    "exit_code": 0,
+    "targets_ok": 55,
+    "warnings": 0
+  },
+  "source_or_business_state_mutated": false
+}

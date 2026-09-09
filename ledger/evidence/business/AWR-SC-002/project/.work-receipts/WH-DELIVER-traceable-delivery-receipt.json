@@ -1,0 +1,114 @@
+{
+  "version": 1,
+  "kind": "traceable_document_delivery_receipt",
+  "date": "2026-09-09",
+  "project": {
+    "name": "望海运营手册更新",
+    "project_id": "01M21S7N6RNH8JE1KAP73K5576",
+    "source_sha": "f9c654a16e66079e1e47558860dbc411b622c3fd",
+    "goal_source_status": "active",
+    "milestone_source_status": "in_progress",
+    "note": "All five current source work items are completed, while the business goal and milestone remain non-final because the seven business gaps and approval conditions are not closed."
+  },
+  "delivery": {
+    "work_item": "WH-DELIVER",
+    "work_item_id": "01M21S7N6Y3EAGEX2SW3DXVW2S",
+    "session_id": "01M225HZKTXCTD9YSV7EVCSBK3",
+    "claim_id": "01M225HZKT29HBPSCFX767RQNT",
+    "result": "completed_for_traceable_document_delivery",
+    "artifacts": {
+      "deliverables/wh-delivery.md": "e29908a4ccd1c9547f009890ff63896c1957e1cba43c714ad08f0a6f5ae52c49",
+      "deliverables/wanghai-final-work-record.md": "3ebbb2b6b37d172a67af13b9982b34721b7b489793e4514651dea0bb64b552de",
+      "deliverables/wanghai-final-handoff.md": "2ab5dadaad92985bb8477bd397a25cf9db03abe5203a087deedd4b92b632c15c",
+      "deliverables/wanghai-operations-manual-draft-v3.md": "b09950015623422d6ae287dd6295abbd83b6ea47970f7da64835d3957f222e68",
+      "deliverables/wanghai-source-verification-v3.md": "267dae9476a283a3bdaeb2539a9912e1849294e22db5bb16d300ae3f5459dbba",
+      "deliverables/wh-independent-review.md": "17d9efb27e766de37c1bc8ed84f1140f644f80238d0c23360beec55f549af602"
+    }
+  },
+  "independent_review": {
+    "work_item": "WH-REVIEW",
+    "reviewer": "/root/restricted_material_client_run",
+    "session_id": "01M223E7S897SM2ADAAQ1AX25Q",
+    "claim_id": "01M223E7S879SQHTJYJ5HAKFEF",
+    "conclusion": "business_review_scope_conditionally_passed",
+    "limitation": "Not business approval, effective release, real-operation acceptance, or E4."
+  },
+  "verification": {
+    "external_key": "WH-DELIVER-FINAL-VERIFY-V2-20260909",
+    "evidence_id": "01M226T052GETX2GE86XKBE6J3",
+    "report": ".work-receipts/WH-DELIVER-final-verification-v2.json",
+    "report_sha256": "61972fed04aba465f8ab105ad4f0b756cd517e1cc6688bf42b7367a7f5181ce0",
+    "command": "rtk proxy python3 .work-receipts/WH-DELIVER-final-verify-v2.py",
+    "result": {
+      "hash_mismatches": 0,
+      "historical_hashes_checked": 13,
+      "local_links_checked": 35,
+      "broken_local_links": 0,
+      "all_seven_gaps_disclosed": true,
+      "failure_receipts_present": true
+    },
+    "evidence_add_receipt": {
+      "path": ".work-receipts/WH-DELIVER-evidence-add-v2-r228.json",
+      "sha256": "e9412dbd9fdab4e45f08fae1ed1a3833d95ebcddf4fee368fb5e35174a3ff7e8",
+      "project_revision": 228
+    }
+  },
+  "awr_lifecycle": {
+    "completion": {
+      "event_id": "01M226V320CYCFZJ00SHGP126T",
+      "project_revision": 235,
+      "receipt": ".work-receipts/WH-DELIVER-complete-r235.json",
+      "receipt_sha256": "0e9c2a3151639fa611efd9e95474092a7e18627e409e2f8203afef2f5f81e44f"
+    },
+    "checkpoint": {
+      "checkpoint_id": "01M226WNEQCN12F98FJYSNYB2C",
+      "event_id": "01M226WNEQX7HRNT4CKKPGJSCS",
+      "project_revision": 237,
+      "receipt": ".work-receipts/WH-DELIVER-checkpoint-r237.json",
+      "receipt_sha256": "c854d76ea0ef5d0580863f2d76848e4dc9910e385b55cb6d6f5cf779d2492b82"
+    },
+    "session_end": {
+      "event_id": "01M22728234E21F5M4GF1W9Y61",
+      "project_revision": 238,
+      "receipt": ".work-receipts/WH-DELIVER-session-end-r238.json",
+      "receipt_sha256": "fe760816a32b24c488e9e342f88e75972e3dc538d60eecd1b9f707626c6856e7"
+    },
+    "final_status": {
+      "project_revision": 238,
+      "current_source_work_items": 0,
+      "completed_source_work_items": 5,
+      "blocked_source_work_items": 0,
+      "receipt": ".work-receipts/WH-DELIVER-final-status-r238.json",
+      "receipt_sha256": "59e6650caccbae293e81db6fd899497a1163b147d12fd76885e380d161e7f96b"
+    }
+  },
+  "preserved_failed_attempt": {
+    "first_report": ".work-receipts/WH-DELIVER-final-verification.json",
+    "first_report_sha256": "9f0b5c3a130ef1c075b7db3bc5f73be64238bd5afec77f1f41b47791181a4831",
+    "first_evidence_external_key": "WH-DELIVER-FINAL-VERIFY-20260909",
+    "first_evidence_id": "01M226D584F22B3WKKJR69NZSY",
+    "failure": "checks was a map but the completion evidence contract required a sequence",
+    "failure_receipt": ".work-receipts/WH-DELIVER-complete-failed-r227.json",
+    "failure_receipt_sha256": "ac1c6a5533012bebe3a05d70f86f32c407f164dc74833df954729499a57c7de4"
+  },
+  "open_business_conditions": {
+    "fully_closed_gaps": 0,
+    "partially_supplemented": [
+      "GAP-01",
+      "GAP-03",
+      "GAP-04",
+      "GAP-07"
+    ],
+    "not_supplemented": [
+      "GAP-02",
+      "GAP-05",
+      "GAP-06"
+    ],
+    "business_approval": false,
+    "effective_version": false,
+    "real_operation_executed": false,
+    "production_acceptance": false,
+    "e4_completed": false
+  },
+  "boundary": "This receipt proves traceable document delivery and AWR source-work completion only. It is not an operations authorization, business approval, effective manual, real-operation record, production acceptance, or E4 evidence."
+}

@@ -1,0 +1,92 @@
+{
+  "version": 1,
+  "scope": "producer remediation and independent-recheck handoff",
+  "source_before_remediation": {
+    "project_revision": 103,
+    "source_revision": 9,
+    "source_fingerprint": "sha256:e3c53f814b4bdb4c8c712cd11e0273dbc53ef810d8c6e6d94e63df97c7c470e4"
+  },
+  "operations": [
+    {
+      "name": "reopen ZS-RECOVER",
+      "proposal_id": "01M22579M0Q9RXW8WNYHQRQ4PE",
+      "apply_attempt_event_id": "01M22579MTXKB246DMSVK2TQP9",
+      "resolved_event_id": "01M22579NCE293D5HMF6WMF01S",
+      "project_revision": 111,
+      "source_revision": 10
+    },
+    {
+      "name": "mark remediation in progress",
+      "proposal_id": "01M22596G6QTWQVH1JGD12256T",
+      "resolved_event_id": "01M22596J4T3VW7A0QFDA2TKC8",
+      "project_revision": 119,
+      "source_revision": 11
+    },
+    {
+      "name": "apply confirmed CR-01 and CR-02 as one acceptance mutation",
+      "proposal_id": "01M225AVE1BFYY0W4T2EKRV88C",
+      "created_project_revision": 120,
+      "ready_project_revision": 121,
+      "approved_project_revision": 122,
+      "apply_attempt_event_id": "01M225BCXTY18AWZSRG0B9WT1P",
+      "resolved_event_id": "01M225BCYBY571X8FPBY8TGME8",
+      "applied_project_revision": 126,
+      "source_revision": 12,
+      "before_fingerprint": "sha256:6ac1624435b6b626e32af360e94acb9bbcd406e9a2dfe0e3bf3926474fac612a",
+      "after_fingerprint": "sha256:83f9e1a0a4cb7b598e5ac0e60b712273b4c85f8e75a246ad59b11225c8ba17a0"
+    },
+    {
+      "name": "register remediation evidence",
+      "evidence_id": "01M225SVDHT1TZP90KGBPPWJW5",
+      "event_id": "01M225SVDHJ2NM4RNE0ZGPK30P",
+      "project_revision": 134
+    },
+    {
+      "name": "complete corrected ZS-RECOVER",
+      "proposal_id": "01M225V6008NJ3X0BMF5GVY5A1",
+      "apply_attempt_event_id": "01M225V615XFZ8WE3ASQ8WBSQP",
+      "resolved_event_id": "01M225V61XTFRJ0376BX762C7P",
+      "project_revision": 141,
+      "source_revision": 14
+    },
+    {
+      "name": "reopen ZS-REVIEW for post-remediation recheck",
+      "proposal_id": "01M225Y07W6X04CFFXTNHGRKQ8",
+      "apply_attempt_event_id": "01M225Y08T61DRCKE006VGGYP8",
+      "resolved_event_id": "01M225Y09FX62WKP69F9ZRD88Q",
+      "project_revision": 152,
+      "source_revision": 15
+    },
+    {
+      "name": "synchronize completed recovery summary and next action",
+      "proposal_id": "01M226DVJZNTTSTGZ20CHGQDWD",
+      "apply_attempt_event_id": "01M226ED6NBFD9JHNY0RD8E2G7",
+      "resolved_event_id": "01M226ED79VHW84RE1E7MA8SP5",
+      "project_revision": 163,
+      "source_revision": 16,
+      "fields": ["summary", "next_action"],
+      "acceptance_changed": false
+    },
+    {
+      "name": "synchronize review handoff summary",
+      "proposal_id": "01M226HF1GX6P579T58HV384G8",
+      "apply_attempt_event_id": "01M226HX392Z07C24FDXZ75WNE",
+      "resolved_event_id": "01M226HX3WNFQ3MWMAG5234VKK",
+      "project_revision": 174,
+      "source_revision": 17,
+      "fields": ["summary"],
+      "acceptance_changed": false
+    }
+  ],
+  "failures_retained_in": [
+    ".work-receipts/cr-01-create-session-mismatch-error.json",
+    ".work-receipts/reviewer-tool-failures.json",
+    ".work-receipts/zs-recovery-final-doctor.log",
+    ".work-receipts/zs-remediation-tool-failures.json"
+  ],
+  "current_recheck_snapshot": {
+    "manifest": ".work-receipts/zs-remediation-recheck-inputs-v2.sha256",
+    "bundle": ".work-receipts/zs-remediation-recheck-bundle-v2.sha256",
+    "preflight": ".work-receipts/zs-remediation-recheck-preflight-v2.json"
+  }
+}

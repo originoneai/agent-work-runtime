@@ -1,0 +1,341 @@
+{
+  "checkpoint_id": null,
+  "completeness": {
+    "acceptance_complete": true,
+    "assessment_scope": "Completeness of current required context facts and associations. Known unresolved dependencies and evidence gaps are retained; this does not certify task completion, verification execution or release readiness.",
+    "branch_context": {
+      "branch_id": null,
+      "branch_revision": null,
+      "creation_event_id": null,
+      "fork_project_revision": 0,
+      "git_binding": null,
+      "git_ref": null,
+      "name": "main",
+      "parent_branch_id": null,
+      "runtime_scope": "exact_branch; no parent or sibling runtime inheritance; delta never precedes fork",
+      "source_basis": "shared_current_sources; git_ref is a creation observation, not a frozen source snapshot"
+    },
+    "branch_id": null,
+    "complete": true,
+    "decision_context_complete": true,
+    "dependencies_complete": true,
+    "evidence_gaps": [],
+    "freshness_basis": "source_refresh_at_project_revision",
+    "goal_context_complete": true,
+    "issues": [],
+    "project_id": "01M21VJFYF7E75EQ55DEH3D5TS",
+    "project_revision": 74,
+    "rules_complete": true,
+    "source_fresh": true,
+    "source_refresh_performed": true,
+    "source_versions": [
+      {
+        "fingerprint": "sha256:254aec11ac1dd7abe79a2b6f8c3dd45be84633765af2ebd74ecbeeaea1ef4152",
+        "freshness": "fresh",
+        "id": "01M21VJFYF2Y6XSNB8R14ZD5K7",
+        "locator": "file:///Users/mac/Documents/originone/agent-work-running/.local/business-live-20260909-v1/interrupted-write/project/GOALS.md",
+        "revision": 1
+      },
+      {
+        "fingerprint": "sha256:eda91c43584652bed15afb4d61f2598d379641610db0883a1b0435fa66185995",
+        "freshness": "fresh",
+        "id": "01M21VJFYG4WH03CP4Q3FNS4TY",
+        "locator": "file:///Users/mac/Documents/originone/agent-work-running/.local/business-live-20260909-v1/interrupted-write/project/PLAN.md",
+        "revision": 1
+      },
+      {
+        "fingerprint": "sha256:4c28d3a308958136b8449d9c61c59da81e0d5f7dcbfd9075b32c87d61a0cb606",
+        "freshness": "fresh",
+        "id": "01M21VJFYH59710E3HQ4619BZB",
+        "locator": "file:///Users/mac/Documents/originone/agent-work-running/.local/business-live-20260909-v1/interrupted-write/project/RULES.md",
+        "revision": 1
+      },
+      {
+        "fingerprint": "sha256:72ea722ab66dfd3b45b46a1a8cac3be96fb4f8ee3b411d939a4fff760b58ed0c",
+        "freshness": "fresh",
+        "id": "01M21VJFYKQHY3PPK3TBPPYNPT",
+        "locator": "file:///Users/mac/Documents/originone/agent-work-running/.local/business-live-20260909-v1/interrupted-write/project/work-ledger.yaml",
+        "revision": 6
+      }
+    ],
+    "status": "CONTEXT COMPLETE",
+    "unresolved_required_dependencies": [],
+    "work_item_found": true,
+    "work_item_key": "ZS-RECOVER",
+    "work_state_complete": true
+  },
+  "delta_after_revision": 62,
+  "diagnostic_text": null,
+  "freshness_basis": "source_refresh",
+  "goal_selection_basis": "project_primary_goal_sources",
+  "level": "L1",
+  "ok": true,
+  "omitted_refs": [],
+  "project_revision": 74,
+  "read_only": false,
+  "selection_basis": "session",
+  "session_id": "01M220BJS3M8C7Y03WACQD54RM",
+  "source_refresh_performed": true,
+  "work_context": {
+    "context_hash": "a9ea205603927209f8f30d5902974918687b5ae88a7a9cd8573646481beb9dfe",
+    "identity": {
+      "branch_id": null,
+      "project_id": "01M21VJFYF7E75EQ55DEH3D5TS",
+      "project_key": "awr-v1/interrupted-write/awr-live-20260909-006",
+      "project_revision": 74,
+      "source_versions": [
+        {
+          "fingerprint": "sha256:254aec11ac1dd7abe79a2b6f8c3dd45be84633765af2ebd74ecbeeaea1ef4152",
+          "freshness": "fresh",
+          "id": "01M21VJFYF2Y6XSNB8R14ZD5K7",
+          "locator": "file:///Users/mac/Documents/originone/agent-work-running/.local/business-live-20260909-v1/interrupted-write/project/GOALS.md",
+          "revision": 1
+        },
+        {
+          "fingerprint": "sha256:eda91c43584652bed15afb4d61f2598d379641610db0883a1b0435fa66185995",
+          "freshness": "fresh",
+          "id": "01M21VJFYG4WH03CP4Q3FNS4TY",
+          "locator": "file:///Users/mac/Documents/originone/agent-work-running/.local/business-live-20260909-v1/interrupted-write/project/PLAN.md",
+          "revision": 1
+        },
+        {
+          "fingerprint": "sha256:4c28d3a308958136b8449d9c61c59da81e0d5f7dcbfd9075b32c87d61a0cb606",
+          "freshness": "fresh",
+          "id": "01M21VJFYH59710E3HQ4619BZB",
+          "locator": "file:///Users/mac/Documents/originone/agent-work-running/.local/business-live-20260909-v1/interrupted-write/project/RULES.md",
+          "revision": 1
+        },
+        {
+          "fingerprint": "sha256:72ea722ab66dfd3b45b46a1a8cac3be96fb4f8ee3b411d939a4fff760b58ed0c",
+          "freshness": "fresh",
+          "id": "01M21VJFYKQHY3PPK3TBPPYNPT",
+          "locator": "file:///Users/mac/Documents/originone/agent-work-running/.local/business-live-20260909-v1/interrupted-write/project/work-ledger.yaml",
+          "revision": 6
+        }
+      ],
+      "work_item_id": "01M21VJFYMD4Q7P3HFNFATQBCZ",
+      "work_item_key": "ZS-RECOVER",
+      "work_item_revision": 2
+    },
+    "omitted_chunks": [],
+    "policy": "awr.whole_chunks.v1",
+    "rendered_context": "Project: awr-v1/interrupted-write/awr-live-20260909-006 [01M21VJFYF7E75EQ55DEH3D5TS] r74\nWork: ZS-RECOVER [01M21VJFYMD4Q7P3HFNFATQBCZ] r2\nBranch: main\nSources:\n01M21VJFYF2Y6XSNB8R14ZD5K7 r1 sha256:254aec11ac1dd7abe79a2b6f8c3dd45be84633765af2ebd74ecbeeaea1ef4152 Fresh file:///Users/mac/Documents/originone/agent-work-running/.local/business-live-20260909-v1/interrupted-write/project/GOALS.md\n01M21VJFYG4WH03CP4Q3FNS4TY r1 sha256:eda91c43584652bed15afb4d61f2598d379641610db0883a1b0435fa66185995 Fresh file:///Users/mac/Documents/originone/agent-work-running/.local/business-live-20260909-v1/interrupted-write/project/PLAN.md\n01M21VJFYH59710E3HQ4619BZB r1 sha256:4c28d3a308958136b8449d9c61c59da81e0d5f7dcbfd9075b32c87d61a0cb606 Fresh file:///Users/mac/Documents/originone/agent-work-running/.local/business-live-20260909-v1/interrupted-write/project/RULES.md\n01M21VJFYKQHY3PPK3TBPPYNPT r6 sha256:72ea722ab66dfd3b45b46a1a8cac3be96fb4f8ee3b411d939a4fff760b58ed0c Fresh file:///Users/mac/Documents/originone/agent-work-running/.local/business-live-20260909-v1/interrupted-write/project/work-ledger.yaml\n\n## Goal\n[goal-body:goal#zs]\ngoal:01M21VJFYGZN6038KTYWEZGSR3@r1\n在交接工作意外中断后核实已保存内容，恢复未应用的改动并完成一致的交付。\n[goal:goal#zs]\ngoal:01M21VJFYGZN6038KTYWEZGSR3@r1\n竹声维护交接\nStatus: active\nSuccess criteria:\n\n\n## Current Work\n[ZS-RECOVER]\nwork_item:01M21VJFYMD4Q7P3HFNFATQBCZ@r2\nStatus: \"in_progress\"\nRaw status: \"in_progress\"\nBlocker present: false\nBlocker:\n\nNext Action:\n根据归档与角色确认形成无重复的合并变更；取得具体遗留问题清单、影响和下一步后再提交并应用，随后验证来源前后和回执数量。\n\n## Acceptance\n[acceptance]\nwork_item:01M21VJFYMD4Q7P3HFNFATQBCZ@r2\n1. 处理待应用改动，保留重试或恢复的证据，避免重复写入。\n2. 保留实际产物与来源引用，无法确认的内容显式说明。\n\n## Rules\n[file:///Users/mac/Documents/originone/agent-work-running/.local/business-live-20260909-v1/interrupted-write/project/RULES.md#authority]\nrule:01M21VJFYJ3AZ2E793BS3A655F@r1\nSeverity: hard\nScope: {\"type\":\"project\",\"value\":\"*\"}\n来源与交付\n\n以当前项目来源为准。未知或缺证据的内容显式保留，不将计划、样例或文件存在当作真实验收通过。\n[file:///Users/mac/Documents/originone/agent-work-running/.local/business-live-20260909-v1/interrupted-write/project/RULES.md#business]\nrule:01M21VJFYJ0B34143SS3FQS21W@r1\nSeverity: hard\nScope: {\"type\":\"project\",\"value\":\"*\"}\n业务要求\n\n恢复前区分已保存产物与尚未应用的源文件变更；未经核实不得重放写入，也不得抹去原失败记录。\n\n## Dependencies\n[dependency-summary]\nRequired dependencies: 0 unresolved, 2 resolved; 0 missing, 0 cycle members.\n[resolved:ZS-COMPARE]\nwork_item:01M21VJFYMCA78QW9DEWGQ4ZV6@r3\n比对已保存与未生效内容\nStatus: \"completed\"\nRaw status: \"completed\"\n[resolved:ZS-DIAG]\nwork_item:01M21VJFYMK83N0YHVXMRVXJNK@r3\n核实中断前保留结果\nStatus: \"completed\"\nRaw status: \"completed\"\n\n## Recent Delta\n[change:01M21VJFYKQHY3PPK3TBPPYNPT:01M21VJFYMD4Q7P3HFNFATQBCZ]\ndelta:work_items:01M21VJFYMD4Q7P3HFNFATQBCZ@r2\nwork_items ZS-RECOVER: updated Some(1) -> Some(2), 1 changes; event 01M220DTPEY0EWD3H4CFD758N6\n[delta-baseline]\nAfter project revision 62 (session_start) through 74. Checkpoint: none. Important events: 0; omitted by event limit: 0.\n[folded-process-history]\nevidence.recorded normal: 0 at/before baseline, 1 after\nproposal.apply_started normal: 0 at/before baseline, 1 after\nproposal.approved normal: 0 at/before baseline, 1 after\nproposal.created normal: 3 at/before baseline, 1 after\nproposal.ready normal: 3 at/before baseline, 1 after\nproposal.rejected normal: 0 at/before baseline, 3 after\nsession.started normal: 0 at/before baseline, 1 after\nwork.progressed normal: 0 at/before baseline, 1 after\n[source:01M21VJFYKQHY3PPK3TBPPYNPT]\n2 source events; latest source.projected. Before known: true\nBefore: r5 sha256:b0fb03adaa0bdc7e9c15e5bc5eaa3c180a07a02b1b4f0f2559817fd75abc53d5 Fresh active=true\nAfter: r6 sha256:72ea722ab66dfd3b45b46a1a8cac3be96fb4f8ee3b411d939a4fff760b58ed0c Fresh active=true\nChanged identities: 1; omitted identities: 0; legacy events without entity history: 0.\nHistory events: 01M220DTPCAP9T4PKSKJSRCTE3 .. 01M220DTPEY0EWD3H4CFD758N6 (r71..r72)\n\n## Evidence\n[evidence-gaps]\nNo metadata evidence gaps found; verification commands were not executed by compilation.\n[evidence:zs-recover-no-duplicate-20260909]\nevidence:01M220V01KGFF32D5KRY9BCXP4@r1\n已保留并显式处置三份旧提案，验证每个 ID 唯一且均无应用尝试；确认材料、失败回执与未知遗留问题均未丢失。\nLevel: LocallyVerified; currency: Current\nReport: .work-receipts/zs-recover-evidence-report.json\nSource SHA: 8218b29c348b7eda3e57b541c3489e41b87b6679\nScope: ZS-RECOVER\n\n## Metadata\n[branch-context]\nWork branch: main | revision: None | fork: 0 | parent: main\nGit ref at creation: unbound; recorded commit: unverified\nSource basis: shared_current_sources; git_ref is a creation observation, not a frozen source snapshot\nRuntime scope: exact_branch; no parent or sibling runtime inheritance; delta never precedes fork\n[completeness]\nCONTEXT COMPLETE\n\nCompleteness of current required context facts and associations. Known unresolved dependencies and evidence gaps are retained; this does not certify task completion, verification execution or release readiness.\n[identity]\nIntent: work\nSelection: session\nSession: 01M220BJS3M8C7Y03WACQD54RM\nPhase: ZS-DELIVERY\nTitle: 恢复并推进交接工作\n\nOptional chunks omitted: 0. Full details remain available through explicit queries.\n",
+    "required_tokens": 1359,
+    "selected_chunks": [
+      {
+        "entities": [
+          {
+            "id": "01M21VJFYGZN6038KTYWEZGSR3",
+            "kind": "goal",
+            "revision": 1
+          }
+        ],
+        "key": "goal-body:goal#zs",
+        "required": false,
+        "section": "goal"
+      },
+      {
+        "entities": [
+          {
+            "id": "01M21VJFYGZN6038KTYWEZGSR3",
+            "kind": "goal",
+            "revision": 1
+          }
+        ],
+        "key": "goal:goal#zs",
+        "required": true,
+        "section": "goal"
+      },
+      {
+        "entities": [
+          {
+            "id": "01M21VJFYMD4Q7P3HFNFATQBCZ",
+            "kind": "work_item",
+            "revision": 2
+          }
+        ],
+        "key": "ZS-RECOVER",
+        "required": true,
+        "section": "work"
+      },
+      {
+        "entities": [
+          {
+            "id": "01M21VJFYMD4Q7P3HFNFATQBCZ",
+            "kind": "work_item",
+            "revision": 2
+          }
+        ],
+        "key": "acceptance",
+        "required": true,
+        "section": "acceptance"
+      },
+      {
+        "entities": [
+          {
+            "id": "01M21VJFYJ3AZ2E793BS3A655F",
+            "kind": "rule",
+            "revision": 1
+          }
+        ],
+        "key": "file:///Users/mac/Documents/originone/agent-work-running/.local/business-live-20260909-v1/interrupted-write/project/RULES.md#authority",
+        "required": true,
+        "section": "rules"
+      },
+      {
+        "entities": [
+          {
+            "id": "01M21VJFYJ0B34143SS3FQS21W",
+            "kind": "rule",
+            "revision": 1
+          }
+        ],
+        "key": "file:///Users/mac/Documents/originone/agent-work-running/.local/business-live-20260909-v1/interrupted-write/project/RULES.md#business",
+        "required": true,
+        "section": "rules"
+      },
+      {
+        "entities": [],
+        "key": "dependency-summary",
+        "required": true,
+        "section": "dependencies"
+      },
+      {
+        "entities": [
+          {
+            "id": "01M21VJFYMCA78QW9DEWGQ4ZV6",
+            "kind": "work_item",
+            "revision": 3
+          }
+        ],
+        "key": "resolved:ZS-COMPARE",
+        "required": false,
+        "section": "dependencies"
+      },
+      {
+        "entities": [
+          {
+            "id": "01M21VJFYMK83N0YHVXMRVXJNK",
+            "kind": "work_item",
+            "revision": 3
+          }
+        ],
+        "key": "resolved:ZS-DIAG",
+        "required": false,
+        "section": "dependencies"
+      },
+      {
+        "entities": [
+          {
+            "id": "01M21VJFYMD4Q7P3HFNFATQBCZ",
+            "kind": "delta:work_items",
+            "revision": 2
+          }
+        ],
+        "key": "change:01M21VJFYKQHY3PPK3TBPPYNPT:01M21VJFYMD4Q7P3HFNFATQBCZ",
+        "required": false,
+        "section": "delta"
+      },
+      {
+        "entities": [],
+        "key": "delta-baseline",
+        "required": true,
+        "section": "delta"
+      },
+      {
+        "entities": [],
+        "key": "folded-process-history",
+        "required": false,
+        "section": "delta"
+      },
+      {
+        "entities": [],
+        "key": "source:01M21VJFYKQHY3PPK3TBPPYNPT",
+        "required": true,
+        "section": "delta"
+      },
+      {
+        "entities": [],
+        "key": "evidence-gaps",
+        "required": true,
+        "section": "evidence"
+      },
+      {
+        "entities": [
+          {
+            "id": "01M220V01KGFF32D5KRY9BCXP4",
+            "kind": "evidence",
+            "revision": 1
+          }
+        ],
+        "key": "evidence:zs-recover-no-duplicate-20260909",
+        "required": false,
+        "section": "evidence"
+      },
+      {
+        "entities": [],
+        "key": "branch-context",
+        "required": true,
+        "section": "metadata"
+      },
+      {
+        "entities": [],
+        "key": "completeness",
+        "required": true,
+        "section": "metadata"
+      },
+      {
+        "entities": [],
+        "key": "identity",
+        "required": true,
+        "section": "metadata"
+      }
+    ],
+    "selected_entities": [
+      {
+        "id": "01M21VJFYMD4Q7P3HFNFATQBCZ",
+        "kind": "delta:work_items",
+        "revision": 2
+      },
+      {
+        "id": "01M220V01KGFF32D5KRY9BCXP4",
+        "kind": "evidence",
+        "revision": 1
+      },
+      {
+        "id": "01M21VJFYGZN6038KTYWEZGSR3",
+        "kind": "goal",
+        "revision": 1
+      },
+      {
+        "id": "01M21VJFYJ0B34143SS3FQS21W",
+        "kind": "rule",
+        "revision": 1
+      },
+      {
+        "id": "01M21VJFYJ3AZ2E793BS3A655F",
+        "kind": "rule",
+        "revision": 1
+      },
+      {
+        "id": "01M21VJFYMCA78QW9DEWGQ4ZV6",
+        "kind": "work_item",
+        "revision": 3
+      },
+      {
+        "id": "01M21VJFYMD4Q7P3HFNFATQBCZ",
+        "kind": "work_item",
+        "revision": 2
+      },
+      {
+        "id": "01M21VJFYMK83N0YHVXMRVXJNK",
+        "kind": "work_item",
+        "revision": 3
+      }
+    ],
+    "token_budget": 5000,
+    "token_count_scope": "Exact o200k_base ordinary-text token count of rendered_context, including headings, references and omission footer. JSON transport/envelope, tool framing and surrounding conversation are excluded. Counts for other model tokenizers may differ; no cross-tokenizer error bound is claimed.",
+    "token_estimate": 1907,
+    "tokenizer": "o200k_base"
+  }
+}

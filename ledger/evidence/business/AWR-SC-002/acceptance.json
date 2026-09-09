@@ -1,0 +1,188 @@
+{
+  "kind": "business_acceptance",
+  "scenario_id": "AWR-SC-002",
+  "repository": "https://github.com/originoneai/agent-work-runtime",
+  "source_commit": "63ea0639a82fddf6eed9e7557d0cb62528c56daa",
+  "runtime_source_commit": "4f6fd11c5283a4ddb52e6cb6fe8ef5a5fd8931aa",
+  "runtime_binary_sha256": "df3aee795905f87fe8bc0747a33b6e73c8a25cef0a072d0b2467e226d0d10217",
+  "business_fixture_seed_commit": "f9c654a16e66079e1e47558860dbc411b622c3fd",
+  "checked_at": "2026-09-09T13:36:30.467837+08:00",
+  "executor": "codex-cli:01a083b2-ae71-77a3-9cc9-977b6c656d5a",
+  "reviewer": "luna_worker:/root/restricted_material_client_run",
+  "scope": "从实际暂停的手册整理工作恢复，响应两轮业务返工，交付已复核工作稿、来源与责任交接，并修正最终清单的引用一致性；七项业务缺口仍未全部解决。",
+  "remote_receipt": {
+    "commit": "63ea0639a82fddf6eed9e7557d0cb62528c56daa",
+    "url": "https://github.com/originoneai/agent-work-runtime/commit/63ea0639a82fddf6eed9e7557d0cb62528c56daa",
+    "verified_at": "2026-09-09T13:36:30.467837+08:00",
+    "git_ls_remote": {
+      "ref": "refs/heads/main",
+      "sha": "63ea0639a82fddf6eed9e7557d0cb62528c56daa",
+      "actual_result": "63ea0639a82fddf6eed9e7557d0cb62528c56daa\trefs/heads/main",
+      "exit_code": 0
+    },
+    "github_api": {
+      "endpoint": "repos/originoneai/agent-work-runtime/commits/main",
+      "sha": "63ea0639a82fddf6eed9e7557d0cb62528c56daa",
+      "html_url": "https://github.com/originoneai/agent-work-runtime/commit/63ea0639a82fddf6eed9e7557d0cb62528c56daa",
+      "exit_code": 0
+    },
+    "scope": "Actual Git transport 54669 and GitHub API 2682 independently matched after successful case-only push 92443; 488 case files."
+  },
+  "gates": {
+    "natural_client_initiation": true,
+    "tool_or_role_execution": true,
+    "real_artifact": true,
+    "business_followup_1": true,
+    "business_followup_2": true,
+    "independent_review": true,
+    "final_delivery": true,
+    "traceable_receipt": true,
+    "fixture_isolation": true,
+    "independent_commit_and_remote_sha": true
+  },
+  "checks": [
+    {
+      "name": "natural_client_initiation",
+      "passed": true,
+      "result": "The natural initial continuation request appears exactly once in the actual new native client. All seven actual business inputs across the old and resumed clients are accounted for and reviewed without internal state instructions.",
+      "artifacts": [
+        "control/initial-sealed.json",
+        "control/native-input-audit.json"
+      ]
+    },
+    {
+      "name": "tool_or_role_execution",
+      "passed": true,
+      "result": "The original actual client prepared work and paused it with a checkpoint. A fresh native client resumed that actual AWR session and used persisted progress to produce the manual. A distinct actual reviewer assessed the result.",
+      "artifacts": [
+        "control/prelude-handoff-sealed.json",
+        "control/actual-resume-binding.json",
+        "control/final-native-metadata.json",
+        "control/initial-review-extract.json"
+      ]
+    },
+    {
+      "name": "real_artifact",
+      "passed": true,
+      "result": "Actual manual drafts, source verification and handoff versions are retained with source citations and explicit unresolved business facts.",
+      "artifacts": [
+        "project/deliverables/wanghai-operations-manual-draft-v3.md",
+        "project/deliverables/wanghai-source-verification-v3.md",
+        "project/deliverables/wanghai-progress-handoff-v3.md"
+      ]
+    },
+    {
+      "name": "business_followup_1",
+      "passed": true,
+      "result": "The first separate natural followup led to a revised manual and source/handoff evidence after the authored partial duty facts were published; missing approval, named roles and unavailable source documents remain open.",
+      "artifacts": [
+        "round-1-inputs.json",
+        "control/round-1-review-extract.json",
+        "history/round-1/deliverables/wanghai-operations-manual-draft-v2.md"
+      ]
+    },
+    {
+      "name": "business_followup_2",
+      "passed": true,
+      "result": "The second separate natural followup required explicit handoff and unresolved conditions. The client revised the manual, source verification and handoff to v3 without inventing missing materials.",
+      "artifacts": [
+        "round-2-inputs.json",
+        "control/round-2-review-extract.json",
+        "history/round-2/deliverables/wanghai-progress-handoff-v3.md"
+      ]
+    },
+    {
+      "name": "independent_review",
+      "passed": true,
+      "result": "A distinct actual luna_worker checked the fixed 101-file history and current materials, accepted the bounded manual-preparation result, and retained process findings. All 22 registered reviewer receipts and the report remain unchanged through final correction.",
+      "artifacts": [
+        "control/independent-review.json",
+        "control/reviewer-identity-binding.json",
+        "project/deliverables/wh-independent-review.md",
+        "control/final-delivery-observation.json"
+      ]
+    },
+    {
+      "name": "final_delivery",
+      "passed": true,
+      "result": "After independent review the resumed original producer delivered the manual and handoff, then corrected a real stale embedded work-record fingerprint identified by root. The new v2 delivery is consistent; the original erroneous final, missed-check report and rejected v3 evidence remain preserved.",
+      "artifacts": [
+        "control/final-delivery-sealed.json",
+        "control/final-correction-sealed.json",
+        "control/final-delivery-reference-finding.json",
+        "project/deliverables/wh-delivery-v2.md",
+        "project/deliverables/wanghai-delivery-fingerprint-correction-v2.md"
+      ]
+    },
+    {
+      "name": "traceable_receipt",
+      "passed": true,
+      "result": "Root verified 120 final receipt files, all 27 current artifacts, 24 unchanged prior-final artifacts, 28 machine entries, 29 human-table rows, 36 links and 17 JSON hash references. The negative regression detects exactly the original stale fingerprint. Actual completion and ended session/claim release are observed read-only at revision 266.",
+      "artifacts": [
+        "control/root-fingerprint-rerun.json",
+        "control/final-delivery-observation.json",
+        "project/.work-receipts/WH-DELIVER-fingerprint-relationship-verification-v4.json",
+        "project/.work-receipts/WH-DELIVER-traceable-delivery-receipt-v2.json",
+        "receipt-storage.json"
+      ]
+    },
+    {
+      "name": "fixture_isolation",
+      "passed": true,
+      "result": "The independent fixture source, namespace, project and work IDs differ from all other observed projects. Old and fresh clients are linked only through this scenario actual checkpoint/resume chain; no prior-case task, answer or result reuse was observed.",
+      "artifacts": [
+        "run.json",
+        "control/actual-resume-binding.json",
+        "control/final-delivery-observation.json"
+      ]
+    },
+    {
+      "name": "independent_commit_and_remote_sha",
+      "passed": true,
+      "result": "Case-only artifact commit 63ea0639a82fddf6eed9e7557d0cb62528c56daa independently verified through Git and GitHub after push."
+    }
+  ],
+  "artifacts": [
+    "ledger/evidence/business/AWR-SC-002/control/actual-resume-binding.json",
+    "ledger/evidence/business/AWR-SC-002/control/final-correction-sealed.json",
+    "ledger/evidence/business/AWR-SC-002/control/final-delivery-observation.json",
+    "ledger/evidence/business/AWR-SC-002/control/final-delivery-reference-finding.json",
+    "ledger/evidence/business/AWR-SC-002/control/final-delivery-sealed.json",
+    "ledger/evidence/business/AWR-SC-002/control/final-native-metadata.json",
+    "ledger/evidence/business/AWR-SC-002/control/independent-review.json",
+    "ledger/evidence/business/AWR-SC-002/control/initial-review-extract.json",
+    "ledger/evidence/business/AWR-SC-002/control/initial-sealed.json",
+    "ledger/evidence/business/AWR-SC-002/control/native-input-audit.json",
+    "ledger/evidence/business/AWR-SC-002/control/prelude-handoff-sealed.json",
+    "ledger/evidence/business/AWR-SC-002/control/reviewer-identity-binding.json",
+    "ledger/evidence/business/AWR-SC-002/control/root-fingerprint-rerun.json",
+    "ledger/evidence/business/AWR-SC-002/control/round-1-review-extract.json",
+    "ledger/evidence/business/AWR-SC-002/control/round-2-review-extract.json",
+    "ledger/evidence/business/AWR-SC-002/gate-review.json",
+    "ledger/evidence/business/AWR-SC-002/history/round-1/deliverables/wanghai-operations-manual-draft-v2.md",
+    "ledger/evidence/business/AWR-SC-002/history/round-2/deliverables/wanghai-progress-handoff-v3.md",
+    "ledger/evidence/business/AWR-SC-002/manifest.json",
+    "ledger/evidence/business/AWR-SC-002/project/.work-receipts/WH-DELIVER-fingerprint-relationship-verification-v4.json",
+    "ledger/evidence/business/AWR-SC-002/project/.work-receipts/WH-DELIVER-traceable-delivery-receipt-v2.json",
+    "ledger/evidence/business/AWR-SC-002/project/deliverables/wanghai-delivery-fingerprint-correction-v2.md",
+    "ledger/evidence/business/AWR-SC-002/project/deliverables/wanghai-operations-manual-draft-v3.md",
+    "ledger/evidence/business/AWR-SC-002/project/deliverables/wanghai-progress-handoff-v3.md",
+    "ledger/evidence/business/AWR-SC-002/project/deliverables/wanghai-source-verification-v3.md",
+    "ledger/evidence/business/AWR-SC-002/project/deliverables/wh-delivery-v2.md",
+    "ledger/evidence/business/AWR-SC-002/project/deliverables/wh-independent-review.md",
+    "ledger/evidence/business/AWR-SC-002/publication-review.json",
+    "ledger/evidence/business/AWR-SC-002/receipt-storage.json",
+    "ledger/evidence/business/AWR-SC-002/round-1-inputs.json",
+    "ledger/evidence/business/AWR-SC-002/round-2-inputs.json",
+    "ledger/evidence/business/AWR-SC-002/run.json"
+  ],
+  "limitations": [
+    "All seven business gaps remain not fully closed. The product is a prepared manual and handoff; no effective manual, business approval, actual operating result or customer UAT is asserted.",
+    "Original out-of-project technical or empty memory lookups, nonzero commands, stale embedded hash and missed relationship check remain visible as process history.",
+    "The v3 fingerprint report binds unchanged files but failed AWR completion scope matching; the separate v4 evidence is the actual accepted completion proof.",
+    "Raw native global context, memory, reasoning, full event streams and runtime databases remain private.",
+    "run.json preserves preparation history and is not a current model-call count.",
+    "This acceptance binds the isolated actual pause/resume, two business followups and reviewed manual-delivery loop; business approval, effective manual and actual operating results remain unverified."
+  ],
+  "completion_claim": true
+}

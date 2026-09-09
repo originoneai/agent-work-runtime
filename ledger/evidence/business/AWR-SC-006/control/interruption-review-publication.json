@@ -1,0 +1,15 @@
+{
+  "kind": "read_only_operator_interruption_evidence_publication",
+  "published_at": "2026-09-09T11:29:34+08:00",
+  "target": "review-inputs/interruption-evidence",
+  "files_sha256": {
+    "README.md": "ee6c78b39dd35bdab3c5b9093dab7bed30e4f95fca931e2b83ea5f3423a10083",
+    "actual-operator-interruption-v1.json": "565b4640dffad67014c1e30a9807f6d89aad57daa38a5c87bb65da42364e38a9",
+    "actual-recovery-binding.json": "4062719fc10ba4b5f66cd7446811dc90cb6642ed795c1958633a98b15fe4cc8c",
+    "prelude-normal-exit-observation.json": "8e3069c90c2287f298d28f322ec9c03d72ae41556038f6ce7e602cc6ef6dccec",
+    "prelude-proposals-business-extract.json": "645728efb5aa5368835fd2f88fe58c49ab3ca22874dce1d2673ee366814ba955",
+    "verified-interruption-binding.json": "34685d72fd533f4c2f306698928ea2a37199ed5d27f87af971eb34cf44765477"
+  },
+  "runtime_mutation_performed": false,
+  "e4_credit": false
+}

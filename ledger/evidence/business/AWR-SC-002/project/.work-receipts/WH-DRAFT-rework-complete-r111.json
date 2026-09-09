@@ -1,0 +1,201 @@
+{
+  "ok": true,
+  "code": "proposal_recorded",
+  "project_revision": 111,
+  "proposal": {
+    "id": "01M21XBRFX8SPCM2BZWCAMZK2W",
+    "project_id": "01M21S7N6RNH8JE1KAP73K5576",
+    "work_item_id": "01M21S7N6YYPKRACNR0J5S9B3K",
+    "source_id": "01M21S7N6XEZK9D9F0CRFZYEMJ",
+    "base_fingerprint": "sha256:18f06685b811d743f6aa542c5c45927d4a0a4dce0f630b661316b9b7153dceb4",
+    "expected_revision": 104,
+    "mutation_type": "work.complete",
+    "patch": {
+      "changes": {
+        "evidence": [
+          "deliverables/wh-draft-verification-v2.json",
+          "deliverables/wh-draft-verification-v3.json"
+        ],
+        "status": "completed",
+        "verification": {
+          "evidence_level": "locally_verified"
+        }
+      },
+      "intent": "新增职责和晚班事实已纳入v2工作稿，遗留缺口状态与当前推进顺序均已按来源核对",
+      "source_config": {
+        "adapter_options": {},
+        "adapter_version": 1,
+        "mapping_key": "ledger|work-ledger.yaml"
+      },
+      "target": {
+        "kind": "work_item",
+        "meta": {
+          "external_key": "WH-DRAFT",
+          "id": "01M21S7N6YYPKRACNR0J5S9B3K",
+          "revision": 5,
+          "source_ref": {
+            "end_line": null,
+            "locator": "file:///Users/mac/Documents/originone/agent-work-running/.local/business-live-20260909-v1/long-task-resume/project/work-ledger.yaml",
+            "pointer": "/work_items/1",
+            "section_fingerprint": null,
+            "source_fingerprint": "sha256:18f06685b811d743f6aa542c5c45927d4a0a4dce0f630b661316b9b7153dceb4",
+            "source_id": "01M21S7N6XEZK9D9F0CRFZYEMJ",
+            "source_revision": 10,
+            "start_line": null
+          }
+        }
+      },
+      "version": 1,
+      "work_action": {
+        "action": "complete",
+        "completion": {
+          "acceptance": [
+            {
+              "criterion": "依据保留的工作记录推进手册，解释当前推进顺序。",
+              "evidence": [
+                "01M21XAHS3RPWF1ZXCZ9T4FNHG"
+              ]
+            },
+            {
+              "criterion": "保留实际产物与来源引用，无法确认的内容显式说明。",
+              "evidence": [
+                "01M21XAHS3RPWF1ZXCZ9T4FNHG"
+              ]
+            }
+          ],
+          "evidence": [
+            {
+              "branch_id": null,
+              "command": "rtk rg -n 'SRC-05|当前工作顺序|新增已确认|GAP-0[1-7].*部分补充|GAP-0[1-7].*未补充|截至本版' deliverables/wanghai-operations-manual-draft-v2.md",
+              "evidence_type": "report",
+              "external_key": "WH-DRAFT-DUTY-NOTES-VERIFY-20260909",
+              "id": "01M21XAHS3RPWF1ZXCZ9T4FNHG",
+              "level": "locally_verified",
+              "locator": "deliverables/wh-draft-verification-v3.json",
+              "project_id": "01M21S7N6RNH8JE1KAP73K5576",
+              "revision": 1,
+              "scope": [
+                "WH-DRAFT",
+                "deliverables/wanghai-operations-manual-draft-v2.md",
+                "materials/duty-notes.md"
+              ],
+              "sha256": "e7bbe796454248849ee1a93b6750c0d8ac1cf861a3d68c88d131c3c972c7567a",
+              "source_ref": null,
+              "source_sha": "f9c654a16e66079e1e47558860dbc411b622c3fd",
+              "summary": "新增值班职责材料已按来源边界纳入新版工作稿，三项遗留缺口得到部分补充并保留当前推进顺序",
+              "verified_at": 1788918107000,
+              "work_item_id": "01M21S7N6YYPKRACNR0J5S9B3K"
+            }
+          ],
+          "minimum_level": "locally_verified",
+          "source_sha": "f9c654a16e66079e1e47558860dbc411b622c3fd",
+          "version": 1
+        },
+        "from": "in_progress",
+        "to": "completed"
+      }
+    },
+    "status": "applied",
+    "created_by_session": "01M21X0KRZFQYT5689A57WSF4D",
+    "revision": 5
+  },
+  "event": {
+    "id": "01M21XBRHM3W865ATDESP2R9DB",
+    "project_id": "01M21S7N6RNH8JE1KAP73K5576",
+    "work_item_id": "01M21S7N6YYPKRACNR0J5S9B3K",
+    "session_id": null,
+    "branch_id": null,
+    "event_type": "work.completed",
+    "importance": "normal",
+    "summary": "Verified source work action Complete",
+    "payload": {
+      "action_reason": "新增职责和晚班事实已纳入v2工作稿，遗留缺口状态与当前推进顺序均已按来源核对",
+      "actor": "codex-root",
+      "after_fingerprint": "sha256:3bdd92be9d2ec3ee11a7d55334de9c7030da3118cd46b3a45c72ced0779dfdc9",
+      "attempt_event_id": "01M21XBRGYZ4JD7NZ2B15JQ51H",
+      "before_fingerprint": "sha256:18f06685b811d743f6aa542c5c45927d4a0a4dce0f630b661316b9b7153dceb4",
+      "creating_session_id": "01M21X0KRZFQYT5689A57WSF4D",
+      "proposal_id": "01M21XBRFX8SPCM2BZWCAMZK2W",
+      "reason": "新增职责和晚班事实已纳入v2工作稿，遗留缺口状态与当前推进顺序均已按来源核对",
+      "released_claim_ids": [
+        "01M21X1EA6JN18Q5BSH9CDD635"
+      ],
+      "source_id": "01M21S7N6XEZK9D9F0CRFZYEMJ",
+      "source_revision": 11,
+      "target_after_hash": "5f5e147938d6c6512d1093a4654c9c4705bd21819fee9c761da4a42399a3bfc6",
+      "target_revision": 6,
+      "work_action": {
+        "action": "complete",
+        "completion": {
+          "acceptance": [
+            {
+              "criterion": "依据保留的工作记录推进手册，解释当前推进顺序。",
+              "evidence": [
+                "01M21XAHS3RPWF1ZXCZ9T4FNHG"
+              ]
+            },
+            {
+              "criterion": "保留实际产物与来源引用，无法确认的内容显式说明。",
+              "evidence": [
+                "01M21XAHS3RPWF1ZXCZ9T4FNHG"
+              ]
+            }
+          ],
+          "evidence": [
+            {
+              "branch_id": null,
+              "command": "rtk rg -n 'SRC-05|当前工作顺序|新增已确认|GAP-0[1-7].*部分补充|GAP-0[1-7].*未补充|截至本版' deliverables/wanghai-operations-manual-draft-v2.md",
+              "evidence_type": "report",
+              "external_key": "WH-DRAFT-DUTY-NOTES-VERIFY-20260909",
+              "id": "01M21XAHS3RPWF1ZXCZ9T4FNHG",
+              "level": "locally_verified",
+              "locator": "deliverables/wh-draft-verification-v3.json",
+              "project_id": "01M21S7N6RNH8JE1KAP73K5576",
+              "revision": 1,
+              "scope": [
+                "WH-DRAFT",
+                "deliverables/wanghai-operations-manual-draft-v2.md",
+                "materials/duty-notes.md"
+              ],
+              "sha256": "e7bbe796454248849ee1a93b6750c0d8ac1cf861a3d68c88d131c3c972c7567a",
+              "source_ref": null,
+              "source_sha": "f9c654a16e66079e1e47558860dbc411b622c3fd",
+              "summary": "新增值班职责材料已按来源边界纳入新版工作稿，三项遗留缺口得到部分补充并保留当前推进顺序",
+              "verified_at": 1788918107000,
+              "work_item_id": "01M21S7N6YYPKRACNR0J5S9B3K"
+            }
+          ],
+          "minimum_level": "locally_verified",
+          "source_sha": "f9c654a16e66079e1e47558860dbc411b622c3fd",
+          "version": 1
+        },
+        "from": "in_progress",
+        "to": "completed"
+      },
+      "write_plan_id": "01M21XBRGB2VSVE4J6YPAYYQAW"
+    },
+    "project_revision": 111,
+    "created_at": 1788918227508
+  },
+  "source_refresh_performed": true,
+  "source_write_performed": true,
+  "write_outcome": "applied",
+  "apply_attempt": {
+    "event_id": "01M21XBRGYZ4JD7NZ2B15JQ51H",
+    "proposal_id": "01M21XBRFX8SPCM2BZWCAMZK2W",
+    "source_id": "01M21S7N6XEZK9D9F0CRFZYEMJ",
+    "project_revision": 108,
+    "plan": {
+      "id": "01M21XBRGB2VSVE4J6YPAYYQAW",
+      "before_fingerprint": "sha256:18f06685b811d743f6aa542c5c45927d4a0a4dce0f630b661316b9b7153dceb4",
+      "after_fingerprint": "sha256:3bdd92be9d2ec3ee11a7d55334de9c7030da3118cd46b3a45c72ced0779dfdc9",
+      "before_size": 2896,
+      "after_size": 2939,
+      "target_after_hash": "5f5e147938d6c6512d1093a4654c9c4705bd21819fee9c761da4a42399a3bfc6"
+    },
+    "resolved_event_id": "01M21XBRHM3W865ATDESP2R9DB"
+  },
+  "recovery_directory": ".awr/mutations/01M21XBRGB2VSVE4J6YPAYYQAW",
+  "source_check": null,
+  "error": null
+}

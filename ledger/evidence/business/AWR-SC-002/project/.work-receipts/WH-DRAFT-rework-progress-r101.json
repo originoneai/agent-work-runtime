@@ -1,0 +1,108 @@
+{
+  "ok": true,
+  "code": "proposal_recorded",
+  "project_revision": 101,
+  "proposal": {
+    "id": "01M21X2JNGA4TZ87TBDWMW9NEM",
+    "project_id": "01M21S7N6RNH8JE1KAP73K5576",
+    "work_item_id": "01M21S7N6YYPKRACNR0J5S9B3K",
+    "source_id": "01M21S7N6XEZK9D9F0CRFZYEMJ",
+    "base_fingerprint": "sha256:ba85d1a5839efa3cde31ea51e97fa734867dfbbdeb17116ac7c590461e3139e2",
+    "expected_revision": 94,
+    "mutation_type": "work.progress",
+    "patch": {
+      "changes": {
+        "next_action": "形成不可变v2工作稿，标明已补充、部分补充与仍缺输入，并解释两层推进顺序",
+        "status": "in_progress",
+        "summary": "正在将新增职责和晚班交接字段纳入新版工作稿"
+      },
+      "intent": "已核对新增值班职责材料并确认其只部分解除三项遗留问题",
+      "source_config": {
+        "adapter_options": {},
+        "adapter_version": 1,
+        "mapping_key": "ledger|work-ledger.yaml"
+      },
+      "target": {
+        "kind": "work_item",
+        "meta": {
+          "external_key": "WH-DRAFT",
+          "id": "01M21S7N6YYPKRACNR0J5S9B3K",
+          "revision": 4,
+          "source_ref": {
+            "end_line": null,
+            "locator": "file:///Users/mac/Documents/originone/agent-work-running/.local/business-live-20260909-v1/long-task-resume/project/work-ledger.yaml",
+            "pointer": "/work_items/1",
+            "section_fingerprint": null,
+            "source_fingerprint": "sha256:ba85d1a5839efa3cde31ea51e97fa734867dfbbdeb17116ac7c590461e3139e2",
+            "source_id": "01M21S7N6XEZK9D9F0CRFZYEMJ",
+            "source_revision": 9,
+            "start_line": null
+          }
+        }
+      },
+      "version": 1,
+      "work_action": {
+        "action": "progress",
+        "from": "planned",
+        "to": "in_progress"
+      }
+    },
+    "status": "applied",
+    "created_by_session": "01M21X0KRZFQYT5689A57WSF4D",
+    "revision": 5
+  },
+  "event": {
+    "id": "01M21X2JQ9YA2FZ143F5VBG69C",
+    "project_id": "01M21S7N6RNH8JE1KAP73K5576",
+    "work_item_id": "01M21S7N6YYPKRACNR0J5S9B3K",
+    "session_id": null,
+    "branch_id": null,
+    "event_type": "work.progressed",
+    "importance": "normal",
+    "summary": "Verified source work action Progress",
+    "payload": {
+      "action_reason": "已核对新增值班职责材料并确认其只部分解除三项遗留问题",
+      "actor": "codex-root",
+      "after_fingerprint": "sha256:18f06685b811d743f6aa542c5c45927d4a0a4dce0f630b661316b9b7153dceb4",
+      "attempt_event_id": "01M21X2JPN02Y0YR4HEDQ70YR5",
+      "before_fingerprint": "sha256:ba85d1a5839efa3cde31ea51e97fa734867dfbbdeb17116ac7c590461e3139e2",
+      "creating_session_id": "01M21X0KRZFQYT5689A57WSF4D",
+      "proposal_id": "01M21X2JNGA4TZ87TBDWMW9NEM",
+      "reason": "已核对新增值班职责材料并确认其只部分解除三项遗留问题",
+      "released_claim_ids": [],
+      "source_id": "01M21S7N6XEZK9D9F0CRFZYEMJ",
+      "source_revision": 10,
+      "target_after_hash": "26f9712225b80a3f378bdcceb99792cecaef8d5865eabd8a6167c2d97369c680",
+      "target_revision": 5,
+      "work_action": {
+        "action": "progress",
+        "from": "planned",
+        "to": "in_progress"
+      },
+      "write_plan_id": "01M21X2JNS5BCF0N49HJW0G957"
+    },
+    "project_revision": 101,
+    "created_at": 1788917926633
+  },
+  "source_refresh_performed": true,
+  "source_write_performed": true,
+  "write_outcome": "applied",
+  "apply_attempt": {
+    "event_id": "01M21X2JPN02Y0YR4HEDQ70YR5",
+    "proposal_id": "01M21X2JNGA4TZ87TBDWMW9NEM",
+    "source_id": "01M21S7N6XEZK9D9F0CRFZYEMJ",
+    "project_revision": 98,
+    "plan": {
+      "id": "01M21X2JNS5BCF0N49HJW0G957",
+      "before_fingerprint": "sha256:ba85d1a5839efa3cde31ea51e97fa734867dfbbdeb17116ac7c590461e3139e2",
+      "after_fingerprint": "sha256:18f06685b811d743f6aa542c5c45927d4a0a4dce0f630b661316b9b7153dceb4",
+      "before_size": 2896,
+      "after_size": 2896,
+      "target_after_hash": "26f9712225b80a3f378bdcceb99792cecaef8d5865eabd8a6167c2d97369c680"
+    },
+    "resolved_event_id": "01M21X2JQ9YA2FZ143F5VBG69C"
+  },
+  "recovery_directory": ".awr/mutations/01M21X2JNS5BCF0N49HJW0G957",
+  "source_check": null,
+  "error": null
+}

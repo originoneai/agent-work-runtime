@@ -1,0 +1,84 @@
+{
+  "schema_version": 1,
+  "kind": "producer_delivery_verification",
+  "date": "2026-09-09",
+  "work_item": "WH-DELIVER",
+  "session_id": "01M225HZKTXCTD9YSV7EVCSBK3",
+  "claim_id": "01M225HZKT29HBPSCFX767RQNT",
+  "evidence_tier": "local_document_and_trace_verification",
+  "artifacts": {
+    "deliverables/wh-delivery.md": "af985dfc7db525028d9876f78ab9878fde6b3b0cb66185fac3fdd1369c64bc8e",
+    "deliverables/wanghai-final-work-record.md": "36835245017f9a6e6bfb99c02465a4975885c0eeb1806bcd659cfa49813fa0a0",
+    "deliverables/wanghai-final-handoff.md": "2ab5dadaad92985bb8477bd397a25cf9db03abe5203a087deedd4b92b632c15c",
+    "deliverables/wanghai-operations-manual-draft-v3.md": "b09950015623422d6ae287dd6295abbd83b6ea47970f7da64835d3957f222e68",
+    "deliverables/wanghai-source-verification-v3.md": "267dae9476a283a3bdaeb2539a9912e1849294e22db5bb16d300ae3f5459dbba",
+    "deliverables/wanghai-progress-handoff-v3.md": "526fe9513c657c927ff71a6d887f353508612ab0b29b2afe32ba7f8d2feb3bff",
+    "deliverables/wh-independent-review.md": "17d9efb27e766de37c1bc8ed84f1140f644f80238d0c23360beec55f549af602",
+    "deliverables/wanghai-final-delivery.md": "ad31de837d2d7be3d2cb22fb6cc8acf2de55b3ddc7ae4cb1a1c5c4765bec48f0",
+    ".work-receipts/final-delivery-memory-lookup-deviation.json": "259b2bff6644fed01bc7911c1b8c36df6196adbdcd052a7add36a8300d5c8e20"
+  },
+  "authoritative_sources": {
+    "materials/manual-outline.md": "47a3a73e7b11cc8759a0c81addd7040169299591d2b7db0a0d0159fa1f465693",
+    "materials/open-questions.csv": "a61c84473cebead6658e1fc1bfbfd4fe344ebfb87f1d1c7850f5da5c4fc6b812",
+    "materials/duty-notes.md": "eda536064f05aea30bc45c43079e8470074414cd8b2a56271ace283db20b9875",
+    "RULES.md": "f1562e163d17cbbcd5f43af3356c2d4e9076063712c010a9495c54f17466876e"
+  },
+  "independent_review": {
+    "work_item": "WH-REVIEW",
+    "reviewer": "/root/restricted_material_client_run",
+    "actual_agent_type": "luna_worker",
+    "session_id": "01M223E7S897SM2ADAAQ1AX25Q",
+    "claim_id": "01M223E7S879SQHTJYJ5HAKFEF",
+    "conclusion": "business_review_scope_conditionally_passed",
+    "review_input_file_count": 101,
+    "review_input_manifest_sha256": "5462dcaecee99d4271f547e9bf6fad180de20d61d77379b9866d2dedfab4409a",
+    "package_verification_sha256": "0c23db3697a1d3a2f953487c592cf40e381a00cbf5e3cf007ef566c04585fe3e",
+    "final_verification_sha256": "1b573e2d59670b697440f077a0753bc1012ae10a67466da63dd4eaac34483bc8"
+  },
+  "checks": {
+    "listed_artifacts_exist_and_hash_match": true,
+    "reviewed_v3_artifacts_unchanged": true,
+    "historical_candidate_unchanged": true,
+    "original_handoff_and_all_revisions_preserved": true,
+    "new_final_documents_local_links_checked": 35,
+    "new_final_documents_missing_links": 0,
+    "all_seven_gaps_present": true,
+    "fully_closed_gap_count": 0,
+    "partially_supplemented_after_review": [
+      "GAP-01",
+      "GAP-03",
+      "GAP-04",
+      "GAP-07"
+    ],
+    "not_supplemented_after_review": [
+      "GAP-02",
+      "GAP-05",
+      "GAP-06"
+    ],
+    "scope_deviations_disclosed": true,
+    "producer_failures_disclosed": true,
+    "reviewer_failures_disclosed": true,
+    "external_execution_record_read_or_modified": false,
+    "business_approval_claimed": false,
+    "actual_operation_claimed": false,
+    "e4_claimed": false,
+    "effective_manual_claimed": false
+  },
+  "preserved_failure_receipts": [
+    ".work-receipts/WH-DRAFT-complete-attempt-missing-command.json",
+    ".work-receipts/WH-LINKS-reopen.json",
+    ".work-receipts/WH-REVIEW-next-action-create-with-session-failed.json",
+    ".work-receipts/final-delivery-memory-lookup-deviation.json",
+    ".work-receipts/reviewer-complete-failed-r206.json",
+    ".work-receipts/reviewer-complete-r206.json",
+    ".work-receipts/reviewer-complete-r207.json",
+    ".work-receipts/reviewer-postcheck-path-failure.json"
+  ],
+  "result": "pass_for_traceable_document_delivery_only",
+  "limitations": [
+    "Seven business gaps remain not fully closed.",
+    "The independent review is not business approval.",
+    "No real operation, production acceptance, E4, release, or effective-version evidence was produced.",
+    "The operator-owned execution-record.json remains outside producer scope and was not read or modified."
+  ]
+}

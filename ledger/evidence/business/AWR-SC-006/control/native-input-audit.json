@@ -1,0 +1,106 @@
+{
+  "kind": "retrospective_actual_native_input_audit",
+  "at": "2026-09-09T13:53:13.594336+08:00",
+  "native_clients": [
+    {
+      "client": "Codex CLI",
+      "native_task_id": "01a083b6-aa5f-7ba0-9135-c128ada421a2",
+      "cli_version": "0.153.4",
+      "model": "gpt-5.6-sol",
+      "effort": "max",
+      "model_override": false,
+      "private_native_sha256": "6cf3d5d69e7acf71e7d4ea3dce4542dc8c38b112486cdc66b3cb5aa8b7cc5773"
+    },
+    {
+      "client": "Codex CLI",
+      "native_task_id": "01a083d7-4073-7150-89cd-993a9899dcad",
+      "cli_version": "0.153.4",
+      "model": "gpt-5.6-sol",
+      "effort": "max",
+      "model_override": false,
+      "private_native_sha256": "1c835fe21d6db950bfe108f9f611a15f9a23d5ead07e0ff79881c13623bdcff9"
+    }
+  ],
+  "policy_rules_sha256": "6ef794db3c42904ad98f0dce374753872118b398e36df908176d6b9192e53ed5",
+  "inputs": [
+    {
+      "native_client": "01a083b6-aa5f-7ba0-9135-c128ada421a2",
+      "timestamp": "2026-09-09T01:09:45.815Z",
+      "sha256": "032475b20453f5783e2fe2be04e467e12564d28efeb171541a8a7656a1699849",
+      "kind": "host_setup_envelope",
+      "raw_content_private": true
+    },
+    {
+      "native_client": "01a083b6-aa5f-7ba0-9135-c128ada421a2",
+      "timestamp": "2026-09-09T01:09:45.896Z",
+      "sha256": "6e97e308e6fec6cbcd165f6a45bb417fc53d753e5aa57fa0a91926b24c50dd97",
+      "kind": "actual_business_input",
+      "phase": "prelude",
+      "text": "请先整理维护交接中需要补充的事项，保留改动建议和已经整理好的内容，暂时不要把建议直接写入权威台账。",
+      "input_policy_passed": true
+    },
+    {
+      "native_client": "01a083b6-aa5f-7ba0-9135-c128ada421a2",
+      "timestamp": "2026-09-09T01:33:56.213Z",
+      "sha256": "d3a8df2af8270ffd383a890120082da8ed9e4cd0258fe319c120b6f80125e558",
+      "kind": "actual_business_input",
+      "phase": "prelude-proposals",
+      "text": "请把已经整理的改动建议提交为可审阅的变更提案，便于后续逐项确认与接续。已经保存的整理稿要保留；这些建议先停留在待审核状态，不要直接改动权威台账。",
+      "input_policy_passed": true
+    },
+    {
+      "native_client": "01a083d7-4073-7150-89cd-993a9899dcad",
+      "timestamp": "2026-09-09T01:45:21.213Z",
+      "sha256": "032475b20453f5783e2fe2be04e467e12564d28efeb171541a8a7656a1699849",
+      "kind": "host_setup_envelope",
+      "raw_content_private": true
+    },
+    {
+      "native_client": "01a083d7-4073-7150-89cd-993a9899dcad",
+      "timestamp": "2026-09-09T01:45:21.295Z",
+      "sha256": "fc97e65c3c31721f4f8ca1316076e8b96740ee57ccc3f2a6bd4d00f678d04cc4",
+      "kind": "actual_business_input",
+      "phase": "initial",
+      "text": "刚才工作意外中断了，请核实保留下来的结果，恢复到可以继续推进的状态。",
+      "input_policy_passed": true
+    },
+    {
+      "native_client": "01a083d7-4073-7150-89cd-993a9899dcad",
+      "timestamp": "2026-09-09T02:11:14.047Z",
+      "sha256": "138a50b851170a3c681c554d06ceaf619e3bbdb465e6510a63198d49c141fd19",
+      "kind": "actual_business_input",
+      "phase": "round-1",
+      "text": "请查清哪些修改已经保存、哪些还没生效，并补齐交接说明。",
+      "input_policy_passed": true
+    },
+    {
+      "native_client": "01a083d7-4073-7150-89cd-993a9899dcad",
+      "timestamp": "2026-09-09T02:28:15.571Z",
+      "sha256": "ff98e3ab40c098bd8a93c4d7facfda5dc97445b71eefeb7487c51b6201a64b60",
+      "kind": "actual_business_input",
+      "phase": "round-2",
+      "text": "继续处理剩余工作，确认没有重复写入或丢失结果后交付。",
+      "input_policy_passed": true
+    },
+    {
+      "native_client": "01a083d7-4073-7150-89cd-993a9899dcad",
+      "timestamp": "2026-09-09T03:56:18.316Z",
+      "sha256": "90dc141835b5115a2455c5a466e0d7be4df84ea147339c6e524f1f7ed440f62e",
+      "kind": "actual_business_input",
+      "phase": "review-correction",
+      "text": "独立复核发现，已经确认的归档和角色要求还没有落实到当前权威验收要求，恢复工作却已写为完成。请依据最新复核意见补齐这些已确认的修订，核对实际生效记录，确保没有重复写入或丢失成果；遗留问题仍未得到明确事实时继续保留。同步修正恢复进展、下一步和交接说明，准确区分旧建议未重放与新修订已生效，保留原建议及全部失败历史。先提交整改记录交回独立返检，再最终交付。",
+      "input_policy_passed": true
+    },
+    {
+      "native_client": "01a083d7-4073-7150-89cd-993a9899dcad",
+      "timestamp": "2026-09-09T05:15:10.689Z",
+      "sha256": "b68a7bbb3f97caa03381a345c7bf3b35f542dd4ea130e5f41dc48f49ff847c8f",
+      "kind": "actual_business_input",
+      "phase": "final-delivery",
+      "text": "请依据独立返检通过的结论完成竹声这次中断恢复交付，整理实际中断与恢复过程、已应用的确认要求、原提案的处理结果，以及归档和责任移交的当前安排。保留原始版本、失败和未持久化信息的缺口；具体问题事实、归档实施、人员及升级安排尚未确认的部分继续列明。更新最终工作记录并附可追溯回执，清楚区分已完成的恢复工作与后续待办。",
+      "input_policy_passed": true
+    }
+  ],
+  "all_business_inputs_accounted_for": true,
+  "limitation": "Exact read-only retrospective input inventory; root natural-language review is separate. Fixed host setup remains private."
+}

@@ -1,0 +1,77 @@
+{
+  "version": 1,
+  "reviewer": "luna_worker",
+  "verified_at": "2026-09-09T11:36:32.967235+08:00",
+  "checks": [
+    {
+      "name": "business_round_publication",
+      "publication": "/Users/mac/Documents/originone/agent-work-running/.local/business-live-20260909-v1/interrupted-write/control/review-input-publication.json",
+      "publication_sha256": "ad2cfe9f7c2a85578ba4ece9e5e875c1d5da5545a6cf00e30eb5b6f9c6c33c1b",
+      "file_count": 56,
+      "missing": [],
+      "mismatches": [],
+      "passed": true
+    },
+    {
+      "name": "interruption_publication",
+      "publication": "/Users/mac/Documents/originone/agent-work-running/.local/business-live-20260909-v1/interrupted-write/control/interruption-review-publication.json",
+      "publication_sha256": "b470bf34eca090ec1c35328fcecc93dedcb902d64b0a3cea6565f2a88b4a8d19",
+      "file_count": 6,
+      "missing": [],
+      "mismatches": [],
+      "passed": true
+    }
+  ],
+  "turn_checks": [
+    {
+      "phase": "prelude",
+      "client_task_id": "01a083b6-aa5f-7ba0-9135-c128ada421a2",
+      "actual_user_turn": {
+        "timestamp": "2026-09-09T01:09:45.896Z",
+        "text": "请先整理维护交接中需要补充的事项，保留改动建议和已经整理好的内容，暂时不要把建议直接写入权威台账。"
+      },
+      "source_count": 7,
+      "artifact_count": 1,
+      "mismatches": [],
+      "passed": true
+    },
+    {
+      "phase": "initial",
+      "client_task_id": "01a083d7-4073-7150-89cd-993a9899dcad",
+      "actual_user_turn": {
+        "timestamp": "2026-09-09T01:45:21.295Z",
+        "text": "刚才工作意外中断了，请核实保留下来的结果，恢复到可以继续推进的状态。"
+      },
+      "source_count": 7,
+      "artifact_count": 3,
+      "mismatches": [],
+      "passed": true
+    },
+    {
+      "phase": "round-1",
+      "client_task_id": "01a083d7-4073-7150-89cd-993a9899dcad",
+      "actual_user_turn": {
+        "timestamp": "2026-09-09T02:11:14.047Z",
+        "text": "请查清哪些修改已经保存、哪些还没生效，并补齐交接说明。"
+      },
+      "source_count": 7,
+      "artifact_count": 4,
+      "mismatches": [],
+      "passed": true
+    },
+    {
+      "phase": "round-2",
+      "client_task_id": "01a083d7-4073-7150-89cd-993a9899dcad",
+      "actual_user_turn": {
+        "timestamp": "2026-09-09T02:28:15.571Z",
+        "text": "继续处理剩余工作，确认没有重复写入或丢失结果后交付。"
+      },
+      "source_count": 7,
+      "artifact_count": 4,
+      "mismatches": [],
+      "passed": true
+    }
+  ],
+  "published_file_total": 62,
+  "passed": true
+}

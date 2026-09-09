@@ -1,0 +1,24 @@
+{
+  "kind": "actual_native_client_metadata",
+  "clients": [
+    {
+      "client": "Codex CLI",
+      "native_task_id": "01a083b6-aa5f-7ba0-9135-c128ada421a2",
+      "cli_version": "0.153.4",
+      "model": "gpt-5.6-sol",
+      "effort": "max",
+      "model_override": false,
+      "private_native_sha256": "6cf3d5d69e7acf71e7d4ea3dce4542dc8c38b112486cdc66b3cb5aa8b7cc5773"
+    },
+    {
+      "client": "Codex CLI",
+      "native_task_id": "01a083d7-4073-7150-89cd-993a9899dcad",
+      "cli_version": "0.153.4",
+      "model": "gpt-5.6-sol",
+      "effort": "max",
+      "model_override": false,
+      "private_native_sha256": "1c835fe21d6db950bfe108f9f611a15f9a23d5ead07e0ff79881c13623bdcff9"
+    }
+  ],
+  "source": "Sealed actual session_meta and turn_context; native context is private."
+}

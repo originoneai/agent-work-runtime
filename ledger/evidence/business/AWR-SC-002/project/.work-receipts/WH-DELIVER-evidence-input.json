@@ -1,0 +1,25 @@
+{
+  "external_key": "WH-DELIVER-FINAL-VERIFY-20260909",
+  "work_item_key": "WH-DELIVER",
+  "evidence_type": "report",
+  "level": "locally_verified",
+  "summary": "最终资料交付验证：实际wh-delivery、最终工作记录和最终交接已形成；当前及历史哈希一致，35个本地链接可解析，七项缺口、范围偏离和实际失败均保留",
+  "locator": ".work-receipts/WH-DELIVER-final-verification.json",
+  "sha256": "9f0b5c3a130ef1c075b7db3bc5f73be64238bd5afec77f1f41b47791181a4831",
+  "source_sha": "f9c654a16e66079e1e47558860dbc411b622c3fd",
+  "command": "rtk proxy python3 .work-receipts/WH-DELIVER-final-verify.py",
+  "scope": [
+    "WH-DELIVER",
+    "deliverables/wh-delivery.md",
+    "deliverables/wanghai-final-work-record.md",
+    "deliverables/wanghai-final-handoff.md",
+    "deliverables/wanghai-operations-manual-draft-v3.md",
+    "deliverables/wanghai-source-verification-v3.md",
+    "deliverables/wanghai-progress-handoff-v3.md",
+    "deliverables/wh-independent-review.md",
+    "deliverables/wanghai-final-delivery.md",
+    ".work-receipts/final-delivery-memory-lookup-deviation.json"
+  ],
+  "branch_id": null,
+  "verified_at": 1788927682000
+}

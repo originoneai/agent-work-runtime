@@ -1,0 +1,20 @@
+{
+  "version": 2,
+  "source_sha": "8218b29c348b7eda3e57b541c3489e41b87b6679",
+  "minimum_level": "locally_verified",
+  "acceptance": [
+    {
+      "criterion": "核对来源前后与事件回执，确认未丢失结果或重复交付。",
+      "evidence": [
+        "zs-independent-re-review-20260909-v2"
+      ]
+    },
+    {
+      "criterion": "保留实际产物与来源引用，无法确认的内容显式说明。",
+      "evidence": [
+        "zs-independent-re-review-20260909-v2"
+      ]
+    }
+  ],
+  "required_evidence": []
+}

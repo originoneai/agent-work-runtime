@@ -1,0 +1,133 @@
+{
+  "acceptance": [
+    "处理待应用改动，保留重试或恢复的证据，避免重复写入。",
+    "保留实际产物与来源引用，无法确认的内容显式说明。",
+    "资料归档按“使用说明、交接记录、问题跟踪”三个内容类型目录执行，并保留资料管理员确认来源（materials/archive-confirmation.md）；目录根路径、权限、迁移与完整性未明确时继续列为未决。",
+    "角色职责按协调者确认执行：值班人员维护交接记录、资料管理员维护使用说明、问题负责人维护问题跟踪，并保留确认来源（materials/role-confirmation.md）；具体人员、值班表、代理/升级路径和交接时限未明确时继续列为未决。"
+  ],
+  "decisions": [],
+  "dependency_cycles": [],
+  "evidence": [
+    {
+      "currency": "unknown",
+      "external_key": "ZS-RECOVER/evidence/.work-receipts/zs-recover-evidence-report.json",
+      "level": "unknown",
+      "locator": ".work-receipts/zs-recover-evidence-report.json",
+      "missing_bindings": [
+        "sha256",
+        "source_sha",
+        "command",
+        "verified_at"
+      ],
+      "reasons": [
+        "both recorded and requested source SHA are needed to determine currency"
+      ],
+      "source_sha": null,
+      "summary": "Evidence reference; not yet verified by AWR"
+    },
+    {
+      "currency": "unknown",
+      "external_key": "ZS-RECOVER/evidence/.work-receipts/zs-remediation-evidence-report.json",
+      "level": "unknown",
+      "locator": ".work-receipts/zs-remediation-evidence-report.json",
+      "missing_bindings": [
+        "sha256",
+        "source_sha",
+        "command",
+        "verified_at"
+      ],
+      "reasons": [
+        "both recorded and requested source SHA are needed to determine currency"
+      ],
+      "source_sha": null,
+      "summary": "Evidence reference; not yet verified by AWR"
+    },
+    {
+      "currency": "unknown",
+      "external_key": "zs-recover-no-duplicate-20260909",
+      "level": "locally_verified",
+      "locator": ".work-receipts/zs-recover-evidence-report.json",
+      "missing_bindings": [],
+      "reasons": [
+        "both recorded and requested source SHA are needed to determine currency"
+      ],
+      "source_sha": "8218b29c348b7eda3e57b541c3489e41b87b6679",
+      "summary": "已保留并显式处置三份旧提案，验证每个 ID 唯一且均无应用尝试；确认材料、失败回执与未知遗留问题均未丢失。"
+    },
+    {
+      "currency": "unknown",
+      "external_key": "zs-recover-remediation-20260909-v1",
+      "level": "locally_verified",
+      "locator": ".work-receipts/zs-remediation-evidence-report.json",
+      "missing_bindings": [],
+      "reasons": [
+        "both recorded and requested source SHA are needed to determine currency"
+      ],
+      "source_sha": "8218b29c348b7eda3e57b541c3489e41b87b6679",
+      "summary": "独立复核后整改已验证：CR-01/CR-02 通过一个最新来源合并提案各生效一次，三个旧 patch 均未重放，CR-03、其他未知事实及全部失败历史继续保留。"
+    }
+  ],
+  "evidence_currency_basis": {
+    "branch_id": null,
+    "requested_source_sha": null
+  },
+  "freshness_basis": "source_refresh",
+  "missing_dependencies": [],
+  "ok": true,
+  "project_revision": 182,
+  "read_only": false,
+  "required_dependencies": [
+    {
+      "external_key": "ZS-COMPARE",
+      "freshness": "fresh",
+      "revision": 3,
+      "source_revision": 17,
+      "status": "completed"
+    },
+    {
+      "external_key": "ZS-DIAG",
+      "freshness": "fresh",
+      "revision": 3,
+      "source_revision": 17,
+      "status": "completed"
+    }
+  ],
+  "source_issues": [],
+  "source_ref": {
+    "end_line": null,
+    "locator": "file:///Users/mac/Documents/originone/agent-work-running/.local/business-live-20260909-v1/interrupted-write/project/work-ledger.yaml",
+    "pointer": "/work_items/2",
+    "section_fingerprint": null,
+    "source_fingerprint": "sha256:910155627fdf6131e7aed88c5297cc9c61a97c60aa4beec9a7c08475de8e4a37",
+    "source_id": "01M21VJFYKQHY3PPK3TBPPYNPT",
+    "source_revision": 17,
+    "start_line": null
+  },
+  "source_refresh_performed": true,
+  "source_warnings": 0,
+  "work": {
+    "active_claims": [],
+    "blocker": null,
+    "diagnostics": [
+      {
+        "code": "status_not_selectable",
+        "detail": "source status is completed",
+        "work_item_key": "ZS-RECOVER"
+      }
+    ],
+    "external_key": "ZS-RECOVER",
+    "freshness": "fresh",
+    "id": "01M21VJFYMD4Q7P3HFNFATQBCZ",
+    "milestone": "ZS-DELIVERY",
+    "next_action": "等待不同参与者完成 ZS-REVIEW 整改后返检；返检须核对 ZS-F01 至 ZS-F03、固定文件前后哈希并保留原报告。返检通过后才可推进 ZS-DELIVER。",
+    "owner": null,
+    "priority": "P0",
+    "raw_status": "completed",
+    "ready": false,
+    "revision": 9,
+    "source_revision": 17,
+    "status": "completed",
+    "summary": "整改已完成并提交返检：CR-01/CR-02 由新合并提案一次生效，三个旧 patch 零应用，CR-03 与其他未知事实及全部失败历史继续保留。",
+    "title": "恢复并推进交接工作"
+  }
+}

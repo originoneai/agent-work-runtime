@@ -1,0 +1,16 @@
+{
+  "work_item_key": "ZS-DELIVER",
+  "branch_id": null,
+  "external_key": "zs-final-recovery-delivery-20260909-v2",
+  "evidence_type": "verification_report",
+  "level": "locally_verified",
+  "summary": "最终交接说明已形成并经 70 项本地核验：中断恢复、确认要求、新旧提案、归档和角色级安排、失败及未知项均已分层；首次登记失败已保留，不扩展为 Git、发布或 E4。",
+  "locator": ".work-receipts/zs-deliver-completion-report-v2.json",
+  "sha256": "746610addd54f1f3e5e6d21b055a184baaec79b57c65c091df11e820d411d340",
+  "source_sha": "8218b29c348b7eda3e57b541c3489e41b87b6679",
+  "command": "rtk proxy /Users/mac/Documents/originone/agent-work-running/.venv/bin/python .work-receipts/verify-zs-delivery.py --phase pre",
+  "scope": [
+    "ZS-DELIVER"
+  ],
+  "verified_at": 1788932066021
+}

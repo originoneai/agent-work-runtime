@@ -1,0 +1,20 @@
+{
+  "version": 1,
+  "source_sha": "f9c654a16e66079e1e47558860dbc411b622c3fd",
+  "minimum_level": "locally_verified",
+  "acceptance": [
+    {
+      "criterion": "列出缺少的职责、资料链接及晚班交接要求。",
+      "evidence": [
+        "WH-OPEN-ROUND1-VERIFY-20260909"
+      ]
+    },
+    {
+      "criterion": "保留实际产物与来源引用，无法确认的内容显式说明。",
+      "evidence": [
+        "WH-OPEN-ROUND1-VERIFY-20260909"
+      ]
+    }
+  ],
+  "required_evidence": []
+}

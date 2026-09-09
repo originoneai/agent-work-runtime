@@ -1,0 +1,55 @@
+{
+  "version": 1,
+  "reviewer": "luna_worker",
+  "review_session": "01M223JC0DGNZACGCB1GK9FWQR",
+  "review_claim": "01M223JC0DMZEZAF591R4QH2BC",
+  "artifact": {
+    "locator": "deliverables/zs-independent-review.md",
+    "sha256": "c580b03404518ac99436ef3f7f3ccfdb78315a7a493b3c53c18448bd685072b5"
+  },
+  "checks": [
+    {
+      "name": "published-review-inputs",
+      "passed": true,
+      "details": "56 historical business files and 6 interruption-evidence files match their publication hashes."
+    },
+    {
+      "name": "producer-files-unchanged-during-review",
+      "passed": true,
+      "details": "Compared 8 producer-owned material and deliverable files before and after review authoring."
+    },
+    {
+      "name": "old-proposal-lifecycle",
+      "passed": true,
+      "details": "Three distinct old business proposals are rejected and each has no apply attempt; this proves zero replays, not one application."
+    },
+    {
+      "name": "blocking-findings-reproduced",
+      "passed": true,
+      "details": "Confirmed archive and role changes are absent from authoritative acceptance while completed recovery still carries a pending application action."
+    },
+    {
+      "name": "awr-recovery-session-chain",
+      "passed": true,
+      "details": "Old session is interrupted with no checkpoint and released claims; successor session ended with a later checkpoint."
+    },
+    {
+      "name": "native-process-evidence",
+      "passed": true,
+      "details": "The first normal exit is distinct from the later terminated native process."
+    },
+    {
+      "name": "review-report",
+      "passed": true,
+      "details": "Independent review records the blocking business-application and authoritative-state findings."
+    },
+    {
+      "name": "final-delivery-boundary",
+      "passed": true,
+      "details": "Final delivery remains absent and is not credited by this review."
+    }
+  ],
+  "passed": true,
+  "business_verdict": "requires_executor_changes",
+  "e4_credit": false
+}

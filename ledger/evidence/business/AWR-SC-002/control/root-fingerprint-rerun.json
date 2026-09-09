@@ -1,0 +1,29 @@
+{
+  "kind": "root_read_only_verifier_execution",
+  "exit_code": 0,
+  "result": {
+    "ok": true,
+    "report": ".work-receipts/WH-DELIVER-fingerprint-relationship-verification-v4.json",
+    "current_manifest_sha256": "862dd0a0f5ea670832f58a3e386be037657c4470f2e821d644a60dd33ff78150",
+    "machine_manifest_sha256": "60de1b4934237293946efc3cc9cd1c34bf0ddf10c09a78fe528226b78dfeb805",
+    "machine_entries_checked": 28,
+    "machine_unique_paths": 28,
+    "current_authority_rows_checked": 29,
+    "current_manifest_mismatches": [],
+    "original_linked_fingerprint_rows_checked": 18,
+    "original_mismatches_detected": [
+      {
+        "path": "deliverables/wanghai-final-work-record.md",
+        "declared_sha256": "36835245017f9a6e6bfb99c02465a4975885c0eeb1806bcd659cfa49813fa0a0",
+        "actual_sha256": "3ebbb2b6b37d172a67af13b9982b34721b7b489793e4514651dea0bb64b552de"
+      }
+    ],
+    "current_local_links_checked": 36,
+    "current_broken_links": [],
+    "seven_business_gaps_disclosed": true,
+    "errors": [],
+    "evidence_tier": "local_document_fingerprint_relationship_verification",
+    "boundary": "document consistency repair only; no business approval, real operation, effective release, production acceptance, or E4"
+  },
+  "runtime_mutation_performed": false
+}

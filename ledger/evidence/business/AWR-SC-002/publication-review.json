@@ -1,0 +1,20 @@
+{
+  "kind": "root_business_artifact_publication_review",
+  "checked_at": "2026-09-09T13:33:14.013043+08:00",
+  "manifest_files_verified": 486,
+  "nonempty_json_documents_valid": 236,
+  "original_empty_failure_receipts_retained": [
+    "project/.work-receipts/reviewer-complete-r206.json",
+    "control/independent-review-1-snapshot/.work-receipts/reviewer-complete-r206.json"
+  ],
+  "high_signal_secret_or_private_native_matches": [],
+  "git_diff_check": {
+    "exit_code": 0
+  },
+  "review_scope": "Actual reviewed business sources, artifacts, raw AWR receipts and bounded business command extracts. Full native/global context, event streams and runtime database are omitted.",
+  "limitations": [
+    "A bounded high-signal scan is not universal DLP proof.",
+    "Original failed or empty output records remain unchanged; later successful evidence does not erase them."
+  ],
+  "e4_credit": false
+}

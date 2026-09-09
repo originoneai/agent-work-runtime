@@ -1,0 +1,57 @@
+{
+  "version": 1,
+  "reviewer": "luna_worker",
+  "verified_at": "2026-09-09T11:49:56.823993+08:00",
+  "project_revision": 103,
+  "source_revision": 9,
+  "checks": [
+    {
+      "name": "review-work-completed",
+      "passed": true,
+      "details": "ZS-REVIEW is completed; final delivery remains planned."
+    },
+    {
+      "name": "session-ended-and-claim-released",
+      "passed": true,
+      "details": "Reviewer session ended and its only claim is released."
+    },
+    {
+      "name": "checkpoint-saved",
+      "passed": true,
+      "details": "Final checkpoint preserves correction and delivery open loops."
+    },
+    {
+      "name": "work-complete-receipt",
+      "passed": true,
+      "details": "AWR completion applied and released the reviewer claim."
+    },
+    {
+      "name": "database-integrity",
+      "passed": true,
+      "details": "Final Doctor is structurally clean; this does not override the business verdict."
+    },
+    {
+      "name": "producer-files-unchanged",
+      "passed": true,
+      "details": "All eight producer-owned current material and deliverable hashes are unchanged."
+    },
+    {
+      "name": "source-scope",
+      "passed": true,
+      "details": "Only ZS-REVIEW changed from the producer final source snapshot."
+    },
+    {
+      "name": "delivery-not-authored",
+      "passed": true,
+      "details": "Reviewer did not author final delivery."
+    },
+    {
+      "name": "report-bound",
+      "passed": true,
+      "details": "Report hash and blocking verdict match the full verification record."
+    }
+  ],
+  "passed": true,
+  "business_verdict": "requires_executor_changes",
+  "e4_credit": false
+}

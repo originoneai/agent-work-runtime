@@ -1,0 +1,554 @@
+{
+  "version": 1,
+  "kind": "independent_re_review_final_verification",
+  "reviewer": "luna_worker",
+  "recorded_at": "2026-09-09T13:10:04+08:00",
+  "ok": true,
+  "checks_passed": 51,
+  "checks_failed": 0,
+  "checks": [
+    {
+      "name": "retained-empty-failure-placeholders",
+      "passed": true,
+      "actual": [
+        ".work-receipts/reviewer-recheck-work-complete-v2.json",
+        ".work-receipts/reviewer-recheck-work-complete.json"
+      ],
+      "expected": [
+        ".work-receipts/reviewer-recheck-work-complete-v2.json",
+        ".work-receipts/reviewer-recheck-work-complete.json"
+      ]
+    },
+    {
+      "name": "nonempty-reviewer-json-parse",
+      "passed": true,
+      "files": 55
+    },
+    {
+      "name": "independent-pre-mutation-checks",
+      "passed": true,
+      "actual": 247,
+      "expected": 247
+    },
+    {
+      "name": "independent-pre-mutation-failures",
+      "passed": true,
+      "actual": 0,
+      "expected": 0
+    },
+    {
+      "name": "final-report-hash",
+      "passed": true,
+      "actual": "5f8d595f33ce5fd48503d12e1076aab409b6f54605d36351ddf343e457d50173",
+      "expected": "5f8d595f33ce5fd48503d12e1076aab409b6f54605d36351ddf343e457d50173"
+    },
+    {
+      "name": "verification-hash",
+      "passed": true,
+      "actual": "4fa906e8c75fe7be0ec550344328b86013a5bdbafd86b7ce5a1e54d4128be710",
+      "expected": "4fa906e8c75fe7be0ec550344328b86013a5bdbafd86b7ce5a1e54d4128be710"
+    },
+    {
+      "name": "tool-failure-hash",
+      "passed": true,
+      "actual": "f0eecc7230b8bbe63b54dd8068d0254fa141fea21227b267ed4f2d5ff7529a7f",
+      "expected": "f0eecc7230b8bbe63b54dd8068d0254fa141fea21227b267ed4f2d5ff7529a7f"
+    },
+    {
+      "name": "completion-schema",
+      "passed": true,
+      "actual": 1,
+      "expected": 1
+    },
+    {
+      "name": "completion-source-sha",
+      "passed": true,
+      "actual": "8218b29c348b7eda3e57b541c3489e41b87b6679",
+      "expected": "8218b29c348b7eda3e57b541c3489e41b87b6679"
+    },
+    {
+      "name": "final-evidence-key",
+      "passed": true,
+      "actual": "zs-independent-re-review-20260909-v3",
+      "expected": "zs-independent-re-review-20260909-v3"
+    },
+    {
+      "name": "final-evidence-level",
+      "passed": true,
+      "actual": "locally_verified",
+      "expected": "locally_verified"
+    },
+    {
+      "name": "final-evidence-report-hash",
+      "passed": true,
+      "actual": "c973140be6fbaefcab4075a56f8e27cd5d55b6ae4b0f5f23b91a31b140f21475",
+      "expected": "c973140be6fbaefcab4075a56f8e27cd5d55b6ae4b0f5f23b91a31b140f21475"
+    },
+    {
+      "name": "work-complete-ok",
+      "passed": true,
+      "actual": true,
+      "expected": true
+    },
+    {
+      "name": "work-complete-proposal-status",
+      "passed": true,
+      "actual": "applied",
+      "expected": "applied"
+    },
+    {
+      "name": "work-complete-source-write",
+      "passed": true,
+      "actual": true,
+      "expected": true
+    },
+    {
+      "name": "final-project-revision",
+      "passed": true,
+      "actual": 209,
+      "expected": 209
+    },
+    {
+      "name": "final-counts",
+      "passed": true,
+      "actual": {
+        "completed": 4,
+        "planned": 1
+      },
+      "expected": {
+        "completed": 4,
+        "planned": 1
+      }
+    },
+    {
+      "name": "final-source-issues",
+      "passed": true,
+      "actual": [],
+      "expected": []
+    },
+    {
+      "name": "final-ready-work",
+      "passed": true,
+      "actual": [
+        "ZS-DELIVER"
+      ],
+      "expected": [
+        "ZS-DELIVER"
+      ]
+    },
+    {
+      "name": "review-status",
+      "passed": true,
+      "actual": "completed",
+      "expected": "completed"
+    },
+    {
+      "name": "review-summary-final",
+      "passed": true,
+      "actual": true,
+      "expected": true
+    },
+    {
+      "name": "review-next-action-final",
+      "passed": true,
+      "actual": true,
+      "expected": true
+    },
+    {
+      "name": "review-acceptance-unchanged",
+      "passed": true,
+      "actual": [
+        "核对来源前后与事件回执，确认未丢失结果或重复交付。",
+        "保留实际产物与来源引用，无法确认的内容显式说明。"
+      ],
+      "expected": [
+        "核对来源前后与事件回执，确认未丢失结果或重复交付。",
+        "保留实际产物与来源引用，无法确认的内容显式说明。"
+      ]
+    },
+    {
+      "name": "session-status",
+      "passed": true,
+      "actual": "ended",
+      "expected": "ended"
+    },
+    {
+      "name": "session-checkpoint",
+      "passed": true,
+      "actual": "01M228PT5GJAEMARV4ZT77K6V7",
+      "expected": "01M228PT5GJAEMARV4ZT77K6V7"
+    },
+    {
+      "name": "claim-status",
+      "passed": true,
+      "actual": "released",
+      "expected": "released"
+    },
+    {
+      "name": "active-sessions",
+      "passed": true,
+      "actual": [],
+      "expected": []
+    },
+    {
+      "name": "final-delivery-absent",
+      "passed": true,
+      "actual": false,
+      "expected": false
+    },
+    {
+      "name": "handoff-proposal-status",
+      "passed": true,
+      "actual": "applied",
+      "expected": "applied"
+    },
+    {
+      "name": "handoff-fields",
+      "passed": true,
+      "actual": [
+        "next_action",
+        "summary"
+      ],
+      "expected": [
+        "next_action",
+        "summary"
+      ]
+    },
+    {
+      "name": "handoff-no-acceptance",
+      "passed": true,
+      "actual": false,
+      "expected": false
+    },
+    {
+      "name": "milestones-unchanged",
+      "passed": true,
+      "actual": [
+        {
+          "id": "ZS-DELIVERY",
+          "title": "竹声维护交接交付",
+          "status": "in_progress"
+        }
+      ],
+      "expected": [
+        {
+          "id": "ZS-DELIVERY",
+          "title": "竹声维护交接交付",
+          "status": "in_progress"
+        }
+      ]
+    },
+    {
+      "name": "nonreview-work-unchanged:ZS-DIAG",
+      "passed": true,
+      "actual": {
+        "acceptance": [
+          "列清真实保存的产物、待应用变更及当前来源状态。",
+          "保留实际产物与来源引用，无法确认的内容显式说明。"
+        ],
+        "depends_on": [],
+        "evidence": [
+          ".work-receipts/zs-diag-evidence-report.json"
+        ],
+        "goal": "goal#zs",
+        "id": "ZS-DIAG",
+        "milestone": "ZS-DELIVERY",
+        "next_action": "整理已保存内容、待补事项和未应用建议，并保留来源与未知项。",
+        "owner": null,
+        "priority": "P0",
+        "status": "completed",
+        "title": "核实中断前保留结果",
+        "verification": {
+          "evidence_level": "locally_verified"
+        }
+      },
+      "expected": {
+        "acceptance": [
+          "列清真实保存的产物、待应用变更及当前来源状态。",
+          "保留实际产物与来源引用，无法确认的内容显式说明。"
+        ],
+        "depends_on": [],
+        "evidence": [
+          ".work-receipts/zs-diag-evidence-report.json"
+        ],
+        "goal": "goal#zs",
+        "id": "ZS-DIAG",
+        "milestone": "ZS-DELIVERY",
+        "next_action": "整理已保存内容、待补事项和未应用建议，并保留来源与未知项。",
+        "owner": null,
+        "priority": "P0",
+        "status": "completed",
+        "title": "核实中断前保留结果",
+        "verification": {
+          "evidence_level": "locally_verified"
+        }
+      }
+    },
+    {
+      "name": "nonreview-work-unchanged:ZS-COMPARE",
+      "passed": true,
+      "actual": {
+        "acceptance": [
+          "用实际回执解释哪些变更已提交，哪些仍待处理。",
+          "保留实际产物与来源引用，无法确认的内容显式说明。"
+        ],
+        "depends_on": [
+          "ZS-DIAG"
+        ],
+        "evidence": [
+          ".work-receipts/zs-compare-completion-evidence-report.json"
+        ],
+        "goal": "goal#zs",
+        "id": "ZS-COMPARE",
+        "milestone": "ZS-DELIVERY",
+        "next_action": "创建并提交逐项可审阅的待审核提案，核对提案状态和权威源未被应用。",
+        "owner": null,
+        "priority": "P0",
+        "status": "completed",
+        "title": "比对已保存与未生效内容",
+        "verification": {
+          "evidence_level": "locally_verified"
+        }
+      },
+      "expected": {
+        "acceptance": [
+          "用实际回执解释哪些变更已提交，哪些仍待处理。",
+          "保留实际产物与来源引用，无法确认的内容显式说明。"
+        ],
+        "depends_on": [
+          "ZS-DIAG"
+        ],
+        "evidence": [
+          ".work-receipts/zs-compare-completion-evidence-report.json"
+        ],
+        "goal": "goal#zs",
+        "id": "ZS-COMPARE",
+        "milestone": "ZS-DELIVERY",
+        "next_action": "创建并提交逐项可审阅的待审核提案，核对提案状态和权威源未被应用。",
+        "owner": null,
+        "priority": "P0",
+        "status": "completed",
+        "title": "比对已保存与未生效内容",
+        "verification": {
+          "evidence_level": "locally_verified"
+        }
+      }
+    },
+    {
+      "name": "nonreview-work-unchanged:ZS-RECOVER",
+      "passed": true,
+      "actual": {
+        "acceptance": [
+          "处理待应用改动，保留重试或恢复的证据，避免重复写入。",
+          "保留实际产物与来源引用，无法确认的内容显式说明。",
+          "资料归档按“使用说明、交接记录、问题跟踪”三个内容类型目录执行，并保留资料管理员确认来源（materials/archive-confirmation.md）；目录根路径、权限、迁移与完整性未明确时继续列为未决。",
+          "角色职责按协调者确认执行：值班人员维护交接记录、资料管理员维护使用说明、问题负责人维护问题跟踪，并保留确认来源（materials/role-confirmation.md）；具体人员、值班表、代理/升级路径和交接时限未明确时继续列为未决。"
+        ],
+        "blocker": null,
+        "depends_on": [
+          "ZS-COMPARE"
+        ],
+        "evidence": [
+          ".work-receipts/zs-recover-evidence-report.json",
+          ".work-receipts/zs-remediation-evidence-report.json"
+        ],
+        "goal": "goal#zs",
+        "id": "ZS-RECOVER",
+        "milestone": "ZS-DELIVERY",
+        "next_action": "等待不同参与者完成 ZS-REVIEW 整改后返检；返检须核对 ZS-F01 至 ZS-F03、固定文件前后哈希并保留原报告。返检通过后才可推进 ZS-DELIVER。",
+        "owner": null,
+        "priority": "P0",
+        "status": "completed",
+        "summary": "整改已完成并提交返检：CR-01/CR-02 由新合并提案一次生效，三个旧 patch 零应用，CR-03 与其他未知事实及全部失败历史继续保留。",
+        "title": "恢复并推进交接工作",
+        "verification": {
+          "evidence_level": "locally_verified"
+        }
+      },
+      "expected": {
+        "acceptance": [
+          "处理待应用改动，保留重试或恢复的证据，避免重复写入。",
+          "保留实际产物与来源引用，无法确认的内容显式说明。",
+          "资料归档按“使用说明、交接记录、问题跟踪”三个内容类型目录执行，并保留资料管理员确认来源（materials/archive-confirmation.md）；目录根路径、权限、迁移与完整性未明确时继续列为未决。",
+          "角色职责按协调者确认执行：值班人员维护交接记录、资料管理员维护使用说明、问题负责人维护问题跟踪，并保留确认来源（materials/role-confirmation.md）；具体人员、值班表、代理/升级路径和交接时限未明确时继续列为未决。"
+        ],
+        "blocker": null,
+        "depends_on": [
+          "ZS-COMPARE"
+        ],
+        "evidence": [
+          ".work-receipts/zs-recover-evidence-report.json",
+          ".work-receipts/zs-remediation-evidence-report.json"
+        ],
+        "goal": "goal#zs",
+        "id": "ZS-RECOVER",
+        "milestone": "ZS-DELIVERY",
+        "next_action": "等待不同参与者完成 ZS-REVIEW 整改后返检；返检须核对 ZS-F01 至 ZS-F03、固定文件前后哈希并保留原报告。返检通过后才可推进 ZS-DELIVER。",
+        "owner": null,
+        "priority": "P0",
+        "status": "completed",
+        "summary": "整改已完成并提交返检：CR-01/CR-02 由新合并提案一次生效，三个旧 patch 零应用，CR-03 与其他未知事实及全部失败历史继续保留。",
+        "title": "恢复并推进交接工作",
+        "verification": {
+          "evidence_level": "locally_verified"
+        }
+      }
+    },
+    {
+      "name": "nonreview-work-unchanged:ZS-DELIVER",
+      "passed": true,
+      "actual": {
+        "id": "ZS-DELIVER",
+        "title": "交付恢复后的维护交接",
+        "status": "planned",
+        "owner": null,
+        "priority": "P0",
+        "milestone": "ZS-DELIVERY",
+        "goal": "goal#zs",
+        "acceptance": [
+          "交付最终交接说明及未决事项。",
+          "保留实际产物与来源引用，无法确认的内容显式说明。"
+        ],
+        "depends_on": [
+          "ZS-REVIEW"
+        ],
+        "next_action": "交付恢复后的维护交接，先核对当前来源和负责范围。",
+        "evidence": [],
+        "verification": {
+          "evidence_level": "none"
+        }
+      },
+      "expected": {
+        "id": "ZS-DELIVER",
+        "title": "交付恢复后的维护交接",
+        "status": "planned",
+        "owner": null,
+        "priority": "P0",
+        "milestone": "ZS-DELIVERY",
+        "goal": "goal#zs",
+        "acceptance": [
+          "交付最终交接说明及未决事项。",
+          "保留实际产物与来源引用，无法确认的内容显式说明。"
+        ],
+        "depends_on": [
+          "ZS-REVIEW"
+        ],
+        "next_action": "交付恢复后的维护交接，先核对当前来源和负责范围。",
+        "evidence": [],
+        "verification": {
+          "evidence_level": "none"
+        }
+      }
+    },
+    {
+      "name": "review-current-status-yaml",
+      "passed": true,
+      "actual": "completed",
+      "expected": "completed"
+    },
+    {
+      "name": "review-current-evidence-yaml",
+      "passed": true,
+      "actual": [
+        ".work-receipts/reviewer-completion-report.json",
+        ".work-receipts/reviewer-recheck-completion-report-v3.json"
+      ],
+      "expected": [
+        ".work-receipts/reviewer-completion-report.json",
+        ".work-receipts/reviewer-recheck-completion-report-v3.json"
+      ]
+    },
+    {
+      "name": "producer-file-unchanged:materials/archive-confirmation.md",
+      "passed": true,
+      "actual": "03fd800c15f3571df42ec52f69073f9230425e0eb1aaa6019ec5fdfa5b60cf5c",
+      "expected": "03fd800c15f3571df42ec52f69073f9230425e0eb1aaa6019ec5fdfa5b60cf5c"
+    },
+    {
+      "name": "producer-file-unchanged:materials/role-confirmation.md",
+      "passed": true,
+      "actual": "8117dffe9cf6088adf357e9d0c404d1f4f547c430dd520cf1095d8cb27bf1da5",
+      "expected": "8117dffe9cf6088adf357e9d0c404d1f4f547c430dd520cf1095d8cb27bf1da5"
+    },
+    {
+      "name": "producer-file-unchanged:deliverables/zhusheng-interruption-diagnosis.md",
+      "passed": true,
+      "actual": "a7feebb26b5f65e7da1eb34b0774393fb06b9835c4b4537b64028b247920a196",
+      "expected": "a7feebb26b5f65e7da1eb34b0774393fb06b9835c4b4537b64028b247920a196"
+    },
+    {
+      "name": "producer-file-unchanged:deliverables/zhusheng-change-proposals.md",
+      "passed": true,
+      "actual": "e00e5e4e98db2476d0321fc86af82e93aa0a218edfab66c1b568f64335304a05",
+      "expected": "e00e5e4e98db2476d0321fc86af82e93aa0a218edfab66c1b568f64335304a05"
+    },
+    {
+      "name": "producer-file-unchanged:deliverables/zhusheng-recovery-work.md",
+      "passed": true,
+      "actual": "46bfc0ea1ac8396b10280e06b3ed55a72a69242555010218974f8b4ece64fb31",
+      "expected": "46bfc0ea1ac8396b10280e06b3ed55a72a69242555010218974f8b4ece64fb31"
+    },
+    {
+      "name": "producer-file-unchanged:deliverables/zhusheng-consistency.md",
+      "passed": true,
+      "actual": "ddb10a828a04059aea355186b98a685167ac738aee77902d587b6506b585260e",
+      "expected": "ddb10a828a04059aea355186b98a685167ac738aee77902d587b6506b585260e"
+    },
+    {
+      "name": "producer-file-unchanged:deliverables/zs-independent-review.md",
+      "passed": true,
+      "actual": "c580b03404518ac99436ef3f7f3ccfdb78315a7a493b3c53c18448bd685072b5",
+      "expected": "c580b03404518ac99436ef3f7f3ccfdb78315a7a493b3c53c18448bd685072b5"
+    },
+    {
+      "name": "original-review-unchanged",
+      "passed": true,
+      "actual": "c580b03404518ac99436ef3f7f3ccfdb78315a7a493b3c53c18448bd685072b5",
+      "expected": "c580b03404518ac99436ef3f7f3ccfdb78315a7a493b3c53c18448bd685072b5"
+    },
+    {
+      "name": "pre-completion-failures-retained",
+      "passed": true,
+      "actual": 9,
+      "expected": 9
+    },
+    {
+      "name": "first-completion-evidence-not-used",
+      "passed": true,
+      "actual": false,
+      "expected": false
+    },
+    {
+      "name": "second-completion-evidence-not-used",
+      "passed": true,
+      "actual": false,
+      "expected": false
+    },
+    {
+      "name": "post-completion-failure-retained",
+      "passed": true,
+      "actual": 1,
+      "expected": 1
+    },
+    {
+      "name": "bound-completion-unchanged",
+      "passed": true,
+      "actual": true,
+      "expected": true
+    }
+  ],
+  "final": {
+    "project_revision": 209,
+    "source_revision": 20,
+    "source_fingerprint": "sha256:c1ae9edabad4bcb9ec0cd7d2c6143b61817bfe4db880065fd5b430d3855111e5",
+    "work_ledger_sha256": "c1ae9edabad4bcb9ec0cd7d2c6143b61817bfe4db880065fd5b430d3855111e5",
+    "report_sha256": "5f8d595f33ce5fd48503d12e1076aab409b6f54605d36351ddf343e457d50173",
+    "completion_report_sha256": "c973140be6fbaefcab4075a56f8e27cd5d55b6ae4b0f5f23b91a31b140f21475",
+    "evidence_id": "01M228NMCF08HZZ2WJY5TX1EYV",
+    "checkpoint_id": "01M228PT5GJAEMARV4ZT77K6V7",
+    "session_status": "ended",
+    "claim_status": "released",
+    "next_ready_work": "ZS-DELIVER",
+    "e4_credit": false
+  }
+}

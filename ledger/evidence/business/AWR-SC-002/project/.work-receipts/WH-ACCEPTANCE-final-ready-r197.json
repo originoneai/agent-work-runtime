@@ -1,0 +1,64 @@
+{
+  "blocked_sample": [
+    {
+      "active_claims": [],
+      "blocker": null,
+      "diagnostics": [
+        {
+          "code": "dependency_not_completed",
+          "detail": "required dependency has source status planned",
+          "work_item_key": "WH-REVIEW"
+        }
+      ],
+      "external_key": "WH-DELIVER",
+      "freshness": "fresh",
+      "id": "01M21S7N6Y3EAGEX2SW3DXVW2S",
+      "milestone": "WH-DELIVERY",
+      "next_action": "交付手册和交接说明，先核对当前来源和负责范围。",
+      "owner": null,
+      "priority": "P0",
+      "raw_status": "planned",
+      "ready": false,
+      "revision": 1,
+      "source_revision": 20,
+      "status": "planned",
+      "summary": "交付手册和交接说明",
+      "title": "交付手册和交接说明"
+    }
+  ],
+  "blocked_total": 1,
+  "branch_id": null,
+  "diagnostic_counts": {
+    "dependency_not_completed": 1
+  },
+  "freshness_basis": "source_refresh",
+  "ok": true,
+  "project_revision": 197,
+  "read_only": false,
+  "ready": [
+    {
+      "active_claims": [],
+      "blocker": null,
+      "diagnostics": [],
+      "external_key": "WH-REVIEW",
+      "freshness": "fresh",
+      "id": "01M21S7N6Y4AC19Z03M6G1K5TW",
+      "milestone": "WH-DELIVERY",
+      "next_action": "由不同参与者独立核对v2至v3差异、六章逐章出处、三个未确认项责任影响矩阵及最终说明中的材料核对记录，并将真实发现写入deliverables/wh-independent-review.md。",
+      "owner": null,
+      "priority": "P0",
+      "raw_status": "planned",
+      "ready": true,
+      "revision": 2,
+      "source_revision": 20,
+      "status": "planned",
+      "summary": "独立复核运营手册",
+      "title": "独立复核运营手册"
+    }
+  ],
+  "ready_total": 1,
+  "source_issues": [],
+  "source_refresh_performed": true,
+  "source_warnings": 0,
+  "truncated": false
+}

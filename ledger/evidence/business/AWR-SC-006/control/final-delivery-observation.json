@@ -1,0 +1,465 @@
+{
+  "kind": "root_read_only_actual_final_delivery_observation",
+  "at": "2026-09-09T13:57:07.149294+08:00",
+  "native_client": "01a083d7-4073-7150-89cd-993a9899dcad",
+  "actual_exit_code": 0,
+  "current_artifacts_verified": 7,
+  "receipt_files_verified": 264,
+  "independent_re_review_files_unchanged": 79,
+  "review_archive_files_unchanged": 121,
+  "final_file_manifest": [
+    {
+      "path": "work-ledger.yaml",
+      "sha256": "d27d51cfc9c3f733a3db94b13c12b668afe22ab1d28b0728c4df8e331f9f31fa"
+    },
+    {
+      "path": "materials/handover-draft.md",
+      "sha256": "4cbac09bd7a59e47e245a2d5f76e6c18a694680be26c411f97c503972df62361"
+    },
+    {
+      "path": "materials/change-requests.csv",
+      "sha256": "0872b48bc80817d733fd80b799d50e850406949f805db81b83aaa54eba433ee2"
+    },
+    {
+      "path": "materials/archive-confirmation.md",
+      "sha256": "03fd800c15f3571df42ec52f69073f9230425e0eb1aaa6019ec5fdfa5b60cf5c"
+    },
+    {
+      "path": "materials/role-confirmation.md",
+      "sha256": "8117dffe9cf6088adf357e9d0c404d1f4f547c430dd520cf1095d8cb27bf1da5"
+    },
+    {
+      "path": "deliverables/zhusheng-interruption-diagnosis.md",
+      "sha256": "a7feebb26b5f65e7da1eb34b0774393fb06b9835c4b4537b64028b247920a196"
+    },
+    {
+      "path": "deliverables/zhusheng-change-proposals.md",
+      "sha256": "e00e5e4e98db2476d0321fc86af82e93aa0a218edfab66c1b568f64335304a05"
+    },
+    {
+      "path": "deliverables/zhusheng-recovery-work.md",
+      "sha256": "46bfc0ea1ac8396b10280e06b3ed55a72a69242555010218974f8b4ece64fb31"
+    },
+    {
+      "path": "deliverables/zhusheng-consistency.md",
+      "sha256": "ddb10a828a04059aea355186b98a685167ac738aee77902d587b6506b585260e"
+    },
+    {
+      "path": "deliverables/zs-independent-review.md",
+      "sha256": "c580b03404518ac99436ef3f7f3ccfdb78315a7a493b3c53c18448bd685072b5"
+    },
+    {
+      "path": "deliverables/zs-independent-re-review.md",
+      "sha256": "5f8d595f33ce5fd48503d12e1076aab409b6f54605d36351ddf343e457d50173"
+    },
+    {
+      "path": "deliverables/zs-delivery.md",
+      "sha256": "d2bb0d5bf582eecadf4282239c2e6e1a1077bbb0d4bae0e2e3fa57646d3d9ee7"
+    },
+    {
+      "path": "review-inputs/interruption-evidence/prelude-normal-exit-observation.json",
+      "sha256": "8e3069c90c2287f298d28f322ec9c03d72ae41556038f6ce7e602cc6ef6dccec"
+    },
+    {
+      "path": "review-inputs/interruption-evidence/actual-operator-interruption-v1.json",
+      "sha256": "565b4640dffad67014c1e30a9807f6d89aad57daa38a5c87bb65da42364e38a9"
+    },
+    {
+      "path": "review-inputs/interruption-evidence/verified-interruption-binding.json",
+      "sha256": "34685d72fd533f4c2f306698928ea2a37199ed5d27f87af971eb34cf44765477"
+    },
+    {
+      "path": "review-inputs/interruption-evidence/actual-recovery-binding.json",
+      "sha256": "4062719fc10ba4b5f66cd7446811dc90cb6642ed795c1958633a98b15fe4cc8c"
+    },
+    {
+      "path": ".work-receipts/cr-01-after-disposition.json",
+      "sha256": "ec2565d53d6cd3c2e104a901dd639d6d3dcad144663d736129b4181882e872b1"
+    },
+    {
+      "path": ".work-receipts/cr-02-after-disposition.json",
+      "sha256": "e45eeb0a4699640cbec9635cd0a4469e03ac108cebd68a426ee66e61e4c840e9"
+    },
+    {
+      "path": ".work-receipts/cr-03-after-disposition.json",
+      "sha256": "ff6fea719ccc3c0247f998c0d1bbb44b14ea882d0d7ff7a279735e9158f7dff4"
+    },
+    {
+      "path": ".work-receipts/zs-remediation-operation-index.json",
+      "sha256": "1e60587b050b51d47a135e7625ebe64ffea3bfc19826c043afd0d2aa80e7b53c"
+    },
+    {
+      "path": ".work-receipts/zs-remediation-evidence-report.json",
+      "sha256": "ebc0f5461ec9d4381d29f97629a19264fac8ca72318b51b1edbcac752605c7a6"
+    },
+    {
+      "path": ".work-receipts/reviewer-recheck-completion-report-v3.json",
+      "sha256": "c973140be6fbaefcab4075a56f8e27cd5d55b6ae4b0f5f23b91a31b140f21475"
+    },
+    {
+      "path": ".work-receipts/reviewer-recheck-work-complete-v3.json",
+      "sha256": "23371458ee210bca97dd8fae5f427851dd4c8e3e27fefe791c2783de5a348a37"
+    },
+    {
+      "path": ".work-receipts/reviewer-recheck-final-verification.json",
+      "sha256": "2622893cdde7c35e434816b3e54855cf6ad5cbad63f758da6da7dd04146037ea"
+    },
+    {
+      "path": ".work-receipts/zs-deliver-session-start.json",
+      "sha256": "3ef8749bc69931c8a5dc34e61811720bdee33ebfeef23dc2995ea786a452379b"
+    },
+    {
+      "path": ".work-receipts/zs-deliver-bootstrap.json",
+      "sha256": "4e176a7d7f5227c0a2fe47b7a0c25550c41954e072c02d5d80ec78b3192871be"
+    },
+    {
+      "path": ".work-receipts/zs-deliver-context.json",
+      "sha256": "0e7b54b5a2bacf0b0ded62acf136f19538e06f17d2e15d0cbd8a7a22fcb0953f"
+    },
+    {
+      "path": ".work-receipts/zs-deliver-progress.json",
+      "sha256": "6b378f17838e05e0851895f8a2244d9328ff5d7cac0572f2e8d0827ca8bca84d"
+    },
+    {
+      "path": ".work-receipts/zs-deliver-handoff-progress.json",
+      "sha256": "b6acf44a1d703b8a7a9da3af76efae85482ec2dfd63029057af5674212bae934"
+    },
+    {
+      "path": ".work-receipts/verify-zs-delivery.py",
+      "sha256": "587a9ad17433636e2acf7d92410249c1633f8e6c010f56055b5cf4d4677a13b6"
+    },
+    {
+      "path": ".work-receipts/zs-deliver-verification.json",
+      "sha256": "341f22694075eed425ec21f2207ed8baca1bab9d4f25533a62be7e8f511b7d8c"
+    },
+    {
+      "path": ".work-receipts/zs-deliver-completion-report.json",
+      "sha256": "b187f3499f5bf0992f882b3a9a3740c98b825e18cdeade4ff91d1a9b41559ede"
+    },
+    {
+      "path": ".work-receipts/zs-deliver-evidence-draft.json",
+      "sha256": "791611d7a2965023d319d8f0791d4a6eb8881e136905caf2e7ee5531f6467ece"
+    },
+    {
+      "path": ".work-receipts/zs-deliver-evidence-add-failure.log",
+      "sha256": "0f6f7156a247eb3592d56e87fa08a60e3e1bbce44f3764dfc5d0c6b81d9c539b"
+    },
+    {
+      "path": ".work-receipts/zs-deliver-verification-v2.json",
+      "sha256": "52c4aa7089c65dbb86b0f1f148e3124f0f0f0764fc48e226853c95aafe522a08"
+    },
+    {
+      "path": ".work-receipts/zs-deliver-completion-report-v2.json",
+      "sha256": "746610addd54f1f3e5e6d21b055a184baaec79b57c65c091df11e820d411d340"
+    },
+    {
+      "path": ".work-receipts/zs-deliver-evidence-draft-v2.json",
+      "sha256": "f9a681ac0de768bda81e43fdd25d2ddae63374034fff64b516ce326d9ae93fb9"
+    },
+    {
+      "path": ".work-receipts/zs-deliver-evidence-add-v2.json",
+      "sha256": "5be7a0688938a7abdb8516d98bc8e631c9b0961b6d7020492abdbf27fa610ec6"
+    },
+    {
+      "path": ".work-receipts/zs-deliver-tool-failures.json",
+      "sha256": "916357a6a548356373623754a8cd54ebd3b8367ec65faa75a70f42d40d67fd55"
+    },
+    {
+      "path": ".work-receipts/zs-deliver-completion-input.json",
+      "sha256": "3fbef8d8203d97207e831b2b6d3a8bbc6b2adc9ca88a1dfa9d5f50d322129116"
+    },
+    {
+      "path": ".work-receipts/zs-deliver-work-complete.json",
+      "sha256": "03e56588b0502f0364c328335119e3806e00744a16bf584d5c9b79523db804a0"
+    },
+    {
+      "path": ".work-receipts/zs-deliver-checkpoint.json",
+      "sha256": "6849154705ce94f6b1432092fa88fa2314137816c86299f8a77566404ad5483b"
+    },
+    {
+      "path": ".work-receipts/zs-deliver-session-end.json",
+      "sha256": "04089185f130549fb809fb25b2bbc9f16e25a867fae82283268f1060b6cbbbbe"
+    },
+    {
+      "path": ".work-receipts/zs-deliver-post-completion-tool-failures.json",
+      "sha256": "962756885c655c6724555bf8fe26ad84cb52139d8c43b486c78948bd0acf43a2"
+    },
+    {
+      "path": ".work-receipts/zs-deliver-post-completion-tool-failures-v2.json",
+      "sha256": "b4f9d2ac2557c78807949c556e5c7a30b5d7a1431a38976dffc710f8ccd9cda4"
+    },
+    {
+      "path": ".work-receipts/zs-deliver-post-verification-failure.log",
+      "sha256": "5ecaa67845eb9624be0a024be3637641fce24206f803e594e6ca6a0b58cb2961"
+    },
+    {
+      "path": ".work-receipts/verify-zs-delivery-post.py",
+      "sha256": "543658e124709692291f2a064308c6317d8844634075d75030c773971a357e87"
+    },
+    {
+      "path": ".work-receipts/zs-deliver-post-verification-v2.json",
+      "sha256": "4f76ddc9375fcd6161d2ebfd4390f70bebcd2adecc7467a8c10a5a6cf45888cc"
+    },
+    {
+      "path": ".work-receipts/zs-deliver-final-status.json",
+      "sha256": "48140c35467af6987a9a278a809e3690bc0a64e6fb739aa6da2b0cad08db6b1d"
+    },
+    {
+      "path": ".work-receipts/zs-deliver-final-doctor.json",
+      "sha256": "3057936fde716b6d8e6d50148efb473be1216a9a6c6b85964e5e49a9a88a5bee"
+    },
+    {
+      "path": ".work-receipts/zs-deliver-final-work.json",
+      "sha256": "bbaba8d410668e7b49d47cc8c39f36a82149f8d40346636096a9cd1a0ae0e06e"
+    },
+    {
+      "path": ".work-receipts/zs-deliver-final-session.json",
+      "sha256": "ba196fa3af34180d5e3fc78e2a5bb7461a0955fd85750a526b4b64035381642a"
+    },
+    {
+      "path": ".work-receipts/zs-deliver-final-completion-proposal.json",
+      "sha256": "71115aa23af499366ec68f6a3947a9a19b031fc28ede6ba1453a22b1f2d003f5"
+    },
+    {
+      "path": ".work-receipts/zs-deliver-final-git-status.txt",
+      "sha256": "edbadca3f360a31d7fff55ce92a5ebf9e64b3b35fcd13bb33ebc59b3736c7efc"
+    },
+    {
+      "path": ".work-receipts/zs-deliver-final-sessions.json",
+      "sha256": "aac13150bc04338377e3df4b29546cc8b721327b55fdc8d5a2f92d5c7ca37b60"
+    }
+  ],
+  "inline_file_hashes_verified": [
+    "deliverables/zs-independent-review.md",
+    "materials/handover-draft.md",
+    "materials/change-requests.csv",
+    "materials/archive-confirmation.md",
+    "materials/role-confirmation.md"
+  ],
+  "current_json_hash_bindings_verified": [
+    "deliverables/zs-delivery.md",
+    ".work-receipts/verify-zs-delivery.py",
+    ".work-receipts/zs-deliver-verification-v2.json",
+    "deliverables/zs-independent-re-review.md",
+    ".work-receipts/zs-deliver-evidence-add-failure.log",
+    ".work-receipts/zs-deliver-evidence-draft.json",
+    ".work-receipts/zs-deliver-completion-report.json",
+    ".work-receipts/zs-deliver-final-files.sha256",
+    ".work-receipts/zs-deliver-final-files-verification.log",
+    ".work-receipts/zs-deliver-final-files-verification-v2.log",
+    ".work-receipts/zs-deliver-post-verification-failure.log",
+    ".work-receipts/zs-deliver-post-completion-tool-failures.json"
+  ],
+  "project_revision": 235,
+  "work_items": [
+    {
+      "id": "01M21VJFYMK83N0YHVXMRVXJNK",
+      "external_key": "ZS-DIAG",
+      "status": "completed"
+    },
+    {
+      "id": "01M21VJFYMCA78QW9DEWGQ4ZV6",
+      "external_key": "ZS-COMPARE",
+      "status": "completed"
+    },
+    {
+      "id": "01M21VJFYMD4Q7P3HFNFATQBCZ",
+      "external_key": "ZS-RECOVER",
+      "status": "completed"
+    },
+    {
+      "id": "01M21VJFYMSXG6YEVAE8TW7WHA",
+      "external_key": "ZS-REVIEW",
+      "status": "completed"
+    },
+    {
+      "id": "01M21VJFYMX50ZQZKG1A17EYVP",
+      "external_key": "ZS-DELIVER",
+      "status": "completed"
+    }
+  ],
+  "final_session": {
+    "id": "01M229PEPFG7KC962FP55GCRMX",
+    "status": "ended",
+    "last_checkpoint_id": "01M22AS1HW41MK9HVYD59WTD70"
+  },
+  "final_claim": {
+    "id": "01M229PEPGF7QHSCBV1ACMH6CJ",
+    "session_id": "01M229PEPFG7KC962FP55GCRMX",
+    "status": "released"
+  },
+  "active_sessions": 0,
+  "active_claims": 0,
+  "actual_completion_event": {
+    "id": "01M22AR70DZQ28FM465Z8V0ZGX",
+    "event_type": "work.completed",
+    "project_revision": 232,
+    "creating_session_id": "01M229PEPFG7KC962FP55GCRMX",
+    "evidence": [
+      {
+        "branch_id": null,
+        "command": "rtk proxy /Users/mac/Documents/originone/agent-work-running/.venv/bin/python .work-receipts/verify-zs-delivery.py --phase pre",
+        "evidence_type": "verification_report",
+        "external_key": "zs-final-recovery-delivery-20260909-v2",
+        "id": "01M22ANMPA7J6GTMRMDN0Z8MPS",
+        "level": "locally_verified",
+        "locator": ".work-receipts/zs-deliver-completion-report-v2.json",
+        "project_id": "01M21VJFYF7E75EQ55DEH3D5TS",
+        "revision": 1,
+        "scope": [
+          "ZS-DELIVER"
+        ],
+        "sha256": "746610addd54f1f3e5e6d21b055a184baaec79b57c65c091df11e820d411d340",
+        "source_ref": null,
+        "source_sha": "8218b29c348b7eda3e57b541c3489e41b87b6679",
+        "summary": "最终交接说明已形成并经 70 项本地核验：中断恢复、确认要求、新旧提案、归档和角色级安排、失败及未知项均已分层；首次登记失败已保留，不扩展为 Git、发布或 E4。",
+        "verified_at": 1788932066021,
+        "work_item_id": "01M21VJFYMX50ZQZKG1A17EYVP"
+      }
+    ],
+    "acceptance_mappings": 2
+  },
+  "proposal_application_observation": [
+    {
+      "id": "01M21X4H7GSP7DY19MTHYDBXST",
+      "status": "rejected",
+      "applied_at": null,
+      "apply_attempts": 0,
+      "applied_events": 0,
+      "event_ids": []
+    },
+    {
+      "id": "01M21X5MHW7RFN8PBE4J86GACM",
+      "status": "rejected",
+      "applied_at": null,
+      "apply_attempts": 0,
+      "applied_events": 0,
+      "event_ids": []
+    },
+    {
+      "id": "01M21X67QFPQ55YSMJEX96HYV7",
+      "status": "rejected",
+      "applied_at": null,
+      "apply_attempts": 0,
+      "applied_events": 0,
+      "event_ids": []
+    },
+    {
+      "id": "01M225AVE1BFYY0W4T2EKRV88C",
+      "status": "applied",
+      "applied_at": 1788926604235,
+      "apply_attempts": 1,
+      "applied_events": 1,
+      "event_ids": [
+        "01M225BCXTY18AWZSRG0B9WT1P",
+        "01M225BCYBY571X8FPBY8TGME8"
+      ]
+    }
+  ],
+  "actual_resume_binding": {
+    "kind": "actual_interruption_recovery_binding",
+    "verified_at": "2026-09-09T10:10:54+08:00",
+    "crash_receipt": "control/verified-interruption-binding.json",
+    "crash_receipt_sha256": "34685d72fd533f4c2f306698928ea2a37199ed5d27f87af971eb34cf44765477",
+    "prior_native_task_id": "01a083b6-aa5f-7ba0-9135-c128ada421a2",
+    "recovery_native_task_id": "01a083d7-4073-7150-89cd-993a9899dcad",
+    "actual_resume_items": [
+      "item_55"
+    ],
+    "old_awr_session_id": "01M21WZXPSGZ77369CSGXCB8CX",
+    "new_awr_session_id": "01M21XP8VZ1YJRNSS6BJH2V4HB",
+    "old_session_interrupted": true,
+    "old_claims_released": true,
+    "session_receipt": ".work-receipts/zs-compare-interrupted-session-after-resume.json",
+    "session_receipt_sha256": "6a3fb15e157da7092e2150b36469ecd0b843a69bdbab575525f49c5f17f5657e",
+    "pending_receipt": ".work-receipts/zs-compare-ready-proposals-after-resume.json",
+    "pending_receipt_sha256": "2fdefba09c38d26a9f262eba825a47df630e4b62bf91139c47fc269668b49498",
+    "retained_ready_proposal_ids": [
+      "01M21X67QFPQ55YSMJEX96HYV7",
+      "01M21X5MHW7RFN8PBE4J86GACM",
+      "01M21X4H7GSP7DY19MTHYDBXST"
+    ],
+    "prior_checkpoint": null,
+    "recovery_limitation": "The old session never saved a checkpoint; unpersisted summaries and open loops cannot be recovered. AWR model fields are caller metadata, not actual native model identity.",
+    "initial_snapshot": "control/initial-sealed.json",
+    "e4_credit": false
+  },
+  "old_interrupted_session": {
+    "id": "01M21WZXPSGZ77369CSGXCB8CX",
+    "status": "interrupted",
+    "last_checkpoint_id": null
+  },
+  "recovery_acceptance": [
+    "处理待应用改动，保留重试或恢复的证据，避免重复写入。",
+    "保留实际产物与来源引用，无法确认的内容显式说明。",
+    "资料归档按“使用说明、交接记录、问题跟踪”三个内容类型目录执行，并保留资料管理员确认来源（materials/archive-confirmation.md）；目录根路径、权限、迁移与完整性未明确时继续列为未决。",
+    "角色职责按协调者确认执行：值班人员维护交接记录、资料管理员维护使用说明、问题负责人维护问题跟踪，并保留确认来源（materials/role-confirmation.md）；具体人员、值班表、代理/升级路径和交接时限未明确时继续列为未决。"
+  ],
+  "actual_business_inputs": 7,
+  "actual_input_naturalness_manually_reviewed": true,
+  "fixture_isolation": [
+    {
+      "run": ".local/business-live-20260909-v1/branch-handoff",
+      "project_id": "01M21RCT0BMJ03YZWEC6H0JGV8",
+      "distinct_work_items": 5
+    },
+    {
+      "run": ".local/business-live-20260909-v1/evidence-completion",
+      "project_id": "01M21SXMTAXZC58B2896N1076Y",
+      "distinct_work_items": 5
+    },
+    {
+      "run": ".local/business-live-20260909-v1/interrupted-write",
+      "project_id": "01M21VJFYF7E75EQ55DEH3D5TS",
+      "distinct_work_items": 5
+    },
+    {
+      "run": ".local/business-live-20260909-v1/long-task-resume",
+      "project_id": "01M21S7N6RNH8JE1KAP73K5576",
+      "distinct_work_items": 5
+    },
+    {
+      "run": ".local/business-live-20260909-v1/parallel-ownership",
+      "project_id": "01M21W3H8XNKD8AKP4N1JNQQTM",
+      "distinct_work_items": 6
+    },
+    {
+      "run": ".local/business-live-20260909-v1/project-onboarding",
+      "project_id": "01M21QQH4Z2YQCA7PQZDZ8STC9",
+      "distinct_work_items": 4
+    },
+    {
+      "run": ".local/business-live-20260909-v1/restricted-material",
+      "project_id": "01M21RM2NCQH6GQGRPZ32GMB0M",
+      "distinct_work_items": 5
+    },
+    {
+      "run": ".local/business-live-20260909-v1/source-change",
+      "project_id": "01M21R5CNDAT34RYH0ZM7SFMX6",
+      "distinct_work_items": 5
+    },
+    {
+      "run": ".local/business-live-20260909-v2/branch-handoff",
+      "project_id": "01M225JCPGD1D9FF03WTQS3XHE",
+      "distinct_work_items": 5
+    }
+  ],
+  "final_artifact": {
+    "path": "deliverables/zs-delivery.md",
+    "sha256": "d2bb0d5bf582eecadf4282239c2e6e1a1077bbb0d4bae0e2e3fa57646d3d9ee7"
+  },
+  "traceable_receipt": {
+    "path": ".work-receipts/zs-deliver-work-complete.json",
+    "sha256": "03e56588b0502f0364c328335119e3806e00744a16bf584d5c9b79523db804a0"
+  },
+  "known_limitations": [
+    "Actual first prelude exited normally. The later operator SIGKILL is the interruption; the automatic observer did not inject it.",
+    "Old session never saved a checkpoint, so unpersisted work summaries cannot be claimed recovered.",
+    "Archive implementation, access and integrity, named people, duty, delegation, escalation and timing, and CR-03 facts remain unknown.",
+    "Milestone grouping remains in_progress; five work items are completed. No unsupported milestone mutation was used.",
+    "AWR actor and model labels are caller metadata; actual native model identity is separately bound.",
+    "The first invalid evidence input, original report, two post-completion command failures and first manifest blank-line warning remain historical; later corrected records are authoritative."
+  ],
+  "runtime_mutation_performed": false,
+  "e4_completion_claim": false
+}

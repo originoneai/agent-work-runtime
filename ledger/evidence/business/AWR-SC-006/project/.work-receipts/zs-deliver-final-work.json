@@ -1,0 +1,117 @@
+{
+  "acceptance": [
+    "交付最终交接说明及未决事项。",
+    "保留实际产物与来源引用，无法确认的内容显式说明。"
+  ],
+  "decisions": [],
+  "dependency_cycles": [],
+  "evidence": [
+    {
+      "currency": "unknown",
+      "external_key": "ZS-DELIVER/evidence/.work-receipts/zs-deliver-completion-report-v2.json",
+      "level": "unknown",
+      "locator": ".work-receipts/zs-deliver-completion-report-v2.json",
+      "missing_bindings": [
+        "sha256",
+        "source_sha",
+        "command",
+        "verified_at"
+      ],
+      "reasons": [
+        "both recorded and requested source SHA are needed to determine currency"
+      ],
+      "source_sha": null,
+      "summary": "Evidence reference; not yet verified by AWR"
+    },
+    {
+      "currency": "unknown",
+      "external_key": "zs-final-recovery-delivery-20260909-v2",
+      "level": "locally_verified",
+      "locator": ".work-receipts/zs-deliver-completion-report-v2.json",
+      "missing_bindings": [],
+      "reasons": [
+        "both recorded and requested source SHA are needed to determine currency"
+      ],
+      "source_sha": "8218b29c348b7eda3e57b541c3489e41b87b6679",
+      "summary": "最终交接说明已形成并经 70 项本地核验：中断恢复、确认要求、新旧提案、归档和角色级安排、失败及未知项均已分层；首次登记失败已保留，不扩展为 Git、发布或 E4。"
+    }
+  ],
+  "evidence_currency_basis": {
+    "branch_id": null,
+    "requested_source_sha": null
+  },
+  "freshness_basis": "source_refresh",
+  "missing_dependencies": [],
+  "ok": true,
+  "project_revision": 235,
+  "read_only": false,
+  "required_dependencies": [
+    {
+      "external_key": "ZS-COMPARE",
+      "freshness": "fresh",
+      "revision": 3,
+      "source_revision": 23,
+      "status": "completed"
+    },
+    {
+      "external_key": "ZS-DIAG",
+      "freshness": "fresh",
+      "revision": 3,
+      "source_revision": 23,
+      "status": "completed"
+    },
+    {
+      "external_key": "ZS-RECOVER",
+      "freshness": "fresh",
+      "revision": 9,
+      "source_revision": 23,
+      "status": "completed"
+    },
+    {
+      "external_key": "ZS-REVIEW",
+      "freshness": "fresh",
+      "revision": 8,
+      "source_revision": 23,
+      "status": "completed"
+    }
+  ],
+  "source_issues": [],
+  "source_ref": {
+    "end_line": null,
+    "locator": "file:///Users/mac/Documents/originone/agent-work-running/.local/business-live-20260909-v1/interrupted-write/project/work-ledger.yaml",
+    "pointer": "/work_items/4",
+    "section_fingerprint": null,
+    "source_fingerprint": "sha256:d27d51cfc9c3f733a3db94b13c12b668afe22ab1d28b0728c4df8e331f9f31fa",
+    "source_id": "01M21VJFYKQHY3PPK3TBPPYNPT",
+    "source_revision": 23,
+    "start_line": null
+  },
+  "source_refresh_performed": true,
+  "source_warnings": 0,
+  "work": {
+    "active_claims": [],
+    "blocker": null,
+    "diagnostics": [
+      {
+        "code": "status_not_selectable",
+        "detail": "source status is completed",
+        "work_item_key": "ZS-DELIVER"
+      }
+    ],
+    "external_key": "ZS-DELIVER",
+    "freshness": "fresh",
+    "id": "01M21VJFYMX50ZQZKG1A17EYVP",
+    "milestone": "ZS-DELIVERY",
+    "next_action": "后续另行取得 CR-03 具体问题事实、归档实施证据及具体人员、值班、代理、升级与时限安排；如需 Git 提交、发布或 E4，须走相应授权和验收。",
+    "owner": null,
+    "priority": "P0",
+    "raw_status": "completed",
+    "ready": false,
+    "revision": 4,
+    "source_revision": 23,
+    "status": "completed",
+    "summary": "最终交接说明已形成：中断与恢复、确认要求、新旧提案、归档和角色安排、失败历史、未持久化缺口及未知事项已分层记录。",
+    "title": "交付恢复后的维护交接"
+  }
+}
+

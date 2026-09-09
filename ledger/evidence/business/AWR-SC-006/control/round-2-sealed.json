@@ -1,0 +1,41 @@
+{
+  "kind": "actual_client_turn_snapshot",
+  "recorded_at": "2026-09-09T11:28:50+08:00",
+  "phase": "round-2",
+  "client": "Codex CLI",
+  "client_task_id": "01a083d7-4073-7150-89cd-993a9899dcad",
+  "actual_user_turn": {
+    "timestamp": "2026-09-09T02:28:15.571Z",
+    "text": "继续处理剩余工作，确认没有重复写入或丢失结果后交付。"
+  },
+  "input_sha256": "ff98e3ab40c098bd8a93c4d7facfda5dc97445b71eefeb7487c51b6201a64b60",
+  "events_local": ".local/business-live-20260909-v1/interrupted-write/control/round-2-events.jsonl",
+  "events_sha256": "9e973c26eae24efa606b462b65445cd5c4f632f0974c5083afe7094dca176e1e",
+  "native_transcript_snapshot_local": ".local/business-live-20260909-v1/interrupted-write/control/round-2-snapshot/native-transcript.jsonl",
+  "native_transcript_snapshot_sha256": "0f9d60809c636aabbf22c5eb5b3dbf4403ced460b813a2c853c57befa2e04ddf",
+  "final_message_sha256": "f549c94d630db87b3158952f8e515830910bcbf13ae0d6c000f5eea7dc0e6b55",
+  "project_sources_sha256": {
+    "project.toml": "15caf8be661c1b9dd77c8474d449e5e5e2f019bcaecb51602a62f14366e2a008",
+    "GOALS.md": "254aec11ac1dd7abe79a2b6f8c3dd45be84633765af2ebd74ecbeeaea1ef4152",
+    "PLAN.md": "eda91c43584652bed15afb4d61f2598d379641610db0883a1b0435fa66185995",
+    "RULES.md": "4c28d3a308958136b8449d9c61c59da81e0d5f7dcbfd9075b32c87d61a0cb606",
+    "work-ledger.yaml": "18f18e0fe31ae9c1a5951f6aad176be41cba613c0fd7a6d0fa65435b7395e846",
+    "AGENTS.md": "d0ca28ca18c438aefdada6a14cb847a0664e261f9e8e48abbfd8701720eb66a2",
+    "DELIVERABLES.md": "4781518d79092e826bb9d506b39afa3f828e1f6aeefd150dc783a03b3a5e71bd"
+  },
+  "artifacts_sha256": {
+    "deliverables/zhusheng-change-proposals.md": "576da8467d953ae91a4652460410375b53becdacf46507480b14351987b5ba39",
+    "deliverables/zhusheng-consistency.md": "a4b0e68ba92833cade1877458a7e029fd1b9ecca9035080d9d0358b096ca19fa",
+    "deliverables/zhusheng-interruption-diagnosis.md": "a7feebb26b5f65e7da1eb34b0774393fb06b9835c4b4537b64028b247920a196",
+    "deliverables/zhusheng-recovery-work.md": "365af74d286ae37c080b689f8f54904ad98468a5051b9939ae544567010cab03"
+  },
+  "tool_event_counts": {
+    "agent_message": 12,
+    "command_execution": 83,
+    "file_change": 26
+  },
+  "command_executions": 83,
+  "nonzero_commands": 1,
+  "snapshot_local": ".local/business-live-20260909-v1/interrupted-write/control/round-2-snapshot",
+  "e4_completion_claim": false
+}

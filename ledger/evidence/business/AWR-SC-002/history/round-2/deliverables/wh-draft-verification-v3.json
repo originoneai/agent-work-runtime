@@ -1,0 +1,39 @@
+{
+  "version": 1,
+  "work_item": "WH-DRAFT",
+  "source_sha": "f9c654a16e66079e1e47558860dbc411b622c3fd",
+  "command": "rtk rg -n 'SRC-05|当前工作顺序|新增已确认|GAP-0[1-7].*部分补充|GAP-0[1-7].*未补充|截至本版' deliverables/wanghai-operations-manual-draft-v2.md",
+  "scope": [
+    "WH-DRAFT",
+    "deliverables/wanghai-operations-manual-draft-v2.md",
+    "materials/duty-notes.md"
+  ],
+  "verified_at": 1788918107000,
+  "artifact": {
+    "locator": "deliverables/wanghai-operations-manual-draft-v2.md",
+    "sha256": "16011e71b8d4bb2b0f588c93b325f07491b3d33bea4052c89ad6c751bbe65438"
+  },
+  "checks": [
+    {
+      "name": "遗留问题事实补充与推进顺序",
+      "passed": true,
+      "details": "新版工作稿逐句纳入duty-notes.md中的三项事实，将GAP-01、GAP-03、GAP-04标为部分补充，并解释事实映射、工作稿修订、来源重核、独立复核和最终交付的当前顺序。",
+      "criteria": [
+        "依据保留的工作记录推进手册，解释当前推进顺序。"
+      ]
+    },
+    {
+      "name": "来源引用和未知项边界",
+      "passed": true,
+      "details": "新版绑定duty-notes.md SHA-256 eda536064f05aea30bc45c43079e8470074414cd8b2a56271ace283db20b9875；GAP-02、GAP-05、GAP-06、GAP-07仍标为未补充，七项缺口均未宣称完全关闭，本地Markdown引用均可定位。",
+      "criteria": [
+        "保留实际产物与来源引用，无法确认的内容显式说明。"
+      ]
+    },
+    {
+      "name": "不可变历史产物",
+      "passed": true,
+      "details": "旧版wanghai-operations-manual-draft.md哈希仍为813bd164add4ed663223d083e56b76a9f57a2c372906236bcad713712c2b0545；新版采用独立文件，没有覆盖旧完成证据。git diff --check无输出。"
+    }
+  ]
+}

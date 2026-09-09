@@ -1,0 +1,368 @@
+{
+  "template_only": false,
+  "fixture_contract_version": "1.0.1",
+  "scenario_id": "AWR-SC-006",
+  "run_namespace": "awr-v1/interrupted-write/awr-live-20260909-006",
+  "source_commit": "4f6fd11c5283a4ddb52e6cb6fe8ef5a5fd8931aa",
+  "binary_sha256": "df3aee795905f87fe8bc0747a33b6e73c8a25cef0a072d0b2467e226d0d10217",
+  "fixture_preparation_receipt": ".local/business-live-20260909-v1/interrupted-write/run.json",
+  "participants": [
+    {
+      "role": "prelude_executor",
+      "identity": "codex-cli:01a083b6-aa5f-7ba0-9135-c128ada421a2",
+      "client_task_id": "01a083b6-aa5f-7ba0-9135-c128ada421a2"
+    },
+    {
+      "role": "executor",
+      "identity": "codex-cli:01a083d7-4073-7150-89cd-993a9899dcad",
+      "actual_client_task_id": "01a083d7-4073-7150-89cd-993a9899dcad",
+      "native_binding_basis": "Actual fresh thread.started event after verified -9 process termination of prelude."
+    },
+    {
+      "role": "reviewer",
+      "identity": "luna_worker:/root/source_change_client_run",
+      "awr_session_id": "01M223JC0DGNZACGCB1GK9FWQR",
+      "actual_identity_binding": "control/reviewer-identity-binding.json"
+    }
+  ],
+  "actual_clients": [
+    {
+      "product": "Codex CLI",
+      "version": "0.153.4",
+      "task_id": "01a083b6-aa5f-7ba0-9135-c128ada421a2",
+      "configured_model": "gpt-5.6-sol",
+      "model_override": false,
+      "phase": "prelude"
+    },
+    {
+      "name": "Codex CLI",
+      "native_task_id": "01a083d7-4073-7150-89cd-993a9899dcad",
+      "model_override": false,
+      "phase": "initial_running",
+      "events": "control/initial-events.jsonl"
+    }
+  ],
+  "live_prelude_evidence": [
+    {
+      "status": "running",
+      "client_task_id": "01a083b6-aa5f-7ba0-9135-c128ada421a2",
+      "input_file": "tests/fixtures/business/interrupted-write/prompts/prelude.md",
+      "raw_events_local": ".local/business-live-20260909-v1/interrupted-write/control/prelude-events.jsonl",
+      "fault_supervisor": "control/supervisor-handle.json",
+      "fault_status": "not_injected_yet"
+    },
+    "control/prelude-sealed.json",
+    "control/prelude-normal-exit-observation.json",
+    "control/actual-operator-interruption-v1.json",
+    "control/verified-interruption-binding.json"
+  ],
+  "initial_user_turn": {
+    "timestamp": "2026-09-09T01:45:21.295Z",
+    "text": "刚才工作意外中断了，请核实保留下来的结果，恢复到可以继续推进的状态。",
+    "client_task_id": "01a083d7-4073-7150-89cd-993a9899dcad",
+    "input_sha256": "fc97e65c3c31721f4f8ca1316076e8b96740ee57ccc3f2a6bd4d00f678d04cc4",
+    "snapshot": "control/initial-sealed.json",
+    "status": "completed"
+  },
+  "tool_and_role_execution_records": [
+    "control/initial-sealed.json",
+    "control/actual-recovery-binding.json",
+    "control/round-1-sealed.json",
+    "control/round-2-sealed.json",
+    "control/independent-review.json",
+    "control/review-correction-sealed.json",
+    "control/review-correction-publication.json"
+  ],
+  "artifacts": [
+    {
+      "path": "deliverables/zhusheng-change-proposals.md",
+      "sha256": "e00e5e4e98db2476d0321fc86af82e93aa0a218edfab66c1b568f64335304a05",
+      "producing_turn": "review-correction",
+      "actual_client_task_id": "01a083d7-4073-7150-89cd-993a9899dcad"
+    },
+    {
+      "path": "deliverables/zhusheng-consistency.md",
+      "sha256": "ddb10a828a04059aea355186b98a685167ac738aee77902d587b6506b585260e",
+      "producing_turn": "review-correction",
+      "actual_client_task_id": "01a083d7-4073-7150-89cd-993a9899dcad"
+    },
+    {
+      "path": "deliverables/zhusheng-interruption-diagnosis.md",
+      "sha256": "a7feebb26b5f65e7da1eb34b0774393fb06b9835c4b4537b64028b247920a196",
+      "producing_turn": "prelude",
+      "observed_in_snapshot": "control/initial-sealed.json"
+    },
+    {
+      "path": "deliverables/zhusheng-recovery-work.md",
+      "sha256": "46bfc0ea1ac8396b10280e06b3ed55a72a69242555010218974f8b4ece64fb31",
+      "producing_turn": "review-correction",
+      "actual_client_task_id": "01a083d7-4073-7150-89cd-993a9899dcad"
+    },
+    {
+      "path": "deliverables/zs-independent-review.md",
+      "sha256": "c580b03404518ac99436ef3f7f3ccfdb78315a7a493b3c53c18448bd685072b5",
+      "producing_turn": "independent-review-1"
+    },
+    {
+      "path": "deliverables/zs-delivery.md",
+      "sha256": "d2bb0d5bf582eecadf4282239c2e6e1a1077bbb0d4bae0e2e3fa57646d3d9ee7",
+      "producing_turn": "final-delivery",
+      "producer": "codex-cli:01a083d7-4073-7150-89cd-993a9899dcad"
+    },
+    {
+      "path": "deliverables/zs-independent-re-review.md",
+      "sha256": "5f8d595f33ce5fd48503d12e1076aab409b6f54605d36351ddf343e457d50173",
+      "producing_turn": "independent-re-review-2",
+      "producer": "luna_worker:/root/source_change_client_run"
+    }
+  ],
+  "followups": [
+    {
+      "number": 1,
+      "user_turn": {
+        "timestamp": "2026-09-09T02:11:14.047Z",
+        "text": "请查清哪些修改已经保存、哪些还没生效，并补齐交接说明。",
+        "client_task_id": "01a083d7-4073-7150-89cd-993a9899dcad",
+        "input_sha256": "138a50b851170a3c681c554d06ceaf619e3bbdb465e6510a63198d49c141fd19"
+      },
+      "published_inputs": {
+        "receipt": "round-1-inputs.json",
+        "kind": "fixture_author_input_publication",
+        "scenario_id": "AWR-SC-006",
+        "round": 1,
+        "published_at": "2026-09-09T10:10:54+08:00",
+        "changes": [
+          {
+            "path": "materials/archive-confirmation.md",
+            "before_sha256": null,
+            "after_sha256": "03fd800c15f3571df42ec52f69073f9230425e0eb1aaa6019ec5fdfa5b60cf5c"
+          }
+        ],
+        "actual_user_followup_submitted": false,
+        "business_followup_completed": false,
+        "e4_completed": 0
+      },
+      "revised_artifacts": [
+        {
+          "path": "deliverables/zhusheng-change-proposals.md",
+          "before_sha256": "5ac0267420fe2c3702226ab13779dd05849821d156724d1aa7c69d93342f3bfb",
+          "after_sha256": "476fb8f2afce2ff073445a34ecd9634c6708f05ce6985b56b3115489752a8736"
+        },
+        {
+          "path": "deliverables/zhusheng-consistency.md",
+          "before_sha256": null,
+          "after_sha256": "0571c415f20395f12543126dcea1fc43b6fca332d05af1f69864b0ce3bb314a8"
+        }
+      ],
+      "snapshot": "control/round-1-sealed.json",
+      "comparison_baseline": "control/initial-sealed.json",
+      "independent_substance_assessment": "Distinct actual reviewer and root verified separate natural requests, published archive/role confirmations, substantive recovery and handoff revisions; actual later correction applied confirmed requirements once while retaining unknowns."
+    },
+    {
+      "number": 2,
+      "user_turn": {
+        "timestamp": "2026-09-09T02:28:15.571Z",
+        "text": "继续处理剩余工作，确认没有重复写入或丢失结果后交付。",
+        "client_task_id": "01a083d7-4073-7150-89cd-993a9899dcad",
+        "input_sha256": "ff98e3ab40c098bd8a93c4d7facfda5dc97445b71eefeb7487c51b6201a64b60"
+      },
+      "published_inputs": {
+        "receipt": "round-2-inputs.json",
+        "kind": "fixture_author_input_publication",
+        "scenario_id": "AWR-SC-006",
+        "round": 2,
+        "published_at": "2026-09-09T10:28:07+08:00",
+        "changes": [
+          {
+            "path": "materials/role-confirmation.md",
+            "before_sha256": null,
+            "after_sha256": "8117dffe9cf6088adf357e9d0c404d1f4f547c430dd520cf1095d8cb27bf1da5"
+          }
+        ],
+        "actual_user_followup_submitted": false,
+        "business_followup_completed": false,
+        "e4_completed": 0
+      },
+      "revised_artifacts": [
+        {
+          "path": "deliverables/zhusheng-change-proposals.md",
+          "before_sha256": "476fb8f2afce2ff073445a34ecd9634c6708f05ce6985b56b3115489752a8736",
+          "after_sha256": "576da8467d953ae91a4652460410375b53becdacf46507480b14351987b5ba39"
+        },
+        {
+          "path": "deliverables/zhusheng-consistency.md",
+          "before_sha256": "0571c415f20395f12543126dcea1fc43b6fca332d05af1f69864b0ce3bb314a8",
+          "after_sha256": "a4b0e68ba92833cade1877458a7e029fd1b9ecca9035080d9d0358b096ca19fa"
+        },
+        {
+          "path": "deliverables/zhusheng-recovery-work.md",
+          "before_sha256": "99762c10f442ce1d4eba5939b773246c701cdf84b57c404b396996970cc2b6e5",
+          "after_sha256": "365af74d286ae37c080b689f8f54904ad98468a5051b9939ae544567010cab03"
+        }
+      ],
+      "snapshot": "control/round-2-sealed.json",
+      "comparison_baseline": "control/round-1-sealed.json",
+      "independent_substance_assessment": "Distinct actual reviewer and root verified separate natural requests, published archive/role confirmations, substantive recovery and handoff revisions; actual later correction applied confirmed requirements once while retaining unknowns."
+    }
+  ],
+  "independent_review": {
+    "reviewer_identity": "luna_worker:/root/source_change_client_run",
+    "client_or_human_record": "control/independent-re-review.json",
+    "identity_binding": "control/re-reviewer-identity-binding.json",
+    "criteria": {
+      "ZS-R04": {
+        "verdict": "pass",
+        "basis": "Current recovery acceptance exactly contains the two original and two confirmed requirements; combined proposal has one resolved apply attempt."
+      },
+      "ZS-R06": {
+        "verdict": "pass",
+        "basis": "At producer handoff, completed recovery pointed to independent recheck, review was ready, and delivery was dependency blocked."
+      },
+      "ZS-F01": {
+        "verdict": "closed",
+        "basis": "Three old proposals are unique rejected records with null apply attempts; new combined proposal 01M225AVE1BFYY0W4T2EKRV88C applied once."
+      },
+      "ZS-F02": {
+        "verdict": "closed",
+        "basis": "Recovery status and handoff next action were consistent at independent recheck start."
+      },
+      "ZS-F03": {
+        "verdict": "closed",
+        "basis": "Producer narrative separates old patch apply count 0 from new combined proposal apply count 1; two later metadata patches contain no acceptance field."
+      }
+    },
+    "verdict": "remediation_recheck_passed",
+    "defects_and_revisions": "Original review and genuine proposal/write failures remain retained; combined confirmed requirements were applied once."
+  },
+  "final_delivery": {
+    "client_task_id": "01a083d7-4073-7150-89cd-993a9899dcad",
+    "snapshot": "control/final-delivery-sealed.json",
+    "root_observation": "control/final-delivery-observation.json",
+    "artifact": {
+      "path": "deliverables/zs-delivery.md",
+      "sha256": "d2bb0d5bf582eecadf4282239c2e6e1a1077bbb0d4bae0e2e3fa57646d3d9ee7"
+    },
+    "traceable_receipt": {
+      "path": ".work-receipts/zs-deliver-work-complete.json",
+      "sha256": "03e56588b0502f0364c328335119e3806e00744a16bf584d5c9b79523db804a0"
+    },
+    "project_revision": 235,
+    "business_scope_completed": true,
+    "whole_case_completion_pending_remote": true,
+    "independent_final_content_recheck": "control/final-delivery-content-check-addendum.json"
+  },
+  "source_and_runtime_receipts": [
+    "control/actual-recovery-binding.json",
+    "control/final-delivery-observation.json",
+    "project/.work-receipts/zs-deliver-work-complete.json"
+  ],
+  "gates": {
+    "natural_client_initiation": {
+      "evidence": []
+    },
+    "tool_or_role_execution": {
+      "evidence": []
+    },
+    "real_artifact": {
+      "evidence": []
+    },
+    "business_followup_1": {
+      "evidence": []
+    },
+    "business_followup_2": {
+      "evidence": []
+    },
+    "independent_review": {
+      "evidence": []
+    },
+    "final_delivery": {
+      "evidence": []
+    },
+    "traceable_receipt": {
+      "evidence": []
+    },
+    "fixture_isolation": {
+      "evidence": []
+    },
+    "independent_commit_and_remote_sha": {
+      "evidence": []
+    }
+  },
+  "independent_delivery_commit": null,
+  "verified_remote_receipt": null,
+  "blockers": [
+    "Case-only artifact commit and independently verified remote delivery receipt remain pending."
+  ],
+  "status_authority": "ledger/work-ledger.yaml",
+  "completion_claim": false,
+  "additional_business_turns": [
+    {
+      "phase": "review-correction",
+      "actual_user_turn": {
+        "timestamp": "2026-09-09T03:56:18.316Z",
+        "text": "独立复核发现，已经确认的归档和角色要求还没有落实到当前权威验收要求，恢复工作却已写为完成。请依据最新复核意见补齐这些已确认的修订，核对实际生效记录，确保没有重复写入或丢失成果；遗留问题仍未得到明确事实时继续保留。同步修正恢复进展、下一步和交接说明，准确区分旧建议未重放与新修订已生效，保留原建议及全部失败历史。先提交整改记录交回独立返检，再最终交付。"
+      },
+      "client_task_id": "01a083d7-4073-7150-89cd-993a9899dcad",
+      "snapshot": "control/review-correction-sealed.json",
+      "scope": "Actual producer response to independent findings; not a replacement canonical followup.",
+      "independent_reassessment": "pending"
+    }
+  ],
+  "independent_review_history": [
+    {
+      "reviewer_identity": "luna_worker:/root/source_change_client_run",
+      "client_or_human_record": "control/independent-review.json",
+      "identity_binding": "control/reviewer-identity-binding.json",
+      "criteria": [
+        {
+          "id": "ZS-R01",
+          "verdict": "pass",
+          "summary": "Actual normal prelude, later SIGKILL and successor-session recovery are distinguishable and evidenced."
+        },
+        {
+          "id": "ZS-R02",
+          "verdict": "pass_with_limit",
+          "summary": "Published and persisted results match hashes; missing old checkpoint prevents recovery claims about unpersisted summaries."
+        },
+        {
+          "id": "ZS-R03",
+          "verdict": "pass_for_no_replay_only",
+          "summary": "Three old proposals are unique, rejected and never applied; zero application cannot be restated as exactly once."
+        },
+        {
+          "id": "ZS-R04",
+          "verdict": "fail_blocking",
+          "summary": "Confirmed archive and role revisions have no consolidated business proposal or one successful application receipt."
+        },
+        {
+          "id": "ZS-R05",
+          "verdict": "pass",
+          "summary": "Unknown archive execution, named ownership and concrete open issues remain explicit; final delivery is absent."
+        },
+        {
+          "id": "ZS-R06",
+          "verdict": "fail_blocking",
+          "summary": "ZS-RECOVER is completed while its next action still requires obtaining issues and applying a merged change."
+        }
+      ],
+      "defects_and_revisions": [
+        {
+          "id": "ZS-F01",
+          "severity": "blocking",
+          "requirement": "Apply the confirmed archive and role changes once through a consolidated current-source change, or provide new explicit business authority that these facts belong only in the handover narrative. Keep the unconfirmed issue change open."
+        },
+        {
+          "id": "ZS-F02",
+          "severity": "blocking",
+          "requirement": "Restore consistency between ZS-RECOVER completion status and its pending substantive next action through normal AWR workflow."
+        },
+        {
+          "id": "ZS-F03",
+          "severity": "blocking",
+          "requirement": "Separate zero replay of old proposals from proof that confirmed business changes took effect exactly once."
+        }
+      ],
+      "verdict": "requires_executor_changes"
+    }
+  ]
+}

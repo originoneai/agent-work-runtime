@@ -1,0 +1,16 @@
+{
+  "kind": "fixture_author_input_publication",
+  "scenario_id": "AWR-SC-006",
+  "round": 2,
+  "published_at": "2026-09-09T10:28:07+08:00",
+  "changes": [
+    {
+      "path": "materials/role-confirmation.md",
+      "before_sha256": null,
+      "after_sha256": "8117dffe9cf6088adf357e9d0c404d1f4f547c430dd520cf1095d8cb27bf1da5"
+    }
+  ],
+  "actual_user_followup_submitted": false,
+  "business_followup_completed": false,
+  "e4_completed": 0
+}

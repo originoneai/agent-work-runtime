@@ -1,0 +1,196 @@
+{
+  "ok": true,
+  "code": "proposal_recorded",
+  "project_revision": 81,
+  "proposal": {
+    "id": "01M220W8JPYKV4SMG3M1JBMH81",
+    "project_id": "01M21VJFYF7E75EQ55DEH3D5TS",
+    "work_item_id": "01M21VJFYMD4Q7P3HFNFATQBCZ",
+    "source_id": "01M21VJFYKQHY3PPK3TBPPYNPT",
+    "base_fingerprint": "sha256:72ea722ab66dfd3b45b46a1a8cac3be96fb4f8ee3b411d939a4fff760b58ed0c",
+    "expected_revision": 74,
+    "mutation_type": "work.complete",
+    "patch": {
+      "changes": {
+        "evidence": [
+          ".work-receipts/zs-recover-evidence-report.json"
+        ],
+        "status": "completed",
+        "verification": {
+          "evidence_level": "locally_verified"
+        }
+      },
+      "intent": "已保留并显式处置三份旧提案，验证提案 ID 唯一、无应用尝试、原始结果和失败现场未丢失；确认事实已进入交接说明，未知遗留问题明确保留。",
+      "source_config": {
+        "adapter_options": {},
+        "adapter_version": 1,
+        "mapping_key": "ledger|work-ledger.yaml"
+      },
+      "target": {
+        "kind": "work_item",
+        "meta": {
+          "external_key": "ZS-RECOVER",
+          "id": "01M21VJFYMD4Q7P3HFNFATQBCZ",
+          "revision": 2,
+          "source_ref": {
+            "end_line": null,
+            "locator": "file:///Users/mac/Documents/originone/agent-work-running/.local/business-live-20260909-v1/interrupted-write/project/work-ledger.yaml",
+            "pointer": "/work_items/2",
+            "section_fingerprint": null,
+            "source_fingerprint": "sha256:72ea722ab66dfd3b45b46a1a8cac3be96fb4f8ee3b411d939a4fff760b58ed0c",
+            "source_id": "01M21VJFYKQHY3PPK3TBPPYNPT",
+            "source_revision": 6,
+            "start_line": null
+          }
+        }
+      },
+      "version": 1,
+      "work_action": {
+        "action": "complete",
+        "completion": {
+          "acceptance": [
+            {
+              "criterion": "处理待应用改动，保留重试或恢复的证据，避免重复写入。",
+              "evidence": [
+                "01M220V01KGFF32D5KRY9BCXP4"
+              ]
+            },
+            {
+              "criterion": "保留实际产物与来源引用，无法确认的内容显式说明。",
+              "evidence": [
+                "01M220V01KGFF32D5KRY9BCXP4"
+              ]
+            }
+          ],
+          "evidence": [
+            {
+              "branch_id": null,
+              "command": "rtk proxy sh .work-receipts/verify-zs-recover.sh",
+              "evidence_type": "verification_report",
+              "external_key": "zs-recover-no-duplicate-20260909",
+              "id": "01M220V01KGFF32D5KRY9BCXP4",
+              "level": "locally_verified",
+              "locator": ".work-receipts/zs-recover-evidence-report.json",
+              "project_id": "01M21VJFYF7E75EQ55DEH3D5TS",
+              "revision": 1,
+              "scope": [
+                "ZS-RECOVER"
+              ],
+              "sha256": "052c7f5df7244f8de57e83cab5d85ca98ac0fb204e9eaf015d9986f4faadb84a",
+              "source_ref": null,
+              "source_sha": "8218b29c348b7eda3e57b541c3489e41b87b6679",
+              "summary": "已保留并显式处置三份旧提案，验证每个 ID 唯一且均无应用尝试；确认材料、失败回执与未知遗留问题均未丢失。",
+              "verified_at": 1788921815000,
+              "work_item_id": "01M21VJFYMD4Q7P3HFNFATQBCZ"
+            }
+          ],
+          "minimum_level": "locally_verified",
+          "source_sha": "8218b29c348b7eda3e57b541c3489e41b87b6679",
+          "version": 1
+        },
+        "from": "in_progress",
+        "to": "completed"
+      }
+    },
+    "status": "applied",
+    "created_by_session": "01M220BJS3M8C7Y03WACQD54RM",
+    "revision": 5
+  },
+  "event": {
+    "id": "01M220W8MG3M6WH4VVYY613PND",
+    "project_id": "01M21VJFYF7E75EQ55DEH3D5TS",
+    "work_item_id": "01M21VJFYMD4Q7P3HFNFATQBCZ",
+    "session_id": null,
+    "branch_id": null,
+    "event_type": "work.completed",
+    "importance": "normal",
+    "summary": "Verified source work action Complete",
+    "payload": {
+      "action_reason": "已保留并显式处置三份旧提案，验证提案 ID 唯一、无应用尝试、原始结果和失败现场未丢失；确认事实已进入交接说明，未知遗留问题明确保留。",
+      "actor": "codex-primary",
+      "after_fingerprint": "sha256:18f18e0fe31ae9c1a5951f6aad176be41cba613c0fd7a6d0fa65435b7395e846",
+      "attempt_event_id": "01M220W8KRFV64HKWZRP0FEWAZ",
+      "before_fingerprint": "sha256:72ea722ab66dfd3b45b46a1a8cac3be96fb4f8ee3b411d939a4fff760b58ed0c",
+      "creating_session_id": "01M220BJS3M8C7Y03WACQD54RM",
+      "proposal_id": "01M220W8JPYKV4SMG3M1JBMH81",
+      "reason": "已保留并显式处置三份旧提案，验证提案 ID 唯一、无应用尝试、原始结果和失败现场未丢失；确认事实已进入交接说明，未知遗留问题明确保留。",
+      "released_claim_ids": [
+        "01M220BJS4Z13TGCX69HJPSYD0"
+      ],
+      "source_id": "01M21VJFYKQHY3PPK3TBPPYNPT",
+      "source_revision": 7,
+      "target_after_hash": "887aed5fc9f010d57a77387b426b1ff6fad0d404ef79eb1aafa48242e6f7c0bf",
+      "target_revision": 3,
+      "work_action": {
+        "action": "complete",
+        "completion": {
+          "acceptance": [
+            {
+              "criterion": "处理待应用改动，保留重试或恢复的证据，避免重复写入。",
+              "evidence": [
+                "01M220V01KGFF32D5KRY9BCXP4"
+              ]
+            },
+            {
+              "criterion": "保留实际产物与来源引用，无法确认的内容显式说明。",
+              "evidence": [
+                "01M220V01KGFF32D5KRY9BCXP4"
+              ]
+            }
+          ],
+          "evidence": [
+            {
+              "branch_id": null,
+              "command": "rtk proxy sh .work-receipts/verify-zs-recover.sh",
+              "evidence_type": "verification_report",
+              "external_key": "zs-recover-no-duplicate-20260909",
+              "id": "01M220V01KGFF32D5KRY9BCXP4",
+              "level": "locally_verified",
+              "locator": ".work-receipts/zs-recover-evidence-report.json",
+              "project_id": "01M21VJFYF7E75EQ55DEH3D5TS",
+              "revision": 1,
+              "scope": [
+                "ZS-RECOVER"
+              ],
+              "sha256": "052c7f5df7244f8de57e83cab5d85ca98ac0fb204e9eaf015d9986f4faadb84a",
+              "source_ref": null,
+              "source_sha": "8218b29c348b7eda3e57b541c3489e41b87b6679",
+              "summary": "已保留并显式处置三份旧提案，验证每个 ID 唯一且均无应用尝试；确认材料、失败回执与未知遗留问题均未丢失。",
+              "verified_at": 1788921815000,
+              "work_item_id": "01M21VJFYMD4Q7P3HFNFATQBCZ"
+            }
+          ],
+          "minimum_level": "locally_verified",
+          "source_sha": "8218b29c348b7eda3e57b541c3489e41b87b6679",
+          "version": 1
+        },
+        "from": "in_progress",
+        "to": "completed"
+      },
+      "write_plan_id": "01M220W8K4E84Y51S5G9QATMDR"
+    },
+    "project_revision": 81,
+    "created_at": 1788921914000
+  },
+  "source_refresh_performed": true,
+  "source_write_performed": true,
+  "write_outcome": "applied",
+  "apply_attempt": {
+    "event_id": "01M220W8KRFV64HKWZRP0FEWAZ",
+    "proposal_id": "01M220W8JPYKV4SMG3M1JBMH81",
+    "source_id": "01M21VJFYKQHY3PPK3TBPPYNPT",
+    "project_revision": 78,
+    "plan": {
+      "id": "01M220W8K4E84Y51S5G9QATMDR",
+      "before_fingerprint": "sha256:72ea722ab66dfd3b45b46a1a8cac3be96fb4f8ee3b411d939a4fff760b58ed0c",
+      "after_fingerprint": "sha256:18f18e0fe31ae9c1a5951f6aad176be41cba613c0fd7a6d0fa65435b7395e846",
+      "before_size": 2764,
+      "after_size": 2822,
+      "target_after_hash": "887aed5fc9f010d57a77387b426b1ff6fad0d404ef79eb1aafa48242e6f7c0bf"
+    },
+    "resolved_event_id": "01M220W8MG3M6WH4VVYY613PND"
+  },
+  "recovery_directory": ".awr/mutations/01M220W8K4E84Y51S5G9QATMDR",
+  "source_check": null,
+  "error": null
+}

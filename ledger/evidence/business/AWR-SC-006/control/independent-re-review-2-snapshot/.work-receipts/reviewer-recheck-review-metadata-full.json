@@ -1,0 +1,64 @@
+{
+  "apply_attempt": {
+    "event_id": "01M226HX392Z07C24FDXZ75WNE",
+    "plan": {
+      "after_fingerprint": "sha256:910155627fdf6131e7aed88c5297cc9c61a97c60aa4beec9a7c08475de8e4a37",
+      "after_size": 4028,
+      "before_fingerprint": "sha256:1e9381596fe3a510c9963bd42bb2e9c5360e9fa54275c4212635d42a6dc03176",
+      "before_size": 4028,
+      "id": "01M226HX2QK75N7F6AGJ0XM8D3",
+      "target_after_hash": "d497b8ee1deb4456663fa3427c91daa3ad0959da87c69c8054fc2b39c8520686"
+    },
+    "project_revision": 171,
+    "proposal_id": "01M226HF1GX6P579T58HV384G8",
+    "resolved_event_id": "01M226HX3WNFQ3MWMAG5234VKK",
+    "source_id": "01M21VJFYKQHY3PPK3TBPPYNPT"
+  },
+  "ok": true,
+  "patch_included": true,
+  "project_revision": 182,
+  "proposal": {
+    "base_fingerprint": "sha256:1e9381596fe3a510c9963bd42bb2e9c5360e9fa54275c4212635d42a6dc03176",
+    "created_by_session": "01M226FFHX3EX8Z93ATKWWGCQH",
+    "expected_revision": 167,
+    "id": "01M226HF1GX6P579T58HV384G8",
+    "mutation_type": "update_fields",
+    "patch": {
+      "changes": {
+        "summary": "旧独立复核已确认需整改；生产者现已提交并固定整改后快照。ZS-REVIEW 等待不同参与者返检，原报告保留，返检尚未发生。"
+      },
+      "intent": "同步返检工作摘要：旧复核需整改、生产者整改快照已提交、当前等待不同参与者返检；不修改复核 acceptance、证据或原报告。",
+      "source_config": {
+        "adapter_options": {},
+        "adapter_version": 1,
+        "mapping_key": "ledger|work-ledger.yaml"
+      },
+      "target": {
+        "kind": "work_item",
+        "meta": {
+          "external_key": "ZS-REVIEW",
+          "id": "01M21VJFYMSXG6YEVAE8TW7WHA",
+          "revision": 4,
+          "source_ref": {
+            "end_line": null,
+            "locator": "file:///Users/mac/Documents/originone/agent-work-running/.local/business-live-20260909-v1/interrupted-write/project/work-ledger.yaml",
+            "pointer": "/work_items/3",
+            "section_fingerprint": null,
+            "source_fingerprint": "sha256:1e9381596fe3a510c9963bd42bb2e9c5360e9fa54275c4212635d42a6dc03176",
+            "source_id": "01M21VJFYKQHY3PPK3TBPPYNPT",
+            "source_revision": 16,
+            "start_line": null
+          }
+        }
+      },
+      "version": 1
+    },
+    "project_id": "01M21VJFYF7E75EQ55DEH3D5TS",
+    "revision": 5,
+    "source_id": "01M21VJFYKQHY3PPK3TBPPYNPT",
+    "status": "applied",
+    "work_item_id": "01M21VJFYMSXG6YEVAE8TW7WHA"
+  },
+  "read_only": true,
+  "source_refresh_performed": false
+}

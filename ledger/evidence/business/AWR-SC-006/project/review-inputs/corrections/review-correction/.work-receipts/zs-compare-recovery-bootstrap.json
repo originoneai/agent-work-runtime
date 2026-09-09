@@ -1,0 +1,121 @@
+{
+  "level": "L0",
+  "context": {
+    "project_id": "01M21VJFYF7E75EQ55DEH3D5TS",
+    "project_key": "awr-v1/interrupted-write/awr-live-20260909-006",
+    "project_name": "竹声维护交接",
+    "project_revision": 46,
+    "branch_id": null,
+    "work": {
+      "id": "01M21VJFYMCA78QW9DEWGQ4ZV6",
+      "external_key": "ZS-COMPARE",
+      "title": "比对已保存与未生效内容",
+      "phase": "ZS-DELIVERY",
+      "status": "in_progress",
+      "raw_status": "in_progress",
+      "next_action": "创建并提交逐项可审阅的待审核提案，核对提案状态和权威源未被应用。",
+      "blocker": null,
+      "revision": 2,
+      "source_ref": {
+        "source_id": "01M21VJFYKQHY3PPK3TBPPYNPT",
+        "locator": "file:///Users/mac/Documents/originone/agent-work-running/.local/business-live-20260909-v1/interrupted-write/project/work-ledger.yaml",
+        "source_revision": 4,
+        "source_fingerprint": "sha256:83d49fc17c8d12f487c59687df314093e8d3c360bf55847b9b5a98cfb8d0abf8",
+        "pointer": "/work_items/1",
+        "start_line": null,
+        "end_line": null,
+        "section_fingerprint": null
+      }
+    },
+    "selection_basis": "session",
+    "session": {
+      "id": "01M21XP8VZ1YJRNSS6BJH2V4HB",
+      "project_id": "01M21VJFYF7E75EQ55DEH3D5TS",
+      "work_item_id": "01M21VJFYMCA78QW9DEWGQ4ZV6",
+      "branch_id": null,
+      "agent_id": "codex-primary",
+      "provider": "openai",
+      "model": "gpt-5",
+      "status": "active",
+      "started_at": 1788918571903,
+      "ended_at": null,
+      "start_project_revision": 45,
+      "end_project_revision": null,
+      "last_checkpoint_id": null,
+      "revision": 1
+    },
+    "checkpoint": null,
+    "checkpoint_origin": "none",
+    "critical_rules": [
+      {
+        "id": "01M21VJFYJ0B34143SS3FQS21W",
+        "external_key": "file:///Users/mac/Documents/originone/agent-work-running/.local/business-live-20260909-v1/interrupted-write/project/RULES.md#business",
+        "revision": 1,
+        "source_ref": {
+          "source_id": "01M21VJFYH59710E3HQ4619BZB",
+          "locator": "file:///Users/mac/Documents/originone/agent-work-running/.local/business-live-20260909-v1/interrupted-write/project/RULES.md",
+          "source_revision": 1,
+          "source_fingerprint": "sha256:4c28d3a308958136b8449d9c61c59da81e0d5f7dcbfd9075b32c87d61a0cb606",
+          "pointer": "#business",
+          "start_line": 5,
+          "end_line": 7,
+          "section_fingerprint": "sha256:ad6dcdf9e4d523ab53b178abffb8db56c4774873e44c4b5ff276dd10fc67ec9c"
+        },
+        "text": "业务要求\n\n恢复前区分已保存产物与尚未应用的源文件变更；未经核实不得重放写入，也不得抹去原失败记录。",
+        "severity": "hard",
+        "scope": {
+          "type": "project",
+          "value": "*"
+        },
+        "unresolved": []
+      },
+      {
+        "id": "01M21VJFYJ3AZ2E793BS3A655F",
+        "external_key": "file:///Users/mac/Documents/originone/agent-work-running/.local/business-live-20260909-v1/interrupted-write/project/RULES.md#authority",
+        "revision": 1,
+        "source_ref": {
+          "source_id": "01M21VJFYH59710E3HQ4619BZB",
+          "locator": "file:///Users/mac/Documents/originone/agent-work-running/.local/business-live-20260909-v1/interrupted-write/project/RULES.md",
+          "source_revision": 1,
+          "source_fingerprint": "sha256:4c28d3a308958136b8449d9c61c59da81e0d5f7dcbfd9075b32c87d61a0cb606",
+          "pointer": "#authority",
+          "start_line": 1,
+          "end_line": 4,
+          "section_fingerprint": "sha256:91475bbc52075362a75e6bd9d3fe1de18d834c4995ef382330d752680e95bc0e"
+        },
+        "text": "来源与交付\n\n以当前项目来源为准。未知或缺证据的内容显式保留，不将计划、样例或文件存在当作真实验收通过。",
+        "severity": "hard",
+        "scope": {
+          "type": "project",
+          "value": "*"
+        },
+        "unresolved": []
+      }
+    ],
+    "source_revisions": [
+      {
+        "id": "01M21VJFYKQHY3PPK3TBPPYNPT",
+        "revision": 4,
+        "fingerprint": "sha256:83d49fc17c8d12f487c59687df314093e8d3c360bf55847b9b5a98cfb8d0abf8",
+        "freshness": "fresh",
+        "locator": "file:///Users/mac/Documents/originone/agent-work-running/.local/business-live-20260909-v1/interrupted-write/project/work-ledger.yaml"
+      },
+      {
+        "id": "01M21VJFYH59710E3HQ4619BZB",
+        "revision": 1,
+        "fingerprint": "sha256:4c28d3a308958136b8449d9c61c59da81e0d5f7dcbfd9075b32c87d61a0cb606",
+        "freshness": "fresh",
+        "locator": "file:///Users/mac/Documents/originone/agent-work-running/.local/business-live-20260909-v1/interrupted-write/project/RULES.md"
+      }
+    ],
+    "gaps": [],
+    "complete": true,
+    "execution_context_complete": false
+  },
+  "rendered_context": "AWR L0 Bootstrap\nProject: 竹声维护交接 [awr-v1/interrupted-write/awr-live-20260909-006] 01M21VJFYF7E75EQ55DEH3D5TS\nRevision: 46 | Branch: main\nWork: ZS-COMPARE [01M21VJFYMCA78QW9DEWGQ4ZV6] r2 — 比对已保存与未生效内容\nPhase: ZS-DELIVERY | Status: in_progress (InProgress)\nNext: 创建并提交逐项可审阅的待审核提案，核对提案状态和权威源未被应用。\nBlocker: none\nWork source: 01M21VJFYKQHY3PPK3TBPPYNPT/work_items/1@r4\nSession: 01M21XP8VZ1YJRNSS6BJH2V4HB r1 active agent=codex-primary provider=openai model=gpt-5\nHard rules [01M21VJFYH59710E3HQ4619BZB@r1]:\n[#business]\n业务要求\n\n恢复前区分已保存产物与尚未应用的源文件变更；未经核实不得重放写入，也不得抹去原失败记录。\n[#authority]\n来源与交付\n\n以当前项目来源为准。未知或缺证据的内容显式保留，不将计划、样例或文件存在当作真实验收通过。\nCheckpoint: none for selected work\nBootstrap: complete\nCompile L1 before execution.\n",
+  "context_hash": "3be5f08ff0f9ec08b934e97c7e3e5dbb226f7397cf71baa56bb38845ffeda187",
+  "token_estimate": 340,
+  "token_budget": 2000,
+  "tokenizer": "o200k_base",
+  "token_scope": "rendered_context; excludes transport envelope and surrounding conversation"
+}
