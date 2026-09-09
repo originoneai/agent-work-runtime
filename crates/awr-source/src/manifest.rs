@@ -90,6 +90,7 @@ impl Manifest {
             }
             if ![
                 "yaml-ledger-v1",
+                "markdown-ledger-v1",
                 "markdown-heading-v1",
                 "markdown-rules-v1",
                 "markdown-directory-v1",

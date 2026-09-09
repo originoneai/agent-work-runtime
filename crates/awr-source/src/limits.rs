@@ -7,9 +7,10 @@ pub const YAML_READ_CAP: u64 = 4 * 1024 * 1024;
 pub fn source_read_cap(adapter: &str) -> Result<u64> {
     match adapter {
         "yaml-ledger-v1" => Ok(YAML_READ_CAP),
-        "markdown-heading-v1" | "markdown-rules-v1" | "markdown-directory-v1" => {
-            Ok(MARKDOWN_READ_CAP)
-        }
+        "markdown-ledger-v1"
+        | "markdown-heading-v1"
+        | "markdown-rules-v1"
+        | "markdown-directory-v1" => Ok(MARKDOWN_READ_CAP),
         _ => Err(Error::Unsupported(format!("source adapter {adapter}"))),
     }
 }

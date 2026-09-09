@@ -7,6 +7,7 @@ mod limits;
 mod locator;
 mod manifest;
 mod markdown;
+mod markdown_ledger;
 mod mutation;
 mod yaml_ledger;
 mod yaml_mutation;
@@ -25,6 +26,7 @@ pub use manifest::{Manifest, ProjectConfig, SourceSpec};
 pub use markdown::{
     MarkdownHeadingAdapter, MarkdownRulesAdapter, MarkdownSection, markdown_sections,
 };
+pub use markdown_ledger::MarkdownLedgerAdapter;
 pub use mutation::{MutationSourceCheck, inspect_mutation_source, verify_mutation_source};
 pub use safe_fs::{open_dir_exact, open_file_exact};
 pub use yaml_ledger::YamlLedgerAdapter;

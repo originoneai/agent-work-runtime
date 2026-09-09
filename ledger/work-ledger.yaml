@@ -1,8 +1,8 @@
 schema_version: 1
 contract_id: awr-v1
-contract_version: 1.0.1
-ledger_revision: 193
-updated_at: '2026-09-09T13:19:58.939743+08:00'
+contract_version: 1.1.0
+ledger_revision: 194
+updated_at: 2026-09-09T13:29:04+08:00
 project:
   name: Agent Work Runtime
   external_key: agent-work-runtime
@@ -10,16 +10,12 @@ project:
   authority_mode: source_first
   release_status: not_released
 current:
-  milestone: M9
-  work_item: AWR-QA-003
-  next_action: 真实业务交付 3/8：接手新项目、来源变化和帮助中心均已独立提交并通过 Git/GitHub 远端核验。继续长任务最终引用修订、受限资料与中断恢复最终交付、并行协作整改后的独立复核；跨客户端 r2
-    因实际 .git 只读边界保留未完成。
+  milestone: M11
+  work_item: AWR-TAKE-001
+  next_action: 在独立分支补齐通用项目 Init，再依次完成客户端检查点、执行登记和恢复核实。
   open_loops:
-  - 用户已明确授权本项目 Codex/Kimi 实际客户端及 luna_worker 并行执行/独立复核，后续同范围不重复询问；执行配置沿用既有模型和 hooks。
-  - QA-003 已从保存 checkpoint 恢复并重新认领；八套本地新项目保留，逐场开展实际工具执行、两轮业务追问、独立复核和独立远端交付。
-  - 10/10 指标已达标；六项 CLI p95 为 33.817084–135.13625 ms。原严格目标和失败基线保留。
-  - 真实业务验收当前 3/8；AWR-SC-001、003、005 已完成全部硬门槛；002、004、006、007 继续原客户端修订/复核/最终交付，未有独立远端回执不得计数。
-  - 跨客户端旧轮保留原生 MCP 与内部步骤泄露记录但不计 E4；全新 r2 的实际 turn_context 明确 project/.git 为只读且 approval never，真实工作 Git ref 尚未创建，保持未完成且不得旁路。通用输入预检已实现，仍须逐条自然语言审查。
+  - 本分支仅执行用户新增的四项能力；主线程 AWR-QA-003 的实际业务验收继续独立推进，已有证据不计入新增功能。
+  - 首次接入的推测进度必须标为待核实，运行现场无法确认时不自动重跑。
 milestones:
 - id: M0
   status: completed
@@ -43,6 +39,8 @@ milestones:
   status: in_progress
 - id: M10
   status: planned
+- id: M11
+  status: in_progress
 work_items:
 - id: AWR-BOOT-001
   title: 公开仓库、Apache 2.0 与原始方案基线
@@ -2006,6 +2004,136 @@ work_items:
   evidence: []
   blocker: null
   next_action: 按交付物实现并验证：V1 发布门槛与远端交付回执
+- id: AWR-TAKE-001
+  title: 通用项目 Init 与可审阅接入草案
+  milestone: M11
+  priority: P0
+  kind: feature
+  required_for_v1: true
+  status: in_progress
+  owner: codex-side-conversation
+  depends_on:
+  - AWR-P1-007
+  source_sections:
+  - 28
+  - 31
+  - 32
+  - 35
+  deliverables:
+  - crates/awr-cli/
+  - crates/awr-source/
+  - examples/takeover/
+  - docs/TAKEOVER.md
+  acceptance:
+  - 空目录、仅代码、仅方案、已有 YAML/Markdown 台账均可得到有来源依据的接入预览与明确缺口。
+  - 接受后保留现有资料，生成缺失的目标/方案/工作入口；原始完成状态与推测状态明确区分。
+  - 预览指纹绑定实际输入；重复初始化不覆盖资料，来源冲突显式失败。
+  verification:
+    minimum: 运行覆盖本条直接行为与恢复边界的真实 CLI/集成检查；不将本地检查视为 E4。
+    evidence_directory: ledger/evidence/AWR-TAKE-001
+    evidence_level: none
+  evidence: []
+  blocker: null
+  next_action: 在 codex/project-takeover 独立分支实现并验证；不操作主线程工作区。
+- id: AWR-TAKE-002
+  title: 客户端生命周期与自动检查点
+  milestone: M11
+  priority: P0
+  kind: feature
+  required_for_v1: true
+  status: planned
+  owner: null
+  depends_on:
+  - AWR-P5-002
+  - AWR-P8-002
+  source_sections:
+  - 23
+  - 24
+  - 34
+  - 36
+  deliverables:
+  - crates/awr-cli/
+  - crates/awr-runtime/
+  - crates/awr-store/
+  - crates/awr-core/
+  - docs/integrations/
+  - examples/takeover/
+  acceptance:
+  - 客户端会话映射到唯一 AWR 会话；生命周期事件可自动保存检查点并提供恢复上下文。
+  - 保存使用已持久化的下一步/遗留问题与真实运行事件；不能从不存在的聊天记忆制造事实。
+  - 重复事件、并发修订、重启与不同客户端会话不会生成重复继承或串会话检查点；安装保留现有 hooks。
+  verification:
+    minimum: 运行覆盖本条直接行为与恢复边界的真实 CLI/集成检查；不将本地检查视为 E4。
+    evidence_directory: ledger/evidence/AWR-TAKE-002
+    evidence_level: none
+  evidence: []
+  blocker: null
+  next_action: 在 codex/project-takeover 独立分支实现并验证；不操作主线程工作区。
+- id: AWR-TAKE-003
+  title: 运行任务登记与受管执行
+  milestone: M11
+  priority: P0
+  kind: feature
+  required_for_v1: true
+  status: planned
+  owner: null
+  depends_on:
+  - AWR-P3-002
+  source_sections:
+  - 15
+  - 25
+  - 26
+  - 39
+  deliverables:
+  - crates/awr-cli/
+  - crates/awr-runtime/
+  - crates/awr-store/
+  - crates/awr-core/
+  acceptance:
+  - 运行任务在执行前持久登记，绑定项目、工作、会话、执行器与唯一操作标识。
+  - 受管本地命令记录启动/结束、退出码及日志产物；调用会话退出后仍可查询结果。
+  - 相同操作标识不会重复执行；外部任务只登记可验证引用，不因 PID 存在或调用者声称成功认定完成。
+  verification:
+    minimum: 运行覆盖本条直接行为与恢复边界的真实 CLI/集成检查；不将本地检查视为 E4。
+    evidence_directory: ledger/evidence/AWR-TAKE-003
+    evidence_level: none
+  evidence: []
+  blocker: null
+  next_action: 在 codex/project-takeover 独立分支实现并验证；不操作主线程工作区。
+- id: AWR-TAKE-004
+  title: 恢复时核实执行现场并整合接续
+  milestone: M11
+  priority: P0
+  kind: feature
+  required_for_v1: true
+  status: planned
+  owner: null
+  depends_on:
+  - AWR-TAKE-002
+  - AWR-TAKE-003
+  source_sections:
+  - 23
+  - 24
+  - 25
+  - 41
+  deliverables:
+  - crates/awr-cli/
+  - crates/awr-runtime/
+  - crates/awr-store/
+  - crates/awr-context/
+  - examples/takeover/
+  - docs/TAKEOVER.md
+  acceptance:
+  - 恢复区分受管任务运行中、已成功、已失败、无法确认；每项有核实依据和观察时间。
+  - 核实命令不自动重跑或杀进程；完成结果与仍运行任务进入接续上下文，避免静默遗漏。
+  - 以真实短命令验证跨会话运行、结果收取、失败、中断未知和重复登记；保留原有 checkpoint/resume 行为。
+  verification:
+    minimum: 运行覆盖本条直接行为与恢复边界的真实 CLI/集成检查；不将本地检查视为 E4。
+    evidence_directory: ledger/evidence/AWR-TAKE-004
+    evidence_level: none
+  evidence: []
+  blocker: null
+  next_action: 在 codex/project-takeover 独立分支实现并验证；不操作主线程工作区。
 scenarios:
 - id: AWR-SC-001
   status: completed

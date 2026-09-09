@@ -195,7 +195,7 @@ pub fn initialize(
     Ok(())
 }
 
-fn discover(root: &Path) -> Result<(Option<Manifest>, Vec<Value>, Vec<String>)> {
+pub(crate) fn discover(root: &Path) -> Result<(Option<Manifest>, Vec<Value>, Vec<String>)> {
     let locations: &[(&str, &str, &[&str])] = &[
         (
             "goal",

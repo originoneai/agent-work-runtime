@@ -64,6 +64,7 @@ impl IndexReport {
 pub fn source_adapter(name: &str) -> Result<Box<dyn SourceAdapter>> {
     match name {
         "yaml-ledger-v1" => Ok(Box::new(YamlLedgerAdapter)),
+        "markdown-ledger-v1" => Ok(Box::new(crate::MarkdownLedgerAdapter)),
         "markdown-heading-v1" => Ok(Box::new(MarkdownHeadingAdapter)),
         "markdown-rules-v1" => Ok(Box::new(MarkdownRulesAdapter)),
         "markdown-directory-v1" => Ok(Box::new(MarkdownDirectoryAdapter)),

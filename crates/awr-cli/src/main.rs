@@ -7,6 +7,7 @@ mod doctor;
 mod drill;
 mod event_append;
 mod mutation;
+mod onboarding;
 mod query;
 mod records;
 mod resume;
@@ -33,12 +34,7 @@ struct Cli {
 #[derive(Debug, Subcommand)]
 enum Command {
     /// Preview source authority mapping; --accept initializes using the reviewed mapping.
-    Init {
-        #[arg(long)]
-        manifest: Option<PathBuf>,
-        #[arg(long)]
-        accept: bool,
-    },
+    Init(onboarding::InitArgs),
     /// List, scan or index authoritative project sources.
     Source {
         #[command(subcommand)]
@@ -116,9 +112,7 @@ enum Command {
 
 fn run(cli: &Cli) -> Result<()> {
     match &cli.command {
-        Some(Command::Init { manifest, accept }) => {
-            source::initialize(&cli.project, manifest.as_deref(), *accept, cli.json)
-        }
+        Some(Command::Init(args)) => onboarding::run(&cli.project, args, cli.json),
         Some(Command::Source { command }) => source::run(&cli.project, command, cli.json),
         Some(Command::Status { branch }) => {
             query::status(&cli.project, branch.as_deref(), cli.json)

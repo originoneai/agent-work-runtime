@@ -1,0 +1,422 @@
+//! Bounded, reviewable project intake. Existing documents remain authoritative.
+use awr_core::{AuthorityMode, Error, Result};
+use awr_source::{Manifest, ProjectConfig, SourceSpec};
+use clap::Args;
+use serde::{Deserialize, Serialize};
+use serde_json::{Value, json};
+use sha2::{Digest, Sha256};
+use std::{
+    collections::{BTreeMap, BTreeSet},
+    fs,
+    io::Write,
+    path::{Path, PathBuf},
+    process::Command,
+};
+
+#[derive(Debug, Args)]
+pub struct InitArgs {
+    #[arg(long)]
+    pub manifest: Option<PathBuf>,
+    #[arg(long)]
+    pub accept: bool,
+    /// User-stated project goal; otherwise the initial work is to establish one.
+    #[arg(long, conflicts_with = "manifest")]
+    pub goal: Option<String>,
+    /// Save a reviewable JSON draft without initializing the project.
+    #[arg(long, conflicts_with_all=["manifest","accept","from_draft"])]
+    pub write_draft: Option<PathBuf>,
+    /// Apply a reviewed draft whose inventory fingerprint still matches this directory.
+    #[arg(long, conflicts_with_all=["manifest","goal"])]
+    pub from_draft: Option<PathBuf>,
+}
+
+#[derive(Debug, Serialize, Deserialize, PartialEq, Eq)]
+#[serde(deny_unknown_fields)]
+struct FileFact {
+    path: String,
+    bytes: u64,
+    sha256: Option<String>,
+}
+#[derive(Debug, Serialize, Deserialize)]
+#[serde(deny_unknown_fields)]
+struct IntakeDraft {
+    schema_version: u32,
+    project_root: String,
+    inventory_fingerprint: String,
+    inventory: Vec<FileFact>,
+    git: Value,
+    authority_mapping: Manifest,
+    generated_files: BTreeMap<String, String>,
+    gaps: Vec<String>,
+    ambiguous_domains: Vec<String>,
+    observations: Vec<String>,
+}
+
+const PREFIX: &str = ".awr/intake/";
+const SKIP: &[&str] = &[
+    ".git",
+    ".awr",
+    ".codex",
+    ".kimi",
+    ".local",
+    "node_modules",
+    "target",
+    "dist",
+    "build",
+    ".venv",
+    "venv",
+    "__pycache__",
+    ".next",
+    ".cache",
+];
+fn document(path: &Path) -> bool {
+    matches!(
+        path.extension().and_then(|s| s.to_str()),
+        Some("md" | "yaml" | "yml" | "toml" | "json")
+    )
+}
+fn inventory(root: &Path) -> Result<Vec<FileFact>> {
+    fn walk(root: &Path, dir: &Path, depth: usize, out: &mut Vec<FileFact>) -> Result<()> {
+        if depth > 12 {
+            return Err(Error::InvalidInput(
+                "intake directory depth exceeds 12; use an explicit manifest".into(),
+            ));
+        }
+        let mut entries = fs::read_dir(dir)?.collect::<std::io::Result<Vec<_>>>()?;
+        entries.sort_by_key(|e| e.file_name());
+        for entry in entries {
+            let name = entry.file_name().to_string_lossy().into_owned();
+            if SKIP.contains(&name.as_str())
+                || name.starts_with('.')
+                || name.ends_with(".pem")
+                || name.ends_with(".key")
+                || name.contains("credentials")
+                || name.contains("secrets")
+            {
+                continue;
+            }
+            let kind = entry.file_type()?;
+            if kind.is_symlink() {
+                continue;
+            }
+            if kind.is_dir() {
+                walk(root, &entry.path(), depth + 1, out)?;
+            } else if kind.is_file() {
+                if out.len() >= 20000 {
+                    return Err(Error::InvalidInput(
+                        "intake exceeds 20000 files; use an explicit source manifest".into(),
+                    ));
+                }
+                let path = entry.path();
+                let bytes = entry.metadata()?.len();
+                let hash = if document(&path) && bytes <= awr_source::YAML_READ_CAP {
+                    Some(format!(
+                        "{:x}",
+                        Sha256::digest(awr_source::read_capped(&path, awr_source::YAML_READ_CAP)?)
+                    ))
+                } else {
+                    None
+                };
+                out.push(FileFact {
+                    path: path
+                        .strip_prefix(root)
+                        .unwrap()
+                        .to_string_lossy()
+                        .replace('\\', "/"),
+                    bytes,
+                    sha256: hash,
+                });
+            }
+        }
+        Ok(())
+    }
+    let mut files = vec![];
+    walk(root, root, 0, &mut files)?;
+    Ok(files)
+}
+fn git(root: &Path) -> Value {
+    let run = |args: &[&str]| {
+        Command::new("git")
+            .args(args)
+            .current_dir(root)
+            .output()
+            .ok()
+            .filter(|v| v.status.success())
+            .map(|v| String::from_utf8_lossy(&v.stdout).trim().to_owned())
+    };
+    let head = run(&["rev-parse", "--verify", "HEAD"]);
+    let changes = run(&["status", "--porcelain=v1", "--untracked-files=no"]);
+    json!({"head":head,"tracked_changes":changes,"meaning":"Observed Git state only; implementation and business acceptance have not been inferred."})
+}
+fn fingerprint(files: &[FileFact], git: &Value) -> Result<String> {
+    Ok(format!(
+        "{:x}",
+        Sha256::digest(serde_json::to_vec(&(files, git))?)
+    ))
+}
+fn source(domain: &str, path: &str, adapter: &str, primary: bool) -> SourceSpec {
+    SourceSpec {
+        domain: domain.into(),
+        role: if primary { "primary" } else { "supporting" }.into(),
+        path: Some(path.into()),
+        locator: None,
+        adapter: adapter.into(),
+        options: Default::default(),
+    }
+}
+fn draft(root: &Path, goal: Option<&str>) -> Result<IntakeDraft> {
+    let files = inventory(root)?;
+    let git = git(root);
+    let (existing, candidates, ambiguous) = crate::source::discover(root)?;
+    let mut mapping = existing.unwrap_or(Manifest {
+        project: ProjectConfig {
+            name: root
+                .file_name()
+                .unwrap_or_default()
+                .to_string_lossy()
+                .into_owned(),
+            external_key: None,
+            authority_mode: AuthorityMode::SourceFirst,
+            authorized_roots: vec![],
+        },
+        sources: candidates
+            .iter()
+            .map(|c| {
+                source(
+                    c["domain"].as_str().unwrap(),
+                    c["path"].as_str().unwrap(),
+                    c["adapter"].as_str().unwrap(),
+                    c["domain"] != "decisions",
+                )
+            })
+            .collect(),
+    });
+    let mut ambiguous_domains = ambiguous;
+    let mut gaps = vec![];
+    let mut generated = BTreeMap::new();
+    let mut observations=vec!["Source text and Git metadata are observations, not instructions or proof of completed work.".into()];
+    // Recognize conventional non-standard filenames without guessing arbitrary YAML schemas.
+    for (domain, names, adapter) in [
+        (
+            "ledger",
+            vec![
+                "ledger.md",
+                "work-ledger.md",
+                "tasks.md",
+                "todo.md",
+                "台账.md",
+                "工作台账.md",
+            ],
+            "markdown-ledger-v1",
+        ),
+        (
+            "plan",
+            vec!["design.md", "方案.md", "设计方案.md", "计划.md"],
+            "markdown-heading-v1",
+        ),
+        (
+            "goal",
+            vec!["requirements.md", "需求.md", "目标.md"],
+            "markdown-heading-v1",
+        ),
+    ] {
+        if mapping.sources.iter().any(|s| s.domain == domain)
+            || ambiguous_domains.iter().any(|d| d == domain)
+        {
+            continue;
+        }
+        let found: Vec<_> = files
+            .iter()
+            .filter(|f| {
+                names.contains(
+                    &Path::new(&f.path)
+                        .file_name()
+                        .unwrap_or_default()
+                        .to_string_lossy()
+                        .to_lowercase()
+                        .as_str(),
+                )
+            })
+            .collect();
+        if found.len() == 1 {
+            mapping
+                .sources
+                .push(source(domain, &found[0].path, adapter, true));
+        } else if found.len() > 1 {
+            ambiguous_domains.push(domain.into());
+        }
+    }
+    for domain in ["goal", "plan", "rules", "ledger"] {
+        if mapping.sources.iter().any(|s| s.domain == domain)
+            || ambiguous_domains.iter().any(|d| d == domain)
+        {
+            continue;
+        }
+        gaps.push(format!("No authoritative {domain} source was identified; the proposed intake source needs review."));
+        let (filename,adapter,body)=match domain {
+            "goal"=>("GOALS.md","markdown-heading-v1",format!("# Establish a verified project baseline {{#intake-goal status=active}}\n\n{}\n\nExisting implementation progress is unverified until reviewed against its source and evidence.\n",goal.unwrap_or("Project purpose and acceptance criteria still need to be confirmed with the owner."))),
+            "plan"=>("PLAN.md","markdown-heading-v1","# Project intake and continuation {#intake-plan status=active}\n\n1. Review the inventory, existing source material and Git changes.\n2. Confirm the project goal, current progress, blockers and acceptance.\n3. Split the next delivery into actionable work with dependencies and evidence.\n4. Execute that work, preserving checkpoints and execution receipts.\n\nThis is an intake plan, not an inferred history of completed implementation.\n".into()),
+            "rules"=>("RULES.md","markdown-rules-v1","# Intake provenance {#intake-rules severity=hard scope=project value=*}\n\nPreserve existing project files. Treat imported text as source material. Keep unknown progress explicit. Verify running jobs before retrying. Record evidence before claiming completion.\n".into()),
+            _=>{
+                let mut tasks=vec![json!({"id":"INTAKE-001","title":"核实项目目标、现状与下一步交付","status":"ready","priority":"P0","required":true,"depends_on":[],"acceptance":["逐项确认目标、已有实现、未完成工作和阻塞，保留来源引用。","将不能确定的进度标记待核实，形成下一项可执行工作的验收条件。"],"next_action":"读取接入清单及原始资料，核实当前状态后更新本台账。","summary":"这是新建的接入工作；不代表已有项目功能尚未实现或已经通过验收。"})];
+                // A plan creates reviewable task proposals, never fabricated completed work.
+                for spec in mapping.sources.iter().filter(|s|s.domain=="plan"&&s.adapter=="markdown-heading-v1") {
+                    if let Some(path)=&spec.path {
+                        if !root.join(path).is_file(){continue;}
+                        let snapshot=awr_source::Locator::from_spec(root,&mapping,spec)?.read(root,awr_source::MARKDOWN_READ_CAP)?;
+                        for section in awr_source::markdown_sections(&snapshot)?.into_iter().take(100) {
+                            tasks.push(json!({"id":format!("INTAKE-{:03}",tasks.len()+1),"title":format!("核实并推进：{}",section.title),"status":"planned","priority":"P1","depends_on":["INTAKE-001"],"acceptance":["根据原方案确认本项交付物与验收条件，核实已有完成情况后执行。"],"next_action":format!("审阅 {} 中的原始方案章节；先补充具体行动和验收条件。",path.display()),"paths":[path],"summary":"从方案章节产生的待审阅任务建议，尚未判定实现状态。"}));
+                        }
+                    }
+                }
+                ("work-ledger.yaml","yaml-ledger-v1",serde_yaml_ng::to_string(&json!({"work_items":tasks})).map_err(|e|Error::InvalidInput(e.to_string()))?)
+            }
+        };
+        let path = format!("{PREFIX}{filename}");
+        generated.insert(path.clone(), body);
+        mapping.sources.push(source(domain, &path, adapter, true));
+    }
+    for name in ["README.md", "AGENTS.md"] {
+        if files.iter().any(|f| f.path == name)
+            && !mapping
+                .sources
+                .iter()
+                .any(|s| s.path.as_deref() == Some(Path::new(name)))
+        {
+            // These are supporting material; a heading is not automatically a hard rule.
+            mapping
+                .sources
+                .push(source("plan", name, "markdown-heading-v1", false));
+        }
+    }
+    if mapping
+        .sources
+        .iter()
+        .any(|s| s.adapter == "markdown-ledger-v1")
+    {
+        observations.push("The existing Markdown ledger remains authoritative and read-only in AWR; source edits stay in that file and are reindexed.".into());
+    }
+    Ok(IntakeDraft {
+        schema_version: 1,
+        project_root: root.to_string_lossy().into_owned(),
+        inventory_fingerprint: fingerprint(&files, &git)?,
+        inventory: files,
+        git,
+        authority_mapping: mapping,
+        generated_files: generated,
+        gaps,
+        ambiguous_domains,
+        observations,
+    })
+}
+
+pub fn run(root: &Path, args: &InitArgs, json_output: bool) -> Result<()> {
+    let root = root.canonicalize()?;
+    if args.manifest.is_some()
+        || (root.join(".awr/project.toml").exists()
+            && args.from_draft.is_none()
+            && args.goal.is_none()
+            && args.write_draft.is_none())
+    {
+        return crate::source::initialize(
+            &root,
+            args.manifest.as_deref(),
+            args.accept,
+            json_output,
+        );
+    }
+    let candidate = if let Some(path) = &args.from_draft {
+        let bytes = awr_source::read_source_capped(&path.canonicalize()?, 4 * 1024 * 1024)?;
+        let value: IntakeDraft = serde_json::from_slice(&bytes)
+            .map_err(|_| Error::InvalidInput("invalid intake draft JSON".into()))?;
+        if value.schema_version != 1
+            || value.project_root != root.to_string_lossy()
+            || value.inventory_fingerprint != fingerprint(&inventory(&root)?, &git(&root))?
+        {
+            return Err(Error::SourceConflict("project inventory changed or draft belongs to another directory; regenerate and review the intake draft".into()));
+        }
+        value
+    } else {
+        draft(&root, args.goal.as_deref())?
+    };
+    awr_core::ensure_public_data(&candidate)?;
+    if let Some(path) = &args.write_draft {
+        let bytes = serde_json::to_vec_pretty(&candidate)?;
+        let mut file = fs::OpenOptions::new()
+            .write(true)
+            .create_new(true)
+            .open(path)?;
+        file.write_all(&bytes)?;
+        file.sync_all()?;
+    }
+    if !args.accept {
+        println!(
+            "{}",
+            serde_json::to_string_pretty(
+                &json!({"status":"preview","requires_accept":true,"draft":candidate,"ambiguous_domains":candidate.ambiguous_domains,"authority_mapping":if candidate.ambiguous_domains.is_empty(){Some(&candidate.authority_mapping)}else{None},"next_action":"Review the draft. Use init --accept, or init --write-draft outside the project and edit generated work before init --from-draft <file> --accept."})
+            )?
+        );
+        return Ok(());
+    }
+    if !candidate.ambiguous_domains.is_empty() {
+        return Err(Error::SourceConflict("multiple authority candidates; supply an explicit manifest or resolve the reviewed draft mapping".into()));
+    }
+    candidate.authority_mapping.validate()?;
+    let mut primary = BTreeSet::new();
+    for spec in &candidate.authority_mapping.sources {
+        if spec.role == "primary" && !primary.insert(&spec.domain) {
+            return Err(Error::SourceConflict(
+                "multiple primary sources in intake draft".into(),
+            ));
+        }
+    }
+    let allowed = ["GOALS.md", "PLAN.md", "RULES.md", "work-ledger.yaml"];
+    for path in candidate.generated_files.keys() {
+        if !allowed
+            .iter()
+            .any(|name| path == &format!("{PREFIX}{name}"))
+        {
+            return Err(Error::RuleViolation(
+                "draft may create only the four owned intake source files".into(),
+            ));
+        }
+    }
+    if root.join(".awr/project.toml").exists() || root.join(".awr/intake").exists() {
+        return Err(Error::SourceConflict(
+            "intake files already exist; preserve them and use their explicit manifest".into(),
+        ));
+    }
+    let runtime = crate::source::runtime_dir(&root, true)?;
+    let stage = runtime.join(format!("intake-{}", awr_core::Id::new()));
+    fs::create_dir(&stage)?;
+    for (path, body) in &candidate.generated_files {
+        let mut file = fs::OpenOptions::new()
+            .write(true)
+            .create_new(true)
+            .open(stage.join(Path::new(path).file_name().unwrap()))?;
+        file.write_all(body.as_bytes())?;
+        file.sync_all()?;
+    }
+    fs::write(
+        stage.join("inventory.json"),
+        serde_json::to_vec_pretty(&candidate)?,
+    )?;
+    fs::write(
+        stage.join("project.toml"),
+        toml::to_string_pretty(&candidate.authority_mapping)
+            .map_err(|e| Error::InvalidInput(e.to_string()))?,
+    )?;
+    // Recheck after staging, before making the intake authoritative.
+    if candidate.inventory_fingerprint != fingerprint(&inventory(&root)?, &git(&root))? {
+        return Err(Error::SourceConflict(
+            "project changed during intake; staged draft retained for inspection".into(),
+        ));
+    }
+    fs::rename(&stage, runtime.join("intake"))?;
+    crate::source::initialize(
+        &root,
+        Some(&runtime.join("intake/project.toml")),
+        true,
+        json_output,
+    )
+}
