@@ -1,8 +1,8 @@
 schema_version: 1
 contract_id: awr-v1
 contract_version: 1.0.1
-ledger_revision: 175
-updated_at: '2026-09-09T08:01:49+08:00'
+ledger_revision: 176
+updated_at: '2026-09-09T08:06:37+08:00'
 project:
   name: Agent Work Runtime
   external_key: agent-work-runtime
@@ -1996,8 +1996,8 @@ work_items:
   next_action: 按交付物实现并验证：V1 发布门槛与远端交付回执
 scenarios:
 - id: AWR-SC-001
-  status: planned
-  executor: null
+  status: in_progress
+  executor: codex-cli:01a08379-ef89-7173-917d-274662891bcb
   reviewer: null
   evidence: []
   gates:
