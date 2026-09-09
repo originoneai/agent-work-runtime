@@ -1,8 +1,8 @@
 schema_version: 1
 contract_id: awr-v1
 contract_version: 1.1.0
-ledger_revision: 199
-updated_at: '2026-09-09T06:29:46.872859+00:00'
+ledger_revision: 200
+updated_at: '2026-09-09T06:36:47.784483+00:00'
 project:
   name: Agent Work Runtime
   external_key: agent-work-runtime
@@ -2128,6 +2128,7 @@ work_items:
   - crates/awr-context/
   - examples/takeover/
   - docs/TAKEOVER.md
+  - tests/platform/contract.json
   acceptance:
   - 恢复区分受管任务运行中、已成功、已失败、无法确认；每项有核实依据和观察时间。
   - 核实命令不自动重跑或杀进程；完成结果与仍运行任务进入接续上下文，避免静默遗漏。
