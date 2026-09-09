@@ -1,8 +1,8 @@
 schema_version: 1
 contract_id: awr-v1
 contract_version: 1.0.1
-ledger_revision: 183
-updated_at: '2026-09-09T09:21:42+08:00'
+ledger_revision: 184
+updated_at: '2026-09-09T09:39:19+08:00'
 project:
   name: Agent Work Runtime
   external_key: agent-work-runtime
@@ -12,7 +12,7 @@ project:
 current:
   milestone: M9
   work_item: AWR-QA-003
-  next_action: 继续八个已启动实际客户端场景；完成两轮业务修订、不同参与者独立复核和逐场景交付。并行协作先建立真实分工，长任务验证新客户端接续，中断场景保留真实故障前后状态。
+  next_action: 推进原客户端整改及独立复核；长任务已由新客户端恢复真实检查点并进入追问，公开资料两轮已封存待复核。中断前序正常退出已留证，原客户端继续提交待审核提案；并行协作继续真实分工与接续。
   open_loops:
   - 用户已明确授权本项目 Codex/Kimi 实际客户端及 luna_worker 并行执行/独立复核，后续同范围不重复询问；执行配置沿用既有模型和 hooks。
   - QA-003 已从保存 checkpoint 恢复并重新认领；八套本地新项目保留，逐场开展实际工具执行、两轮业务追问、独立复核和独立远端交付。
@@ -1731,7 +1731,7 @@ work_items:
   id: AWR-QA-003
   kind: quality
   milestone: M9
-  next_action: 继续八个已启动实际客户端场景；完成两轮业务修订、不同参与者独立复核和逐场景交付。并行协作先建立真实分工，长任务验证新客户端接续，中断场景保留真实故障前后状态。
+  next_action: 推进原客户端整改及独立复核；长任务已由新客户端恢复真实检查点并进入追问，公开资料两轮已封存待复核。中断前序正常退出已留证，原客户端继续提交待审核提案；并行协作继续真实分工与接续。
   owner: codex-primary
   priority: P2
   required_for_v1: true
@@ -1999,7 +1999,7 @@ scenarios:
 - id: AWR-SC-001
   status: in_progress
   executor: codex-cli:01a08379-ef89-7173-917d-274662891bcb
-  reviewer: null
+  reviewer: luna_worker:/root/source_change_client_run
   evidence: []
   gates:
     natural_client_initiation: false
