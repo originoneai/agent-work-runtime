@@ -1,8 +1,8 @@
 schema_version: 1
 contract_id: awr-v1
 contract_version: 1.0.1
-ledger_revision: 189
-updated_at: '2026-09-09T12:25:44+08:00'
+ledger_revision: 190
+updated_at: '2026-09-09T12:29:06+08:00'
 project:
   name: Agent Work Runtime
   external_key: agent-work-runtime
@@ -1727,6 +1727,7 @@ work_items:
   - tests/fixtures/business/check_client_input.py
   - tests/fixtures/business/test_client_input.py
   - tests/fixtures/business/README.md
+  - tests/fixtures/business/coverage.json
   depends_on:
   - AWR-QA-001
   - AWR-QA-002

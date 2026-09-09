@@ -23,7 +23,17 @@
     "canonical_and_prelude_inputs": 28,
     "derived_work_keys": 40,
     "git_diff_check_exit_code": 0,
-    "full_fixture_intake_verification": "pending exact committed source; this targeted result makes no intake or E4 claim"
+    "full_fixture_intake_verification": "pending exact committed source; this targeted result makes no intake or E4 claim",
+    "full_fixture_intake_attempts": [
+      {
+        "source_commit": "e0caf460",
+        "exit_code": 1,
+        "actual_error": "Coverage index is stale; render it before verification",
+        "runtime_fixture_created": false,
+        "diagnosis": "Only generated coverage.json version remained 1.0.0 after the fixture contract had moved to 1.0.1; Markdown coverage and all scenario content already matched.",
+        "required_fix": "Regenerate tests/fixtures/business/coverage.json; no scenario counts or gates change."
+      }
+    ]
   },
   "known_limitations": [
     "Deterministic syntax and identifier checks cannot prove all naturalness or exclude implicit answer pollution.",
