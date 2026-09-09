@@ -76,14 +76,10 @@ def main():
     require(not output.exists(), 'Use a new output directory; preserve failed runs')
     require(not checked('git', 'status', '--porcelain', '--untracked-files=all'), 'Commit all benchmark inputs first')
     contract = json.loads((HERE / 'contract.json').read_text())
-    active_contract = json.loads((ROOT / 'contracts/awr-v1.json').read_text())
-    require(contract['acceptance_contract_version'] == active_contract['version'], 'Latency acceptance contract version drift')
-    active_metrics = {m['id']: m for m in active_contract['metrics'] if m['unit'] == 'ms'}
-    require({o['metric'] for o in contract['operations']} == set(active_metrics), 'Latency metric scope drift')
-    for operation in contract['operations']:
-        metric = active_metrics[operation['metric']]
-        require(metric['comparison'] == 'lt' and metric['target'] == operation['exclusive_limit_ms']
-                and metric['optimization_target'] == operation['optimization_target_ms'], 'Latency threshold drift')
+    operations = contract['operations']
+    require(len({o['metric'] for o in operations}) == len(operations) == 6, 'Latency metric scope drift')
+    require(all(0 < o['optimization_target_ms'] <= o['exclusive_limit_ms'] for o in operations),
+            'Invalid latency thresholds')
     sample_contract = json.loads((ROOT / contract['sample_contract']).read_text())
     preparation = json.loads((prepared / 'preparation.json').read_text())
     for name, key in [('preparation.json', 'preparation_sha256'), ('mapping-spec.json', 'mapping_sha256'), ('source-map.json', 'source_map_sha256')]:
@@ -110,14 +106,13 @@ def main():
     output.mkdir(parents=True)
     report = {'kind': 'local_cli_latency_benchmark', 'contract_id': contract['contract_id'], 'version': contract['version'],
               'source_commit': checked('git', 'rev-parse', 'HEAD'), 'binary_sha256': digest(binary),
-              'acceptance_contract_version': active_contract['version'],
+              'measurement_contract_version': contract['version'],
               'checked_at': datetime.now().astimezone().isoformat(timespec='seconds'), 'environment': environment,
               'sample': sample_contract['sample'], 'build': contract['build'], 'transport': contract['transport'],
               'cache': contract['cache'], 'percentile': contract['percentile'], 'passed': False, 'operations': [],
               'inputs': {p.relative_to(ROOT).as_posix(): digest(p) for p in sorted(HERE.iterdir()) if p.is_file()},
               'e4_completed': 0, 'model_invocations': 0}
     report['inputs'][contract['sample_contract']] = digest(ROOT / contract['sample_contract'])
-    report['inputs']['contracts/awr-v1.json'] = digest(ROOT / 'contracts/awr-v1.json')
 
     def save():
         write_json(output / 'report.json', report)

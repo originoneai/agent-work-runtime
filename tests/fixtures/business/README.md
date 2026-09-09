@@ -1,8 +1,7 @@
 # Independent business fixtures
 
-This pack implements AWR-QA-002: eight independent **definitions and business
-input projects** under the existing V1 scenario contract. It is not an E4 run.
-The source ledger remains the only scenario-status authority.
+This pack contains eight independent synthetic business projects defined by
+`scenarios.json`. It contains no actual client execution records.
 
 Each scenario has a distinct namespace, source project, work graph, participant
 slots, three canonical business artifact requirements, independent review and
@@ -83,7 +82,6 @@ the client project and publishes it in the first followup. Its separate syntheti
 restricted note never enters that project. Log rows represent events, with many
 events per batch; a report must not confuse line counts and processed batches.
 
-Read [the actual acceptance procedure](../../../docs/acceptance/README.md),
-[coverage](../../../docs/acceptance/coverage.md) and `gate-contract.json` before
-attempting E4. Larger real-project and performance acceptance remain separate
-ledger work.
+Read [the actual acceptance procedure](protocol.md),
+[coverage](coverage.md) and `gate-contract.json` before
+attempting E4. Performance measurements are separate from business acceptance.

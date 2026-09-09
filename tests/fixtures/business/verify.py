@@ -29,14 +29,14 @@ def render(contract, specs):
             'dimensions':coverage(specs),'required_gates':contract['required_gates'],
             'status_authority':contract['status_authority'],'execution_status_inferred':False}
     lines=['# 业务场景覆盖矩阵','',
-           '本表由版本化 fixture 合同生成，只描述材料与覆盖安排。真实执行状态以源台账为准，准备通过不计 E4。','',
+           '本表由版本化 fixture 合同生成，只描述材料与覆盖安排。实际执行记录保留在本地，准备通过不计 E4。','',
            '| 场景 | 业务背景 | 工作节点 | 角色 | 覆盖维度 |',
            '| --- | --- | ---: | --- | --- |']
     for key,(spec,_,result) in specs.items():
         lines.append('| '+ ' | '.join([key,spec['business_title'],str(len(result['work_keys'])),', '.join(result['roles']),', '.join(spec['dimensions'])])+' |')
     lines += ['', '所有场景都要求自然发起、实际执行与产物、两轮业务追问、独立复核、最终交付、可追溯回执、独立 fixture，以及独立提交和远端 SHA。', '',
               '恢复、并行与跨客户端场景还要求真实前序过程；准备工具不会创建会话、claim、checkpoint、事件、通过记录或交付产物。', '',
-              '大型真实项目由 AWR-P9-001 验证，恢复、Token 与延迟指标由其余 AWR-P9 工作验证；本矩阵不替代该范围。', '']
+              '本矩阵不提供性能、Token 消耗或真实客户端执行结果。', '']
     return matrix,'\n'.join(lines)
 
 
@@ -54,7 +54,7 @@ def main():
     contract,authority,specs=load_bundle()
     matrix,markdown=render(contract,specs)
     matrix_path=BASE/'coverage.json'
-    markdown_path=ROOT/'docs/acceptance/coverage.md'
+    markdown_path=BASE/'coverage.md'
     if args.render:
         require(args.output is None,'Render definitions separately from an execution run')
         matrix_path.write_text(json.dumps(matrix,ensure_ascii=False,indent=2)+'\n')
@@ -71,7 +71,6 @@ def main():
     output.mkdir(parents=True)
     binary=args.awr.resolve(strict=True)
     before=fingerprints()
-    actual_ledger_before=digest(ROOT/'ledger/work-ledger.yaml')
     input_policy=client_input_policy()
     report={'work_item':'AWR-QA-002','contract_id':contract['contract_id'],'contract_version':contract['version'],
             'contract_sha256':digest(BASE/'contract.json'),'checked_at':datetime.now().astimezone().isoformat(timespec='seconds'),
@@ -241,13 +240,13 @@ def main():
                    runtime_counts=runtime_counts,prepared_rounds=[1,2],doctor_findings=0,
                    generated_material=marker.get('generated_material'),e4_credit=0)
         save()
-    unchanged=before==fingerprints() and digest(ROOT/'ledger/work-ledger.yaml')==actual_ledger_before
+    unchanged=before==fingerprints()
     report.update(passed=all(row['passed'] for row in report['fixtures']) and len(report['fixtures'])==8 and unchanged and conflict_checked,
                   prepared_fixtures=len(report['fixtures']),distinct_projects=len(projects),distinct_work_identities=len(runtime_work_ids),
-                  source_pack_and_actual_ledger_unchanged=unchanged,author_conflict_preserved=conflict_checked,
+                  source_pack_unchanged=unchanged,author_conflict_preserved=conflict_checked,
                   finished_at=datetime.now().astimezone().isoformat(timespec='seconds'))
     save()
-    print(json.dumps({k:report[k] for k in ['passed','prepared_fixtures','distinct_projects','distinct_work_identities','source_pack_and_actual_ledger_unchanged','e4_credit_from_this_run']},ensure_ascii=False))
+    print(json.dumps({k:report[k] for k in ['passed','prepared_fixtures','distinct_projects','distinct_work_identities','source_pack_unchanged','e4_credit_from_this_run']},ensure_ascii=False))
     return 0 if report['passed'] else 1
 
 

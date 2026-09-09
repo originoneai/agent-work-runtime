@@ -1,9 +1,0 @@
-{
-  "version": 1,
-  "command": "rtk proxy sh .work-receipts/verify-xq-return-check-handoff.sh",
-  "exit_code": 1,
-  "stdout": "",
-  "result": "failed",
-  "failed_check": "The first handoff verifier chained an earlier verifier that assumed XQ-DELIVER remained multi-line YAML. The later authorized field proposal normalized XQ-DELIVER into a one-line JSON work item, so that historical checker could no longer locate its block.",
-  "resolution": "Keep the earlier verifier and its registered evidence byte-identical, retain this failed attempt, and make the current handoff verifier read all current work items by their one-line JSON identity. No business artifact or AWR source state was changed by this failed read-only check."
-}

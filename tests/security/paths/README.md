@@ -1,6 +1,6 @@
 # 路径边界检查
 
-`contract.json` 定义 AWR-SEC-001 的 26 个组件条件，覆盖允许、拒绝、目录发现、授权根、路径替换及写回恢复。它不是 8 个真实业务场景的替代口径；任务状态以 `ledger/work-ledger.yaml` 为准。
+`contract.json` 定义 26 个组件条件，覆盖允许、拒绝、目录发现、授权根、路径替换及写回恢复。它不是 8 个真实业务场景的替代口径。
 
 ```bash
 python3 tests/security/paths/verify.py --report .local/path-checks.json
@@ -16,6 +16,6 @@ python3 tests/security/paths/verify.py --report .local/path-checks.json
 
 YAML 写回把临时文件创建、原子替换和失败清理绑定到同一个已打开的父目录；恢复快照和锁也通过逐层打开的目录句柄访问，快照和临时文件使用独占创建。测试在准备后移动原目录并把旧路径指向目录外，确认目录外的源文件和同名临时文件均未改变，失败清理只作用于保留的原目录。域层的来源身份、指纹、版本、验收和写后复核仍然执行；目录句柄不替代这些判断。恢复目录或快照的拒绝信息带上具体路径。
 
-这组检查验证的是来源路径及写回边界。历史读取阶段报告保留在 `ledger/evidence/AWR-SEC-001/read-containment.json`；完整当前报告和源码绑定见同目录下的 `checks.json` 与台账交付回执。它不代表集中故障注入、跨平台验证或真实客户端 E4 已完成。
+这组检查验证来源路径及写回边界。报告写入命令指定的本地路径，不代表跨平台或真实客户端验收。
 
 实现使用 [cap-std 的目录句柄](https://docs.rs/cap-std/4.0.3/cap_std/fs/struct.Dir.html) 和 [cap-fs-ext 的无符号链接目录打开](https://docs.rs/cap-fs-ext/4.0.3/cap_fs_ext/trait.DirExt.html#tymethod.open_dir_nofollow)。依赖版本由 Cargo.lock 固定。多段路径必须逐段处理；仅约束最后一段仍会遗漏父目录替换。

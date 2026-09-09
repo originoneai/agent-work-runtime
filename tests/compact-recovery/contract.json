@@ -2,15 +2,43 @@
   "contract_id": "awr-compact-recovery",
   "version": "1.0.1",
   "work_item": "AWR-P9-002",
-  "source_sections": [23, 24, 43, 52],
-  "status_authority": "ledger/work-ledger.yaml",
+  "source_sections": [
+    23,
+    24,
+    43,
+    52
+  ],
+  "status_authority": "Local execution report; this specification does not record project completion.",
   "fixture_kind": "public synthetic recovery fixture; no model or real-client business invocation",
-  "budgets": {"bootstrap": 3000, "work_context": 5000},
+  "budgets": {
+    "bootstrap": 3000,
+    "work_context": 5000
+  },
   "cases": [
-    {"id": "source-before-checkpoint", "source_change": "before_checkpoint", "checkpoint": true, "fault": null},
-    {"id": "source-after-checkpoint", "source_change": "after_checkpoint", "checkpoint": true, "fault": "stale_revision"},
-    {"id": "missing-checkpoint", "source_change": "after_session_start", "checkpoint": false, "fault": "missing_checkpoint"},
-    {"id": "missing-rule-source", "source_change": "before_checkpoint", "checkpoint": true, "fault": "missing_source"}
+    {
+      "id": "source-before-checkpoint",
+      "source_change": "before_checkpoint",
+      "checkpoint": true,
+      "fault": null
+    },
+    {
+      "id": "source-after-checkpoint",
+      "source_change": "after_checkpoint",
+      "checkpoint": true,
+      "fault": "stale_revision"
+    },
+    {
+      "id": "missing-checkpoint",
+      "source_change": "after_session_start",
+      "checkpoint": false,
+      "fault": "missing_checkpoint"
+    },
+    {
+      "id": "missing-rule-source",
+      "source_change": "before_checkpoint",
+      "checkpoint": true,
+      "fault": "missing_source"
+    }
   ],
   "required_gates": [
     "separate_processes_and_durable_sessions",
@@ -29,7 +57,10 @@
     "original_next_action": "Draft the handover checklist from the existing notes.",
     "current_next_action": "Revise the handover checklist for the updated supplier schedule.",
     "saved_next_action": "Confirm the missing shift contact before finalizing the draft.",
-    "open_loops": ["Supplier timing is still awaiting confirmation.", "The night-shift contact has not reviewed the draft."],
+    "open_loops": [
+      "Supplier timing is still awaiting confirmation.",
+      "The night-shift contact has not reviewed the draft."
+    ],
     "original_common_rule": "Preserve the approved handover facts.",
     "current_common_rule": "Preserve the approved handover facts and label unconfirmed timing.",
     "common_rule_title": "Handover facts",

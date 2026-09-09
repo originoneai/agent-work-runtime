@@ -17,7 +17,7 @@
     "registered_content_read_bytes": 16777216
   },
   "event_payload_schema_version": 1,
-  "completion": "Only executed, passing conditions count. Source-bound checks are an intermediate stage; this item also requires Event Schema, artifact and secret boundaries. Task status and remote receipt remain in ledger/work-ledger.yaml.",
+  "completion": "Only executed, passing conditions count. Source-bound checks are an intermediate stage; this item also requires Event Schema, artifact and secret boundaries. Task status and remote receipt remain in local execution reports.",
   "cases": [
     {
       "id": "markdown_limit",

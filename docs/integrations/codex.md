@@ -220,16 +220,7 @@ Installation preserves existing hooks and never approves their trust automatical
 Verify actual trigger delivery in the receiving client; configuration presence and
 synthetic receiver checks alone are insufficient evidence of native activation.
 
-Verification is dated **2026-09-08**:
-
-| Layer | Evidence boundary |
-| --- | --- |
-| Local Codex CLI | `codex-cli 0.153.4`; `mcp add/get` help inspected and the stdio template parsed with command-line overrides, without persisting configuration. |
-| AWR CLI lifecycle | [Executable fixture walkthrough](../../examples/codex/README.md), plus manual bootstrap/context/checkpoint/resume on this repository's development work. |
-| AWR stdio protocol | Eight-tool transport and domain checks in P8-001; developer stdio self-use is recorded separately from native Codex activation. |
-| Native Codex MCP activation | Not verified by this delivery; requires a live `/mcp` connection and an actual tool call in the receiving client. |
-| Automatic Codex hooks | Project adapter and receiver implemented with local shell/protocol checks; native activation still requires exact hook trust and actual client trigger evidence. |
-| Real business acceptance/release | Not established by configuration, lifecycle demos or development self-use. |
-
-The versioned verification and source/remote bindings are maintained in
-[the work ledger](../../ledger/work-ledger.yaml), not inferred from this guide.
+Use the [executable lifecycle example](../../examples/codex/README.md) to check
+AWR behavior on a disposable project. Native MCP and hook activation must be
+verified in the actual receiving client. Configuration presence, synthetic
+receiver checks and local fixture results do not prove real business acceptance.

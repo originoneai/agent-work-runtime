@@ -1,0 +1,348 @@
+{
+  "contract_id": "awr-business-scenario-catalog",
+  "version": "1.0.0",
+  "completion": {
+    "scenario_required_gates": [
+      "natural_client_initiation",
+      "tool_or_role_execution",
+      "real_artifact",
+      "business_followup_1",
+      "business_followup_2",
+      "independent_review",
+      "final_delivery",
+      "traceable_receipt",
+      "fixture_isolation",
+      "independent_commit_and_remote_sha"
+    ]
+  },
+  "scenarios": [
+    {
+      "id": "AWR-SC-001",
+      "title": "接手新项目并交付当前工作简报",
+      "dimensions": [
+        "daily",
+        "single_agent",
+        "cli"
+      ],
+      "fixture": "tests/fixtures/business/project-onboarding",
+      "namespace": "awr-v1/project-onboarding",
+      "work_graph": "tests/fixtures/business/project-onboarding/work-graph.yaml",
+      "artifact_directory": ".local/business/AWR-SC-001",
+      "roles": {
+        "executor": "实际 Agent 客户端中的执行者",
+        "reviewer": "与执行者可区分的独立复核者；需记录身份与复核结论"
+      },
+      "client": "实际用户使用的 Coding Agent 客户端；优先 Codex，MCP 场景使用已接入 MCP 的真实客户端",
+      "initial_request": "帮我接手这个项目，整理当前目标、最先能推进的工作，以及开始前需要遵守的要求。",
+      "followups": [
+        "把本周优先交付的内容收拢成一份可执行清单，并说明依赖。",
+        "我调整了项目规则，请更新简报，说明哪些安排需要改变。"
+      ],
+      "expected_artifacts": [
+        "工作简报",
+        "任务与依赖清单",
+        "更新后的 Context Pack"
+      ],
+      "required_gates": [
+        "natural_client_initiation",
+        "tool_or_role_execution",
+        "real_artifact",
+        "business_followup_1",
+        "business_followup_2",
+        "independent_review",
+        "final_delivery",
+        "traceable_receipt",
+        "fixture_isolation",
+        "independent_commit_and_remote_sha"
+      ]
+    },
+    {
+      "id": "AWR-SC-002",
+      "title": "长任务中断后继续完成交付",
+      "dimensions": [
+        "daily",
+        "recovery",
+        "session_change",
+        "cli"
+      ],
+      "fixture": "tests/fixtures/business/long-task-resume",
+      "namespace": "awr-v1/long-task-resume",
+      "work_graph": "tests/fixtures/business/long-task-resume/work-graph.yaml",
+      "artifact_directory": ".local/business/AWR-SC-002",
+      "roles": {
+        "executor": "实际 Agent 客户端中的执行者",
+        "reviewer": "与执行者可区分的独立复核者；需记录身份与复核结论"
+      },
+      "client": "实际用户使用的 Coding Agent 客户端；优先 Codex，MCP 场景使用已接入 MCP 的真实客户端",
+      "initial_request": "请继续整理这项持续多天的工作，完成交接记录，并推进还没有闭环的部分。",
+      "followups": [
+        "先补齐上次遗留的问题，并解释现在的推进顺序。",
+        "我补充了验收要求，请据此调整下一步并给出最终交付说明。"
+      ],
+      "expected_artifacts": [
+        "中断前交接",
+        "恢复后的工作记录",
+        "最终交付说明"
+      ],
+      "required_gates": [
+        "natural_client_initiation",
+        "tool_or_role_execution",
+        "real_artifact",
+        "business_followup_1",
+        "business_followup_2",
+        "independent_review",
+        "final_delivery",
+        "traceable_receipt",
+        "fixture_isolation",
+        "independent_commit_and_remote_sha"
+      ]
+    },
+    {
+      "id": "AWR-SC-003",
+      "title": "外部规则与台账变化后的计划修订",
+      "dimensions": [
+        "boundary",
+        "exception",
+        "freshness",
+        "cli"
+      ],
+      "fixture": "tests/fixtures/business/source-change",
+      "namespace": "awr-v1/source-change",
+      "work_graph": "tests/fixtures/business/source-change/work-graph.yaml",
+      "artifact_directory": ".local/business/AWR-SC-003",
+      "roles": {
+        "executor": "实际 Agent 客户端中的执行者",
+        "reviewer": "与执行者可区分的独立复核者；需记录身份与复核结论"
+      },
+      "client": "实际用户使用的 Coding Agent 客户端；优先 Codex，MCP 场景使用已接入 MCP 的真实客户端",
+      "initial_request": "项目计划和规则刚有调整，请重新梳理当前任务，确保后续工作使用最新要求。",
+      "followups": [
+        "对比刚才的安排，说明这次变化影响了哪些依赖和验收条件。",
+        "请把仍不确定的内容核清楚，再给我一版可以执行的安排。"
+      ],
+      "expected_artifacts": [
+        "变化影响说明",
+        "修订后的工作计划",
+        "来源版本对照"
+      ],
+      "required_gates": [
+        "natural_client_initiation",
+        "tool_or_role_execution",
+        "real_artifact",
+        "business_followup_1",
+        "business_followup_2",
+        "independent_review",
+        "final_delivery",
+        "traceable_receipt",
+        "fixture_isolation",
+        "independent_commit_and_remote_sha"
+      ]
+    },
+    {
+      "id": "AWR-SC-004",
+      "title": "两个执行者分工处理并行工作",
+      "dimensions": [
+        "topology",
+        "multi_agent",
+        "claim_conflict",
+        "branch"
+      ],
+      "fixture": "tests/fixtures/business/parallel-ownership",
+      "namespace": "awr-v1/parallel-ownership",
+      "work_graph": "tests/fixtures/business/parallel-ownership/work-graph.yaml",
+      "artifact_directory": ".local/business/AWR-SC-004",
+      "roles": {
+        "executor": "实际 Agent 客户端中的执行者",
+        "reviewer": "与执行者可区分的独立复核者；需记录身份与复核结论"
+      },
+      "client": "实际用户使用的 Coding Agent 客户端；优先 Codex，MCP 场景使用已接入 MCP 的真实客户端",
+      "initial_request": "这两项工作需要并行推进，请先明确分工和交接关系，再分别产出结果。",
+      "followups": [
+        "其中一位执行者暂时离开，请安排接续，保留尚未解决的问题。",
+        "请分别复核两项工作的结果，并汇总需要共同处理的事项。"
+      ],
+      "expected_artifacts": [
+        "分工与接续记录",
+        "两个独立工作产物",
+        "协作复核说明"
+      ],
+      "required_gates": [
+        "natural_client_initiation",
+        "tool_or_role_execution",
+        "real_artifact",
+        "business_followup_1",
+        "business_followup_2",
+        "independent_review",
+        "final_delivery",
+        "traceable_receipt",
+        "fixture_isolation",
+        "independent_commit_and_remote_sha"
+      ]
+    },
+    {
+      "id": "AWR-SC-005",
+      "title": "补齐验收证据后完成任务",
+      "dimensions": [
+        "daily",
+        "boundary",
+        "missing_evidence",
+        "source_mutation"
+      ],
+      "fixture": "tests/fixtures/business/evidence-completion",
+      "namespace": "awr-v1/evidence-completion",
+      "work_graph": "tests/fixtures/business/evidence-completion/work-graph.yaml",
+      "artifact_directory": ".local/business/AWR-SC-005",
+      "roles": {
+        "executor": "实际 Agent 客户端中的执行者",
+        "reviewer": "与执行者可区分的独立复核者；需记录身份与复核结论"
+      },
+      "client": "实际用户使用的 Coding Agent 客户端；优先 Codex，MCP 场景使用已接入 MCP 的真实客户端",
+      "initial_request": "请检查这项工作是否已经具备交付条件，补齐必要的验证材料后完成交付。",
+      "followups": [
+        "现有报告只说明了本地结果，请补充实际使用过程的验证。",
+        "把每条验收要求对应到证据，修订不准确的结论，再确认完成状态。"
+      ],
+      "expected_artifacts": [
+        "证据缺口清单",
+        "补充验证报告",
+        "完成状态与交付回执"
+      ],
+      "required_gates": [
+        "natural_client_initiation",
+        "tool_or_role_execution",
+        "real_artifact",
+        "business_followup_1",
+        "business_followup_2",
+        "independent_review",
+        "final_delivery",
+        "traceable_receipt",
+        "fixture_isolation",
+        "independent_commit_and_remote_sha"
+      ]
+    },
+    {
+      "id": "AWR-SC-006",
+      "title": "意外退出与待应用变更恢复",
+      "dimensions": [
+        "exception",
+        "recovery",
+        "crash",
+        "source_mutation"
+      ],
+      "fixture": "tests/fixtures/business/interrupted-write",
+      "namespace": "awr-v1/interrupted-write",
+      "work_graph": "tests/fixtures/business/interrupted-write/work-graph.yaml",
+      "artifact_directory": ".local/business/AWR-SC-006",
+      "roles": {
+        "executor": "实际 Agent 客户端中的执行者",
+        "reviewer": "与执行者可区分的独立复核者；需记录身份与复核结论"
+      },
+      "client": "实际用户使用的 Coding Agent 客户端；优先 Codex，MCP 场景使用已接入 MCP 的真实客户端",
+      "initial_request": "刚才工作意外中断了，请核实保留下来的结果，恢复到可以继续推进的状态。",
+      "followups": [
+        "请查清哪些修改已经保存、哪些还没生效，并补齐交接说明。",
+        "继续处理剩余工作，确认没有重复写入或丢失结果后交付。"
+      ],
+      "expected_artifacts": [
+        "中断诊断",
+        "恢复及续做记录",
+        "最终一致性说明"
+      ],
+      "required_gates": [
+        "natural_client_initiation",
+        "tool_or_role_execution",
+        "real_artifact",
+        "business_followup_1",
+        "business_followup_2",
+        "independent_review",
+        "final_delivery",
+        "traceable_receipt",
+        "fixture_isolation",
+        "independent_commit_and_remote_sha"
+      ]
+    },
+    {
+      "id": "AWR-SC-007",
+      "title": "受限资料与超大日志下的工作交付",
+      "dimensions": [
+        "permission",
+        "boundary",
+        "secret",
+        "size_limit"
+      ],
+      "fixture": "tests/fixtures/business/restricted-material",
+      "namespace": "awr-v1/restricted-material",
+      "work_graph": "tests/fixtures/business/restricted-material/work-graph.yaml",
+      "artifact_directory": ".local/business/AWR-SC-007",
+      "roles": {
+        "executor": "实际 Agent 客户端中的执行者",
+        "reviewer": "与执行者可区分的独立复核者；需记录身份与复核结论"
+      },
+      "client": "实际用户使用的 Coding Agent 客户端；优先 Codex，MCP 场景使用已接入 MCP 的真实客户端",
+      "initial_request": "请利用这个项目允许访问的资料完成工作简报，并列出仍然缺少的材料。",
+      "followups": [
+        "补充分析这份很长的运行记录，保留对当前任务真正有用的结论。",
+        "给我一份可对外分享的版本，核实引用范围和敏感内容处理结果。"
+      ],
+      "expected_artifacts": [
+        "受限资料说明",
+        "运行记录摘要",
+        "可公开交付版本"
+      ],
+      "required_gates": [
+        "natural_client_initiation",
+        "tool_or_role_execution",
+        "real_artifact",
+        "business_followup_1",
+        "business_followup_2",
+        "independent_review",
+        "final_delivery",
+        "traceable_receipt",
+        "fixture_isolation",
+        "independent_commit_and_remote_sha"
+      ]
+    },
+    {
+      "id": "AWR-SC-008",
+      "title": "跨客户端接续工作分支并合并交付",
+      "dimensions": [
+        "channel",
+        "topology",
+        "recovery",
+        "branch_merge",
+        "mcp"
+      ],
+      "fixture": "tests/fixtures/business/branch-handoff",
+      "namespace": "awr-v1/branch-handoff",
+      "work_graph": "tests/fixtures/business/branch-handoff/work-graph.yaml",
+      "artifact_directory": ".local/business/AWR-SC-008",
+      "roles": {
+        "executor": "实际 Agent 客户端中的执行者",
+        "reviewer": "与执行者可区分的独立复核者；需记录身份与复核结论"
+      },
+      "client": "实际用户使用的 Coding Agent 客户端；优先 Codex，MCP 场景使用已接入 MCP 的真实客户端",
+      "initial_request": "请接续另一位执行者留下的工作分支，核实进展后完成后续交付。",
+      "followups": [
+        "主线已有新的变化，请结合这些变化修订方案并继续推进。",
+        "整合结果后整理合并说明，关闭已结束的工作，并交代仍需跟进的问题。"
+      ],
+      "expected_artifacts": [
+        "跨客户端交接记录",
+        "合并影响说明",
+        "分支结束与最终交付记录"
+      ],
+      "required_gates": [
+        "natural_client_initiation",
+        "tool_or_role_execution",
+        "real_artifact",
+        "business_followup_1",
+        "business_followup_2",
+        "independent_review",
+        "final_delivery",
+        "traceable_receipt",
+        "fixture_isolation",
+        "independent_commit_and_remote_sha"
+      ]
+    }
+  ]
+}

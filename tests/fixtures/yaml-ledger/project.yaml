@@ -1,0 +1,38 @@
+goals:
+  - id: G-SERVICE
+    title: Deliver a usable support service
+    status: active
+    success_criteria: [A request can be received and resolved.]
+milestones:
+  - id: M-CORE
+    title: Service workflow
+    status: in_progress
+    acceptance: [Routing and delivery can be demonstrated.]
+work_items:
+  - id: SERVICE-1
+    title: Receive a support request
+    goal: G-SERVICE
+    milestone: M-CORE
+    status: completed
+    acceptance: [The original request is retained.]
+    depends_on: []
+    next_action: Keep the request available for routing.
+    evidence: []
+  - id: SERVICE-2
+    title: Route a request to its owner
+    goal: G-SERVICE
+    milestone: M-CORE
+    status: ready
+    acceptance: [Exactly one owner is assigned., Unassigned requests remain visible.]
+    depends_on: [SERVICE-1]
+    next_action: Implement owner selection.
+    evidence: []
+  - id: SERVICE-3
+    title: Deliver the resolution
+    goal: G-SERVICE
+    milestone: M-CORE
+    status: planned
+    acceptance: [A resolution is linked to the original request.]
+    depends_on: [SERVICE-2]
+    next_action: Draft the delivery template after routing is ready.
+    evidence: []

@@ -19,3 +19,34 @@ __pycache__/
 .env
 .env.*
 !.env.example
+
+# Internal development material stays local, including the project's own AWR mapping.
+/ledger/
+/contracts/
+/.awr/
+/docs/GOALS.md
+/docs/PLAN.md
+/docs/RULES.md
+/docs/KICKOFF.md
+/docs/design/
+/docs/decisions/
+/docs/acceptance/
+/docs/benchmarks/compact-recovery.md
+/docs/benchmarks/context.md
+/docs/benchmarks/large-ledger.md
+/docs/benchmarks/performance.md
+/scripts/check_ledger.py
+
+# Conventional local planning and handoff locations
+/work-ledger.yaml
+/LEDGER.md
+/GOALS.md
+/PLAN.md
+/KICKOFF.md
+/RULES.md
+/internal/
+/planning/
+/notes/
+/records/
+/evidence/
+/handoffs/

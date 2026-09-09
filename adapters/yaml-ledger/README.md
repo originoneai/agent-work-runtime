@@ -30,7 +30,7 @@ Done = "completed"
 Source runtime state, claims and events cannot be imported as work history. The development example can index a local ledger:
 
 ```sh
-cargo run -p awr-source --example index_yaml -- . ledger/work-ledger.yaml .local/intake.db
+cargo run -p awr-source --example index_yaml -- . tests/fixtures/yaml-ledger/ledger.yaml .local/intake.db
 ```
 
 Create the output directory first. The example reads the named project files and stores derived facts in the provided database. It does not modify source files.

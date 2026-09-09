@@ -3,13 +3,16 @@ import hashlib
 import json
 import sqlite3
 import subprocess
+import shutil
+import os
 import tempfile
 from pathlib import Path
 
 import yaml
 
 ROOT = Path(__file__).resolve().parents[3]
-BINARY = ROOT / "target/debug/examples/index_yaml"
+BINARY = ROOT / ("target/debug/examples/index_yaml.exe" if os.name == "nt" else "target/debug/examples/index_yaml")
+PREFIX = ["rtk", "proxy"] if shutil.which("rtk") else []
 
 
 def digest(path):
@@ -18,7 +21,7 @@ def digest(path):
 
 def index(source, database, success=True):
     result = subprocess.run(
-        ["rtk", "proxy", str(BINARY), str(ROOT), str(source), str(database)],
+        PREFIX + [str(BINARY), str(ROOT), str(source), str(database)],
         capture_output=True, text=True, check=False,
     )
     assert (result.returncode == 0) == success, result.stdout + result.stderr
@@ -37,7 +40,7 @@ def rows(database, table):
 
 def main():
     fixture = ROOT / "tests/fixtures/yaml-ledger/ledger.yaml"
-    project = ROOT / "ledger/work-ledger.yaml"
+    project = ROOT / "tests/fixtures/yaml-ledger/project.yaml"
     original = {path: digest(path) for path in (fixture, project)}
     (ROOT / ".local").mkdir(exist_ok=True)
     with tempfile.TemporaryDirectory(prefix="yaml-intake-", dir=ROOT / ".local") as scratch:

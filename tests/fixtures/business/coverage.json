@@ -1,6 +1,6 @@
 {
   "contract_id": "awr-business-fixtures",
-  "version": "1.0.1",
+  "version": "1.1.0",
   "scenario_count": 8,
   "work_node_count": 40,
   "dimensions": {
@@ -91,6 +91,6 @@
     "fixture_isolation",
     "independent_commit_and_remote_sha"
   ],
-  "status_authority": "ledger/work-ledger.yaml",
+  "status_authority": "Local execution reports; public fixtures contain definitions only.",
   "execution_status_inferred": false
 }

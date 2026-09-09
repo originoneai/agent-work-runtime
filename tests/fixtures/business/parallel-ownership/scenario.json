@@ -115,7 +115,7 @@
     "claim_conflict",
     "branch"
   ],
-  "artifact_directory": "ledger/evidence/business/AWR-SC-004",
+  "artifact_directory": ".local/business/AWR-SC-004",
   "minimum_real_clients": 1,
   "native_mcp_required": false,
   "runtime_seed_policy": "Never seed sessions, claims, events, checkpoints, completed source work or E4 receipts. Prelude state must come from actual client execution.",

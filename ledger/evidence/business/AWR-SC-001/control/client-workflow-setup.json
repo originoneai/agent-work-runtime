@@ -1,8 +1,0 @@
-{
-  "kind": "client_workflow_setup",
-  "project": "/Users/mac/Documents/originone/agent-work-running/.local/business-live-20260909-v1/project-onboarding/project",
-  "agent_instructions_sha256": "9c50d24e34e314142c7e724290034d0aaeea768953c122f54fd9c3ee922c1b01",
-  "runtime_initialized": false,
-  "model_started": false,
-  "delivery_convention_sha256": "32a59caa8ca42ee5481b32777a40777af6ff36076bdd68355b669f44058c56f4"
-}

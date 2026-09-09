@@ -1,8 +1,0 @@
-{
-  "kind": "actual_process_observation_publication",
-  "published_at": "2026-09-09T11:33:05+08:00",
-  "target": "review-inputs/usage-process-observation.json",
-  "sha256": "29fa1f377f792204c13811480e515808563091f2b1f0691020d445f41e74093d",
-  "basis": "Actual native input timing and original report claims; correction assessment remains independent.",
-  "runtime_mutation_performed": false
-}
