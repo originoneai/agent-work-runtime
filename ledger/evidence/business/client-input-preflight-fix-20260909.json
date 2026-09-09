@@ -23,7 +23,18 @@
     "canonical_and_prelude_inputs": 28,
     "derived_work_keys": 40,
     "git_diff_check_exit_code": 0,
-    "full_fixture_intake_verification": "pending exact committed source; this targeted result makes no intake or E4 claim",
+    "full_fixture_intake_verification": {
+      "source_commit": "6038af608a89752e6ea8c6d8e2c70e236269ca64",
+      "report": "ledger/evidence/business/client-input-preflight-intake-20260909.json",
+      "report_sha256": "73d530526d73a0a9ffec0fcee7c5d09d8b941072e8fa4a9eaee26b3da80cbc87",
+      "exit_code": 0,
+      "prepared_fixtures": 8,
+      "distinct_projects": 8,
+      "distinct_work_identities": 40,
+      "definition_rejections": 7,
+      "source_pack_and_actual_ledger_unchanged": true,
+      "e4_credit": 0
+    },
     "full_fixture_intake_attempts": [
       {
         "source_commit": "e0caf460",
@@ -42,5 +53,20 @@
   ],
   "native_client_invoked_by_checks": false,
   "runtime_business_state_modified": false,
-  "e4_credit": 0
+  "e4_credit": 0,
+  "verified_remote_delivery": {
+    "kind": "verified_git_and_github_remote_receipt",
+    "source_commit": "6038af608a89752e6ea8c6d8e2c70e236269ca64",
+    "verified_at": "2026-09-09T12:31:07+08:00",
+    "git_ls_remote": {
+      "exit_code": 0,
+      "actual_result": "6038af608a89752e6ea8c6d8e2c70e236269ca64\trefs/heads/main"
+    },
+    "github_api": {
+      "exit_code": 0,
+      "sha": "6038af608a89752e6ea8c6d8e2c70e236269ca64",
+      "url": "https://github.com/originoneai/agent-work-runtime/commit/6038af608a89752e6ea8c6d8e2c70e236269ca64"
+    },
+    "scope": "Actual root transport and GitHub API outputs after successful push of shared input-preflight and coverage fixes."
+  }
 }
