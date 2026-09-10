@@ -592,6 +592,9 @@ pub fn work(root: &Path, command: &WorkCommand, json_output: bool) -> Result<()>
             )
         }
         WorkCommand::Show { .. }
+        | WorkCommand::Create(_)
+        | WorkCommand::CreateStatus(_)
+        | WorkCommand::CreateRecover(_)
         | WorkCommand::Progress(_)
         | WorkCommand::Block(_)
         | WorkCommand::Unblock(_)

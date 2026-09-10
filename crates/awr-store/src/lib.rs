@@ -43,10 +43,11 @@ use std::{path::Path, time::Duration};
 
 const APPLICATION_ID: i64 = 0x41575231;
 /// Schema written by this build. Exposed for offline host compatibility negotiation.
-pub const SCHEMA_VERSION: i64 = 3;
+pub const SCHEMA_VERSION: i64 = 4;
 const CATALOG_SQL: &str = include_str!("../migrations/001_catalog.sql");
 const DOMAIN_SQL: &str = include_str!("../migrations/002_domain.sql");
 const SEARCH_SQL: &str = include_str!("../migrations/003_search.sql");
+const DRAFT_WORK_SQL: &str = include_str!("../migrations/004_draft_work.sql");
 
 /// Domain operations own database writes; no SQL handle is exposed to callers.
 ///
@@ -239,6 +240,12 @@ impl Store {
             }
         }
         if current < SCHEMA_VERSION {
+            // SQLite table rebuild protocol: suppress FK actions only on this unexposed
+            // connection, then check all references before committing and restore enforcement.
+            conn.pragma_update(None, "foreign_keys", false)
+                .map_err(db_error)?;
+            conn.pragma_update(None, "legacy_alter_table", true)
+                .map_err(db_error)?;
             let tx = conn
                 .transaction_with_behavior(TransactionBehavior::Immediate)
                 .map_err(db_error)?;
@@ -276,10 +283,34 @@ impl Store {
                 )
                 .map_err(db_error)?;
             }
+            if version < 4 {
+                // Preserve user diagnostic indexes/triggers as well as owned schema objects.
+                let extras:Vec<String> = tx.prepare("SELECT sql FROM sqlite_master WHERE tbl_name='work_items' AND type IN ('index','trigger') AND sql IS NOT NULL AND name NOT IN ('work_items_source','work_status') ORDER BY name").map_err(db_error)?
+                    .query_map([],|row|row.get(0)).map_err(db_error)?.collect::<rusqlite::Result<_>>().map_err(db_error)?;
+                tx.execute_batch(DRAFT_WORK_SQL).map_err(db_error)?;
+                for sql in extras {
+                    tx.execute_batch(&sql).map_err(db_error)?;
+                }
+                tx.execute("INSERT INTO schema_migrations(version,name,applied_at) VALUES(4,'draft_work',?1)",[now_millis()?]).map_err(db_error)?;
+            }
             tx.pragma_update(None, "user_version", SCHEMA_VERSION)
                 .map_err(db_error)?;
             schema::verify(&tx, SCHEMA_VERSION)?;
+            if tx
+                .prepare("PRAGMA foreign_key_check")
+                .map_err(db_error)?
+                .exists([])
+                .map_err(db_error)?
+            {
+                return Err(Error::Storage(
+                    "migration would leave invalid foreign-key references".into(),
+                ));
+            }
             tx.commit().map_err(db_error)?;
+            conn.pragma_update(None, "legacy_alter_table", false)
+                .map_err(db_error)?;
+            conn.pragma_update(None, "foreign_keys", true)
+                .map_err(db_error)?;
         }
         let store = Self { conn };
         store.verify_catalog()?;

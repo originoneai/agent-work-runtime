@@ -67,6 +67,19 @@ pub fn inspect_mutation_source(
             "mutation source identity/configuration differs from its binding".into(),
         ));
     }
+    let (locator, spec, snapshot) = inspect_registered_source(root, source)?;
+    if snapshot.locator != patch.target.meta.source_ref.locator {
+        return Err(Error::SourceConflict("proposal source bytes or immutable locator changed; keep the proposal for review and create a new one from current facts".into()));
+    }
+    Ok((locator, spec, snapshot))
+}
+
+/// Resolve exactly one currently registered source, retaining its bound configuration.
+/// This is a read-only observation; writers must hold their source lock and recheck bytes.
+pub fn inspect_registered_source(
+    root: &Path,
+    source: &Source,
+) -> Result<(Locator, SourceSpec, SourceSnapshot)> {
     let root = root.canonicalize()?;
     let manifest = Manifest::load(&root)?;
     let mut matches = Vec::new();
@@ -91,9 +104,7 @@ pub fn inspect_mutation_source(
                 spec,
                 manifest.project.context_profile == crate::ContextProfile::Minimal,
             );
-            if source.adapter != spec.adapter
-                || source.role != spec.role
-                || config != patch.source_config
+            if source.adapter != spec.adapter || source.role != spec.role || config != source.config
             {
                 return Err(Error::SourceConflict(
                     "proposal source mapping or adapter configuration has changed".into(),
@@ -110,8 +121,5 @@ pub fn inspect_mutation_source(
     }
     let (locator, spec) = matches.pop().unwrap();
     let snapshot = locator.read(&root, crate::source_read_cap(&spec.adapter)?)?;
-    if snapshot.locator != patch.target.meta.source_ref.locator {
-        return Err(Error::SourceConflict("proposal source bytes or immutable locator changed; keep the proposal for review and create a new one from current facts".into()));
-    }
     Ok((locator, spec, snapshot))
 }

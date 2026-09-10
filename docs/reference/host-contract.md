@@ -166,9 +166,52 @@ expected semantics and reparse through the source adapter. See the
 [YAML writer](../../adapters/yaml-ledger/README.md) for supported shapes.
 
 Markdown adapters currently read sources; they do not authorize Markdown body or ledger
-writes. Unsupported capabilities include human-save shortcuts, new tasks, multi-file
+writes. Unsupported capabilities include human-save shortcuts, multi-file
 writes and user-confirmed completion. Never route an unsupported operation through a
 generic status patch or a second writer.
+
+## Create a task with a stable request identity
+
+```text
+awr work create --title 'Prepare the travel checklist' --request-key <host-request-id> --json
+awr work create --title 'Prepare the travel checklist' --request-key <same-id> --accept --expected-preview <fingerprint> --expected-revision <preview-project-revision> --json
+awr work create-status --key <host-request-id> --json
+awr work create-recover --key <host-request-id> --expected-revision <current-project-revision> --json
+```
+
+Alternatively, `work create --input request.json` accepts protected JSON containing
+`version: 1`, `request_key`, `title` and optional `source_id`. Without an explicit source,
+exactly one primary ledger must be registered. Creation currently supports ordinary
+YAML lists and keyed maps, including flow/empty collections, configured field/status
+names and CRLF. Existing bytes and work IDs are retained; new block records use the
+existing indentation. Unsupported YAML forms fail before writing.
+
+The request ID belongs to one project and one exact creation payload. Its stable new
+`WORK-…` key is included in the preview. Acceptance binds the request, source mapping,
+source fingerprint, before/after text and project revision. Repeated identical requests
+return the recorded work ID and outcome, even with an old preview revision. Changed
+content under an existing key is a conflict. A busy concurrent writer may return
+`MutationConflict`; query the request before another attempt. A later source change
+does not authorize reusing the same request to create or restore another task.
+
+Only a title is needed from the user. The new source status is `draft` (or its explicit
+mapped spelling), with missing execution facts left missing. It is a draft, never
+automatically executable or completed. Draft is excluded from the execution queue; normal readiness/context/domain rules still
+apply. No session, runtime claim, model call or invented acceptance is created.
+
+Creation retains a plan and before/after snapshots in the ignored mutation directory,
+shares the existing source writer lock and atomic replacement primitive, and verifies
+the resulting projection. `phase` describes the creation request, not work completion.
+`source_write_performed`/`runtime_write_performed` describe this invocation; a replay's
+historical `write_outcome` is separate. Pending results require explicit recovery.
+Recovery only installs the reviewed after snapshot when current bytes match before,
+or finishes projection when they already match after. Other bytes or changed registrations
+are retained and reported as conflicts. Recovery never rolls back newer user edits.
+
+`create-status` is read-only and distinguishes its historical receipt from the current
+source observation (`before`, `after`, `externally_changed`, or unavailable/registration
+changed). A transport failure cannot be interpreted as unwritten. Read the same request
+key first; pending writes are never automatically repeated by the create command.
 
 `work complete` retains the engineering contract: a real session/claim and evidence
 covering the source's acceptance criteria at the supplied source SHA. A source's raw
@@ -337,6 +380,13 @@ Back up matching program version, original sources, manifest and SQLite runtime
 before an upgrade. Source projections are rebuildable; events and checkpoints are
 not reconstructed by reindexing source documents. A binary downgrade alone is not a
 database rollback procedure.
+
+This development build writes schema 4, which adds the non-executable `draft` work
+state. The transactional migration preserves existing rows and references, checks
+foreign keys, and retains additional indexes and triggers. Builds that only support
+schema 3 must reject this database; restore a matching database/program snapshot
+when rolling back. Newly created drafts need an explicit source declaration before
+execution; creation itself never supplies missing execution or completion facts.
 
 One project keeps one source ledger. When replacing an existing host writer, switch
 only operations AWR actually supports, retain old runtime history as history, and

@@ -426,11 +426,7 @@ fn render(text: &str, node: &Node, value: &Value, newline: &str) -> Result<Strin
     }
 }
 
-pub(crate) fn edit_fields(
-    text: &str,
-    pointer: &str,
-    changes: &Map<String, Value>,
-) -> Result<String> {
+fn parse_tree(text: &str) -> Result<Node> {
     let offsets = text
         .char_indices()
         .map(|(i, _)| i)
@@ -451,6 +447,15 @@ pub(crate) fn edit_fields(
             "multiple YAML documents require manual editing",
         ));
     }
+    Ok(root)
+}
+
+pub(crate) fn edit_fields(
+    text: &str,
+    pointer: &str,
+    changes: &Map<String, Value>,
+) -> Result<String> {
+    let root = parse_tree(text)?;
     let mut target = &root;
     for part in pointer
         .strip_prefix('/')
@@ -526,5 +531,108 @@ pub(crate) fn edit_fields(
         boundary = range.start;
         output.replace_range(range, &replacement);
     }
+    Ok(output)
+}
+
+/// Append one record without serializing any existing record or renumbering keys.
+pub(crate) fn append_work(text: &str, key: &str, fields: &[(String, Value)]) -> Result<String> {
+    let root = parse_tree(text)?;
+    let Kind::Mapping(root_fields, ..) = &root.kind else {
+        return Err(unsupported("work creation needs a mapping document"));
+    };
+    let (_, collection) = root_fields
+        .iter()
+        .find(|(k, _)| k == "work_items")
+        .ok_or_else(|| {
+            unsupported("register a YAML ledger with an explicit work_items list or map")
+        })?;
+    let newline = if text.contains("\r\n") { "\r\n" } else { "\n" };
+    let record = Value::Object(fields.iter().cloned().collect());
+    let (at, addition) = match &collection.kind {
+        Kind::Sequence(items) if text[collection.range.start..].starts_with('[') => (
+            collection.range.end - 1,
+            format!(
+                "{}{}",
+                if items.is_empty() { "" } else { ", " },
+                json(&record)?
+            ),
+        ),
+        Kind::Sequence(items) => {
+            let first = items
+                .first()
+                .ok_or_else(|| unsupported("empty block sequences require explicit [] syntax"))?;
+            let line = text[..first.range.start].rfind('\n').map_or(0, |i| i + 1);
+            let dash = text[line..line_end(text, line)]
+                .find('-')
+                .map(|i| line + i)
+                .ok_or_else(|| unsupported("could not locate the ledger list indentation"))?;
+            if !text[line..dash].trim().is_empty() {
+                return Err(unsupported("unsupported compact ledger nesting"));
+            }
+            let indent = column(text, dash);
+            let at = if text[..collection.range.end].ends_with('\n') {
+                collection.range.end
+            } else {
+                line_end(text, collection.range.end)
+            };
+            let mut addition = if text[..at].ends_with('\n') {
+                String::new()
+            } else {
+                newline.into()
+            };
+            for (i, (field, value)) in fields.iter().enumerate() {
+                addition += &format!(
+                    "{}{}{}: {}{newline}",
+                    " ".repeat(indent),
+                    if i == 0 { "- " } else { "  " },
+                    json(&Value::String(field.clone()))?,
+                    json(value)?
+                );
+            }
+            (at, addition)
+        }
+        Kind::Mapping(items, true, _) => (
+            collection.range.end - 1,
+            format!(
+                "{}{}: {}",
+                if items.is_empty() { "" } else { ", " },
+                json(&Value::String(key.into()))?,
+                json(&record)?
+            ),
+        ),
+        Kind::Mapping(_, false, indent) => {
+            let at = if text[..collection.range.end].ends_with('\n') {
+                collection.range.end
+            } else {
+                line_end(text, collection.range.end)
+            };
+            let mut addition = if text[..at].ends_with('\n') {
+                String::new()
+            } else {
+                newline.into()
+            };
+            addition += &format!(
+                "{}{}:{newline}",
+                " ".repeat(*indent),
+                json(&Value::String(key.into()))?
+            );
+            for (field, value) in fields {
+                addition += &format!(
+                    "{}{}: {}{newline}",
+                    " ".repeat(*indent + 2),
+                    json(&Value::String(field.clone()))?,
+                    json(value)?
+                );
+            }
+            (at, addition)
+        }
+        _ => {
+            return Err(unsupported(
+                "work_items must be an explicit list or keyed map",
+            ));
+        }
+    };
+    let mut output = text.to_owned();
+    output.insert_str(at, &addition);
     Ok(output)
 }

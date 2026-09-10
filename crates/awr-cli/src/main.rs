@@ -22,6 +22,7 @@ mod session;
 mod source;
 mod source_changes;
 mod work_action;
+mod work_create;
 
 #[derive(Debug, Parser)]
 #[command(

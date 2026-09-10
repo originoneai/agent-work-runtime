@@ -10,6 +10,7 @@ mod manifest;
 mod markdown;
 mod markdown_ledger;
 mod mutation;
+mod yaml_create;
 mod yaml_edit;
 mod yaml_ledger;
 mod yaml_mutation;
@@ -33,8 +34,11 @@ pub use markdown::{
     MarkdownHeadingAdapter, MarkdownRulesAdapter, MarkdownSection, markdown_sections,
 };
 pub use markdown_ledger::MarkdownLedgerAdapter;
-pub use mutation::{MutationSourceCheck, inspect_mutation_source, verify_mutation_source};
+pub use mutation::{
+    MutationSourceCheck, inspect_mutation_source, inspect_registered_source, verify_mutation_source,
+};
 pub use safe_fs::{open_dir_exact, open_file_exact};
+pub use yaml_create::{PreparedWorkCreation, prepare_work_creation};
 pub use yaml_ledger::YamlLedgerAdapter;
 pub use yaml_mutation::{
     PreparedYamlMutation, parse_mutation_projection, prepare_yaml_mutation,

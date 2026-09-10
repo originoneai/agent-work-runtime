@@ -194,7 +194,17 @@ fn catalog() -> Vec<Capability> {
                 "domain_actions_still_required",
             ],
         ),
-        ("mutation.work.create", false, &[], &["not_implemented"]),
+        (
+            "mutation.work.create",
+            true,
+            &["work create", "work create-status", "work create-recover"],
+            &[
+                "registered_yaml_ledger_only",
+                "exact_preview_and_revision",
+                "stable_request_key",
+                "draft_state_not_executable",
+            ],
+        ),
         ("mutation.markdown", false, &[], &["not_implemented"]),
         ("mutation.human_save", false, &[], &["not_implemented"]),
         ("mutation.multi_file", false, &[], &["not_implemented"]),
@@ -269,7 +279,7 @@ pub fn run(args: &CapabilitiesArgs, json_output: bool) -> Result<()> {
             "os": std::env::consts::OS, "arch": std::env::consts::ARCH},
         "database": {"schema_version": awr_store::SCHEMA_VERSION,
             "read_only_schema_versions": [awr_store::SCHEMA_VERSION],
-            "migrate_from_schema_versions": [1, 2],
+            "migrate_from_schema_versions": [1, 2, 3],
             "newer_schema_policy": "reject_without_migration",
             "schema_validation_required": true},
         "source_adapters": awr_source::SOURCE_ADAPTERS.iter().map(|id| json!({

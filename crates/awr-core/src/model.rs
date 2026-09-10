@@ -32,6 +32,7 @@ pub enum Freshness {
 #[derive(Debug, Clone, Copy, Serialize, Deserialize, PartialEq, Eq)]
 #[serde(rename_all = "snake_case")]
 pub enum WorkStatus {
+    Draft,
     Planned,
     Ready,
     Claimed,
@@ -45,6 +46,7 @@ pub enum WorkStatus {
 impl WorkStatus {
     pub fn normalize(raw: &str) -> Self {
         match raw {
+            "draft" => Self::Draft,
             "planned" => Self::Planned,
             "ready" => Self::Ready,
             "claimed" => Self::Claimed,

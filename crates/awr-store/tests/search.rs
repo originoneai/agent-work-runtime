@@ -120,7 +120,10 @@ fn fts_and_structured_filters_return_ranked_versioned_summaries() {
     f.store.retire_source(&f.source).unwrap();
     assert!(search(&mut f, "依赖").is_empty());
     assert!(f.store.doctor().unwrap().ok);
-    assert_eq!(f.store.doctor().unwrap().schema_version, 3);
+    assert_eq!(
+        f.store.doctor().unwrap().schema_version,
+        awr_store::SCHEMA_VERSION
+    );
 }
 
 #[test]
