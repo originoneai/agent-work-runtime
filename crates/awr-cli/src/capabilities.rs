@@ -39,6 +39,16 @@ fn catalog() -> Vec<Capability> {
             &["may_write_runtime", "partial_failure_requires_retry"],
         ),
         (
+            "source.changes",
+            true,
+            &["source changes"],
+            &[
+                "read_only_event_window",
+                "consumer_owns_success_cursor",
+                "current_failures_are_not_retirements",
+            ],
+        ),
+        (
             "intake.reviewed_draft",
             true,
             &["init", "intake inspect"],

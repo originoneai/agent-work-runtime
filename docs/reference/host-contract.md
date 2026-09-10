@@ -171,6 +171,59 @@ without installing hooks; caller-provided summaries remain caller assertions. An
 artifact import copies content, while references in evidence/events keep their own
 documented read and verification rules.
 
+## Consume changes without losing failures
+
+`source scan` observes current registrations and availability; it does not parse
+pending content. `source reindex` refreshes projections. Both return a `change_window`
+with `after_revision` and `through_revision`, plus `projection_complete` (false for
+pending or failed sources). A fully unchanged refresh creates no new source event or
+work identity. Keep stdout, stderr and exit code for partial failures.
+
+Read immutable source receipts, including changes missed before a host restart:
+
+```text
+awr source changes --after-revision <last-successfully-processed-revision> --json
+awr source changes --cursor '<next_cursor JSON>' --through-revision <returned-bound> --json
+```
+
+This command is read-only and reuses the existing event cursor/order. Pages contain
+at most 100 source events (default 20); runtime events do not consume that limit.
+Hold `through_revision` fixed while paging. Each receipt exposes the source's before
+and after versions/freshness, content/configuration/membership changes and an exact
+projection change count. `observation_only` is true when the event changes neither
+content, configuration, membership nor objects; a freshness observation may still
+mean the source needs reindexing. Scanning is not a knowledge-processing result.
+
+Object change details stay in their original `source.projected`/retirement event.
+Use the returned `detail_command` to read its bounded payload, including stable IDs,
+added/updated/removed actions and before/after object revisions. A summary never
+stands in for omitted details. Unknown historical change schemas return an explicit
+partial result requiring a full refresh/rebaseline; they are not guessed compatible.
+
+`pending_source_total` and bounded `pending_sources` describe the **current retained
+index state**, independently of the historical event window. A nonzero `SourceStale`
+result retains useful stdout and withholds `next_after_revision_when_processed`.
+An unreadable or malformed source stays stale/unavailable; repeated failure can have
+no new event while the pending source remains visible. Retry the failed refresh and
+resume from the last successfully processed window. `source list` exposes all retained
+active source metadata if more than 50 pending summaries were omitted. Reads alone do
+not check whether previously fresh files changed since the last scan/index.
+
+Successful directory discovery can prove a child is no longer selected, and removing
+a manifest mapping explicitly retires its source. Failure to read a file/directory,
+parse it or access an authorized root does not prove retirement. The `issues` from
+scan/reindex preserve typed failures and affected mappings. `retired` means no longer
+selected as current authority; it is not a claim that a physical file was deleted.
+Events, evidence and completed checkpoints remain in runtime history. Reappearance
+under the same source identity/explicit object key keeps its retained IDs. File moves
+or changed source identities do not authorize guessing a rename or rewriting history.
+
+When all pages, object changes and pending sources have been handled successfully,
+the host may persist `next_after_revision_when_processed` as its own success cursor.
+`consumer_checkpoint_updated` is always false: AWR never acknowledges knowledge
+weaving or application processing on the host's behalf. A returned revision or an
+empty change page alone is not proof that downstream work finished.
+
 ## External clients, checkpoints and continuation
 
 One work may have several AWR sessions and several native client conversations.

@@ -12,6 +12,8 @@ use std::{
 
 #[derive(Debug, Subcommand)]
 pub enum SourceCommand {
+    /// Read source lifecycle/change receipts in an immutable event window without refreshing files.
+    Changes(crate::source_changes::ChangesArgs),
     /// Preview or apply an exact replacement source mapping while preserving project identity.
     Configure {
         #[arg(long)]
@@ -520,6 +522,7 @@ pub(crate) fn discover(root: &Path) -> Result<(Option<Manifest>, Vec<Value>, Vec
 
 pub fn run(root: &Path, command: &SourceCommand, json_output: bool) -> Result<()> {
     match command {
+        SourceCommand::Changes(args) => return crate::source_changes::run(root, args, json_output),
         SourceCommand::ConfigureStatus {
             preview_fingerprint,
         } => {
@@ -551,6 +554,7 @@ pub fn run(root: &Path, command: &SourceCommand, json_output: bool) -> Result<()
     let runtime = runtime_dir(&root, false)?;
     match command {
         SourceCommand::Configure { .. }
+        | SourceCommand::Changes(_)
         | SourceCommand::ConfigureStatus { .. }
         | SourceCommand::Show(_)
         | SourceCommand::History { .. } => unreachable!(),

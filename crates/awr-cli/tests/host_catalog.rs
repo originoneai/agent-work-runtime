@@ -361,3 +361,46 @@ fn runtime_artifacts_and_source_or_runtime_evidence_share_bounded_reference_cata
     assert!(first["items"][0]["source"].is_null() != second["items"][0]["source"].is_null());
     assert_eq!(p.ok(&["work", "show", "W000"])["work"]["status"], "ready");
 }
+
+#[test]
+fn git_directory_reads_match_registered_ref_identity_and_verify_current_snapshot() {
+    let p = Project::new(1);
+    let git = |args: &[&str]| {
+        let r = Command::new("git")
+            .current_dir(&p.0)
+            .args(args)
+            .output()
+            .unwrap();
+        assert!(r.status.success(), "{}", String::from_utf8_lossy(&r.stderr));
+    };
+    git(&["init", "--initial-branch=main"]);
+    git(&["config", "user.name", "AWR Fixture"]);
+    git(&["config", "user.email", "fixture@example.invalid"]);
+    git(&["config", "commit.gpgsign", "false"]);
+    fs::create_dir(p.0.join("decisions")).unwrap();
+    let body = "# D: Keep registered Git sources\n\nStatus: accepted\n\n## Decision\n\nRead the selected revision.\n";
+    p.write("decisions/D.md", body);
+    git(&["add", "decisions/D.md"]);
+    git(&["commit", "-m", "Add fixture decision"]);
+    let manifest = fs::read_to_string(p.0.join(".awr/project.toml")).unwrap();
+    p.write(".awr/project.toml",&format!("{manifest}\n[[sources]]\ndomain='decisions'\nrole='supporting'\nlocator='git://HEAD:decisions'\nadapter='markdown-directory-v1'\n"));
+    let source = p.ok(&["object", "list", "source"])["items"]
+        .as_array()
+        .unwrap()
+        .iter()
+        .find(|s| s["domain"] == "decisions")
+        .unwrap()
+        .clone();
+    assert_eq!(source["locator"], "git://HEAD:decisions/D.md");
+    let id = source["id"].as_str().unwrap();
+    assert_eq!(p.ok(&["source", "show", id, "--content"])["content"], body);
+    let revised = body.replace("selected revision", "revised selection");
+    p.write("decisions/D.md", &revised);
+    git(&["add", "decisions/D.md"]);
+    git(&["commit", "-m", "Revise fixture decision"]);
+    p.error(&["source", "show", id, "--content"], "SourceConflict");
+    p.ok(&["source", "reindex"]);
+    let current = p.ok(&["source", "show", id, "--content"]);
+    assert_eq!(current["content"], revised);
+    assert_eq!(current["source"]["id"], id);
+}
