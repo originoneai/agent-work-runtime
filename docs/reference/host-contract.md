@@ -55,6 +55,49 @@ before retrying. Do not synthesize `source_write_performed: false` from a transp
 failure. Input paths and maximum sizes remain command-specific (`--input`, reviewed
 drafts, or documented lifecycle JSON on stdin); there is no universal JSON RPC wrapper.
 
+## Bind intake to the reviewed effects
+
+`init --json` (including `--manifest` or a reviewed `--from-draft`) returns
+`preview.fingerprint`, the source/configuration mapping, bounded source snapshots,
+source issues, and a `writes` inventory with before/after fingerprints and exact
+text for the manifest, `.gitignore` and generated intake files. Runtime database,
+WAL and temporary staging effects are listed separately. This preview performs no
+project writes; an explicitly requested `--write-draft` still writes its output file.
+
+Pass that fingerprint as `init --accept --expected-preview <fingerprint>` with the
+same input/mapping arguments. Changed sources, mapping semantics, existing manifest
+bytes or ignore contents reject the old preview. Existing clients may omit the new
+flag and retain the legacy behavior. A draft file's original inventory fingerprint
+is still checked; editing a draft requires previewing that edited draft before
+acceptance. Multiple source candidates remain an explicit ambiguity.
+
+Repeated initialization keeps the existing manifest, project/work identities,
+events, sessions and checkpoints. Non-Git projects are supported. Preview can read
+a read-only project, but initialization requiring runtime writes is rejected there.
+Source failures remain in the result: acceptance can create a partial index with a
+nonzero `SourceStale` result, preserving usable source records. It must not be shown
+as a fully successful import. Initializing multiple files is not a cross-file atomic
+transaction; interrupted staging may require inspection before retry.
+
+To change an initialized project's source mapping, provide a candidate manifest:
+
+```text
+awr source configure --manifest candidate.toml --json
+awr source configure --manifest candidate.toml --accept --expected-preview <fingerprint> --json
+awr source configure-status <fingerprint> --json
+```
+
+Configuration changes preserve project name, external key and authority mode.
+They require a reviewed fingerprint, leave business source bytes untouched and
+reindex the same project. Before/after manifests and a durable receipt are kept in
+the ignored mutation directory; the preview fingerprint locates the receipt even
+if the return pipe was lost. `configure-status` reads the recorded outcome and
+compares current configuration fingerprints without applying or reindexing anything.
+Pending, externally changed or partially indexed results are distinct from success.
+A failed projection does not mean the configuration was unwritten; inspect the
+receipt and current configuration before acting. Identical configuration returns
+`no_change`. Configuration setup is separate from task/document source editing.
+
 ## Current read/write limits
 
 `source.read` and `object.read` operate on registered references with bounded body

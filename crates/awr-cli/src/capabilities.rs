@@ -45,10 +45,25 @@ fn catalog() -> Vec<Capability> {
             &[
                 "explicit_accept",
                 "draft_fingerprint_checked",
-                "not_exact_write_inventory",
+                "effect_binding_requires_expected_preview",
             ],
         ),
-        ("intake.exact_preview", false, &[], &["not_implemented"]),
+        (
+            "intake.exact_preview",
+            true,
+            &["init"],
+            &["requires_expected_preview", "individual_files_only"],
+        ),
+        (
+            "source.configure",
+            true,
+            &["source configure", "source configure-status"],
+            &[
+                "existing_project_identity_preserved",
+                "requires_expected_preview",
+                "projection_can_partially_fail",
+            ],
+        ),
         (
             "work.read",
             true,

@@ -136,7 +136,6 @@ fn source_read_support_does_not_advertise_lossless_or_markdown_writes() {
         "mutation.multi_file",
         "completion.user_confirmation",
         "project.catalog",
-        "intake.exact_preview",
     ] {
         let capability = result["capabilities"]
             .as_array()
