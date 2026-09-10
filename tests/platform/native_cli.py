@@ -85,7 +85,7 @@ def main():
 
     with closing(sqlite3.connect(db_path.as_uri() + '?mode=ro', uri=True)) as db:
         require(db.execute('PRAGMA journal_mode').fetchone()[0] == 'wal', 'WAL is not active')
-        require(db.execute('PRAGMA user_version').fetchone()[0] == 3, 'Unexpected schema version')
+        require(db.execute('PRAGMA user_version').fetchone()[0] == 4, 'Unexpected schema version')
         require(db.execute('PRAGMA integrity_check').fetchall() == [('ok',)], 'Database integrity failed')
         require(not db.execute('PRAGMA foreign_key_check').fetchall(), 'Foreign keys failed')
     report['conditions']['wal_schema_integrity'] = True
