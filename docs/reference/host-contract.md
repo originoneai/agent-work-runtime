@@ -98,6 +98,50 @@ A failed projection does not mean the configuration was unwritten; inspect the
 receipt and current configuration before acting. Identical configuration returns
 `no_change`. Configuration setup is separate from task/document source editing.
 
+## Traverse the complete catalog
+
+```text
+awr object list work --limit 20 --json
+awr object list work --cursor '<next_cursor JSON>' --json
+awr object list source --scope all --json
+```
+
+Use `object list` for `goal`, `plan`, `rule`, `work`, `decision`, `source`,
+`relation`, `artifact` and `evidence`. Each page contains at most 200 objects
+(default 20), an exact `total` for the selected scope, `has_more`, and a nullable
+`next_cursor`. Repeat the same kind and scope. The cursor binds the project identity,
+project revision and last stable object ID. Any intervening source or runtime revision
+requires a new traversal (`RevisionConflict`); do not append pages from different
+versions. A changed title retains identity when the source's explicit key is stable.
+Title-derived keys can change identity; AWR does not guess a rename from similarity.
+
+Scope defaults to `active`. `retired` includes projections removed from a source or
+whose source was unregistered; `all` combines both. These scopes describe retained
+index membership, not completion, archive status or a reporting period. `active_total`
+and `retired_total` remain separate. Select the desired milestone/relations for period
+reporting; never infer engineering verification from `status: completed`.
+
+Lists preserve source references, object/source/project revisions, raw status and
+owner values alongside normalized status. Owner strings are source data, not runnable
+Agent identities or runtime claims. Use `work show`/`ready` for readiness diagnostics
+and current claims, and `object list relation` for dependencies and groupings. Unknown
+states remain unknown; custom language or code-wrapped spellings use the project's
+explicit `status_map`. Original bytes remain available through the source reader.
+
+Long text is summarized and `content_included` is false. Drill down with
+`object show <kind> <id> --full`, `decision show --full`, `source show --content`,
+`artifact show`/`cat`, or `evidence show --content`, using their byte/version guards.
+Source content reads require a current registration and the indexed fingerprint;
+retired/revoked sources retain metadata and history without granting new file reads.
+Explicit cached object reads expose historical projections, not fresh file content.
+
+A failed source refresh can still return a useful page on stdout with a nonzero
+`SourceStale` result. Its `total_basis` is `retained_indexed_objects` and
+`total_is_current` is false; inspect `source_issues` and each source's freshness.
+The retained count is not the authoritative total of an unreadable source. An empty
+partial index must not be displayed as a confirmed empty project. Process stdout,
+stderr and exit code together. Existing status/ready summary limits are unchanged.
+
 ## Current read/write limits
 
 `source.read` and `object.read` operate on registered references with bounded body

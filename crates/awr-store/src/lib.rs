@@ -12,6 +12,7 @@ mod execution;
 mod handoff;
 mod mutation;
 mod mutation_apply;
+mod object_catalog;
 mod projection;
 mod query;
 mod reconcile;
@@ -32,6 +33,7 @@ pub use delta::{
     DeltaEvents, EntityDelta, EventReference, HistoryCount, ImportantEvent, SourceDelta,
 };
 pub use events::{BranchFilter, EventCursor, EventPage, EventQuery};
+pub use object_catalog::{CatalogCursor, CatalogKind, CatalogPage, CatalogRow, CatalogScope};
 pub use reconcile::{ReconcileAction, ReconcileReceipt, RuntimeFinding, RuntimeInspection};
 use rusqlite::{Connection, OpenFlags, TransactionBehavior};
 pub use search::{SearchHit, SearchQuery, SearchReport};
