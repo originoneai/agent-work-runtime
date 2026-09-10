@@ -32,12 +32,20 @@ pub struct IndexReport {
     pub ok: bool,
     pub project_id: Id,
     pub project_revision: Revision,
+    /// Exact event interval observed by this operation; consumers acknowledge only after processing.
+    pub change_window: SourceChangeWindow,
+    pub projection_complete: bool,
     pub indexed: usize,
     pub unchanged: usize,
     pub retired: usize,
     pub pending: usize,
     pub sources: Vec<IndexedSource>,
     pub issues: Vec<IndexIssue>,
+}
+#[derive(Debug, Clone, Serialize)]
+pub struct SourceChangeWindow {
+    pub after_revision: Revision,
+    pub through_revision: Revision,
 }
 impl IndexReport {
     fn issue(&mut self, mapping: &str, locator: Option<&str>, error: &Error) {
@@ -131,6 +139,11 @@ fn process_project(
         ok: true,
         project_id: project.id,
         project_revision: project.project_revision,
+        change_window: SourceChangeWindow {
+            after_revision: project.project_revision,
+            through_revision: project.project_revision,
+        },
+        projection_complete: false,
         indexed: 0,
         unchanged: 0,
         retired: 0,
@@ -266,6 +279,8 @@ fn process_project(
         }
     }
     report.project_revision = store.project(project.id)?.project_revision;
+    report.change_window.through_revision = report.project_revision;
+    report.projection_complete = report.ok && report.pending == 0;
     Ok(report)
 }
 

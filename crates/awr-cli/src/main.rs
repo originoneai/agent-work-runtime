@@ -20,6 +20,7 @@ mod resume;
 mod search;
 mod session;
 mod source;
+mod source_changes;
 mod work_action;
 
 #[derive(Debug, Parser)]

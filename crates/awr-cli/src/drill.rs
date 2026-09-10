@@ -412,7 +412,13 @@ pub fn source_show(root: &Path, request: &SourceRead, json_output: bool) -> Resu
             for locator in
                 awr_source::source_adapter(&spec.adapter)?.discover(root, &manifest, spec)?
             {
-                if locator.identity()? == source.locator {
+                let identity = if spec.adapter == "markdown-directory-v1" {
+                    awr_source::MarkdownDirectoryAdapter
+                        .source_identity(root, &manifest, spec, &locator)?
+                } else {
+                    locator.identity()?
+                };
+                if identity == source.locator {
                     authorized = Some(locator);
                     break;
                 }
