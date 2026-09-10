@@ -19,6 +19,9 @@ pub struct InitArgs {
     pub manifest: Option<PathBuf>,
     #[arg(long)]
     pub accept: bool,
+    /// Accept only the source/configuration/ignore effects with this preview fingerprint.
+    #[arg(long, requires = "accept")]
+    pub expected_preview: Option<String>,
     /// User-stated project goal; otherwise the initial work is to establish one.
     #[arg(long, conflicts_with = "manifest")]
     pub goal: Option<String>,
@@ -374,6 +377,7 @@ pub fn run(root: &Path, args: &InitArgs, json_output: bool) -> Result<()> {
             args.manifest.as_deref(),
             args.accept,
             json_output,
+            args.expected_preview.as_deref(),
         );
     }
     let mut candidate = if let Some(path) = &args.from_draft {
@@ -429,6 +433,19 @@ pub fn run(root: &Path, args: &InitArgs, json_output: bool) -> Result<()> {
         candidate.observations.push("Explicit ledger field/status mappings interpret source values without rewriting the original documents.".into());
     }
     awr_core::ensure_public_data(&candidate)?;
+    let mut generated = candidate.generated_files.clone();
+    generated.insert(
+        ".awr/intake/inventory.json".into(),
+        serde_json::to_string_pretty(&candidate)?,
+    );
+    generated.insert(
+        ".awr/intake/project.toml".into(),
+        toml::to_string_pretty(&candidate.authority_mapping)
+            .map_err(|e| Error::InvalidInput(e.to_string()))?,
+    );
+    let preview =
+        crate::intake_plan::preview(&root, &candidate.authority_mapping, &generated, false)?;
+    crate::intake_plan::check_expected(&preview, args.expected_preview.as_deref())?;
     if let Some(path) = &args.write_draft {
         let bytes = serde_json::to_vec_pretty(&candidate)?;
         let mut file = fs::OpenOptions::new()
@@ -468,7 +485,7 @@ pub fn run(root: &Path, args: &InitArgs, json_output: bool) -> Result<()> {
         println!(
             "{}",
             serde_json::to_string_pretty(
-                &json!({"status":"preview","requires_accept":true,"draft":candidate,"organization":organization,"ambiguous_domains":candidate.ambiguous_domains,"authority_mapping":if candidate.ambiguous_domains.is_empty(){Some(&candidate.authority_mapping)}else{None},"next_action":"Review the draft and organization actions. Use init --accept, or edit an external --write-draft before init --from-draft <file> --accept. Then run awr intake inspect."})
+                &json!({"status":"preview","requires_accept":true,"preview":preview,"draft":candidate,"organization":organization,"ambiguous_domains":candidate.ambiguous_domains,"authority_mapping":if candidate.ambiguous_domains.is_empty(){Some(&candidate.authority_mapping)}else{None},"next_action":"Review the draft and organization actions. Use init --accept, or edit an external --write-draft before init --from-draft <file> --accept. Then run awr intake inspect."})
             )?
         );
         return Ok(());
@@ -527,11 +544,19 @@ pub fn run(root: &Path, args: &InitArgs, json_output: bool) -> Result<()> {
             "project changed during intake; staged draft retained for inspection".into(),
         ));
     }
+    // Staging is inside the ignored runtime; published targets and sources must
+    // still match the effect inventory accepted by the host.
+    if args.expected_preview.is_some() {
+        let current =
+            crate::intake_plan::preview(&root, &candidate.authority_mapping, &generated, false)?;
+        crate::intake_plan::check_expected(&current, args.expected_preview.as_deref())?;
+    }
     fs::rename(&stage, runtime.join("intake"))?;
     crate::source::initialize(
         &root,
         Some(&runtime.join("intake/project.toml")),
         true,
         json_output,
+        None,
     )
 }

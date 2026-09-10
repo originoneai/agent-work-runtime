@@ -12,6 +12,17 @@ use std::{
 
 #[derive(Debug, Subcommand)]
 pub enum SourceCommand {
+    /// Preview or apply an exact replacement source mapping while preserving project identity.
+    Configure {
+        #[arg(long)]
+        manifest: PathBuf,
+        #[arg(long)]
+        accept: bool,
+        #[arg(long, requires = "accept")]
+        expected_preview: Option<String>,
+    },
+    /// Inspect a configuration receipt without applying or reindexing anything.
+    ConfigureStatus { preview_fingerprint: String },
     /// Read one registered source by ID, unambiguous domain or exact locator.
     Show(crate::drill::SourceRead),
     /// Read source lifecycle/change summaries, including retired source IDs.
@@ -33,6 +44,11 @@ pub enum SourceCommand {
 
 pub(crate) fn runtime_dir(root: &Path, create: bool) -> Result<PathBuf> {
     let root = root.canonicalize()?;
+    if create && root.metadata()?.permissions().readonly() {
+        return Err(Error::RuleViolation(
+            "project directory is read-only".into(),
+        ));
+    }
     let path = root.join(".awr");
     if create && !path.exists() {
         fs::create_dir(&path)?;
@@ -53,6 +69,7 @@ pub fn initialize(
     manifest_path: Option<&Path>,
     accept: bool,
     json_output: bool,
+    expected_preview: Option<&str>,
 ) -> Result<()> {
     let root = root.canonicalize()?;
     if !root.is_dir() {
@@ -93,8 +110,12 @@ pub fn initialize(
             .map(toml::to_string_pretty)
             .transpose()
             .map_err(|e| Error::InvalidInput(e.to_string()))?;
+        let effects = candidate
+            .as_ref()
+            .map(|m| crate::intake_plan::preview(&root, m, &BTreeMap::new(), false))
+            .transpose()?;
         let preview = json!({"status":"preview","configuration_exists":existing.is_some(),"requires_accept":true,
-            "candidates":candidates,"ambiguous_domains":ambiguous,"authority_mapping":candidate,"manifest_toml":toml});
+            "preview":effects,"candidates":candidates,"ambiguous_domains":ambiguous,"authority_mapping":candidate,"manifest_toml":toml});
         if json_output {
             println!("{}", serde_json::to_string_pretty(&preview)?);
         } else {
@@ -119,6 +140,10 @@ pub fn initialize(
         })
     })?;
     manifest.validate()?;
+    if expected_preview.is_some() {
+        let plan = crate::intake_plan::preview(&root, &manifest, &BTreeMap::new(), false)?;
+        crate::intake_plan::check_expected(&plan, expected_preview)?;
+    }
     if existing.is_none() && root.join(".awr/state.db").exists() {
         return Err(Error::SourceConflict("database exists without project.toml; restore its matching manifest before initializing".into()));
     }
@@ -134,15 +159,7 @@ pub fn initialize(
     } else {
         String::new()
     };
-    let needed = [
-        ".awr/state.db",
-        ".awr/state.db-*",
-        ".awr/artifacts/",
-        ".awr/mutations/",
-        ".awr/cache/",
-        ".awr/clients/",
-        ".awr/executions/",
-    ];
+    let needed = crate::intake_plan::IGNORE_ENTRIES;
     let missing: Vec<_> = needed
         .iter()
         .filter(|entry| !previous_ignore.lines().any(|line| line.trim() == **entry))
@@ -211,6 +228,211 @@ pub fn initialize(
             "project initialized with source issues; resolve them and run source reindex".into(),
         ));
     }
+    Ok(())
+}
+
+fn configure(
+    root: &Path,
+    path: &Path,
+    accept: bool,
+    expected: Option<&str>,
+    json_output: bool,
+) -> Result<()> {
+    let root = root.canonicalize()?;
+    let existing = Manifest::load(&root)?;
+    let input = if path.is_absolute() {
+        path.to_path_buf()
+    } else {
+        root.join(path)
+    };
+    let bytes = awr_source::read_capped(&input, 64 * 1024)?;
+    let candidate = Manifest::parse(
+        std::str::from_utf8(&bytes)
+            .map_err(|_| Error::InvalidInput("manifest must be UTF-8".into()))?,
+    )?;
+    if candidate.project.name != existing.project.name
+        || candidate.project.external_key != existing.project.external_key
+        || candidate.project.authority_mode != existing.project.authority_mode
+    {
+        return Err(Error::SourceConflict(
+            "source configure preserves project name, external_key and authority mode".into(),
+        ));
+    }
+    let plan = crate::intake_plan::preview(&root, &candidate, &BTreeMap::new(), true)?;
+    if !accept {
+        println!(
+            "{}",
+            serde_json::to_string_pretty(
+                &serde_json::json!({"status":"preview", "preview":plan, "requires_accept":true})
+            )?
+        );
+        return Ok(());
+    }
+    if expected.is_none() {
+        return Err(Error::InvalidInput(
+            "source configure --accept requires --expected-preview from the reviewed preview"
+                .into(),
+        ));
+    }
+    crate::intake_plan::check_expected(&plan, expected)?;
+    if root.metadata()?.permissions().readonly() {
+        return Err(Error::RuleViolation(
+            "project directory is read-only".into(),
+        ));
+    }
+    let runtime = runtime_dir(&root, false)?;
+    // Do not modify a configuration for a foreign, future or damaged runtime.
+    let store = Store::open_readonly(&runtime.join("state.db"))?;
+    let project = store.project_by_root(&root)?;
+    drop(store);
+    let after = plan["writes"][0]["after_text"]
+        .as_str()
+        .ok_or_else(|| Error::InvalidInput("configuration preview lacks its target text".into()))?
+        .to_owned();
+    let effect = crate::intake_plan::effect(&root, ".awr/project.toml", after)?;
+    if effect.action == "no_change" {
+        println!(
+            "{}",
+            serde_json::to_string_pretty(
+                &serde_json::json!({"ok":true,"write_outcome":"no_change","configuration_write_performed":false,"runtime_write_performed":false,"project_id":project.id,"project_revision":project.project_revision})
+            )?
+        );
+        return Ok(());
+    }
+    let _lock = crate::client::lock(&root, "mutations", "source-configuration")?;
+    let current = crate::intake_plan::preview(&root, &candidate, &BTreeMap::new(), true)?;
+    crate::intake_plan::check_expected(&current, expected)?;
+    let permissions = awr_source::open_file_exact(&root.join(".awr/project.toml"))?
+        .metadata()?
+        .permissions();
+    if permissions.readonly() {
+        return Err(Error::RuleViolation(
+            "source configuration is read-only".into(),
+        ));
+    }
+    let id = awr_core::Id::new();
+    let key = plan["fingerprint"]
+        .as_str()
+        .unwrap()
+        .strip_prefix("sha256:")
+        .unwrap();
+    let recovery = runtime
+        .join("mutations")
+        .join(format!("source-config-{key}"));
+    fs::create_dir(&recovery)?;
+    let before = crate::intake_plan::current(&root, ".awr/project.toml", 64 * 1024)?
+        .ok_or_else(|| Error::SourceConflict("source manifest disappeared".into()))?;
+    for (name, content) in [
+        ("before.toml", before.as_slice()),
+        ("after.toml", effect.after_text.as_bytes()),
+    ] {
+        let mut file = OpenOptions::new()
+            .write(true)
+            .create_new(true)
+            .open(recovery.join(name))?;
+        file.write_all(content)?;
+        file.sync_all()?;
+    }
+    let receipt_path = recovery.join("receipt.json");
+    let mut receipt = serde_json::json!({"id":id,"operation":"source.configure","project_id":project.id,"preview":plan,"write_outcome":"pending","before_fingerprint":effect.before_fingerprint,"after_fingerprint":effect.after_fingerprint});
+    save_configuration_receipt(&recovery, &receipt)?;
+    // Use a held runtime directory for the final rename; do not follow replacement links.
+    let directory = awr_source::open_dir_exact(&runtime)?;
+    let stage = format!("config-{id}.tmp");
+    let mut options = cap_std::fs::OpenOptions::new();
+    options.write(true).create_new(true);
+    let mut staged = directory.open_with(&stage, &options)?.into_std();
+    staged.write_all(effect.after_text.as_bytes())?;
+    staged.set_permissions(permissions)?;
+    staged.sync_all()?;
+    crate::intake_plan::verify_file(&root, &effect)?;
+    directory.rename(&stage, &directory, "project.toml")?;
+    receipt["write_outcome"] = serde_json::json!("applied");
+    receipt["configuration_write_performed"] = serde_json::json!(true);
+    let indexed = (|| -> Result<awr_source::IndexReport> {
+        let mut store = Store::open(&runtime.join("state.db"))?;
+        index_project(&mut store, &root, &candidate, false)
+    })();
+    let failure = match indexed {
+        Ok(report) => {
+            let failed = !report.ok;
+            receipt["project_revision"] = serde_json::json!(report.project_revision);
+            receipt["index"] = serde_json::to_value(report)?;
+            failed.then(|| Error::SourceStale("configuration applied with source issues; inspect the result and reindex after fixing affected sources".into()))
+        }
+        Err(error) => {
+            receipt["index_error"] = serde_json::to_value(error.report())?;
+            Some(error)
+        }
+    };
+    receipt["ok"] = serde_json::json!(failure.is_none());
+    receipt["recovery_directory"] = serde_json::json!(recovery.strip_prefix(&root).unwrap());
+    save_configuration_receipt(&recovery, &receipt)?;
+    if json_output {
+        println!("{}", serde_json::to_string_pretty(&receipt)?);
+    } else {
+        println!(
+            "Source configuration applied; receipt {}",
+            receipt_path.display()
+        );
+    }
+    if let Some(error) = failure {
+        return Err(error);
+    }
+    Ok(())
+}
+
+fn save_configuration_receipt(directory: &Path, receipt: &Value) -> Result<()> {
+    let dir = awr_source::open_dir_exact(directory)?;
+    let stage = format!("receipt-{}.tmp", awr_core::Id::new());
+    let mut options = cap_std::fs::OpenOptions::new();
+    options.write(true).create_new(true);
+    let mut file = dir.open_with(&stage, &options)?;
+    file.write_all(&serde_json::to_vec_pretty(receipt)?)?;
+    file.sync_all()?;
+    drop(file);
+    dir.rename(&stage, &dir, "receipt.json")?;
+    Ok(())
+}
+
+fn configure_status(root: &Path, fingerprint: &str) -> Result<()> {
+    let key = fingerprint.strip_prefix("sha256:").unwrap_or(fingerprint);
+    if key.len() != 64 || !key.bytes().all(|c| c.is_ascii_hexdigit()) {
+        return Err(Error::InvalidInput(
+            "configuration receipt requires a SHA256 preview fingerprint".into(),
+        ));
+    }
+    let root = root.canonicalize()?;
+    let recovery = format!(
+        ".awr/mutations/source-config-{}/receipt.json",
+        key.to_ascii_lowercase()
+    );
+    let bytes = crate::intake_plan::current(&root, &recovery, awr_source::YAML_READ_CAP)?
+        .ok_or_else(|| Error::NotFound("configuration receipt".into()))?;
+    let receipt: Value = serde_json::from_slice(&bytes)?;
+    if receipt["preview"]["fingerprint"].as_str()
+        != Some(&format!("sha256:{}", key.to_ascii_lowercase()))
+        || receipt["preview"]["project_root"] != serde_json::to_value(&root)?
+    {
+        return Err(Error::SourceConflict(
+            "configuration receipt belongs to another preview or project".into(),
+        ));
+    }
+    let observed = crate::intake_plan::current(&root, ".awr/project.toml", 64 * 1024)?
+        .map(|b| awr_source::fingerprint(&b));
+    let matches = match observed.as_deref() {
+        Some(hash) if Some(hash) == receipt["after_fingerprint"].as_str() => "after",
+        Some(hash) if Some(hash) == receipt["before_fingerprint"].as_str() => "before",
+        _ => "conflict_or_missing",
+    };
+    println!(
+        "{}",
+        serde_json::to_string_pretty(
+            &json!({"ok":true,"read_only":true,"source_write_performed":false,"runtime_write_performed":false,
+        "receipt":receipt,"observed_configuration":matches,"current_fingerprint":observed,
+        "interpretation":"stored write outcome and current bytes are separate observations; pending/conflicting results require inspection, never automatic replay"})
+        )?
+    );
     Ok(())
 }
 
@@ -298,6 +520,24 @@ pub(crate) fn discover(root: &Path) -> Result<(Option<Manifest>, Vec<Value>, Vec
 
 pub fn run(root: &Path, command: &SourceCommand, json_output: bool) -> Result<()> {
     match command {
+        SourceCommand::ConfigureStatus {
+            preview_fingerprint,
+        } => {
+            return configure_status(root, preview_fingerprint);
+        }
+        SourceCommand::Configure {
+            manifest,
+            accept,
+            expected_preview,
+        } => {
+            return configure(
+                root,
+                manifest,
+                *accept,
+                expected_preview.as_deref(),
+                json_output,
+            );
+        }
         SourceCommand::Show(request) => {
             return crate::drill::source_show(root, request, json_output);
         }
@@ -310,7 +550,10 @@ pub fn run(root: &Path, command: &SourceCommand, json_output: bool) -> Result<()
     let manifest = Manifest::load(&root)?;
     let runtime = runtime_dir(&root, false)?;
     match command {
-        SourceCommand::Show(_) | SourceCommand::History { .. } => unreachable!(),
+        SourceCommand::Configure { .. }
+        | SourceCommand::ConfigureStatus { .. }
+        | SourceCommand::Show(_)
+        | SourceCommand::History { .. } => unreachable!(),
         SourceCommand::List => {
             let store = Store::open_readonly(&runtime.join("state.db"))?;
             let project = store.project_by_root(&root)?;

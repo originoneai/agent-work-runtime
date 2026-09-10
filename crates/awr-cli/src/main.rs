@@ -9,6 +9,7 @@ mod doctor;
 mod drill;
 mod event_append;
 mod execution;
+mod intake_plan;
 mod mutation;
 mod onboarding;
 mod query;
