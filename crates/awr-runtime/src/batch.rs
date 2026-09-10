@@ -32,6 +32,27 @@ pub enum BatchChange {
         source_fingerprint: String,
         operations: Vec<LedgerBatchOperation>,
     },
+    Related {
+        changes: Vec<RelatedChange>,
+    },
+}
+#[derive(Clone, Debug, PartialEq, Eq, Serialize, Deserialize)]
+#[serde(tag = "operation", rename_all = "snake_case", deny_unknown_fields)]
+pub enum RelatedChange {
+    Document {
+        source_id: Id,
+        source_fingerprint: String,
+        edit: DocumentEdit,
+    },
+    Adopt {
+        candidate: DocumentVersion,
+        supersedes: Option<DocumentVersion>,
+    },
+    Ledger {
+        source_id: Id,
+        source_fingerprint: String,
+        operations: Vec<LedgerBatchOperation>,
+    },
 }
 #[derive(Clone, Serialize, Deserialize)]
 #[serde(deny_unknown_fields)]
@@ -143,7 +164,7 @@ fn done(r: &Receipt) -> bool {
 }
 fn report(r: &Receipt, replay: bool) -> Result<Value> {
     Ok(
-        json!({"ok":done(r),"status":if r.phase=="no_change"{"no_change"}else if done(r){"completed"}else{"pending_recovery"},"phase":r.phase,"project_id":r.plan.project_id,"project_revision":r.project_revision,"request_key":r.plan.request.request_key,"actor":r.plan.request.actor,"reason":r.plan.request.reason,"preview_fingerprint":r.fingerprint,"outcomes":r.plan.outcomes,"applied_files":r.applied_files,"already_recorded":replay,"historical_outcome":replay,"source_write_performed":false,"runtime_write_performed":false,"write_outcome":if r.phase=="no_change"{"no_change"}else if done(r){"applied"}else{"pending_recovery"},"recovery_directory":format!(".awr/mutations/{}",name(r.plan.project_id,&r.plan.request.request_key)?)}),
+        json!({"ok":done(r),"status":if r.phase=="no_change"{"no_change"}else if done(r){"completed"}else{"pending_recovery"},"phase":r.phase,"project_id":r.plan.project_id,"project_revision":r.project_revision,"request_key":r.plan.request.request_key,"actor":r.plan.request.actor,"reason":r.plan.request.reason,"preview_fingerprint":r.fingerprint,"outcomes":r.plan.outcomes,"applied_files":r.applied_files,"file_total":r.plan.files.len(),"filesystem_atomic":false,"partial_apply":!r.applied_files.is_empty() && !done(r),"already_recorded":replay,"historical_outcome":replay,"source_write_performed":false,"runtime_write_performed":false,"write_outcome":if r.phase=="no_change"{"no_change"}else if done(r){"applied"}else{"pending_recovery"},"recovery_directory":format!(".awr/mutations/{}",name(r.plan.project_id,&r.plan.request.request_key)?)}),
     )
 }
 fn observe(root: &Path, plan: &Plan) -> Result<Vec<String>> {
@@ -350,33 +371,164 @@ pub fn change_batch(
             actual: revision,
         });
     }
-    let (source, prepared) = match &request.change {
+    let mut documents = Vec::new();
+    let mut archive_targets = Vec::new();
+    let mut outcomes = Vec::new();
+    let mut ledger_count = 0;
+    let changes = match &request.change {
         BatchChange::Ledger {
             source_id,
             source_fingerprint,
             operations,
-        } => {
-            let source = store.source(project.id, *source_id)?;
-            if source.fingerprint != *source_fingerprint {
-                return Err(Error::SourceConflict(
-                    "batch ledger fingerprint changed".into(),
-                ));
-            }
-            if store.source_apply_pending(project.id, source.id)?.is_some() {
-                return Err(Error::MutationConflict(
-                    "finish pending source proposal before a batch".into(),
-                ));
-            }
-            let prepared =
-                prepare_ledger_batch(&root, &source, operations, store.projection_ids(&source)?)?;
-            validate_archive(store, project.id, source.id, &prepared)?;
-            (source, prepared)
-        }
+        } => vec![RelatedChange::Ledger {
+            source_id: *source_id,
+            source_fingerprint: source_fingerprint.clone(),
+            operations: operations.clone(),
+        }],
+        BatchChange::Related { changes } => changes.clone(),
     };
+    if changes.is_empty() || changes.len() > 100 {
+        return Err(Error::InvalidInput(
+            "related batch requires 1..100 changes".into(),
+        ));
+    }
+    for change in changes {
+        match change {
+            RelatedChange::Ledger {
+                source_id,
+                source_fingerprint,
+                operations,
+            } => {
+                ledger_count += 1;
+                if ledger_count > 1 {
+                    return Err(Error::MutationUnsupported(
+                        "a related batch supports one ledger plus associated documents".into(),
+                    ));
+                }
+                let source = store.source(project.id, source_id)?;
+                if source.fingerprint != source_fingerprint {
+                    return Err(Error::SourceConflict(
+                        "batch ledger fingerprint changed".into(),
+                    ));
+                }
+                let prepared = prepare_ledger_batch(
+                    &root,
+                    &source,
+                    &operations,
+                    store.projection_ids(&source)?,
+                )?;
+                validate_archive(store, project.id, source.id, &prepared)?;
+                archive_targets.extend(prepared.archive_targets);
+                outcomes.extend(prepared.outcomes);
+                documents.push(PreparedDocument {
+                    path: prepared.path,
+                    source,
+                    spec: prepared.spec,
+                    before: Some(prepared.before),
+                    after: prepared.after,
+                });
+            }
+            RelatedChange::Document {
+                source_id,
+                source_fingerprint,
+                edit,
+            } => {
+                let source = store.source(project.id, source_id)?;
+                let prepared = prepare_document_edit(
+                    &root,
+                    &source,
+                    &source_fingerprint,
+                    &edit,
+                    store.projection_ids(&source)?,
+                )?;
+                outcomes.push(json!({"source_id":source_id,"operation":"document_edit"}));
+                documents.push(prepared);
+            }
+            RelatedChange::Adopt {
+                candidate,
+                supersedes,
+            } => {
+                if supersedes.as_ref().is_some_and(|old| {
+                    old.source_id == candidate.source_id
+                        || old.external_key == candidate.external_key
+                }) {
+                    return Err(Error::InvalidInput(
+                        "supersession requires distinct old and new documents".into(),
+                    ));
+                }
+                let adoption = DecisionAdoption {
+                    version: 1,
+                    request_key: request.request_key.clone(),
+                    actor: request.actor.clone(),
+                    reason: request.reason.clone(),
+                    candidate: candidate.clone(),
+                    supersedes: supersedes.clone(),
+                    content_fingerprint: String::new(),
+                };
+                // Retire the old accepted document before accepting its replacement. Each step remains recoverable.
+                if let Some(old) = &supersedes {
+                    let source = store.source(project.id, old.source_id)?;
+                    documents.push(prepare_decision_lifecycle(
+                        &root,
+                        &source,
+                        old,
+                        &adoption,
+                        true,
+                        store.projection_ids(&source)?,
+                    )?);
+                }
+                let source = store.source(project.id, candidate.source_id)?;
+                documents.push(prepare_decision_lifecycle(
+                    &root,
+                    &source,
+                    &candidate,
+                    &adoption,
+                    false,
+                    store.projection_ids(&source)?,
+                )?);
+                outcomes.push(
+                    json!({"operation":"adopt","candidate":candidate,"supersedes":supersedes}),
+                );
+            }
+        }
+    }
+    let mut paths = BTreeSet::new();
+    let mut source_ids = BTreeSet::new();
+    let mut total = 0usize;
+    for d in &documents {
+        if !paths.insert(d.path.clone()) || !source_ids.insert(d.source.id) {
+            return Err(Error::InvalidInput("each source/path may occur only once in a related batch; finish its content edit before reviewing adoption".into()));
+        }
+        if store
+            .source_apply_pending(project.id, d.source.id)?
+            .is_some()
+        {
+            return Err(Error::MutationConflict(
+                "finish pending source proposal before a batch".into(),
+            ));
+        }
+        total += d.before.as_ref().unwrap().bytes.len() + d.after.bytes.len();
+    }
+    if documents.len() > 100 || total > 64 * 1024 * 1024 {
+        return Err(Error::BudgetExceeded {
+            required: total,
+            budget: 64 * 1024 * 1024,
+        });
+    }
     let observations = store
         .sources(project.id)?
         .into_iter()
-        .filter(|s| s.domain == "ledger" && s.id != source.id)
+        .filter(|s| s.domain == "ledger" && !source_ids.contains(&s.id))
+        .collect();
+    let files = documents
+        .iter()
+        .map(|d| FilePlan {
+            path: d.path.clone(),
+            source: d.source.clone(),
+            spec: d.spec.clone(),
+            before_fingerprint: d.before.as_ref().unwrap().fingerprint.clone(),
+            after_fingerprint: d.after.fingerprint.clone(),
+        })
         .collect();
     let plan = Plan {
         version: 1,
@@ -385,21 +537,16 @@ pub fn change_batch(
         project_revision: revision,
         manifest_fingerprint: manifest_hash(&root)?,
         request,
-        files: vec![FilePlan {
-            path: prepared.path,
-            source,
-            spec: prepared.spec,
-            before_fingerprint: prepared.before.fingerprint.clone(),
-            after_fingerprint: prepared.after.fingerprint.clone(),
-        }],
+        files,
         observations,
-        archive_targets: prepared.archive_targets,
-        outcomes: prepared.outcomes,
+        archive_targets,
+        outcomes,
     };
+    let file_previews=documents.iter().map(|d|Ok(json!({"path":d.path,"before_text":d.before.as_ref().unwrap().text()?,"after_text":d.after.text()?}))).collect::<Result<Vec<Value>>>()?;
     let preview = fingerprint(&serde_json::to_vec(&plan)?);
     if !accept {
         return Ok(BatchReport {
-            value: json!({"ok":true,"status":"preview","requires_accept":true,"project_revision":revision,"preview":{"fingerprint":preview,"plan":plan,"files":[{"before_text":prepared.before.text()?,"after_text":prepared.after.text()?}]},"source_write_performed":false,"runtime_write_performed":true}),
+            value: json!({"ok":true,"status":"preview","requires_accept":true,"project_revision":revision,"preview":{"fingerprint":preview,"plan":plan,"files":file_previews},"source_write_performed":false,"runtime_write_performed":true}),
             failure: None,
         });
     }
@@ -429,13 +576,15 @@ pub fn change_batch(
         &owner,
         &root.join(".awr/mutations").join(&owner),
     )?;
-    for (name, bytes) in [
-        ("0.before", prepared.before.bytes.as_slice()),
-        ("0.after", prepared.after.bytes.as_slice()),
-    ] {
-        let mut f = new_file(&dir, OsStr::new(name))?;
-        f.write_all(bytes)?;
-        f.sync_all()?;
+    for (i, d) in documents.iter().enumerate() {
+        for (suffix, bytes) in [
+            ("before", d.before.as_ref().unwrap().bytes.as_slice()),
+            ("after", d.after.bytes.as_slice()),
+        ] {
+            let mut f = new_file(&dir, OsStr::new(&format!("{i}.{suffix}")))?;
+            f.write_all(bytes)?;
+            f.sync_all()?;
+        }
     }
     let mut r = Receipt {
         plan,

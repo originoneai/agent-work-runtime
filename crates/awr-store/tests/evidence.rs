@@ -58,6 +58,8 @@ fn decisions_require_acceptance_and_explicit_relevance_or_unknown_scope() {
         ("superseded", DecisionStatus::Superseded, vec!["W"], vec![]),
     ] {
         batch.decisions.push(Decision {
+            adoption: None,
+            superseded_by: None,
             meta: f.meta(key),
             title: key.into(),
             status,
@@ -103,6 +105,8 @@ fn unknown_work_paths_preserve_potential_decisions_and_explicit_scope_can_resolv
     let mut task = work(&f, "W");
     task.paths = vec!["crates/".into()];
     let decision = Decision {
+        adoption: None,
+        superseded_by: None,
         meta: f.meta("path-choice"),
         title: "Scoped choice".into(),
         status: DecisionStatus::Accepted,

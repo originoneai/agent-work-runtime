@@ -63,7 +63,7 @@ fn negotiation_needs_no_project_tty_model_or_environment() {
 }
 
 #[test]
-fn callers_can_distinguish_unknown_from_known_unavailable_without_parsing_messages() {
+fn callers_distinguish_unknown_from_now_available_multi_file_capability() {
     let host = Host::new();
     let result = host.run(&[
         "capabilities",
@@ -85,10 +85,7 @@ fn callers_can_distinguish_unknown_from_known_unavailable_without_parsing_messag
         error["details"]["unknown"],
         serde_json::json!(["fictional.capability"])
     );
-    assert_eq!(
-        error["details"]["unsupported"],
-        serde_json::json!(["mutation.multi_file"])
-    );
+    assert_eq!(error["details"]["unsupported"], serde_json::json!([]));
     assert_eq!(error["details"]["runtime_write_performed"], false);
     assert_eq!(fs::read_dir(&host.0).unwrap().count(), 0);
 }
@@ -118,7 +115,7 @@ fn unsupported_protocol_and_invalid_usage_keep_distinct_error_codes() {
 }
 
 #[test]
-fn capability_modes_separate_supported_writers_from_unavailable_multi_file_writes() {
+fn capability_modes_advertise_the_finite_writers() {
     let host = Host::new();
     let result = host.ok(&["--json", "capabilities"]);
     let adapters = result["source_adapters"].as_array().unwrap();
@@ -143,11 +140,7 @@ fn capability_modes_separate_supported_writers_from_unavailable_multi_file_write
             .iter()
             .find(|c| c["id"] == id)
             .unwrap();
-        assert_eq!(
-            capability["available"],
-            id == "completion.user_confirmation",
-            "{id}"
-        );
+        assert_eq!(capability["available"], true, "{id}");
     }
 }
 

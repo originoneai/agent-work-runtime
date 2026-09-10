@@ -56,3 +56,6 @@ pub use markdown_mutation::*;
 
 mod ledger_batch;
 pub use ledger_batch::*;
+
+mod adoption;
+pub use adoption::*;
