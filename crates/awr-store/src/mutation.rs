@@ -325,6 +325,14 @@ fn event_metadata(
 }
 
 impl Store {
+    /// Stable host request lookup; a read must never advance a proposal lifecycle.
+    pub fn host_proposal(&self, project: Id, key: &str) -> Result<Option<MutationProposal>> {
+        self.project(project)?;
+        self.conn.query_row(
+            &format!("SELECT {PROPOSAL_COLUMNS} FROM mutation_proposals WHERE project_id=?1 AND json_extract(patch_json,'$.host_edit.request_key')=?2"),
+            params![project.to_string(),key],proposal_row,
+        ).optional().map_err(db_error)
+    }
     /// Resolve one active source projection by exact ULID or external key.
     pub fn mutation_target(
         &self,
@@ -355,6 +363,10 @@ impl Store {
             expected,
             EventDraft::new("proposal.created", "Created source mutation proposal"),
             move |tx, _, event| {
+                if let Some(host)=&draft.patch.host_edit {
+                    let exists:bool=tx.query_row("SELECT EXISTS(SELECT 1 FROM mutation_proposals WHERE project_id=?1 AND json_extract(patch_json,'$.host_edit.request_key')=?2)",params![project.to_string(),host.request_key],|r|r.get(0)).map_err(db_error)?;
+                    if exists {return Err(Error::SourceConflict("host request already has a proposal; inspect its retained result".into()));}
+                }
                 let target = validate_binding(
                     tx,
                     project,

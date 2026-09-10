@@ -149,6 +149,7 @@ impl Fixture {
                 source_config: target.source.config,
                 intent: input.reason,
                 changes,
+                host_edit: None,
                 work_action: Some(binding),
             },
             created_by_session: session,

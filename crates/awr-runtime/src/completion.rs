@@ -92,6 +92,7 @@ pub(crate) fn verify_completion_proof(
                 source_config: target.source.config.clone(),
                 intent: "Verify completion evidence source".into(),
                 changes: serde_json::json!({"summary":"read only verification"}),
+                host_edit: None,
                 work_action: None,
             };
             verify_mutation_source(root, &target.source, &probe)?;
@@ -166,6 +167,7 @@ pub fn complete_work(
         source_config: target.source.config.clone(),
         intent: request.reason.clone(),
         changes: serde_json::json!({"status":"completed"}),
+        host_edit: None,
         work_action: None,
     };
     verify_mutation_source(&root, &target.source, &patch)?;

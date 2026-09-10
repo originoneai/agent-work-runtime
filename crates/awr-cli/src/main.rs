@@ -11,6 +11,7 @@ mod document;
 mod drill;
 mod event_append;
 mod execution;
+mod host_save;
 mod intake_plan;
 mod mutation;
 mod onboarding;
@@ -42,6 +43,11 @@ struct Cli {
 
 #[derive(Debug, Subcommand)]
 enum Command {
+    /// Save explicit host edits with durable request identity and provenance.
+    Host {
+        #[command(subcommand)]
+        command: host_save::HostCommand,
+    },
     /// Edit registered Markdown documents or create source-backed drafts.
     Document {
         #[command(subcommand)]
@@ -151,6 +157,7 @@ enum Command {
 
 fn run(cli: &Cli) -> Result<()> {
     match &cli.command {
+        Some(Command::Host { command }) => host_save::run(&cli.project, command, cli.json),
         Some(Command::Document { command }) => document::run(&cli.project, command, cli.json),
         Some(Command::Capabilities(args)) => capabilities::run(args, cli.json),
         Some(Command::Init(args)) => onboarding::run(&cli.project, args, cli.json),

@@ -54,7 +54,7 @@ pub fn read_yaml_mutation_record(
         Ok(record)
     }
 }
-fn allowed(kind: EntityKind, field: &str) -> bool {
+pub fn yaml_field_writable(kind: EntityKind, field: &str) -> bool {
     match kind {
         EntityKind::Goal => matches!(
             field,
@@ -150,10 +150,15 @@ pub fn prepare_yaml_mutation(
         ));
     }
     let changes = patch.changes.as_object().unwrap();
-    if let Some(field) = changes
-        .keys()
-        .find(|field| patch.work_action.is_none() && !allowed(patch.target.kind, field))
-    {
+    if let Some(field) = changes.keys().find(|field| {
+        patch.work_action.is_none()
+            && !yaml_field_writable(patch.target.kind, field)
+            && !(patch
+                .host_edit
+                .as_ref()
+                .is_some_and(|h| h.action == HostEditAction::ActivateDraft)
+                && field.as_str() == "status")
+    }) {
         return Err(unsupported(&format!(
             "field {field} is not supported by this writer; work state, ownership and verification changes require domain actions"
         )));

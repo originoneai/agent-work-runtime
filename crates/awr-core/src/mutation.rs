@@ -23,6 +23,73 @@ pub struct MutationPatch {
     pub changes: Value,
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub work_action: Option<crate::WorkActionBinding>,
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub host_edit: Option<HostEditBinding>,
+}
+
+/// Caller-supplied provenance, never authentication or permission to bypass a domain gate.
+#[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
+#[serde(deny_unknown_fields)]
+pub struct HostEditBinding {
+    pub version: u32,
+    pub request_key: String,
+    pub request_hash: String,
+    pub actor: HostActor,
+    pub action: HostEditAction,
+}
+#[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
+#[serde(deny_unknown_fields)]
+pub struct HostActor {
+    pub host: String,
+    pub subject: String,
+    pub origin: HostEditOrigin,
+}
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize)]
+#[serde(rename_all = "snake_case")]
+pub enum HostEditOrigin {
+    Human,
+    AiAccepted,
+    DelegatedAgent,
+}
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize)]
+#[serde(rename_all = "snake_case")]
+pub enum HostEditAction {
+    Fields,
+    ActivateDraft,
+}
+impl HostActor {
+    pub fn validate(&self) -> Result<()> {
+        crate::ensure_public_data(self)?;
+        if self.host.len() + self.subject.len() + 1 > 256 {
+            return Err(Error::InvalidInput(
+                "combined host and subject must fit the 256-byte actor receipt limit".into(),
+            ));
+        }
+        for value in [&self.host, &self.subject] {
+            if value.trim().is_empty() || value.len() > 512 || value.chars().any(char::is_control) {
+                return Err(Error::InvalidInput(
+                    "host and subject require bounded provenance identifiers".into(),
+                ));
+            }
+        }
+        Ok(())
+    }
+}
+impl HostEditBinding {
+    pub fn validate(&self) -> Result<()> {
+        self.actor.validate()?;
+        if self.version != 1
+            || self.request_key.trim().is_empty()
+            || self.request_key.len() > 512
+            || self.request_key.chars().any(char::is_control)
+            || !crate::is_sha256_hash(&self.request_hash)
+        {
+            return Err(Error::InvalidInput(
+                "host edit requires version, bounded request key and exact request hash".into(),
+            ));
+        }
+        Ok(())
+    }
 }
 impl MutationPatch {
     pub fn mutation_type(&self) -> &'static str {
@@ -72,6 +139,22 @@ impl MutationPatch {
                 ));
             }
             binding.validate(&self.changes)?;
+        }
+        if let Some(binding) = &self.host_edit {
+            binding.validate()?;
+            if self.work_action.is_some() {
+                return Err(Error::InvalidInput(
+                    "host edits cannot impersonate Agent work actions".into(),
+                ));
+            }
+            if binding.action == HostEditAction::ActivateDraft
+                && (self.target.kind != EntityKind::WorkItem
+                    || self.changes != serde_json::json!({"status":"planned"}))
+            {
+                return Err(Error::RuleViolation(
+                    "draft activation only declares the planned state of one work item".into(),
+                ));
+            }
         }
         let meta = &self.target.meta;
         let source = &meta.source_ref;
