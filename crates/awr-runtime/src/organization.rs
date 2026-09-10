@@ -15,6 +15,7 @@ pub enum OrganizationState {
     Blocked,
     AwaitingVerification,
     Completed,
+    CompletedUnderPolicy,
     ClosedWithoutCompletion,
 }
 
@@ -57,6 +58,9 @@ pub struct OrganizationReport {
     pub source_sha: Option<String>,
     pub source_completed: usize,
     pub verified_completed: usize,
+    pub user_confirmed_completed: usize,
+    pub business_checked_completed: usize,
+    pub ordinary_work_policies: Vec<serde_json::Value>,
     pub source_cancelled: usize,
     pub recheck: Vec<String>,
     pub next_action: String,
@@ -133,6 +137,9 @@ impl OrganizationReport {
             source_sha: None,
             source_completed: 0,
             verified_completed: 0,
+            user_confirmed_completed: 0,
+            business_checked_completed: 0,
+            ordinary_work_policies: vec![],
             source_cancelled: 0,
             recheck: vec![
                 "awr".into(),
@@ -191,6 +198,7 @@ impl OrganizationReport {
             OrganizationState::Blocked => "The work structure is present, but prerequisites or blockers prevent execution. Resolve the cited dependencies and recheck.",
             OrganizationState::AwaitingVerification => "Source tasks are marked completed, but project completion is unverified. Supply current acceptance reports and an explicit source SHA to awr intake inspect --source-sha <sha>.",
             OrganizationState::Completed => "All non-cancelled ledger work has matching passing acceptance reports for the explicit source SHA. Check the project's separate release/business-acceptance gates before delivery claims.",
+            OrganizationState::CompletedUnderPolicy => "The current work scope is complete under its explicit policies. User confirmations and business checks are separate from engineering verification; inspect each confirmation's actor, basis, artifacts and policy version.",
             OrganizationState::ClosedWithoutCompletion => "The ledger contains cancelled work or cancelled required scope; this is not a completed project. Clarify remaining scope before selecting new work.",
         }.into();
     }
@@ -349,6 +357,11 @@ pub fn inspect_organization(
     }
     let sources = store.sources(project.id)?;
     let minimal = awr_source::minimal_context(&sources);
+    for source in &sources {
+        if let Some(policy) = OrdinaryWorkPolicy::from_config(&source.config)? {
+            result.ordinary_work_policies.push(serde_json::json!({"source_id": source.id, "policy": policy, "fingerprint": policy.fingerprint()?}));
+        }
+    }
     result.context_profile = if minimal { "minimal" } else { "standard" };
     let rules_defined = minimal || sources.iter().any(|s| s.domain == "rules");
     if !rules_defined {
@@ -494,6 +507,33 @@ pub fn inspect_organization(
         }
         if work.status == WorkStatus::Completed {
             result.source_completed += 1;
+            if work.ordinary_completion.is_some() {
+                match crate::assess_ordinary_completion(store, project.id, projected) {
+                    Ok(()) if structured => match work.ordinary_completion.as_ref().unwrap().kind {
+                        OrdinaryCompletionKind::UserConfirmation => {
+                            result.user_confirmed_completed += 1
+                        }
+                        OrdinaryCompletionKind::BusinessCheck => {
+                            result.business_checked_completed += 1
+                        }
+                    },
+                    Ok(()) => result.gap(
+                        "ordinary_confirmation_unresolved",
+                        key,
+                        "Current structural gaps prevent counting this confirmation.",
+                        vec![work.meta.source_ref.clone()],
+                        "work",
+                    ),
+                    Err(error) => result.gap(
+                        "ordinary_confirmation_unresolved",
+                        key,
+                        &error.report().message,
+                        vec![work.meta.source_ref.clone()],
+                        "work",
+                    ),
+                }
+                continue;
+            }
             if structured && source_sha.is_some() {
                 match verify_completed(
                     store,
@@ -572,6 +612,13 @@ pub fn inspect_organization(
         OrganizationState::NeedsOrganization
     } else if unfinished == 0 && result.verified_completed == result.source_completed {
         OrganizationState::Completed
+    } else if unfinished == 0
+        && result.verified_completed
+            + result.user_confirmed_completed
+            + result.business_checked_completed
+            == result.source_completed
+    {
+        OrganizationState::CompletedUnderPolicy
     } else if unfinished == 0 {
         OrganizationState::AwaitingVerification
     } else if result.business_execution_ready {
@@ -583,6 +630,9 @@ pub fn inspect_organization(
     };
     if source_sha.is_some() {
         result.completion_basis = "Only verified_completed counts hash-verified passing reports covering all current task acceptance for the explicit source SHA. Source-declared completion remains separate. This does not certify release or real-client business acceptance.";
+    }
+    if !result.ordinary_work_policies.is_empty() {
+        result.completion_basis = "User confirmations and business checks require matching current policy, acceptance and applied host receipts. They never count as verified_completed. Other work keeps the strict engineering policy; changing configuration cannot promote old source declarations.";
     }
     result.finish();
     let actual = store.project(project.id)?.project_revision;

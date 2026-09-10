@@ -5,6 +5,7 @@ use support::Fixture;
 
 fn work(f: &Fixture, status: &str) -> WorkItem {
     WorkItem {
+        ordinary_completion: None,
         meta: f.meta("W"),
         title: "Implement runtime".into(),
         kind: None,

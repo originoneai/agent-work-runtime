@@ -25,6 +25,30 @@ pub(crate) fn validate_action(
             let work: WorkItem = serde_json::from_value(target.clone())?;
             validate_draft_activation(conn, project, revision, &work)?;
         }
+        if host.action == HostEditAction::ConfirmOrdinary {
+            let work: WorkItem = serde_json::from_value(target.clone())?;
+            let receipt: OrdinaryCompletion =
+                serde_json::from_value(patch.changes["ordinary_completion"].clone())?;
+            receipt.validate(&work.meta.external_key, &work.acceptance)?;
+            if !matches!(
+                work.status,
+                WorkStatus::Planned | WorkStatus::Ready | WorkStatus::InProgress
+            ) {
+                return Err(Error::InvalidTransition("ordinary confirmation requires active work; draft, cancelled and completed work need their explicit lifecycle action".into()));
+            }
+            let claimed: bool = conn.query_row("SELECT EXISTS(SELECT 1 FROM claims WHERE project_id=?1 AND work_item_id=?2 AND status='active' AND released_at IS NULL AND (expires_at IS NULL OR expires_at>?3))", params![project.to_string(),work.meta.id.to_string(),now_millis()?], |r|r.get(0)).map_err(db_error)?;
+            if claimed {
+                return Err(Error::ClaimConflict(
+                    "finish or release the active execution before ordinary confirmation".into(),
+                ));
+            }
+            check_blocker(&work)?;
+            check_dependencies(conn, project, revision, &work, None, false)?;
+            // Reuse declared goal/acceptance readiness without inventing a draft transition.
+            let mut structural = work.clone();
+            structural.status = WorkStatus::Draft;
+            validate_draft_activation(conn, project, revision, &structural)?;
+        }
     }
     let Some(binding) = &patch.work_action else {
         return Ok(());

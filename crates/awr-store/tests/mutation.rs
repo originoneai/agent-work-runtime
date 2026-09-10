@@ -47,6 +47,7 @@ fn meta(
 
 fn work(meta: ProjectionMeta, next_action: &str) -> WorkItem {
     WorkItem {
+        ordinary_completion: None,
         meta,
         title: "Work".into(),
         kind: Some("feature".into()),

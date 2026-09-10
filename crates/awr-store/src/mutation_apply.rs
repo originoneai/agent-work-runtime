@@ -9,7 +9,7 @@ use awr_core::*;
 use rusqlite::{Connection, OptionalExtension, params};
 use serde_json::json;
 
-const RESOLVED: &str = "SELECT r.id FROM events r WHERE r.project_id=s.project_id AND r.event_type IN ('proposal.applied','proposal.apply_failed','proposal.apply_conflict','work.progressed','work.blocked','work.unblocked','work.cancelled','work.reopened','work.completed') AND json_extract(r.payload_json,'$.attempt_event_id')=s.id";
+const RESOLVED: &str = "SELECT r.id FROM events r WHERE r.project_id=s.project_id AND r.event_type IN ('proposal.applied','proposal.apply_failed','proposal.apply_conflict','work.progressed','work.blocked','work.unblocked','work.cancelled','work.reopened','work.completed','work.draft_activated','work.ordinary_confirmed') AND json_extract(r.payload_json,'$.attempt_event_id')=s.id";
 fn row(row: &rusqlite::Row<'_>) -> rusqlite::Result<MutationApplyAttempt> {
     let payload: serde_json::Value =
         serde_json::from_str(&row.get::<_, String>(1)?).map_err(|e| {
@@ -166,6 +166,10 @@ impl Store {
                 if host.action==HostEditAction::ActivateDraft {
                     event.event_type="work.draft_activated".into();
                     event.summary="Explicitly activated source-declared draft".into();
+                }
+                if host.action==HostEditAction::ConfirmOrdinary {
+                    event.event_type="work.ordinary_confirmed".into();
+                    event.summary="Recorded ordinary completion; no engineering verification asserted".into();
                 }
             }
             if let Some(binding)=patch.work_action {

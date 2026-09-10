@@ -210,7 +210,7 @@ impl SourceAdapter for MarkdownLedgerAdapter {
                     source_ref: source_ref.clone(),
                 });
             }
-            batch.work_items.push(WorkItem {meta,title:title.into(),kind:None,owner:(!get("owner").is_empty()).then(||get("owner").into()),required:false,
+            batch.work_items.push(WorkItem {ordinary_completion:None,meta,title:title.into(),kind:None,owner:(!get("owner").is_empty()).then(||get("owner").into()),required:false,
                 raw_status:get("status").into(),status,priority:(!get("priority").is_empty()).then(||get("priority").into()),milestone:None,score:None,evidence_level:None,
                 summary:"Imported from source-declared Markdown; completion evidence has not been inferred.".into(),next_action:get("next_action").into(),blocker:None,
                 acceptance:(!get("acceptance").is_empty()).then(||vec![get("acceptance").into()]).unwrap_or_default(),tags:vec![],paths:vec![]});

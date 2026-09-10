@@ -158,6 +158,11 @@ pub fn prepare_yaml_mutation(
                 .as_ref()
                 .is_some_and(|h| h.action == HostEditAction::ActivateDraft)
                 && field.as_str() == "status")
+            && !(patch
+                .host_edit
+                .as_ref()
+                .is_some_and(|h| h.action == HostEditAction::ConfirmOrdinary)
+                && matches!(field.as_str(), "status" | "ordinary_completion"))
     }) {
         return Err(unsupported(&format!(
             "field {field} is not supported by this writer; work state, ownership and verification changes require domain actions"

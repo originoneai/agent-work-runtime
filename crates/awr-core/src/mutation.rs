@@ -56,6 +56,7 @@ pub enum HostEditOrigin {
 pub enum HostEditAction {
     Fields,
     ActivateDraft,
+    ConfirmOrdinary,
 }
 impl HostActor {
     pub fn validate(&self) -> Result<()> {
@@ -154,6 +155,21 @@ impl MutationPatch {
                 return Err(Error::RuleViolation(
                     "draft activation only declares the planned state of one work item".into(),
                 ));
+            }
+            if binding.action == HostEditAction::ConfirmOrdinary {
+                let receipt: crate::OrdinaryCompletion =
+                    serde_json::from_value(self.changes["ordinary_completion"].clone())?;
+                receipt.validate(&self.target.meta.external_key, &receipt.acceptance)?;
+                if self.target.kind != EntityKind::WorkItem
+                    || fields.len() != 2
+                    || self.changes["status"] != "completed"
+                    || receipt.actor != binding.actor
+                    || receipt.request_key != binding.request_key
+                    || crate::OrdinaryWorkPolicy::from_config(&self.source_config)?.as_ref()
+                        != Some(&receipt.policy)
+                {
+                    return Err(Error::RuleViolation("ordinary confirmation cannot change its actor, policy, scope or engineering metadata".into()));
+                }
             }
         }
         let meta = &self.target.meta;

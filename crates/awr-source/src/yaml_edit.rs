@@ -258,8 +258,9 @@ fn scalar_end(
                             break;
                         }
                         let comment = content.char_indices().find_map(|(i, c)| {
-                            (c == '#' && (i == 0 || content.as_bytes()[i - 1].is_ascii_whitespace()))
-                                .then_some(i)
+                            (c == '#'
+                                && (i == 0 || content.as_bytes()[i - 1].is_ascii_whitespace()))
+                            .then_some(i)
                         });
                         end = line + content[..comment.unwrap_or(content.len())].trim_end().len();
                         if comment.is_some() {

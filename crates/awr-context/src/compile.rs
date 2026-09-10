@@ -486,6 +486,13 @@ fn compile_context_selected(
         }
     }
     let mut required = hard_chunks(&hard)?;
+    if let Some(policy) = OrdinaryWorkPolicy::from_config(&work.source.config)? {
+        if policy.work_items.iter().any(|w| w == key) {
+            required.push(chunk("ordinary-work-policy", ContextSection::Metadata,
+                format!("Ordinary work policy (explicit source configuration): {}\nPolicy fingerprint: {}\nOnly a protected ordinary confirmation may record user approval or a business check; it is never engineering verification. An Agent cannot change this policy through a work edit. Recorded source confirmation: {}", serde_json::to_string(&policy)?, policy.fingerprint()?, serde_json::to_string(&work.item.ordinary_completion)?),
+                vec![entity(&work.item.meta, "work_item")]));
+        }
+    }
     if awr_source::minimal_context(&sources) {
         required.push(chunk("context-profile", ContextSection::Metadata, "Context profile: minimal. Separate plan/rule sources are optional; every configured hard rule still applies. Check project organization before business execution.", vec![]));
     }

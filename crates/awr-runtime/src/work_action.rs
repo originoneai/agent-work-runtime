@@ -20,11 +20,12 @@ pub(crate) fn verify_work_dependencies(
     project: Id,
     patch: &MutationPatch,
 ) -> Result<()> {
-    if patch
-        .host_edit
-        .as_ref()
-        .is_some_and(|h| h.action == HostEditAction::ActivateDraft)
-    {
+    if patch.host_edit.as_ref().is_some_and(|h| {
+        matches!(
+            h.action,
+            HostEditAction::ActivateDraft | HostEditAction::ConfirmOrdinary
+        )
+    }) {
         for source in store.sources(project)? {
             let (_, _, actual) = awr_source::inspect_registered_source(root, &source)?;
             if source.freshness != Freshness::Fresh || actual.fingerprint != source.fingerprint {
@@ -33,6 +34,24 @@ pub(crate) fn verify_work_dependencies(
                         .into(),
                 ));
             }
+        }
+    }
+    if patch
+        .host_edit
+        .as_ref()
+        .is_some_and(|h| h.action == HostEditAction::ConfirmOrdinary)
+    {
+        let receipt: OrdinaryCompletion =
+            serde_json::from_value(patch.changes["ordinary_completion"].clone())?;
+        for artifact in &receipt.artifacts {
+            crate::read::read_registered_file(
+                store,
+                project,
+                &artifact.locator,
+                None,
+                Some(&artifact.sha256),
+                1024 * 1024,
+            )?;
         }
     }
     if !patch

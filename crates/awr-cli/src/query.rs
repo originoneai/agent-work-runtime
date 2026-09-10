@@ -105,6 +105,7 @@ pub(crate) fn short(text: &str) -> String {
 
 fn brief(work: &Projected<WorkItem>) -> Value {
     json!({"id":work.item.meta.id,"external_key":work.item.meta.external_key,"title":work.item.title,
+        "ordinary_completion":work.item.ordinary_completion,"ordinary_work_policy":work.source.config["adapter_options"]["ordinary_work_policy"],
         "status":work.item.status,"raw_status":work.item.raw_status,"summary":short(if work.item.summary.is_empty(){&work.item.title}else{&work.item.summary}),
         "priority":work.item.priority,"milestone":work.item.milestone,"owner":work.item.owner,"next_action":work.item.next_action,
         "blocker":work.item.blocker,"revision":work.item.meta.revision,"source_revision":work.item.meta.source_ref.source_revision,"freshness":work.source.freshness})

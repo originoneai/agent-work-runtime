@@ -98,6 +98,7 @@ impl WorkActionBinding {
         for (field, value) in fields {
             match field.as_str() {
                 "status" => (),
+                "ordinary_completion" if self.action == WorkAction::Reopen && value.is_null() => (),
                 "evidence" | "verification" | "evidence_level"
                     if self.action == WorkAction::Complete =>
                 {
@@ -188,6 +189,9 @@ impl WorkActionInput {
             WorkAction::Unblock | WorkAction::Cancel | WorkAction::Reopen
         ) {
             changes["blocker"] = Value::Null;
+        }
+        if self.action == WorkAction::Reopen && work.ordinary_completion.is_some() {
+            changes["ordinary_completion"] = Value::Null;
         }
         binding.validate(&changes)?;
         Ok((binding, changes))
