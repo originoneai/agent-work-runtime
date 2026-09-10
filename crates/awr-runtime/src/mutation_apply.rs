@@ -232,6 +232,21 @@ impl SourceReplacement {
         self.temp = None;
         Ok(())
     }
+    /// Publish a fully written new file without replacing a concurrent creator.
+    pub(crate) fn install_new(&mut self) -> Result<()> {
+        let temp = self
+            .temp
+            .as_ref()
+            .ok_or_else(|| Error::InvalidTransition("source was already installed".into()))?;
+        self.directory
+            .hard_link(temp, &self.directory, &self.name)?;
+        self.directory.remove_file(temp)?;
+        self.temp = None;
+        crate::fs_sync::sync_directory(&self.directory)
+    }
+    pub(crate) fn sync_parent(&self) -> Result<()> {
+        crate::fs_sync::sync_directory(&self.directory)
+    }
 }
 impl Drop for SourceReplacement {
     fn drop(&mut self) {

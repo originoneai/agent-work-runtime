@@ -118,7 +118,7 @@ fn unsupported_protocol_and_invalid_usage_keep_distinct_error_codes() {
 }
 
 #[test]
-fn yaml_lossless_support_does_not_imply_markdown_or_human_writes() {
+fn capability_modes_separate_field_document_ledger_and_human_writes() {
     let host = Host::new();
     let result = host.ok(&["--json", "capabilities"]);
     let adapters = result["source_adapters"].as_array().unwrap();
@@ -130,8 +130,10 @@ fn yaml_lossless_support_does_not_imply_markdown_or_human_writes() {
         );
         if adapter["id"] == "yaml-ledger-v1" {
             assert_eq!(adapter["write_mode"], "lossless_supported_fields");
-        } else {
+        } else if adapter["id"] == "markdown-ledger-v1" {
             assert_eq!(adapter["write_mode"], "read_only");
+        } else {
+            assert_eq!(adapter["write_mode"], "document_body_only");
         }
     }
     for id in [

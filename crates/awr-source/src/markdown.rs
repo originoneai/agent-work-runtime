@@ -182,6 +182,8 @@ struct MarkdownOptions {
     severity: Option<String>,
     scope: Option<String>,
     value: Option<String>,
+    /// Optional host-facing plan document type, such as architecture.
+    kind: Option<String>,
 }
 impl MarkdownOptions {
     fn load(spec: &SourceSpec) -> Result<Self> {
@@ -267,7 +269,12 @@ impl SourceAdapter for MarkdownHeadingAdapter {
                     meta: meta(context, snapshot, EntityKind::Plan, &section, &options)?,
                     title: section.title,
                     status,
-                    kind: Some("markdown_section".into()),
+                    kind: Some(
+                        options
+                            .kind
+                            .clone()
+                            .unwrap_or_else(|| "markdown_section".into()),
+                    ),
                     summary: section.body,
                     scope: vec![],
                     acceptance: vec![],

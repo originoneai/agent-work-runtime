@@ -205,7 +205,24 @@ fn catalog() -> Vec<Capability> {
                 "draft_state_not_executable",
             ],
         ),
-        ("mutation.markdown", false, &[], &["not_implemented"]),
+        (
+            "mutation.markdown",
+            true,
+            &["document change"],
+            &["document_bodies_only", "work_ledger_writes_unavailable"],
+        ),
+        (
+            "mutation.markdown.document",
+            true,
+            &["document change", "document status", "document recover"],
+            &[
+                "single_file",
+                "registered_sources_only",
+                "exact_preview_and_revision",
+                "preserve_identity_and_lifecycle",
+                "draft_no_clobber",
+            ],
+        ),
         ("mutation.human_save", false, &[], &["not_implemented"]),
         ("mutation.multi_file", false, &[], &["not_implemented"]),
         (
@@ -284,7 +301,7 @@ pub fn run(args: &CapabilitiesArgs, json_output: bool) -> Result<()> {
             "schema_validation_required": true},
         "source_adapters": awr_source::SOURCE_ADAPTERS.iter().map(|id| json!({
             "id": id, "read": true,
-            "write_mode": if *id == "yaml-ledger-v1" { "lossless_supported_fields" } else { "read_only" },
+            "write_mode": match *id { "yaml-ledger-v1" => "lossless_supported_fields", "markdown-ledger-v1" => "read_only", _ => "document_body_only" },
             "lossless_field_write": *id == "yaml-ledger-v1"
         })).collect::<Vec<_>>(),
         "capabilities": capabilities,

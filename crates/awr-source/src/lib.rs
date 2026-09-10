@@ -1,6 +1,7 @@
 //! Authoritative project source configuration and adapter contracts.
 mod adapter;
 mod directory;
+mod document;
 mod freshness;
 mod indexer;
 mod ledger_mapping;
@@ -18,6 +19,10 @@ mod yaml_mutation;
 pub use adapter::{ParseContext, ProjectionBatch, SourceAdapter};
 pub use awr_core::{Error, Result};
 pub use directory::{DirectoryDelta, DirectoryInventory, MarkdownDirectoryAdapter};
+pub use document::{
+    DocumentAction, DocumentEdit, PreparedDocument, document_path_registration,
+    prepare_document_draft, prepare_document_edit,
+};
 pub use freshness::{SourceObservation, observe_source};
 pub use indexer::{
     IndexIssue, IndexReport, IndexedSource, index_project, scan_project, source_adapter,
