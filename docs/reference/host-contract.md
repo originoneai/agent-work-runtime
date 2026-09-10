@@ -166,7 +166,7 @@ expected semantics and reparse through the source adapter. See the
 [YAML writer](../../adapters/yaml-ledger/README.md) for supported shapes.
 
 `mutation.markdown.document` supports registered heading, rule and decision documents.
-Markdown work ledgers remain read-only. Unsupported capabilities include multi-file
+Markdown work ledgers support the finite stable-ID forms below. Unsupported capabilities include multi-file
 writes and user-confirmed completion. Never route an unsupported operation through a
 generic status patch or a second writer.
 
@@ -562,3 +562,41 @@ and `verified_completed` remain separate. Ordinary closure reports
 cannot count as current confirmation. A normal explicit `work reopen` clears the
 current ordinary confirmation, retaining its immutable proposal/event history.
 The engineering `work complete` input and all existing evidence gates remain unchanged.
+
+
+## Markdown ledger writes
+
+`markdown-ledger-v1` now exposes adapter revision 3. Reindexing preserves stable
+object IDs and runtime history. Tables with explicit ID columns use stable key
+pointers; unnumbered legacy tables/checklists remain readable and require an explicit
+ID before writing. Lines alone are never sufficient authorization to target a record.
+
+Use the same `host preview/save/status/recover`, proposal lifecycle, work actions and
+`work create/create-status/create-recover` as for YAML. The source adapter selects the
+writer and reparses before any write. Draft creation requires one unambiguous table
+with ID/title/status columns, or one contiguous checklist. Multiple candidate groups,
+nested or multiline list targets and unequal table rows require manual editing.
+
+Table cells retain surrounding whitespace, other cells/rows, escaped pipes, code
+examples and line endings. Existing code-span cells keep their code style when the
+replacement is representable. Array values can be explicit JSON in a cell. A field
+without a visible column is stored as a typed, individual inline metadata comment in
+the title cell. A checklist uses the same metadata after its visible title:
+
+```markdown
+- [ ] Read the article <!-- awr:id="READ-1" --> <!-- awr:status="draft" -->
+```
+
+Each `<!-- awr:field=JSON -->` has one authority and one exact value span. Conflicting
+or duplicate declarations fail. Only real HTML comments are metadata; escaped text,
+inline code and fenced examples remain content. Metadata may carry goal, acceptance,
+next action, blockers and protected completion receipts without changing the visible
+title. The checkbox must agree with the explicit completion state. New drafts remain
+unchecked and unclaimable until explicit activation passes the existing domain gates.
+
+Generic field saves cannot set status, ordinary completion or engineering evidence.
+Ordinary confirmation requires the same explicit scoped policy and applied receipt;
+engineering completion uses the existing acceptance/evidence contract. The single-file
+journal and source reservation rules also cover Markdown, including lost receipts and
+external edits during recovery. Internal snapshot filenames are opaque implementation
+details; the registered adapter determines their format.

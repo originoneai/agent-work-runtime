@@ -126,12 +126,12 @@ fn capability_modes_separate_supported_writers_from_unavailable_multi_file_write
         assert_eq!(adapter["read"], true);
         assert_eq!(
             adapter["lossless_field_write"],
-            adapter["id"] == "yaml-ledger-v1"
+            adapter["id"] == "yaml-ledger-v1" || adapter["id"] == "markdown-ledger-v1"
         );
         if adapter["id"] == "yaml-ledger-v1" {
             assert_eq!(adapter["write_mode"], "lossless_supported_fields");
         } else if adapter["id"] == "markdown-ledger-v1" {
-            assert_eq!(adapter["write_mode"], "read_only");
+            assert_eq!(adapter["write_mode"], "stable_id_table_or_checklist");
         } else {
             assert_eq!(adapter["write_mode"], "document_body_only");
         }
