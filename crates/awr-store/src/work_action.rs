@@ -14,6 +14,17 @@ pub(crate) fn validate_action(
     target: &serde_json::Value,
     session: Option<Id>,
 ) -> Result<()> {
+    if (patch.work_action.is_some()
+        || patch
+            .host_edit
+            .as_ref()
+            .is_some_and(|h| h.action != HostEditAction::Fields))
+        && target.get("archived").and_then(serde_json::Value::as_bool) == Some(true)
+    {
+        return Err(Error::RuleViolation(
+            "restore archived work before performing lifecycle actions".into(),
+        ));
+    }
     if let Some(host) = &patch.host_edit {
         host.validate()?;
         if session.is_some() {

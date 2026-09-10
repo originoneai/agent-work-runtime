@@ -165,3 +165,24 @@ fn discovery_does_not_open_or_migrate_an_existing_database() {
     assert_eq!(fs::read(config).unwrap(), b"future manifest");
     assert_eq!(fs::read_dir(host.0.join(".awr")).unwrap().count(), 2);
 }
+
+#[test]
+fn batch_and_archive_capabilities_are_negotiable() {
+    let output = std::process::Command::new(env!("CARGO_BIN_EXE_awr"))
+        .env_clear()
+        .args([
+            "--json",
+            "capabilities",
+            "--require",
+            "mutation.batch.ledger",
+            "--require",
+            "mutation.work.archive",
+        ])
+        .output()
+        .unwrap();
+    assert!(
+        output.status.success(),
+        "{}",
+        String::from_utf8_lossy(&output.stderr)
+    );
+}

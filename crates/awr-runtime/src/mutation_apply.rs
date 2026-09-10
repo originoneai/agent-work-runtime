@@ -58,6 +58,13 @@ pub(crate) fn source_lock(root: &Path, source: Id) -> Result<SourceLock> {
     named_lock(root, &format!("{source}.lock"))
 }
 pub(crate) fn named_lock(root: &Path, name: &str) -> Result<SourceLock> {
+    named_lock_for_owner(root, name, None)
+}
+pub(crate) fn named_lock_for_owner(
+    root: &Path,
+    name: &str,
+    owner: Option<&str>,
+) -> Result<SourceLock> {
     if name.len() > 100
         || !name
             .bytes()
@@ -99,7 +106,22 @@ pub(crate) fn named_lock(root: &Path, name: &str) -> Result<SourceLock> {
             path.display()
         ))
     })?;
-    Ok(SourceLock(file))
+    let lock = SourceLock(file);
+    let intent = path.with_extension("intent");
+    match std::fs::symlink_metadata(&intent) {
+        Err(e) if e.kind() == std::io::ErrorKind::NotFound => (),
+        Err(e) => return Err(e.into()),
+        Ok(_) => {
+            let mut bytes = Vec::new();
+            open_file_exact(&intent)?
+                .take(513)
+                .read_to_end(&mut bytes)?;
+            if bytes.len() > 512 || owner.map(str::as_bytes) != Some(bytes.as_slice()) {
+                return Err(Error::MutationConflict("source has a pending batch; inspect its receipt and explicitly recover it before another write".into()));
+            }
+        }
+    }
+    Ok(lock)
 }
 pub(crate) fn new_file(directory: &Dir, name: &OsStr) -> Result<File> {
     let mut options = OpenOptions::new();

@@ -600,3 +600,22 @@ engineering completion uses the existing acceptance/evidence contract. The singl
 journal and source reservation rules also cover Markdown, including lost receipts and
 external edits during recovery. Internal snapshot filenames are opaque implementation
 details; the registered adapter determines their format.
+
+
+## Same-source batches and archival
+
+`batch change --input request.json` previews up to 100 operations against one registered YAML or finite Markdown ledger. Acceptance requires `--accept --expected-preview <fingerprint> --expected-revision <revision>`. The version 1 envelope contains `request_key`, `actor` (the same provenance fields as host save), `reason`, and `change`:
+
+```json
+{"kind":"ledger","source_id":"<source ID>","source_fingerprint":"sha256:<current hash>","operations":[
+  {"operation":"fields","target":"READ-1","fields":{"next_action":"Review the note"}},
+  {"operation":"import","external_key":"READ-2","title":"Read the follow-up","fields":{"acceptance":["Useful notes"]},"duplicate":"fail"},
+  {"operation":"archive","target":"OLD-1","archived":true}
+]}
+```
+
+Use each stable key once per batch; combine fields in one operation. All operations and the final dependency graph are checked in memory before any source write. Import requires an explicit stable external key and produces a draft. `duplicate: "skip_exact"` only skips an existing unarchived draft with the same title and requested field values; unrelated existing fields remain intact. Conflicts never overwrite an existing entry. Status, verification, identity and completion metadata remain domain guarded.
+
+Archive is an independent `archived` boolean. It retains the original lifecycle status, ID, source record and runtime history. Archived work stays in explicit catalogs and `work show`, is absent from ready selection and current-scope completion counts, and cannot execute lifecycle actions until restored. `source_archived` is reported separately. Archive/restore requires no active executor across any branch. Remove incoming dependencies explicitly or archive the associated dependent scope in the same batch; restoring dependents requires restoring their dependencies too. Cancelled work remains separately counted; moving work out of current scope proves no completion.
+
+`batch status --key <key>` reads the durable outcome without writing. `batch recover --key <key> --expected-revision <revision>` explicitly resumes interrupted writes/indexing. Recovery binds the project, full manifest, reviewed bytes and dependency sources. A pending intent prevents another AWR writer from changing the same source; external edits are preserved and reported as conflicts. A duplicate request returns its historical receipt without new writes. No-change batches write no business events. The actor is provenance supplied by the host, not authentication. Raw journals are local runtime state.

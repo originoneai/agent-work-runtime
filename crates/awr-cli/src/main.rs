@@ -1,6 +1,7 @@
 use awr_core::{Error, Result};
 use clap::{CommandFactory, Parser, Subcommand};
 use std::path::PathBuf;
+mod batch;
 mod branch;
 mod capabilities;
 mod catalog;
@@ -43,6 +44,11 @@ struct Cli {
 
 #[derive(Debug, Subcommand)]
 enum Command {
+    /// Preview and apply a bounded batch of source edits.
+    Batch {
+        #[command(subcommand)]
+        command: batch::BatchCommand,
+    },
     /// Save explicit host edits with durable request identity and provenance.
     Host {
         #[command(subcommand)]
@@ -158,6 +164,7 @@ enum Command {
 fn run(cli: &Cli) -> Result<()> {
     match &cli.command {
         Some(Command::Host { command }) => host_save::run(&cli.project, command, cli.json),
+        Some(Command::Batch { command }) => batch::run(&cli.project, command, cli.json),
         Some(Command::Document { command }) => document::run(&cli.project, command, cli.json),
         Some(Command::Capabilities(args)) => capabilities::run(args, cli.json),
         Some(Command::Init(args)) => onboarding::run(&cli.project, args, cli.json),

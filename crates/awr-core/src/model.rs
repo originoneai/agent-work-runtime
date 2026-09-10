@@ -182,6 +182,8 @@ pub struct Rule {
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct WorkItem {
+    #[serde(default, skip_serializing_if = "is_false")]
+    pub archived: bool,
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub ordinary_completion: Option<crate::OrdinaryCompletion>,
     #[serde(flatten)]
@@ -203,6 +205,10 @@ pub struct WorkItem {
     pub acceptance: Vec<String>,
     pub tags: Vec<String>,
     pub paths: Vec<String>,
+}
+
+fn is_false(value: &bool) -> bool {
+    !value
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
