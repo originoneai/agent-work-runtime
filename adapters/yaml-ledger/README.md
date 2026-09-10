@@ -46,7 +46,24 @@ Use `awr proposal create`, `submit`, `approve`, then `apply` as described in the
 | Work | `title`, `kind`, `priority`, `required` / `required_for_v1`, `summary`, `next_action`, `score`, `tags`, `paths` / `deliverables`, `acceptance`, `milestone`, `depends_on` / `dependencies`, `goal` / `goals` |
 | Structured source evidence | `summary` only; evidence identity, provenance and verification level are preserved |
 
-The writer supports ordinary list and keyed-map records, including flow mappings, Unicode and CRLF files. It serializes the selected mapping as JSON flow syntax, which is valid YAML. Whitespace, comments and scalar formatting inside that record can change; bytes outside the record remain unchanged. Standalone trailing comments remain outside the replacement. The complete resulting document must have exactly the proposed semantic changes and must reparse through the same projection adapter before any write is attempted.
+The writer supports ordinary list and keyed-map records, including flow mappings,
+Unicode and CRLF files. It locates the changed fields using parser events and changes
+only their value spans; new fields are appended without reordering existing keys.
+Unchanged fields, inline/standalone comments, and surrounding bytes retain their exact
+representation. Plain, single-quoted, double-quoted, literal and folded scalars are
+supported. Quotes and block style remain when representable; plain strings that would
+become another YAML type are quoted, and block chomping follows the new trailing breaks.
+Existing indentation and LF/CRLF are retained. Collection replacement is one field edit;
+comment-bearing collections are conservatively rejected instead of losing comments.
+Multiline plain target scalars, unusual single-quoted whitespace/line breaks and block
+headers separated from their key by a comment require explicit manual editing.
+Unrelated multiline plain scalars retain their original bytes.
+
+Anchors, aliases, tags, merge/duplicate/complex keys and multiple documents are rejected
+for automatic field writes. These forms may remain readable. The complete resulting
+document must have exactly the proposed semantic changes and reparse through the same
+projection adapter before any write is attempted. There is no whole-record serialization
+fallback when field-level preservation cannot be proved.
 
 Git sources, scalar evidence, aliased targets, anchored/tagged target nodes, complex mapping keys and unsupported fields return `proposal_required`. Generic work field updates cannot change status, owner, blocker, verification or evidence lists. Validated `work progress/block/unblock/cancel/reopen` proposals can change their exact authorized status/blocker/next-action fields (and progress summary); the immutable transition and current runtime/domain conditions are checked before writing. `work complete` additionally binds every acceptance criterion to current registered evidence and checks the actual version 1 report files. It preserves existing evidence references and arbitrary verification metadata, appends selected report locators, and sets `verification.evidence_level` to the minimum supported level across selected records. If a top-level `evidence_level` already exists, both aliases are updated consistently. A manually constructed completion patch must match these preserving changes exactly; source-reference namespace collisions fail before writing. The completed projection is verified before recording `work.completed` and releasing the creating session's claim. See the [completion input and report contract](../../README.md) for report fields and limits. Invalid values and no-op patches fail explicitly. Project runtime files under `.awr` cannot be mutation targets. Source and recovery snapshots are capped at 16 MiB.
 

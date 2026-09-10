@@ -10,6 +10,7 @@ mod manifest;
 mod markdown;
 mod markdown_ledger;
 mod mutation;
+mod yaml_edit;
 mod yaml_ledger;
 mod yaml_mutation;
 

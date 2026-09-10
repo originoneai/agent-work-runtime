@@ -155,14 +155,20 @@ reads. Status, ready and summaries do not provide a complete project catalog. Co
 projections can write the runtime database; `read_only` and freshness fields are part
 of the result, not an inference from the command's name.
 
-`mutation.yaml.record` supports selected YAML fields through source-bound proposals;
-it reserializes the selected record. It preserves neither every comment nor its
-original quoting/formatting. Require `mutation.yaml.lossless_fields` if the host
-promises field-level preservation. Markdown adapters currently read sources; they do
-not authorize Markdown body or ledger writes. Unsupported capabilities are explicitly
-listed as unavailable, including human-save shortcuts, new tasks, multi-file writes
-and user-confirmed completion. Never route an unsupported operation through a generic
-status patch or a second writer.
+`mutation.yaml.record` and `mutation.yaml.lossless_fields` support selected YAML
+fields through source-bound proposals. Field spans preserve unrelated bytes, comments,
+key order and line endings. Existing scalar styles are retained when the new value can
+be represented in that style; a plain string that would become a boolean is quoted.
+Block style is retained with chomping adjusted to the new value. Unsupported anchors,
+aliases, tags, duplicate/complex keys, comment-bearing collection replacement and
+ambiguous scalar forms fail before writing. The entire result must have precisely the
+expected semantics and reparse through the source adapter. See the
+[YAML writer](../../adapters/yaml-ledger/README.md) for supported shapes.
+
+Markdown adapters currently read sources; they do not authorize Markdown body or ledger
+writes. Unsupported capabilities include human-save shortcuts, new tasks, multi-file
+writes and user-confirmed completion. Never route an unsupported operation through a
+generic status patch or a second writer.
 
 `work complete` retains the engineering contract: a real session/claim and evidence
 covering the source's acceptance criteria at the supplied source SHA. A source's raw

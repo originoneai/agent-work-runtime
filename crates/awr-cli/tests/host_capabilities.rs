@@ -69,7 +69,7 @@ fn callers_can_distinguish_unknown_from_known_unavailable_without_parsing_messag
         "capabilities",
         "--json",
         "--require",
-        "mutation.yaml.lossless_fields",
+        "mutation.multi_file",
         "--require",
         "fictional.capability",
         "--require",
@@ -87,7 +87,7 @@ fn callers_can_distinguish_unknown_from_known_unavailable_without_parsing_messag
     );
     assert_eq!(
         error["details"]["unsupported"],
-        serde_json::json!(["mutation.yaml.lossless_fields"])
+        serde_json::json!(["mutation.multi_file"])
     );
     assert_eq!(error["details"]["runtime_write_performed"], false);
     assert_eq!(fs::read_dir(&host.0).unwrap().count(), 0);
@@ -118,15 +118,18 @@ fn unsupported_protocol_and_invalid_usage_keep_distinct_error_codes() {
 }
 
 #[test]
-fn source_read_support_does_not_advertise_lossless_or_markdown_writes() {
+fn yaml_lossless_support_does_not_imply_markdown_or_human_writes() {
     let host = Host::new();
     let result = host.ok(&["--json", "capabilities"]);
     let adapters = result["source_adapters"].as_array().unwrap();
     for adapter in adapters {
         assert_eq!(adapter["read"], true);
-        assert_eq!(adapter["lossless_field_write"], false);
+        assert_eq!(
+            adapter["lossless_field_write"],
+            adapter["id"] == "yaml-ledger-v1"
+        );
         if adapter["id"] == "yaml-ledger-v1" {
-            assert_eq!(adapter["write_mode"], "supported_record_reserialization");
+            assert_eq!(adapter["write_mode"], "lossless_supported_fields");
         } else {
             assert_eq!(adapter["write_mode"], "read_only");
         }
