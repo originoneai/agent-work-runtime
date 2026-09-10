@@ -8,6 +8,71 @@ pub enum ExecutorKind {
     External,
 }
 
+/// Claimed provenance of an external report; neither value grants supervisor authority.
+#[derive(Debug, Clone, Copy, Serialize, Deserialize, PartialEq, Eq)]
+#[serde(rename_all = "snake_case")]
+pub enum ExternalReportOrigin {
+    CallerReported,
+    HostObserved,
+}
+
+#[derive(Debug, Clone, Copy, Serialize, Deserialize, PartialEq, Eq)]
+#[serde(rename_all = "snake_case")]
+pub enum ExternalReportPhase {
+    Started,
+    Progress,
+    WaitingUser,
+    Succeeded,
+    Failed,
+    Interrupted,
+    Unknown,
+}
+
+/// Immutable host observation. Reports are separate from AWR's execution state machine.
+#[derive(Debug, Clone, Serialize, Deserialize, PartialEq, Eq)]
+#[serde(deny_unknown_fields)]
+pub struct ExternalExecutionReport {
+    pub version: u32,
+    pub request_key: String,
+    pub execution_id: Id,
+    pub host_id: String,
+    pub host_work_key: String,
+    pub native_session: String,
+    pub agent_id: String,
+    pub origin: ExternalReportOrigin,
+    pub phase: ExternalReportPhase,
+    pub observed_at: i64,
+    pub summary: String,
+    #[serde(default)]
+    pub detail_references: Vec<String>,
+}
+impl ExternalExecutionReport {
+    pub fn validate(&self) -> crate::Result<()> {
+        if self.version != 1
+            || self.observed_at < 0
+            || [
+                &self.request_key,
+                &self.host_id,
+                &self.host_work_key,
+                &self.native_session,
+                &self.agent_id,
+            ]
+            .iter()
+            .any(|s| s.trim().is_empty() || s.len() > 512 || s.contains('\0'))
+            || self.summary.trim().is_empty()
+            || self.summary.len() > 8192
+            || self.detail_references.len() > 32
+            || self
+                .detail_references
+                .iter()
+                .any(|s| s.trim().is_empty() || s.len() > 4096 || s.contains('\0'))
+        {
+            return Err(crate::Error::InvalidInput("external report requires version 1, bounded identities, timestamp, summary and references".into()));
+        }
+        crate::ensure_public_data(self)
+    }
+}
+
 #[derive(Debug, Clone, Copy, Serialize, Deserialize, PartialEq, Eq)]
 #[serde(rename_all = "snake_case")]
 pub enum ExecutionState {

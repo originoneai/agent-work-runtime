@@ -135,6 +135,20 @@ fn catalog() -> Vec<Capability> {
             &["local_supervisor", "project_scoped_operation_key"],
         ),
         (
+            "execution.external.report",
+            true,
+            &[
+                "execution report",
+                "execution report-status",
+                "execution inspect",
+            ],
+            &[
+                "host_supplied_provenance",
+                "never_promotes_managed_or_verified",
+                "request_key_idempotent",
+            ],
+        ),
+        (
             "artifact.managed",
             true,
             &["artifact add", "artifact show", "artifact cat"],

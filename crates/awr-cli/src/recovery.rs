@@ -21,7 +21,22 @@ pub fn run(root: &Path, command: &RecoveryCommand, json_output: bool) -> Result<
     let checkpoint = store.recovery_checkpoint(project.id, session.id)?;
     let executions =
         awr_runtime::inspect_work_executions(&store, root, project.id, work, session.branch_id)?;
-    let result = json!({"session":session,"checkpoint":checkpoint,"executions":executions,"all_execution_states_verified":executions.iter().all(|e|e.verified),"observed_at":now_millis()?,"source_refresh_performed":false,"side_effects_performed":false,"next_step":"Use session resume to refresh project sources and compile the successor context. Unknown executions require explicit investigation before a retry."});
+    let reports = executions
+        .iter()
+        .map(|e| store.latest_external_report(project.id, e.execution_id))
+        .collect::<Result<Vec<_>>>()?
+        .into_iter()
+        .flatten()
+        .collect::<Vec<_>>();
+    let findings = store.inspect_runtime(project.id, now_millis()?)?.findings;
+    let actual = store.project(project.id)?.project_revision;
+    if actual != project.project_revision {
+        return Err(Error::RevisionConflict {
+            expected: project.project_revision,
+            actual,
+        });
+    }
+    let result = json!({"session":session,"checkpoint":checkpoint,"executions":executions,"external_reports":reports,"runtime_findings":findings,"project_revision":project.project_revision,"all_execution_states_verified":executions.iter().all(|e|e.verified),"observed_at":now_millis()?,"source_refresh_performed":false,"side_effects_performed":false,"next_step":"Use doctor for read-only current-source and artifact diagnostics, then session resume to refresh sources and compile the successor context. Unknown executions and incomplete writes require explicit investigation before any retry."});
     if json_output {
         println!("{}", serde_json::to_string_pretty(&result)?);
     } else {
