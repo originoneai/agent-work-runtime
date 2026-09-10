@@ -7,6 +7,10 @@ mod branch;
 mod branch_close;
 mod completion;
 mod doctor;
+mod document;
+pub use document::{
+    DocumentReport, DocumentRequest, change_document, document_status, recover_document,
+};
 mod execution;
 mod fs_sync;
 mod mutation;

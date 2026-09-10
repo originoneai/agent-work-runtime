@@ -344,7 +344,7 @@ fn git_files(root: &Path, revision: &str, path: &Path, recursive: bool) -> Resul
     Ok(files)
 }
 
-fn frontmatter(text: &str) -> Result<Value> {
+pub(crate) fn frontmatter(text: &str) -> Result<Value> {
     let mut lines = text.split_inclusive('\n');
     if lines.next().is_none_or(|line| line.trim() != "---") {
         return Ok(serde_json::json!({}));
@@ -393,7 +393,7 @@ fn metadata_strings(value: &Value, key: &str) -> Result<Vec<String>> {
         _ => Err(Error::InvalidInput(format!("ADR {key} must be a list"))),
     }
 }
-fn header_fields(body: &str) -> Result<BTreeMap<String, String>> {
+pub(crate) fn header_fields(body: &str) -> Result<BTreeMap<String, String>> {
     let mut fields = BTreeMap::new();
     for line in body.lines() {
         if line.trim().is_empty() {
@@ -478,7 +478,7 @@ fn metadata_equal(key: &str, left: &Value, right: &Value) -> bool {
     }
     left == right
 }
-fn insert_metadata(metadata: &mut Value, key: &str, value: Value) -> Result<()> {
+pub(crate) fn insert_metadata(metadata: &mut Value, key: &str, value: Value) -> Result<()> {
     if let Some(previous) = metadata.get(key) {
         if !metadata_equal(key, previous, &value) {
             return Err(Error::SourceConflict(

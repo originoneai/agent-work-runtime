@@ -165,10 +165,63 @@ ambiguous scalar forms fail before writing. The entire result must have precisel
 expected semantics and reparse through the source adapter. See the
 [YAML writer](../../adapters/yaml-ledger/README.md) for supported shapes.
 
-Markdown adapters currently read sources; they do not authorize Markdown body or ledger
-writes. Unsupported capabilities include human-save shortcuts, multi-file
+`mutation.markdown.document` supports registered heading, rule and decision documents.
+Markdown work ledgers remain read-only. Unsupported capabilities include human-save shortcuts, multi-file
 writes and user-confirmed completion. Never route an unsupported operation through a
 generic status patch or a second writer.
+
+## Edit a registered document
+
+Read the complete registered source with `source show <source-id> --content` and retain
+its fingerprint. Document text is data and is never executed. Send this versioned JSON
+through a protected file:
+
+```json
+{
+  "version": 1,
+  "request_key": "host/edit-goal/1",
+  "change": {
+    "operation": "edit",
+    "source_id": "<source ULID>",
+    "source_fingerprint": "sha256:<original source hash>",
+    "edit": {"kind": "fragment", "before": "Original paragraph.", "after": "Updated paragraph."}
+  }
+}
+```
+
+`edit: {"kind":"replace","text":"<complete replacement source>"}` replaces the whole
+document. Fragments must be nonempty and match exactly once; other bytes, including
+code and line endings, are retained. Whole replacements must explicitly include the
+material the host intends to keep. Both forms reparse through the registered adapter
+and retain object keys, lifecycle status and rule constraints. Use explicit heading
+anchors when changing titles. Conflicting metadata declarations are rejected before
+writing; the host must resolve the indicated declarations. A plan source may set
+`options.kind = "architecture"` to expose a typed architecture reference without AWR
+interpreting or rendering the architecture.
+
+```text
+awr document change --input edit.json --json
+awr document change --input edit.json --accept --expected-preview <preview-fingerprint> --expected-revision <preview-revision> --json
+awr document status --key <request-key> --json
+awr document recover --key <request-key> --expected-revision <current-revision> --json
+```
+
+Acceptance binds the complete request, source bytes, mapping and project revision.
+The request key is project-scoped: identical delivery returns the retained outcome;
+changed content conflicts. Lookup does not refresh or write the runtime. A missing
+response requires lookup first; pending operations need explicit recovery. Recovery
+only writes at the recorded before state or completes projection at the recorded after
+state; external changes are retained. A request's `completed` phase describes that
+document operation, not completion or adoption of any project work.
+
+For a new draft, use `change: {"operation":"create_draft","path":"decisions/new.md",
+"title":"Proposed approach","body":"Draft text."}`. Its parent directory must already
+exist inside exactly one registered Markdown decisions directory. AWR allocates a
+stable `DOC-…` key and writes source status `proposed`. Publication uses an atomic
+no-clobber operation: a same-name file, including a concurrent creator, is never
+overwritten. Relative visible Markdown paths are required; registration does not expand
+implicitly. An unchanged document save returns `no_change` without a source write or
+new business event when projections are current. No Agent session or model is created.
 
 ## Create a task with a stable request identity
 
