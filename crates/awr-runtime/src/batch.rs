@@ -411,6 +411,17 @@ pub fn change_batch(
                         "batch ledger fingerprint changed".into(),
                     ));
                 }
+                let existing = store.work_items(project.id)?;
+                for operation in &operations {
+                    if let LedgerBatchOperation::Import { external_key, .. } = operation
+                        && existing.iter().any(|w| {
+                            w.item.meta.external_key == *external_key
+                                && w.item.meta.source_ref.source_id != source.id
+                        })
+                    {
+                        return Err(Error::SourceConflict("import key already belongs to another source in this project; link the existing task instead of creating an ambiguous identity".into()));
+                    }
+                }
                 let prepared = prepare_ledger_batch(
                     &root,
                     &source,

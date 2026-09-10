@@ -418,3 +418,30 @@ fn active_execution_prevents_archiving_until_its_claim_is_released() {
         "DependencyBlocked",
     );
 }
+
+#[test]
+fn imports_reject_keys_owned_by_another_source_in_the_same_project() {
+    let h = Host::new(false);
+    h.write(
+        "other.yaml",
+        "work_items:\n- id: EXISTING\n  title: Existing source work\n  status: draft\n",
+    );
+    let mapping = h.text(".awr/project.toml")
+        + "\n[[sources]]\ndomain='ledger'\nrole='supporting'\npath='other.yaml'\nadapter='yaml-ledger-v1'\n";
+    h.write(".awr/project.toml", &mapping);
+    h.ok(&["source", "reindex"]);
+    let sources = h.ok(&["source", "list"]);
+    let source = sources["sources"]
+        .as_array()
+        .unwrap()
+        .iter()
+        .find(|s| s["locator"].as_str().unwrap().ends_with("/work.yaml"))
+        .unwrap();
+    h.write("batch.json",&json!({"version":1,"request_key":"foreign-source-import","actor":{"host":"fixture","subject":"editor","origin":"human"},"reason":"Review import identity","change":{"kind":"ledger","source_id":source["id"],"source_fingerprint":source["fingerprint"],"operations":[{"operation":"import","external_key":"EXISTING","title":"Existing source work","duplicate":"skip_exact"}]}}).to_string());
+    let before = h.text(h.file);
+    h.error(
+        &["batch", "change", "--input", "batch.json"],
+        "SourceConflict",
+    );
+    assert_eq!(h.text(h.file), before);
+}
