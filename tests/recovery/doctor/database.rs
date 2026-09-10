@@ -122,7 +122,15 @@ impl Fixture {
         json!({"schema":schema,"tables":tables,"version":version,"sources":sources})
     }
     fn downgrade_to_v2(&self) {
+        self.downgrade_to_v3();
         self.sql("DROP TABLE search_fts; DROP TABLE search_state; DROP TABLE search_documents; DELETE FROM schema_migrations WHERE version=3; PRAGMA user_version=2;");
+    }
+    fn downgrade_to_v3(&self) {
+        // Build an authentic old fixture, including its original constraint definition.
+        let domain = include_str!("../../../crates/awr-store/migrations/002_domain.sql");
+        let begin = domain.find("CREATE TABLE work_items (").unwrap();
+        let end = domain[begin..].find("CREATE TABLE decisions (").unwrap() + begin;
+        self.sql(&format!("PRAGMA foreign_keys=OFF; CREATE TEMP TABLE kept_work AS SELECT * FROM work_items; DROP TABLE work_items; {} INSERT INTO work_items SELECT * FROM kept_work; DROP TABLE kept_work; CREATE INDEX work_status ON work_items(project_id,status,active,priority); DELETE FROM schema_migrations WHERE version=4; PRAGMA user_version=3;",&domain[begin..end]));
     }
     fn revision(&self) -> String {
         Connection::open_with_flags(self.db(), OpenFlags::SQLITE_OPEN_READ_ONLY)
@@ -293,13 +301,13 @@ fn case_schema_migration_catalog_checks_record_identity() {
     for sql in [
         "DELETE FROM schema_migrations WHERE version=1",
         "UPDATE schema_migrations SET name='other' WHERE version=2",
-        "INSERT INTO schema_migrations VALUES(4,'unsupported',0)",
+        "INSERT INTO schema_migrations VALUES(5,'unsupported',0)",
     ] {
         let f = Fixture::new();
         f.sql(sql);
         let before = f.snapshot();
         let report = f.problems(&["doctor", "--database-only"]);
-        assert_eq!(report["schema_version"], 3);
+        assert_eq!(report["schema_version"], awr_store::SCHEMA_VERSION);
         assert!(Store::open_existing(&f.db()).is_err());
         assert!(Store::open(&f.db()).is_err());
         assert_eq!(f.snapshot(), before);
@@ -428,7 +436,7 @@ fn case_migration_sql_failure_rolls_back_and_supported_versions_keep_history() {
     let before = f.snapshot();
     drop(Store::open(&f.db()).unwrap());
     let after = f.snapshot();
-    assert_eq!(after["version"], 3);
+    assert_eq!(after["version"], awr_store::SCHEMA_VERSION);
     assert_runtime_retained(&before, &after);
     assert_eq!(before["tables"]["sources"], after["tables"]["sources"]);
     assert_eq!(f.ok(&["doctor"])["database_ok"], true);
@@ -446,6 +454,64 @@ fn case_migration_sql_failure_rolls_back_and_supported_versions_keep_history() {
     assert!(migrated.ok);
     assert_eq!(migrated.migrations[0].applied_at, 42);
     passed("migration_success_preserves_runtime");
+}
+
+#[test]
+fn draft_state_migration_preserves_rows_references_and_extra_indexes_and_rolls_back_on_failure() {
+    let f = Fixture::new();
+    let session = f.start(false);
+    f.checkpoint(session["session"]["id"].as_str().unwrap());
+    f.downgrade_to_v3();
+    f.sql("CREATE INDEX user_work_title ON work_items(title); CREATE TRIGGER reject_draft_migration BEFORE INSERT ON schema_migrations WHEN NEW.version=4 BEGIN SELECT RAISE(ABORT,'fixture migration failure'); END;");
+    let before = f.snapshot();
+    assert!(Store::open(&f.db()).is_err());
+    assert_eq!(f.snapshot(), before);
+    f.sql("DROP TRIGGER reject_draft_migration");
+    let before = f.snapshot();
+    let store = Store::open(&f.db()).unwrap();
+    let doctor = store.doctor().unwrap();
+    assert!(doctor.ok);
+    assert!(doctor.foreign_keys);
+    drop(store);
+    let after = f.snapshot();
+    assert_runtime_retained(&before, &after);
+    for name in [
+        "projects",
+        "sources",
+        "work_items",
+        "events",
+        "sessions",
+        "claims",
+        "checkpoints",
+    ] {
+        assert_eq!(
+            before["tables"][name], after["tables"][name],
+            "migration changed {name}"
+        );
+    }
+    let db = Connection::open(f.db()).unwrap();
+    assert_eq!(
+        db.query_row(
+            "SELECT count(*) FROM sqlite_master WHERE name='user_work_title'",
+            [],
+            |r| r.get::<_, i64>(0)
+        )
+        .unwrap(),
+        1
+    );
+    // New draft values are accepted without changing any old status spelling.
+    db.execute(
+        "UPDATE work_items SET status='draft' WHERE external_key='OTHER'",
+        [],
+    )
+    .unwrap();
+    assert!(
+        db.execute(
+            "UPDATE work_items SET status='made_up' WHERE external_key='OTHER'",
+            []
+        )
+        .is_err()
+    );
 }
 
 #[test]

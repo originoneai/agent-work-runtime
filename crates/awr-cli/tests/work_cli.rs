@@ -112,7 +112,7 @@ fn search_cli_combines_text_and_structured_filters() {
     let diagnosed = f.run(&["doctor"]);
     assert!(!diagnosed.status.success());
     let diagnosis: Value = serde_json::from_slice(&diagnosed.stdout).unwrap();
-    assert_eq!(diagnosis["schema_version"], 3);
+    assert_eq!(diagnosis["schema_version"], awr_store::SCHEMA_VERSION);
     assert_eq!(diagnosis["database_ok"], true);
     assert!(
         diagnosis["findings"]

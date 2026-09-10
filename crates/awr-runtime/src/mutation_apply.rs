@@ -15,7 +15,7 @@ use std::{
     path::Path,
 };
 
-fn directory(parent: &Dir, name: &str, path: &Path) -> Result<Dir> {
+pub(crate) fn directory(parent: &Dir, name: &str, path: &Path) -> Result<Dir> {
     match parent.create_dir(name) {
         Ok(()) => (),
         Err(e) if e.kind() == std::io::ErrorKind::AlreadyExists => (),
@@ -30,7 +30,7 @@ fn directory(parent: &Dir, name: &str, path: &Path) -> Result<Dir> {
     }
     Ok(parent.open_dir_nofollow(name)?)
 }
-fn recovery_root(root: &Path) -> Result<Dir> {
+pub(crate) fn recovery_root(root: &Path) -> Result<Dir> {
     let runtime = root.join(".awr");
     let project = open_dir_exact(root)?;
     let meta = project.symlink_metadata(".awr")?;
@@ -45,7 +45,7 @@ fn recovery_root(root: &Path) -> Result<Dir> {
         .map_err(|e| Error::SourceUnavailable(format!("{}: {e}", runtime.display())))?;
     directory(&runtime_dir, "mutations", &runtime.join("mutations"))
 }
-struct SourceLock(File);
+pub(crate) struct SourceLock(File);
 impl Drop for SourceLock {
     fn drop(&mut self) {
         // Release this writer's reservation explicitly. A concurrent process spawn
@@ -54,9 +54,18 @@ impl Drop for SourceLock {
         let _ = self.0.unlock();
     }
 }
-fn source_lock(root: &Path, source: Id) -> Result<SourceLock> {
+pub(crate) fn source_lock(root: &Path, source: Id) -> Result<SourceLock> {
+    named_lock(root, &format!("{source}.lock"))
+}
+pub(crate) fn named_lock(root: &Path, name: &str) -> Result<SourceLock> {
+    if name.len() > 100
+        || !name
+            .bytes()
+            .all(|b| b.is_ascii_alphanumeric() || b".-".contains(&b))
+    {
+        return Err(Error::InvalidInput("invalid mutation lock name".into()));
+    }
     let directory = recovery_root(root)?;
-    let name = format!("{source}.lock");
     let path = root.join(".awr/mutations").join(&name);
     if directory
         .symlink_metadata(&name)
@@ -92,7 +101,7 @@ fn source_lock(root: &Path, source: Id) -> Result<SourceLock> {
     })?;
     Ok(SourceLock(file))
 }
-fn new_file(directory: &Dir, name: &OsStr) -> Result<File> {
+pub(crate) fn new_file(directory: &Dir, name: &OsStr) -> Result<File> {
     let mut options = OpenOptions::new();
     options.create_new(true).write(true);
     #[cfg(unix)]
@@ -190,13 +199,13 @@ fn stored_after(root: &Path, plan: &MutationWritePlan) -> Result<Vec<u8>> {
 
 /// Hold one approved source directory for temp creation, replacement and cleanup.
 /// Domain fingerprint/revision checks still run immediately before install.
-struct SourceReplacement {
+pub(crate) struct SourceReplacement {
     directory: Dir,
     name: OsString,
     temp: Option<OsString>,
 }
 impl SourceReplacement {
-    fn prepare(path: &Path, bytes: &[u8], permissions: fs::Permissions) -> Result<Self> {
+    pub(crate) fn prepare(path: &Path, bytes: &[u8], permissions: fs::Permissions) -> Result<Self> {
         let directory = open_dir_exact(
             path.parent()
                 .ok_or_else(|| Error::InvalidInput("source has no parent".into()))?,
@@ -215,7 +224,7 @@ impl SourceReplacement {
         write_file(file, bytes, Some(permissions))?;
         Ok(replacement)
     }
-    fn install(&mut self) -> Result<()> {
+    pub(crate) fn install(&mut self) -> Result<()> {
         let temp = self.temp.as_ref().ok_or_else(|| {
             Error::InvalidTransition("source replacement was already installed".into())
         })?;

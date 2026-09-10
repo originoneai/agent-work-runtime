@@ -98,7 +98,9 @@ impl LedgerMapping {
                 || raw != raw.trim()
                 || raw.chars().any(char::is_control)
                 || status == WorkStatus::Unknown
-                || (existing != WorkStatus::Unknown && existing != status)
+                // Before draft became a built-in nonselectable state, projects could
+                // explicitly map that source spelling. Retain those prior mappings.
+                || (existing != WorkStatus::Unknown && existing != WorkStatus::Draft && existing != status)
                 || !keys.insert(key)
             {
                 return Err(Error::InvalidInput("status_map requires unique source statuses and canonical targets; canonical states cannot be redefined".into()));

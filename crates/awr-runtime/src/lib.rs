@@ -15,6 +15,7 @@ mod organization;
 mod read;
 mod resume;
 mod work_action;
+mod work_create;
 pub use artifact::ArtifactFile;
 use awr_store::Store;
 pub use awr_store::{BranchFilter, EventCursor, EventPage, EventQuery};
@@ -30,6 +31,9 @@ pub use mutation::{
 pub use organization::{OrganizationReport, OrganizationState, inspect_organization};
 pub use resume::{ResumeReport, ResumeRequest, resume_session};
 pub use work_action::{WorkActionRequest, perform_work_action};
+pub use work_create::{
+    CreateWorkInput, CreationReport, create_work, creation_status, recover_creation,
+};
 
 /// Hard ceilings; a caller may select a smaller budget, never raise these limits.
 pub const ARTIFACT_IMPORT_CAP: u64 = 64 * 1024 * 1024;

@@ -7,6 +7,12 @@ use std::{collections::BTreeMap, path::Path};
 
 #[derive(Debug, Subcommand)]
 pub enum WorkCommand {
+    /// Preview or accept one new source-backed, non-executable task draft.
+    Create(crate::work_create::CreateArgs),
+    /// Read the durable outcome for a stable creation request without applying it.
+    CreateStatus(crate::work_create::StatusArgs),
+    /// Explicitly recover a pending creation while retaining externally changed bytes.
+    CreateRecover(crate::work_create::RecoverArgs),
     /// Record progress in the source ledger; requires an active owned runtime claim.
     Progress(crate::work_action::ActionArgs),
     /// Mark in-progress source work blocked with a concrete blocker.
@@ -340,6 +346,9 @@ pub fn ready(root: &Path, limit: usize, reference: Option<&str>, json_output: bo
 
 pub fn work(root: &Path, command: &WorkCommand, json_output: bool) -> Result<()> {
     match command {
+        WorkCommand::Create(args) => crate::work_create::create(root, args, json_output),
+        WorkCommand::CreateStatus(args) => crate::work_create::status(root, args, json_output),
+        WorkCommand::CreateRecover(args) => crate::work_create::recover(root, args, json_output),
         WorkCommand::Progress(args) => {
             crate::work_action::run(root, args, WorkAction::Progress, json_output)
         }
