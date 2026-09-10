@@ -179,16 +179,20 @@ fn catalog() -> Vec<Capability> {
             &["proposal create", "proposal apply"],
             &[
                 "supported_fields_only",
-                "target_record_reserialized",
+                "field_spans_preserve_unrelated_bytes",
                 "state_requires_domain_action",
                 "single_file",
             ],
         ),
         (
             "mutation.yaml.lossless_fields",
-            false,
-            &[],
-            &["not_implemented"],
+            true,
+            &["proposal apply"],
+            &[
+                "supported_yaml_shapes_only",
+                "scalar_style_when_representable",
+                "domain_actions_still_required",
+            ],
         ),
         ("mutation.work.create", false, &[], &["not_implemented"]),
         ("mutation.markdown", false, &[], &["not_implemented"]),
@@ -270,8 +274,8 @@ pub fn run(args: &CapabilitiesArgs, json_output: bool) -> Result<()> {
             "schema_validation_required": true},
         "source_adapters": awr_source::SOURCE_ADAPTERS.iter().map(|id| json!({
             "id": id, "read": true,
-            "write_mode": if *id == "yaml-ledger-v1" { "supported_record_reserialization" } else { "read_only" },
-            "lossless_field_write": false
+            "write_mode": if *id == "yaml-ledger-v1" { "lossless_supported_fields" } else { "read_only" },
+            "lossless_field_write": *id == "yaml-ledger-v1"
         })).collect::<Vec<_>>(),
         "capabilities": capabilities,
         "source_write_performed": false,

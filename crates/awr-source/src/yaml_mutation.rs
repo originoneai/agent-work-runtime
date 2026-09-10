@@ -6,10 +6,8 @@ use awr_core::*;
 use serde_json::Value;
 use std::{
     collections::BTreeMap,
-    ops::Range,
     path::{Path, PathBuf},
 };
-use yaml_rust2::parser::{Event, Parser};
 
 pub struct PreparedYamlMutation {
     pub path: PathBuf,
@@ -20,181 +18,6 @@ pub struct PreparedYamlMutation {
 
 fn unsupported(message: &str) -> Error {
     Error::MutationUnsupported(message.into())
-}
-fn bytes_at(text: &str, index: usize) -> Result<usize> {
-    text.char_indices()
-        .nth(index)
-        .map(|(byte, _)| byte)
-        .or_else(|| (text.chars().count() == index).then_some(text.len()))
-        .ok_or_else(|| Error::InvalidInput("YAML marker is outside its source".into()))
-}
-fn token(parser: &mut Parser<std::str::Chars<'_>>) -> Result<(Event, usize)> {
-    parser
-        .next_token()
-        .map(|(event, mark)| (event, mark.index()))
-        .map_err(|e| Error::InvalidInput(format!("YAML mutation syntax: {e}")))
-}
-fn node(
-    parser: &mut Parser<std::str::Chars<'_>>,
-    first: (Event, usize),
-    path: &mut Vec<String>,
-    target: &[String],
-    text: &str,
-    found: &mut Option<Range<usize>>,
-    depth: usize,
-    in_target: bool,
-) -> Result<()> {
-    if depth > 128 {
-        return Err(unsupported("YAML mutation nesting exceeds 128 levels"));
-    }
-    let here = path == target;
-    let in_target = in_target || here;
-    match first.0 {
-        Event::MappingStart(anchor, tag) => {
-            if in_target && (anchor != 0 || tag.is_some()) {
-                return Err(unsupported(
-                    "anchored or tagged target mappings require manual mutation",
-                ));
-            }
-            let flow = here && text[bytes_at(text, first.1)?..].starts_with('{');
-            let mut mapping_start = first.1;
-            let mut first_key = true;
-            let end = loop {
-                let key = token(parser)?;
-                if key.0 == Event::MappingEnd {
-                    break key.1;
-                }
-                if first_key && !flow {
-                    mapping_start = key.1;
-                }
-                first_key = false;
-                let Event::Scalar(key, _, anchor, tag) = key.0 else {
-                    return Err(unsupported(
-                        "complex YAML mapping keys require manual mutation",
-                    ));
-                };
-                if anchor != 0 || tag.is_some() {
-                    return Err(unsupported(
-                        "tagged or anchored YAML keys require manual mutation",
-                    ));
-                }
-                path.push(key);
-                let value = token(parser)?;
-                node(
-                    parser,
-                    value,
-                    path,
-                    target,
-                    text,
-                    found,
-                    depth + 1,
-                    in_target,
-                )?;
-                path.pop();
-            };
-            if here {
-                if found.is_some() {
-                    return Err(Error::SourceConflict(
-                        "YAML pointer resolved more than once".into(),
-                    ));
-                }
-                let start = bytes_at(text, mapping_start)?;
-                let mut end = bytes_at(text, end)?;
-                if text[start..].starts_with('{') {
-                    if !text[end..].starts_with('}') {
-                        return Err(unsupported("could not bound the flow mapping exactly"));
-                    }
-                    end += 1;
-                } else {
-                    // Leave separators, indentation and standalone trailing comments outside
-                    // the replacement. Comments within the selected record may be normalized.
-                    end = start + text[start..end].trim_end().len();
-                    loop {
-                        let line = text[..end]
-                            .rfind('\n')
-                            .map_or(start, |n| (n + 1).max(start));
-                        if line <= start || !text[line..end].trim_start().starts_with('#') {
-                            break;
-                        }
-                        end = start + text[start..line].trim_end().len();
-                    }
-                }
-                *found = Some(start..end);
-            }
-        }
-        Event::SequenceStart(anchor, tag) => {
-            if in_target && (anchor != 0 || tag.is_some()) {
-                return Err(unsupported(
-                    "anchored or tagged target values require manual mutation",
-                ));
-            }
-            if here {
-                return Err(unsupported("a mutation target must be a YAML mapping"));
-            }
-            let mut index = 0;
-            loop {
-                let child = token(parser)?;
-                if child.0 == Event::SequenceEnd {
-                    break;
-                }
-                path.push(index.to_string());
-                node(
-                    parser,
-                    child,
-                    path,
-                    target,
-                    text,
-                    found,
-                    depth + 1,
-                    in_target,
-                )?;
-                path.pop();
-                index += 1;
-            }
-        }
-        Event::Scalar(_, _, anchor, tag) => {
-            if here || (in_target && (anchor != 0 || tag.is_some())) {
-                return Err(unsupported(
-                    "scalar, anchored or tagged targets require manual mutation",
-                ));
-            }
-        }
-        Event::Alias(_) if !here => (),
-        Event::Alias(_) => return Err(unsupported("an aliased target requires manual mutation")),
-        _ => return Err(unsupported("unexpected YAML node boundary")),
-    }
-    Ok(())
-}
-fn target_range(text: &str, pointer: &str) -> Result<Range<usize>> {
-    let parts = pointer
-        .strip_prefix('/')
-        .ok_or_else(|| unsupported("YAML target requires a JSON pointer"))?
-        .split('/')
-        .map(|s| s.replace("~1", "/").replace("~0", "~"))
-        .collect::<Vec<_>>();
-    let mut parser = Parser::new_from_str(text);
-    if token(&mut parser)?.0 != Event::StreamStart || token(&mut parser)?.0 != Event::DocumentStart
-    {
-        return Err(unsupported("YAML stream has no document"));
-    }
-    let first = token(&mut parser)?;
-    let mut found = None;
-    node(
-        &mut parser,
-        first,
-        &mut Vec::new(),
-        &parts,
-        text,
-        &mut found,
-        0,
-        false,
-    )?;
-    if token(&mut parser)?.0 != Event::DocumentEnd || token(&mut parser)?.0 != Event::StreamEnd {
-        return Err(unsupported(
-            "multiple YAML documents require manual mutation",
-        ));
-    }
-    found.ok_or_else(|| Error::SourceConflict("YAML mutation target pointer is missing".into()))
 }
 fn document(snapshot: &SourceSnapshot) -> Result<Value> {
     crate::limits::check_source_size(&snapshot.bytes, crate::YAML_READ_CAP)?;
@@ -375,13 +198,16 @@ pub fn prepare_yaml_mutation(
             "proposal would not change its source record".into(),
         ));
     }
-    let replacement = serde_json::to_string(&expected.pointer(pointer).unwrap())?
-        .replace('\u{85}', "\\u0085")
-        .replace('\u{2028}', "\\u2028")
-        .replace('\u{2029}', "\\u2029");
-    let range = target_range(before.text()?, pointer)?;
-    let mut output = before.text()?.to_string();
-    output.replace_range(range, &replacement);
+    let changed_fields = expected
+        .pointer(pointer)
+        .unwrap()
+        .as_object()
+        .unwrap()
+        .iter()
+        .filter(|(key, value)| original.pointer(pointer).unwrap().get(*key) != Some(*value))
+        .map(|(key, value)| (key.clone(), value.clone()))
+        .collect();
+    let output = crate::yaml_edit::edit_fields(before.text()?, pointer, &changed_fields)?;
     crate::limits::check_source_size(output.as_bytes(), crate::YAML_READ_CAP)?;
     let after = SourceSnapshot {
         locator: before.locator.clone(),
@@ -390,7 +216,7 @@ pub fn prepare_yaml_mutation(
     };
     if document(&after)? != expected {
         return Err(unsupported(
-            "exact target replacement cannot preserve the document's other facts",
+            "exact field replacement cannot preserve the document's other facts",
         ));
     }
     let (_, target_after_hash) =

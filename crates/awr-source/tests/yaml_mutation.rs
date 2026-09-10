@@ -92,6 +92,10 @@ fn mapped_yaml_writer_retains_original_keys_and_other_records() {
         .plan(EntityKind::WorkItem, "W", json!({"next_action":"After"}))
         .unwrap();
     let after = parsed(plan.after.text().unwrap());
+    assert_eq!(
+        plan.after.text().unwrap(),
+        text.replace("next: Before", "next: After")
+    );
     assert_eq!(after["work_items"][0]["next"], "After");
     assert!(after["work_items"][0].get("next_action").is_none());
     assert_eq!(after["work_items"][0]["phase"], "Pending");
@@ -104,6 +108,164 @@ fn mapped_yaml_writer_retains_original_keys_and_other_records() {
         f.plan(EntityKind::WorkItem, "W", json!({"status":"completed"})),
         Err(Error::MutationUnsupported(_))
     ));
+}
+
+#[test]
+fn one_field_keeps_all_other_bytes_comments_key_order_quotes_and_line_endings() {
+    for newline in ["\n", "\r\n"] {
+        let text = [
+            "# 项目",
+            "work_items:",
+            "- id: W  # stable",
+            "  title: 'Keep my title'",
+            "  status: ready",
+            "  next_action: \"Before\" # keep inline",
+            "  summary: >-",
+            "    Preserve this folded",
+            "    description exactly.",
+            "  tags: [first, 'second']",
+            "# trailing comment",
+            "- id: OTHER",
+            "  title: Do not touch",
+            "",
+        ]
+        .join(newline);
+        let f = Fixture::new(&text);
+        let plan = f
+            .plan(
+                EntityKind::WorkItem,
+                "W",
+                json!({"next_action":"新的动作 🐾"}),
+            )
+            .unwrap();
+        assert_eq!(
+            plan.after.text().unwrap(),
+            text.replace("\"Before\"", "\"新的动作 🐾\"")
+        );
+        assert_eq!(
+            fs::read(f.root.join("ledger.yaml")).unwrap(),
+            text.as_bytes()
+        );
+    }
+}
+
+#[test]
+fn quoted_fields_keep_quote_style_and_escape_new_content_without_touching_neighbors() {
+    for (old, new, encoded) in [
+        ("'Before'", "Don't normalize", "'Don''t normalize'"),
+        ("\"Before\"", "Quoted \"value\"", "\"Quoted \\\"value\\\"\""),
+        ("Before", "false", "\"false\""),
+    ] {
+        let text = format!(
+            "work_items: [{{id: W, status: ready, next_action: {old}, title: 'Keep'}}] # comment\n"
+        );
+        let f = Fixture::new(&text);
+        let plan = f
+            .plan(EntityKind::WorkItem, "W", json!({"next_action":new}))
+            .unwrap();
+        assert_eq!(plan.after.text().unwrap(), text.replace(old, encoded));
+    }
+}
+
+#[test]
+fn new_field_and_empty_scalar_preserve_existing_inline_and_trailing_comments() {
+    for text in [
+        "work_items:\n- id: W\n  status: ready # state note\n# outside\n- id: OTHER\n  status: ready\n",
+        "work_items: [{id: W, status: ready}, {id: OTHER, status: ready}] # outside\n",
+        "work_items:\n  W:\n    status: ready # state note",
+        "work_items:\n- id: W\n  status: ready\n  summary: # keep empty comment\n  next_action: Before\n",
+    ] {
+        let f = Fixture::new(text);
+        let plan = f
+            .plan(EntityKind::WorkItem, "W", json!({"summary":"New summary"}))
+            .unwrap();
+        let output = plan.after.text().unwrap();
+        assert!(output.contains("status: ready"));
+        for comment in ["# state note", "# outside", "# keep empty comment"] {
+            if text.contains(comment) {
+                assert!(output.contains(comment));
+            }
+        }
+        let mut expected = parsed(text);
+        if expected["work_items"].is_array() {
+            expected["work_items"][0]["summary"] = json!("New summary");
+        } else {
+            expected["work_items"]["W"]["summary"] = json!("New summary");
+        }
+        assert_eq!(parsed(output), expected);
+    }
+}
+
+#[test]
+fn block_field_edits_keep_literal_or_folded_style_header_comment_and_neighbor_bytes() {
+    for newline in ["\n", "\r\n"] {
+        for style in ["|-", ">-", "|2-", ">2-"] {
+            let prefix = format!(
+                "work_items:{newline}- id: W{newline}  status: ready{newline}  next_action: "
+            );
+            let suffix = format!("  title: 'Untouched'{newline}# outside{newline}");
+            let text =
+                format!("{prefix}{style} # keep header{newline}    Old line{newline}{suffix}");
+            let f = Fixture::new(&text);
+            for value in [
+                "First line\nsecond line",
+                "Paragraph one\n\nparagraph two\n",
+                "Keep a final blank\n\n",
+            ] {
+                let plan = f
+                    .plan(EntityKind::WorkItem, "W", json!({"next_action":value}))
+                    .unwrap();
+                let out = plan.after.text().unwrap();
+                assert!(out.starts_with(&format!("{prefix}{}", &style[..1])));
+                assert!(out.contains("# keep header"));
+                assert!(out.ends_with(&suffix));
+                assert_eq!(parsed(out)["work_items"][0]["next_action"], value);
+                if newline == "\r\n" {
+                    assert!(!out.replace("\r\n", "").contains('\n'));
+                }
+            }
+        }
+    }
+}
+
+#[test]
+fn unrelated_multiline_plain_fields_are_preserved_and_ambiguous_target_edits_are_rejected() {
+    let text = "work_items:\n- id: W\n  status: ready\n  title: A plain title continued\n    on another line\n  next_action: Before\n";
+    let f = Fixture::new(text);
+    assert_eq!(
+        f.plan(EntityKind::WorkItem, "W", json!({"next_action":"After"}))
+            .unwrap()
+            .after
+            .text()
+            .unwrap(),
+        text.replace("Before", "After")
+    );
+    assert!(matches!(
+        f.plan(EntityKind::WorkItem, "W", json!({"title":"Changed"})),
+        Err(Error::MutationUnsupported(_))
+    ));
+    assert_eq!(
+        fs::read_to_string(f.root.join("ledger.yaml")).unwrap(),
+        text
+    );
+}
+
+#[test]
+fn comment_bearing_collection_and_anchor_edits_fail_before_writing() {
+    for text in [
+        "work_items:\n- id: W\n  status: ready\n  tags:\n  - old # a tag comment\n  next_action: Before\n",
+        "work_items:\n- id: W\n  status: ready\n  tags: &tags [old]\nextra: *tags\n",
+    ] {
+        let f = Fixture::new(text);
+        assert!(matches!(
+            f.plan(EntityKind::WorkItem, "W", json!({"tags":["new"]})),
+            Err(Error::MutationUnsupported(_))
+        ));
+        assert_eq!(
+            fs::read_to_string(f.root.join("ledger.yaml")).unwrap(),
+            text
+        );
+    }
 }
 
 #[test]
