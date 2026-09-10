@@ -5,6 +5,15 @@ use std::{
     path::{Path, PathBuf},
 };
 
+/// Adapter identifiers accepted by source manifests in this build.
+pub const SOURCE_ADAPTERS: &[&str] = &[
+    "yaml-ledger-v1",
+    "markdown-ledger-v1",
+    "markdown-heading-v1",
+    "markdown-rules-v1",
+    "markdown-directory-v1",
+];
+
 #[derive(Debug, Clone, Serialize, Deserialize)]
 #[serde(deny_unknown_fields)]
 pub struct Manifest {
@@ -110,15 +119,7 @@ impl Manifest {
                     source.domain, source.role
                 )));
             }
-            if ![
-                "yaml-ledger-v1",
-                "markdown-ledger-v1",
-                "markdown-heading-v1",
-                "markdown-rules-v1",
-                "markdown-directory-v1",
-            ]
-            .contains(&source.adapter.as_str())
-            {
+            if !SOURCE_ADAPTERS.contains(&source.adapter.as_str()) {
                 return Err(Error::Unsupported(format!(
                     "source adapter {}",
                     source.adapter

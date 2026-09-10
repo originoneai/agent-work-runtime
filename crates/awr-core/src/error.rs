@@ -63,6 +63,13 @@ pub enum Error {
     InvalidInput(String),
     #[error("operation is not implemented: {0}")]
     Unsupported(String),
+    #[error("host protocol version {requested} is not supported")]
+    ProtocolUnsupported { requested: u32, supported: Vec<u32> },
+    #[error("required host capabilities are unavailable")]
+    CapabilityUnavailable {
+        unknown: Vec<String>,
+        unsupported: Vec<String>,
+    },
     #[error("storage error: {0}")]
     Storage(String),
     #[error(transparent)]
@@ -102,6 +109,8 @@ impl Error {
             Self::InvalidTransition(_) => "InvalidTransition",
             Self::InvalidInput(_) => "InvalidInput",
             Self::Unsupported(_) => "Unsupported",
+            Self::ProtocolUnsupported { .. } => "ProtocolUnsupported",
+            Self::CapabilityUnavailable { .. } => "CapabilityUnavailable",
             Self::Storage(_) => "Storage",
             Self::Io(_) => "Io",
             Self::Json(_) => "Json",
@@ -118,6 +127,14 @@ impl Error {
                 Self::BudgetExceeded { required, budget } => {
                     Some(serde_json::json!({"required": required, "budget": budget}))
                 }
+                Self::ProtocolUnsupported { requested, supported } => Some(serde_json::json!({
+                    "requested": requested, "supported": supported,
+                    "source_write_performed": false, "runtime_write_performed": false
+                })),
+                Self::CapabilityUnavailable { unknown, unsupported } => Some(serde_json::json!({
+                    "unknown": unknown, "unsupported": unsupported,
+                    "source_write_performed": false, "runtime_write_performed": false
+                })),
                 Self::CheckpointIncomplete { attempt_id, reason } => {
                     Some(serde_json::json!({"attempt_id":attempt_id,"reason":reason}))
                 }
