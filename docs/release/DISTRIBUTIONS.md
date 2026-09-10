@@ -1,13 +1,13 @@
 # Native npm and PyPI distributions
 
-AWR 0.2.0 is a stable package release. npm uses the `latest` channel and PyPI uses
-`0.2.0` without a prerelease suffix. Both install the same Rust CLI and MCP server;
+AWR 0.3.0 is a stable package release. npm uses the `latest` channel and PyPI uses
+`0.3.0` without a prerelease suffix. Both install the same Rust CLI and MCP server;
 no separate JavaScript or Python SDK is included.
 
 ```sh
-npm install -g @originoneai/agent-work-runtime@0.2.0
+npm install -g @originoneai/agent-work-runtime@0.3.0
 # or, in a virtual environment
-python -m pip install agent-work-runtime==0.2.0
+python -m pip install agent-work-runtime==0.3.0
 awr --version
 awr-mcp --version
 ```
@@ -69,9 +69,9 @@ packages, checksums and aggregate manifest. Raw execution records stay local or 
 isolated CI artifacts and are not committed to the repository.
 
 
-## Pinned host payload (0.3.0-rc.1)
+## Pinned host payload (0.3.0)
 
-The host integration candidate is version `0.3.0-rc.1`, database schema 4. This source version and a locally built payload do not imply publication to either registry. The macOS arm64 payload can be embedded directly in an application; runtime users need no Node/Python/Rust installation and no PATH changes. The build/verification machine still needs its development tools. The host is responsible for application signing, notarization and updating its bundled binary.
+AWR `0.3.0` uses database schema 4. Host applications can bundle the same native CLI and MCP server without the registry launchers. A locally built payload has its own recorded source and artifact identity. The macOS arm64 payload can be embedded directly in an application; runtime users need no Node/Python/Rust installation and no PATH changes. The build/verification machine still needs its development tools. The host is responsible for application signing, notarization and updating its bundled binary.
 
 From clean committed source:
 
