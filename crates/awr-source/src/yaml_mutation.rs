@@ -1,6 +1,5 @@
 use crate::{
-    Locator, ParseContext, SourceAdapter, SourceSnapshot, SourceSpec, YamlLedgerAdapter,
-    fingerprint, inspect_mutation_source,
+    Locator, ParseContext, SourceSnapshot, SourceSpec, fingerprint, inspect_mutation_source,
 };
 use awr_core::*;
 use serde_json::Value;
@@ -32,6 +31,9 @@ pub fn read_yaml_mutation_record(
     source: &Source,
     patch: &MutationPatch,
 ) -> Result<Value> {
+    if source.adapter == "markdown-ledger-v1" {
+        return crate::read_markdown_mutation_record(root, source, patch);
+    }
     crate::verify_mutation_source(root, source, patch)?;
     if source.adapter != "yaml-ledger-v1" {
         return Err(unsupported(
@@ -97,7 +99,7 @@ pub fn parse_mutation_projection(
     existing_ids: BTreeMap<(EntityKind, String), Id>,
     target: &MutationTarget,
 ) -> Result<(ProjectionBatch, String)> {
-    let batch = YamlLedgerAdapter.parse(
+    let batch = crate::source_adapter(&source.adapter)?.parse(
         snapshot,
         &ParseContext {
             source,
@@ -131,6 +133,9 @@ pub fn prepare_yaml_mutation(
     proposal: &MutationProposal,
     existing_ids: BTreeMap<(EntityKind, String), Id>,
 ) -> Result<PreparedYamlMutation> {
+    if source.adapter == "markdown-ledger-v1" {
+        return crate::prepare_markdown_mutation(root, source, proposal, existing_ids);
+    }
     let patch = proposal.bound_patch()?;
     if source.adapter != "yaml-ledger-v1" {
         return Err(unsupported("this source adapter has no automatic writer"));
@@ -150,22 +155,12 @@ pub fn prepare_yaml_mutation(
         ));
     }
     let changes = patch.changes.as_object().unwrap();
-    if let Some(field) = changes.keys().find(|field| {
-        patch.work_action.is_none()
-            && !yaml_field_writable(patch.target.kind, field)
-            && !(patch
-                .host_edit
-                .as_ref()
-                .is_some_and(|h| h.action == HostEditAction::ActivateDraft)
-                && field.as_str() == "status")
-            && !(patch
-                .host_edit
-                .as_ref()
-                .is_some_and(|h| h.action == HostEditAction::ConfirmOrdinary)
-                && matches!(field.as_str(), "status" | "ordinary_completion"))
-    }) {
+    if let Some(field) = changes
+        .keys()
+        .find(|field| !mutation_field_writable(&patch, field))
+    {
         return Err(unsupported(&format!(
-            "field {field} is not supported by this writer; work state, ownership and verification changes require domain actions"
+            "field {field} requires its domain action"
         )));
     }
     let pointer = patch.target.meta.source_ref.pointer.as_deref().unwrap();
@@ -246,4 +241,19 @@ pub fn prepare_yaml_mutation(
         after,
         plan,
     })
+}
+
+pub(crate) fn mutation_field_writable(patch: &MutationPatch, field: &str) -> bool {
+    !(patch.work_action.is_none()
+        && !yaml_field_writable(patch.target.kind, field)
+        && !(patch
+            .host_edit
+            .as_ref()
+            .is_some_and(|h| h.action == HostEditAction::ActivateDraft)
+            && field == "status")
+        && !(patch
+            .host_edit
+            .as_ref()
+            .is_some_and(|h| h.action == HostEditAction::ConfirmOrdinary)
+            && matches!(field, "status" | "ordinary_completion")))
 }

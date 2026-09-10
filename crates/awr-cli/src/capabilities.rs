@@ -199,7 +199,7 @@ fn catalog() -> Vec<Capability> {
             true,
             &["work create", "work create-status", "work create-recover"],
             &[
-                "registered_yaml_ledger_only",
+                "registered_yaml_or_supported_markdown_ledger",
                 "exact_preview_and_revision",
                 "stable_request_key",
                 "draft_state_not_executable",
@@ -208,8 +208,16 @@ fn catalog() -> Vec<Capability> {
         (
             "mutation.markdown",
             true,
-            &["document change"],
-            &["document_bodies_only", "work_ledger_writes_unavailable"],
+            &[
+                "document change",
+                "host save",
+                "work create",
+                "work progress",
+            ],
+            &[
+                "finite_stable_id_ledger_records",
+                "registered_document_bodies",
+            ],
         ),
         (
             "mutation.markdown.document",
@@ -331,8 +339,8 @@ pub fn run(args: &CapabilitiesArgs, json_output: bool) -> Result<()> {
             "schema_validation_required": true},
         "source_adapters": awr_source::SOURCE_ADAPTERS.iter().map(|id| json!({
             "id": id, "read": true,
-            "write_mode": match *id { "yaml-ledger-v1" => "lossless_supported_fields", "markdown-ledger-v1" => "read_only", _ => "document_body_only" },
-            "lossless_field_write": *id == "yaml-ledger-v1"
+            "write_mode": match *id { "yaml-ledger-v1" => "lossless_supported_fields", "markdown-ledger-v1" => "stable_id_table_or_checklist", _ => "document_body_only" },
+            "lossless_field_write": matches!(*id, "yaml-ledger-v1" | "markdown-ledger-v1")
         })).collect::<Vec<_>>(),
         "capabilities": capabilities,
         "source_write_performed": false,

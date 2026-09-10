@@ -1,17 +1,10 @@
-//! Read-only intake of existing Markdown task tables and checklists.
-//! Source-declared completion is retained; no evidence or execution is inferred.
+//! Source-declared Markdown records; runtime evidence is never inferred from prose.
 use crate::{Locator, Manifest, ParseContext, SourceAdapter, SourceSnapshot, SourceSpec};
-use awr_core::{Edge, EntityKind, Error, ProjectionBatch, Result, WorkItem, WorkStatus};
-use pulldown_cmark::{Event, Options, Parser, Tag, TagEnd};
-use sha2::{Digest, Sha256};
-use std::{
-    collections::{BTreeMap, BTreeSet},
-    path::Path,
-};
-
+use awr_core::*;
+use serde_json::{Value, json};
+use std::{collections::BTreeMap, path::Path};
 pub struct MarkdownLedgerAdapter;
-
-fn column(s: &str) -> &str {
+pub(crate) fn column(s: &str) -> &str {
     match s.trim() {
         "ID" | "编号" | "任务编号" | "任务ID" => "id",
         "任务" | "功能" | "工作" | "工作项" | "标题" | "名称" => "title",
@@ -26,7 +19,7 @@ fn column(s: &str) -> &str {
     }
 }
 
-fn normalized(raw: &str, mapping: &crate::LedgerMapping) -> WorkStatus {
+pub(crate) fn normalized(raw: &str, mapping: &crate::LedgerMapping) -> WorkStatus {
     if mapping.status(raw) != WorkStatus::Unknown {
         return mapping.status(raw);
     }
@@ -64,173 +57,136 @@ impl SourceAdapter for MarkdownLedgerAdapter {
                 "Markdown ledger requires domain ledger".into(),
             ));
         }
+        ensure_public_text(snapshot.text()?)?;
         let mapping = crate::LedgerMapping::from_spec(spec)?;
-        let text = snapshot.text()?;
-        awr_core::ensure_public_text(text)?;
-        let mut rows: Vec<(usize, BTreeMap<String, String>)> = vec![];
-        let mut headers = Vec::<String>::new();
-        let mut cells = Vec::<String>::new();
-        let mut cell = String::new();
-        let mut in_cell = false;
-        let mut row_line = 0;
-        for (event, range) in Parser::new_ext(text, Options::ENABLE_TABLES).into_offset_iter() {
-            match event {
-                Event::Start(Tag::Table(_)) => headers.clear(),
-                Event::Start(Tag::TableHead | Tag::TableRow) => {
-                    cells.clear();
-                    row_line = text[..range.start].bytes().filter(|b| *b == b'\n').count() + 1;
-                }
-                Event::Start(Tag::TableCell) => {
-                    cell.clear();
-                    in_cell = true;
-                }
-                Event::Text(v) | Event::Code(v) if in_cell => cell.push_str(&v),
-                Event::SoftBreak | Event::HardBreak if in_cell => cell.push(' '),
-                Event::End(TagEnd::TableCell) => {
-                    cells.push(cell.trim().to_owned());
-                    in_cell = false;
-                }
-                Event::End(TagEnd::TableHead) => {
-                    headers = cells
-                        .iter()
-                        .map(|s| {
-                            mapping
-                                .column(s)
-                                .unwrap_or_else(|| column(s))
-                                .to_lowercase()
-                        })
-                        .collect();
-                    if headers.iter().collect::<BTreeSet<_>>().len() != headers.len() {
-                        return Err(Error::SourceConflict(
-                            "duplicate Markdown ledger columns".into(),
-                        ));
-                    }
-                }
-                Event::End(TagEnd::TableRow) if headers.iter().any(|v| v == "title") => {
-                    rows.push((
-                        row_line,
-                        headers.iter().cloned().zip(cells.clone()).collect(),
-                    ));
-                }
-                _ => {}
-            }
-        }
-        // Fenced examples are not project tasks. The parser's task-list markers identify real lists.
-        let mut task: Option<(usize, bool, String)> = None;
-        for (event, range) in Parser::new_ext(text, Options::ENABLE_TASKLISTS).into_offset_iter() {
-            match event {
-                Event::TaskListMarker(done) => {
-                    if task.is_some() {
-                        return Err(Error::Unsupported(
-                            "nested Markdown task lists require an explicit YAML mapping".into(),
-                        ));
-                    }
-                    task = Some((
-                        text[..range.start].bytes().filter(|b| *b == b'\n').count() + 1,
-                        done,
-                        String::new(),
-                    ));
-                }
-                Event::Text(v) | Event::Code(v) => {
-                    if let Some((_, _, title)) = &mut task {
-                        title.push_str(&v);
-                    }
-                }
-                Event::SoftBreak | Event::HardBreak => {
-                    if let Some((_, _, title)) = &mut task {
-                        title.push(' ');
-                    }
-                }
-                Event::End(TagEnd::Item) => {
-                    if let Some((line, done, title)) = task.take() {
-                        rows.push((
-                            line,
-                            BTreeMap::from([
-                                ("title".into(), title),
-                                ("status".into(), if done { "[x]" } else { "[ ]" }.into()),
-                            ]),
-                        ));
-                    }
-                }
-                _ => {}
-            }
-        }
-        if rows.is_empty() {
-            return Err(Error::InvalidInput(
-                "no supported task table or checklist in Markdown ledger".into(),
-            ));
-        }
-        let mut batch = ProjectionBatch::default();
-        let mut keys = BTreeSet::new();
-        for (line, row) in rows {
-            let get = |key: &str| row.get(key).map(|s| s.trim()).unwrap_or("");
-            let title = get("title");
-            if title.is_empty() {
-                return Err(Error::InvalidInput("Markdown task title is empty".into()));
-            }
-            let key = if get("id").is_empty() {
-                format!("md-{:x}", Sha256::digest(title.as_bytes()))
-            } else {
-                get("id").to_owned()
-            };
-            if !keys.insert(key.clone()) {
+        let rows = crate::markdown_records::rows(snapshot.text()?, spec)?;
+        let mut records = vec![];
+        let mut refs = BTreeMap::new();
+        let mut raw_statuses = BTreeMap::new();
+        for row in &rows {
+            let key = crate::markdown_records::key(row)?;
+            if refs.contains_key(&key) {
                 return Err(Error::SourceConflict(
                     "duplicate Markdown task ID/title; add explicit unique IDs".into(),
                 ));
             }
-            let status = normalized(get("status"), &mapping);
-            if status == WorkStatus::Unknown {
-                batch.warnings.push(format!(
-                    "line {line}: unrecognized status; retained as unknown"
-                ));
+            let mut value = Value::Object(row.values.clone());
+            let explicit = row
+                .values
+                .get("id")
+                .and_then(Value::as_str)
+                .is_some_and(|s| !s.trim().is_empty());
+            value["id"] = json!(key);
+            let raw = value["status"].as_str().unwrap_or("").to_owned();
+            let status = normalized(&raw, &mapping);
+            value["status"] = if status == WorkStatus::Unknown {
+                json!(raw)
+            } else {
+                json!(status)
+            };
+            raw_statuses.insert(key.clone(), raw);
+            for field in [
+                "acceptance",
+                "depends_on",
+                "dependencies",
+                "goals",
+                "tags",
+                "paths",
+                "deliverables",
+            ] {
+                if let Some(v) = value.get(field).and_then(Value::as_str) {
+                    let list: Vec<String> = if field == "acceptance" {
+                        if v.is_empty() { vec![] } else { vec![v.into()] }
+                    } else {
+                        v.split([',', '，', ';', '；'])
+                            .map(str::trim)
+                            .filter(|s| !s.is_empty() && *s != "—" && *s != "-")
+                            .map(str::to_owned)
+                            .collect()
+                    };
+                    value[field] = json!(list);
+                }
             }
-            let meta = context.meta(
-                EntityKind::WorkItem,
-                &key,
-                snapshot,
-                None,
-                Some((line, line)),
-            )?;
-            let source_ref = meta.source_ref.clone();
-            for goal in get("goal")
-                .split([',', '，', ';', '；'])
-                .map(str::trim)
-                .filter(|s| !s.is_empty() && *s != "—" && *s != "-")
-            {
-                batch.edges.push(Edge {
-                    id: awr_core::Id::new(),
-                    project_id: context.source.project_id,
-                    from_kind: EntityKind::WorkItem,
-                    from_key: key.clone(),
-                    to_kind: EntityKind::Goal,
-                    to_key: goal.into(),
-                    relation: "supports".into(),
-                    required: true,
-                    revision: 1,
-                    source_ref: source_ref.clone(),
-                });
+            if value.get("goal").and_then(Value::as_str).is_some() {
+                let goals: Vec<_> = value["goal"]
+                    .as_str()
+                    .unwrap()
+                    .split([',', '，', ';', '；'])
+                    .map(str::trim)
+                    .filter(|s| !s.is_empty() && *s != "—" && *s != "-")
+                    .map(str::to_owned)
+                    .collect();
+                value.as_object_mut().unwrap().remove("goal");
+                value["goals"] = json!(goals);
             }
-            batch.work_items.push(WorkItem {ordinary_completion:None,meta,title:title.into(),kind:None,owner:(!get("owner").is_empty()).then(||get("owner").into()),required:false,
-                raw_status:get("status").into(),status,priority:(!get("priority").is_empty()).then(||get("priority").into()),milestone:None,score:None,evidence_level:None,
-                summary:"Imported from source-declared Markdown; completion evidence has not been inferred.".into(),next_action:get("next_action").into(),blocker:None,
-                acceptance:(!get("acceptance").is_empty()).then(||vec![get("acceptance").into()]).unwrap_or_default(),tags:vec![],paths:vec![]});
-            for dependency in get("depends_on")
-                .split([',', '，', ';', '；'])
-                .map(str::trim)
-                .filter(|s| !s.is_empty() && *s != "—" && *s != "-")
-            {
-                batch.edges.push(Edge {
-                    id: awr_core::Id::new(),
-                    project_id: context.source.project_id,
-                    from_kind: EntityKind::WorkItem,
-                    from_key: key.clone(),
-                    to_kind: EntityKind::WorkItem,
-                    to_key: dependency.into(),
-                    relation: "depends_on".into(),
-                    required: true,
-                    revision: 1,
-                    source_ref: source_ref.clone(),
-                });
+            for field in [
+                "owner",
+                "priority",
+                "milestone",
+                "kind",
+                "blocker",
+                "score",
+                "required",
+                "required_for_v1",
+                "ordinary_completion",
+                "verification",
+                "evidence_level",
+            ] {
+                if value.get(field) == Some(&json!("")) {
+                    value.as_object_mut().unwrap().remove(field);
+                }
+            }
+            if value.get("summary").is_none() {
+                value["summary"] = json!(
+                    "Imported from source-declared Markdown; completion evidence has not been inferred."
+                );
+            }
+            refs.insert(
+                key.clone(),
+                context.meta(
+                    EntityKind::WorkItem,
+                    &key,
+                    snapshot,
+                    explicit.then(|| crate::markdown_records::pointer(&key)),
+                    Some((row.line, row.line)),
+                )?,
+            );
+            records.push(value);
+        }
+        // Reuse the domain decoder in memory, then restore actual Markdown provenance.
+        let bytes = serde_json::to_vec(&json!({"work_items":records}))?;
+        let synthetic = SourceSnapshot {
+            locator: snapshot.locator.clone(),
+            fingerprint: snapshot.fingerprint.clone(),
+            bytes,
+        };
+        let mut canonical = spec.clone();
+        canonical.adapter = "yaml-ledger-v1".into();
+        canonical.options.clear();
+        let mut ids = context.existing_ids.clone();
+        for (key, meta) in &refs {
+            ids.insert((EntityKind::WorkItem, key.clone()), meta.id);
+        }
+        let mut batch = crate::YamlLedgerAdapter.parse(
+            &synthetic,
+            &ParseContext {
+                source: context.source,
+                existing_ids: ids,
+            },
+            &canonical,
+        )?;
+        for work in &mut batch.work_items {
+            work.meta = refs[&work.meta.external_key].clone();
+            work.raw_status = raw_statuses[&work.meta.external_key].clone();
+        }
+        for edge in &mut batch.edges {
+            if let Some(meta) = refs.get(&edge.from_key) {
+                edge.source_ref = meta.source_ref.clone();
+            }
+        }
+        for evidence in &mut batch.evidence {
+            if let Some(meta) = refs.values().find(|m| Some(m.id) == evidence.work_item_id) {
+                evidence.source_ref = Some(meta.source_ref.clone());
             }
         }
         Ok(batch)

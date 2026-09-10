@@ -367,8 +367,7 @@ fn finish(
             ));
         }
         // Recovery also reparses its immutable after snapshot through the registered adapter.
-        use awr_source::SourceAdapter;
-        awr_source::YamlLedgerAdapter.parse(
+        awr_source::source_adapter(&plan.source.adapter)?.parse(
             &SourceSnapshot {
                 locator: current.locator.clone(),
                 bytes: after.clone(),

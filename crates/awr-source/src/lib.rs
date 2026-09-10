@@ -49,3 +49,7 @@ pub use yaml_mutation::{
     PreparedYamlMutation, parse_mutation_projection, prepare_yaml_mutation,
     read_yaml_mutation_record, yaml_field_writable,
 };
+mod markdown_records;
+
+mod markdown_mutation;
+pub use markdown_mutation::*;

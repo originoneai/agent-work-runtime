@@ -22,7 +22,9 @@ pub fn prepare_work_creation(
     external_key: &str,
     title: &str,
 ) -> Result<PreparedWorkCreation> {
-    if source.adapter != "yaml-ledger-v1" || source.domain != "ledger" {
+    if !["yaml-ledger-v1", "markdown-ledger-v1"].contains(&source.adapter.as_str())
+        || source.domain != "ledger"
+    {
         return Err(Error::MutationUnsupported(
             "new work requires a registered YAML ledger".into(),
         ));
@@ -58,6 +60,43 @@ pub fn prepare_work_creation(
         ),
     ];
     let record = Value::Object(fields.iter().cloned().collect());
+    if source.adapter == "markdown-ledger-v1" {
+        let output = crate::markdown_mutation::append_markdown_work(
+            before.text()?,
+            &spec,
+            external_key,
+            title,
+        )?;
+        crate::limits::check_source_size(output.as_bytes(), crate::MARKDOWN_READ_CAP)?;
+        let after = SourceSnapshot {
+            locator: before.locator.clone(),
+            fingerprint: fingerprint(output.as_bytes()),
+            bytes: output.into_bytes(),
+        };
+        let batch = crate::MarkdownLedgerAdapter.parse(
+            &after,
+            &ParseContext {
+                source,
+                existing_ids: BTreeMap::new(),
+            },
+            &spec,
+        )?;
+        if !batch
+            .work_items
+            .iter()
+            .any(|w| w.meta.external_key == external_key && w.status == WorkStatus::Draft)
+        {
+            return Err(Error::MutationUnsupported(
+                "new Markdown work must remain draft".into(),
+            ));
+        }
+        return Ok(PreparedWorkCreation {
+            path,
+            before,
+            after,
+            record,
+        });
+    }
     let mut expected: Value = serde_yaml_ng::from_str(before.text()?)
         .map_err(|_| Error::InvalidInput("invalid YAML ledger".into()))?;
     match expected.get_mut("work_items") {
