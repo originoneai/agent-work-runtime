@@ -144,3 +144,6 @@ impl<'a> Runtime<'a> {
 }
 mod ordinary;
 pub use ordinary::*;
+
+mod batch;
+pub use batch::*;

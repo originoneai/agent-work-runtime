@@ -36,6 +36,7 @@ pub(crate) fn cell_value(key: &str, s: &str) -> Value {
             | "evidence"
             | "verification"
             | "ordinary_completion"
+            | "archived"
             | "required"
             | "required_for_v1"
             | "score"

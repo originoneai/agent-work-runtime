@@ -87,6 +87,14 @@ fn open_attempt(
     Ok((proposal, attempt))
 }
 impl Store {
+    pub fn source_apply_pending(
+        &self,
+        project: Id,
+        source: Id,
+    ) -> Result<Option<MutationApplyAttempt>> {
+        self.source(project, source)?;
+        pending_for_source(&self.conn, project, source)
+    }
     pub fn proposal_apply_attempt(
         &self,
         project: Id,

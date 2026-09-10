@@ -258,6 +258,27 @@ fn catalog() -> Vec<Capability> {
                 "not_completion",
             ],
         ),
+        (
+            "mutation.batch.ledger",
+            true,
+            &["batch change", "batch status", "batch recover"],
+            &[
+                "single_source",
+                "all_operations_preflight",
+                "exact_preview_and_revision",
+                "draft_import_explicit_duplicates",
+            ],
+        ),
+        (
+            "mutation.work.archive",
+            true,
+            &["batch change"],
+            &[
+                "separate_from_lifecycle",
+                "dependency_and_claim_guards",
+                "identity_and_history_preserved",
+            ],
+        ),
         ("mutation.multi_file", false, &[], &["not_implemented"]),
         (
             "completion.engineering",

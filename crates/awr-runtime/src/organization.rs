@@ -62,6 +62,7 @@ pub struct OrganizationReport {
     pub business_checked_completed: usize,
     pub ordinary_work_policies: Vec<serde_json::Value>,
     pub source_cancelled: usize,
+    pub source_archived: usize,
     pub recheck: Vec<String>,
     pub next_action: String,
 }
@@ -141,6 +142,7 @@ impl OrganizationReport {
             business_checked_completed: 0,
             ordinary_work_policies: vec![],
             source_cancelled: 0,
+            source_archived: 0,
             recheck: vec![
                 "awr".into(),
                 "intake".into(),
@@ -402,6 +404,7 @@ pub fn inspect_organization(
     let noncancelled: BTreeSet<_> = works
         .iter()
         .filter(|w| w.item.status != WorkStatus::Cancelled)
+        .filter(|w| !w.item.archived)
         .map(|w| &w.item.meta.external_key)
         .collect();
     for (key, goal) in &goals {
@@ -427,6 +430,10 @@ pub fn inspect_organization(
     for projected in works {
         let work = &projected.item;
         let key = &work.meta.external_key;
+        if work.archived {
+            result.source_archived += 1;
+            continue;
+        }
         if work.status == WorkStatus::Cancelled {
             result.source_cancelled += 1;
             required_cancelled |= work.required;
@@ -596,9 +603,14 @@ pub fn inspect_organization(
         }
     }
     let concrete_work = works.iter().any(|w| {
-        w.item.kind.as_deref() != Some("intake") && w.item.status != WorkStatus::Cancelled
+        !w.item.archived
+            && w.item.kind.as_deref() != Some("intake")
+            && w.item.status != WorkStatus::Cancelled
     });
-    if !works.is_empty() && !concrete_work && result.source_cancelled != works.len() {
+    if !works.is_empty()
+        && !concrete_work
+        && result.source_cancelled + result.source_archived != works.len()
+    {
         result.gap("business_work_missing", "project", "Only intake work is present. Organizing a baseline does not establish the business delivery scope; add the actual delivery work before claiming project completion.", vec![], "work");
     }
     result.business_execution_ready = sources_ok && result.executable_work_total > 0;

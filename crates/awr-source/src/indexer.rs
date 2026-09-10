@@ -92,7 +92,7 @@ fn mapping_key(spec: &SourceSpec) -> String {
 }
 /// Configuration identity shared by indexing, source mutations and read-only diagnosis.
 pub fn source_configuration(spec: &SourceSpec, minimal_context: bool) -> serde_json::Value {
-    let mut config = json!({"mapping_key":mapping_key(spec),"adapter_options":spec.options,"adapter_version":if spec.adapter == "markdown-ledger-v1" {3}else{2}});
+    let mut config = json!({"mapping_key":mapping_key(spec),"adapter_options":spec.options,"adapter_version":if matches!(spec.adapter.as_str(), "markdown-ledger-v1" | "yaml-ledger-v1") {4}else{2}});
     if minimal_context {
         config["context_profile"] = json!("minimal");
     }

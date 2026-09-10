@@ -9,6 +9,7 @@ fn fixture(path: &str, unknown: bool) -> Fixture {
     let mut f = Fixture::new();
     let work = WorkItem {
         ordinary_completion: None,
+        archived: false,
         meta: f.meta("W"),
         title: "Hard facts".into(),
         kind: None,

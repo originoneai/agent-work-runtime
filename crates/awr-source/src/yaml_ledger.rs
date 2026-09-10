@@ -253,6 +253,7 @@ impl SourceAdapter for YamlLedgerAdapter {
                 ),
             };
             let work = WorkItem {
+                archived: boolean(&value["archived"], false, &pointer)?,
                 ordinary_completion: value
                     .get("ordinary_completion")
                     .filter(|v| !v.is_null())

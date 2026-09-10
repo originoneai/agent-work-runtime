@@ -6,6 +6,7 @@ use support::Fixture;
 fn work(f: &Fixture, key: &str, title: &str, summary: &str) -> WorkItem {
     WorkItem {
         ordinary_completion: None,
+        archived: false,
         meta: f.meta(key),
         title: title.into(),
         kind: None,
