@@ -166,9 +166,7 @@ expected semantics and reparse through the source adapter. See the
 [YAML writer](../../adapters/yaml-ledger/README.md) for supported shapes.
 
 `mutation.markdown.document` supports registered heading, rule and decision documents.
-Markdown work ledgers support the finite stable-ID forms below. Unsupported capabilities include multi-file
-writes and user-confirmed completion. Never route an unsupported operation through a
-generic status patch or a second writer.
+Markdown work ledgers support the finite stable-ID forms below. Reviewed related batches and explicitly scoped ordinary completion have separate capabilities and guards described below. Never route an unsupported operation through a generic status patch or a second writer.
 
 ## Edit a registered document
 
@@ -619,3 +617,22 @@ Use each stable key once per batch; combine fields in one operation. All operati
 Archive is an independent `archived` boolean. It retains the original lifecycle status, ID, source record and runtime history. Archived work stays in explicit catalogs and `work show`, is absent from ready selection and current-scope completion counts, and cannot execute lifecycle actions until restored. `source_archived` is reported separately. Archive/restore requires no active executor across any branch. Remove incoming dependencies explicitly or archive the associated dependent scope in the same batch; restoring dependents requires restoring their dependencies too. Cancelled work remains separately counted; moving work out of current scope proves no completion.
 
 `batch status --key <key>` reads the durable outcome without writing. `batch recover --key <key> --expected-revision <revision>` explicitly resumes interrupted writes/indexing. Recovery binds the project, full manifest, reviewed bytes and dependency sources. A pending intent prevents another AWR writer from changing the same source; external edits are preserved and reported as conflicts. A duplicate request returns its historical receipt without new writes. No-change batches write no business events. The actor is provenance supplied by the host, not authentication. Raw journals are local runtime state.
+
+
+## Adopt and supersede a reviewed decision
+
+Create a proposed decision with `document change` first. An explicit adoption uses the version 1 batch envelope above with `change.kind: "related"` and `changes`:
+
+```json
+[{"operation":"adopt","candidate":{"source_id":"<new source ID>","external_key":"ADR-NEW","source_fingerprint":"sha256:<reviewed new bytes>"},"supersedes":{"source_id":"<old source ID>","external_key":"ADR-OLD","source_fingerprint":"sha256:<reviewed old bytes>"}}]
+```
+
+`supersedes: null` adopts a proposed version without replacing an earlier one. Both references bind explicit registered decision IDs and exact source versions. A timestamp or a newer filename never selects an accepted document. The finite writer requires canonical `id` and `status` in YAML front matter of a registered `markdown-directory-v1` document. Ambiguous header declarations and other adapters refuse adoption explicitly. Text, title, unrelated metadata and the old document remain in place. The old document gets `superseded_by`; the new document gets `adoption` with the actor, request key, reason, reviewed candidate version, superseded version and a fingerprint of declared content and body. `decision show` exposes these links; `--full` includes the retained decision and rationale.
+
+A later content or identity change invalidates a recorded approval: an externally modified accepted document projects as `unknown` until that exact version is explicitly reviewed again. Generic document edits cannot carry an approval across changed content. Legacy source-declared accepted decisions without an adoption receipt keep their original source authority and do not become runtime-verified approvals.
+
+## Recoverable related changes
+
+The same related batch may include `operation: "document"` with a registered `source_id`, `source_fingerprint` and `edit` (the fragment/replace document contract), and one `operation: "ledger"` with the same ledger fields as a single-source batch. Each physical source occurs once; edit a candidate's body before reviewing its adoption. New draft creation remains the separate no-clobber operation. The total bound is 100 files/changes and 64 MiB of before/after snapshots.
+
+A single reviewed fingerprint covers all targets. Every target is preflighted before writing; each completed file step is durably recorded. Supersession writes the old decision first, then its replacement. `filesystem_atomic: false` is explicit: an interrupted multi-file write can have some files applied and others pending. `applied_files`, `file_total`, `partial_apply`, and read-only `current_sources` distinguish those states. A nonzero exit can accompany the retained partial receipt on stdout; hosts must inspect it instead of reporting success. `batch recover` checks every actual file against its saved before/after bytes before resuming. It neither repeats already applied writes nor rolls back third-party changes. Local journals and source intents must travel with matched runtime backups.

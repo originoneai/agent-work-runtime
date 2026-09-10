@@ -474,11 +474,16 @@ pub(crate) fn edit_fields(
 ) -> Result<String> {
     let root = parse_tree(text)?;
     let mut target = &root;
-    for part in pointer
-        .strip_prefix('/')
-        .ok_or_else(|| unsupported("expected JSON pointer"))?
-        .split('/')
-    {
+    let parts = if pointer.is_empty() {
+        Vec::new()
+    } else {
+        pointer
+            .strip_prefix('/')
+            .ok_or_else(|| unsupported("expected JSON pointer"))?
+            .split('/')
+            .collect::<Vec<_>>()
+    };
+    for part in parts {
         let key = part.replace("~1", "/").replace("~0", "~");
         target = match &target.kind {
             Kind::Mapping(fields, ..) => fields.iter().find(|(k, _)| k == &key).map(|(_, n)| n),

@@ -279,7 +279,28 @@ fn catalog() -> Vec<Capability> {
                 "identity_and_history_preserved",
             ],
         ),
-        ("mutation.multi_file", false, &[], &["not_implemented"]),
+        (
+            "mutation.multi_file",
+            true,
+            &["batch change", "batch status", "batch recover"],
+            &[
+                "all_targets_preflight",
+                "per_file_durable_steps",
+                "not_filesystem_atomic",
+                "existing_registered_documents_and_one_ledger",
+            ],
+        ),
+        (
+            "mutation.decision.adopt",
+            true,
+            &["batch change"],
+            &[
+                "explicit_version_bound_decisions",
+                "finite_yaml_frontmatter",
+                "preserve_old_document",
+                "changed_content_invalidates_approval",
+            ],
+        ),
         (
             "completion.engineering",
             true,

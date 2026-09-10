@@ -247,6 +247,29 @@ pub struct Decision {
     pub rationale: String,
     pub affected_keys: Vec<String>,
     pub paths: Vec<String>,
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub adoption: Option<DecisionAdoption>,
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub superseded_by: Option<DocumentVersion>,
+}
+
+#[derive(Debug, Clone, Serialize, Deserialize, PartialEq, Eq)]
+#[serde(deny_unknown_fields)]
+pub struct DocumentVersion {
+    pub source_id: Id,
+    pub external_key: String,
+    pub source_fingerprint: String,
+}
+#[derive(Debug, Clone, Serialize, Deserialize, PartialEq, Eq)]
+#[serde(deny_unknown_fields)]
+pub struct DecisionAdoption {
+    pub version: u32,
+    pub request_key: String,
+    pub actor: crate::HostActor,
+    pub reason: String,
+    pub candidate: DocumentVersion,
+    pub supersedes: Option<DocumentVersion>,
+    pub content_fingerprint: String,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]

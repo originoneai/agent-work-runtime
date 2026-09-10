@@ -200,7 +200,31 @@ impl SourceAdapter for MarkdownDirectoryAdapter {
             insert_metadata(&mut metadata, &key, value)?;
         }
         let raw_status = metadata_string(&metadata, "status")?.unwrap_or_default();
-        let status = decision_status(&raw_status);
+        let mut status = decision_status(&raw_status);
+        let adoption: Option<awr_core::DecisionAdoption> = if metadata["adoption"].is_null() {
+            None
+        } else {
+            Some(serde_json::from_value(metadata["adoption"].clone())?)
+        };
+        let superseded_by: Option<awr_core::DocumentVersion> =
+            if metadata["superseded_by"].is_null() {
+                None
+            } else {
+                Some(serde_json::from_value(metadata["superseded_by"].clone())?)
+            };
+        if let Some(a) = &adoption {
+            a.actor.validate()?;
+            if a.version != 1
+                || a.candidate.external_key != metadata["id"].as_str().unwrap_or("")
+                || a.candidate.source_id != context.source.id
+                || a.content_fingerprint != crate::adoption::decision_content_fingerprint(text)?
+            {
+                if status == DecisionStatus::Accepted {
+                    status = DecisionStatus::Unknown;
+                }
+                warnings.push("adoption content or object identity changed; explicit review of this version is required".into());
+            }
+        }
         if status == DecisionStatus::Unknown {
             warnings.push(format!("decision status unresolved: {raw_status:?}"));
         }
@@ -260,6 +284,8 @@ impl SourceAdapter for MarkdownDirectoryAdapter {
             title,
             status,
             raw_status,
+            adoption,
+            superseded_by,
             decision,
             rationale,
             affected_keys: metadata_strings(&metadata, "affected_keys")?,

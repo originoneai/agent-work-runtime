@@ -79,6 +79,8 @@ fn fixture() -> Fixture {
         ("UNRELATED", DecisionStatus::Accepted, vec!["OTHER"]),
     ] {
         batch.decisions.push(Decision {
+            adoption: None,
+            superseded_by: None,
             meta: f.meta(key),
             title: key.into(),
             status,

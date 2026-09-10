@@ -236,7 +236,7 @@ pub fn decision(root: &Path, command: &DecisionCommand, json_output: bool) -> Re
                 check_limit(serde_json::to_vec(&full)?.len() as u64, *max_bytes)?;
                 full
             } else {
-                json!({"id":item.meta.id,"external_key":item.meta.external_key,"title":short(&item.title),"status":item.status,"summary":short(&item.decision),"affected_keys":item.affected_keys.iter().take(20).collect::<Vec<_>>(),"affected_keys_total":item.affected_keys.len(),"paths":item.paths.iter().take(20).collect::<Vec<_>>(),"paths_total":item.paths.len(),"revision":item.meta.revision})
+                json!({"id":item.meta.id,"external_key":item.meta.external_key,"title":short(&item.title),"status":item.status,"adoption":item.adoption,"superseded_by":item.superseded_by,"summary":short(&item.decision),"affected_keys":item.affected_keys.iter().take(20).collect::<Vec<_>>(),"affected_keys_total":item.affected_keys.len(),"paths":item.paths.iter().take(20).collect::<Vec<_>>(),"paths_total":item.paths.len(),"revision":item.meta.revision})
             };
             value["source_ref"] = json!(item.meta.source_ref);
             value["freshness"] = json!(decision.source.freshness);
