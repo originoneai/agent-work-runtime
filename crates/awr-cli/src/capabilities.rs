@@ -262,9 +262,13 @@ fn catalog() -> Vec<Capability> {
         ),
         (
             "completion.user_confirmation",
-            false,
-            &[],
-            &["not_implemented"],
+            true,
+            &["host save"],
+            &[
+                "explicit_scoped_policy_v1",
+                "human_provenance_required",
+                "separate_from_engineering_verification",
+            ],
         ),
     ]
     .into_iter()

@@ -134,7 +134,13 @@ impl Manifest {
                 source.adapter.as_str(),
                 "yaml-ledger-v1" | "markdown-ledger-v1"
             ) {
-                crate::LedgerMapping::from_spec(source)?;
+                let mapping = crate::LedgerMapping::from_spec(source)?;
+                if mapping.ordinary_work_policy.is_some()
+                    && (source.domain != "ledger"
+                        || self.project.context_profile != ContextProfile::Minimal)
+                {
+                    return Err(Error::InvalidInput("ordinary policy is scoped to a ledger and requires explicit context_profile = minimal; configured rules still apply".into()));
+                }
             }
             if source
                 .path

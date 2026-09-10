@@ -514,3 +514,51 @@ only operations AWR actually supports, retain old runtime history as history, an
 compare stable references and counts before cutover. Do not turn imported completion
 claims into newly verified work. Host integration examples and local component checks
 are separate from actual native-client or full application acceptance.
+
+
+## Explicit ordinary work policy
+
+The default remains strict engineering completion. A ledger can opt specific external
+work keys into ordinary confirmations through reviewed source configuration. Use the
+existing exact manifest preview/accept or `source configure` contract to select the
+configuration; an ordinary `host save` cannot change policy. Policy metadata records
+owner authorization, not authentication. The embedding host must enforce the actual
+user authorization; do not let an execution Agent rewrite policy to finish its task.
+
+```toml
+[project]
+name = "Reading"
+context_profile = "minimal"
+# Existing sources remain registered. In the selected ledger's options:
+[sources.options.ordinary_work_policy]
+version = 1
+policy_id = "reading-v1"
+authorized_by = "project-owner"
+authorized_at = 1 # replace with the actual authorization time in epoch milliseconds
+reason = "Use user confirmation for the selected reading work"
+work_items = ["READ-1"]
+```
+
+`minimal` explicitly omits separate rule/milestone requirements; configured rules,
+real goals, acceptance, next actions and dependencies remain required everywhere.
+The policy and its fingerprint are returned by `intake inspect` and included in work
+context. Source configuration changes invalidate old previews. Work outside the exact
+scope retains strict engineering rules. No source status is upgraded by opting in.
+
+Use the existing host envelope with `change.operation = "confirm_ordinary"`, `work`,
+`source_fingerprint`, `policy_fingerprint`, `kind`, `basis`, `confirmed_at` and
+`artifacts`. `kind` is `user_confirmation` (human origin required) or `business_check`
+(actual local artifacts required). Each artifact contains `locator` and `sha256`.
+AWR checks authorized path/read bounds and current bytes, never runs a report command.
+Business checks are attributable host assertions with checked artifact references;
+they do not imply independent objective verification. All nonhuman edits still need
+the exact host preview fingerprint. Release active execution claims before confirmation.
+
+The source stores a typed `ordinary_completion` with actor, authorization policy,
+criteria, basis, time and artifact references. The protected applied host receipt must
+match before intake counts it. `user_confirmed_completed`, `business_checked_completed`
+and `verified_completed` remain separate. Ordinary closure reports
+`completed_under_policy`; stale policy, criteria, artifacts or forged source receipts
+cannot count as current confirmation. A normal explicit `work reopen` clears the
+current ordinary confirmation, retaining its immutable proposal/event history.
+The engineering `work complete` input and all existing evidence gates remain unchanged.

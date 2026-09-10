@@ -35,6 +35,15 @@ pub enum HostChange {
         work: String,
         source_fingerprint: String,
     },
+    ConfirmOrdinary {
+        work: String,
+        source_fingerprint: String,
+        policy_fingerprint: String,
+        kind: OrdinaryCompletionKind,
+        basis: String,
+        confirmed_at: i64,
+        artifacts: Vec<OrdinaryArtifact>,
+    },
     Document {
         change: DocumentAction,
     },
@@ -294,6 +303,46 @@ fn prepare(store: &mut Store, root: &Path, request: HostSaveRequest) -> Result<P
             json!({"status":"planned"}),
             HostEditAction::ActivateDraft,
         )?,
+        HostChange::ConfirmOrdinary {
+            work,
+            source_fingerprint,
+            policy_fingerprint,
+            kind,
+            basis,
+            confirmed_at,
+            artifacts,
+        } => {
+            let current = store.work_item(project.id, work)?;
+            let policy =
+                OrdinaryWorkPolicy::from_config(&current.source.config)?.ok_or_else(|| {
+                    Error::RuleViolation(
+                        "this work retains the strict engineering completion policy".into(),
+                    )
+                })?;
+            let receipt = OrdinaryCompletion {
+                version: 1,
+                request_key: request.request_key.clone(),
+                policy,
+                policy_fingerprint: policy_fingerprint.clone(),
+                kind: kind.clone(),
+                actor: request.actor.clone(),
+                basis: basis.clone(),
+                confirmed_at: *confirmed_at,
+                acceptance: current.item.acceptance.clone(),
+                artifacts: artifacts.clone(),
+            };
+            preview_fields(
+                store,
+                root,
+                project.id,
+                &request,
+                EntityKind::WorkItem,
+                work,
+                source_fingerprint,
+                json!({"status":"completed","ordinary_completion":receipt}),
+                HostEditAction::ConfirmOrdinary,
+            )?
+        }
         HostChange::Document { change } => {
             let unchanged = if let DocumentAction::Edit {
                 source_id,

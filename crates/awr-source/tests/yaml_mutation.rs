@@ -243,7 +243,10 @@ fn multiline_plain_fields_are_preserved_or_edited_at_the_exact_span() {
     );
     assert_eq!(
         f.plan(EntityKind::WorkItem, "W", json!({"title":"Changed"}))
-            .unwrap().after.text().unwrap(),
+            .unwrap()
+            .after
+            .text()
+            .unwrap(),
         text.replace("A plain title continued\n    on another line", "Changed")
     );
     assert_eq!(
@@ -257,9 +260,22 @@ fn wrapped_plain_edits_preserve_trailing_comments_and_newline_style() {
     for newline in ["\n", "\r\n"] {
         let text = "work_items:\n- id: W\n  status: ready\n  title: A plain title\n    continued here # keep this comment\n  next_action: Before\n".replace('\n', newline);
         let f = Fixture::new(&text);
-        let expected = text.replace(&format!("A plain title{newline}    continued here"), "Changed");
-        assert_eq!(f.plan(EntityKind::WorkItem, "W", json!({"title":"Changed"})).unwrap().after.text().unwrap(), expected);
-        assert_eq!(fs::read_to_string(f.root.join("ledger.yaml")).unwrap(), text);
+        let expected = text.replace(
+            &format!("A plain title{newline}    continued here"),
+            "Changed",
+        );
+        assert_eq!(
+            f.plan(EntityKind::WorkItem, "W", json!({"title":"Changed"}))
+                .unwrap()
+                .after
+                .text()
+                .unwrap(),
+            expected
+        );
+        assert_eq!(
+            fs::read_to_string(f.root.join("ledger.yaml")).unwrap(),
+            text
+        );
     }
 }
 

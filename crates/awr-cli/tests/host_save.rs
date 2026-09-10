@@ -376,6 +376,13 @@ fn complete_draft_declarations_can_activate_without_invented_session_or_completi
     assert_eq!(work["work"]["status"], "planned");
     assert_eq!(work["work"]["ready"], true);
     assert_eq!(h.ok(&["session", "list"])["sessions"], json!([]));
+    h.fields(
+        "edit-after-activation",
+        "human",
+        "D",
+        json!({"next_action":"Review the activated draft"}),
+    );
+    assert_eq!(h.save()["status"], "completed");
     h.activate("repeat-transition", "D");
     h.error(
         &[

@@ -182,6 +182,8 @@ pub struct Rule {
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct WorkItem {
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub ordinary_completion: Option<crate::OrdinaryCompletion>,
     #[serde(flatten)]
     pub meta: ProjectionMeta,
     pub title: String,

@@ -143,7 +143,11 @@ fn capability_modes_separate_supported_writers_from_unavailable_multi_file_write
             .iter()
             .find(|c| c["id"] == id)
             .unwrap();
-        assert_eq!(capability["available"], false, "{id}");
+        assert_eq!(
+            capability["available"],
+            id == "completion.user_confirmation",
+            "{id}"
+        );
     }
 }
 

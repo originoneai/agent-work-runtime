@@ -52,6 +52,7 @@ pub fn is_domain_event_type(kind: &str) -> bool {
                 | "work.reopened"
                 | "work.completed"
                 | "work.draft_activated"
+                | "work.ordinary_confirmed"
                 | "claim.released"
                 | "claim.expired"
                 | "artifact.recorded"
@@ -129,6 +130,7 @@ fn domain_fields(kind: &str, payload: &Value) -> Result<()> {
             | "work.reopened"
             | "work.completed"
             | "work.draft_activated"
+            | "work.ordinary_confirmed"
     ) {
         "proposal_id source_id attempt_event_id write_plan_id before_fingerprint after_fingerprint target_after_hash source_revision target_revision actor reason work_action host_edit action_reason creating_session_id released_claim_ids"
     } else if matches!(kind, "proposal.apply_conflict" | "proposal.apply_failed") {
@@ -201,7 +203,7 @@ fn domain_fields(kind: &str, payload: &Value) -> Result<()> {
         | "work.cancelled" | "work.reopened" | "work.completed" => {
             "proposal_id source_id attempt_event_id write_plan_id source_revision target_revision"
         }
-        "work.draft_activated" => {
+        "work.draft_activated" | "work.ordinary_confirmed" => {
             "proposal_id source_id attempt_event_id write_plan_id source_revision target_revision host_edit"
         }
         "proposal.apply_conflict" | "proposal.apply_failed" => {
@@ -266,6 +268,8 @@ fn domain_fields(kind: &str, payload: &Value) -> Result<()> {
                     h.validate().is_ok()
                         && (kind != "work.draft_activated"
                             || h.action == crate::HostEditAction::ActivateDraft)
+                        && (kind != "work.ordinary_confirmed"
+                            || h.action == crate::HostEditAction::ConfirmOrdinary)
                 }),
             "agent_id" => value.is_string(),
             key if key.ends_with("_id") => id(value),

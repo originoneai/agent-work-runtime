@@ -253,6 +253,12 @@ impl SourceAdapter for YamlLedgerAdapter {
                 ),
             };
             let work = WorkItem {
+                ordinary_completion: value
+                    .get("ordinary_completion")
+                    .filter(|v| !v.is_null())
+                    .cloned()
+                    .map(serde_json::from_value)
+                    .transpose()?,
                 meta,
                 title: string(&value["title"], &pointer)?.unwrap_or_else(|| key.clone()),
                 kind: string(&value["kind"], &pointer)?,

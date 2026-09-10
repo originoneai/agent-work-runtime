@@ -27,6 +27,7 @@ const FIELDS: &[&str] = &[
 #[derive(Debug, Default, Deserialize)]
 #[serde(default, deny_unknown_fields)]
 pub struct LedgerMapping {
+    pub ordinary_work_policy: Option<awr_core::OrdinaryWorkPolicy>,
     /// Canonical work field -> original YAML key or Markdown column.
     pub field_map: BTreeMap<String, String>,
     /// Original status -> canonical work status. Never guesses unknown states.
@@ -42,6 +43,9 @@ impl LedgerMapping {
                 )
             })?;
         let mut names = BTreeSet::new();
+        if let Some(policy) = &mapping.ordinary_work_policy {
+            policy.validate()?;
+        }
         if mapping.field_map.len() > FIELDS.len() || mapping.status_map.len() > 128 {
             return Err(Error::InvalidInput(
                 "ledger mapping exceeds its field/status limit".into(),
