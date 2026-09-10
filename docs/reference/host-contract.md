@@ -7,6 +7,11 @@ paths or user content into a shell command. A host owns its UI, client credentia
 scheduling, notifications and knowledge processing. AWR owns the source-backed work
 projection, runtime records and its supported source mutations.
 
+The runnable [no-UI host example](../../examples/host-app/README.md) demonstrates
+these operations with argv, protected JSON, complete paging and explicit generic
+client continuation. Its synthetic fixture checks are separate from native-client
+or application business acceptance.
+
 ## Discover before opening a project
 
 ```text

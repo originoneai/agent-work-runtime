@@ -1,0 +1,9 @@
+[project]
+name = "Synthetic host guide"
+context_profile = "minimal"
+
+[[sources]]
+domain = "ledger"
+role = "primary"
+path = "工作 台账.yaml"
+adapter = "yaml-ledger-v1"
