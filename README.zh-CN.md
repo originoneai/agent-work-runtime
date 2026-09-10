@@ -39,15 +39,16 @@
 
 ## 怎么用
 
-任选 npm 或 pip 安装 **0.2.0 正式版**，均提供 `awr` 和 `awr-mcp`：
+任选 npm 或 pip 安装 **0.3.0 正式版**，均提供 `awr` 和 `awr-mcp`：
 
 ```sh
-npm install -g @originoneai/agent-work-runtime@0.2.0
+npm install -g @originoneai/agent-work-runtime@0.3.0
 # 或在 Python 虚拟环境内
-python -m pip install agent-work-runtime==0.2.0
+python -m pip install agent-work-runtime==0.3.0
 ```
 
 预编译包支持 macOS 15+ arm64、Linux x64/glibc 2.39+、Windows x64；启动器需要 Node 22.14+ 或 Python 3.9+。详见[安装边界](docs/release/DISTRIBUTIONS.md)。
+宿主能力和数据库升级说明见 [0.3.0 发布说明](docs/release/0.3.0.md)。
 
 也可安装 [Rust](https://www.rust-lang.org/tools/install)，选择源码构建：
 
