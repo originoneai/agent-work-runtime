@@ -1,0 +1,156 @@
+goals:
+- id: GUIDE
+  title: Publish a useful guide
+  status: active
+  success_criteria: [Readers can follow the guide]
+work_items:
+- id: GUIDE-01
+  title: Draft guide section 1
+  goal: GUIDE
+  status: ready
+  acceptance: [A useful reviewed section]
+  next_action: Write the outline
+- id: GUIDE-02
+  title: Draft guide section 2
+  goal: GUIDE
+  status: ready
+  acceptance: [A useful reviewed section]
+  next_action: Write the outline
+- id: GUIDE-03
+  title: Draft guide section 3
+  goal: GUIDE
+  status: ready
+  acceptance: [A useful reviewed section]
+  next_action: Write the outline
+- id: GUIDE-04
+  title: Draft guide section 4
+  goal: GUIDE
+  status: ready
+  acceptance: [A useful reviewed section]
+  next_action: Write the outline
+- id: GUIDE-05
+  title: Draft guide section 5
+  goal: GUIDE
+  status: ready
+  acceptance: [A useful reviewed section]
+  next_action: Write the outline
+- id: GUIDE-06
+  title: Draft guide section 6
+  goal: GUIDE
+  status: ready
+  acceptance: [A useful reviewed section]
+  next_action: Write the outline
+- id: GUIDE-07
+  title: Draft guide section 7
+  goal: GUIDE
+  status: ready
+  acceptance: [A useful reviewed section]
+  next_action: Write the outline
+- id: GUIDE-08
+  title: Draft guide section 8
+  goal: GUIDE
+  status: ready
+  acceptance: [A useful reviewed section]
+  next_action: Write the outline
+- id: GUIDE-09
+  title: Draft guide section 9
+  goal: GUIDE
+  status: ready
+  acceptance: [A useful reviewed section]
+  next_action: Write the outline
+- id: GUIDE-10
+  title: Draft guide section 10
+  goal: GUIDE
+  status: ready
+  acceptance: [A useful reviewed section]
+  next_action: Write the outline
+- id: GUIDE-11
+  title: Draft guide section 11
+  goal: GUIDE
+  status: ready
+  acceptance: [A useful reviewed section]
+  next_action: Write the outline
+- id: GUIDE-12
+  title: Draft guide section 12
+  goal: GUIDE
+  status: ready
+  acceptance: [A useful reviewed section]
+  next_action: Write the outline
+- id: GUIDE-13
+  title: Draft guide section 13
+  goal: GUIDE
+  status: ready
+  acceptance: [A useful reviewed section]
+  next_action: Write the outline
+- id: GUIDE-14
+  title: Draft guide section 14
+  goal: GUIDE
+  status: ready
+  acceptance: [A useful reviewed section]
+  next_action: Write the outline
+- id: GUIDE-15
+  title: Draft guide section 15
+  goal: GUIDE
+  status: ready
+  acceptance: [A useful reviewed section]
+  next_action: Write the outline
+- id: GUIDE-16
+  title: Draft guide section 16
+  goal: GUIDE
+  status: ready
+  acceptance: [A useful reviewed section]
+  next_action: Write the outline
+- id: GUIDE-17
+  title: Draft guide section 17
+  goal: GUIDE
+  status: ready
+  acceptance: [A useful reviewed section]
+  next_action: Write the outline
+- id: GUIDE-18
+  title: Draft guide section 18
+  goal: GUIDE
+  status: ready
+  acceptance: [A useful reviewed section]
+  next_action: Write the outline
+- id: GUIDE-19
+  title: Draft guide section 19
+  goal: GUIDE
+  status: ready
+  acceptance: [A useful reviewed section]
+  next_action: Write the outline
+- id: GUIDE-20
+  title: Draft guide section 20
+  goal: GUIDE
+  status: ready
+  acceptance: [A useful reviewed section]
+  next_action: Write the outline
+- id: GUIDE-21
+  title: Draft guide section 21
+  goal: GUIDE
+  status: ready
+  acceptance: [A useful reviewed section]
+  next_action: Write the outline
+- id: GUIDE-22
+  title: Draft guide section 22
+  goal: GUIDE
+  status: ready
+  acceptance: [A useful reviewed section]
+  next_action: Write the outline
+- id: GUIDE-23
+  title: Draft guide section 23
+  goal: GUIDE
+  status: ready
+  acceptance: [A useful reviewed section]
+  next_action: Write the outline
+- id: GUIDE-24
+  title: Draft guide section 24
+  goal: GUIDE
+  status: ready
+  acceptance: [A useful reviewed section]
+  next_action: Write the outline
+- id: GUIDE-25
+  title: Draft guide section 25
+  goal: GUIDE
+  status: ready
+  acceptance: [A useful reviewed section]
+  next_action: Write the outline
