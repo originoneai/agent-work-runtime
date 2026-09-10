@@ -7,7 +7,7 @@ use std::{
     fs,
     io::{Read, Write},
     net::TcpListener,
-    path::Path,
+    path::{Path, PathBuf},
     process::{Command, Stdio},
     time::Duration,
 };
@@ -35,6 +35,18 @@ pub enum ExecutionCommand {
         purpose: String,
         #[arg(long)]
         reference: String,
+    },
+    /// Record a bounded ExternalExecutionReport JSON file; never changes supervisor facts.
+    Report {
+        #[arg(long)]
+        input: PathBuf,
+        #[arg(long)]
+        expected_revision: Revision,
+    },
+    /// Look up the immutable report receipt before retrying after a lost response.
+    ReportStatus {
+        #[arg(long)]
+        key: String,
     },
     List {
         #[arg(long)]
@@ -118,6 +130,27 @@ fn protect_runtime(root: &Path) -> Result<()> {
 pub fn run(root: &Path, command: &ExecutionCommand, _json_output: bool) -> Result<()> {
     let root = root.canonicalize()?;
     let result = match command {
+        ExecutionCommand::Report {
+            input,
+            expected_revision,
+        } => {
+            let bytes = awr_source::read_capped(&root.join(input), 1024 * 1024)?;
+            let report: ExternalExecutionReport = serde_json::from_slice(&bytes).map_err(|_| {
+                Error::InvalidInput("invalid external execution report JSON".into())
+            })?;
+            // External observations must remain recordable when source parsing fails.
+            // This opens existing runtime state without refreshing or mutating source files.
+            let mut db = RuntimeProject::open(&root, false)?;
+            let (event, created) =
+                db.store
+                    .report_external_execution(db.project.id, *expected_revision, report)?;
+            json!({"ok":true,"project_revision":db.store.project(db.project.id)?.project_revision,"event":event,"created":created,"receipt_recorded":true,"validation_basis":"host_supplied_report","outcome_verified":false,"source_write_performed":false,"source_refresh_performed":false})
+        }
+        ExecutionCommand::ReportStatus { key } => {
+            let (store, project) = read_state(&root)?;
+            let event = store.external_report_by_key(project.id, key)?;
+            json!({"ok":true,"project_revision":project.project_revision,"found":event.is_some(),"event":event,"validation_basis":"host_supplied_report","outcome_verified":false,"side_effects_performed":false})
+        }
         ExecutionCommand::Run {
             session,
             key,
@@ -195,11 +228,11 @@ pub fn run(root: &Path, command: &ExecutionCommand, _json_output: bool) -> Resul
         ExecutionCommand::Inspect { id } => {
             let (store, project) = read_state(&root)?;
             let e = store.execution(project.id, *id)?;
-            json!({"observation":awr_runtime::inspect_execution(&root,&e)?,"side_effects_performed":false})
+            json!({"observation":awr_runtime::inspect_execution(&root,&e)?,"external_report":store.latest_external_report(project.id,*id)?,"side_effects_performed":false})
         }
         ExecutionCommand::Show { id } => {
             let db = RuntimeProject::open(&root, false)?;
-            json!({"execution":db.store.execution(db.project.id,*id)?,"live_verification_performed":false})
+            json!({"execution":db.store.execution(db.project.id,*id)?,"external_report":db.store.latest_external_report(db.project.id,*id)?,"live_verification_performed":false})
         }
         ExecutionCommand::Worker { id } => return supervise(&root, *id),
     };

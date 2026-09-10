@@ -149,6 +149,7 @@ fn domain_fields(kind: &str, payload: &Value) -> Result<()> {
             | "execution.starting"
             | "execution.running"
             | "execution.finished" => "execution",
+            "execution.external_reported" => "execution_id report",
             "session.started" => {
                 "agent_id provider model start_project_revision claim_id expired_claim_ids expires_at"
             }
@@ -209,6 +210,7 @@ fn domain_fields(kind: &str, payload: &Value) -> Result<()> {
         | "execution.starting"
         | "execution.running"
         | "execution.finished" => "execution",
+        "execution.external_reported" => "execution_id report",
         "session.started" => "agent_id provider model start_project_revision",
         "work.claimed" => "claim_id agent_id expired_claim_ids",
         "session.resumed" | "session.resumed_from" | "session.handoff_received" => {
@@ -267,7 +269,7 @@ fn domain_fields(kind: &str, payload: &Value) -> Result<()> {
             | "source_write_performed" => value.is_boolean(),
             "execution" | "binding" | "before" | "after" | "write_plan" | "work_action"
             | "draft" | "session_delta" | "git_binding" | "selection" | "closure" | "original"
-            | "target_work" => value.is_object(),
+            | "target_work" | "report" => value.is_object(),
             "changes" => value
                 .as_array()
                 .is_some_and(|v| v.iter().all(Value::is_object)),

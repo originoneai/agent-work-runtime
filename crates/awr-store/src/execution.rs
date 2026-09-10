@@ -20,6 +20,59 @@ fn key_at(conn: &Connection, project: Id, key: &str) -> Result<Option<Execution>
     value.map(decode).transpose()
 }
 impl Store {
+    /// Immutable report lookup also works after its originating work session ends.
+    pub fn external_report_by_key(&self, project: Id, key: &str) -> Result<Option<Event>> {
+        report_at(&self.conn, project, "$.report.request_key", key)
+    }
+    pub fn latest_external_report(&self, project: Id, execution: Id) -> Result<Option<Event>> {
+        self.execution(project, execution)?;
+        report_at(
+            &self.conn,
+            project,
+            "$.execution_id",
+            &execution.to_string(),
+        )
+    }
+    pub fn report_external_execution(
+        &mut self,
+        project: Id,
+        expected: Revision,
+        report: ExternalExecutionReport,
+    ) -> Result<(Event, bool)> {
+        report.validate()?;
+        let same = |event: Event| -> Result<(Event, bool)> {
+            if event.payload["report"] != serde_json::to_value(&report)? {
+                return Err(Error::SourceConflict(
+                    "external report request key was already used for different content".into(),
+                ));
+            }
+            Ok((event, false))
+        };
+        if let Some(event) = self.external_report_by_key(project, &report.request_key)? {
+            return same(event);
+        }
+        let result=self.runtime_transaction_with_event(project,expected,EventDraft::new("execution.external_reported",&report.summary),|tx,_,event| {
+            let execution=at(tx,project,report.execution_id)?;
+            if execution.intent.executor!=ExecutorKind::External {
+                return Err(Error::InvalidTransition("host reports require an external execution; managed supervisors retain exclusive ownership".into()));
+            }
+            event.work_item_id=Some(execution.work_item_id);
+            event.session_id=Some(execution.session_id);
+            event.branch_id=execution.branch_id;
+            event.payload=serde_json::json!({"execution_id":execution.id,"report":report});
+            Ok(())
+        });
+        match result {
+            Ok((_, event)) => Ok((event, true)),
+            Err(error @ Error::RevisionConflict { .. }) => {
+                match self.external_report_by_key(project, &report.request_key)? {
+                    Some(event) => same(event),
+                    None => Err(error),
+                }
+            }
+            Err(error) => Err(error),
+        }
+    }
     pub fn execution(&self, project: Id, id: Id) -> Result<Execution> {
         at(&self.conn, project, id)
     }
@@ -246,4 +299,10 @@ impl Store {
             },
         )
     }
+}
+
+fn report_at(conn: &Connection, project: Id, selector: &str, value: &str) -> Result<Option<Event>> {
+    // selector is supplied only by the two typed readers above and remains a SQL parameter.
+    let id:Option<String>=conn.query_row("SELECT id FROM events WHERE project_id=?1 AND event_type='execution.external_reported' AND json_extract(payload_json,?2)=?3 ORDER BY project_revision DESC LIMIT 1",params![project.to_string(),selector,value],|r|r.get(0)).optional().map_err(db_error)?;
+    id.map(|id|conn.query_row("SELECT id,project_id,work_item_id,session_id,branch_id,event_type,importance,summary,payload_json,project_revision,created_at FROM events WHERE project_id=?1 AND id=?2",params![project.to_string(),id],crate::events::event_row).map_err(db_error)).transpose()
 }

@@ -171,6 +171,99 @@ without installing hooks; caller-provided summaries remain caller assertions. An
 artifact import copies content, while references in evidence/events keep their own
 documented read and verification rules.
 
+## External clients, checkpoints and continuation
+
+One work may have several AWR sessions and several native client conversations.
+Keep the host's navigation key, the work's AWR ID/key, AWR session ID, native session
+namespace and execution ID separate. Source `owner`, chosen Agent and actual session
+Agent are separate facts. For a client without native hooks, call the generic
+receiver explicitly; no hook installation or client-private history access is needed.
+
+1. Start an AWR session with `session start` and the actual Agent/provider/model,
+   or let `client bind --client generic --external-session <namespaced-native-id>
+   --work <key>` create it. Pass `--session <id>` to bind an already created session.
+   Binding does not claim the work; claim ownership remains an explicit domain action.
+2. `client bind` returns the current context. `context compile --session <id>` can
+   return a separately budgeted context, rendered body, hash and completeness result.
+   Record actual delivery/receipt in the host; a hash alone proves no model received it.
+3. If the host supervises the client, register only an external execution with
+   `execution register --session <id> --key <operation-key> --purpose <purpose>
+   --reference <host-execution-reference>`. AWR never adopts the PID, launches or
+   terminates that client. `execution run` is for commands owned by AWR's supervisor.
+4. Save useful progress with `client progress --client generic --external-session
+   <native-id> --digest <observed-summary> --next-action <next> --open-loop <issue>`.
+   Deliver a lifecycle callback using `client hook --client generic --work <key>`
+   and JSON on stdin: `session_id`, `cwd`, `hook_event_name` and optional `turn_id`.
+   Events are `SessionStart`, `PostCompact`, `PreCompact`, `Stop`, `SessionEnd`,
+   `Interrupt`. Start/PostCompact return context; the others persist a checkpoint.
+   Stable repeated callbacks deduplicate against source state and saved progress.
+   Changed progress/source facts can legitimately produce a new checkpoint even with
+   the same native turn ID. Wait for `awr.checkpoint_saved` before calling a save done.
+5. After reopening the host, use `client show` to recover the binding and
+   `recovery inspect --session <id>` to inspect the last completed checkpoint,
+   pending runtime writes and external/managed execution observations. This does not
+   refresh sources, release claims, create a successor, restart or stop a process.
+   Combine it with `doctor --json` for read-only current-source/artifact diagnostics;
+   preserve nonzero diagnostics. Investigate unfinished writes and unknown effects.
+6. Explicitly continue with `session resume` at the current project revision, or
+   bind a new native conversation with `client bind --from-session <old-id>`.
+   Continuation refreshes sources and compiles new context before work proceeds;
+   stale checkpoints do not authorize replay. Repeating a binding keeps its session.
+   A raw resume that already created a successor must be inspected, not retried as a
+   new continuation. Native resumption remains a separate, client-supported host action.
+
+### Durable external reports
+
+`execution report --input report.json --expected-revision <revision>` records a
+version 1 `ExternalExecutionReport`. For example, a synthetic host might send:
+
+```json
+{
+  "version": 1,
+  "request_key": "guide-execution/stage-2",
+  "execution_id": "<registered AWR execution ULID>",
+  "host_id": "example-host",
+  "host_work_key": "workspace/guide",
+  "native_session": "provider/conversation-id",
+  "agent_id": "guide-author",
+  "origin": "host_observed",
+  "phase": "waiting_user",
+  "observed_at": 1,
+  "summary": "The draft needs the user's choice of examples.",
+  "detail_references": ["host://example/logs/guide"]
+}
+```
+
+Use the actual ULID and observation time (Unix milliseconds). Supported phases are
+`started`, `progress`, `waiting_user`, `succeeded`, `failed`, `interrupted`, `unknown`.
+These are report classifications, not another work/execution state machine. `origin`
+is `caller_reported` or `host_observed`; both are host-supplied provenance assertions.
+Neither is authentication or an AWR-owned observation. Reports reject managed or
+foreign-project executions and cannot overwrite their execution snapshot, create a
+worker, verify business completion or change source work status.
+
+The project-scoped `request_key` is immutable: identical content returns the same
+event (even with the original revision after a lost response); different content
+returns `SourceConflict`. Concurrent identical submissions make one receipt.
+First-time stale revisions still fail. Use `execution report-status --key <key>`
+before retrying a timeout; `found: false` means no retained receipt was found at that
+read, not proof an in-flight writer cannot finish. Report lookup is read-only.
+
+Reports remain recordable after the originating session ends or source parsing fails.
+The file is capped at 1 MiB, identifiers at 512 bytes, summary at 8192 bytes, and
+references at 32 entries of 4096 bytes each. References are retained, never opened,
+copied or authenticated by this operation. Use the host's controlled detail viewer
+for original logs. No token streams, client secrets or fabricated native IDs are needed.
+
+The `execution.external_reported` event binds the work, original session, execution
+and immutable report. Read its history with the existing event cursor and its full
+body with `event show --full`. `execution show`/`inspect` return the latest report
+separately; `recovery inspect` includes latest reports and project runtime findings.
+An external host's reported `succeeded` still leaves AWR's observation `unknown` and
+unverified. Interpret the host report using its actual supporting records before
+retrying or completing work. Generic fixture checks and actual Kimi/Grok receiving
+context are separate acceptance evidence.
+
 ## Compatibility and recovery
 
 The schema declaration describes what this build can open, subject to ownership and
