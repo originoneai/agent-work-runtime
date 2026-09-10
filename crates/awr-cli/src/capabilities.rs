@@ -76,7 +76,16 @@ fn catalog() -> Vec<Capability> {
             &["object show", "decision show"],
             &["explicit_object_reference", "bounded_body_reads"],
         ),
-        ("project.catalog", false, &[], &["not_implemented"]),
+        (
+            "project.catalog",
+            true,
+            &["object list"],
+            &[
+                "revision_bound_pages",
+                "retired_is_not_archived",
+                "summaries_only_bodies_are_opt_in",
+            ],
+        ),
         (
             "history.cursor",
             true,

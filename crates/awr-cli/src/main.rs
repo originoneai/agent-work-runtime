@@ -3,6 +3,7 @@ use clap::{CommandFactory, Parser, Subcommand};
 use std::path::PathBuf;
 mod branch;
 mod capabilities;
+mod catalog;
 mod client;
 mod context;
 mod doctor;

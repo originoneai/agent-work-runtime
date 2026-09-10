@@ -4,7 +4,7 @@ use crate::{
     session::{RuntimeProject, event_brief},
 };
 use awr_core::*;
-use awr_source::{Locator, Manifest, SourceSpec};
+use awr_source::Manifest;
 use awr_store::{BranchFilter, EventCursor, EventQuery, Store};
 use clap::{Args, Subcommand, ValueEnum};
 use serde_json::{Value, json};
@@ -22,6 +22,8 @@ pub enum ObjectKind {
 
 #[derive(Debug, Subcommand)]
 pub enum ObjectCommand {
+    /// Traverse all indexed objects with bounded pages and revision-bound cursors.
+    List(crate::catalog::ListArgs),
     /// Read one projected object by external key/ID, or an immutable checkpoint by ID.
     Show {
         #[arg(value_enum)]
@@ -128,6 +130,9 @@ fn resolve_source(store: &Store, project: Id, reference: &str) -> Result<(Source
 }
 
 pub fn object(root: &Path, command: &ObjectCommand, json_output: bool) -> Result<()> {
+    if let ObjectCommand::List(args) = command {
+        return crate::catalog::list(root, args, json_output);
+    }
     let ObjectCommand::Show {
         kind,
         reference,
@@ -135,7 +140,10 @@ pub fn object(root: &Path, command: &ObjectCommand, json_output: bool) -> Result
         cached,
         entity_revision,
         max_bytes,
-    } = command;
+    } = command
+    else {
+        unreachable!()
+    };
     let db = RuntimeProject::open(root, !cached && *kind != ObjectKind::Checkpoint)?;
     let mut checkpoint_save = Value::Null;
     let mut session_delta = Value::Null;
@@ -389,19 +397,37 @@ pub fn source_show(root: &Path, request: &SourceRead, json_output: bool) -> Resu
     value["freshness_basis"] = json!("last_recorded_source_state");
     if request.content {
         check_limit(0, request.max_bytes)?;
+        if !active {
+            return Err(Error::SourceUnavailable("retired source retains metadata and history; content requires a current source registration".into()));
+        }
         let manifest = Manifest::load(root)?;
-        let spec = SourceSpec {
-            domain: source.domain.clone(),
-            role: source.role.clone(),
-            path: None,
-            locator: Some(source.locator.clone()),
-            adapter: source.adapter.clone(),
-            options: Default::default(),
-        };
+        // A retained DB locator is not permission to reopen a removed source.
+        // Only rediscover the matching registered domain/adapter, never the project tree.
+        let mut authorized = None;
+        for spec in manifest
+            .sources
+            .iter()
+            .filter(|spec| spec.domain == source.domain && spec.adapter == source.adapter)
+        {
+            for locator in
+                awr_source::source_adapter(&spec.adapter)?.discover(root, &manifest, spec)?
+            {
+                if locator.identity()? == source.locator {
+                    authorized = Some(locator);
+                    break;
+                }
+            }
+            if authorized.is_some() {
+                break;
+            }
+        }
+        let locator = authorized.ok_or_else(|| {
+            Error::SourceUnavailable("source is no longer registered for content reads".into())
+        })?;
         let cap = request
             .max_bytes
-            .min(awr_source::source_read_cap(&spec.adapter)?);
-        let snapshot = Locator::from_spec(root, &manifest, &spec)?.read(root, cap)?;
+            .min(awr_source::source_read_cap(&source.adapter)?);
+        let snapshot = locator.read(root, cap)?;
         if snapshot.fingerprint != source.fingerprint {
             return Err(Error::SourceConflict(
                 "source bytes changed since indexing; reindex and obtain a new reference".into(),
