@@ -42,6 +42,7 @@ impl Fixture {
         let target = self.store.mutation_target(self.project, kind, key)?;
         let patch = MutationPatch {
             version: 1,
+            host_edit: None,
             work_action: None,
             target: MutationTarget {
                 kind,
@@ -229,7 +230,7 @@ fn block_field_edits_keep_literal_or_folded_style_header_comment_and_neighbor_by
 }
 
 #[test]
-fn unrelated_multiline_plain_fields_are_preserved_and_ambiguous_target_edits_are_rejected() {
+fn multiline_plain_fields_are_preserved_or_edited_at_the_exact_span() {
     let text = "work_items:\n- id: W\n  status: ready\n  title: A plain title continued\n    on another line\n  next_action: Before\n";
     let f = Fixture::new(text);
     assert_eq!(
@@ -240,14 +241,26 @@ fn unrelated_multiline_plain_fields_are_preserved_and_ambiguous_target_edits_are
             .unwrap(),
         text.replace("Before", "After")
     );
-    assert!(matches!(
-        f.plan(EntityKind::WorkItem, "W", json!({"title":"Changed"})),
-        Err(Error::MutationUnsupported(_))
-    ));
+    assert_eq!(
+        f.plan(EntityKind::WorkItem, "W", json!({"title":"Changed"}))
+            .unwrap().after.text().unwrap(),
+        text.replace("A plain title continued\n    on another line", "Changed")
+    );
     assert_eq!(
         fs::read_to_string(f.root.join("ledger.yaml")).unwrap(),
         text
     );
+}
+
+#[test]
+fn wrapped_plain_edits_preserve_trailing_comments_and_newline_style() {
+    for newline in ["\n", "\r\n"] {
+        let text = "work_items:\n- id: W\n  status: ready\n  title: A plain title\n    continued here # keep this comment\n  next_action: Before\n".replace('\n', newline);
+        let f = Fixture::new(&text);
+        let expected = text.replace(&format!("A plain title{newline}    continued here"), "Changed");
+        assert_eq!(f.plan(EntityKind::WorkItem, "W", json!({"title":"Changed"})).unwrap().after.text().unwrap(), expected);
+        assert_eq!(fs::read_to_string(f.root.join("ledger.yaml")).unwrap(), text);
+    }
 }
 
 #[test]

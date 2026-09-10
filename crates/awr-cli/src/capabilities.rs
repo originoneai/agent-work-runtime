@@ -223,7 +223,33 @@ fn catalog() -> Vec<Capability> {
                 "draft_no_clobber",
             ],
         ),
-        ("mutation.human_save", false, &[], &["not_implemented"]),
+        (
+            "mutation.human_save",
+            true,
+            &["host save", "host status", "host recover"],
+            &[
+                "registered_sources_only",
+                "provenance_is_not_authentication",
+                "domain_guards_retained",
+                "single_file",
+            ],
+        ),
+        (
+            "mutation.ai_apply",
+            true,
+            &["host preview", "host save"],
+            &["exact_reviewed_preview_required", "stable_request_identity"],
+        ),
+        (
+            "mutation.work.activate_draft",
+            true,
+            &["host save"],
+            &[
+                "draft_only",
+                "declared_structure_and_dependencies_required",
+                "not_completion",
+            ],
+        ),
         ("mutation.multi_file", false, &[], &["not_implemented"]),
         (
             "completion.engineering",

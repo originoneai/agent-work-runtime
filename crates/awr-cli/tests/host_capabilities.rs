@@ -118,7 +118,7 @@ fn unsupported_protocol_and_invalid_usage_keep_distinct_error_codes() {
 }
 
 #[test]
-fn capability_modes_separate_field_document_ledger_and_human_writes() {
+fn capability_modes_separate_supported_writers_from_unavailable_multi_file_writes() {
     let host = Host::new();
     let result = host.ok(&["--json", "capabilities"]);
     let adapters = result["source_adapters"].as_array().unwrap();
@@ -136,11 +136,7 @@ fn capability_modes_separate_field_document_ledger_and_human_writes() {
             assert_eq!(adapter["write_mode"], "document_body_only");
         }
     }
-    for id in [
-        "mutation.human_save",
-        "mutation.multi_file",
-        "completion.user_confirmation",
-    ] {
+    for id in ["mutation.multi_file", "completion.user_confirmation"] {
         let capability = result["capabilities"]
             .as_array()
             .unwrap()

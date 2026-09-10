@@ -8,8 +8,12 @@ mod branch_close;
 mod completion;
 mod doctor;
 mod document;
+mod host_save;
 pub use document::{
     DocumentReport, DocumentRequest, change_document, document_status, recover_document,
+};
+pub use host_save::{
+    HostChange, HostSaveReport, HostSaveRequest, host_preview, host_recover, host_save, host_status,
 };
 mod execution;
 mod fs_sync;

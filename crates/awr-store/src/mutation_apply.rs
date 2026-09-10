@@ -161,6 +161,13 @@ impl Store {
             proposal.status=ProposalStatus::Applied; proposal.revision+=1;
             bind(event,tx,project,&proposal)?;
             event.payload=json!({"proposal_id":id,"source_id":proposal.source_id,"attempt_event_id":attempt_id,"write_plan_id":attempt.plan.id,"before_fingerprint":attempt.plan.before_fingerprint,"after_fingerprint":attempt.plan.after_fingerprint,"target_after_hash":attempt.plan.target_after_hash,"source_revision":target.source.revision,"target_revision":meta.revision,"actor":actor,"reason":reason});
+            if let Some(host)=&patch.host_edit {
+                event.payload["host_edit"]=json!(host);
+                if host.action==HostEditAction::ActivateDraft {
+                    event.event_type="work.draft_activated".into();
+                    event.summary="Explicitly activated source-declared draft".into();
+                }
+            }
             if let Some(binding)=patch.work_action {
                 event.event_type=binding.action.event_type().into();
                 event.summary=format!("Verified source work action {:?}",binding.action);

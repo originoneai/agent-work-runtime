@@ -257,7 +257,14 @@ fn scalar_end(
                         if spaces <= indent {
                             break;
                         }
-                        end = line + content.trim_end().len();
+                        let comment = content.char_indices().find_map(|(i, c)| {
+                            (c == '#' && (i == 0 || content.as_bytes()[i - 1].is_ascii_whitespace()))
+                                .then_some(i)
+                        });
+                        end = line + content[..comment.unwrap_or(content.len())].trim_end().len();
+                        if comment.is_some() {
+                            break;
+                        }
                     }
                     line = next;
                 }
@@ -290,9 +297,18 @@ fn render(text: &str, node: &Node, value: &Value, newline: &str) -> Result<Strin
         };
         return Ok(format!("{prefix}{}", json(value)?));
     };
-    if *style == TScalarStyle::Plain && !node.range.is_empty() && original.trim() != old_value {
+    if *style == TScalarStyle::Plain
+        && !node.range.is_empty()
+        && original.trim() != old_value
+        && (original.contains('#')
+            || serde_yaml_ng::from_str::<Value>(original)
+                .ok()
+                .as_ref()
+                .and_then(Value::as_str)
+                != Some(old_value.as_str()))
+    {
         return Err(unsupported(
-            "multiline plain scalars require an explicit block or quoted style before editing",
+            "ambiguous multiline plain scalar boundaries require manual editing",
         ));
     }
     let Some(string) = value.as_str() else {

@@ -47,5 +47,5 @@ pub use yaml_create::{PreparedWorkCreation, prepare_work_creation};
 pub use yaml_ledger::YamlLedgerAdapter;
 pub use yaml_mutation::{
     PreparedYamlMutation, parse_mutation_projection, prepare_yaml_mutation,
-    read_yaml_mutation_record,
+    read_yaml_mutation_record, yaml_field_writable,
 };

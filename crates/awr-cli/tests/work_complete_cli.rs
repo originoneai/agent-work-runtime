@@ -207,6 +207,7 @@ impl Fixture {
             source_config: target.source.config.clone(),
             intent: "Complete the reviewed report".into(),
             changes: json!({"status":"completed"}),
+            host_edit: None,
             work_action: None,
         };
         let record =

@@ -112,6 +112,7 @@ pub fn create_proposal(
         source_config: target.source.config.clone(),
         intent: request.intent.clone(),
         changes: request.changes.clone(),
+        host_edit: None,
         work_action: None,
     };
     patch.validate()?;

@@ -166,7 +166,7 @@ expected semantics and reparse through the source adapter. See the
 [YAML writer](../../adapters/yaml-ledger/README.md) for supported shapes.
 
 `mutation.markdown.document` supports registered heading, rule and decision documents.
-Markdown work ledgers remain read-only. Unsupported capabilities include human-save shortcuts, multi-file
+Markdown work ledgers remain read-only. Unsupported capabilities include multi-file
 writes and user-confirmed completion. Never route an unsupported operation through a
 generic status patch or a second writer.
 
@@ -440,6 +440,74 @@ foreign keys, and retains additional indexes and triggers. Builds that only supp
 schema 3 must reject this database; restore a matching database/program snapshot
 when rolling back. Newly created drafts need an explicit source declaration before
 execution; creation itself never supplies missing execution or completion facts.
+
+## One Save from a host
+
+`host save` provides one CLI invocation for a user's explicit edit. It reuses existing
+YAML proposals and document recovery journals; it does not create an Agent session,
+claim or model call. The trusted local host remains responsible for authenticating its
+user and showing the actual edit. The `actor` fields record caller-supplied provenance;
+they are not authentication, and every origin retains source registration, filesystem
+permissions, version checks and domain rules.
+
+```json
+{
+  "version": 1,
+  "request_key": "host/edit-task/1",
+  "actor": {"host": "desktop-app", "subject": "local-user", "origin": "human"},
+  "reason": "Save the user's explicit next-action edit",
+  "change": {
+    "operation": "fields",
+    "kind": "work_item",
+    "target": "WORK-EXAMPLE",
+    "source_fingerprint": "sha256:<source hash from the editor's original read>",
+    "fields": {"next_action": "Review the reading notes"}
+  }
+}
+```
+
+```text
+awr host save --input save.json --expected-revision <editor-revision> --json
+awr host status --key <same-request-key> --json
+awr host recover --key <same-request-key> --expected-revision <current-revision> --json
+```
+
+Request keys contain 1–512 UTF-8 bytes; the combined host and subject plus separator
+must fit 256 bytes. Reasons contain 1–4096 bytes. Field saves support the existing YAML
+goal, plan, work and evidence writer's fields. Work completion, ownership and evidence
+levels remain protected. The proposal and final event retain the exact request hash
+and actor; the saved host journal also binds their source preview and operation.
+
+For AI edits, set `origin` to `ai_accepted`, call `host preview --input save.json`, show
+the complete `preview.plan` change to the user, and pass its fingerprint to `host save
+--expected-preview <fingerprint> --expected-revision <preview-revision>`. The fingerprint
+binds the request, actor, exact patch, target, source and project versions. A changed
+patch, target or source requires a new preview. A provenance label alone cannot mark
+work completed or bypass a claim-dependent Agent action.
+
+For an Agent acting under authority already delegated by the user, record
+`origin: "delegated_agent"` and the actual Agent subject. This also requires the exact
+preview fingerprint. The host must enforce the scope of that delegation; the label
+does not grant it and does not assert that a human individually reviewed the patch.
+
+Use `change: {"operation":"document","change":<document change>}` for one registered
+Markdown edit or new draft through the same host flow. A supported unchanged save
+returns `no_change` without creating a proposal or business event. Existing proposal
+no-op errors remain unchanged. `host status` is read-only and reports retained outcomes
+separately from current source observations and the underlying proposal/document.
+An identical request replay returns the retained identity; changed content under the
+same key conflicts. A lost response requires lookup before retry. `pending_recovery`
+requires explicit recovery; `requires_review` means a terminal proposal stopped, and
+its outcome must be inspected before creating a new request. File effects and runtime
+effects remain separate; neither a transport error nor a stopped proposal proves the
+source was never written. Recovery retains external edits.
+
+After filling a work draft's goal, acceptance and next action, explicitly use
+`change: {"operation":"activate_draft","work":"<key>","source_fingerprint":"<hash>"}`.
+Activation requires a current, declared primary goal, valid structure, resolved
+dependencies and no blocker or existing claim. Standard projects retain rule/milestone
+requirements. It changes only `draft` to `planned`, with a protected
+`work.draft_activated` receipt; it never asserts completion or invents execution facts.
 
 One project keeps one source ledger. When replacing an existing host writer, switch
 only operations AWR actually supports, retain old runtime history as history, and

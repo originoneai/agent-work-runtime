@@ -264,6 +264,7 @@ fn outstanding_source_proposals_must_be_settled_and_are_not_silently_discarded()
                     source_config: target.source.config,
                     intent: input.reason,
                     changes,
+                    host_edit: None,
                     work_action: Some(binding),
                 },
                 created_by_session: Some(sid.parse().unwrap()),

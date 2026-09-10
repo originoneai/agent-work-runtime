@@ -20,6 +20,21 @@ pub(crate) fn verify_work_dependencies(
     project: Id,
     patch: &MutationPatch,
 ) -> Result<()> {
+    if patch
+        .host_edit
+        .as_ref()
+        .is_some_and(|h| h.action == HostEditAction::ActivateDraft)
+    {
+        for source in store.sources(project)? {
+            let (_, _, actual) = awr_source::inspect_registered_source(root, &source)?;
+            if source.freshness != Freshness::Fresh || actual.fingerprint != source.fingerprint {
+                return Err(Error::SourceConflict(
+                    "draft activation requires current goal, rule, plan and dependency sources"
+                        .into(),
+                ));
+            }
+        }
+    }
     if !patch
         .work_action
         .as_ref()
@@ -56,6 +71,7 @@ pub(crate) fn verify_required_sources(
                 source_config: dependency.source.config.clone(),
                 intent: "Verify the current required dependency source".into(),
                 changes: serde_json::json!({"next_action":"verification only"}),
+                host_edit: None,
                 work_action: None,
             };
             verify_mutation_source(root, &dependency.source, &probe)?;
@@ -96,6 +112,7 @@ pub fn perform_work_action(
         source_config: target.source.config.clone(),
         intent: request.input.reason.clone(),
         changes,
+        host_edit: None,
         work_action: Some(binding),
     };
     verify_mutation_source(&root, &target.source, &patch)?;
