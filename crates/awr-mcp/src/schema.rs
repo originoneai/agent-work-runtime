@@ -1,7 +1,7 @@
 use rmcp::model::{Tool, ToolAnnotations};
 use serde_json::{Value, json};
 
-pub const TOOL_NAMES: [&str; 8] = [
+pub const TOOL_NAMES: [&str; 15] = [
     "awr_project_status",
     "awr_work_ready",
     "awr_work_get",
@@ -10,6 +10,13 @@ pub const TOOL_NAMES: [&str; 8] = [
     "awr_event_append",
     "awr_evidence_record",
     "awr_search",
+    "awr_session_start",
+    "awr_session_get",
+    "awr_session_list",
+    "awr_session_checkpoint",
+    "awr_session_end",
+    "awr_session_resume",
+    "awr_session_claim",
 ];
 
 fn object(properties: Value, required: &[&str]) -> Value {
@@ -68,7 +75,7 @@ pub fn tools() -> Vec<Tool> {
         }),
         &["version", "source_sha", "acceptance"],
     );
-    vec![
+    let mut catalog = vec![
         tool(
             TOOL_NAMES[0],
             "Read project progress, organization gaps, ordered repair actions and business readiness. Optional source_sha verifies completion reports. Never refresh persistent state; after source edits run awr source reindex before rechecking.",
@@ -171,6 +178,124 @@ pub fn tools() -> Vec<Tool> {
                 &[],
             ),
             true,
+            false,
+        ),
+    ];
+    catalog.extend(lifecycle_tools());
+    for entry in &mut catalog {
+        if matches!(
+            entry.name.as_ref(),
+            "awr_context_compile" | "awr_work_transition" | "awr_event_append"
+        ) {
+            let schema = std::sync::Arc::make_mut(&mut entry.input_schema);
+            schema["properties"]
+                .as_object_mut()
+                .unwrap()
+                .insert("conversation".into(), optional(text()));
+            if entry.name == "awr_work_transition" {
+                schema["required"]
+                    .as_array_mut()
+                    .unwrap()
+                    .retain(|v| v != "session");
+                schema.insert(
+                    "anyOf".into(),
+                    json!([{"required":["session"]},{"required":["conversation"]}]),
+                );
+            }
+        }
+    }
+    catalog
+}
+
+fn lifecycle_tools() -> Vec<Tool> {
+    let selector = |properties: Value, required: &[&str]| {
+        let mut value = object(properties, required);
+        value["properties"]["session"] = optional(text());
+        value["properties"]["conversation"] = optional(text());
+        value["anyOf"] = json!([{"required":["session"]},{"required":["conversation"]}]);
+        value
+    };
+    let ttl = optional(json!({"type":"integer","minimum":1}));
+    vec![
+        tool(
+            "awr_session_start",
+            "Start and optionally claim work, atomically binding this client's stable host conversation. Existing identical bindings are returned without creating another session; inspect claims and current status.",
+            object(
+                json!({"work":text(),"conversation":text(),"agent":text(),"provider":text(),"model":text(),"expected_revision":revision(),"claim":{"type":"boolean","default":false},"ttl_ms":ttl,"branch":branch()}),
+                &[
+                    "work",
+                    "conversation",
+                    "agent",
+                    "provider",
+                    "model",
+                    "expected_revision",
+                ],
+            ),
+            false,
+            false,
+        ),
+        tool(
+            "awr_session_get",
+            "Read the selected session, conversation binding, claims, checkpoints, interrupted saves and successor. Runtime-only read works even when sources are stale.",
+            selector(json!({}), &[]),
+            true,
+            false,
+        ),
+        tool(
+            "awr_session_list",
+            "List this client's persistent sessions newest first. Use next_before_revision to read older entries; transport connections are not work sessions.",
+            object(
+                json!({"limit":limit(),"before_revision":optional(revision())}),
+                &[],
+            ),
+            true,
+            false,
+        ),
+        tool(
+            "awr_session_checkpoint",
+            "Save the caller's actual digest, next action, open loops and last consumed context hash through the existing checkpoint domain. Never invent a context hash.",
+            selector(
+                json!({"expected_revision":revision(),"context_hash":text(),"digest":text(),"next_action":text(),"open_loops":strings(),"changed_entities":strings()}),
+                &["expected_revision", "context_hash", "digest", "next_action"],
+            ),
+            false,
+            false,
+        ),
+        tool(
+            "awr_session_end",
+            "Explicitly close a work session and release its claims. A transport disconnect does not perform this action. Available with stale sources.",
+            selector(
+                json!({"expected_revision":revision(),"outcome":{"type":"string","enum":["ended","interrupted","incomplete"]}}),
+                &["expected_revision", "outcome"],
+            ),
+            false,
+            false,
+        ),
+        tool(
+            "awr_session_resume",
+            "Explicitly resume one predecessor in a new session and bind the target conversation. Refresh and compile current context, inherit the checkpoint and transfer/acquire claims through the existing resume domain.",
+            object(
+                json!({"session":text(),"conversation":text(),"agent":text(),"provider":text(),"model":text(),"expected_revision":revision(),"claim":{"type":"string","enum":["inherit","acquire","none"],"default":"inherit"},"ttl_ms":ttl,"budget":{"type":["integer","null"],"minimum":1,"maximum":100000},"paths":optional(strings()),"tags":optional(strings()),"goals":strings(),"source_sha":optional(text())}),
+                &[
+                    "session",
+                    "conversation",
+                    "agent",
+                    "provider",
+                    "model",
+                    "expected_revision",
+                ],
+            ),
+            false,
+            false,
+        ),
+        tool(
+            "awr_session_claim",
+            "Acquire a work claim with optional TTL, or release an explicitly identified claim owned by the session.",
+            selector(
+                json!({"action":{"type":"string","enum":["acquire","release"]},"expected_revision":revision(),"claim":optional(text()),"ttl_ms":ttl}),
+                &["action", "expected_revision"],
+            ),
+            false,
             false,
         ),
     ]

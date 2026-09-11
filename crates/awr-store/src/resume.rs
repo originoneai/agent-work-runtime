@@ -118,6 +118,25 @@ impl Store {
         expected: Revision,
         draft: SessionResumeDraft,
     ) -> Result<(SessionResumed, Event)> {
+        self.resume_session_inner(project, expected, draft, None)
+    }
+    pub fn resume_bound_session(
+        &mut self,
+        project: Id,
+        expected: Revision,
+        draft: SessionResumeDraft,
+        binding: McpSessionBinding,
+    ) -> Result<(SessionResumed, Event)> {
+        binding.validate()?;
+        self.resume_session_inner(project, expected, draft, Some(binding))
+    }
+    fn resume_session_inner(
+        &mut self,
+        project: Id,
+        expected: Revision,
+        draft: SessionResumeDraft,
+        binding: Option<McpSessionBinding>,
+    ) -> Result<(SessionResumed, Event)> {
         if [&draft.agent_id, &draft.provider, &draft.model]
             .iter()
             .any(|s| s.trim().is_empty())
@@ -135,6 +154,16 @@ impl Store {
         expires_at(now_millis()?, draft.claim_ttl_ms)?;
         self.runtime_transaction_with_event(project,expected,EventDraft::new("session.resumed","Resumed work in a new session; compile current execution context"),|tx,next,event| {
             let from=session_at(tx,project,draft.from_session_id)?;
+            let inherited_binding=crate::mcp::session_binding(tx,project,from.id)?;
+            let binding=binding.or(inherited_binding.clone());
+            if let Some(binding)=&binding {
+                if inherited_binding.as_ref().is_some_and(|old|old.client!=binding.client) {
+                    return Err(Error::RuleViolation("MCP session belongs to another client".into()));
+                }
+                if crate::mcp::binding_session(tx,project,binding)?.is_some_and(|session|session.id!=from.id) {
+                    return Err(Error::SourceConflict("target conversation belongs to another session".into()));
+                }
+            }
             if !["active","incomplete","interrupted","ended"].contains(&from.status.as_str()) {return Err(Error::InvalidTransition(format!("session {} is {}",from.id,from.status)));}
             if let Some(id)=successor_id(tx,project,from.id)? {return Err(Error::InvalidTransition(format!("session {} already resumed as {id}; inspect that successor",from.id)));}
             let branch=tx.query_row("SELECT current_branch_id FROM projects WHERE id=?1",[project.to_string()],|r|optional_id(r,0)).map_err(db_error)?;
@@ -168,6 +197,7 @@ impl Store {
             event.session_id=Some(session.id);event.work_item_id=Some(work_id);event.branch_id=branch;event.importance="high".into();
             let expired_claim_ids=event.payload.get("expired_claim_ids").cloned().unwrap_or_else(||serde_json::json!([]));
             event.payload=serde_json::json!({"from_session_id":from.id,"to_session_id":session.id,"checkpoint_id":checkpoint.as_ref().map(|c|c.id),"recovery_after_revision":recovery_after_revision,"prepared_context_hash":draft.prepared_context_hash,"prepared_project_revision":expected,"claim_mode":draft.claim,"claim_id":claim.as_ref().map(|c|c.id),"closed_claim_ids":closed_claim_ids,"expired_claim_ids":expired_claim_ids,"context_requires_refresh":true});
+            if let Some(binding)=binding { event.payload["mcp_binding"]=serde_json::to_value(binding)?; }
             insert_event(tx,&Event{id:Id::new(),project_id:project,session_id:Some(from.id),work_item_id:Some(work_id),branch_id:branch,event_type:"session.resumed_from".into(),importance:"high".into(),summary:"Work continued in a successor session".into(),payload:event.payload.clone(),project_revision:next,created_at:at})?;
             if checkpoint.is_some() {insert_event(tx,&Event{id:Id::new(),project_id:project,session_id:Some(session.id),work_item_id:Some(work_id),branch_id:branch,event_type:"session.handoff_received".into(),importance:"high".into(),summary:"Inherited checkpoint during session resume".into(),payload:event.payload.clone(),project_revision:next,created_at:at})?;}
             Ok(SessionResumed {from_session:session_at(tx,project,from.id)?,session,checkpoint,claim,closed_claim_ids})

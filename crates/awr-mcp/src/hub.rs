@@ -92,19 +92,20 @@ impl ProjectService {
         &self,
         name: &str,
         args: rmcp::model::JsonObject,
+        principal: Option<&str>,
     ) -> Result<rmcp::model::CallToolResult> {
         if operations::is_read_only(name) {
             let _guard = self.operation.read().map_err(|_| {
                 Error::Storage("MCP project operation lock is poisoned; restart the server".into())
             })?;
             self.validate()?;
-            operations::call(&self.root, name, args)
+            operations::call_as(&self.root, name, args, principal)
         } else {
             let _guard = self.operation.write().map_err(|_| {
                 Error::Storage("MCP project operation lock is poisoned; restart the server".into())
             })?;
             self.validate()?;
-            operations::call(&self.root, name, args)
+            operations::call_as(&self.root, name, args, principal)
         }
     }
 }

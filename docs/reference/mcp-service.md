@@ -71,3 +71,38 @@ projects have independent operation locks. A stale write returns a conflict;
 read the current state and reconsider the intended change before retrying. An
 interrupted write may already have committed; never infer failure from a closed
 HTTP response stream.
+
+## Work session lifecycle
+
+The lifecycle tools are available over HTTP and stdio. HTTP binds the authenticated
+client identity; stdio uses the local `stdio` identity. Supply a stable `conversation`
+identifier from the host, not an HTTP connection identifier. The same conversation
+string in another project or authenticated client has a separate binding.
+
+| Tool | Purpose |
+| --- | --- |
+| `awr_session_start` | Start a work-bound session and optionally claim its work; bind the conversation atomically. |
+| `awr_session_get` | Inspect binding, session, claims, checkpoint, interrupted saves and successor. |
+| `awr_session_list` | Page through this client's session history with `next_before_revision`. |
+| `awr_session_checkpoint` | Persist the actual consumed context hash, digest, next action and open loops. |
+| `awr_session_claim` | Acquire or release the selected session's claim. |
+| `awr_session_end` | Explicitly end/interupt a session and release its claims. |
+| `awr_session_resume` | Create a successor with fresh context and inherited checkpoint/claims. |
+
+Start with a current project revision and explicit `work`, `conversation`, `agent`,
+`provider`, `model` and optional `claim: true`. An existing matching binding is
+returned with `binding_reused: true`; this does not reacquire a claim, change its
+TTL or reactivate a closed session. Inspect its current status and claims. Reusing
+a conversation for different work or identity is rejected.
+
+Session inspection, context compilation, checkpoints, claims, work transitions
+and event appends accept a conversation selector. If both `session` and
+`conversation` are provided, they must agree. Explicit resume requires the
+predecessor `session` and target `conversation` (which may stay the same). Shared
+context calls without a session must explicitly set `work` and `detached: true`.
+The service never guesses from another client's active conversation.
+
+Resume follows the existing domain rules, including current work-branch selection
+and context completeness. A returned `isError` may include a committed successor
+whose final context needs attention; inspect that successor before trying again.
+Session reads and cleanup remain available when source files are unavailable.

@@ -156,14 +156,14 @@ fn domain_fields(kind: &str, payload: &Value) -> Result<()> {
             | "execution.finished" => "execution",
             "execution.external_reported" => "execution_id report",
             "session.started" => {
-                "agent_id provider model start_project_revision claim_id expired_claim_ids expires_at"
+                "agent_id provider model start_project_revision claim_id expired_claim_ids expires_at mcp_binding"
             }
             "work.claimed" => "claim_id expired_claim_ids agent_id expires_at",
             "session.resumed" | "session.resumed_from" => {
-                "from_session_id to_session_id checkpoint_id recovery_after_revision prepared_context_hash prepared_project_revision claim_mode claim_id closed_claim_ids expired_claim_ids context_requires_refresh"
+                "from_session_id to_session_id checkpoint_id recovery_after_revision prepared_context_hash prepared_project_revision claim_mode claim_id closed_claim_ids expired_claim_ids context_requires_refresh mcp_binding"
             }
             "session.handoff_received" => {
-                "from_session_id to_session_id checkpoint_id recovery_after_revision prepared_context_hash prepared_project_revision claim_mode claim_id closed_claim_ids expired_claim_ids context_requires_refresh transferred_claim_id next_action open_loops"
+                "from_session_id to_session_id checkpoint_id recovery_after_revision prepared_context_hash prepared_project_revision claim_mode claim_id closed_claim_ids expired_claim_ids context_requires_refresh transferred_claim_id next_action open_loops mcp_binding"
             }
             "work.handoff" => {
                 "from_session_id to_session_id checkpoint_id closed_claim_ids transferred_claim_id next_action open_loops context_requires_refresh"
@@ -264,6 +264,8 @@ fn domain_fields(kind: &str, payload: &Value) -> Result<()> {
             continue;
         }
         let valid = match key.as_str() {
+            "mcp_binding" => serde_json::from_value::<crate::McpSessionBinding>(value.clone())
+                .is_ok_and(|binding| binding.validate().is_ok()),
             "host_edit" => serde_json::from_value::<crate::HostEditBinding>(value.clone())
                 .is_ok_and(|h| {
                     h.validate().is_ok()

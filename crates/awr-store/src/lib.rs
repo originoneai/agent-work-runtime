@@ -10,6 +10,7 @@ mod events;
 mod evidence;
 mod execution;
 mod handoff;
+mod mcp;
 mod mutation;
 mod mutation_apply;
 mod object_catalog;

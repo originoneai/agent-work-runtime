@@ -227,19 +227,19 @@ async fn project_organization_guides_repairs_and_preserves_readonly_mcp_state() 
 }
 
 #[tokio::test]
-async fn stdio_discovers_exactly_eight_tools_and_survives_protocol_and_argument_errors() {
+async fn stdio_discovers_tools_and_survives_protocol_and_argument_errors() {
     let f = Fixture::new();
     let before = f.logical_state();
     let client = f.client().await;
     let tools = client.list_all_tools().await.unwrap();
-    assert_eq!(tools.len(), 8);
+    assert_eq!(tools.len(), awr_mcp::TOOL_NAMES.len());
     let names = tools
         .iter()
         .map(|t| t.name.as_ref())
         .collect::<std::collections::BTreeSet<_>>();
     assert_eq!(names, awr_mcp::TOOL_NAMES.into_iter().collect());
     assert!(
-        serde_json::to_vec(&tools).unwrap().len() < 16_384,
+        serde_json::to_vec(&tools).unwrap().len() < 32_768,
         "catalog must stay compact"
     );
     for tool in &tools {
@@ -247,6 +247,11 @@ async fn stdio_discovers_exactly_eight_tools_and_survives_protocol_and_argument_
             "awr_work_transition",
             "awr_event_append",
             "awr_evidence_record",
+            "awr_session_start",
+            "awr_session_checkpoint",
+            "awr_session_end",
+            "awr_session_resume",
+            "awr_session_claim",
         ]
         .contains(&tool.name.as_ref());
         assert_eq!(
@@ -765,7 +770,10 @@ async fn legacy_stdio_negotiation_keeps_protocol_stdout_and_clean_eof() {
                     .unwrap();
                 input.flush().await.unwrap();
             }
-            2 => assert_eq!(reply["result"]["tools"].as_array().unwrap().len(), 8),
+            2 => assert_eq!(
+                reply["result"]["tools"].as_array().unwrap().len(),
+                awr_mcp::TOOL_NAMES.len()
+            ),
             _ => assert_eq!(reply["result"]["structuredContent"]["read_only"], true),
         }
     }

@@ -263,6 +263,25 @@ impl Store {
         expected: Revision,
         draft: SessionDraft,
     ) -> Result<(SessionStarted, Event)> {
+        self.start_session_inner(project, expected, draft, None)
+    }
+    pub fn start_bound_session(
+        &mut self,
+        project: Id,
+        expected: Revision,
+        draft: SessionDraft,
+        binding: McpSessionBinding,
+    ) -> Result<(SessionStarted, Event)> {
+        binding.validate()?;
+        self.start_session_inner(project, expected, draft, Some(binding))
+    }
+    fn start_session_inner(
+        &mut self,
+        project: Id,
+        expected: Revision,
+        draft: SessionDraft,
+        binding: Option<McpSessionBinding>,
+    ) -> Result<(SessionStarted, Event)> {
         if [&draft.agent_id, &draft.provider, &draft.model]
             .iter()
             .any(|s| s.trim().is_empty())
@@ -284,6 +303,11 @@ impl Store {
         event.session_id = Some(id);
         event.branch_id = draft.branch_id;
         self.runtime_transaction_with_event(project,expected,event,|tx,_next,event| {
+            if let Some(binding)=&binding {
+                if crate::mcp::binding_session(tx,project,binding)?.is_some() {
+                    return Err(Error::SourceConflict("MCP conversation already has a session; inspect or resume it".into()));
+                }
+            }
             require_branch(tx,project,draft.branch_id)?;
             let work=draft.work_item_key.as_deref().map(|key|projection::<WorkItem>(tx,project,EntityKind::WorkItem,key)).transpose()?;
             if work.as_ref().is_some_and(|w|w.source.freshness!=Freshness::Fresh) {return Err(Error::SourceStale("session work source is not fresh".into()));}
@@ -291,6 +315,7 @@ impl Store {
             tx.execute("INSERT INTO sessions(id,project_id,work_item_id,branch_id,agent_id,provider,model,status,started_at,start_project_revision,revision)
                 VALUES(?1,?2,?3,?4,?5,?6,?7,'active',?8,?9,1)",params![id.to_string(),project.to_string(),session.work_item_id.map(|id|id.to_string()),session.branch_id.map(|id|id.to_string()),session.agent_id,session.provider,session.model,session.started_at,sqlite_revision(expected)?]).map_err(db_error)?;
             event.work_item_id=session.work_item_id;event.payload=serde_json::json!({"agent_id":session.agent_id,"provider":session.provider,"model":session.model,"start_project_revision":expected});
+            if let Some(binding)=binding { event.payload["mcp_binding"]=serde_json::to_value(binding)?; }
             let claim=if draft.claim {Some(acquire(tx,&session,draft.claim_ttl_ms,expected,event)?)} else {None};
             Ok(SessionStarted {session,claim})
         })

@@ -12,6 +12,7 @@ use tokio::{
 
 const WRITER: &str = "synthetic-writer-credential-for-http-fixtures";
 const READER: &str = "synthetic-reader-credential-for-http-fixtures";
+const COLLEAGUE: &str = "synthetic-colleague-credential-for-http-fixtures";
 
 struct ProjectFixture {
     root: PathBuf,
@@ -23,7 +24,7 @@ impl ProjectFixture {
         fs::create_dir_all(path.join(".awr")).unwrap();
         let root = path.canonicalize().unwrap();
         fs::write(root.join(".awr/project.toml"), "[project]\nname='Shared MCP fixture'\ncontext_profile='minimal'\n[[sources]]\ndomain='ledger'\nrole='primary'\npath='work.yaml'\nadapter='yaml-ledger-v1'\n").unwrap();
-        fs::write(root.join("work.yaml"), format!("work_items:\n- id: W\n  title: {title}\n  status: ready\n  next_action: Draft the guide\n  acceptance: [Deliver the reviewed guide]\n- id: NEXT\n  title: Prepare follow-up\n  status: ready\n  next_action: Draft the follow-up\n  acceptance: [Deliver the follow-up]\n")).unwrap();
+        fs::write(root.join("work.yaml"), format!("goals:\n- id: GUIDE\n  title: Deliver useful team guidance\n  status: active\n  summary: Review and deliver the team guide and follow-up\n  success_criteria: [The reviewed guidance is available]\nwork_items:\n- id: W\n  title: {title}\n  status: ready\n  goal: GUIDE\n  next_action: Draft the guide\n  acceptance: [Deliver the reviewed guide]\n- id: NEXT\n  title: Prepare follow-up\n  status: ready\n  goal: GUIDE\n  next_action: Draft the follow-up\n  acceptance: [Deliver the follow-up]\n")).unwrap();
         let mut store = Store::open(&root.join(".awr/state.db")).unwrap();
         let report =
             index_project(&mut store, &root, &Manifest::load(&root).unwrap(), false).unwrap();
@@ -60,6 +61,7 @@ impl Server {
             .arg("127.0.0.1:0")
             .env("AWR_FIXTURE_WRITER", WRITER)
             .env("AWR_FIXTURE_READER", READER)
+            .env("AWR_FIXTURE_COLLEAGUE", COLLEAGUE)
             .stdout(Stdio::null())
             .stderr(Stdio::piped())
             .kill_on_drop(true)
@@ -110,8 +112,145 @@ fn error(result: Value, code: &str) {
 }
 fn registry(a: &ProjectFixture, b: &ProjectFixture) -> PathBuf {
     let path = a.root.join("service.toml");
-    fs::write(&path, format!("version=1\n[[projects]]\nkey='alpha'\nroot={}\nproject_id='{}'\n[[projects]]\nkey='beta'\nroot={}\nproject_id='{}'\n[[clients]]\nid='writer'\ntoken_env='AWR_FIXTURE_WRITER'\nwrite=['alpha','beta']\n[[clients]]\nid='reader'\ntoken_env='AWR_FIXTURE_READER'\nread=['alpha']\n", json!(a.root), a.id, json!(b.root), b.id)).unwrap();
+    fs::write(&path, format!("version=1\n[[projects]]\nkey='alpha'\nroot={}\nproject_id='{}'\n[[projects]]\nkey='beta'\nroot={}\nproject_id='{}'\n[[clients]]\nid='writer'\ntoken_env='AWR_FIXTURE_WRITER'\nwrite=['alpha','beta']\n[[clients]]\nid='reader'\ntoken_env='AWR_FIXTURE_READER'\nread=['alpha']\n[[clients]]\nid='colleague'\ntoken_env='AWR_FIXTURE_COLLEAGUE'\nwrite=['alpha']\n", json!(a.root), a.id, json!(b.root), b.id)).unwrap();
     path
+}
+
+fn start_args(
+    project: &str,
+    work: &str,
+    conversation: &str,
+    revision: Revision,
+    claim: bool,
+) -> Value {
+    json!({"project":project,"work":work,"conversation":conversation,"agent":"guide-editor","provider":"synthetic","model":"fixture","expected_revision":revision,"claim":claim})
+}
+
+#[tokio::test]
+async fn lifecycle_binds_conversations_and_preserves_checkpoints_across_connections_and_restart() {
+    let a = ProjectFixture::new("Write the team guide");
+    let b = ProjectFixture::new("Write the other guide");
+    let config = registry(&a, &b);
+    let mut server = Server::start(&config).await;
+    let args = start_args("alpha", "W", "guide-discussion", a.revision(), true);
+    let started = ok(server.call(WRITER, "awr_session_start", args.clone()).await);
+    let sid = started["session"]["id"].clone();
+    let revision = a.revision();
+    let repeat = ok(server.call(WRITER, "awr_session_start", args).await);
+    assert_eq!(repeat["session"]["id"], sid);
+    assert_eq!(repeat["binding_reused"], true);
+    assert_eq!(a.revision(), revision);
+    error(
+        server
+            .call(
+                WRITER,
+                "awr_session_start",
+                start_args("alpha", "NEXT", "guide-discussion", a.revision(), false),
+            )
+            .await,
+        "SourceConflict",
+    );
+    let other = ok(server
+        .call(
+            WRITER,
+            "awr_session_start",
+            start_args("alpha", "NEXT", "follow-up", a.revision(), true),
+        )
+        .await);
+    let beta = ok(server
+        .call(
+            WRITER,
+            "awr_session_start",
+            start_args("beta", "W", "guide-discussion", b.revision(), true),
+        )
+        .await);
+    assert_ne!(sid, beta["session"]["id"]);
+    let colleague = ok(server
+        .call(
+            COLLEAGUE,
+            "awr_session_start",
+            start_args("alpha", "W", "guide-discussion", a.revision(), false),
+        )
+        .await);
+    assert_ne!(sid, colleague["session"]["id"]);
+    error(server.call(COLLEAGUE,"awr_session_end",json!({"project":"alpha","session":sid,"outcome":"ended","expected_revision":a.revision()})).await,"RuleViolation");
+    error(server.call(WRITER,"awr_session_get",json!({"project":"alpha","session":other["session"]["id"],"conversation":"guide-discussion"})).await,"RuleViolation");
+    let context = ok(server
+        .call(
+            WRITER,
+            "awr_context_compile",
+            json!({"project":"alpha","conversation":"guide-discussion"}),
+        )
+        .await);
+    let checkpoint=ok(server.call(WRITER,"awr_session_checkpoint",json!({"project":"alpha","conversation":"guide-discussion","expected_revision":a.revision(),"context_hash":context["work_context"]["context_hash"],"digest":"The introduction is drafted; review examples next.","next_action":"Review the examples","open_loops":["Confirm the example order"]})).await);
+    let cp = checkpoint["checkpoint"]["id"].clone();
+    let listed = ok(server
+        .call(
+            WRITER,
+            "awr_session_list",
+            json!({"project":"alpha","limit":1}),
+        )
+        .await);
+    assert_eq!(listed["sessions"].as_array().unwrap().len(), 1);
+    assert_eq!(listed["sessions"][0]["id"], other["session"]["id"]);
+    let older = ok(server
+        .call(
+            WRITER,
+            "awr_session_list",
+            json!({"project":"alpha","limit":1,"before_revision":listed["next_before_revision"]}),
+        )
+        .await);
+    assert_eq!(older["sessions"][0]["id"], sid);
+    server.stop().await;
+    let mut server = Server::start(&config).await;
+    let restored = ok(server
+        .call(
+            WRITER,
+            "awr_session_get",
+            json!({"project":"alpha","conversation":"guide-discussion"}),
+        )
+        .await);
+    assert_eq!(restored["session"]["id"], sid);
+    assert_eq!(restored["session"]["status"], "active");
+    assert_eq!(restored["checkpoint"]["id"], cp);
+    let resumed=ok(server.call(WRITER,"awr_session_resume",json!({"project":"alpha","session":sid,"conversation":"guide-discussion","agent":"guide-editor","provider":"synthetic","model":"fixture","expected_revision":a.revision()})).await);
+    assert_eq!(resumed["checkpoint_id"], cp);
+    assert_ne!(resumed["resumed"]["session"]["id"], sid);
+    assert!(resumed["resumed"]["claim"].is_object());
+    let current = ok(server
+        .call(
+            WRITER,
+            "awr_session_get",
+            json!({"project":"alpha","conversation":"guide-discussion"}),
+        )
+        .await);
+    assert_eq!(
+        current["session"]["id"],
+        resumed["resumed"]["session"]["id"]
+    );
+    assert_eq!(current["inherited_checkpoint"]["id"], cp);
+    // Ending one session releases only its claims; another conversation stays active.
+    ok(server.call(WRITER,"awr_session_end",json!({"project":"alpha","conversation":"guide-discussion","expected_revision":a.revision(),"outcome":"ended"})).await);
+    let other = ok(server
+        .call(
+            WRITER,
+            "awr_session_get",
+            json!({"project":"alpha","conversation":"follow-up"}),
+        )
+        .await);
+    assert_eq!(other["session"]["status"], "active");
+    assert_eq!(other["claims"][0]["status"], "active");
+    // Runtime inspection/cleanup survive unavailable source files.
+    fs::remove_file(a.root.join("work.yaml")).unwrap();
+    ok(server
+        .call(
+            WRITER,
+            "awr_session_get",
+            json!({"project":"alpha","conversation":"follow-up"}),
+        )
+        .await);
+    ok(server.call(WRITER,"awr_session_end",json!({"project":"alpha","conversation":"follow-up","expected_revision":a.revision(),"outcome":"interrupted"})).await);
+    server.stop().await;
 }
 
 #[tokio::test]

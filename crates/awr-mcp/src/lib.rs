@@ -2,6 +2,7 @@
 pub use awr_core::{Error, Result};
 mod arguments;
 pub mod hub;
+mod lifecycle;
 mod operations;
 mod project;
 mod schema;
@@ -47,7 +48,7 @@ impl ServerHandler for AwrServer {
     fn get_info(&self) -> ServerInfo {
         ServerInfo::new(ServerCapabilities::builder().enable_tools().build())
             .with_server_info(Implementation::new("awr-mcp", env!("CARGO_PKG_VERSION")))
-            .with_instructions("AWR is source-first. Start with awr_project_status and follow organization.actions; an empty ledger or an intake draft is not business readiness. AWR diagnoses structure; the Coding Agent organizes source-backed goals and work and keeps uncertain intent explicit. Read tools never persist changes. On SourceStale, run awr source reindex explicitly and inspect again. Use awr session start --claim before source transitions. Mutations require a reviewed expected_revision; completion also requires bound evidence. Command/report metadata is never executed. Inspect durable receipts before retrying an interrupted mutation.")
+            .with_instructions("AWR is source-first. When awr_projects_list is available, discover registered keys and pass project on every project call. Start with awr_project_status and follow organization.actions; an empty ledger or intake draft is not business readiness. Read tools never persist changes. On SourceStale, explicitly reindex sources and inspect again. Use awr_session_start with a stable host conversation and claim before source transitions. Select your session or conversation on subsequent calls; HTTP connections never select or end work sessions. Mutations require a reviewed expected_revision; completion also requires bound evidence. Command/report metadata is never executed. Inspect durable receipts before retrying an interrupted mutation.")
     }
     async fn list_tools(
         &self,
@@ -87,6 +88,7 @@ impl ServerHandler for AwrServer {
             .cloned();
         let selected = if let Some(hub) = &self.hub {
             let principal = principal
+                .as_ref()
                 .ok_or_else(|| ErrorData::invalid_params("authenticated client required", None))?;
             if request.name == "awr_projects_list" {
                 if !args.is_empty() {
@@ -126,7 +128,11 @@ impl ServerHandler for AwrServer {
         })?;
         let result = tokio::task::spawn_blocking(move || {
             let _permit = permit;
-            project.call(&request.name, args)
+            project.call(
+                &request.name,
+                args,
+                principal.as_ref().map(|p| p.id.as_str()),
+            )
         })
         .await
         .map_err(|e| ErrorData::internal_error(format!("MCP domain worker failed: {e}"), None))?;

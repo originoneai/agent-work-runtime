@@ -37,7 +37,7 @@ pub use mutation::{
     create_proposal, review_proposal,
 };
 pub use organization::{OrganizationReport, OrganizationState, inspect_organization};
-pub use resume::{ResumeReport, ResumeRequest, resume_session};
+pub use resume::{ResumeReport, ResumeRequest, resume_bound_session, resume_session};
 pub use work_action::{WorkActionRequest, perform_work_action};
 pub use work_create::{
     CreateWorkInput, CreationReport, create_work, creation_status, recover_creation,

@@ -1,6 +1,34 @@
 use crate::{Checkpoint, Claim, Id, Session};
 use serde::{Deserialize, Serialize};
 
+/// Stable host conversation identity, independent of any MCP transport connection.
+#[derive(Debug, Clone, Serialize, Deserialize, PartialEq, Eq)]
+#[serde(deny_unknown_fields)]
+pub struct McpSessionBinding {
+    pub client: String,
+    pub conversation: String,
+}
+impl McpSessionBinding {
+    pub fn validate(&self) -> crate::Result<()> {
+        crate::ensure_public_data(self)?;
+        if self.client.trim().is_empty()
+            || self.client.len() > 128
+            || self.conversation.trim().is_empty()
+            || self.conversation.len() > 512
+            || self
+                .client
+                .chars()
+                .chain(self.conversation.chars())
+                .any(char::is_control)
+        {
+            return Err(crate::Error::InvalidInput(
+                "invalid MCP client/conversation identity".into(),
+            ));
+        }
+        Ok(())
+    }
+}
+
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct CheckpointDraft {
     pub context_hash: String,

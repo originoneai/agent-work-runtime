@@ -14,7 +14,7 @@ use std::{
     path::Path,
 };
 
-fn parse<T: DeserializeOwned>(args: Value) -> Result<T> {
+pub(crate) fn parse<T: DeserializeOwned>(args: Value) -> Result<T> {
     awr_core::ensure_public_value(&args)?;
     serde_json::from_value(args)
         .map_err(|_| Error::InvalidInput("tool arguments do not match the tool schema".into()))
@@ -61,7 +61,32 @@ pub(crate) fn is_read_only(name: &str) -> bool {
             | "awr_context_compile"
             | "awr_search"
             | "awr_projects_list"
+            | "awr_session_get"
+            | "awr_session_list"
     )
+}
+
+pub(crate) fn call_as(
+    root: &Path,
+    name: &str,
+    mut args: JsonObject,
+    principal: Option<&str>,
+) -> Result<CallToolResult> {
+    if serde_json::to_vec(&args)?.len() > 1024 * 1024 {
+        return Err(Error::InvalidInput("tool arguments exceed 1 MiB".into()));
+    }
+    ensure_public_value(&Value::Object(args.clone()))?;
+    crate::lifecycle::authorize(root, name, &mut args, principal)?;
+    if crate::lifecycle::NAMES.contains(&name) {
+        crate::lifecycle::call(
+            root,
+            name,
+            Value::Object(args),
+            principal.unwrap_or("stdio"),
+        )
+    } else {
+        call(root, name, args)
+    }
 }
 
 pub(crate) fn call(root: &Path, name: &str, args: JsonObject) -> Result<CallToolResult> {
