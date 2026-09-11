@@ -563,7 +563,11 @@ impl Store {
             .pragma_update(None, "journal_mode", "DELETE")
             .map_err(db_error)?;
         drop(target);
-        std::fs::File::open(path)?.sync_all()?;
+        // Windows FlushFileBuffers requires a handle opened for writing.
+        std::fs::OpenOptions::new()
+            .write(true)
+            .open(path)?
+            .sync_all()?;
         Ok(())
     }
 }

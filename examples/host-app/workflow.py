@@ -15,7 +15,8 @@ from host import Host, CommandFailed, digest, protected_file
 def atomic_json(path, value):
     temporary = protected_file(path.parent, '.tmp', json.dumps(value, ensure_ascii=False, indent=2).encode())
     try:
-        with temporary.open('rb') as stream:
+        # Windows fsync requires a writable descriptor; do not truncate the payload.
+        with temporary.open('r+b') as stream:
             os.fsync(stream.fileno())
         os.replace(temporary, path)
         if os.name == 'posix':
