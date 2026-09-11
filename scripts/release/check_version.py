@@ -4,7 +4,7 @@ import json
 import os
 from pathlib import Path
 import tomllib
-from build_packages import ROOT, python_version
+from build_packages import ROOT, PLATFORMS, python_version
 
 
 def check():
@@ -17,7 +17,8 @@ def check():
     assert len(packages) == 7 and all(p["version"] == version for p in packages)
     npm = json.loads((ROOT / "packaging/npm/package.json").read_text())
     assert npm["version"] == version
-    assert len(npm["optionalDependencies"]) == 3 and set(npm["optionalDependencies"].values()) == {version}
+    assert set(npm["optionalDependencies"]) == {f"@originoneai/agent-work-runtime-{target}" for target in PLATFORMS}
+    assert set(npm["optionalDependencies"].values()) == {version}
     tag = "next" if "-" in version else "latest"
     assert npm["publishConfig"]["tag"] == tag
     print(json.dumps({"version": version, "python_version": normalized, "npm_tag": tag}))

@@ -15,9 +15,11 @@ import tomllib
 ROOT = Path(__file__).resolve().parents[2]
 TARGETS = {
     "Darwin-arm64": ("darwin-arm64", "aarch64-apple-darwin", "macosx_15_0_arm64", "darwin", "arm64"),
+    "Darwin-x86_64": ("darwin-x64", "x86_64-apple-darwin", "macosx_15_0_x86_64", "darwin", "x64"),
     "Linux-x86_64": ("linux-x64-gnu", "x86_64-unknown-linux-gnu", "linux_x86_64", "linux", "x64"),
     "Windows-AMD64": ("win32-x64", "x86_64-pc-windows-msvc", "win_amd64", "win32", "x64"),
 }
+PLATFORMS = {target[0] for target in TARGETS.values()}
 
 
 def run(args, *, cwd=ROOT, env=None):
@@ -86,7 +88,7 @@ def main():
     args = parser.parse_args()
     target_info = TARGETS.get(f"{platform.system()}-{platform.machine()}")
     if not target_info:
-        raise ValueError("native distribution build is supported only on macOS arm64, Linux x64 and Windows x64")
+        raise ValueError("native distribution build is supported only on macOS arm64/x64, Linux x64 and Windows x64")
     target, rust_target, wheel_platform, npm_os, npm_cpu = target_info
     source_sha = run(["git", "rev-parse", "HEAD"])
     if run(["git", "status", "--porcelain"]):
@@ -102,13 +104,20 @@ def main():
     env = os.environ.copy()
     if platform.system() == "Darwin":
         env["MACOSX_DEPLOYMENT_TARGET"] = "15.0"
-    run(["cargo", "build", "--locked", "--release", "-p", "awr-cli", "-p", "awr-mcp", "--target-dir", ROOT / ".local/dist-build"], env=env)
-    bin_dir = ROOT / ".local/dist-build/release"
+    run(["cargo", "build", "--locked", "--release", "-p", "awr-cli", "-p", "awr-mcp",
+         "--target", rust_target, "--target-dir", ROOT / ".local/dist-build"], env=env)
+    bin_dir = ROOT / ".local/dist-build" / rust_target / "release"
     suffix = ".exe" if npm_os == "win32" else ""
     binaries = [bin_dir / (name + suffix) for name in ("awr", "awr-mcp")]
     for binary in binaries:
         if version not in run([binary, "--version"]):
             raise ValueError(f"binary version mismatch: {binary.name}")
+    architectures = {}
+    if npm_os == "darwin":
+        for binary in binaries:
+            architectures[binary.name] = run(["lipo", "-archs", binary])
+            if architectures[binary.name] != platform.machine():
+                raise ValueError(f"Mach-O architecture mismatch: {binary.name}")
     notices, inventory = license_bundle(rust_target)
     if run(["git", "rev-parse", "HEAD"]) != source_sha or run(["git", "status", "--porcelain"]):
         raise ValueError("source tree changed during the native build")
@@ -119,6 +128,7 @@ def main():
         "source_tree_clean": not bool(run(["git", "status", "--porcelain"])),
         "rustc": run(["rustc", "--version"]),
         "binary_sha256": {p.name: digest(p) for p in binaries},
+        "binary_architectures": architectures,
         "dependency_notices": inventory,
     }
     primary = stage / "npm"

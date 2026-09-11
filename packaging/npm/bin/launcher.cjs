@@ -6,6 +6,7 @@ const path = require('node:path');
 exports.run = function run(command) {
   const targets = {
     'darwin-arm64': 'darwin-arm64',
+    'darwin-x64': 'darwin-x64',
     'linux-x64': 'linux-x64-gnu',
     'win32-x64': 'win32-x64',
   };

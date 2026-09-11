@@ -56,12 +56,12 @@ def main():
         env["MACOSX_DEPLOYMENT_TARGET"] = "15.0"
     target_dir = ROOT / ".local/host-dist-build"
     run(["cargo", "build", "--locked", "--release", "-p", "awr-cli", "-p", "awr-mcp",
-         "--target-dir", target_dir], env=env)
+         "--target", rust_target, "--target-dir", target_dir], env=env)
     suffix = ".exe" if npm_os == "win32" else ""
     versions = {}
     for name in ("awr", "awr-mcp"):
         dest = payload / "bin" / (name + suffix)
-        shutil.copy2(target_dir / "release" / dest.name, dest)
+        shutil.copy2(target_dir / rust_target / "release" / dest.name, dest)
         versions[name] = native(dest, "--version")
         if version not in versions[name]:
             raise ValueError("native payload version differs from committed source")

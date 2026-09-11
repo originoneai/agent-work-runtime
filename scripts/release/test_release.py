@@ -5,6 +5,7 @@ import hashlib
 import io
 import json
 from pathlib import Path
+import shutil
 import sys
 import tarfile
 import tempfile
@@ -32,7 +33,7 @@ class ReleaseChecks(unittest.TestCase):
         npm.mkdir()
         artifacts = {}
         tag = "next" if "-" in version else "latest"
-        for suffix in ["", "-darwin-arm64", "-linux-x64-gnu", "-win32-x64"]:
+        for suffix in ["", "-darwin-arm64", "-darwin-x64", "-linux-x64-gnu", "-win32-x64"]:
             path = npm / ("package" + suffix + ".tgz")
             metadata = json.dumps({"name": "@originoneai/agent-work-runtime" + suffix,
                                    "version": version, "publishConfig": {"tag": tag}}).encode()
@@ -46,28 +47,34 @@ class ReleaseChecks(unittest.TestCase):
         return manifest
 
     def test_publish_stable_latest_and_prerelease_next_with_wrapper_last(self):
-        for version, tag in [("0.2.0", "latest"), ("0.3.0-rc.1", "next")]:
+        for version, tag in [("0.3.1", "latest"), ("0.3.1-rc.1", "next")]:
             with self.subTest(version=version), tempfile.TemporaryDirectory() as tmp:
                 root = Path(tmp)
                 self.package_set(root, version)
                 with patch.object(sys, "argv", ["publish_npm.py", str(root)]), patch("publish_npm.subprocess.run") as run, redirect_stdout(io.StringIO()):
                     publish_npm.main()
                 commands = [call.args[0] for call in run.call_args_list]
-                self.assertEqual(len(commands), 4)
+                self.assertEqual(len(commands), 5)
                 self.assertTrue(all(c[c.index("--tag")+1] == tag for c in commands))
                 self.assertEqual(Path(commands[-1][2]).name, "package.tgz")
+                self.assertIn("package-darwin-x64.tgz", [Path(c[2]).name for c in commands[:-1]])
 
     def test_wrong_channel_and_tampered_archive_never_publish(self):
-        for fault in ["channel", "artifact"]:
+        for fault in ["channel", "artifact", "missing_intel", "missing_intel_platform"]:
             with self.subTest(fault=fault), tempfile.TemporaryDirectory() as tmp:
                 root = Path(tmp)
                 manifest = self.package_set(root, "0.2.0")
                 if fault == "channel":
                     manifest["channel"] = "next"
                     (root / "release-manifest.json").write_text(json.dumps(manifest))
-                else:
+                elif fault == "artifact":
                     with (root / "npm/package.tgz").open("ab") as stream:
                         stream.write(b"changed")
+                else:
+                    (root / "npm/package-darwin-x64.tgz").unlink()
+                    if fault == "missing_intel_platform":
+                        manifest["platforms"].remove("darwin-x64")
+                        (root / "release-manifest.json").write_text(json.dumps(manifest))
                 with patch.object(sys, "argv", ["publish_npm.py", str(root)]), patch("publish_npm.subprocess.run") as run:
                     with self.assertRaises(AssertionError):
                         publish_npm.main()
@@ -93,12 +100,19 @@ class ReleaseChecks(unittest.TestCase):
         return source
 
     def test_assembly_requires_matching_installation_and_source_receipts(self):
-        for fault in [None, "source", "installation", "bytes"]:
+        for fault in [None, "source", "installation", "bytes", "missing_intel", "intel_installation"]:
             with self.subTest(fault=fault), tempfile.TemporaryDirectory() as tmp:
                 root = Path(tmp)
                 source = self.assembled_inputs(root / "inputs")
                 platform = root / "inputs/darwin-arm64"
-                if fault == "bytes":
+                if fault == "missing_intel":
+                    shutil.rmtree(root / "inputs/darwin-x64")
+                elif fault == "intel_installation":
+                    path = root / "inputs/darwin-x64/installation-checks.json"
+                    data = json.loads(path.read_text())
+                    data["npm"]["version_and_help"] = False
+                    path.write_text(json.dumps(data))
+                elif fault == "bytes":
                     (platform / "publish/darwin-arm64.whl").write_bytes(b"different")
                 elif fault:
                     path = platform / ("manifest.json" if fault == "source" else "installation-checks.json")
@@ -117,7 +131,8 @@ class ReleaseChecks(unittest.TestCase):
                         assemble_release.main()
                         result = json.loads((root / "release/release-manifest.json").read_text())
                         self.assertEqual((result["version"], result["python_version"], result["channel"]), ("0.2.0", "0.2.0", "latest"))
-                        self.assertEqual(len(result["artifacts"]), 7)
+                        self.assertEqual(len(result["artifacts"]), 9)
+                        self.assertIn("darwin-x64", result["platforms"])
 
 
 if __name__ == "__main__":

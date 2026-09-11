@@ -1,10 +1,11 @@
 {
   "contract_id": "awr-native-platforms",
-  "version": "1.0.1",
+  "version": "1.1.0",
   "work_item": "AWR-QA-004",
   "rust_version": "1.93.1",
   "platforms": [
     {"id": "macos-arm64", "runner": "macos-15", "system": "Darwin", "machine": "arm64", "rust_host": "aarch64-apple-darwin"},
+    {"id": "macos-x64", "runner": "macos-15-intel", "system": "Darwin", "machine": "x86_64", "rust_host": "x86_64-apple-darwin"},
     {"id": "linux-x64", "runner": "ubuntu-24.04", "system": "Linux", "machine": "x86_64", "rust_host": "x86_64-unknown-linux-gnu"},
     {"id": "windows-x64", "runner": "windows-2025", "system": "Windows", "machine": "x86_64", "rust_host": "x86_64-pc-windows-msvc"}
   ],
@@ -30,5 +31,5 @@
   },
   "native_cli_conditions": ["unicode_space_path", "crlf_source_intake", "wal_schema_integrity", "persisted_session", "source_write_and_receipt", "stale_write_preserved", "updated_hard_rule", "outside_source_rejected", "closed_session_health"],
   "counting": "Each platform requires its own native execution of every gate on the recorded source commit. Report actual Rust counts per target; Unix-only tests omitted by cfg on Windows are not credited there. Repeated tests and fixture processes are not additional business scenarios. A workflow definition, cross compilation, or another platform's pass cannot supply a native result.",
-  "limitations": ["Only the three listed OS/architecture/toolchain combinations are covered. Other architectures, older OS releases and filesystem or network-share variants remain unverified.", "This work does not supply native agent-client activation, independent business review, E4, performance metrics or a release."]
+  "limitations": ["Only the four listed OS/architecture/toolchain combinations are covered. Other architectures, older OS releases and filesystem or network-share variants remain unverified.", "This work does not supply native agent-client activation, independent business review, E4, performance metrics or a release."]
 }
