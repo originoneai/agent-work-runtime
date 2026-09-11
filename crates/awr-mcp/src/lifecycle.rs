@@ -164,10 +164,12 @@ fn snapshot(root: &Path) -> Result<(Store, Project)> {
     Ok((store, project))
 }
 fn session_value(store: &Store, project: &Project, session: Id) -> Result<Value> {
+    let waits = store.mcp_waits(project.id, session)?;
     Ok(
         json!({"ok":true,"read_only":true,"freshness_basis":"runtime_database","source_refresh_performed":false,
         "project_revision":project.project_revision,"session":store.session(project.id,session)?,
         "binding":store.mcp_session_binding(project.id,session)?,"checkpoint":store.latest_checkpoint(project.id,session)?,
+        "continuity_state":if waits.iter().any(|w|w.status=="waiting_user"){"waiting_user"}else{"available"},"waits":waits,
         "inherited_checkpoint":store.recovery_checkpoint(project.id,session)?,"claims":store.session_claims(project.id,session)?,
         "resumed_successor":store.resumed_successor(project.id,session)?,"checkpoint_saves":store.checkpoint_attempts(project.id,session,20)?}),
     )
@@ -325,6 +327,8 @@ pub(crate) fn call(root: &Path, name: &str, args: Value, client: &str) -> Result
             )?;
             let ready = report.context_ready;
             let mut value = serde_json::to_value(report)?;
+            let project = store.project_by_root(root)?;
+            value["predecessor_waits"] = json!(store.mcp_waits(project.id, args.session)?);
             value["ok"] = json!(ready);
             value["project_revision"] = json!(store.project_by_root(root)?.project_revision);
             if !ready {

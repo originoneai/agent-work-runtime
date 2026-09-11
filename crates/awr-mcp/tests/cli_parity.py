@@ -60,7 +60,7 @@ WORK = """work_items:
   next_action: Review next steps
   acceptance: [Follow-up is available]
 """
-TRANSPORT_FIELDS = ("freshness_basis", "source_refresh_performed", "read_only", "snapshot")
+TRANSPORT_FIELDS = ("freshness_basis", "source_refresh_performed", "read_only", "snapshot", "continuity")
 TOOLS = set()
 
 

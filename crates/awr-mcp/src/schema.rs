@@ -1,7 +1,7 @@
 use rmcp::model::{Tool, ToolAnnotations};
 use serde_json::{Value, json};
 
-pub const TOOL_NAMES: [&str; 15] = [
+pub const TOOL_NAMES: [&str; 20] = [
     "awr_project_status",
     "awr_work_ready",
     "awr_work_get",
@@ -17,6 +17,11 @@ pub const TOOL_NAMES: [&str; 15] = [
     "awr_session_end",
     "awr_session_resume",
     "awr_session_claim",
+    "awr_session_wait",
+    "awr_session_reply",
+    "awr_operation_get",
+    "awr_operation_recover",
+    "awr_source_reindex",
 ];
 
 fn object(properties: Value, required: &[&str]) -> Value {
@@ -182,7 +187,17 @@ pub fn tools() -> Vec<Tool> {
         ),
     ];
     catalog.extend(lifecycle_tools());
+    catalog.extend(continuity_tools());
     for entry in &mut catalog {
+        if entry
+            .annotations
+            .as_ref()
+            .is_some_and(|a| a.read_only_hint == Some(false))
+            && entry.name != "awr_operation_recover"
+        {
+            let schema = std::sync::Arc::make_mut(&mut entry.input_schema);
+            schema["properties"].as_object_mut().unwrap().insert("request_id".into(),json!({"type":"string","minLength":1,"maxLength":256,"description":"Stable identity chosen before the first attempt. Required for shared HTTP writes; reuse exactly the same ID and arguments after a lost response."}));
+        }
         if matches!(
             entry.name.as_ref(),
             "awr_context_compile" | "awr_work_transition" | "awr_event_append"
@@ -301,6 +316,66 @@ fn lifecycle_tools() -> Vec<Tool> {
     ]
 }
 
+fn continuity_tools() -> Vec<Tool> {
+    let mut wait = object(
+        json!({"session":optional(text()),"conversation":optional(text()),"expected_revision":revision(),"question":text(),"context_hash":text(),"digest":text(),"next_action":text(),"open_loops":strings()}),
+        &[
+            "expected_revision",
+            "question",
+            "context_hash",
+            "digest",
+            "next_action",
+        ],
+    );
+    wait["anyOf"] = json!([{"required":["session"]},{"required":["conversation"]}]);
+    vec![
+        tool(
+            "awr_session_wait",
+            "Save a checkpoint with caller-supplied progress and consumed context hash, then persist a user-input wait. The host collects input; AWR does not start a new model turn.",
+            wait,
+            false,
+            false,
+        ),
+        tool(
+            "awr_session_reply",
+            "Record a user reply or explicit cancellation reason for this client's wait. Does not execute work. Query the session and compile current context before continuing.",
+            object(
+                json!({"wait":text(),"expected_revision":revision(),"reply":text(),"cancel":{"type":"boolean","default":false}}),
+                &["wait", "expected_revision", "reply"],
+            ),
+            false,
+            false,
+        ),
+        tool(
+            "awr_operation_get",
+            "Read this client's durable request outcome and exactly correlated domain receipts, including after disconnect or restart. A started request has unknown outcome; never replay it automatically.",
+            object(json!({"request_id":text()}), &["request_id"]),
+            true,
+            false,
+        ),
+        tool(
+            "awr_operation_recover",
+            "Recover an unknown request only from its correlated committed terminal domain receipt. Never re-executes the operation; absence or partial receipts stays unknown. Compile fresh context after recovery.",
+            object(
+                json!({"request_id":text(),"expected_revision":revision()}),
+                &["request_id", "expected_revision"],
+            ),
+            false,
+            false,
+        ),
+        tool(
+            "awr_source_reindex",
+            "Explicitly refresh this registered project's source projections after authoritative files change. Does not edit source files; partial failures remain visible.",
+            object(
+                json!({"expected_revision":revision()}),
+                &["expected_revision"],
+            ),
+            false,
+            false,
+        ),
+    ]
+}
+
 pub(crate) fn shared_tools() -> Vec<Tool> {
     let mut catalog = tools();
     for tool in &mut catalog {
@@ -311,6 +386,17 @@ pub(crate) fn shared_tools() -> Vec<Tool> {
             .as_array_mut()
             .unwrap()
             .push(json!("project"));
+        if tool
+            .annotations
+            .as_ref()
+            .is_some_and(|a| a.read_only_hint == Some(false))
+            && tool.name != "awr_operation_recover"
+        {
+            schema["required"]
+                .as_array_mut()
+                .unwrap()
+                .push(json!("request_id"));
+        }
     }
     catalog.insert(0, tool("awr_projects_list", "List this authenticated client's registered project keys and access. Does not read project source files.", object(json!({}), &[]), true, false));
     catalog

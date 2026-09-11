@@ -32,6 +32,7 @@ pub fn is_domain_event_type(kind: &str) -> bool {
         "branch.",
         "client.",
         "execution.",
+        "mcp.",
     ]
     .iter()
     .any(|prefix| kind.starts_with(prefix))
@@ -87,7 +88,7 @@ fn generic_fields(payload: &Value) -> Result<()> {
     for (key, value) in payload.as_object().ok_or_else(invalid)? {
         let valid = if let Some((_, cap)) = TEXT_FIELDS.iter().find(|(name, _)| key == name) {
             value.as_str().is_some_and(|v| v.len() <= *cap)
-        } else if GENERIC_EVENT_ID_FIELDS.contains(&key.as_str()) {
+        } else if key == "mcp_operation_id" || GENERIC_EVENT_ID_FIELDS.contains(&key.as_str()) {
             id(value)
         } else {
             match key.as_str() {
@@ -149,6 +150,10 @@ fn domain_fields(kind: &str, payload: &Value) -> Result<()> {
         "action actor expected_revision from intent proposal_id proposal_revision reason source_id target_id target_key target_kind to work_action"
     } else {
         match kind {
+            "mcp.operation_started" | "mcp.operation_finished" | "mcp.operation_recovered" => {
+                "operation"
+            }
+            "mcp.wait_created" | "mcp.wait_replied" => "wait",
             "client.bound" | "client.updated" | "client.checkpointed" => "binding",
             "execution.registered"
             | "execution.starting"
@@ -198,6 +203,10 @@ fn domain_fields(kind: &str, payload: &Value) -> Result<()> {
     // These non-null receipt fields anchor the event to the operation that produced it.
     // Optional fields and nested snapshots still come from the typed domain constructors.
     let required = match kind {
+        "mcp.operation_started" | "mcp.operation_finished" | "mcp.operation_recovered" => {
+            "operation"
+        }
+        "mcp.wait_created" | "mcp.wait_replied" => "wait",
         kind if kind.starts_with("source.") => "source_id change_schema after changes",
         "proposal.apply_started" => "proposal_id source_id write_plan source_write_confirmed",
         "proposal.applied" | "work.progressed" | "work.blocked" | "work.unblocked"
@@ -256,7 +265,7 @@ fn domain_fields(kind: &str, payload: &Value) -> Result<()> {
         return Err(invalid());
     }
     for (key, value) in object {
-        if !allowed.split_whitespace().any(|name| name == key) {
+        if key != "mcp_operation_id" && !allowed.split_whitespace().any(|name| name == key) {
             return Err(invalid());
         }
         // Nullable fields are emitted only by the typed domain operations, not generic append.
@@ -264,6 +273,8 @@ fn domain_fields(kind: &str, payload: &Value) -> Result<()> {
             continue;
         }
         let valid = match key.as_str() {
+            "operation" => serde_json::from_value::<crate::McpOperation>(value.clone()).is_ok(),
+            "wait" => serde_json::from_value::<crate::McpWait>(value.clone()).is_ok(),
             "mcp_binding" => serde_json::from_value::<crate::McpSessionBinding>(value.clone())
                 .is_ok_and(|binding| binding.validate().is_ok()),
             "host_edit" => serde_json::from_value::<crate::HostEditBinding>(value.clone())

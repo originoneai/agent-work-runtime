@@ -5,7 +5,9 @@ pub mod hub;
 mod lifecycle;
 mod operations;
 mod project;
+mod requests;
 mod schema;
+mod waiting;
 
 use hub::{Hub, Principal, ProjectService};
 use rmcp::{ErrorData, RoleServer, ServerHandler, model::*, service::RequestContext};

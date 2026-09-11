@@ -7,11 +7,13 @@ use awr_core::{Error, Event, EventDraft, Id, Result, Revision, now_millis};
 use rusqlite::{Connection, OptionalExtension, Transaction, TransactionBehavior, params};
 
 pub(crate) fn insert_event(conn: &Connection, event: &Event) -> Result<()> {
+    let mut value = event.payload.clone();
+    crate::mcp::tag_operation(event.project_id, &mut value);
     let payload = awr_core::checked_event_payload(
         &event.event_type,
         &event.importance,
         &event.summary,
-        &event.payload,
+        &value,
     )?;
     conn.execute("INSERT INTO events(id,project_id,work_item_id,session_id,branch_id,event_type,importance,summary,payload_json,project_revision,created_at)
         VALUES(?1,?2,?3,?4,?5,?6,?7,?8,?9,?10,?11)",
@@ -105,6 +107,7 @@ impl Store {
                 "transaction changed project revision outside the domain contract".into(),
             ));
         }
+        crate::mcp::tag_operation(project_id, &mut draft.payload);
         let event = Event {
             id: Id::new(),
             project_id,
@@ -152,6 +155,11 @@ impl Store {
         selected_branch: Option<Option<Id>>,
     ) -> Result<Event> {
         self.runtime_transaction_with_event(project_id, expected_revision, draft, |tx, _, event| {
+            if event.payload.get("mcp_operation_id").is_some() {
+                return Err(Error::InvalidInput(
+                    "MCP operation correlation is reserved for the runtime".into(),
+                ));
+            }
             crate::events::bind_event(tx, project_id, event, true)?;
             if selected_branch.is_some_and(|branch| event.branch_id != branch) {
                 return Err(Error::InvalidInput(

@@ -252,6 +252,10 @@ async fn stdio_discovers_tools_and_survives_protocol_and_argument_errors() {
             "awr_session_end",
             "awr_session_resume",
             "awr_session_claim",
+            "awr_session_wait",
+            "awr_session_reply",
+            "awr_operation_recover",
+            "awr_source_reindex",
         ]
         .contains(&tool.name.as_ref());
         assert_eq!(

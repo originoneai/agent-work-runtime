@@ -63,6 +63,7 @@ pub(crate) fn is_read_only(name: &str) -> bool {
             | "awr_projects_list"
             | "awr_session_get"
             | "awr_session_list"
+            | "awr_operation_get"
     )
 }
 
@@ -76,16 +77,66 @@ pub(crate) fn call_as(
         return Err(Error::InvalidInput("tool arguments exceed 1 MiB".into()));
     }
     ensure_public_value(&Value::Object(args.clone()))?;
+    let client = principal.unwrap_or("stdio");
+    if name == "awr_operation_get" {
+        return crate::requests::inspect(root, Value::Object(args), client);
+    }
+    if name == "awr_operation_recover" {
+        return crate::requests::recover(root, Value::Object(args), client);
+    }
+    let request = args
+        .remove("request_id")
+        .map(|value| {
+            serde_json::from_value::<String>(value)
+                .map_err(|_| Error::InvalidInput("request_id must be a string".into()))
+        })
+        .transpose()?;
+    if request.is_some() && is_read_only(name) {
+        return Err(Error::InvalidInput(
+            "read tools do not take request_id".into(),
+        ));
+    }
+    if principal.is_some() && !is_read_only(name) && request.is_none() {
+        return Err(Error::InvalidInput(
+            "shared writes require a stable request_id for outcome recovery".into(),
+        ));
+    }
+    let original = args.clone();
+    if let Some(request) = &request {
+        if let Some(result) = crate::requests::existing(root, client, request, name, &original)? {
+            return Ok(result);
+        }
+    }
     crate::lifecycle::authorize(root, name, &mut args, principal)?;
-    if crate::lifecycle::NAMES.contains(&name) {
-        crate::lifecycle::call(
-            root,
+    if matches!(name, "awr_work_transition" | "awr_session_resume") {
+        if let Some(session) = args.get("session").and_then(Value::as_str) {
+            let store = Store::open_readonly(&database(root)?)?;
+            let project = store.project_by_root(root)?;
+            crate::waiting::require_resolved(
+                &store,
+                project.id,
+                session
+                    .parse()
+                    .map_err(|_| Error::InvalidInput("invalid session".into()))?,
+            )?;
+        }
+    }
+    let apply = |args| {
+        if crate::lifecycle::NAMES.contains(&name) {
+            crate::lifecycle::call(root, name, Value::Object(args), client)
+        } else if matches!(
             name,
-            Value::Object(args),
-            principal.unwrap_or("stdio"),
-        )
+            "awr_session_wait" | "awr_session_reply" | "awr_source_reindex"
+        ) {
+            crate::waiting::call(root, name, Value::Object(args), client)
+        } else {
+            call(root, name, args)
+        }
+    };
+    if let Some(request) = request {
+        crate::requests::execute(root, client, &request, name, &original, args, apply)
     } else {
-        call(root, name, args)
+        apply(args)
     }
 }
 
@@ -328,7 +379,13 @@ fn context(view: &mut ReadProject, root: &Path, args: ContextArgs) -> Result<Val
         Some(branch) => compile_branch_context(&mut view.store, root, &branch, &request)?,
         None => compile_context(&mut view.store, root, &request)?,
     };
-    Ok(serde_json::to_value(report)?)
+    let session = report.session_id;
+    let mut value = serde_json::to_value(report)?;
+    if let Some(session) = session {
+        let waits = view.store.mcp_waits(view.project.id, session)?;
+        value["continuity"] = json!({"state":if waits.iter().any(|w|w.status=="waiting_user"){"waiting_user"}else{"available"},"waits":waits,"scope":"Runtime wait/reply records; separate from the bounded source context packet."});
+    }
+    Ok(value)
 }
 fn search(view: &mut ReadProject, args: SearchArgs) -> Result<Value> {
     let query = SearchQuery {

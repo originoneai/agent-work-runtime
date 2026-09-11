@@ -83,7 +83,16 @@ impl Server {
         self.child.kill().await.unwrap();
         self.child.wait().await.unwrap();
     }
-    async fn call(&self, credential: &str, name: &str, arguments: Value) -> Value {
+    async fn call(&self, credential: &str, name: &str, mut arguments: Value) -> Value {
+        if awr_mcp::tools()
+            .iter()
+            .find(|tool| tool.name == name)
+            .is_some_and(|tool| tool.annotations.as_ref().unwrap().read_only_hint == Some(false))
+            && name != "awr_operation_recover"
+            && arguments.get("request_id").is_none()
+        {
+            arguments["request_id"] = json!(Id::new().to_string());
+        }
         let response = reqwest::Client::new().post(&self.url).bearer_auth(credential)
             .header("Accept", "application/json, text/event-stream")
             .header("MCP-Protocol-Version", "2026-07-28")
@@ -123,7 +132,7 @@ fn start_args(
     revision: Revision,
     claim: bool,
 ) -> Value {
-    json!({"project":project,"work":work,"conversation":conversation,"agent":"guide-editor","provider":"synthetic","model":"fixture","expected_revision":revision,"claim":claim})
+    json!({"project":project,"work":work,"conversation":conversation,"agent":"guide-editor","provider":"synthetic","model":"fixture","expected_revision":revision,"claim":claim,"request_id":Id::new().to_string()})
 }
 
 #[tokio::test]
@@ -138,7 +147,7 @@ async fn lifecycle_binds_conversations_and_preserves_checkpoints_across_connecti
     let revision = a.revision();
     let repeat = ok(server.call(WRITER, "awr_session_start", args).await);
     assert_eq!(repeat["session"]["id"], sid);
-    assert_eq!(repeat["binding_reused"], true);
+    assert_eq!(repeat["operation"]["replayed"], true);
     assert_eq!(a.revision(), revision);
     error(
         server
@@ -313,8 +322,8 @@ async fn one_endpoint_routes_independent_clients_projects_and_conflicting_writes
         "RevisionConflict",
     );
     ok(other_project);
-    assert_eq!(a.revision(), before + 1);
-    assert_eq!(b.revision(), beta_before + 1);
+    assert_eq!(a.revision(), before + 3);
+    assert_eq!(b.revision(), beta_before + 3);
     server.stop().await;
     // A fresh service keeps the same project identities and committed revisions.
     let mut restarted = Server::start(&registry(&a, &b)).await;
@@ -325,7 +334,7 @@ async fn one_endpoint_routes_independent_clients_projects_and_conflicting_writes
             json!({"project":"alpha","work":"W"}),
         )
         .await);
-    assert_eq!(current["project_revision"], before + 1);
+    assert_eq!(current["project_revision"], before + 3);
     restarted.stop().await;
 }
 
@@ -380,5 +389,223 @@ async fn every_http_request_requires_credentials_and_allowed_browser_origin() {
             .status(),
         403
     );
+    server.stop().await;
+}
+
+#[tokio::test]
+async fn wait_reply_and_successor_keep_progress_without_automatic_execution() {
+    let a = ProjectFixture::new("Prepare the onboarding guide");
+    let b = ProjectFixture::new("Prepare the reference guide");
+    let config = registry(&a, &b);
+    let mut server = Server::start(&config).await;
+    let started = ok(server
+        .call(
+            WRITER,
+            "awr_session_start",
+            start_args("alpha", "W", "onboarding", a.revision(), true),
+        )
+        .await);
+    let context = ok(server
+        .call(
+            WRITER,
+            "awr_context_compile",
+            json!({"project":"alpha","conversation":"onboarding"}),
+        )
+        .await);
+    let wait_args = json!({"project":"alpha","conversation":"onboarding","expected_revision":a.revision(),"request_id":"ask-example-order","question":"Should the practical example come before the reference material?","context_hash":context["work_context"]["context_hash"],"digest":"The introduction is drafted and the example order needs a decision.","next_action":"Arrange the examples after the reply","open_loops":["Confirm the example order"]});
+    let waiting = ok(server
+        .call(WRITER, "awr_session_wait", wait_args.clone())
+        .await);
+    assert_eq!(waiting["wait"]["status"], "waiting_user");
+    assert_eq!(
+        waiting["wait"]["checkpoint_id"],
+        waiting["checkpoint"]["id"]
+    );
+    let before = a.revision();
+    ok(server.call(WRITER, "awr_session_wait", wait_args).await);
+    assert_eq!(a.revision(), before);
+    error(server.call(WRITER,"awr_work_transition",json!({"project":"alpha","conversation":"onboarding","work":"W","action":"progress","reason":"Proceed with the guide","expected_revision":a.revision(),"next_action":"Edit examples"})).await,"InvalidTransition");
+    server.stop().await;
+    let mut server = Server::start(&config).await;
+    let state = ok(server
+        .call(
+            WRITER,
+            "awr_session_get",
+            json!({"project":"alpha","conversation":"onboarding"}),
+        )
+        .await);
+    assert_eq!(state["continuity_state"], "waiting_user");
+    assert_eq!(state["checkpoint"]["id"], waiting["checkpoint"]["id"]);
+    error(server.call(COLLEAGUE,"awr_session_reply",json!({"project":"alpha","wait":waiting["wait"]["id"],"reply":"A reply from a different client","expected_revision":a.revision()})).await,"RuleViolation");
+    let reply = json!({"project":"alpha","wait":waiting["wait"]["id"],"reply":"Put the practical example first, followed by the reference material.","expected_revision":a.revision(),"request_id":"example-order-reply"});
+    let answered = ok(server
+        .call(WRITER, "awr_session_reply", reply.clone())
+        .await);
+    assert_eq!(answered["wait"]["status"], "answered");
+    let before = a.revision();
+    ok(server.call(WRITER, "awr_session_reply", reply).await);
+    assert_eq!(a.revision(), before);
+    let context = ok(server
+        .call(
+            WRITER,
+            "awr_context_compile",
+            json!({"project":"alpha","conversation":"onboarding"}),
+        )
+        .await);
+    assert_eq!(
+        context["continuity"]["waits"][0]["reply"],
+        answered["wait"]["reply"]
+    );
+    let resumed=ok(server.call(WRITER,"awr_session_resume",json!({"project":"alpha","session":started["session"]["id"],"conversation":"onboarding-next-day","agent":"guide-editor","provider":"synthetic","model":"fixture","expected_revision":a.revision()})).await);
+    assert_eq!(
+        resumed["predecessor_waits"][0]["reply"],
+        answered["wait"]["reply"]
+    );
+    let context = ok(server
+        .call(
+            WRITER,
+            "awr_context_compile",
+            json!({"project":"alpha","conversation":"onboarding-next-day"}),
+        )
+        .await);
+    assert_eq!(
+        context["continuity"]["waits"][0]["reply"],
+        answered["wait"]["reply"]
+    );
+    assert_eq!(
+        fs::read_to_string(a.root.join("work.yaml"))
+            .unwrap()
+            .matches("status: ready")
+            .count(),
+        2
+    );
+    server.stop().await;
+}
+
+#[tokio::test]
+async fn missing_response_receipt_is_recovered_from_correlated_events_without_replaying() {
+    let a = ProjectFixture::new("Prepare the guide");
+    let b = ProjectFixture::new("Prepare the reference");
+    let config = registry(&a, &b);
+    let mut server = Server::start(&config).await;
+    let conn = rusqlite::Connection::open(a.root.join(".awr/state.db")).unwrap();
+    conn.execute_batch("CREATE TRIGGER fixture_deny_response BEFORE INSERT ON events WHEN new.event_type='mcp.operation_finished' BEGIN SELECT RAISE(ABORT,'synthetic response receipt failure'); END;").unwrap();
+    let mut args = start_args("alpha", "W", "lost-response", a.revision(), true);
+    args["request_id"] = json!("lost-start-result");
+    let result = server.call(WRITER, "awr_session_start", args.clone()).await;
+    assert_eq!(result["isError"], true);
+    assert_eq!(result["structuredContent"]["write_outcome"], "unknown");
+    let receipt = ok(server
+        .call(
+            WRITER,
+            "awr_operation_get",
+            json!({"project":"alpha","request_id":"lost-start-result"}),
+        )
+        .await);
+    assert_eq!(receipt["outcome"], "unknown");
+    assert_eq!(receipt["domain_receipts"].as_array().unwrap().len(), 1);
+    assert_eq!(
+        receipt["domain_receipts"][0]["event_type"],
+        "session.started"
+    );
+    let before = a.revision();
+    server.call(WRITER, "awr_session_start", args.clone()).await;
+    assert_eq!(a.revision(), before);
+    let mut conflict = args.clone();
+    conflict["model"] = json!("different-fixture");
+    error(
+        server.call(WRITER, "awr_session_start", conflict).await,
+        "SourceConflict",
+    );
+    error(
+        server
+            .call(
+                COLLEAGUE,
+                "awr_operation_get",
+                json!({"project":"alpha","request_id":"lost-start-result"}),
+            )
+            .await,
+        "NotFound",
+    );
+    conn.execute_batch("DROP TRIGGER fixture_deny_response;")
+        .unwrap();
+    drop(conn);
+    server.stop().await;
+    let mut server = Server::start(&config).await;
+    let recover = json!({"project":"alpha","request_id":"lost-start-result","expected_revision":a.revision()});
+    let recovered = ok(server
+        .call(WRITER, "awr_operation_recover", recover.clone())
+        .await);
+    assert_eq!(recovered["write_outcome"], "committed");
+    assert_eq!(recovered["recovered"], true);
+    let before = a.revision();
+    ok(server.call(WRITER, "awr_operation_recover", recover).await);
+    assert_eq!(a.revision(), before);
+    ok(server.call(WRITER, "awr_session_start", args).await);
+    assert_eq!(a.revision(), before);
+    let sessions = ok(server
+        .call(WRITER, "awr_session_list", json!({"project":"alpha"}))
+        .await);
+    assert_eq!(sessions["sessions"].as_array().unwrap().len(), 1);
+    // Generic event callers cannot forge the runtime correlation metadata.
+    error(server.call(WRITER,"awr_event_append",json!({"project":"alpha","expected_revision":a.revision(),"event_type":"work.observed","summary":"Observation with a forged correlation","payload":{"mcp_operation_id":receipt["operation"]["id"]}})).await,"InvalidInput");
+    // A start marker alone remains unknown; it never authorizes replay or false success.
+    let mut store = Store::open_existing(&a.root.join(".awr/state.db")).unwrap();
+    store
+        .begin_mcp_operation(
+            a.id,
+            a.revision(),
+            "writer",
+            "no-terminal-receipt",
+            "awr_session_start",
+            &"a".repeat(64),
+        )
+        .unwrap();
+    drop(store);
+    let before = a.revision();
+    let unresolved=server.call(WRITER,"awr_operation_recover",json!({"project":"alpha","request_id":"no-terminal-receipt","expected_revision":before})).await;
+    assert_eq!(unresolved["isError"], true);
+    assert_eq!(unresolved["structuredContent"]["write_outcome"], "unknown");
+    assert_eq!(a.revision(), before);
+    server.stop().await;
+}
+
+#[tokio::test]
+async fn authorized_source_refresh_is_available_at_the_shared_endpoint() {
+    let a = ProjectFixture::new("Draft the first guide");
+    let b = ProjectFixture::new("Draft the second guide");
+    let mut server = Server::start(&registry(&a, &b)).await;
+    let path = a.root.join("work.yaml");
+    let source = fs::read_to_string(&path)
+        .unwrap()
+        .replace("Draft the first guide", "Review the updated guide");
+    fs::write(&path, &source).unwrap();
+    error(
+        server
+            .call(
+                READER,
+                "awr_source_reindex",
+                json!({"project":"alpha","expected_revision":a.revision()}),
+            )
+            .await,
+        "RuleViolation",
+    );
+    let refreshed = ok(server
+        .call(
+            WRITER,
+            "awr_source_reindex",
+            json!({"project":"alpha","expected_revision":a.revision()}),
+        )
+        .await);
+    assert_eq!(refreshed["source_write_performed"], false);
+    assert_eq!(fs::read_to_string(&path).unwrap(), source);
+    let work = ok(server
+        .call(
+            READER,
+            "awr_work_get",
+            json!({"project":"alpha","work":"W"}),
+        )
+        .await);
+    assert_eq!(work["work"]["title"], "Review the updated guide");
     server.stop().await;
 }

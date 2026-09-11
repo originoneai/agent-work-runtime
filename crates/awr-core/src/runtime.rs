@@ -30,6 +30,35 @@ impl McpSessionBinding {
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
+#[serde(deny_unknown_fields)]
+pub struct McpOperation {
+    pub id: Id,
+    pub client: String,
+    pub request_id: String,
+    pub tool: String,
+    pub fingerprint: String,
+    pub expected_revision: crate::Revision,
+    pub started_revision: crate::Revision,
+    pub status: String,
+    pub result: Option<serde_json::Value>,
+    pub is_error: Option<bool>,
+}
+
+#[derive(Debug, Clone, Serialize, Deserialize)]
+#[serde(deny_unknown_fields)]
+pub struct McpWait {
+    pub id: Id,
+    pub client: String,
+    pub session_id: Id,
+    pub checkpoint_id: Id,
+    pub question: String,
+    pub status: String,
+    pub reply: Option<String>,
+    pub created_at: i64,
+    pub revision: crate::Revision,
+}
+
+#[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct CheckpointDraft {
     pub context_hash: String,
     pub digest: String,
