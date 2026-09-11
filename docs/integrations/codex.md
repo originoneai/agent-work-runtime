@@ -1,9 +1,12 @@
 # Using AWR from Codex
 
 AWR supplies current project facts, work context and recoverable session memory.
-Codex performs the work using its available tools. The integration uses AWR's CLI
-for session/claim lifecycle and eight MCP tools for compact reads and work
-mutations. Both access the same initialized project.
+Codex performs the work using its available tools. The local workflow below uses
+AWR's CLI and stdio MCP against the same initialized project. AWR 0.3.3
+also exposes session/claim lifecycle directly through MCP and a
+[shared HTTP service](../reference/mcp-service.md) for multiple projects and clients.
+Client configuration and native-client verification remain separate from
+server implementation.
 
 ## Build and bind the project
 

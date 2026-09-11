@@ -1,6 +1,63 @@
 use crate::{Checkpoint, Claim, Id, Session};
 use serde::{Deserialize, Serialize};
 
+/// Stable host conversation identity, independent of any MCP transport connection.
+#[derive(Debug, Clone, Serialize, Deserialize, PartialEq, Eq)]
+#[serde(deny_unknown_fields)]
+pub struct McpSessionBinding {
+    pub client: String,
+    pub conversation: String,
+}
+impl McpSessionBinding {
+    pub fn validate(&self) -> crate::Result<()> {
+        crate::ensure_public_data(self)?;
+        if self.client.trim().is_empty()
+            || self.client.len() > 128
+            || self.conversation.trim().is_empty()
+            || self.conversation.len() > 512
+            || self
+                .client
+                .chars()
+                .chain(self.conversation.chars())
+                .any(char::is_control)
+        {
+            return Err(crate::Error::InvalidInput(
+                "invalid MCP client/conversation identity".into(),
+            ));
+        }
+        Ok(())
+    }
+}
+
+#[derive(Debug, Clone, Serialize, Deserialize)]
+#[serde(deny_unknown_fields)]
+pub struct McpOperation {
+    pub id: Id,
+    pub client: String,
+    pub request_id: String,
+    pub tool: String,
+    pub fingerprint: String,
+    pub expected_revision: crate::Revision,
+    pub started_revision: crate::Revision,
+    pub status: String,
+    pub result: Option<serde_json::Value>,
+    pub is_error: Option<bool>,
+}
+
+#[derive(Debug, Clone, Serialize, Deserialize)]
+#[serde(deny_unknown_fields)]
+pub struct McpWait {
+    pub id: Id,
+    pub client: String,
+    pub session_id: Id,
+    pub checkpoint_id: Id,
+    pub question: String,
+    pub status: String,
+    pub reply: Option<String>,
+    pub created_at: i64,
+    pub revision: crate::Revision,
+}
+
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct CheckpointDraft {
     pub context_hash: String,

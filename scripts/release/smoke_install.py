@@ -11,6 +11,7 @@ import subprocess
 import sys
 import tempfile
 import threading
+from mcp_catalog import validate_stdio_tools
 
 ROOT = Path(__file__).resolve().parents[2]
 
@@ -48,8 +49,8 @@ def check_mcp(command, project):
         process.stdin.write("\n".join(json.dumps(r) for r in requests[1:]) + "\n")
         process.stdin.flush()
         tools = responses.get(timeout=20)
-        assert tools["id"] == 2 and len(tools["result"]["tools"]) == 8, tools
-        names = sorted(t["name"] for t in tools["result"]["tools"])
+        assert tools["id"] == 2 and "result" in tools, tools
+        names = validate_stdio_tools([t["name"] for t in tools["result"]["tools"]])
         process.stdin.close()
         assert process.wait(timeout=10) == 0
         return names

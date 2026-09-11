@@ -14,10 +14,20 @@ from unittest.mock import patch
 
 import assemble_release
 from build_packages import python_version
+from mcp_catalog import STDIO_TOOLS, validate_stdio_tools
 import publish_npm
 
 
 class ReleaseChecks(unittest.TestCase):
+    def test_installed_catalog_requires_continuity_tools_and_unique_names(self):
+        names = sorted(STDIO_TOOLS)
+        self.assertEqual(validate_stdio_tools(list(reversed(names))), names)
+        for invalid in [names[:-1], names + [names[0]],
+                        names[:-1] + ["unrelated_tool"], [f"tool-{i}" for i in range(20)],
+                        names + ["awr_projects_list"]]:
+            with self.subTest(invalid=invalid), self.assertRaises(AssertionError):
+                validate_stdio_tools(invalid)
+
     def test_stable_and_prerelease_version_mapping(self):
         for original, expected in {
             "0.2.0": "0.2.0", "0.3.0-dev": "0.3.0.dev0",
@@ -94,13 +104,13 @@ class ReleaseChecks(unittest.TestCase):
             (base / "manifest.json").write_text(json.dumps(manifest))
             checks = {"version_and_help": True, "exit_code_and_stderr": True,
                       "unicode_space_project_init_and_status": True, "task_context_and_intake": True,
-                      "mcp_stdio_tools": [f"tool-{i}" for i in range(8)]}
+                      "mcp_stdio_tools": sorted(STDIO_TOOLS)}
             receipt = {"source_sha": source, "platform": platform, "artifact_sha256": artifacts, "npm": checks, "python": checks}
             (base / "installation-checks.json").write_text(json.dumps(receipt))
         return source
 
     def test_assembly_requires_matching_installation_and_source_receipts(self):
-        for fault in [None, "source", "installation", "bytes", "missing_intel", "intel_installation"]:
+        for fault in [None, "source", "installation", "bytes", "missing_intel", "intel_installation", "missing_tool", "duplicate_tool", "wrong_tool"]:
             with self.subTest(fault=fault), tempfile.TemporaryDirectory() as tmp:
                 root = Path(tmp)
                 source = self.assembled_inputs(root / "inputs")
@@ -119,6 +129,12 @@ class ReleaseChecks(unittest.TestCase):
                     data = json.loads(path.read_text())
                     if fault == "source":
                         data["source_sha"] = "2" * 40
+                    elif fault == "missing_tool":
+                        data["python"]["mcp_stdio_tools"].remove("awr_session_resume")
+                    elif fault == "duplicate_tool":
+                        data["python"]["mcp_stdio_tools"].append("awr_session_resume")
+                    elif fault == "wrong_tool":
+                        data["python"]["mcp_stdio_tools"][0] = "unrelated_tool"
                     else:
                         data["python"]["task_context_and_intake"] = False
                     path.write_text(json.dumps(data))

@@ -7,6 +7,13 @@ paths or user content into a shell command. A host owns its UI, client credentia
 scheduling, notifications and knowledge processing. AWR owns the source-backed work
 projection, runtime records and its supported source mutations.
 
+Hosts that need a central service can use AWR 0.3.3's
+[shared MCP endpoint](mcp-service.md). One process routes explicit project keys
+for multiple authenticated clients and persists host conversation/session bindings,
+checkpoints, waits and request outcomes. This is an alternative transport; host UI,
+model execution and wakeup scheduling remain host responsibilities. The shared
+service and lifecycle extensions are included in the 0.3.3 packages.
+
 The runnable [no-UI host example](../../examples/host-app/README.md) demonstrates
 these operations with argv, protected JSON, complete paging and explicit generic
 client continuation. Its synthetic fixture checks are separate from native-client
@@ -722,7 +729,7 @@ A single reviewed fingerprint covers all targets. Every target is preflighted be
 
 ## Embed and upgrade the native host payload
 
-Version `0.3.2` exposes the host integration capabilities with schema 4. Use the immutable host payload produced by `scripts/release/build_host_bundle.py`; it includes both native executables, exact capability metadata, file/archive SHA256 values, source/version/platform identity and licenses. Invoke the bundled binary by absolute path with an explicit project root. The native runtime does not require Node, Python, Rust or PATH setup. Development-time packaging and upgrade fixtures run separately.
+Version `0.3.3` exposes the host integration capabilities with schema 4. Use the immutable host payload produced by `scripts/release/build_host_bundle.py`; it includes both native executables, exact capability metadata, file/archive SHA256 values, source/version/platform identity and licenses. Invoke the bundled binary by absolute path with an explicit project root. The native runtime does not require Node, Python, Rust or PATH setup. Development-time packaging and upgrade fixtures run separately.
 
 Follow the [matched upgrade and rollback procedure](../release/DISTRIBUTIONS.md#matched-upgrade-and-rollback-checklist). Preserve all runtime history and source authority, validate old-schema migration with IDs/record inventories, retain read-only legacy APP records, and switch to one AWR writer. A rollback restores a matching program/database/configuration/source set while keeping new user files and the superseded runtime snapshot. Old programs must reject newer databases before writing; host signing, full APP integration and other deployment platforms require their own evidence.
 

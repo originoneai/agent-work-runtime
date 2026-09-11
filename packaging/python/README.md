@@ -2,17 +2,17 @@
 
 Persistent work state and minimal context for long-running AI agents.
 
-AWR 0.3.2 includes the native Rust `awr` CLI and `awr-mcp` stdio server.
+AWR 0.3.3 includes the native Rust `awr` CLI and `awr-mcp` server for stdio and shared Streamable HTTP.
 It provides command-line tools; context compilation runs locally.
 
 ```sh
-python -m pip install agent-work-runtime==0.3.2
+python -m pip install agent-work-runtime==0.3.3
 awr --version
 awr --help
 awr-mcp --help
 ```
 
-For an isolated application installation, use `pipx install agent-work-runtime==0.3.2` or `uv tool install agent-work-runtime==0.3.2`.
+For an isolated application installation, use `pipx install agent-work-runtime==0.3.3` or `uv tool install agent-work-runtime==0.3.3`.
 
 The project must be initialized before running
 `awr-mcp --project /absolute/project`. Follow the
@@ -25,3 +25,12 @@ platforms install a prebuilt wheel and do not need a Rust compiler.
 
 The wheel includes source identity, binary checksums and third-party license
 notices. The core program is licensed under Apache-2.0.
+
+A single shared service can manage multiple initialized projects and clients:
+
+```sh
+awr-mcp --registry /etc/awr/service.toml --listen 127.0.0.1:8080
+```
+
+Configure project registrations and client credentials using the
+[shared MCP service guide](https://github.com/originoneai/agent-work-runtime/blob/main/docs/reference/mcp-service.md).

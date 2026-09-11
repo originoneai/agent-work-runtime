@@ -48,6 +48,23 @@ pub fn resume_session(
     root: &Path,
     request: &ResumeRequest,
 ) -> Result<ResumeReport> {
+    resume_inner(store, root, request, None)
+}
+pub fn resume_bound_session(
+    store: &mut Store,
+    root: &Path,
+    request: &ResumeRequest,
+    binding: McpSessionBinding,
+) -> Result<ResumeReport> {
+    binding.validate()?;
+    resume_inner(store, root, request, Some(binding))
+}
+fn resume_inner(
+    store: &mut Store,
+    root: &Path,
+    request: &ResumeRequest,
+    binding: Option<McpSessionBinding>,
+) -> Result<ResumeReport> {
     if [&request.agent_id, &request.provider, &request.model]
         .iter()
         .any(|s| s.trim().is_empty())
@@ -229,20 +246,21 @@ pub fn resume_session(
         })?
         .context_hash
         .clone();
-    let (resumed, event) = store.resume_session(
-        project.id,
-        request.expected_revision,
-        SessionResumeDraft {
-            from_session_id: from.id,
-            checkpoint_id,
-            agent_id: request.agent_id.clone(),
-            provider: request.provider.clone(),
-            model: request.model.clone(),
-            claim: request.claim,
-            claim_ttl_ms: request.claim_ttl_ms,
-            prepared_context_hash: hash,
-        },
-    )?;
+    let draft = SessionResumeDraft {
+        from_session_id: from.id,
+        checkpoint_id,
+        agent_id: request.agent_id.clone(),
+        provider: request.provider.clone(),
+        model: request.model.clone(),
+        claim: request.claim,
+        claim_ttl_ms: request.claim_ttl_ms,
+        prepared_context_hash: hash,
+    };
+    let (resumed, event) = if let Some(binding) = binding {
+        store.resume_bound_session(project.id, request.expected_revision, draft, binding)?
+    } else {
+        store.resume_session(project.id, request.expected_revision, draft)?
+    };
     context_request.session_id = Some(resumed.session.id);
     context_request.detached = false;
     report.resumed = Some(resumed);

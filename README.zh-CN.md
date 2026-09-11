@@ -39,16 +39,16 @@
 
 ## 怎么用
 
-任选 npm 或 pip 安装 **0.3.2 正式版**，均提供 `awr` 和 `awr-mcp`：
+任选 npm 或 pip 安装 **0.3.3 正式版**，均提供 `awr` 和 `awr-mcp`：
 
 ```sh
-npm install -g @originoneai/agent-work-runtime@0.3.2
+npm install -g @originoneai/agent-work-runtime@0.3.3
 # 或在 Python 虚拟环境内
-python -m pip install agent-work-runtime==0.3.2
+python -m pip install agent-work-runtime==0.3.3
 ```
 
 预编译包支持 macOS 15+ Apple Silicon arm64 和 Intel x64、Linux x64/glibc 2.39+、Windows x64；启动器需要 Node 22.14+ 或 Python 3.9+。详见[安装边界](docs/release/DISTRIBUTIONS.md)。
-宿主能力和数据库升级说明见 [0.3.2 发布说明](docs/release/0.3.2.md)。
+宿主能力和数据库升级说明见 [0.3.3 发布说明](docs/release/0.3.3.md)。
 
 也可安装 [Rust](https://www.rust-lang.org/tools/install)，选择源码构建：
 
@@ -82,7 +82,9 @@ awr --project /path/to/project intake inspect
 
 先预览，再接受映射。没有明确目标时，初始化可加 `--goal "你希望完成的事情"`。Agent 按诊断补齐目标与任务，随后重新检查；AWR 不会替你编造业务意图。自定义状态或中文字段可用 `--status-map pending=planned`、`--field-map title=事项` 映射。
 
-接入 MCP 时，让客户端启动 `awr-mcp --project /项目绝对路径`。详见 [MCP 配置](crates/awr-mcp/README.md)、[Codex 接入](docs/integrations/codex.md)、[检查点与恢复示例](examples/codex/README.md)、[项目接管指南](docs/TAKEOVER.md)。
+本地接入 MCP 时，让客户端启动 `awr-mcp --project /项目绝对路径`。0.3.3 同时支持[共享 MCP 常驻服务](docs/reference/mcp-service.md)：一个 HTTP 入口服务多个项目和客户端，保存独立的会话、检查点、用户等待和请求回执。这些能力均包含在 0.3.3 安装包中。
+
+详见 [MCP 配置与工具](crates/awr-mcp/README.md)、[Codex 接入](docs/integrations/codex.md)、[检查点与恢复示例](examples/codex/README.md)、[项目接管指南](docs/TAKEOVER.md)。
 
 AWR 可托管自己启动的命令，并连接受支持的客户端生命周期事件。任意已有进程或客户端私有会话的恢复，需要对应客户端配合。
 
