@@ -121,6 +121,7 @@ impl Error {
             code: self.code(),
             message: crate::safe_diagnostic(&self.to_string()),
             details: (match self {
+                Self::RuleViolation(message) => crate::secrets::sensitive_rejection_details(message),
                 Self::RevisionConflict { expected, actual } => {
                     Some(serde_json::json!({"expected": expected, "actual": actual}))
                 }

@@ -17,6 +17,8 @@ pub struct IndexIssue {
     pub locator: Option<String>,
     pub code: String,
     pub message: String,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub details: Option<serde_json::Value>,
 }
 #[derive(Debug, Clone, Serialize)]
 pub struct IndexedSource {
@@ -55,6 +57,7 @@ impl IndexReport {
             locator: locator.map(awr_core::safe_diagnostic),
             code: error.code().into(),
             message: error.report().message,
+            details: error.report().details,
         });
     }
     fn source(&mut self, source: Source, action: &str, warnings: Vec<String>) {
