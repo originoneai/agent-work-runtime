@@ -65,6 +65,33 @@ fn catalog() -> Vec<Capability> {
             &["requires_expected_preview", "individual_files_only"],
         ),
         (
+            "intake.semantic_preflight",
+            true,
+            &["init", "source configure"],
+            &[
+                "captured_bytes",
+                "no_project_writes",
+                "execution_readiness_separate",
+                "bounded_temporary_snapshot",
+            ],
+        ),
+        (
+            "source.relocate",
+            true,
+            &[
+                "source relocate",
+                "source relocate-status",
+                "source relocate-recover",
+            ],
+            &[
+                "single_relative_file",
+                "unchanged_contents",
+                "stable_object_keys",
+                "explicit_preview",
+                "recoverable_not_filesystem_atomic",
+            ],
+        ),
+        (
             "source.configure",
             true,
             &["source configure", "source configure-status"],

@@ -117,6 +117,42 @@ A failed projection does not mean the configuration was unwritten; inspect the
 receipt and current configuration before acting. Identical configuration returns
 `no_change`. Configuration setup is separate from task/document source editing.
 
+## Relocate one source while retaining its identity
+
+```text
+awr source relocate --source <source-id> --to plans/work-ledger.yaml --json
+awr source relocate --source <source-id> --to plans/work-ledger.yaml --accept --expected-preview <fingerprint> --json
+awr source relocate-status <fingerprint> --json
+awr source relocate-recover <fingerprint> --json
+```
+
+Version 1 relocates one explicit relative file mapping inside the same project.
+The destination must already contain the exact indexed bytes. The original may be
+present or already moved by the user; AWR does not move, delete or overwrite either
+business file. Change content separately. The preview binds the retained source ID,
+source revision/configuration, both paths, destination bytes and exact before/after
+manifest text. Adapters must produce the same object keys and IDs in the semantic
+preflight. Path-derived keys and directory/Git mappings are explicitly unsupported;
+YAML ledgers with stable explicit keys are supported. An identical hash alone never
+merges source identities. Any destination owned by another retained source conflicts.
+
+Acceptance retains source/object identities and runtime sessions, claims, checkpoints,
+dependencies and evidence. It appends `source.relocated` with before/after locators;
+`source history`, `event show --full` and `source changes` expose the history. Old
+checkpoint references remain immutable. Current projection references use the new
+location after reindexing. Manifest formatting changes are included in the exact
+preview and require that fingerprint.
+
+The SQLite binding and manifest rename are individually durable, not a cross-file
+transaction. A source transition lock coordinates refresh/configuration writers;
+an interrupted relocation leaves a pending marker that prevents ordinary refreshes
+from inventing a replacement source. Read-only status reports the journal and actual
+bindings. Explicit recovery accepts only the recorded before/after manifest and
+source states and unchanged target bytes, then completes the missing steps. Changed
+user files remain untouched. A repeated completed request returns its existing receipt
+and observations without applying it again. Preserve mutation journals in matching
+runtime backups; do not delete a pending marker to bypass recovery.
+
 ## Traverse the complete catalog
 
 ```text

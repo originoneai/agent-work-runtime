@@ -24,6 +24,7 @@ mod search;
 mod session;
 mod source;
 mod source_changes;
+mod source_relocation;
 mod work_action;
 mod work_create;
 

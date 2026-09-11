@@ -112,6 +112,35 @@ pub fn index_project(
     manifest: &Manifest,
     force: bool,
 ) -> Result<IndexReport> {
+    let guard = store.lock_sources()?;
+    index_project_locked(store, root, manifest, force, &guard, None)
+}
+
+/// Used by a journaled relocation while holding the same lock as normal refreshes.
+pub fn index_project_locked(
+    store: &mut Store,
+    root: &Path,
+    manifest: &Manifest,
+    force: bool,
+    guard: &awr_store::SourceLock,
+    relocation: Option<&str>,
+) -> Result<IndexReport> {
+    store.check_source_lock(guard)?;
+    let pending = root.join(".awr/mutations/source-relocation.pending");
+    if pending.exists() {
+        let key = String::from_utf8(crate::read_source_capped(&pending, 256)?)
+            .map_err(|_| Error::InvalidInput("invalid relocation marker".into()))?;
+        if relocation != Some(key.as_str()) {
+            return Err(Error::SourceConflict("source relocation pending; inspect source relocate-status and explicitly recover it".into()));
+        }
+    }
+    if root.join(".awr/project.toml").exists()
+        && serde_json::to_value(Manifest::load(root)?)? != serde_json::to_value(manifest)?
+    {
+        return Err(Error::SourceConflict(
+            "source mapping changed while waiting for refresh".into(),
+        ));
+    }
     process_project(store, root, manifest, Some(force), None)
 }
 
@@ -131,6 +160,15 @@ pub fn preview_index_project(
 
 /// Refresh source registry and availability without parsing or promoting pending facts to fresh.
 pub fn scan_project(store: &mut Store, root: &Path, manifest: &Manifest) -> Result<IndexReport> {
+    let _guard = store.lock_sources()?;
+    if root
+        .join(".awr/mutations/source-relocation.pending")
+        .exists()
+    {
+        return Err(Error::SourceConflict(
+            "source relocation pending; inspect its receipt before scanning".into(),
+        ));
+    }
     process_project(store, root, manifest, None, None)
 }
 

@@ -22,6 +22,8 @@ mod schema;
 mod search;
 mod session;
 mod source_changes;
+mod source_lock;
+pub use source_lock::SourceLock;
 mod transaction;
 mod work;
 mod work_action;
