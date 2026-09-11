@@ -1,13 +1,13 @@
 # Native npm and PyPI distributions
 
-AWR 0.3.2 is a stable package release. npm uses the `latest` channel and PyPI uses
-`0.3.2` without a prerelease suffix. Both install the same Rust CLI and MCP server;
+AWR 0.3.3 is a stable package release. npm uses the `latest` channel and PyPI uses
+`0.3.3` without a prerelease suffix. Both install the same Rust CLI and MCP server;
 no separate JavaScript or Python SDK is included.
 
 ```sh
-npm install -g @originoneai/agent-work-runtime@0.3.2
+npm install -g @originoneai/agent-work-runtime@0.3.3
 # or, in a virtual environment
-python -m pip install agent-work-runtime==0.3.2
+python -m pip install agent-work-runtime==0.3.3
 awr --version
 awr-mcp --version
 ```
@@ -42,7 +42,8 @@ python scripts/release/smoke_install.py .local/distribution-001
 
 Each run uses a new output directory. The installation check uses isolated pip/npm
 installs, verifies both native versions and errors, initializes a Unicode project,
-compiles task context, checks intake diagnosis and discovers the eight MCP tools.
+compiles task context, checks intake diagnosis and verifies the exact 20-tool stdio
+MCP catalog. The shared HTTP service exposes 21 tools, including project discovery.
 These are installation checks, not proof of every real-agent business scenario.
 
 ## Publish reviewed builds
@@ -70,9 +71,9 @@ packages, checksums and aggregate manifest. Raw execution records stay local or 
 isolated CI artifacts and are not committed to the repository.
 
 
-## Pinned host payload (0.3.2)
+## Pinned host payload (0.3.3)
 
-AWR `0.3.2` uses database schema 4. Host applications can bundle the same native CLI and MCP server without the registry launchers. A locally built payload has its own recorded source and artifact identity. The matching macOS arm64 or Intel x64 payload can be embedded directly in an application; runtime users need no Node/Python/Rust installation and no PATH changes. The build/verification machine still needs its development tools. The host is responsible for application signing, notarization and updating its bundled binary.
+AWR `0.3.3` uses database schema 4. Host applications can bundle the same native CLI and MCP server without the registry launchers. A locally built payload has its own recorded source and artifact identity. The matching macOS arm64 or Intel x64 payload can be embedded directly in an application; runtime users need no Node/Python/Rust installation and no PATH changes. The build/verification machine still needs its development tools. The host is responsible for application signing, notarization and updating its bundled binary.
 
 From clean committed source:
 
@@ -86,7 +87,7 @@ Invoke the executable by its absolute application-resource path with `--project 
 
 ## Matched upgrade and rollback checklist
 
-AWR 0.3.2 exposes a native `runtime.matched_snapshot` capability for
+AWR 0.3.3 exposes a native `runtime.matched_snapshot` capability for
 `runtime binding`, `backup`, `check`, `restore-preview`, `restore`, `restore-status`
 and `restore-recover`. See the [snapshot contract](../reference/runtime-snapshots.md)
 for exact program/configuration/source matching and offline history restoration.

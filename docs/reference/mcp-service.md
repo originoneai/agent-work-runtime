@@ -1,7 +1,7 @@
 # Shared MCP service
 
-The source build supports a single Streamable HTTP endpoint for multiple projects
-and independent MCP clients. This capability is not in the published 0.3.2 packages.
+AWR 0.3.3 supports a single Streamable HTTP endpoint for multiple projects
+and independent MCP clients. Both npm and PyPI packages include this capability.
 The existing `awr-mcp --project /absolute/project` stdio command remains available.
 
 Initialize each project on the server using `awr init`. Register its canonical

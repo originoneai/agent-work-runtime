@@ -172,9 +172,9 @@ or delivery is unverified, use the manual checkpoint process above.
 [Official hook guide](https://docs.x.ai/build/features/hooks)
 
 Grok web's custom connectors require a reachable MCP URL; a local executable path
-cannot be entered as that URL. AWR's source build now offers a
-[shared Streamable HTTP service](../reference/mcp-service.md), beyond published
-0.3.2. Deploying it and meeting a connector's authentication requirements remains
+cannot be entered as that URL. AWR 0.3.3 offers a
+[shared Streamable HTTP service](../reference/mcp-service.md). Deploying it and
+meeting a connector's authentication requirements remains
 separate from configuring Grok Build; this guide does not verify that connector.
 [Official web connector guide](https://docs.x.ai/grok/connectors)
 
