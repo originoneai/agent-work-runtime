@@ -63,3 +63,6 @@ pub use ledger_batch::*;
 
 mod adoption;
 pub use adoption::*;
+
+mod organization_edit;
+pub use organization_edit::{edit_organization_fields, organization_fields};

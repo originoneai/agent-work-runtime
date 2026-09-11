@@ -750,3 +750,35 @@ Counts describe source states; they do not certify acceptance or releases. Full
 organization evidence assessment runs only against an explicitly supplied
 `source_sha`, as before. Snapshot and cached-currentness metadata retain the query
 contract above. A summary reduces transport size, not the source verification scope.
+
+### Explicit project organization metadata
+
+`organization show --source SOURCE_ID --mapping fields.json` reads source annotations.
+A mapping is an object from `phase`, `scope`, `focus`, and/or `next_action` to exact
+JSON pointers, for example `{"phase":"/current/stage","focus":"/current/work"}`.
+Parents must already be YAML mappings. Escaped pointer segments, array ancestors,
+overlapping paths, entity collections, lifecycle, release, contract and count fields
+are outside this finite writer. Unmapped values and surrounding YAML bytes remain
+untouched. Hosts can consume the returned focus explicitly; reading it never starts,
+claims, activates, reopens or completes work.
+
+`organization preview --input change.json` is a read-only full preflight. The input
+has `version: 1`, `request_key`, `actor: {host, subject, origin}`, `reason`,
+`source_id`, `source_fingerprint`, `mapping`, and `values`. Actor origins reuse the
+host contract (`human`, `ai_accepted`, `delegated_agent`); they record provenance,
+not permission. Values use a phase plan key, a scope array of exact work keys, a
+nonterminal focus work key, and next-action text. Null can clear optional metadata.
+Unknown references, focus/phase or focus/scope conflicts, stale sources and attempts
+to alter projected work, dependencies, status, acceptance or evidence are rejected.
+The preview binds every changed field, source/configuration fingerprints and project
+revision. No project-specific completion formula or denominator is embedded in AWR.
+
+Apply with `organization change --input change.json --expected-preview HASH
+--expected-revision N`. Inspect with `organization status --key KEY`; recover an
+interruption with `organization recover --key KEY --expected-revision N` after
+reviewing its receipt. Recovery accepts only the recorded before/after source bytes
+and original configuration, and never overwrites external edits. The source write
+and subsequent projection refresh are separate durable steps. If refresh fails,
+the retained receipt identifies the possible saved source; source history records
+the refreshed fingerprint. Repeated completed requests return the historical receipt
+without applying the metadata again. Private receipts live under `.awr/mutations`.

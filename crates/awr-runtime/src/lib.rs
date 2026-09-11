@@ -150,3 +150,9 @@ pub use batch::*;
 
 mod status_summary;
 pub use status_summary::{StatusScope, summarize_status};
+
+mod organization_change;
+pub use organization_change::{
+    OrganizationChange, change_organization, organization_preview, organization_status,
+    read_organization, recover_organization,
+};

@@ -37,6 +37,22 @@ fn catalog() -> Vec<Capability> {
             ][..],
         ),
         (
+            "organization.mapped_metadata",
+            true,
+            &[
+                "organization preview",
+                "organization change",
+                "organization status",
+                "organization recover",
+            ][..],
+            &[
+                "primary_yaml",
+                "explicit_mapping",
+                "no_entity_or_acceptance_changes",
+                "exact_preview",
+            ][..],
+        ),
+        (
             "source.read",
             true,
             &["source list", "source show"][..],
