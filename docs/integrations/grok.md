@@ -171,10 +171,12 @@ claiming automatic AWR persistence. If events are missing, hooks are inactive,
 or delivery is unverified, use the manual checkpoint process above.
 [Official hook guide](https://docs.x.ai/build/features/hooks)
 
-Grok web's custom connectors require a reachable MCP URL. AWR currently provides
-local stdio, so the executable path cannot be entered as a web connector URL.
-A remote transport/deployment is outside this guide and has not been supplied
-by merely configuring Grok Build. [Official web connector guide](https://docs.x.ai/grok/connectors)
+Grok web's custom connectors require a reachable MCP URL; a local executable path
+cannot be entered as that URL. AWR's source build now offers a
+[shared Streamable HTTP service](../reference/mcp-service.md), beyond published
+0.3.2. Deploying it and meeting a connector's authentication requirements remains
+separate from configuring Grok Build; this guide does not verify that connector.
+[Official web connector guide](https://docs.x.ai/grok/connectors)
 
 Local command/version checks, project-scoped configuration parsing and the
 documented untrusted-folder diagnostic are recorded separately from AWR's CLI

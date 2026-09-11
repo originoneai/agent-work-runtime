@@ -1,8 +1,17 @@
 # AWR MCP
 
-One `awr-mcp` process serves one initialized project over stdio. Build with `cargo build --locked -p awr-mcp`; Cargo.lock pins the official `rmcp` SDK. The SDK handles protocol negotiation, initialization, JSON-RPC framing, discovery and shutdown. stdout contains protocol messages; diagnostics use stderr.
+One `awr-mcp` process can serve multiple initialized projects and clients through
+a shared Streamable HTTP endpoint. Local single-project stdio remains available.
+Build with `cargo build --locked -p awr-mcp`; Cargo.lock pins the official `rmcp`
+SDK. Diagnostics use stderr; stdio stdout contains protocol messages only.
 
-A generic client configuration is:
+The shared service and lifecycle extensions below are **unreleased source-build
+capabilities**, beyond published 0.3.2. See the [shared service guide](../../docs/reference/mcp-service.md)
+for the project registry, client access, persistent conversations, wait/reply flow
+and request outcome recovery. Clients share one URL and select an authorized
+project on each call; projects retain separate sources and runtime databases.
+
+A generic configuration for local stdio is:
 
 ```json
 {
@@ -15,13 +24,19 @@ A generic client configuration is:
 }
 ```
 
-Initialize and index the selected project through `awr init` and `awr source reindex` first. Starting the MCP server does not create or migrate a database. The project cannot be overridden through tool arguments. No shell or report command is executed by a tool.
+Initialize and index projects through `awr init` and `awr source reindex` first.
+Starting the server does not create or migrate a database. Stdio stays bound to its
+startup project; HTTP accepts registered project keys, never arbitrary paths.
+No shell or report command is executed by a tool.
 
-## Eight tools
+## Work and context tools
+
+These eight original tools retain their domain contracts. The source build also
+exposes twelve lifecycle/continuity tools below; HTTP adds `awr_projects_list`.
 
 | Tool | Arguments and behavior |
 | --- | --- |
-| `awr_project_status` | Optional `branch`; compact progress, current work and next suggestion. |
+| `awr_project_status` | Optional `branch`, `source_sha`; `view: summary` accepts `work` (array), `goal` or `milestone` scope. Compact progress and next suggestion. |
 | `awr_work_ready` | Optional `branch`, `limit` (1–100, default 10); dependency readiness and bounded exclusion diagnostics. |
 | `awr_work_get` | Required `work`; optional `branch`, `source_sha`; exact acceptance, dependencies and decision/evidence summaries. |
 | `awr_context_compile` | Optional `work`, `session`, `agent`, `detached`, `branch`, `goals`, `paths`, `tags`, `source_sha`, `intent`, `budget`, `checkpoint` or `after_revision`; existing L1 context, hash, completeness and omission metadata. |
@@ -38,13 +53,22 @@ Input objects reject unknown fields. Total tool arguments are limited to 1 MiB; 
 
 The five read tools use the existing Source, Store, Context and Search services against a disposable SQLite memory snapshot. The persistent database is opened read-only. The source indexer and lazy FTS cache may write to that private snapshot; no cache or projection is copied back. If reindexing would change a source, registration or project revision, the read returns `SourceStale` instead of presenting an ephemeral revision as real state. Sources and the live project revision are checked again before the response.
 
-On `SourceStale`, inspect and run `awr source reindex`, then read the tool result again. On `RevisionConflict`, obtain and review the new state before choosing the next action. The initial database snapshot is capped at 256 MiB; source reads retain the existing per-source caps. Large-project scaling and memory optimization remain scheduled work.
+On `SourceStale`, inspect and run `awr source reindex` or explicitly call
+`awr_source_reindex`, then read again. On `RevisionConflict`, review the new state
+before choosing the next action. The database snapshot is capped at 256 MiB;
+source reads retain existing per-source caps. Large-project memory optimization
+remains separate work. Runtime-only session and operation inspection does not
+require the source files to be available.
 
 The returned metadata records `freshness_basis: source_verified_readonly`, `source_refresh_performed: false` and `read_only: true`. Sessions, claims, events, checkpoints and selection are not changed by these tools. Named branch context retains the existing execution boundary: closed branches cannot be used for a new execution pack, while their historical records remain available through CLI drill-down commands.
 
 ## Source actions
 
-Start an actual development session/claim using the CLI, then get the current revision from a read tool. MCP source actions reuse `perform_work_action` and `complete_work`, including source fingerprint checks, claim/session ownership, dependency/acceptance gates, mutation proposals, recovery snapshots and durable event receipts.
+Start an actual session/claim through `awr_session_start` or the CLI, then get the
+current revision from a read tool. HTTP sessions must be bound to the authenticated
+client; local CLI sessions remain usable through stdio. MCP source actions reuse
+the same domain services, including source fingerprint checks, claim ownership,
+dependency/acceptance gates, mutation proposals and durable event receipts.
 
 | Action | Action-specific fields |
 | --- | --- |
@@ -88,6 +112,30 @@ Source work actions retain the domain service's fingerprint checks before accept
 
 Domain errors are tool results with `isError: true` and the core AWR `code` and message. Incomplete context retains its L1 diagnostics and `completeness` alongside the error. A source write failure that has already produced a proposal returns that proposal's report, including its recovery outcome. Unknown tools are JSON-RPC protocol errors. Successful tool results have `isError: false`.
 
-An interrupted or cancelled request may have already committed a mutation. Read project state and inspect the relevant CLI event/proposal/evidence receipt before retrying; do not infer rollback from losing a transport response. Session start/checkpoint/end, claim acquisition/release, branch lifecycle and detailed history inspection remain available through the CLI, keeping the MCP catalog at eight tools.
+An interrupted or cancelled request may have committed. Shared HTTP writes require
+stable `request_id` values; stdio accepts them optionally. Inspect the identified
+operation before retrying. The request journal consumes revisions too: use returned
+revisions, not a calculated increment. See the [recovery contract](../../docs/reference/mcp-service.md#write-identity-and-unknown-outcomes).
+
+## Session and continuity tools
+
+| Tool | Purpose |
+| --- | --- |
+| `awr_session_start` | Bind a host conversation to a work session and optionally claim work. |
+| `awr_session_get` | Read the session, claims, checkpoint, waits and successor. |
+| `awr_session_list` | Page through the authenticated client's sessions. |
+| `awr_session_checkpoint` | Save consumed context, progress and next action. |
+| `awr_session_claim` | Acquire or release the selected session's claim. |
+| `awr_session_end` | End or interrupt a session and settle claims. |
+| `awr_session_resume` | Explicitly continue a predecessor in a successor session. |
+| `awr_session_wait` | Save a checkpoint and durable question before waiting for the user. |
+| `awr_session_reply` | Save an answer or cancellation without executing work. |
+| `awr_operation_get` | Inspect the authenticated client's saved request outcome. |
+| `awr_operation_recover` | Recover a proven committed outcome without replaying its action. |
+| `awr_source_reindex` | Refresh configured source projections explicitly. |
+
+The [service guide](../../docs/reference/mcp-service.md) defines arguments, scope,
+limits and continuation. Branch creation/selection and other detailed administration
+remain CLI operations; adding MCP continuity does not change those domain rules.
 
 The implementation follows the [official Rust SDK](https://github.com/modelcontextprotocol/rust-sdk) and [MCP tools specification](https://modelcontextprotocol.io/specification/2026-07-28/server/tools). Local stdio checks and development self-use are recorded as feature evidence; they do not constitute E4 business acceptance or release approval.

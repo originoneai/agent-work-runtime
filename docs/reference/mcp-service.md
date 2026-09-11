@@ -53,6 +53,13 @@ projects. Origins are denied unless explicitly listed in `allowed_origins`;
 native clients normally omit Origin. The SDK checks `allowed_hosts`, defaulting
 to loopback hosts when none are configured.
 
+Configure each MCP client for Streamable HTTP, the same service URL, and its own
+bearer credential using that client's credential mechanism. Clients need network
+access to the service, not a local AWR executable or a separate server process per
+project. Project files must be available to the server; a path on a client laptop
+does not become readable remotely. The service validates Origin but does not
+implement browser CORS preflight; a browser frontend needs an appropriate gateway.
+
 Call `awr_projects_list` to discover authorized project keys. Every project tool
 then requires `project`, for example:
 
@@ -64,6 +71,12 @@ There is no shared current project and no tool for opening an arbitrary server
 path. Configuration changes take effect after a service restart. Disconnecting a
 client or restarting the HTTP service does not end an AWR work session. Protocol
 connections and persistent AWR sessions are separate identities.
+
+Keep client IDs stable across credential rotation to retain conversation and
+request bindings. Changing the client ID creates a distinct scope. On Unix,
+SIGTERM and Ctrl-C gracefully stop accepting requests and drain active HTTP work;
+they do not end persistent AWR sessions. Use the deployment's process supervisor
+for service startup/restart. AWR does not install a system daemon automatically.
 
 Reads can run concurrently. Writes are serialized per project, with existing
 database revision and source-fingerprint checks for other processes. Different

@@ -7,6 +7,13 @@ paths or user content into a shell command. A host owns its UI, client credentia
 scheduling, notifications and knowledge processing. AWR owns the source-backed work
 projection, runtime records and its supported source mutations.
 
+Hosts that need a central service can instead use the source build's
+[shared MCP endpoint](mcp-service.md). One process routes explicit project keys
+for multiple authenticated clients and persists host conversation/session bindings,
+checkpoints, waits and request outcomes. This is an alternative transport; host UI,
+model execution and wakeup scheduling remain host responsibilities. The shared
+service and lifecycle extensions are beyond the published 0.3.2 CLI/package baseline.
+
 The runnable [no-UI host example](../../examples/host-app/README.md) demonstrates
 these operations with argv, protected JSON, complete paging and explicit generic
 client continuation. Its synthetic fixture checks are separate from native-client

@@ -38,9 +38,11 @@ help does not expose the older `kimi mcp` subcommand or `--mcp-config-file` flag
 [Official MCP guide](https://www.kimi.com/code/docs/en/kimi-code-cli/customization/mcp.html)
 
 Confirm the connected server's project identity using `awr_project_status`.
-Its [eight tools](../../crates/awr-mcp/README.md) include `awr_context_compile`;
-session start/checkpoint/resume remain CLI operations. A configuration file or a
-running Kimi conversation does not establish that these tools are connected.
+Its [work/context tools](../../crates/awr-mcp/README.md) include `awr_context_compile`.
+The source build also provides MCP session start/checkpoint/resume and a
+[shared HTTP service](../reference/mcp-service.md), beyond published 0.3.2.
+The CLI workflow below remains usable. A configuration file or a running Kimi
+conversation does not establish that these tools are connected.
 
 ## Start or receive an AWR session
 

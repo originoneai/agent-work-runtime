@@ -2,6 +2,13 @@
 use awr_core::*;
 use awr_source::{Manifest, index_project};
 use awr_store::Store;
+use rmcp::{
+    ServiceExt,
+    model::CallToolRequestParams,
+    transport::{
+        StreamableHttpClientTransport, streamable_http_client::StreamableHttpClientTransportConfig,
+    },
+};
 use serde_json::{Value, json};
 use std::{fs, path::PathBuf, process::Stdio, time::Duration};
 use tokio::{
@@ -133,6 +140,74 @@ fn start_args(
     claim: bool,
 ) -> Value {
     json!({"project":project,"work":work,"conversation":conversation,"agent":"guide-editor","provider":"synthetic","model":"fixture","expected_revision":revision,"claim":claim,"request_id":Id::new().to_string()})
+}
+
+#[tokio::test]
+async fn official_sdk_clients_discover_and_call_the_same_http_endpoint() {
+    let a = ProjectFixture::new("Write the team guide");
+    let b = ProjectFixture::new("Write the other guide");
+    let config = registry(&a, &b);
+    let mut server = Server::start(&config).await;
+    for (credential, expected_projects) in [(WRITER, 2), (READER, 1)] {
+        let transport = StreamableHttpClientTransport::with_client(
+            reqwest::Client::new(),
+            StreamableHttpClientTransportConfig::with_uri(server.url.clone())
+                .auth_header(credential),
+        );
+        let client = timeout(Duration::from_secs(15), ().serve(transport))
+            .await
+            .unwrap()
+            .unwrap();
+        let tools = client.list_all_tools().await.unwrap();
+        assert_eq!(tools.len(), awr_mcp::tools().len() + 1);
+        assert!(
+            tools
+                .iter()
+                .any(|tool| tool.name == "awr_operation_recover")
+        );
+        let catalog = client
+            .call_tool(CallToolRequestParams::new("awr_projects_list"))
+            .await
+            .unwrap();
+        assert_eq!(
+            catalog.structured_content.unwrap()["projects"]
+                .as_array()
+                .unwrap()
+                .len(),
+            expected_projects
+        );
+        let status = client
+            .call_tool(
+                CallToolRequestParams::new("awr_project_status")
+                    .with_arguments(json!({"project":"alpha"}).as_object().unwrap().clone()),
+            )
+            .await
+            .unwrap();
+        assert_ne!(status.is_error, Some(true));
+        assert_eq!(
+            status.structured_content.unwrap()["project_id"],
+            json!(a.id)
+        );
+        client.cancel().await.unwrap();
+    }
+    #[cfg(unix)]
+    {
+        let status = Command::new("kill")
+            .args(["-TERM", &server.child.id().unwrap().to_string()])
+            .status()
+            .await
+            .unwrap();
+        assert!(status.success());
+        assert!(
+            timeout(Duration::from_secs(10), server.child.wait())
+                .await
+                .unwrap()
+                .unwrap()
+                .success()
+        );
+    }
+    #[cfg(not(unix))]
+    server.stop().await;
 }
 
 #[tokio::test]

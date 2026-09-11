@@ -105,8 +105,11 @@ plan and task sources, then runs `intake inspect` again. It does not invent your
 business intent. Nonstandard fields and statuses have explicit mappings such as
 `--status-map pending=planned` and `--field-map title=事项`.
 
-For MCP, configure the client to launch `awr-mcp --project /absolute/project/path`
-after initialization. See the [MCP setup and eight tools](crates/awr-mcp/README.md),
+For local MCP, configure the client to launch `awr-mcp --project /absolute/project/path`
+after initialization. The source build additionally provides a [shared MCP service](docs/reference/mcp-service.md):
+one HTTP endpoint for multiple projects and clients, with persistent sessions,
+checkpoints, user waits and request recovery. These extensions are not in the
+published 0.3.2 packages. See the [MCP setup and tools](crates/awr-mcp/README.md),
 [Codex guide](docs/integrations/codex.md),
 [checkpoint/resume example](examples/codex/README.md) and
 [project intake and execution guide](docs/TAKEOVER.md).

@@ -1,10 +1,12 @@
 # CLI / MCP 输出与错误契约
 
-适用于当前 `0.1.0-dev` 实现。V1 MCP 固定提供 8 个工具，调用现有领域服务。CLI 是完整的项目管理入口；MCP 只暴露下表中的动作。
+本页描述八个原有工作与上下文工具的 CLI/MCP 领域对照。当前源码新增十二个会话与接续工具；共享 HTTP 服务另有项目目录工具，总计 21 个，stdio 为 20 个。新增能力尚未包含在已发布的 0.3.2 包中，完整契约见[共享 MCP 服务](mcp-service.md)。CLI 继续提供完整项目管理入口。
 
 ## 动作映射
 
-CLI 示例统一以 `awr --project /absolute/project --json` 为前缀。表中的 `R` 是最近一次观察到的 `project_revision`，会话由 `awr session start` 创建。
+CLI 示例统一以 `awr --project /absolute/project --json` 为前缀。表中的 `R` 是最近一次观察到的 `project_revision`。会话可由 `awr session start` 或 `awr_session_start` 创建；共享 HTTP 调用必须使用当前认证客户端绑定的会话。
+
+共享 HTTP 每次调用显式传 `project`，写入还需稳定 `request_id`。请求回执会额外推进项目版本，原有 CLI/stdio 对照以不启用请求日志的调用为基线。使用日志时按返回版本继续，不要求它与独立 CLI 执行后的数字相同。上下文额外返回等待/回复的 `continuity`，该信封独立于 L1 正文、预算和 hash。
 
 | MCP 工具 | CLI 对应动作 | 参数对应与返回值 |
 | --- | --- | --- |
@@ -57,7 +59,7 @@ Evidence 输入和 Event payload 的相对路径以 `--project` 根目录为基�
 | `freshness_basis` | `source_refresh` | `source_verified_readonly` |
 | `source_refresh_performed` | `true` | `false` |
 | `read_only` | `false`，可能更新可重建的 DB 投影 | `true`，不持久化任何表的变化 |
-| 来源已改变 | 先刷新，返回新版本或显式缺口 | 返回 `SourceStale`；显式运行 `awr source reindex` 后再读 |
+| 来源已改变 | 先刷新，返回新版本或显式缺口 | 返回 `SourceStale`；显式运行 `awr source reindex` 或 `awr_source_reindex` 后再读 |
 
 MCP 在内存快照中验证来源，并在返回前再次检查来源和真实 DB revision。它不会把临时快照版本当作持久状态返回。CLI 刷新不会改写权威源文件。通用查询提供 `source_issues` 和 `source_warnings`；L1 将来源与所需缺口放在自己的上下文和 `completeness` 中。
 
@@ -110,8 +112,11 @@ python3 crates/awr-mcp/tests/cli_parity.py \
   --awr target/debug/awr --mcp target/debug/awr-mcp
 cargo test -p awr-cli --test output_cli --locked
 cargo test -p awr-mcp --test stdio --locked
+cargo test -p awr-mcp --test shared --locked
 ```
 
 对照程序使用临时 fixture，实际启动 CLI 与 MCP stdio。读取比较完整领域 JSON，逐表检查 MCP 未写入 DB，检查权威来源字节不变；写入从同一快照分别执行，并核对状态、源文件结果、revision、缺口、证据和认领回执。Context hash 和必需事实不做归一化。独立写入的生成 ID / 时间分别验证，不能作为两次执行内容相等的条件。
 
-这些属于本地接口与功能验证，不代表真实客户端业务验收、性能测量或发布结果。
+HTTP 集成另外覆盖多客户端、多项目、会话、等待、重复请求、重启和未知结果恢复；官方 Rust MCP SDK 客户端还验证协议发现与调用。八项 CLI 对照没有被扩充成全部新工具的逐项对照。
+
+这些属于本地接口与功能验证，不代表真实 Agent 客户端业务验收、性能测量或发布结果。
