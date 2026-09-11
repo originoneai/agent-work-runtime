@@ -22,11 +22,15 @@ impl Drop for Fixture {
     }
 }
 impl Fixture {
-    fn new() -> Self {
+    fn uninitialized() -> Self {
         let f = Self(std::env::temp_dir().join(format!("awr-snapshot-{}", Id::new())));
         fs::create_dir(&f.0).unwrap();
         fs::write(f.0.join("work.yaml"),"goals:\n- id: G\n  title: Deliver a useful guide\n  status: active\nwork_items:\n- id: W\n  title: Draft a guide\n  status: in_progress\n  goal: G\n  acceptance: [Useful examples]\n  next_action: Review examples\n").unwrap();
         fs::write(f.0.join("map.toml"),"[project]\nname='Guide'\ncontext_profile='minimal'\n[[sources]]\ndomain='ledger'\nrole='primary'\npath='work.yaml'\nadapter='yaml-ledger-v1'\n").unwrap();
+        f
+    }
+    fn new() -> Self {
+        let f = Self::uninitialized();
         f.ok(&["init", "--manifest", "map.toml", "--accept"]);
         fs::write(
             f.0.join(".awr/runtime-binding.json"),
@@ -492,4 +496,64 @@ fn backup_includes_committed_wal_and_restore_retains_displaced_sidecars() {
         f.ok(&["runtime", "binding"])["project"]["project_revision"],
         event.project_revision
     );
+}
+
+#[test]
+fn git_backups_bind_resolved_commit_and_refuse_a_new_commit_with_identical_blob_bytes() {
+    let f = Fixture::uninitialized();
+    let git = |args: &[&str]| {
+        let r = Command::new("git")
+            .arg("-C")
+            .arg(&f.0)
+            .args([
+                "-c",
+                "core.hooksPath=/dev/null",
+                "-c",
+                "user.name=Snapshot Fixture",
+                "-c",
+                "user.email=snapshot@example.invalid",
+            ])
+            .args(args)
+            .output()
+            .unwrap();
+        assert!(r.status.success(), "{}", String::from_utf8_lossy(&r.stderr));
+        String::from_utf8(r.stdout).unwrap()
+    };
+    git(&["init"]);
+    git(&["add", "work.yaml"]);
+    git(&["commit", "-m", "Initial source"]);
+    let commit = git(&["rev-parse", "HEAD"]);
+    let path = f.0.join("map.toml");
+    let mut manifest = awr_source::Manifest::parse(&fs::read_to_string(&path).unwrap()).unwrap();
+    manifest.sources[0].path = None;
+    manifest.sources[0].locator = Some("git://HEAD:work.yaml".into());
+    fs::write(path, toml::to_string_pretty(&manifest).unwrap()).unwrap();
+    f.ok(&["init", "--manifest", "map.toml", "--accept"]);
+    let backup = f.backup();
+    let source = &backup["snapshot"]["sources"][0];
+    assert_eq!(
+        source["observed_locator"],
+        format!("git://{}:work.yaml", commit.trim())
+    );
+    assert_ne!(source["source"]["fingerprint"], source["content"]["sha256"]);
+    f.advance();
+    let restored = f.restore(&f.preview());
+    assert_eq!(
+        restored["project_revision"],
+        backup["snapshot"]["project_revision"]
+    );
+    // Same bytes at a different immutable commit are a distinct source binding.
+    git(&[
+        "commit",
+        "--allow-empty",
+        "-m",
+        "Advance the source revision",
+    ]);
+    assert_eq!(
+        f.ok(&["runtime", "check", "--backup", "backup"])["phase"],
+        "verified"
+    );
+    let original = fs::read(f.0.join("work.yaml")).unwrap();
+    f.reject(&["runtime", "restore-preview", "--backup", "backup"]);
+    assert_eq!(fs::read(f.0.join("work.yaml")).unwrap(), original);
 }

@@ -44,6 +44,11 @@ The bundle contains:
 - `sources/<source-id>.bin`: exact registered source content, including supported
   Git locators and explicitly authorized external sources.
 
+Each source retains its observed locator separately from its registration locator.
+A Git source binds the resolved immutable commit and original blob bytes; its
+source fingerprint differs from the raw payload checksum. Advancing a configured
+Git ref invalidates matching restore even when its blob content stays identical.
+
 External artifacts, unregistered business files and host state outside `.awr`
 need their own backup. A restored artifact registration does not restore an
 excluded file. Bundles can contain private work, so keep them in private storage;

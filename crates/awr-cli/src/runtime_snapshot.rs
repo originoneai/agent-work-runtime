@@ -97,6 +97,7 @@ struct Program {
 #[serde(deny_unknown_fields)]
 struct SourceCopy {
     source: Source,
+    observed_locator: String,
     content: Blob,
 }
 #[derive(Clone, Serialize, Deserialize)]
@@ -330,7 +331,10 @@ fn require_clear(runtime: &Path) -> Result<()> {
     }
     Ok(())
 }
-fn sources(store: &Store, root: &Path) -> Result<(String, Vec<(Source, Vec<u8>)>)> {
+fn sources(
+    store: &Store,
+    root: &Path,
+) -> Result<(String, Vec<(Source, awr_source::SourceSnapshot)>)> {
     let project = store.project_by_root(root)?;
     let state = awr_source::source_state_fingerprint(store, project.id)?;
     let mut check = store.memory_snapshot(FILE_CAP)?;
@@ -356,7 +360,7 @@ fn sources(store: &Store, root: &Path) -> Result<(String, Vec<(Source, Vec<u8>)>
                 "source snapshot exceeds total size/file cap".into(),
             ));
         }
-        content.push((source, snapshot.bytes));
+        content.push((source, snapshot));
     }
     Ok((state, content))
 }
@@ -457,15 +461,16 @@ fn backup(
         write_payload(&output, &expected.path, &bytes, false)?;
     }
     let mut copies = Vec::new();
-    for (source, bytes) in content {
+    for (source, observed) in content {
         let payload = write_payload(
             &output,
             &format!("sources/{}.bin", source.id),
-            &bytes,
+            &observed.bytes,
             false,
         )?;
         copies.push(SourceCopy {
             source,
+            observed_locator: observed.locator,
             content: payload,
         });
     }
@@ -556,9 +561,7 @@ fn checked(backup: &Path) -> Result<(PathBuf, Snapshot, Store)> {
         return Err(conflict("snapshot has no project configuration"));
     }
     for copy in &snapshot.sources {
-        if copy.content.path != format!("sources/{}.bin", copy.source.id)
-            || copy.content.sha256 != copy.source.fingerprint
-        {
+        if copy.content.path != format!("sources/{}.bin", copy.source.id) {
             return Err(conflict("source payload binding differs"));
         }
         payloads.push(&copy.content);
@@ -579,6 +582,29 @@ fn checked(backup: &Path) -> Result<(PathBuf, Snapshot, Store)> {
             ));
         }
         blob_bytes(&root, blob)?;
+    }
+    for copy in &snapshot.sources {
+        let observed = awr_source::SourceSnapshot {
+            locator: copy.observed_locator.clone(),
+            fingerprint: copy.source.fingerprint.clone(),
+            bytes: blob_bytes(&root, &copy.content)?,
+        };
+        let location_matches = if let Some(original) = copy.source.locator.strip_prefix("git://") {
+            let original_path = original.split_once(':').map(|(_, p)| p);
+            let observed_path = observed
+                .locator
+                .strip_prefix("git://")
+                .and_then(|s| s.split_once(':'))
+                .map(|(_, p)| p);
+            original_path.is_some() && original_path == observed_path
+        } else {
+            copy.source.locator == observed.locator
+        };
+        if !location_matches || !observed.verify_fingerprint() {
+            return Err(conflict(
+                "source bytes or resolved locator differ from recorded fingerprint",
+            ));
+        }
     }
     for suffix in ["-wal", "-shm", "-journal", "-restore.pending"] {
         if exists(&root.join(format!("runtime/state.db{suffix}")))? {

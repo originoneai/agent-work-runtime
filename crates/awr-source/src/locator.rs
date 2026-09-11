@@ -27,6 +27,32 @@ pub struct SourceSnapshot {
     pub bytes: Vec<u8>,
 }
 impl SourceSnapshot {
+    /// Validate retained source bytes without reading the original file or Git repository.
+    /// Git fingerprints bind the resolved locator as well as the blob content.
+    pub fn verify_fingerprint(&self) -> bool {
+        let expected = if let Some(git) = self.locator.strip_prefix("git://") {
+            let Some((commit, path)) = git.split_once(':') else {
+                return false;
+            };
+            if ![40, 64].contains(&commit.len())
+                || !commit.bytes().all(|b| b.is_ascii_hexdigit())
+                || relative(Path::new(path)).is_err()
+            {
+                return false;
+            }
+            let mut hash = Sha256::new();
+            hash.update(self.locator.as_bytes());
+            hash.update([0]);
+            hash.update(&self.bytes);
+            format!("sha256:{:x}", hash.finalize())
+        } else if self.locator.starts_with("file://") {
+            fingerprint(&self.bytes)
+        } else {
+            return false;
+        };
+        self.fingerprint == expected
+    }
+
     pub fn text(&self) -> Result<&str> {
         awr_core::ensure_public_bytes(&self.bytes)?;
         std::str::from_utf8(&self.bytes)
