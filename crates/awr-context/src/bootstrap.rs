@@ -1,6 +1,5 @@
 use crate::{RuleScopeInput, SourceVersion, select_rules};
 use awr_core::*;
-use awr_source::{Manifest, index_project};
 use awr_store::Store;
 use serde::{Deserialize, Serialize};
 use sha2::{Digest, Sha256};
@@ -220,8 +219,9 @@ fn bootstrap_selected(
         ));
     }
     let root = root.canonicalize()?;
-    let manifest = Manifest::load(&root)?;
-    let refresh = index_project(store, &root, &manifest, false)?;
+    let snapshot = awr_source::refresh_snapshot(store, &root)?;
+    let refresh = snapshot.refresh;
+    let store = &snapshot.store;
     let project = store.project(refresh.project_id)?;
     let sources = store.sources(project.id)?;
     let mut gaps = Vec::new();

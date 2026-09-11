@@ -27,6 +27,54 @@ struct Capability {
 fn catalog() -> Vec<Capability> {
     [
         (
+            "runtime.matched_snapshot",
+            true,
+            &[
+                "runtime binding",
+                "runtime backup",
+                "runtime check",
+                "runtime restore-preview",
+                "runtime restore",
+                "runtime restore-status",
+                "runtime restore-recover",
+            ][..],
+            &[
+                "same_root",
+                "same_executable_bytes",
+                "matching_sources_and_known_runtime_files",
+                "database_only_restore",
+                "explicit_offline",
+                "new_files_preserved",
+                "external_host_state_excluded",
+            ][..],
+        ),
+        (
+            "query.summary",
+            true,
+            &["status --view summary"][..],
+            &[
+                "explicit_scope",
+                "source_counts_are_not_acceptance",
+                "details_on_demand",
+            ][..],
+        ),
+        (
+            "organization.mapped_metadata",
+            true,
+            &[
+                "organization preview",
+                "organization change",
+                "organization status",
+                "organization recover",
+            ][..],
+            &[
+                "primary_yaml",
+                "explicit_mapping",
+                "no_entity_or_acceptance_changes",
+                "exact_preview",
+            ][..],
+        ),
+        (
             "source.read",
             true,
             &["source list", "source show"][..],
@@ -65,6 +113,33 @@ fn catalog() -> Vec<Capability> {
             &["requires_expected_preview", "individual_files_only"],
         ),
         (
+            "intake.semantic_preflight",
+            true,
+            &["init", "source configure"],
+            &[
+                "captured_bytes",
+                "no_project_writes",
+                "execution_readiness_separate",
+                "bounded_temporary_snapshot",
+            ],
+        ),
+        (
+            "source.relocate",
+            true,
+            &[
+                "source relocate",
+                "source relocate-status",
+                "source relocate-recover",
+            ],
+            &[
+                "single_relative_file",
+                "unchanged_contents",
+                "stable_object_keys",
+                "explicit_preview",
+                "recoverable_not_filesystem_atomic",
+            ],
+        ),
+        (
             "source.configure",
             true,
             &["source configure", "source configure-status"],
@@ -72,6 +147,24 @@ fn catalog() -> Vec<Capability> {
                 "existing_project_identity_preserved",
                 "requires_expected_preview",
                 "projection_can_partially_fail",
+            ],
+        ),
+        (
+            "query.coherent_snapshot",
+            true,
+            &[
+                "status",
+                "ready",
+                "work show",
+                "object list",
+                "search",
+                "context compile",
+            ],
+            &[
+                "source_transition_wait_bounded",
+                "query_revision_is_a_snapshot",
+                "source_fingerprint_excludes_runtime_events",
+                "cached_mode_does_not_verify_current_sources",
             ],
         ),
         (

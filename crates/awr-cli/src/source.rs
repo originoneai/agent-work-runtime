@@ -12,6 +12,12 @@ use std::{
 
 #[derive(Debug, Subcommand)]
 pub enum SourceCommand {
+    /// Preview or accept a single file-source binding relocation; content must be unchanged.
+    Relocate(crate::source_relocation::RelocateArgs),
+    /// Inspect a relocation receipt and current source/configuration bindings without refreshing.
+    RelocateStatus { fingerprint: String },
+    /// Resume a reviewed interrupted relocation after validating its saved before/after state.
+    RelocateRecover { fingerprint: String },
     /// Read source lifecycle/change receipts in an immutable event window without refreshing files.
     Changes(crate::source_changes::ChangesArgs),
     /// Preview or apply an exact replacement source mapping while preserving project identity.
@@ -142,10 +148,9 @@ pub fn initialize(
         })
     })?;
     manifest.validate()?;
-    if expected_preview.is_some() {
-        let plan = crate::intake_plan::preview(&root, &manifest, &BTreeMap::new(), false)?;
-        crate::intake_plan::check_expected(&plan, expected_preview)?;
-    }
+    let plan = crate::intake_plan::preview(&root, &manifest, &BTreeMap::new(), false)?;
+    crate::intake_plan::check_expected(&plan, expected_preview)?;
+    crate::intake_plan::require_applicable(&plan)?;
     if existing.is_none() && root.join(".awr/state.db").exists() {
         return Err(Error::SourceConflict("database exists without project.toml; restore its matching manifest before initializing".into()));
     }
@@ -277,6 +282,7 @@ fn configure(
         ));
     }
     crate::intake_plan::check_expected(&plan, expected)?;
+    crate::intake_plan::require_applicable(&plan)?;
     if root.metadata()?.permissions().readonly() {
         return Err(Error::RuleViolation(
             "project directory is read-only".into(),
@@ -302,8 +308,19 @@ fn configure(
         return Ok(());
     }
     let _lock = crate::client::lock(&root, "mutations", "source-configuration")?;
+    let mut store = Store::open_existing(&runtime.join("state.db"))?;
+    let guard = store.lock_sources()?;
+    if root
+        .join(".awr/mutations/source-relocation.pending")
+        .exists()
+    {
+        return Err(Error::SourceConflict(
+            "source relocation pending; recover it before configuring sources".into(),
+        ));
+    }
     let current = crate::intake_plan::preview(&root, &candidate, &BTreeMap::new(), true)?;
     crate::intake_plan::check_expected(&current, expected)?;
+    crate::intake_plan::require_applicable(&current)?;
     let permissions = awr_source::open_file_exact(&root.join(".awr/project.toml"))?
         .metadata()?
         .permissions();
@@ -351,10 +368,8 @@ fn configure(
     directory.rename(&stage, &directory, "project.toml")?;
     receipt["write_outcome"] = serde_json::json!("applied");
     receipt["configuration_write_performed"] = serde_json::json!(true);
-    let indexed = (|| -> Result<awr_source::IndexReport> {
-        let mut store = Store::open(&runtime.join("state.db"))?;
-        index_project(&mut store, &root, &candidate, false)
-    })();
+    let indexed =
+        awr_source::index_project_locked(&mut store, &root, &candidate, false, &guard, None);
     let failure = match indexed {
         Ok(report) => {
             let failed = !report.ok;
@@ -384,7 +399,7 @@ fn configure(
     Ok(())
 }
 
-fn save_configuration_receipt(directory: &Path, receipt: &Value) -> Result<()> {
+pub(crate) fn save_configuration_receipt(directory: &Path, receipt: &Value) -> Result<()> {
     let dir = awr_source::open_dir_exact(directory)?;
     let stage = format!("receipt-{}.tmp", awr_core::Id::new());
     let mut options = cap_std::fs::OpenOptions::new();
@@ -522,6 +537,13 @@ pub(crate) fn discover(root: &Path) -> Result<(Option<Manifest>, Vec<Value>, Vec
 
 pub fn run(root: &Path, command: &SourceCommand, json_output: bool) -> Result<()> {
     match command {
+        SourceCommand::Relocate(args) => return crate::source_relocation::run(root, args),
+        SourceCommand::RelocateStatus { fingerprint } => {
+            return crate::source_relocation::status(root, fingerprint);
+        }
+        SourceCommand::RelocateRecover { fingerprint } => {
+            return crate::source_relocation::recover(root, fingerprint);
+        }
         SourceCommand::Changes(args) => return crate::source_changes::run(root, args, json_output),
         SourceCommand::ConfigureStatus {
             preview_fingerprint,
@@ -553,7 +575,10 @@ pub fn run(root: &Path, command: &SourceCommand, json_output: bool) -> Result<()
     let manifest = Manifest::load(&root)?;
     let runtime = runtime_dir(&root, false)?;
     match command {
-        SourceCommand::Configure { .. }
+        SourceCommand::Relocate(_)
+        | SourceCommand::RelocateStatus { .. }
+        | SourceCommand::RelocateRecover { .. }
+        | SourceCommand::Configure { .. }
         | SourceCommand::Changes(_)
         | SourceCommand::ConfigureStatus { .. }
         | SourceCommand::Show(_)

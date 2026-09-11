@@ -103,6 +103,7 @@ fn checked_source(conn: &Connection, expected: &Source) -> Result<Source> {
         .map_err(db_error)?
         .ok_or_else(|| Error::NotFound(format!("source {}", expected.id)))?;
     if current.revision != expected.revision
+        || current.locator != expected.locator
         || current.fingerprint != expected.fingerprint
         || current.config != expected.config
         || current.adapter != expected.adapter
@@ -132,6 +133,42 @@ fn validate_ref(value: &Value, source: &Source, fingerprint: &str) -> Result<()>
 }
 
 impl Store {
+    /// Explicit identity-preserving binding transition. Projection is refreshed separately;
+    /// the caller must hold the source lock across the matching manifest replacement.
+    pub fn relocate_source(
+        &mut self,
+        expected: &Source,
+        locator: &str,
+        config: Value,
+        guard: &crate::SourceLock,
+    ) -> Result<Source> {
+        self.check_source_lock(guard)?;
+        awr_core::ensure_public_value(&config)?;
+        awr_core::ensure_public_text(locator)?;
+        if !locator.starts_with("file://") || locator == expected.locator || !config.is_object() {
+            return Err(Error::InvalidInput(
+                "relocation requires a distinct file locator and source configuration".into(),
+            ));
+        }
+        let revision = self.project(expected.project_id)?.project_revision;
+        let mut event = EventDraft::new(
+            "source.relocated",
+            "Source binding relocated; identity and history retained",
+        );
+        event.payload = json!({"source_id":expected.id});
+        let (source, _) = self.runtime_transaction_with_event(expected.project_id, revision, event, |tx, _, event| {
+            let mut source = checked_source(tx, expected)?;
+            let collision: bool = tx.query_row("SELECT EXISTS(SELECT 1 FROM sources WHERE project_id=?1 AND locator=?2 AND id<>?3)", params![expected.project_id.to_string(), locator, expected.id.to_string()], |r| r.get(0)).map_err(db_error)?;
+            if collision { return Err(Error::SourceConflict("relocation target is already owned by a retained source".into())); }
+            let before = SourceState::from_source(&source, true);
+            tx.execute("UPDATE sources SET locator=?1,config_json=?2,freshness='stale',revision=revision+1 WHERE id=?3", params![locator, serde_json::to_string(&config)?, source.id.to_string()]).map_err(db_error)?;
+            source.locator = locator.into(); source.config = config; source.freshness = Freshness::Stale; source.revision += 1;
+            source_changes::annotate(event, Some(before), SourceState::from_source(&source, true), vec![])?;
+            Ok(source)
+        })?;
+        Ok(source)
+    }
+
     pub fn configure_source(&mut self, expected: &Source, config: Value) -> Result<Source> {
         awr_core::ensure_public_value(&config)?;
         if !config.is_object() {

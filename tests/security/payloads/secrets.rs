@@ -574,7 +574,7 @@ fn legacy_search_redacts_summaries_omits_sensitive_identity_and_rebuilds_the_old
             },
         )
         .unwrap();
-    assert_eq!(report.index_policy_version, 5);
+    assert_eq!(report.index_policy_version, 6);
     let hit = report.hits.iter().find(|h| h.external_key == "W").unwrap();
     assert_eq!(hit.summary, "[redacted]");
     assert!(!serde_json::to_string(&report).unwrap().contains(SENTINEL));

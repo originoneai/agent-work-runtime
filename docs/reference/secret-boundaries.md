@@ -1,14 +1,14 @@
 # 秘密数据边界
 
-当前使用 `awr-core` 的秘密策略 3。组件合同 `tests/security/payloads/contract.json` 1.5.0 保持 32 个条件，覆盖无凭据结构定义、Bearer 普通文字和伪装夹带检查。原始来源仍由项目维护者负责；AWR 不改写或删除包含敏感值的源文件。
+当前使用 `awr-core` 的秘密策略 4。组件合同 `tests/security/payloads/contract.json` 1.6.0 保持 32 个条件，覆盖无凭据结构定义、公开命令说明、授权叙述、Bearer 普通文字和伪装夹带检查。原始来源仍由项目维护者负责；AWR 不改写或删除包含敏感值的源文件。
 
-写入前检查原始文本和解析后的结构。覆盖来源文件及直接解析、Manifest、直接投影与来源配置、提案 patch、所有事件、checkpoint 的 digest/列表、证据元数据和产物元数据。拒绝返回固定 `RuleViolation`，不附带命中的值、键或片段。来源读取失败会保留旧投影并报告非新鲜状态；直接运行态写入被拒绝时不提交记录和事件。
+写入前检查原始文本和解析后的结构。覆盖来源文件及直接解析、Manifest、直接投影与来源配置、提案 patch、所有事件、checkpoint 的 digest/列表、证据元数据和产物元数据。拒绝保留 `RuleViolation`，并提供 `details.policy_version`、`details.category` 和 `details.next_action`；分类为 `credential`、`labelled_value`、`environment_dump` 或 `private_prompt`，不附带命中的值、键或片段。来源索引问题保留这些分类，CLI/MCP 使用同一合同。来源读取失败会保留旧投影并报告非新鲜状态；直接运行态写入被拒绝时不提交记录和事件。
 
 识别范围包括：
 
 - API key、access/refresh/id token、client secret、password/passwd/pwd、authorization，以及中文密码、令牌、密钥等标签后的值；支持常见前缀变量名。
 - 显式 `private_prompt` 字段、私有提示词标签和独立的私有 prompt 标题块。
-- `.env` 风格的大写变量赋值、`export` 赋值、明确标为 env/environment 的对象、列表或多行块。普通的 `environment: candidate` 业务标签可以使用。
+- `.env` 风格的独立大写变量赋值、`export` 赋值、明确标为 env/environment 的对象、列表或多行块。普通的 `environment: candidate` 业务标签可以使用。
 - 具有足够长度的常见 OpenAI、GitHub、Slack 凭据前缀，AWS access key、JWT、Bearer/Basic 凭据、PEM 私钥头，以及含用户名和密码的 URL。
 
 Basic 候选值需能按标准 Base64 解码，并包含用户名和密码之间的冒号，依据 [RFC 7617 第 2 节](https://www.rfc-editor.org/rfc/rfc7617#section-2)。检测也接受省略填充符的形式，不设置会漏掉短用户名/密码的长度下限。普通的 “basic source-intake” 或 “basic authentication” 不因此被当作凭据；带有 `authorization` 等敏感标签的值仍按标签规则检查。
@@ -21,11 +21,15 @@ Bearer 的普通协议讨论（例如 `Bearer authentication`）可以保留。`
 
 可以保留安全主题的普通讨论、空值和明确占位符，例如 `[redacted]`、`<redacted>`、`[withheld]`、`***`、`${EXAMPLE_API_KEY}`。实际值应从来源中移除，只留下必要的引用。讨论密码保护、token 预算或 API key 管理不会因这些词本身被删除。
 
+公开配置的命令说明也可以保留，例如 `PROJECT_ROOT=/public/project EXPECTED_ITEMS=42 cargo test --offline`，以及叙述或注释中的 `EXPECTED_ITEMS=42`。识别范围限于简单的无引号变量前缀加可识别命令词；不执行命令，不按项目名或某个变量名豁免。独立赋值、只有若干赋值的环境转储、`export` 和明确的 environment 对象继续拒绝。所有位置的敏感键赋值和可识别凭据仍独立检查；把实际密钥放在命令前缀中不能使其通过。
+
+`Completed native authorization: the user confirmed this operation.` 这类叙述也可保留：标签前有普通文字，后面是多词文字或带明确标点的中文句子。独立的 authorization 字段、HTTP Header、不透明单值，以及跟随 Bearer/Basic 的值继续拒绝。不确定内容保留拒绝，不提供全局关闭检查或任意字符串白名单。需要明确表达公开配置时可以使用普通结构字段，授权过程可以记在 summary 等叙述字段；这不是对任意未标记私有文字的自动分类承诺。
+
 产物在创建受管文件前，读取完整且最多 64 MiB 的快照，完成检查，再写入同一份字节并计算摘要。扫描不使用可能漏掉跨块内容的滑动窗口；为此使用有明确上限的内存缓冲。显式产物/证据正文读取仍受 16 MiB 限制，并在大小、摘要和秘密检查全部通过后返回。正文为有效 JSON 时也检查解码内容。元数据登记不构成对外部文件正文的验证。
 
 对旧数据的输出保护：
 
-- FTS 策略为 5，首次读取时重建旧缓存，包括旧策略下误删的普通认证说明和结构定义。来源解析配置版本为 2，重索引时重新解析旧适配器投影；来源映射变更同样使缓存失效。摘要检查完整字段后才取短文本；敏感摘要标为 `[redacted]`。身份、关联工作或来源引用含敏感值时，整条搜索文档不进入索引。查询参数也经过检查。
+- FTS 策略为 6，首次读取时重建旧缓存，包括旧策略下误删的普通认证说明、公开配置和结构定义。失败来源重索引时重新读取原始内容；来源映射和适配器配置变更同样使缓存失效。摘要检查完整字段后才取短文本；敏感摘要标为 `[redacted]`。身份、关联工作或来源引用含敏感值时，整条搜索文档不进入索引。查询参数也经过检查。
 - L0、L1、硬规则/关联事实及 delta 检查实际选中的输出。选中的必需事实包含敏感值时返回 `ContextIncomplete`，不返回看似完整的包、哈希或渲染文本。原本不进入 Context 的正文仍然被排除；例如 delta 只使用 checkpoint 的基线和身份，不返回 digest。
 - CLI 的敏感参数在参数解析报错前拒绝；证据、完成输入、分支关闭输入及 Manifest 的结构错误不回显字段内容。CLI 和 MCP 共用安全错误报告；MCP 同时保护结构化结果、文本副本与读取输出。
 

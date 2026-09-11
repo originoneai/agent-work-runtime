@@ -52,9 +52,13 @@ pub enum IntakeCommand {
 
 pub fn inspect(root: &Path, command: &IntakeCommand, json_output: bool) -> Result<()> {
     match command {
-        IntakeCommand::Inspect { branch, source_sha } => {
-            crate::query::status(root, branch.as_deref(), source_sha.as_deref(), json_output)
-        }
+        IntakeCommand::Inspect { branch, source_sha } => crate::query::status(
+            root,
+            branch.as_deref(),
+            source_sha.as_deref(),
+            json_output,
+            false,
+        ),
     }
 }
 
@@ -493,6 +497,7 @@ pub fn run(root: &Path, args: &InitArgs, json_output: bool) -> Result<()> {
     if !candidate.ambiguous_domains.is_empty() {
         return Err(Error::SourceConflict("multiple authority candidates; supply an explicit manifest or resolve the reviewed draft mapping".into()));
     }
+    crate::intake_plan::require_applicable(&preview)?;
     candidate.authority_mapping.validate()?;
     let mut primary = BTreeSet::new();
     for spec in &candidate.authority_mapping.sources {
@@ -559,4 +564,11 @@ pub fn run(root: &Path, args: &InitArgs, json_output: bool) -> Result<()> {
         json_output,
         None,
     )
+    .map_err(|error| match error {
+        Error::IntakePreflightRejected { issues, .. } => Error::IntakePreflightRejected {
+            issues,
+            intake_staged: true,
+        },
+        other => other,
+    })
 }

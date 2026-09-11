@@ -11,7 +11,7 @@ use serde::Serialize;
 use serde_json::Value;
 use std::{borrow::Cow, sync::LazyLock};
 
-pub const SECRET_POLICY_VERSION: u32 = 3;
+pub const SECRET_POLICY_VERSION: u32 = 4;
 pub const SENSITIVE_CONTENT_WITHHELD: &str = "[sensitive content withheld]";
 const REJECTION: &str =
     "sensitive content is not accepted; remove secret values or use explicit redacted placeholders";
@@ -51,6 +51,106 @@ static ENV_ASSIGNMENT: LazyLock<Regex> = LazyLock::new(|| {
     Regex::new(r"(?:^|[\s;])(?:export[ \t]+)?[A-Z_][A-Z0-9_]{1,80}[ \t]*=[ \t]*")
         .expect("fixed environment assignment pattern")
 });
+
+/// A diagnostic category is safe to disclose; matched text and key names are not.
+#[derive(Clone, Copy, Debug, Serialize, PartialEq, Eq)]
+#[serde(rename_all = "snake_case")]
+pub enum SensitiveCategory {
+    Credential,
+    LabelledValue,
+    EnvironmentDump,
+    PrivatePrompt,
+}
+impl SensitiveCategory {
+    fn rejection(self) -> String {
+        format!("{REJECTION}; category={}", self.name())
+    }
+    fn name(self) -> &'static str {
+        match self {
+            Self::Credential => "credential",
+            Self::LabelledValue => "labelled_value",
+            Self::EnvironmentDump => "environment_dump",
+            Self::PrivatePrompt => "private_prompt",
+        }
+    }
+}
+
+pub(crate) fn sensitive_rejection_details(message: &str) -> Option<Value> {
+    [SensitiveCategory::Credential, SensitiveCategory::LabelledValue,
+        SensitiveCategory::EnvironmentDump, SensitiveCategory::PrivatePrompt]
+        .into_iter().find(|category| message == category.rejection()).map(|category| {
+            serde_json::json!({"policy_version": SECRET_POLICY_VERSION, "category": category,
+                "next_action": "Inspect this source locally. Keep credentials outside AWR; use explicit redacted placeholders for values. Describe public configuration and permission outcomes as prose, not a credential field or environment dump."})
+        })
+}
+
+// Environment dumps and explicit exports retain their boundary. An incidental
+// assignment in a command/prose string is not an environment dump. Sensitive key
+// labels and recognizable credentials are still checked independently everywhere.
+fn environment_assignment(text: &str, matched: &str, start: usize) -> bool {
+    if matched.trim_start().starts_with("export") {
+        return true;
+    }
+    let line_start = text[..start].rfind('\n').map_or(0, |n| n + 1);
+    let prefix = text[line_start..start].trim();
+    let line = text[line_start..].lines().next().unwrap_or("").trim();
+    (prefix.is_empty() || prefix.chars().all(|c| matches!(c, '`' | '\'' | '"')))
+        && !inline_command(line)
+}
+fn inline_command(line: &str) -> bool {
+    let mut assignment = false;
+    for word in line.split_whitespace() {
+        if let Some((name, value)) = word.split_once('=') {
+            if !env_name(name)
+                || name != name.to_ascii_uppercase()
+                || value.is_empty()
+                || value.contains(['\'', '"', '`', ';'])
+            {
+                return false;
+            }
+            assignment = true;
+        } else {
+            return assignment
+                && word.chars().any(char::is_alphabetic)
+                && word
+                    .chars()
+                    .all(|c| c.is_ascii_alphanumeric() || "_-./".contains(c));
+        }
+    }
+    false
+}
+
+// "completed native authorization: the user accepted ..." is a narrative event,
+// unlike a line/header/JSON/YAML field named authorization. Only the former may
+// carry prose. A single opaque word or an authentication scheme remains a value.
+fn narrative_authorization(text: &str, matched: &str, start: usize, end: usize) -> bool {
+    if matched.trim() != "authorization:" {
+        return false;
+    }
+    let prefix = text[..start].rsplit('\n').next().unwrap_or("").trim();
+    if !prefix.chars().last().is_some_and(char::is_alphabetic) {
+        return false;
+    }
+    let rest = text[end..].trim_start().lines().next().unwrap_or("");
+    let first = rest.split_whitespace().next().unwrap_or("");
+    if first.to_ascii_lowercase().starts_with("bearer")
+        || first.to_ascii_lowercase().starts_with("basic")
+    {
+        return false;
+    }
+    if first.is_ascii() {
+        first.chars().all(char::is_alphabetic)
+            && first.len() < 24
+            && rest.split_whitespace().take(3).count() == 3
+    } else {
+        // A CJK sentence has explicit prose punctuation, unlike an opaque value.
+        rest.chars().any(|c| matches!(c, '，' | '。' | '；' | '：'))
+            && first
+                .chars()
+                .next()
+                .is_some_and(|c| ('\u{3400}'..='\u{9fff}').contains(&c))
+    }
+}
 
 static PRIVATE_BLOCK: LazyLock<Regex> = LazyLock::new(|| {
     Regex::new(
@@ -150,9 +250,9 @@ fn has_value(rest: &str) -> bool {
     !matches!(value, "null" | "~" | "{}" | "[]") && !placeholder(value)
 }
 
-pub fn contains_sensitive_text(text: &str) -> bool {
+pub fn sensitive_text_category(text: &str) -> Option<SensitiveCategory> {
     let text = normalized(text);
-    KNOWN.is_match(&text)
+    if KNOWN.is_match(&text)
         || BEARER_AUTH.captures_iter(&text).any(|capture| {
             let value = &capture[1];
             // An unlabelled ordinary word is prose, not proof of an opaque token.
@@ -174,23 +274,43 @@ pub fn contains_sensitive_text(text: &str) -> bool {
                 .or_else(|_| STANDARD_NO_PAD.decode(&capture[1]))
                 .is_ok_and(|bytes| bytes.contains(&b':'))
         })
-        || ASSIGNMENT
-            .find_iter(&text)
-            .any(|m| has_value(&text[m.end()..]) && !definition_after_assignment(&text[m.end()..]))
-        || ENV_ASSIGNMENT
-            .find_iter(&text)
-            .any(|m| has_value(&text[m.end()..]) && !definition_after_assignment(&text[m.end()..]))
-        || PRIVATE_BLOCK
-            .find_iter(&text)
-            .any(|m| has_value(&text[m.end()..]))
-        || ENV_BLOCK.find_iter(&text).any(|m| {
-            let rest = &text[m.end()..];
-            let value = rest.trim_start();
-            let whitespace = &rest[..rest.len() - value.len()];
-            (value.starts_with(['{', '[']) || whitespace.contains('\n'))
-                && has_value(value)
-                && !definition_after_assignment(rest)
-        })
+    {
+        return Some(SensitiveCategory::Credential);
+    }
+    if ASSIGNMENT.find_iter(&text).any(|m| {
+        has_value(&text[m.end()..])
+            && !definition_after_assignment(&text[m.end()..])
+            && !narrative_authorization(&text, m.as_str(), m.start(), m.end())
+    }) {
+        return Some(SensitiveCategory::LabelledValue);
+    }
+    if ENV_ASSIGNMENT.find_iter(&text).any(|m| {
+        environment_assignment(&text, m.as_str(), m.start())
+            && has_value(&text[m.end()..])
+            && !definition_after_assignment(&text[m.end()..])
+    }) {
+        return Some(SensitiveCategory::EnvironmentDump);
+    }
+    if PRIVATE_BLOCK
+        .find_iter(&text)
+        .any(|m| has_value(&text[m.end()..]))
+    {
+        return Some(SensitiveCategory::PrivatePrompt);
+    }
+    if ENV_BLOCK.find_iter(&text).any(|m| {
+        let rest = &text[m.end()..];
+        let value = rest.trim_start();
+        let whitespace = &rest[..rest.len() - value.len()];
+        (value.starts_with(['{', '[']) || whitespace.contains('\n'))
+            && has_value(value)
+            && !definition_after_assignment(rest)
+    }) {
+        return Some(SensitiveCategory::EnvironmentDump);
+    }
+    None
+}
+pub fn contains_sensitive_text(text: &str) -> bool {
+    sensitive_text_category(text).is_some()
 }
 
 fn secret_key(key: &str) -> bool {
@@ -384,21 +504,32 @@ fn sensitive_field(key: &str, value: &Value) -> bool {
         && !public_definition(value)
 }
 pub fn contains_sensitive_value(value: &Value) -> bool {
+    sensitive_value_category(value).is_some()
+}
+pub fn sensitive_value_category(value: &Value) -> Option<SensitiveCategory> {
     match value {
-        Value::String(s) => contains_sensitive_text(s),
-        Value::Array(values) => values.iter().any(contains_sensitive_value),
-        Value::Object(values) => values.iter().any(|(key, value)| {
-            contains_sensitive_text(key)
-                || sensitive_field(key, value)
-                || contains_sensitive_value(value)
+        Value::String(s) => sensitive_text_category(s),
+        Value::Array(values) => values.iter().find_map(sensitive_value_category),
+        Value::Object(values) => values.iter().find_map(|(key, value)| {
+            sensitive_text_category(key).or_else(|| {
+                if sensitive_field(key, value) {
+                    Some(if env_key(key) {
+                        SensitiveCategory::EnvironmentDump
+                    } else {
+                        SensitiveCategory::LabelledValue
+                    })
+                } else {
+                    sensitive_value_category(value)
+                }
+            })
         }),
-        _ => false,
+        _ => None,
     }
 }
 
 pub fn ensure_public_text(text: &str) -> Result<()> {
-    if contains_sensitive_text(text) {
-        Err(Error::RuleViolation(REJECTION.into()))
+    if let Some(category) = sensitive_text_category(text) {
+        Err(Error::RuleViolation(category.rejection()))
     } else {
         Ok(())
     }
@@ -416,8 +547,8 @@ pub fn ensure_public_bytes(bytes: &[u8]) -> Result<()> {
     Ok(())
 }
 pub fn ensure_public_value(value: &Value) -> Result<()> {
-    if contains_sensitive_value(value) {
-        Err(Error::RuleViolation(REJECTION.into()))
+    if let Some(category) = sensitive_value_category(value) {
+        Err(Error::RuleViolation(category.rejection()))
     } else {
         Ok(())
     }
@@ -488,6 +619,58 @@ pub fn redact_sensitive_value(value: Value) -> Value {
 mod tests {
     use super::*;
     use serde_json::json;
+
+    #[test]
+    fn command_configuration_and_permission_narratives_are_not_dumps_or_headers() {
+        for text in [
+            "Expected count APP_EXPECTED_TASKS=134; keep the original source.",
+            "# APP_EXPECTED_TASKS=134",
+            "PROJECT_ROOT=/public/project EXPECTED_ITEMS=134 cargo test --offline",
+            "TASK_LIMIT=25 ./check",
+            "passed normal native authorization: 官方设备确认后应用继续工作；重开保留原记录。",
+            "Completed native authorization: the user confirmed this operation.",
+        ] {
+            ensure_public_text(text).unwrap_or_else(|e| panic!("{text}: {e}"));
+            ensure_public_value(&json!({"summary":text})).unwrap();
+            ensure_public_bytes(&serde_json::to_vec(&json!({"summary":text})).unwrap()).unwrap();
+            ensure_public_text(&public_summary(text, 240).unwrap()).unwrap();
+        }
+        for text in [
+            "APP_VALUE=unknown-value",
+            "HOME=/private PATH=/private/bin",
+            "Run export HOME=/private",
+            "API_KEY=unknown-value cargo test",
+            "Run API_KEY=unknown-value cargo test",
+            "Authorization: the user confirmed this operation.",
+            "native authorization: unknown-value",
+            "native authorization: Bearer word",
+            "native authorization: Basic word",
+            "native authorization: aBcdEfgHijKlmNopQrStUvWxyz extra words",
+            "authorization: 用户明确允许本轮编辑",
+        ] {
+            assert!(ensure_public_text(text).is_err(), "{text}");
+        }
+        assert!(
+            ensure_public_value(&json!({"authorization":"the user confirmed this operation"}))
+                .is_err()
+        );
+    }
+
+    #[test]
+    fn rejection_categories_preserve_the_legacy_code_without_disclosing_values() {
+        for (text, category) in [
+            ("export HOME=/private", "environment_dump"),
+            ("password: synthetic-private-value", "labelled_value"),
+            ("Basic YTpi", "credential"),
+            ("# Private prompt\nprivate material", "private_prompt"),
+        ] {
+            let report = ensure_public_text(text).unwrap_err().report();
+            assert_eq!(report.code, "RuleViolation");
+            assert_eq!(report.details.as_ref().unwrap()["category"], category);
+            assert_eq!(report.details.as_ref().unwrap()["policy_version"], 4);
+            assert!(!serde_json::to_string(&report).unwrap().contains(text));
+        }
+    }
 
     #[test]
     fn labelled_values_and_environment_are_rejected_without_echo() {

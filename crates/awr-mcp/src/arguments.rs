@@ -5,6 +5,11 @@ use serde_json::Value;
 #[derive(Deserialize, Default)]
 #[serde(deny_unknown_fields)]
 pub(crate) struct StatusArgs {
+    pub view: Option<String>,
+    #[serde(default)]
+    pub work: Vec<String>,
+    pub goal: Option<String>,
+    pub milestone: Option<String>,
     pub branch: Option<String>,
     pub source_sha: Option<String>,
 }

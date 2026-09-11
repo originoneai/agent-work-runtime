@@ -73,7 +73,7 @@ pub fn tools() -> Vec<Tool> {
             TOOL_NAMES[0],
             "Read project progress, organization gaps, ordered repair actions and business readiness. Optional source_sha verifies completion reports. Never refresh persistent state; after source edits run awr source reindex before rechecking.",
             object(
-                json!({"branch":branch(),"source_sha":optional(text())}),
+                json!({"branch":branch(),"source_sha":optional(text()),"view":{"type":"string","enum":["full","summary"],"default":"full"},"work":strings(),"goal":optional(text()),"milestone":optional(text())}),
                 &[],
             ),
             true,

@@ -49,7 +49,7 @@ pub fn run(root: &Path, args: &ChangesArgs, _json_output: bool) -> Result<()> {
         let count=event.payload["changes"].as_array().map(Vec::len);
         let content_changed=supported && before["fingerprint"]!=after["fingerprint"] && after["fingerprint"].as_str().is_some_and(|s|!s.is_empty());
         let membership_changed=matches!(event.event_type.as_str(),"source.registered"|"source.retired");
-        let configuration_changed=event.event_type=="source.configured";
+        let configuration_changed=matches!(event.event_type.as_str(),"source.configured"|"source.relocated");
         let freshness_changed=before["freshness"]!=after["freshness"];
         json!({"event_id":event.id,"event_type":event.event_type,"project_revision":event.project_revision,"created_at":event.created_at,"source_id":event.payload["source_id"],"change_schema":event.payload["change_schema"],"change_details_available":supported,
             "before":before,"after":after,"content_changed":if supported {Some(content_changed)}else{None},"membership_changed":membership_changed,"configuration_changed":configuration_changed,"freshness_changed":freshness_changed,

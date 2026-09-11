@@ -16,9 +16,12 @@ pub struct SearchArgs {
     work_item_key: Option<String>,
     #[arg(long, default_value_t = 10)]
     limit: usize,
+    /// Read last recorded facts without refreshing authoritative files.
+    #[arg(long)]
+    cached: bool,
 }
 pub fn run(root: &Path, args: &SearchArgs, json_output: bool) -> Result<()> {
-    let mut project = QueryProject::open(root)?;
+    let mut project = QueryProject::open_read(root, args.cached)?;
     let kind = args.kind.as_ref().map(|s| {
         if s == "work" {
             "work_item".into()

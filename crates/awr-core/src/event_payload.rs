@@ -113,6 +113,7 @@ fn domain_fields(kind: &str, payload: &Value) -> Result<()> {
         kind,
         "source.registered"
             | "source.configured"
+            | "source.relocated"
             | "source.retired"
             | "source.freshness_changed"
             | "source.projected"

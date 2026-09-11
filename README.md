@@ -54,17 +54,17 @@ On this Apple M3 Max / macOS run, context compilation took **108 ms at p95**
 
 ## Get started
 
-Install **0.3.1** through either registry; both supply `awr` and `awr-mcp`:
+Install **0.3.2** through either registry; both supply `awr` and `awr-mcp`:
 
 ```sh
-npm install -g @originoneai/agent-work-runtime@0.3.1
+npm install -g @originoneai/agent-work-runtime@0.3.2
 # or, in a Python virtual environment
-python -m pip install agent-work-runtime==0.3.1
+python -m pip install agent-work-runtime==0.3.2
 ```
 
 Prebuilt targets: macOS 15+ arm64 and Intel x64, Linux x64/glibc 2.39+, Windows x64.
 Launchers require Node 22.14+ or Python 3.9+. See [distribution details](docs/release/DISTRIBUTIONS.md).
-See the [0.3.1 release notes](docs/release/0.3.1.md) for host capabilities and schema upgrade guidance.
+See the [0.3.2 release notes](docs/release/0.3.2.md) for host capabilities and schema upgrade guidance.
 
 For an optional source build, use [Rust](https://www.rust-lang.org/tools/install)
 (the repository pins its toolchain):

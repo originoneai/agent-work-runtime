@@ -63,8 +63,9 @@ fn context_delta_selected(
             "work and agent selectors must not be empty".into(),
         ));
     }
-    let refresh =
-        awr_source::index_project(store, root, &awr_source::Manifest::load(root)?, false)?;
+    let snapshot = awr_source::refresh_snapshot(store, root)?;
+    let refresh = snapshot.refresh;
+    let store = &snapshot.store;
     let project = store.project_by_root(&root.canonicalize()?)?;
     let branch = match reference {
         Some(reference) => store.resolve_branch(project.id, reference)?,

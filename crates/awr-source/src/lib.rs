@@ -11,6 +11,10 @@ mod manifest;
 mod markdown;
 mod markdown_ledger;
 mod mutation;
+mod query_snapshot;
+pub use query_snapshot::{
+    QuerySnapshot, recorded_snapshot, refresh_snapshot, source_state_fingerprint,
+};
 mod yaml_create;
 mod yaml_edit;
 mod yaml_ledger;
@@ -25,8 +29,8 @@ pub use document::{
 };
 pub use freshness::{SourceObservation, observe_source};
 pub use indexer::{
-    IndexIssue, IndexReport, IndexedSource, index_project, scan_project, source_adapter,
-    source_configuration,
+    IndexIssue, IndexReport, IndexedSource, PreviewSources, index_project, index_project_locked,
+    preview_index_project, scan_project, source_adapter, source_configuration,
 };
 pub use ledger_mapping::LedgerMapping;
 pub use limits::{MARKDOWN_READ_CAP, YAML_READ_CAP, source_read_cap};
@@ -59,3 +63,6 @@ pub use ledger_batch::*;
 
 mod adoption;
 pub use adoption::*;
+
+mod organization_edit;
+pub use organization_edit::{edit_organization_fields, organization_fields};

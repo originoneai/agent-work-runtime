@@ -1,3 +1,5 @@
+mod organization;
+mod runtime_snapshot;
 use awr_core::{Error, Result};
 use clap::{CommandFactory, Parser, Subcommand};
 use std::path::PathBuf;
@@ -24,6 +26,7 @@ mod search;
 mod session;
 mod source;
 mod source_changes;
+mod source_relocation;
 mod work_action;
 mod work_create;
 
@@ -44,6 +47,16 @@ struct Cli {
 
 #[derive(Debug, Subcommand)]
 enum Command {
+    /// Inspect, back up and explicitly restore a matching local runtime.
+    Runtime {
+        #[command(subcommand)]
+        command: runtime_snapshot::RuntimeCommand,
+    },
+    /// Maintain explicitly mapped project phase, scope and focus.
+    Organization {
+        #[command(subcommand)]
+        command: organization::OrganizationCommand,
+    },
     /// Preview and apply a bounded batch of source edits.
     Batch {
         #[command(subcommand)]
@@ -90,8 +103,21 @@ enum Command {
     },
     /// Refresh source projections and summarize current project work.
     Status {
+        /// Select the compatible full view or the versioned compact summary.
+        #[arg(long, default_value="full", value_parser=["full","summary"])]
+        view: String,
+        /// Exact work keys in the summary scope; repeat to select several.
+        #[arg(long, requires = "view")]
+        work: Vec<String>,
+        #[arg(long)]
+        goal: Option<String>,
+        #[arg(long)]
+        milestone: Option<String>,
         #[arg(long)]
         branch: Option<String>,
+        /// Use the last recorded snapshot without refreshing business sources.
+        #[arg(long)]
+        cached: bool,
         /// Verify completion reports against this explicit full source SHA.
         #[arg(long)]
         source_sha: Option<String>,
@@ -102,6 +128,9 @@ enum Command {
         limit: usize,
         #[arg(long)]
         branch: Option<String>,
+        /// Use the last recorded snapshot without refreshing business sources.
+        #[arg(long)]
+        cached: bool,
     },
     /// Read one work item without expanding the full ledger or event history.
     Work {
@@ -164,6 +193,12 @@ enum Command {
 fn run(cli: &Cli) -> Result<()> {
     match &cli.command {
         Some(Command::Host { command }) => host_save::run(&cli.project, command, cli.json),
+        Some(Command::Runtime { command }) => {
+            runtime_snapshot::run(&cli.project, command, cli.json)
+        }
+        Some(Command::Organization { command }) => {
+            organization::run(&cli.project, command, cli.json)
+        }
         Some(Command::Batch { command }) => batch::run(&cli.project, command, cli.json),
         Some(Command::Document { command }) => document::run(&cli.project, command, cli.json),
         Some(Command::Capabilities(args)) => capabilities::run(args, cli.json),
@@ -173,15 +208,39 @@ fn run(cli: &Cli) -> Result<()> {
         Some(Command::Execution { command }) => execution::run(&cli.project, command, cli.json),
         Some(Command::Recovery { command }) => recovery::run(&cli.project, command, cli.json),
         Some(Command::Source { command }) => source::run(&cli.project, command, cli.json),
-        Some(Command::Status { branch, source_sha }) => query::status(
-            &cli.project,
-            branch.as_deref(),
-            source_sha.as_deref(),
-            cli.json,
-        ),
-        Some(Command::Ready { limit, branch }) => {
-            query::ready(&cli.project, *limit, branch.as_deref(), cli.json)
+        Some(Command::Status {
+            branch,
+            source_sha,
+            cached,
+            view,
+            work,
+            goal,
+            milestone,
+        }) => {
+            let scope = awr_runtime::StatusScope {
+                work: work.clone(),
+                goal: goal.clone(),
+                milestone: milestone.clone(),
+            };
+            if view == "full" && !scope.is_empty() {
+                return Err(awr_core::Error::InvalidInput(
+                    "scope selectors require --view summary".into(),
+                ));
+            }
+            query::status_with_scope(
+                &cli.project,
+                branch.as_deref(),
+                source_sha.as_deref(),
+                cli.json,
+                *cached,
+                (view == "summary").then_some(&scope),
+            )
         }
+        Some(Command::Ready {
+            limit,
+            branch,
+            cached,
+        }) => query::ready(&cli.project, *limit, branch.as_deref(), cli.json, *cached),
         Some(Command::Work { command }) => query::work(&cli.project, command, cli.json),
         Some(Command::Session { command }) => session::run(&cli.project, command, cli.json),
         Some(Command::Evidence { command }) => records::evidence(&cli.project, command, cli.json),

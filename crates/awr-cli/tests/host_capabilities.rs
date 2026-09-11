@@ -48,6 +48,10 @@ fn negotiation_needs_no_project_tty_model_or_environment() {
         "不存在的 project",
         "--require",
         "context.compile",
+        "--require",
+        "intake.semantic_preflight",
+        "--require",
+        "source.relocate",
     ]);
     assert_eq!(result["protocol"]["version"], 1);
     assert_eq!(result["program"]["version"], env!("CARGO_PKG_VERSION"));

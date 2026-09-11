@@ -69,18 +69,32 @@ text for the manifest, `.gitignore` and generated intake files. Runtime database
 WAL and temporary staging effects are listed separately. This preview performs no
 project writes; an explicitly requested `--write-draft` still writes its output file.
 
+The version 1 `preview.semantic` report parses the exact captured source bytes through
+the normal adapters and projection constraints in private RAM. Existing database and WAL
+files are captured with bounded repeated byte/identity/mtime checks, then opened by
+SQLite in an owner-only temporary directory and copied into RAM. The temporary copy
+is removed after use; SQLite never opens the project database during preflight.
+Concurrent writes or rollback journals reject capture for a later retry. Compatible
+migrations happen only in RAM. It returns
+`can_apply`, `can_execute`, organization gaps and their total/truncation, plus stable
+source identity/revision/configuration bindings. A generated preview is not evidence
+that it can be applied. `can_apply: true` permits intake; unresolved goals/references
+can still make `can_execute: false`. Neither flag proves business acceptance. The
+snapshot is bounded to 256 MiB; larger databases return a preflight issue.
+
 Pass that fingerprint as `init --accept --expected-preview <fingerprint>` with the
 same input/mapping arguments. Changed sources, mapping semantics, existing manifest
 bytes or ignore contents reject the old preview. Existing clients may omit the new
-flag and retain the legacy behavior. A draft file's original inventory fingerprint
+flag; semantic preflight still applies. A draft file's original inventory fingerprint
 is still checked; editing a draft requires previewing that edited draft before
 acceptance. Multiple source candidates remain an explicit ambiguity.
 
 Repeated initialization keeps the existing manifest, project/work identities,
 events, sessions and checkpoints. Non-Git projects are supported. Preview can read
 a read-only project, but initialization requiring runtime writes is rejected there.
-Source failures remain in the result: acceptance can create a partial index with a
-nonzero `SourceStale` result, preserving usable source records. It must not be shown
+Malformed sources and predictable identity conflicts now return `SourceStale` before
+configuration or runtime writes. Failures arising after writes start can still leave a
+partial index; retain the nonzero result and inspect the reported effects. It must not be shown
 as a fully successful import. Initializing multiple files is not a cross-file atomic
 transaction; interrupted staging may require inspection before retry.
 
@@ -102,6 +116,74 @@ Pending, externally changed or partially indexed results are distinct from succe
 A failed projection does not mean the configuration was unwritten; inspect the
 receipt and current configuration before acting. Identical configuration returns
 `no_change`. Configuration setup is separate from task/document source editing.
+
+## Read a coherent query snapshot
+
+Status, ready work, work details, object catalogs, search, and context compilation
+refresh through a shared source transition guard before reading one SQLite snapshot
+in RAM. The lock waits at most five seconds. Source projection steps retry only
+optimistic runtime revision conflicts, at most four attempts; source/permission/parse
+failures remain failures. A pending relocation is explicitly recoverable, not a reason
+to silently reuse stale facts. Runtime write commands retain their expected-revision
+checks against the live database.
+
+Query responses include version 1 `snapshot` metadata: the coherent query revision,
+a `source_state_fingerprint` derived from retained source IDs, revisions, fingerprints and
+parsing configuration, and the source refresh revision. Runtime-only events advance
+the project revision without changing the source state fingerprint. A response is a snapshot at
+its recorded revision; later events do not make its internally consistent facts false.
+Context hashes already bind their source and runtime snapshot identities.
+
+`status --cached`, `ready --cached`, `work show <key> --cached`, `object list <kind>
+--cached` and `search --cached` read the last recorded projections without opening
+business files or writing project files. They explicitly return `read_only: true`,
+`source_refresh_performed: false`, `freshness_basis: last_recorded_source_state` and
+`snapshot.source_currentness_verified: false`. Cached facts do not establish current
+progress. The temporary capture is bounded to 256 MiB and may reject an active writer;
+retry after it settles. It never ignores WAL data or upgrades the live schema.
+
+MCP read operations remain read-only and still require source files to match indexed
+facts. They return their coherent revision/source state fingerprint with no source refresh revision.
+A later runtime event alone does not invalidate that read; source drift still rejects it.
+CLI refresh reads can update the projection cache, so `read_only` remains false for
+the overall operation even though the query itself uses RAM. Negotiate this behavior
+with capability `query.coherent_snapshot`.
+
+## Relocate one source while retaining its identity
+
+```text
+awr source relocate --source <source-id> --to plans/work-ledger.yaml --json
+awr source relocate --source <source-id> --to plans/work-ledger.yaml --accept --expected-preview <fingerprint> --json
+awr source relocate-status <fingerprint> --json
+awr source relocate-recover <fingerprint> --json
+```
+
+Version 1 relocates one explicit relative file mapping inside the same project.
+The destination must already contain the exact indexed bytes. The original may be
+present or already moved by the user; AWR does not move, delete or overwrite either
+business file. Change content separately. The preview binds the retained source ID,
+source revision/configuration, both paths, destination bytes and exact before/after
+manifest text. Adapters must produce the same object keys and IDs in the semantic
+preflight. Path-derived keys and directory/Git mappings are explicitly unsupported;
+YAML ledgers with stable explicit keys are supported. An identical hash alone never
+merges source identities. Any destination owned by another retained source conflicts.
+
+Acceptance retains source/object identities and runtime sessions, claims, checkpoints,
+dependencies and evidence. It appends `source.relocated` with before/after locators;
+`source history`, `event show --full` and `source changes` expose the history. Old
+checkpoint references remain immutable. Current projection references use the new
+location after reindexing. Manifest formatting changes are included in the exact
+preview and require that fingerprint.
+
+The SQLite binding and manifest rename are individually durable, not a cross-file
+transaction. A source transition lock coordinates refresh/configuration writers;
+an interrupted relocation leaves a pending marker that prevents ordinary refreshes
+from inventing a replacement source. Read-only status reports the journal and actual
+bindings. Explicit recovery accepts only the recorded before/after manifest and
+source states and unchanged target bytes, then completes the missing steps. Changed
+user files remain untouched. A repeated completed request returns its existing receipt
+and observations without applying it again. Preserve mutation journals in matching
+runtime backups; do not delete a pending marker to bypass recovery.
 
 ## Traverse the complete catalog
 
@@ -640,6 +722,63 @@ A single reviewed fingerprint covers all targets. Every target is preflighted be
 
 ## Embed and upgrade the native host payload
 
-Version `0.3.1` exposes the host integration capabilities with schema 4. Use the immutable host payload produced by `scripts/release/build_host_bundle.py`; it includes both native executables, exact capability metadata, file/archive SHA256 values, source/version/platform identity and licenses. Invoke the bundled binary by absolute path with an explicit project root. The native runtime does not require Node, Python, Rust or PATH setup. Development-time packaging and upgrade fixtures run separately.
+Version `0.3.2` exposes the host integration capabilities with schema 4. Use the immutable host payload produced by `scripts/release/build_host_bundle.py`; it includes both native executables, exact capability metadata, file/archive SHA256 values, source/version/platform identity and licenses. Invoke the bundled binary by absolute path with an explicit project root. The native runtime does not require Node, Python, Rust or PATH setup. Development-time packaging and upgrade fixtures run separately.
 
 Follow the [matched upgrade and rollback procedure](../release/DISTRIBUTIONS.md#matched-upgrade-and-rollback-checklist). Preserve all runtime history and source authority, validate old-schema migration with IDs/record inventories, retain read-only legacy APP records, and switch to one AWR writer. A rollback restores a matching program/database/configuration/source set while keeping new user files and the superseded runtime snapshot. Old programs must reject newer databases before writing; host signing, full APP integration and other deployment platforms require their own evidence.
+
+### Compact scoped status (version 1)
+
+`awr status --view summary [--work KEY ...] [--goal KEY] [--milestone KEY]`
+returns compact JSON under `--json`. The same selectors are available in
+`awr_project_status` as `view: "summary"`, `work: ["KEY"]`, `goal`, and `milestone`.
+Selectors intersect exact source-declared associations; unknown references are errors.
+No selectors means all projected work. The default full view remains compatible;
+selectors on that view are rejected rather than ignored.
+
+The summary includes source status counts, current work, the next action, readiness
+and blocking codes, all-source freshness, project organization gaps and registered
+pending mutation/checkpoint findings. Pending findings are project-wide, even for a
+narrow scope. Lists show at most five entries and carry total/omitted counts; text
+uses a 240-character public summary. `omissions` identifies excluded work, truncated
+organization scans, and details left for `work show`, `source list`, full `status`,
+`recovery inspect`, or a specific operation's status command. Filesystem-only and
+host-private journals are outside the snapshot's pending inventory and explicitly
+listed as not evaluated. Zero registered pending findings is not a claim that an
+external host has no uncertain operations.
+
+Counts describe source states; they do not certify acceptance or releases. Full
+organization evidence assessment runs only against an explicitly supplied
+`source_sha`, as before. Snapshot and cached-currentness metadata retain the query
+contract above. A summary reduces transport size, not the source verification scope.
+
+### Explicit project organization metadata
+
+`organization show --source SOURCE_ID --mapping fields.json` reads source annotations.
+A mapping is an object from `phase`, `scope`, `focus`, and/or `next_action` to exact
+JSON pointers, for example `{"phase":"/current/stage","focus":"/current/work"}`.
+Parents must already be YAML mappings. Escaped pointer segments, array ancestors,
+overlapping paths, entity collections, lifecycle, release, contract and count fields
+are outside this finite writer. Unmapped values and surrounding YAML bytes remain
+untouched. Hosts can consume the returned focus explicitly; reading it never starts,
+claims, activates, reopens or completes work.
+
+`organization preview --input change.json` is a read-only full preflight. The input
+has `version: 1`, `request_key`, `actor: {host, subject, origin}`, `reason`,
+`source_id`, `source_fingerprint`, `mapping`, and `values`. Actor origins reuse the
+host contract (`human`, `ai_accepted`, `delegated_agent`); they record provenance,
+not permission. Values use a phase plan key, a scope array of exact work keys, a
+nonterminal focus work key, and next-action text. Null can clear optional metadata.
+Unknown references, focus/phase or focus/scope conflicts, stale sources and attempts
+to alter projected work, dependencies, status, acceptance or evidence are rejected.
+The preview binds every changed field, source/configuration fingerprints and project
+revision. No project-specific completion formula or denominator is embedded in AWR.
+
+Apply with `organization change --input change.json --expected-preview HASH
+--expected-revision N`. Inspect with `organization status --key KEY`; recover an
+interruption with `organization recover --key KEY --expected-revision N` after
+reviewing its receipt. Recovery accepts only the recorded before/after source bytes
+and original configuration, and never overwrites external edits. The source write
+and subsequent projection refresh are separate durable steps. If refresh fails,
+the retained receipt identifies the possible saved source; source history records
+the refreshed fingerprint. Repeated completed requests return the historical receipt
+without applying the metadata again. Private receipts live under `.awr/mutations`.
