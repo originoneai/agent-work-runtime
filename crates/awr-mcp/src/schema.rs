@@ -175,3 +175,18 @@ pub fn tools() -> Vec<Tool> {
         ),
     ]
 }
+
+pub(crate) fn shared_tools() -> Vec<Tool> {
+    let mut catalog = tools();
+    for tool in &mut catalog {
+        let schema = std::sync::Arc::make_mut(&mut tool.input_schema);
+        schema["properties"].as_object_mut().unwrap().insert("project".into(),
+            json!({"type":"string","description":"Registered project key from awr_projects_list. Required on every call; never a filesystem path."}));
+        schema["required"]
+            .as_array_mut()
+            .unwrap()
+            .push(json!("project"));
+    }
+    catalog.insert(0, tool("awr_projects_list", "List this authenticated client's registered project keys and access. Does not read project source files.", object(json!({}), &[]), true, false));
+    catalog
+}

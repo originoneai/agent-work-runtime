@@ -52,6 +52,18 @@ fn ready_brief(work: &WorkReadiness) -> Value {
     value
 }
 
+pub(crate) fn is_read_only(name: &str) -> bool {
+    matches!(
+        name,
+        "awr_project_status"
+            | "awr_work_ready"
+            | "awr_work_get"
+            | "awr_context_compile"
+            | "awr_search"
+            | "awr_projects_list"
+    )
+}
+
 pub(crate) fn call(root: &Path, name: &str, args: JsonObject) -> Result<CallToolResult> {
     let args = Value::Object(args);
     if serde_json::to_vec(&args)?.len() > 1024 * 1024 {
