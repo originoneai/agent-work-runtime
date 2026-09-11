@@ -112,12 +112,26 @@ pub fn index_project(
     manifest: &Manifest,
     force: bool,
 ) -> Result<IndexReport> {
-    process_project(store, root, manifest, Some(force))
+    process_project(store, root, manifest, Some(force), None)
+}
+
+pub type PreviewSources = BTreeMap<String, Vec<(Locator, crate::SourceSnapshot)>>;
+
+/// Run the actual adapters and projection constraints only in an isolated memory store.
+/// Proposed intake files are supplied as bytes rather than materialized on disk.
+pub fn preview_index_project(
+    store: &mut Store,
+    root: &Path,
+    manifest: &Manifest,
+    captured: &PreviewSources,
+) -> Result<IndexReport> {
+    store.require_memory()?;
+    process_project(store, root, manifest, Some(true), Some(captured))
 }
 
 /// Refresh source registry and availability without parsing or promoting pending facts to fresh.
 pub fn scan_project(store: &mut Store, root: &Path, manifest: &Manifest) -> Result<IndexReport> {
-    process_project(store, root, manifest, None)
+    process_project(store, root, manifest, None, None)
 }
 
 fn process_project(
@@ -125,6 +139,7 @@ fn process_project(
     root: &Path,
     manifest: &Manifest,
     mode: Option<bool>,
+    captured: Option<&PreviewSources>,
 ) -> Result<IndexReport> {
     manifest.validate()?;
     let project = store.register_project(
@@ -161,7 +176,19 @@ fn process_project(
         let key = mapping_key(spec);
         desired.insert(key.clone());
         let adapter = source_adapter(&spec.adapter)?;
-        let discovered = adapter.discover(root, manifest, spec).and_then(|locators| {
+        let discovered = if let Some(captured) = captured {
+            Ok(captured
+                .get(&key)
+                .ok_or_else(|| {
+                    Error::InvalidInput("preview source inventory is incomplete".into())
+                })?
+                .iter()
+                .map(|(locator, _)| locator.clone())
+                .collect())
+        } else {
+            adapter.discover(root, manifest, spec)
+        }
+        .and_then(|locators| {
             locators
                 .into_iter()
                 .map(|locator| {
@@ -224,6 +251,12 @@ fn process_project(
                 &identity,
                 mode,
                 manifest.project.context_profile == crate::ContextProfile::Minimal,
+                captured.and_then(|all| all.get(&key)).and_then(|files| {
+                    files
+                        .iter()
+                        .find(|(path, _)| path.identity().ok() == locator.identity().ok())
+                        .map(|(_, snapshot)| snapshot)
+                }),
             );
             match outcome {
                 Ok((source, indexed, warnings)) => {
@@ -295,6 +328,7 @@ fn index_one(
     identity: &str,
     mode: Option<bool>,
     minimal_context: bool,
+    captured: Option<&crate::SourceSnapshot>,
 ) -> Result<(Source, Option<bool>, Vec<String>)> {
     let project = store.project_by_root(root)?;
     let source = store.register_source(
@@ -313,7 +347,22 @@ fn index_one(
     )?;
     let source = store.configure_source(&source, source_configuration(spec, minimal_context))?;
     let cap = crate::source_read_cap(&spec.adapter)?;
-    let observed = observe_source(store, &source, root, locator, cap)?;
+    let observed = if let Some(snapshot) = captured {
+        if snapshot.bytes.len() as u64 > cap {
+            return Err(Error::InvalidInput(
+                "proposed source exceeds its adapter read cap".into(),
+            ));
+        }
+        awr_core::ensure_public_bytes(&snapshot.bytes)?;
+        crate::SourceObservation {
+            source: store.mark_source_freshness(&source, Freshness::Stale)?,
+            changed: true,
+            snapshot: Some(snapshot.clone()),
+            error: None,
+        }
+    } else {
+        observe_source(store, &source, root, locator, cap)?
+    };
     if let Some(error) = observed.error {
         return Err(error);
     }
@@ -336,7 +385,8 @@ fn index_one(
     };
     let batch = adapter.parse(&snapshot, &context, spec)?;
     let warnings = batch.warnings.clone();
-    if matches!(locator, Locator::File(_))
+    if captured.is_none()
+        && matches!(locator, Locator::File(_))
         && locator.read(root, cap)?.fingerprint != snapshot.fingerprint
     {
         return Err(Error::SourceConflict(

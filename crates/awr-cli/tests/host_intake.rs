@@ -338,7 +338,7 @@ fn explicit_configuration_change_preserves_runtime_and_rejects_stale_or_identity
 }
 
 #[test]
-fn partial_source_failure_retains_partial_results_and_nonzero_exit() {
+fn known_source_failure_is_rejected_before_any_initialization() {
     let p = Project::new();
     p.write("missing.toml", &(fs::read_to_string(p.0.join("mapping.toml")).unwrap() + "\n[[sources]]\ndomain='plan'\nrole='supporting'\npath='not-present.md'\nadapter='markdown-heading-v1'\n"));
     let preview = p.ok(&["init", "--manifest", "missing.toml"]);
@@ -362,14 +362,11 @@ fn partial_source_failure_retains_partial_results_and_nonzero_exit() {
         serde_json::from_slice::<Value>(&result.stderr).unwrap()["code"],
         "SourceStale"
     );
-    assert_eq!(
-        serde_json::from_slice::<Value>(&result.stdout).unwrap()["index"]["indexed"],
-        1
-    );
-    assert_eq!(
-        p.ok(&["object", "show", "work", "W", "--cached"])["ok"],
-        true
-    );
+    assert!(result.stdout.is_empty());
+    let error: Value = serde_json::from_slice(&result.stderr).unwrap();
+    assert_eq!(error["details"]["configuration_write_performed"], false);
+    assert_eq!(error["details"]["runtime_write_performed"], false);
+    assert!(!p.0.join(".awr").exists());
 }
 
 #[cfg(unix)]
@@ -402,4 +399,137 @@ fn a_linked_ignore_target_is_rejected_and_readonly_preview_does_not_initialize()
     );
     assert!(!p.0.join(".awr").exists());
     assert!(!accept.status.success());
+}
+
+fn tree_bytes(root: &std::path::Path) -> std::collections::BTreeMap<PathBuf, String> {
+    fn walk(
+        root: &std::path::Path,
+        path: &std::path::Path,
+        out: &mut std::collections::BTreeMap<PathBuf, String>,
+    ) {
+        for entry in fs::read_dir(path).unwrap() {
+            let path = entry.unwrap().path();
+            if path.is_dir() {
+                walk(root, &path, out);
+            } else {
+                out.insert(
+                    path.strip_prefix(root).unwrap().to_owned(),
+                    awr_source::fingerprint(&fs::read(path).unwrap()),
+                );
+            }
+        }
+    }
+    let mut result = Default::default();
+    walk(root, root, &mut result);
+    result
+}
+
+#[test]
+fn semantic_preview_rejects_malformed_source_without_creating_runtime() {
+    let p = Project::new();
+    p.write("work-ledger.yaml", "work_items: [\n");
+    let before = tree_bytes(&p.0);
+    let plan = p.ok(&["init", "--manifest", "mapping.toml"]);
+    assert_eq!(plan["preview"]["can_apply"], false);
+    assert_eq!(plan["preview"]["semantic"]["can_execute"], false);
+    assert!(
+        !plan["preview"]["source_issues"]
+            .as_array()
+            .unwrap()
+            .is_empty()
+    );
+    p.error(
+        &["init", "--manifest", "mapping.toml", "--accept"],
+        "SourceStale",
+    );
+    assert_eq!(tree_bytes(&p.0), before);
+}
+
+#[test]
+fn unresolved_business_references_are_visible_but_do_not_prevent_intake() {
+    let p = Project::new();
+    p.write("work-ledger.yaml", "work_items:\n- id: W\n  title: Write the guide\n  goal: absent\n  status: ready\n  acceptance: [Useful guide]\n  next_action: Draft it\n");
+    let plan = p.ok(&["init", "--manifest", "mapping.toml"]);
+    let semantic = &plan["preview"]["semantic"];
+    assert_eq!(plan["preview"]["can_apply"], true);
+    assert_eq!(semantic["can_execute"], false);
+    assert!(
+        semantic["gaps"]
+            .as_array()
+            .unwrap()
+            .iter()
+            .any(|g| g["code"] == "work_goal_unresolved")
+    );
+    assert_eq!(
+        plan["preview"]["fingerprint"],
+        p.ok(&["init", "--manifest", "mapping.toml"])["preview"]["fingerprint"]
+    );
+    p.init();
+}
+
+#[test]
+fn replacement_identity_conflicts_are_preflighted_against_a_readonly_history_snapshot() {
+    let p = Project::new();
+    p.init();
+    let work = p.ok(&["work", "show", "W"]);
+    let session = p.ok(&[
+        "session",
+        "start",
+        "--work",
+        "W",
+        "--agent",
+        "fixture",
+        "--provider",
+        "local",
+        "--model",
+        "none",
+        "--expected-revision",
+        &work["project_revision"].to_string(),
+    ]);
+    let ledger = fs::read_to_string(p.0.join("work-ledger.yaml")).unwrap();
+    p.write("relocated.yaml", &ledger);
+    let mapping = fs::read_to_string(p.0.join("mapping.toml"))
+        .unwrap()
+        .replace("work-ledger.yaml", "relocated.yaml");
+    p.write("replacement.toml", &mapping);
+    let before = tree_bytes(&p.0);
+    let plan = p.ok(&["source", "configure", "--manifest", "replacement.toml"]);
+    assert_eq!(plan["preview"]["can_apply"], false);
+    assert!(
+        !plan["preview"]["source_issues"]
+            .as_array()
+            .unwrap()
+            .is_empty()
+    );
+    assert_eq!(
+        plan["preview"]["fingerprint"],
+        p.ok(&["source", "configure", "--manifest", "replacement.toml"])["preview"]["fingerprint"]
+    );
+    p.error(
+        &[
+            "source",
+            "configure",
+            "--manifest",
+            "replacement.toml",
+            "--accept",
+            "--expected-preview",
+            plan["preview"]["fingerprint"].as_str().unwrap(),
+        ],
+        "SourceStale",
+    );
+    assert_eq!(
+        tree_bytes(&p.0),
+        before,
+        "preview and rejected acceptance must not alter persisted files"
+    );
+    let saved = p.ok(&[
+        "session",
+        "show",
+        session["session"]["id"].as_str().unwrap(),
+    ]);
+    assert_eq!(saved["session"]["id"], session["session"]["id"]);
+    assert_eq!(
+        p.ok(&["work", "show", "W"])["work"]["id"],
+        work["work"]["id"]
+    );
 }

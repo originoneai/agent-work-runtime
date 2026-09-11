@@ -69,18 +69,32 @@ text for the manifest, `.gitignore` and generated intake files. Runtime database
 WAL and temporary staging effects are listed separately. This preview performs no
 project writes; an explicitly requested `--write-draft` still writes its output file.
 
+The version 1 `preview.semantic` report parses the exact captured source bytes through
+the normal adapters and projection constraints in private RAM. Existing database and WAL
+files are captured with bounded repeated byte/identity/mtime checks, then opened by
+SQLite in an owner-only temporary directory and copied into RAM. The temporary copy
+is removed after use; SQLite never opens the project database during preflight.
+Concurrent writes or rollback journals reject capture for a later retry. Compatible
+migrations happen only in RAM. It returns
+`can_apply`, `can_execute`, organization gaps and their total/truncation, plus stable
+source identity/revision/configuration bindings. A generated preview is not evidence
+that it can be applied. `can_apply: true` permits intake; unresolved goals/references
+can still make `can_execute: false`. Neither flag proves business acceptance. The
+snapshot is bounded to 256 MiB; larger databases return a preflight issue.
+
 Pass that fingerprint as `init --accept --expected-preview <fingerprint>` with the
 same input/mapping arguments. Changed sources, mapping semantics, existing manifest
 bytes or ignore contents reject the old preview. Existing clients may omit the new
-flag and retain the legacy behavior. A draft file's original inventory fingerprint
+flag; semantic preflight still applies. A draft file's original inventory fingerprint
 is still checked; editing a draft requires previewing that edited draft before
 acceptance. Multiple source candidates remain an explicit ambiguity.
 
 Repeated initialization keeps the existing manifest, project/work identities,
 events, sessions and checkpoints. Non-Git projects are supported. Preview can read
 a read-only project, but initialization requiring runtime writes is rejected there.
-Source failures remain in the result: acceptance can create a partial index with a
-nonzero `SourceStale` result, preserving usable source records. It must not be shown
+Malformed sources and predictable identity conflicts now return `SourceStale` before
+configuration or runtime writes. Failures arising after writes start can still leave a
+partial index; retain the nonzero result and inspect the reported effects. It must not be shown
 as a fully successful import. Initializing multiple files is not a cross-file atomic
 transaction; interrupted staging may require inspection before retry.
 

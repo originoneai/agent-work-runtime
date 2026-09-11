@@ -25,8 +25,8 @@ pub use document::{
 };
 pub use freshness::{SourceObservation, observe_source};
 pub use indexer::{
-    IndexIssue, IndexReport, IndexedSource, index_project, scan_project, source_adapter,
-    source_configuration,
+    IndexIssue, IndexReport, IndexedSource, PreviewSources, index_project, preview_index_project,
+    scan_project, source_adapter, source_configuration,
 };
 pub use ledger_mapping::LedgerMapping;
 pub use limits::{MARKDOWN_READ_CAP, YAML_READ_CAP, source_read_cap};

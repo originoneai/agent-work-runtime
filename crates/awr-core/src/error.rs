@@ -11,6 +11,11 @@ pub enum Error {
     SourceUnavailable(String),
     #[error("source is stale: {0}")]
     SourceStale(String),
+    #[error("source preflight rejected this mapping; inspect the source issues before applying")]
+    IntakePreflightRejected {
+        issues: serde_json::Value,
+        intake_staged: bool,
+    },
     #[error("source fingerprint conflict: {0}")]
     SourceConflict(String),
     #[error("revision conflict: expected {expected}, actual {actual}")]
@@ -92,6 +97,7 @@ impl Error {
             Self::NotFound(_) => "NotFound",
             Self::SourceUnavailable(_) => "SourceUnavailable",
             Self::SourceStale(_) => "SourceStale",
+            Self::IntakePreflightRejected { .. } => "SourceStale",
             Self::SourceConflict(_) => "SourceConflict",
             Self::RevisionConflict { .. } => "RevisionConflict",
             Self::DependencyBlocked(_) => "DependencyBlocked",
@@ -121,6 +127,11 @@ impl Error {
             code: self.code(),
             message: crate::safe_diagnostic(&self.to_string()),
             details: (match self {
+                Self::IntakePreflightRejected { issues, intake_staged } => Some(serde_json::json!({
+                    "can_apply":false,"source_issues":issues,"source_write_performed":intake_staged,
+                    "configuration_write_performed":false,"runtime_write_performed":intake_staged,
+                    "intake_staged":intake_staged
+                })),
                 Self::RuleViolation(message) => crate::secrets::sensitive_rejection_details(message),
                 Self::RevisionConflict { expected, actual } => {
                     Some(serde_json::json!({"expected": expected, "actual": actual}))

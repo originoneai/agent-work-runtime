@@ -13,6 +13,7 @@ mod handoff;
 mod mutation;
 mod mutation_apply;
 mod object_catalog;
+mod preview_snapshot;
 mod projection;
 mod query;
 mod reconcile;
@@ -192,7 +193,58 @@ impl Store {
 
     /// Create or reopen an AWR database. Refuse unrelated databases.
     pub fn open(path: &Path) -> Result<Self> {
-        let mut conn = Connection::open(path).map_err(db_error)?;
+        Self::initialize_connection(Connection::open(path).map_err(db_error)?, true)
+    }
+
+    /// An isolated current-schema store for semantic previews. No disk files are created.
+    pub fn memory() -> Result<Self> {
+        Self::initialize_connection(Connection::open_in_memory().map_err(db_error)?, false)
+    }
+
+    /// Copy and, if necessary, upgrade only a private in-memory copy of an owned database.
+    pub fn preview_snapshot(path: &Path, max_bytes: u64) -> Result<Self> {
+        // Opening even a read-only WAL database may create sidecars. Capture bounded,
+        // stable file images first and let SQLite recover only the private temporary copy.
+        let snapshot = preview_snapshot::Files::capture(path, max_bytes)?;
+        let conn =
+            Connection::open_with_flags(&snapshot.database, OpenFlags::SQLITE_OPEN_READ_ONLY)
+                .map_err(db_error)?;
+        Self::configure(&conn)?;
+        let owner: i64 = conn
+            .pragma_query_value(None, "application_id", |r| r.get(0))
+            .map_err(db_error)?;
+        let version: i64 = conn
+            .pragma_query_value(None, "user_version", |r| r.get(0))
+            .map_err(db_error)?;
+        if owner != APPLICATION_ID || !(1..=SCHEMA_VERSION).contains(&version) {
+            return Err(Error::Storage(
+                "preview requires an owned, supported database".into(),
+            ));
+        }
+        schema::verify(&conn, version)?;
+        let copy = Self { conn }.memory_snapshot(max_bytes)?;
+        Self::initialize_connection(copy.conn, false)
+    }
+
+    pub fn require_memory(&self) -> Result<()> {
+        let file: String = self
+            .conn
+            .query_row(
+                "SELECT file FROM pragma_database_list WHERE name='main'",
+                [],
+                |r| r.get(0),
+            )
+            .map_err(db_error)?;
+        if file.is_empty() {
+            Ok(())
+        } else {
+            Err(Error::RuleViolation(
+                "semantic preview requires an in-memory store".into(),
+            ))
+        }
+    }
+
+    fn initialize_connection(mut conn: Connection, persistent: bool) -> Result<Self> {
         Self::configure(&conn)?;
         let application_id: i64 = conn
             .pragma_query_value(None, "application_id", |r| r.get(0))
@@ -229,7 +281,7 @@ impl Store {
         let mode: String = conn
             .pragma_query_value(None, "journal_mode", |r| r.get(0))
             .map_err(db_error)?;
-        if mode != "wal" {
+        if persistent && mode != "wal" {
             let actual: String = conn
                 .query_row("PRAGMA journal_mode=WAL", [], |r| r.get(0))
                 .map_err(db_error)?;

@@ -142,10 +142,9 @@ pub fn initialize(
         })
     })?;
     manifest.validate()?;
-    if expected_preview.is_some() {
-        let plan = crate::intake_plan::preview(&root, &manifest, &BTreeMap::new(), false)?;
-        crate::intake_plan::check_expected(&plan, expected_preview)?;
-    }
+    let plan = crate::intake_plan::preview(&root, &manifest, &BTreeMap::new(), false)?;
+    crate::intake_plan::check_expected(&plan, expected_preview)?;
+    crate::intake_plan::require_applicable(&plan)?;
     if existing.is_none() && root.join(".awr/state.db").exists() {
         return Err(Error::SourceConflict("database exists without project.toml; restore its matching manifest before initializing".into()));
     }
@@ -277,6 +276,7 @@ fn configure(
         ));
     }
     crate::intake_plan::check_expected(&plan, expected)?;
+    crate::intake_plan::require_applicable(&plan)?;
     if root.metadata()?.permissions().readonly() {
         return Err(Error::RuleViolation(
             "project directory is read-only".into(),
@@ -304,6 +304,7 @@ fn configure(
     let _lock = crate::client::lock(&root, "mutations", "source-configuration")?;
     let current = crate::intake_plan::preview(&root, &candidate, &BTreeMap::new(), true)?;
     crate::intake_plan::check_expected(&current, expected)?;
+    crate::intake_plan::require_applicable(&current)?;
     let permissions = awr_source::open_file_exact(&root.join(".awr/project.toml"))?
         .metadata()?
         .permissions();
