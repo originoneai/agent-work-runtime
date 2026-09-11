@@ -6,6 +6,7 @@ import json
 from pathlib import Path
 import shutil
 from build_packages import PLATFORMS, python_version
+from mcp_catalog import validate_stdio_tools
 
 
 def main():
@@ -33,7 +34,7 @@ def main():
             check = receipt[ecosystem]
             assert check["version_and_help"] is True and check["exit_code_and_stderr"] is True
             assert check["unicode_space_project_init_and_status"] is True and check["task_context_and_intake"] is True
-            assert len(set(check["mcp_stdio_tools"])) == 8
+            validate_stdio_tools(check["mcp_stdio_tools"])
         versions.add(manifest["version"])
         for name, expected in manifest["artifacts"].items():
             assert Path(name).name == name and name.endswith((".whl", ".tgz"))
