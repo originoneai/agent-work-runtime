@@ -115,6 +115,20 @@ pub(crate) fn call(root: &Path, name: &str, args: JsonObject) -> Result<CallTool
 }
 
 fn status(view: &ReadProject, args: StatusArgs) -> Result<Value> {
+    let scope = awr_runtime::StatusScope {
+        work: args.work,
+        goal: args.goal,
+        milestone: args.milestone,
+    };
+    let summary = match args.view.as_deref().unwrap_or("full") {
+        "full" if scope.is_empty() => false,
+        "summary" => true,
+        _ => {
+            return Err(Error::InvalidInput(
+                "view must be full or summary; scopes require summary".into(),
+            ));
+        }
+    };
     let branch = branch(&view.store, &view.project, args.branch.as_deref())?;
     let works = view.store.work_items(view.project.id)?;
     let ready = view
@@ -129,6 +143,16 @@ fn status(view: &ReadProject, args: StatusArgs) -> Result<Value> {
         &works,
         &ready,
     )?;
+    if summary {
+        return awr_runtime::summarize_status(
+            &view.store,
+            &view.project,
+            &scope,
+            &works,
+            &ready,
+            &organization,
+        );
+    }
     let mut counts = BTreeMap::<String, usize>::new();
     for work in &works {
         *counts

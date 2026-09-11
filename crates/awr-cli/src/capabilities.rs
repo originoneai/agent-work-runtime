@@ -27,6 +27,16 @@ struct Capability {
 fn catalog() -> Vec<Capability> {
     [
         (
+            "query.summary",
+            true,
+            &["status --view summary"][..],
+            &[
+                "explicit_scope",
+                "source_counts_are_not_acceptance",
+                "details_on_demand",
+            ][..],
+        ),
+        (
             "source.read",
             true,
             &["source list", "source show"][..],

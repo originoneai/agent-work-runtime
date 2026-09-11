@@ -91,6 +91,16 @@ enum Command {
     },
     /// Refresh source projections and summarize current project work.
     Status {
+        /// Select the compatible full view or the versioned compact summary.
+        #[arg(long, default_value="full", value_parser=["full","summary"])]
+        view: String,
+        /// Exact work keys in the summary scope; repeat to select several.
+        #[arg(long, requires = "view")]
+        work: Vec<String>,
+        #[arg(long)]
+        goal: Option<String>,
+        #[arg(long)]
+        milestone: Option<String>,
         #[arg(long)]
         branch: Option<String>,
         /// Use the last recorded snapshot without refreshing business sources.
@@ -184,13 +194,30 @@ fn run(cli: &Cli) -> Result<()> {
             branch,
             source_sha,
             cached,
-        }) => query::status(
-            &cli.project,
-            branch.as_deref(),
-            source_sha.as_deref(),
-            cli.json,
-            *cached,
-        ),
+            view,
+            work,
+            goal,
+            milestone,
+        }) => {
+            let scope = awr_runtime::StatusScope {
+                work: work.clone(),
+                goal: goal.clone(),
+                milestone: milestone.clone(),
+            };
+            if view == "full" && !scope.is_empty() {
+                return Err(awr_core::Error::InvalidInput(
+                    "scope selectors require --view summary".into(),
+                ));
+            }
+            query::status_with_scope(
+                &cli.project,
+                branch.as_deref(),
+                source_sha.as_deref(),
+                cli.json,
+                *cached,
+                (view == "summary").then_some(&scope),
+            )
+        }
         Some(Command::Ready {
             limit,
             branch,

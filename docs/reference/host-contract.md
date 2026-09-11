@@ -725,3 +725,28 @@ A single reviewed fingerprint covers all targets. Every target is preflighted be
 Version `0.3.1` exposes the host integration capabilities with schema 4. Use the immutable host payload produced by `scripts/release/build_host_bundle.py`; it includes both native executables, exact capability metadata, file/archive SHA256 values, source/version/platform identity and licenses. Invoke the bundled binary by absolute path with an explicit project root. The native runtime does not require Node, Python, Rust or PATH setup. Development-time packaging and upgrade fixtures run separately.
 
 Follow the [matched upgrade and rollback procedure](../release/DISTRIBUTIONS.md#matched-upgrade-and-rollback-checklist). Preserve all runtime history and source authority, validate old-schema migration with IDs/record inventories, retain read-only legacy APP records, and switch to one AWR writer. A rollback restores a matching program/database/configuration/source set while keeping new user files and the superseded runtime snapshot. Old programs must reject newer databases before writing; host signing, full APP integration and other deployment platforms require their own evidence.
+
+### Compact scoped status (version 1)
+
+`awr status --view summary [--work KEY ...] [--goal KEY] [--milestone KEY]`
+returns compact JSON under `--json`. The same selectors are available in
+`awr_project_status` as `view: "summary"`, `work: ["KEY"]`, `goal`, and `milestone`.
+Selectors intersect exact source-declared associations; unknown references are errors.
+No selectors means all projected work. The default full view remains compatible;
+selectors on that view are rejected rather than ignored.
+
+The summary includes source status counts, current work, the next action, readiness
+and blocking codes, all-source freshness, project organization gaps and registered
+pending mutation/checkpoint findings. Pending findings are project-wide, even for a
+narrow scope. Lists show at most five entries and carry total/omitted counts; text
+uses a 240-character public summary. `omissions` identifies excluded work, truncated
+organization scans, and details left for `work show`, `source list`, full `status`,
+`recovery inspect`, or a specific operation's status command. Filesystem-only and
+host-private journals are outside the snapshot's pending inventory and explicitly
+listed as not evaluated. Zero registered pending findings is not a claim that an
+external host has no uncertain operations.
+
+Counts describe source states; they do not certify acceptance or releases. Full
+organization evidence assessment runs only against an explicitly supplied
+`source_sha`, as before. Snapshot and cached-currentness metadata retain the query
+contract above. A summary reduces transport size, not the source verification scope.

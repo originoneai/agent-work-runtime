@@ -172,6 +172,16 @@ pub fn status(
     json_output: bool,
     cached: bool,
 ) -> Result<()> {
+    status_with_scope(root, reference, source_sha, json_output, cached, None)
+}
+pub fn status_with_scope(
+    root: &Path,
+    reference: Option<&str>,
+    source_sha: Option<&str>,
+    json_output: bool,
+    cached: bool,
+    scope: Option<&awr_runtime::StatusScope>,
+) -> Result<()> {
     if source_sha.is_some_and(|s| !is_source_sha(s)) {
         return Err(Error::InvalidInput(
             "--source-sha requires a full source SHA".into(),
@@ -212,6 +222,34 @@ pub fn status(
         &works,
         &report,
     )?;
+    if let Some(scope) = scope {
+        let mut value = awr_runtime::summarize_status(
+            &query.store,
+            &query.project,
+            scope,
+            &works,
+            &report,
+            &organization,
+        )?;
+        for (key, item) in query.metadata().as_object().expect("query metadata") {
+            value[key] = item.clone();
+        }
+        query.check_revision()?;
+        if json_output {
+            println!("{}", serde_json::to_string(&value)?);
+        } else {
+            println!(
+                "Project: {} | {} selected | {} active | {} ready | {} blocked\nNext: {}\nDetails: awr status; awr work show KEY",
+                query.project.name,
+                value["total"],
+                value["current_total"],
+                value["ready_count"],
+                value["blocked_count"],
+                value["next_action"]
+            );
+        }
+        return query.finish();
+    }
     let mut counts = BTreeMap::<String, usize>::new();
     for work in &works {
         *counts
