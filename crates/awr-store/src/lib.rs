@@ -18,11 +18,13 @@ mod projection;
 mod query;
 mod reconcile;
 mod resume;
+mod runtime_lease;
 mod schema;
 mod search;
 mod session;
 mod source_changes;
 mod source_lock;
+pub use runtime_lease::{RuntimeLease, pending_path as restore_pending_path};
 pub use source_lock::SourceLock;
 mod transaction;
 mod work;
@@ -69,6 +71,7 @@ const DRAFT_WORK_SQL: &str = include_str!("../migrations/004_draft_work.sql");
 /// ```
 pub struct Store {
     pub(crate) conn: Connection,
+    runtime_lease: Option<RuntimeLease>,
 }
 
 #[cfg(test)]
@@ -142,11 +145,15 @@ impl Store {
             ));
         }
         Self::configure(&conn)?;
-        Ok(Self { conn })
+        Ok(Self {
+            conn,
+            runtime_lease: None,
+        })
     }
 
     /// Open the current schema for queries without creating or upgrading database state.
     pub fn open_readonly(path: &Path) -> Result<Self> {
+        let runtime_lease = RuntimeLease::shared(path, false)?;
         if !path.is_file() {
             return Err(Error::NotFound(format!("AWR database: {}", path.display())));
         }
@@ -164,13 +171,17 @@ impl Store {
                 "read queries require a current AWR database; use doctor to inspect it".into(),
             ));
         }
-        let store = Self { conn };
+        let store = Self {
+            conn,
+            runtime_lease,
+        };
         store.verify_catalog()?;
         Ok(store)
     }
 
     /// Open an existing current-schema database for domain writes without creating or migrating it.
     pub fn open_existing(path: &Path) -> Result<Self> {
+        let runtime_lease = RuntimeLease::shared(path, true)?;
         if !path.is_file() {
             return Err(Error::NotFound(format!("AWR database: {}", path.display())));
         }
@@ -188,14 +199,21 @@ impl Store {
                 "writes require an existing current AWR database; inspect it before repair".into(),
             ));
         }
-        let store = Self { conn };
+        let store = Self {
+            conn,
+            runtime_lease,
+        };
         store.verify_catalog()?;
         Ok(store)
     }
 
     /// Create or reopen an AWR database. Refuse unrelated databases.
     pub fn open(path: &Path) -> Result<Self> {
-        Self::initialize_connection(Connection::open(path).map_err(db_error)?, true)
+        let lease = RuntimeLease::shared(path, true)?;
+        let mut store =
+            Self::initialize_connection(Connection::open(path).map_err(db_error)?, true)?;
+        store.runtime_lease = lease;
+        Ok(store)
     }
 
     /// An isolated current-schema store for semantic previews. No disk files are created.
@@ -212,6 +230,19 @@ impl Store {
         Self::capture_snapshot(path, max_bytes, false)
     }
     fn capture_snapshot(path: &Path, max_bytes: u64, upgrade: bool) -> Result<Self> {
+        let _lease = RuntimeLease::shared(path, false)?;
+        Self::capture_snapshot_unleased(path, max_bytes, upgrade)
+    }
+    /// Offline inspection under an exclusive runtime lease, including pending restore recovery.
+    pub fn read_snapshot_with_lease(
+        path: &Path,
+        max_bytes: u64,
+        lease: &RuntimeLease,
+    ) -> Result<Self> {
+        lease.check_database(path)?;
+        Self::capture_snapshot_unleased(path, max_bytes, false)
+    }
+    fn capture_snapshot_unleased(path: &Path, max_bytes: u64, upgrade: bool) -> Result<Self> {
         // Opening even a read-only WAL database may create sidecars. Capture bounded,
         // stable file images first and let SQLite recover only the private temporary copy.
         let snapshot = preview_snapshot::Files::capture(path, max_bytes)?;
@@ -236,7 +267,11 @@ impl Store {
             ));
         }
         schema::verify(&conn, version)?;
-        let copy = Self { conn }.memory_snapshot(max_bytes)?;
+        let copy = Self {
+            conn,
+            runtime_lease: None,
+        }
+        .memory_snapshot(max_bytes)?;
         if upgrade {
             Self::initialize_connection(copy.conn, false)
         } else {
@@ -382,7 +417,10 @@ impl Store {
             conn.pragma_update(None, "foreign_keys", true)
                 .map_err(db_error)?;
         }
-        let store = Self { conn };
+        let store = Self {
+            conn,
+            runtime_lease: None,
+        };
         store.verify_catalog()?;
         Ok(store)
     }
@@ -404,13 +442,18 @@ impl Store {
 
     /// Inspect without creating, upgrading, or repairing the database.
     pub fn inspect(path: &Path) -> Result<DoctorReport> {
+        let _lease = RuntimeLease::shared(path, false)?;
         if !path.is_file() {
             return Err(Error::NotFound(format!("AWR database: {}", path.display())));
         }
         let conn = Connection::open_with_flags(path, OpenFlags::SQLITE_OPEN_READ_ONLY)
             .map_err(db_error)?;
         Self::configure(&conn)?;
-        Self { conn }.doctor()
+        Self {
+            conn,
+            runtime_lease: None,
+        }
+        .doctor()
     }
 
     pub fn doctor(&self) -> Result<DoctorReport> {
@@ -490,5 +533,37 @@ impl Store {
             schema_issues,
             foreign_key_check_error,
         })
+    }
+}
+
+impl Store {
+    /// Export an already coherent RAM snapshot to a new SQLite file. No private SQL API escapes.
+    pub fn export_snapshot(&self, path: &Path) -> Result<()> {
+        self.require_memory()?;
+        let mut options = std::fs::OpenOptions::new();
+        options.write(true).create_new(true);
+        #[cfg(unix)]
+        {
+            use std::os::unix::fs::OpenOptionsExt;
+            options.mode(0o600);
+        }
+        drop(options.open(path)?);
+        let mut target = Connection::open(path).map_err(db_error)?;
+        {
+            let backup =
+                rusqlite::backup::Backup::new(&self.conn, &mut target).map_err(db_error)?;
+            if !matches!(
+                backup.step(-1).map_err(db_error)?,
+                rusqlite::backup::StepResult::Done
+            ) {
+                return Err(Error::Storage("snapshot export did not finish".into()));
+            }
+        }
+        target
+            .pragma_update(None, "journal_mode", "DELETE")
+            .map_err(db_error)?;
+        drop(target);
+        std::fs::File::open(path)?.sync_all()?;
+        Ok(())
     }
 }

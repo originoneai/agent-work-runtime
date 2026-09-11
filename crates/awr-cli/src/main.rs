@@ -1,4 +1,5 @@
 mod organization;
+mod runtime_snapshot;
 use awr_core::{Error, Result};
 use clap::{CommandFactory, Parser, Subcommand};
 use std::path::PathBuf;
@@ -46,6 +47,11 @@ struct Cli {
 
 #[derive(Debug, Subcommand)]
 enum Command {
+    /// Inspect, back up and explicitly restore a matching local runtime.
+    Runtime {
+        #[command(subcommand)]
+        command: runtime_snapshot::RuntimeCommand,
+    },
     /// Maintain explicitly mapped project phase, scope and focus.
     Organization {
         #[command(subcommand)]
@@ -187,6 +193,9 @@ enum Command {
 fn run(cli: &Cli) -> Result<()> {
     match &cli.command {
         Some(Command::Host { command }) => host_save::run(&cli.project, command, cli.json),
+        Some(Command::Runtime { command }) => {
+            runtime_snapshot::run(&cli.project, command, cli.json)
+        }
         Some(Command::Organization { command }) => {
             organization::run(&cli.project, command, cli.json)
         }

@@ -86,6 +86,13 @@ Invoke the executable by its absolute application-resource path with `--project 
 
 ## Matched upgrade and rollback checklist
 
+Development builds expose a native `runtime.matched_snapshot` capability for
+`runtime binding`, `backup`, `check`, `restore-preview`, `restore`, `restore-status`
+and `restore-recover`. See the [snapshot contract](../reference/runtime-snapshots.md)
+for exact program/configuration/source matching and offline history restoration.
+This does not change published 0.3.1 packages. Cross-schema downgrade and host files
+outside `.awr` still require the broader matched inventory below.
+
 Use the same project directory and identity. Arbitrary relocation, cloud synchronization and long-lived dual writers are outside this contract.
 
 1. Quiesce host/CLI/MCP writers and execution supervisors. Record the one application owner that will resume writes. Negotiate the candidate's capabilities/schema before opening the existing database; retain the previous executable and its source/version/hash. Check the current database's integrity and foreign keys with its matching program.

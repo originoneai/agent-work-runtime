@@ -27,6 +27,28 @@ struct Capability {
 fn catalog() -> Vec<Capability> {
     [
         (
+            "runtime.matched_snapshot",
+            true,
+            &[
+                "runtime binding",
+                "runtime backup",
+                "runtime check",
+                "runtime restore-preview",
+                "runtime restore",
+                "runtime restore-status",
+                "runtime restore-recover",
+            ][..],
+            &[
+                "same_root",
+                "same_executable_bytes",
+                "matching_sources_and_known_runtime_files",
+                "database_only_restore",
+                "explicit_offline",
+                "new_files_preserved",
+                "external_host_state_excluded",
+            ][..],
+        ),
+        (
             "query.summary",
             true,
             &["status --view summary"][..],

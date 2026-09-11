@@ -42,6 +42,12 @@ distinct from the migration transaction. Doctor never invokes that upgrade path.
 
 ## Backup and recovery
 
+The native [`runtime` snapshot commands](runtime-snapshots.md) provide coherent
+backups, integrity checks, same-root matching restore previews and explicit offline
+database restoration. They retain source/configuration copies for verification,
+preserve added files and refuse source drift. The broader manual recovery inventory
+below also covers external files and schema upgrades outside automatic restore.
+
 For a recoverable project snapshot, retain all of the following together:
 
 - A coherent SQLite backup of `.awr/state.db`, made with SQLite's backup API or
