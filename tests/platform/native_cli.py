@@ -130,15 +130,15 @@ def main():
         denied.mkdir()
         (denied / 'project.toml').write_text("[project]\nname='Denied source'\n[[sources]]\ndomain='ledger'\nrole='primary'\npath='" + locator + "'\nadapter='yaml-ledger-v1'\n", encoding='utf-8')
         rejected = run('09-denied-' + label, 'init', '--manifest', 'project.toml', '--accept', accepted=False, root=denied)
-        index = rejected['stdout_report']['index']
-        require(rejected['code'] == 'SourceStale' and not index['ok'] and index['indexed'] == 0
-                and not index['sources'] and index['issues'], 'Outside source did not report its rejection')
-        # Init keeps a diagnosable project mapping even when a source is rejected.
-        # That empty runtime is not adoption: no source or work projection may exist.
-        with closing(sqlite3.connect((denied / '.awr/state.db').as_uri() + '?mode=ro', uri=True)) as db:
-            require(db.execute('SELECT count(*) FROM sources').fetchone()[0] == 0
-                    and db.execute('SELECT count(*) FROM work_items').fetchone()[0] == 0,
-                    'Denied outside source was adopted')
+        details = rejected['details']
+        require(rejected['code'] == 'SourceStale' and details['can_apply'] is False
+                and details['source_issues'], 'Outside source did not report its rejection')
+        require(all(details[field] is False for field in
+                    ['configuration_write_performed', 'runtime_write_performed',
+                     'source_write_performed', 'intake_staged']),
+                'Rejected preflight reported a write')
+        # Preflight rejects invalid sources before creating configuration or a database.
+        require(not (denied / '.awr').exists(), 'Denied outside source created runtime state')
         require(digest(outside) == outside_hash, 'Denied outside source was changed')
     report['conditions']['outside_source_rejected'] = True
     status = run('10-status', 'status')
