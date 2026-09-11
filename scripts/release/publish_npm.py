@@ -6,7 +6,7 @@ import json
 from pathlib import Path
 import subprocess
 import tarfile
-from build_packages import python_version
+from build_packages import PLATFORMS, python_version
 
 
 def main():
@@ -19,6 +19,7 @@ def main():
     python_version(version)  # Reject malformed or unsupported release versions.
     tag = "next" if "-" in version else "latest"
     assert manifest["channel"] == tag, "release channel mismatch"
+    assert set(manifest["platforms"]) == PLATFORMS, "release platform set mismatch"
     packages = []
     for file in (args.directory / "npm").glob("*.tgz"):
         assert hashlib.sha256(file.read_bytes()).hexdigest() == manifest["artifacts"][file.name]
@@ -27,7 +28,7 @@ def main():
         assert package["version"] == version and package["publishConfig"]["tag"] == tag
         assert package["name"] in {"@originoneai/agent-work-runtime", *[f"@originoneai/agent-work-runtime-{platform}" for platform in manifest["platforms"]]}
         packages.append((package["name"], file))
-    assert len(packages) == 4
+    assert len(packages) == len(PLATFORMS) + 1
     assert {name for name, _ in packages} == {"@originoneai/agent-work-runtime", *[f"@originoneai/agent-work-runtime-{platform}" for platform in manifest["platforms"]]}
     # Installers may fetch the wrapper as soon as it exists, so its dependencies go first.
     packages.sort(key=lambda p: p[0] == "@originoneai/agent-work-runtime")

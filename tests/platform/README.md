@@ -1,6 +1,6 @@
 # 原生平台验证
 
-[合同](contract.json)定义三个目标：macOS arm64、Linux x64 和 Windows x64，均使用 Rust 1.93.1。每个平台需要独立运行 11 道检查；结果以本次绑定的实际运行证据为准。工作流存在、交叉编译通过或另一平台通过都不能作为该平台完成。
+[合同](contract.json)定义四个目标：macOS arm64、macOS Intel x64、Linux x64 和 Windows x64，均使用 Rust 1.93.1。每个平台需要独立运行 11 道检查；结果以本次绑定的实际运行证据为准。工作流存在、交叉编译通过或另一平台通过都不能作为该平台完成。
 
 检查包含全 workspace/all-targets 构建、实际 Rust 测试、doctest、ignored 入口清单与进程终止后的真实 CLI 恢复、全部 8 项 CLI/MCP 对照、手动 checkpoint/resume，以及中文/空格路径、CRLF 来源、WAL/schema 完整性、持久化会话、源码写回回执、过期版本保护、硬规则更新与项目外来源拒绝。最后核对所有已跟踪文件及源码 SHA 没有变化。
 

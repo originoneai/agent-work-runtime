@@ -13,7 +13,7 @@ on:
         description: Exact version expected in Cargo.toml
         type: string
         required: true
-        default: '0.3.0'
+        default: '0.3.1'
       registry:
         description: Registry publication targets
         type: choice
@@ -31,6 +31,8 @@ jobs:
         include:
           - platform: darwin-arm64
             runner: macos-15
+          - platform: darwin-x64
+            runner: macos-15-intel
           - platform: linux-x64-gnu
             runner: ubuntu-24.04
           - platform: win32-x64
@@ -60,6 +62,7 @@ jobs:
           python scripts/check_public_tree.py
           python scripts/release/check_version.py
           python scripts/release/test_release.py
+          node --test scripts/release/test_launcher.cjs
       - name: Install build tools
         run: |
           rustup toolchain install 1.93.1 --profile minimal --component rustfmt --component clippy

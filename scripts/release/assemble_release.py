@@ -5,9 +5,7 @@ import hashlib
 import json
 from pathlib import Path
 import shutil
-from build_packages import python_version
-
-PLATFORMS = {"darwin-arm64", "linux-x64-gnu", "win32-x64"}
+from build_packages import PLATFORMS, python_version
 
 
 def main():
@@ -18,7 +16,7 @@ def main():
     parser.add_argument("--candidate", type=Path, help="also require the recorded candidate artifact hashes")
     args = parser.parse_args()
     manifests = list(args.input.rglob("manifest.json"))
-    assert len(manifests) == 3, "three independent platform build manifests are required"
+    assert len(manifests) == len(PLATFORMS), "one independent build manifest per supported platform is required"
     selected = {}
     versions = set()
     files = {}
@@ -47,8 +45,8 @@ def main():
             files[name] = (source, actual)
         selected[platform] = manifest
     assert set(selected) == PLATFORMS and len(versions) == 1
-    assert sum(name.endswith(".whl") for name in files) == 3
-    assert sum(name.endswith(".tgz") for name in files) == 4
+    assert sum(name.endswith(".whl") for name in files) == len(PLATFORMS)
+    assert sum(name.endswith(".tgz") for name in files) == len(PLATFORMS) + 1
     if args.candidate:
         candidate = json.loads(args.candidate.read_text())
         assert candidate["source_sha"] == args.expected_sha
