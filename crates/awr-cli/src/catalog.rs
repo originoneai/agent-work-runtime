@@ -15,6 +15,9 @@ pub struct ListArgs {
     cursor: Option<String>,
     #[arg(long, default_value_t = 20)]
     limit: usize,
+    /// Read last recorded facts without refreshing authoritative files.
+    #[arg(long)]
+    cached: bool,
 }
 
 pub fn list(root: &Path, args: &ListArgs, json_output: bool) -> Result<()> {
@@ -29,7 +32,7 @@ pub fn list(root: &Path, args: &ListArgs, json_output: bool) -> Result<()> {
     if !(1..=200).contains(&args.limit) {
         return Err(Error::InvalidInput("catalog limit must be 1..200".into()));
     }
-    let query = crate::query::QueryProject::open(root)?;
+    let query = crate::query::QueryProject::open_read(root, args.cached)?;
     let page = query.store.catalog_page(
         query.project.id,
         query.project.project_revision,

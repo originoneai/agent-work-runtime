@@ -60,7 +60,7 @@ WORK = """work_items:
   next_action: Review next steps
   acceptance: [Follow-up is available]
 """
-TRANSPORT_FIELDS = ("freshness_basis", "source_refresh_performed", "read_only")
+TRANSPORT_FIELDS = ("freshness_basis", "source_refresh_performed", "read_only", "snapshot")
 TOOLS = set()
 
 
@@ -192,6 +192,17 @@ class Parity(unittest.TestCase):
         self.assertEqual(mcp["freshness_basis"], "source_verified_readonly")
         self.assertFalse(mcp["source_refresh_performed"])
         self.assertTrue(mcp["read_only"])
+        self.assertTrue(mcp["snapshot"]["coherent"])
+        if "snapshot" in cli:
+            self.assertTrue(cli["snapshot"]["coherent"])
+            for key in ("version", "storage", "project_revision", "source_state_fingerprint", "source_currentness_verified"):
+                self.assertEqual(cli["snapshot"][key], mcp["snapshot"][key])
+            self.assertIsNotNone(cli["snapshot"]["source_refresh_revision"])
+        else:
+            # CLI context packs retain their existing hash-bearing wire contract.
+            self.assertIn("work_context", cli)
+            self.assertEqual(cli["project_revision"], mcp["snapshot"]["project_revision"])
+        self.assertIsNone(mcp["snapshot"]["source_refresh_revision"])
         self.assertEqual({k: v for k, v in cli.items() if k not in TRANSPORT_FIELDS},
                          {k: v for k, v in mcp.items() if k not in TRANSPORT_FIELDS})
 

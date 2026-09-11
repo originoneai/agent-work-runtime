@@ -117,6 +117,38 @@ A failed projection does not mean the configuration was unwritten; inspect the
 receipt and current configuration before acting. Identical configuration returns
 `no_change`. Configuration setup is separate from task/document source editing.
 
+## Read a coherent query snapshot
+
+Status, ready work, work details, object catalogs, search, and context compilation
+refresh through a shared source transition guard before reading one SQLite snapshot
+in RAM. The lock waits at most five seconds. Source projection steps retry only
+optimistic runtime revision conflicts, at most four attempts; source/permission/parse
+failures remain failures. A pending relocation is explicitly recoverable, not a reason
+to silently reuse stale facts. Runtime write commands retain their expected-revision
+checks against the live database.
+
+Query responses include version 1 `snapshot` metadata: the coherent query revision,
+a `source_state_fingerprint` derived from retained source IDs, revisions, fingerprints and
+parsing configuration, and the source refresh revision. Runtime-only events advance
+the project revision without changing the source state fingerprint. A response is a snapshot at
+its recorded revision; later events do not make its internally consistent facts false.
+Context hashes already bind their source and runtime snapshot identities.
+
+`status --cached`, `ready --cached`, `work show <key> --cached`, `object list <kind>
+--cached` and `search --cached` read the last recorded projections without opening
+business files or writing project files. They explicitly return `read_only: true`,
+`source_refresh_performed: false`, `freshness_basis: last_recorded_source_state` and
+`snapshot.source_currentness_verified: false`. Cached facts do not establish current
+progress. The temporary capture is bounded to 256 MiB and may reject an active writer;
+retry after it settles. It never ignores WAL data or upgrades the live schema.
+
+MCP read operations remain read-only and still require source files to match indexed
+facts. They return their coherent revision/source state fingerprint with no source refresh revision.
+A later runtime event alone does not invalidate that read; source drift still rejects it.
+CLI refresh reads can update the projection cache, so `read_only` remains false for
+the overall operation even though the query itself uses RAM. Negotiate this behavior
+with capability `query.coherent_snapshot`.
+
 ## Relocate one source while retaining its identity
 
 ```text

@@ -52,9 +52,13 @@ pub enum IntakeCommand {
 
 pub fn inspect(root: &Path, command: &IntakeCommand, json_output: bool) -> Result<()> {
     match command {
-        IntakeCommand::Inspect { branch, source_sha } => {
-            crate::query::status(root, branch.as_deref(), source_sha.as_deref(), json_output)
-        }
+        IntakeCommand::Inspect { branch, source_sha } => crate::query::status(
+            root,
+            branch.as_deref(),
+            source_sha.as_deref(),
+            json_output,
+            false,
+        ),
     }
 }
 

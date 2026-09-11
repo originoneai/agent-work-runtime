@@ -93,6 +93,9 @@ enum Command {
     Status {
         #[arg(long)]
         branch: Option<String>,
+        /// Use the last recorded snapshot without refreshing business sources.
+        #[arg(long)]
+        cached: bool,
         /// Verify completion reports against this explicit full source SHA.
         #[arg(long)]
         source_sha: Option<String>,
@@ -103,6 +106,9 @@ enum Command {
         limit: usize,
         #[arg(long)]
         branch: Option<String>,
+        /// Use the last recorded snapshot without refreshing business sources.
+        #[arg(long)]
+        cached: bool,
     },
     /// Read one work item without expanding the full ledger or event history.
     Work {
@@ -174,15 +180,22 @@ fn run(cli: &Cli) -> Result<()> {
         Some(Command::Execution { command }) => execution::run(&cli.project, command, cli.json),
         Some(Command::Recovery { command }) => recovery::run(&cli.project, command, cli.json),
         Some(Command::Source { command }) => source::run(&cli.project, command, cli.json),
-        Some(Command::Status { branch, source_sha }) => query::status(
+        Some(Command::Status {
+            branch,
+            source_sha,
+            cached,
+        }) => query::status(
             &cli.project,
             branch.as_deref(),
             source_sha.as_deref(),
             cli.json,
+            *cached,
         ),
-        Some(Command::Ready { limit, branch }) => {
-            query::ready(&cli.project, *limit, branch.as_deref(), cli.json)
-        }
+        Some(Command::Ready {
+            limit,
+            branch,
+            cached,
+        }) => query::ready(&cli.project, *limit, branch.as_deref(), cli.json, *cached),
         Some(Command::Work { command }) => query::work(&cli.project, command, cli.json),
         Some(Command::Session { command }) => session::run(&cli.project, command, cli.json),
         Some(Command::Evidence { command }) => records::evidence(&cli.project, command, cli.json),

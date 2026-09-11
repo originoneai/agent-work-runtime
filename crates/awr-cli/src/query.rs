@@ -41,6 +41,9 @@ pub enum WorkCommand {
         /// Explicit full source SHA for evidence currency (does not assume HEAD is clean).
         #[arg(long)]
         source_sha: Option<String>,
+        /// Read last recorded facts without refreshing files; currentness is not verified.
+        #[arg(long)]
+        cached: bool,
     },
 }
 
@@ -48,6 +51,8 @@ pub(crate) struct QueryProject {
     pub store: Store,
     pub project: Project,
     pub refresh: IndexReport,
+    snapshot: Option<Value>,
+    cached: bool,
 }
 impl QueryProject {
     /// Refresh the rebuildable projection cache only; authoritative files are never modified.
@@ -68,12 +73,43 @@ impl QueryProject {
             store,
             project,
             refresh,
+            snapshot: None,
+            cached: false,
+        })
+    }
+    pub(crate) fn open_read(root: &Path, cached: bool) -> Result<Self> {
+        let root = root.canonicalize()?;
+        let database = super::source::runtime_dir(&root, false)?.join("state.db");
+        if !database.is_file() {
+            return Err(Error::NotFound("AWR database; initialize first".into()));
+        }
+        let snapshot = if cached {
+            awr_source::recorded_snapshot(&root)?
+        } else {
+            let mut origin = Store::open(&database)?;
+            awr_source::refresh_snapshot(&mut origin, &root)?
+        };
+        let project = snapshot.store.project(snapshot.refresh.project_id)?;
+        let metadata = json!({"version":1,"storage":"private_memory","coherent":true,
+            "project_revision":project.project_revision,"source_state_fingerprint":snapshot.source_state_fingerprint,
+            "source_refresh_revision":if cached {None}else{Some(snapshot.refresh.change_window.through_revision)},
+            "source_currentness_verified":!cached && snapshot.refresh.ok});
+        Ok(Self {
+            store: snapshot.store,
+            project,
+            refresh: snapshot.refresh,
+            snapshot: Some(metadata),
+            cached,
         })
     }
     pub(crate) fn metadata(&self) -> Value {
-        json!({"ok":self.refresh.ok,"project_revision":self.project.project_revision,
-            "freshness_basis":"source_refresh","source_refresh_performed":true,"read_only":false,"source_issues":self.refresh.issues,
-            "source_warnings":self.refresh.sources.iter().map(|s|s.warnings.len()).sum::<usize>()})
+        let mut value = json!({"ok":self.refresh.ok,"project_revision":self.project.project_revision,
+            "freshness_basis":if self.cached {"last_recorded_source_state"} else {"source_refresh"},"source_refresh_performed":!self.cached,"read_only":self.cached,"source_issues":self.refresh.issues,
+            "source_warnings":self.refresh.sources.iter().map(|s|s.warnings.len()).sum::<usize>()});
+        if let Some(snapshot) = &self.snapshot {
+            value["snapshot"] = snapshot.clone();
+        }
+        value
     }
     pub(crate) fn finish(&self) -> Result<()> {
         if self.refresh.ok {
@@ -134,6 +170,7 @@ pub fn status(
     reference: Option<&str>,
     source_sha: Option<&str>,
     json_output: bool,
+    cached: bool,
 ) -> Result<()> {
     if source_sha.is_some_and(|s| !is_source_sha(s)) {
         return Err(Error::InvalidInput(
@@ -141,7 +178,7 @@ pub fn status(
         ));
     }
     let root = root.canonicalize()?;
-    let query = match QueryProject::open(&root) {
+    let query = match QueryProject::open_read(&root, cached) {
         Ok(query) => query,
         Err(error) => {
             let initialized =
@@ -263,11 +300,17 @@ pub fn status(
     query.finish()
 }
 
-pub fn ready(root: &Path, limit: usize, reference: Option<&str>, json_output: bool) -> Result<()> {
+pub fn ready(
+    root: &Path,
+    limit: usize,
+    reference: Option<&str>,
+    json_output: bool,
+    cached: bool,
+) -> Result<()> {
     if limit == 0 || limit > 100 {
         return Err(Error::InvalidInput("ready limit must be 1..100".into()));
     }
-    let query = QueryProject::open(root)?;
+    let query = QueryProject::open_read(root, cached)?;
     let branch_id = branch(&query.store, &query.project, reference)?;
     let report = query
         .store
@@ -374,13 +417,14 @@ pub fn work(root: &Path, command: &WorkCommand, json_output: bool) -> Result<()>
             id,
             source_sha,
             branch: reference,
+            cached,
         } => {
             if source_sha.as_ref().is_some_and(|s| !is_source_sha(s)) {
                 return Err(Error::InvalidInput(
                     "--source-sha requires a full source SHA".into(),
                 ));
             }
-            let query = QueryProject::open(root)?;
+            let query = QueryProject::open_read(root, *cached)?;
             let branch_id = branch(&query.store, &query.project, reference.as_deref())?;
             let work =
                 query

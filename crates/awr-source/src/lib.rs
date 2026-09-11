@@ -11,6 +11,10 @@ mod manifest;
 mod markdown;
 mod markdown_ledger;
 mod mutation;
+mod query_snapshot;
+pub use query_snapshot::{
+    QuerySnapshot, recorded_snapshot, refresh_snapshot, source_state_fingerprint,
+};
 mod yaml_create;
 mod yaml_edit;
 mod yaml_ledger;

@@ -205,6 +205,13 @@ impl Store {
 
     /// Copy and, if necessary, upgrade only a private in-memory copy of an owned database.
     pub fn preview_snapshot(path: &Path, max_bytes: u64) -> Result<Self> {
+        Self::capture_snapshot(path, max_bytes, true)
+    }
+    /// Current-schema read snapshot with no project-file writes and no migration.
+    pub fn read_snapshot(path: &Path, max_bytes: u64) -> Result<Self> {
+        Self::capture_snapshot(path, max_bytes, false)
+    }
+    fn capture_snapshot(path: &Path, max_bytes: u64, upgrade: bool) -> Result<Self> {
         // Opening even a read-only WAL database may create sidecars. Capture bounded,
         // stable file images first and let SQLite recover only the private temporary copy.
         let snapshot = preview_snapshot::Files::capture(path, max_bytes)?;
@@ -223,9 +230,18 @@ impl Store {
                 "preview requires an owned, supported database".into(),
             ));
         }
+        if !upgrade && version != SCHEMA_VERSION {
+            return Err(Error::Storage(
+                "read snapshot requires the current schema; inspect and upgrade explicitly".into(),
+            ));
+        }
         schema::verify(&conn, version)?;
         let copy = Self { conn }.memory_snapshot(max_bytes)?;
-        Self::initialize_connection(copy.conn, false)
+        if upgrade {
+            Self::initialize_connection(copy.conn, false)
+        } else {
+            Ok(copy)
+        }
     }
 
     pub fn require_memory(&self) -> Result<()> {

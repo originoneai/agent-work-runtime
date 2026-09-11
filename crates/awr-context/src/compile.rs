@@ -1,7 +1,6 @@
 use crate::completeness::{CompletenessFacts, assess_completeness};
 use crate::*;
 use awr_core::*;
-use awr_source::{Manifest, index_project};
 use awr_store::Store;
 use serde::{Deserialize, Serialize};
 use std::{collections::BTreeSet, path::Path};
@@ -365,7 +364,9 @@ fn compile_context_selected(
         ));
     }
     let root = root.canonicalize()?;
-    let refresh = index_project(store, &root, &Manifest::load(&root)?, false)?;
+    let snapshot = awr_source::refresh_snapshot(store, &root)?;
+    let refresh = snapshot.refresh;
+    let store = &snapshot.store;
     let project = store.project(refresh.project_id)?;
     let branch = match reference {
         Some(reference) => store.resolve_branch(project.id, reference)?,

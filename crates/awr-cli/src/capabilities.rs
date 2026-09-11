@@ -102,6 +102,24 @@ fn catalog() -> Vec<Capability> {
             ],
         ),
         (
+            "query.coherent_snapshot",
+            true,
+            &[
+                "status",
+                "ready",
+                "work show",
+                "object list",
+                "search",
+                "context compile",
+            ],
+            &[
+                "source_transition_wait_bounded",
+                "query_revision_is_a_snapshot",
+                "source_fingerprint_excludes_runtime_events",
+                "cached_mode_does_not_verify_current_sources",
+            ],
+        ),
+        (
             "work.read",
             true,
             &["work show", "ready", "status"],

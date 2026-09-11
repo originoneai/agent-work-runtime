@@ -280,22 +280,30 @@ fn process_project(
             }
         };
         for (locator, identity) in files {
-            let outcome = index_one(
-                store,
-                root,
-                spec,
-                adapter.as_ref(),
-                &locator,
-                &identity,
-                mode,
-                manifest.project.context_profile == crate::ContextProfile::Minimal,
-                captured.and_then(|all| all.get(&key)).and_then(|files| {
-                    files
-                        .iter()
-                        .find(|(path, _)| path.identity().ok() == locator.identity().ok())
-                        .map(|(_, snapshot)| snapshot)
-                }),
-            );
+            let mut attempts = 0;
+            let outcome = loop {
+                attempts += 1;
+                let result = index_one(
+                    store,
+                    root,
+                    spec,
+                    adapter.as_ref(),
+                    &locator,
+                    &identity,
+                    mode,
+                    manifest.project.context_profile == crate::ContextProfile::Minimal,
+                    captured.and_then(|all| all.get(&key)).and_then(|files| {
+                        files
+                            .iter()
+                            .find(|(path, _)| path.identity().ok() == locator.identity().ok())
+                            .map(|(_, snapshot)| snapshot)
+                    }),
+                );
+                if matches!(result, Err(Error::RevisionConflict { .. })) && attempts < 4 {
+                    continue;
+                }
+                break result;
+            };
             match outcome {
                 Ok((source, indexed, warnings)) => {
                     seen.insert(source.id);
