@@ -42,3 +42,52 @@ command-specific contract in [host-contract](../../docs/reference/host-contract.
 path containing spaces, with no TTY. It requires Python 3.11+ on the development/CI
 machine. The test also checks binary pin rejection, partial errors, and unknown
 timeout outcomes without replaying commands.
+
+## Explicit work workflow
+
+`workflow.py` is a reusable thin caller for ordinary engineering work. It uses the
+same `Host` pin checks, argv, public domain commands, and private receipts. It adds
+an OS-locked, atomically saved workflow state with a pinned executable checksum,
+program version, canonical project root and expected project ID. Python 3.11+ is
+needed only for this optional example; the native runtime is unchanged.
+
+Every invocation supplies `--binary`, `--sha256`, `--version`, `--project`,
+`--project-id`, and `--state /private/path/workflow/state.json`. Keep that directory
+ignored and outside registered sources. The individual commands are:
+
+1. `begin --work KEY --agent NAME --provider NAME --model NAME --expected-revision N`
+   starts and claims one session. `adopt --session ID --work KEY` attaches an existing
+   active session to a new workflow without duplicating the runtime session.
+2. `context` returns the full actual context pack and records its immutable receipt.
+   Deliver and consume `work_context.rendered_context`, then call
+   `ack --consumed-hash HASH`. A hash without the matching intact delivery is rejected.
+   The acknowledgement is explicitly a caller attestation; software cannot prove
+   model comprehension. The example never acknowledges context on the caller's behalf.
+3. `checkpoint --consumed-hash HASH --digest TEXT --next-action TEXT --expected-revision N`
+   uses only the acknowledged delivery. A new `context` invalidates the old acknowledgement.
+4. `evidence --input DRAFT.json --expected-revision N` records evidence for the selected
+   work through the existing evidence contract. Commands in evidence are not executed.
+5. `finish --input COMPLETION.json --reason TEXT --expected-revision N` runs the domain
+   completion gates, persists the completed-work phase, then ends that exact session.
+   Source completion and session end are separate durable operations, not an atomic batch.
+
+The class exposes the same methods for embedding. Start from an initialized project
+and reviewed source work; this wrapper does not silently activate or rewrite a task.
+Revisions remain explicit and are returned after each operation. Workflow state is
+operation continuity, not a replacement for source work state or an AWR acceptance record.
+
+Before any write, a pending operation is durably saved. A crash, timeout, malformed
+response or domain error leaves it for inspection; writes stop and are never retried
+automatically. `inspect [--session ID --work KEY]` uses actual public session, work
+and recovery queries and returns an inspection checksum. Read both the invocation
+receipt and observed state. `reconcile --inspection-sha256 HASH --reason TEXT`
+records an explicit operator decision and observed phase, without asserting that the
+uncertain command succeeded. For an unknown begin, identify its actual session and
+pass `--session` and `--work` to inspect/reconcile. Unbound outcomes are not guessed.
+A completed work/session is never automatically reopened or duplicated.
+
+The regression simulates losing a response *after a real checkpoint was saved*,
+then inspects and reconciles without replay. It also covers stale revisions, wrong
+pins, delivery tampering, adoption and a complete synthetic evidence/finish flow.
+This is a public CLI workflow, not restoration of a private native client or E4
+business acceptance.
