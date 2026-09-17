@@ -346,8 +346,8 @@
         <span class="eyebrow">awr intake inspect</span>
         <h1>索引源</h1>
         <p class="lede">
-          被 manifest 匹配到的文件。<b>drift</b> 表示文件在上次索引之后改过，
-          投影已经陈旧——重新索引之前，控制台看到的东西是过期的。
+          AWR 认定为权威的项目源。<b>新鲜度</b>不是 <code>fresh</code> 时，表示文件在上次索引之后改过，
+          投影已经陈旧——重新索引之前，控制台和 agent 看到的都是过期的东西。
         </p>
       </div>
 
@@ -361,7 +361,7 @@
           <div class="scroller">
             <table>
               <thead>
-                <tr><th>路径</th><th>类型</th><th class="num">条目</th><th>状态</th><th class="num">索引于</th></tr>
+                <tr><th>路径</th><th>类型</th><th>角色</th><th>新鲜度</th><th class="num">Revision</th></tr>
               </thead>
               <tbody id="srcRows"></tbody>
             </table>
@@ -382,10 +382,11 @@
           </header>
           <div class="body">
             <dl class="gloss">
-              <dt>indexed</dt><dd>已索引，且文件从那以后没动过。这是正常状态。</dd>
-              <dt>drift</dt><dd>文件改过了，但还没重新索引。控制台和 agent 看到的都是旧内容。</dd>
-              <dt>new</dt><dd>manifest 匹配到了，但从来没索引过。跑一次重新索引就会纳入。</dd>
-              <dt>rejected</dt><dd>被规则挡下了，最常见的是疑似写了密钥。展开那一行能看到位置和修复建议——AWR 不会把匹配到的原值回显出来。</dd>
+              <dt>fresh</dt><dd>源已索引，且文件从那以后没动过。这是正常状态。</dd>
+              <dt>stale</dt><dd>文件改过了，但还没重新索引。控制台和 agent 看到的都是旧内容，读操作可能直接返回 <code>SourceStale</code>。</dd>
+              <dt>类型（domain）</dt><dd>AWR 把源按用途分：goal 目标、plan 计划、rules 规则、ledger 工作项台账。</dd>
+              <dt>角色（role）</dt><dd>同一类型可以有多个源，<code>primary</code> 是主的那个。</dd>
+              <dt>被规则挡下的源</dt><dd>最常见的是疑似写了密钥。那一行可展开，能看到位置和修复建议——AWR 不会把匹配到的原值回显出来。</dd>
             </dl>
           </div>
         </div>

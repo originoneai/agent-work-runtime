@@ -35,9 +35,20 @@
       freshness:    ['freshness_basis'],
       guidance:     ['guidance.next_action', 'next_action'],
     },
-    // 队列在 status 里是四个顶层数组，每个最多 5 条；被截掉的条数在 omissions 里。
+    // 两种 status 形状都要认：
+    //  - 源码树（未发布）：四个顶层数组 current/ready/waiting/blocked + omissions
+    //  - 发布版 0.4.0：只有 current；ready 和 blocked 要另外跑 `awr ready` 拿
     queueItems:     { current: ['current'], ready: ['ready'], waiting: ['waiting'], blocked: ['blocked'] },
     queueOmitted:   { current: ['omissions.current'], ready: ['omissions.ready'], waiting: ['omissions.waiting'], blocked: ['omissions.blocked'] },
+    // `awr ready` 的响应
+    readyCmd: {
+      items:        ['ready'],
+      total:        ['ready_total'],
+      blockedItems: ['blocked_sample'],
+      // 注意：blocked_total 是「不可选」（含已被 claim 的），与 status 的 blocked_count 定义不同，
+      // 只用来给列表标注截断，不往状态条上放。
+      blockedTotal: ['blocked_total'],
+    },
     workItem: {
       key:        ['key', 'external_key', 'work', 'id'],
       title:      ['title', 'summary', 'name'],
@@ -68,15 +79,18 @@
       revision:   ['completeness.project_revision', 'project_revision'],
       omissions:  ['work_context.omitted_chunks', 'omitted_refs', 'omitted_chunks'],
     },
+    // `awr intake inspect` 返回的是组织报告，不是文件表。
+    // 真正的源清单在 organization.sources[]：{domain, freshness, locator, revision, role}
     sources: {
-      files:      ['files', 'sources', 'matched'],
-      summary:    ['summary', 'counts'],
-      path:       ['path', 'file', 'relative_path'],
-      kind:       ['kind', 'type'],
-      items:      ['items', 'item_count', 'extracted'],
-      state:      ['state', 'status'],
-      indexedAt:  ['indexed_at', 'last_indexed_at', 'indexed'],
+      files:      ['organization.sources', 'files', 'sources', 'matched'],
+      path:       ['locator', 'path', 'file'],
+      kind:       ['domain', 'kind', 'type'],
+      state:      ['freshness', 'state', 'status'],
+      role:       ['role'],
+      revision:   ['revision', 'source_revision'],
       rejection:  ['rejection', 'violation', 'error'],
+      issues:     ['source_issues'],
+      gapTotal:   ['organization.gap_total'],
     },
   };
 
@@ -207,35 +221,64 @@
     );
 
     return Object.assign(base, {
-      goal: pick(raw, M.goal, null),
+      // milestone/goal 在条目里，不在响应外层。
+      goal: pick(item, M.goal, null) || pick(raw, M.goal, null),
       acceptance,
       dependsOn: deps,
       missingDeps: pick(raw, M.missingDeps, []) || [],
     });
   }
 
-  function normStatus(raw) {
+  /**
+   * @param raw       `awr status` 的响应
+   * @param readyRaw  `awr ready` 的响应；发布版 0.4.0 的 status 不带 ready/blocked 列表，
+   *                  得靠它补。源码树版本自带四个数组，这时它只是冗余。
+   */
+  function normStatus(raw, readyRaw) {
     const M = FIELD_MAP.status;
+    const R = FIELD_MAP.readyCmd;
     const queues = {};
     let all = [];
 
-    // 四个队列是顶层数组，AWR 自己截到 5 条；被截掉的条数在 omissions 里。
+    // 队列条目：优先用 status 自己的数组；没有就退回 `awr ready`。
+    const fallback = {
+      ready: pick(readyRaw, R.items, null),
+      blocked: pick(readyRaw, R.blockedItems, null),
+    };
+
     for (const q of QUEUES) {
-      const items = pick(raw, FIELD_MAP.queueItems[q.key], []) || [];
-      const omitted = pick(raw, FIELD_MAP.queueOmitted[q.key], 0) || 0;
+      let items = pick(raw, FIELD_MAP.queueItems[q.key], null);
+      let omitted = pick(raw, FIELD_MAP.queueOmitted[q.key], 0) || 0;
+      let source = 'status';
+
+      if (items == null && fallback[q.key] != null) {
+        items = fallback[q.key];
+        source = 'ready';
+        if (q.key === 'ready') {
+          const t = pick(readyRaw, R.total, items.length);
+          omitted = Math.max(0, t - items.length);
+        }
+      }
+      // waiting 在发布版 0.4.0 里根本不存在，别拿 0 冒充「没有」。
+      const available = items != null;
+      items = items || [];
+
       const list = items.map(normWorkBrief).map((w) => Object.assign(w, { queue: q.key }));
-      queues[q.key] = { total: list.length + omitted, omitted, items: list };
+      queues[q.key] = { total: list.length + omitted, omitted, items: list, available, source };
       all = all.concat(list);
     }
 
-    // 计数以 AWR 自己给的为准，不用列表长度推算。
+    // 计数以 AWR 自己给的为准，不用列表长度推算。缺就是缺，记成 null。
     const counted = {
-      current: pick(raw, M.currentTotal, queues.current.total),
-      ready: pick(raw, M.readyCount, queues.ready.total),
-      waiting: pick(raw, M.waitingCount, queues.waiting.total),
-      blocked: pick(raw, M.blockedCount, queues.blocked.total),
+      current: pick(raw, M.currentTotal, queues.current.available ? queues.current.total : null),
+      ready: pick(raw, M.readyCount, queues.ready.available ? queues.ready.total : null),
+      waiting: pick(raw, M.waitingCount, queues.waiting.available ? queues.waiting.total : null),
+      blocked: pick(raw, M.blockedCount, queues.blocked.available ? queues.blocked.total : null),
     };
-    for (const k of Object.keys(counted)) queues[k].total = counted[k];
+    for (const k of Object.keys(counted)) {
+      if (counted[k] != null) queues[k].total = counted[k];
+      else queues[k].available = false;
+    }
 
     // 同一个 key 可能出现在多个队列里，去重，先到的赢。
     const seen = new Set();
@@ -262,15 +305,38 @@
 
   function normSources(raw) {
     const M = FIELD_MAP.sources;
-    const files = (pick(raw, M.files, []) || []).map((f) => ({
-      path: pick(f, M.path, '—'),
-      kind: pick(f, M.kind, '—'),
-      items: pick(f, M.items, null),
-      state: String(pick(f, M.state, 'indexed')).toLowerCase(),
-      indexedAt: pick(f, M.indexedAt, null),
-      rejection: pick(f, M.rejection, null),
-    }));
-    return { files, summary: pick(raw, M.summary, null) };
+    const files = (pick(raw, M.files, []) || []).map((f) => {
+      const locator = pick(f, M.path, '—');
+      return {
+        // locator 是 file:// URL，界面上显示成项目内的相对路径更好读。
+        path: shortenLocator(locator),
+        locator,
+        kind: pick(f, M.kind, '—'),
+        role: pick(f, M.role, null),
+        revision: pick(f, M.revision, null),
+        // AWR 的源状态叫 freshness：fresh / stale …
+        state: String(pick(f, M.state, 'fresh')).toLowerCase(),
+        rejection: pick(f, M.rejection, null),
+      };
+    });
+    // 按 domain 汇总，代替原来按扩展名统计
+    const summary = {};
+    for (const f of files) summary[f.kind] = (summary[f.kind] || 0) + 1;
+
+    return {
+      files,
+      summary: files.length ? summary : null,
+      issues: pick(raw, M.issues, []) || [],
+      gapTotal: pick(raw, M.gapTotal, null),
+    };
+  }
+
+  /** file:///a/b/demo/RULES.md → demo/RULES.md；拿不到就原样。 */
+  function shortenLocator(locator) {
+    const s = String(locator || '');
+    if (!s.startsWith('file://')) return s;
+    const parts = s.replace('file://', '').split('/').filter(Boolean);
+    return parts.slice(-2).join('/') || s;
   }
 
   function normContext(raw) {
@@ -394,7 +460,12 @@
     const cells = [
       { label: '进行中', value: s.currentTotal, hint: '有人正在做' },
       { label: '可开工', value: s.readyCount, hint: '依赖都满足了' },
-      { label: '等待中', value: s.waitingCount, cls: s.waitingCount > 0 ? 'watch' : '', hint: '在等回答或前置' },
+      {
+        label: '等待中',
+        value: s.waitingCount != null ? s.waitingCount : '—',
+        cls: s.waitingCount > 0 ? 'watch' : '',
+        hint: s.waitingCount != null ? '在等回答或前置' : '这个 awr 版本不报告该队列',
+      },
       { label: '被阻塞', value: s.blockedCount, cls: s.blockedCount > 0 ? 'alert' : '', hint: '卡住了，先看这里' },
       {
         label: '结构缺口',
@@ -498,6 +569,15 @@
 
     setText('queueTitle', meta.label);
     setText('queueSub', q.total > q.items.length ? `显示 ${q.items.length} / ${q.total}` : `共 ${q.total}`);
+
+    if (!q.available) {
+      const li = el('li');
+      li.style.gridTemplateColumns = '1fr';
+      li.appendChild(stateBlock('empty', `这个版本的 awr 不报告${meta.label}队列`,
+        '它是当前源码树里的能力，已发布的 0.4.0 还没有。装上带该能力的版本后这里会自动显示。'));
+      list.appendChild(li);
+      return;
+    }
 
     if (!q.items.length) {
       const li = el('li');
@@ -896,14 +976,13 @@
     setText('srcCmd', `awr --project ${state.project} --json intake inspect`);
 
     const files = data.files;
-    const drift = files.filter((f) => f.state === 'drift').length;
-    const rejected = files.filter((f) => f.state === 'rejected').length;
+    const stale = files.filter((f) => f.state !== 'fresh' && f.state !== 'indexed').length;
 
-    setText('srcTitle', `${files.length} 个文件`);
+    setText('srcTitle', `${files.length} 个源`);
     setText('srcSub', [
       data.summary ? Object.keys(data.summary).map((k) => `${data.summary[k]} ${k}`).join(' · ') : '',
-      drift ? `${drift} 个漂移` : '',
-      rejected ? `${rejected} 个被拒` : '',
+      stale ? `${stale} 个不新鲜` : '',
+      data.issues.length ? `${data.issues.length} 个问题` : '',
     ].filter(Boolean).join(' · '));
     setText('navSourceCount', String(files.length || ''));
 
@@ -914,19 +993,19 @@
       return;
     }
 
-    const tagFor = { indexed: 'ok', drift: 'warn', new: 'info', rejected: 'crit' };
+    const tagFor = { fresh: 'ok', indexed: 'ok', stale: 'warn', drift: 'warn', new: 'info', rejected: 'crit' };
 
     for (const f of files) {
       const tr = el('tr');
       tr.appendChild(el('td', 'wide', f.path));
       tr.appendChild(el('td', null, f.kind));
-      tr.appendChild(el('td', 'num', f.items != null ? String(f.items) : '—'));
+      tr.appendChild(el('td', null, f.role || '—'));
 
       const c4 = el('td');
-      c4.appendChild(el('span', 'tag flat ' + (tagFor[f.state] || ''), f.state));
+      c4.appendChild(el('span', 'tag flat ' + (tagFor[f.state] || 'warn'), f.state));
       tr.appendChild(c4);
 
-      tr.appendChild(el('td', 'num', since(f.indexedAt)));
+      tr.appendChild(el('td', 'num', f.revision != null ? String(f.revision) : '—'));
       tbody.appendChild(tr);
 
       if (f.rejection) {
@@ -1005,17 +1084,20 @@
     renderModeUi();
 
     if (state.mode === 'demo') {
-      state.status = normStatus(window.AWR_DEMO.status);
+      state.status = normStatus(window.AWR_DEMO.status, null);
       state.sources = normSources(window.AWR_DEMO.sources);
       state.raw.overview = { ok: true, data: window.AWR_DEMO.status, note: '演示数据' };
       state.raw.sources = { ok: true, data: window.AWR_DEMO.sources, note: '演示数据' };
     } else {
-      const [st, src] = await Promise.all([callApi('/api/status'), callApi('/api/sources')]);
-      state.raw.overview = st;
+      // 发布版 0.4.0 的 status 不带 ready/blocked 列表，所以两条一起拉。
+      const [st, rdy, src] = await Promise.all([
+        callApi('/api/status'), callApi('/api/ready'), callApi('/api/sources'),
+      ]);
+      state.raw.overview = { status: st, ready: rdy };
       state.raw.sources = src;
 
       if (st.ok) {
-        state.status = normStatus(st.data);
+        state.status = normStatus(st.data, rdy.ok ? rdy.data : null);
       } else {
         state.status = null;
         clear($('statusStrip'));

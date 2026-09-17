@@ -55,7 +55,7 @@ node server.js --project /你的/项目路径
 | 概览 | 现在该干什么 | `awr status` |
 | 工作项 | 这件活要做成什么样、卡在哪 | `awr status` + `awr work show KEY` |
 | 上下文 | 给 agent 的那包东西里装了什么 | `awr context compile` |
-| 索引源 | 控制台看到的还算数吗 | `awr intake inspect` |
+| 索引源 | 控制台看到的还算数吗 | `awr intake inspect`（读 `organization.sources`）|
 
 **先看哪里：** 概览页的「被阻塞」和「等待中」两个队列，进度停下来的地方都在那儿。
 
@@ -81,16 +81,21 @@ awr --project /你的/项目路径 init --accept
 
 ## 界面上的数字对不上？
 
-字段映射的来源：
+四条命令的映射都已经跑过真实的 `awr 0.4.0`（`examples/basic` 初始化出来的项目）核对过。
 
-| 命令 | 映射依据 |
-| --- | --- |
-| `awr status` | 已对照 `crates/awr-runtime/src/status_action.rs` 与 `status_summary.rs` |
-| `awr work show` | 已对照 `crates/awr-cli/src/query.rs` |
-| `awr context compile` | 已对照 `crates/awr-context/src/{compile,budget}.rs` |
-| `awr intake inspect` | **未核对**，仍是按文档推测的 |
+### 版本差异
 
-前三条读的是源码，但没跑过真实项目验证过；Sources 视图尤其可能对不上。
+已发布的 0.4.0 和当前源码树的 `status` 输出**不是同一个形状**，控制台两种都认：
+
+| | 发布版 0.4.0 | 当前源码树 |
+| --- | --- | --- |
+| `status` 的队列 | 只有 `current` 数组 | `current`/`ready`/`waiting`/`blocked` 四个数组 |
+| ready 列表从哪来 | 另跑 `awr ready` | `status` 自带 |
+| waiting 队列 | **没有** | 有 |
+| 截断条数 | `ready_total` 减列表长度 | `omissions.<队列>` |
+
+发布版没有的队列，界面显示「—」并说明原因，不拿 0 冒充「没有」。
+
 遇到某一格显示「—」：
 
 1. 展开那个页面底部的 **「原始 JSON」**，看真实字段叫什么。
