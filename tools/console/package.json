@@ -1,0 +1,12 @@
+{
+  "name": "awr-console",
+  "version": "1.0.0",
+  "private": true,
+  "description": "AWR 的本地只读 Web 控制台",
+  "bin": { "awr-console": "server.js" },
+  "scripts": {
+    "start": "node server.js",
+    "demo": "node server.js --demo"
+  },
+  "engines": { "node": ">=18" }
+}
