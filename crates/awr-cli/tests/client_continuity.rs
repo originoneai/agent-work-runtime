@@ -69,6 +69,8 @@ fn automatic_stop_and_compact_save_persisted_work_and_deduplicate() {
     p.ok(&[
         "client",
         "progress",
+        "--client",
+        "codex",
         "--external-session",
         "conversation-a",
         "--next-action",
@@ -91,6 +93,8 @@ fn automatic_stop_and_compact_save_persisted_work_and_deduplicate() {
     p.ok(&[
         "client",
         "progress",
+        "--client",
+        "codex",
         "--external-session",
         "conversation-a",
         "--next-action",
@@ -166,6 +170,8 @@ fn conversations_keep_separate_next_actions_and_checkpoints() {
     p.ok(&[
         "client",
         "progress",
+        "--client",
+        "codex",
         "--external-session",
         "conversation-a",
         "--next-action",
@@ -174,6 +180,8 @@ fn conversations_keep_separate_next_actions_and_checkpoints() {
     p.ok(&[
         "client",
         "progress",
+        "--client",
+        "codex",
         "--external-session",
         "conversation-b",
         "--next-action",
@@ -221,19 +229,42 @@ fn installing_hooks_preserves_existing_entries_and_requires_no_global_edits() {
         serde_json::to_vec(&old).unwrap(),
     )
     .unwrap();
-    let preview = p.ok(&["client", "install", "--work", "INTAKE-001"]);
+    let preview = p.ok(&[
+        "client",
+        "install",
+        "--client",
+        "codex",
+        "--work",
+        "INTAKE-001",
+    ]);
     assert_eq!(preview["installed"], false);
     assert_eq!(
         serde_json::from_slice::<Value>(&fs::read(p.0.join(".codex/hooks.json")).unwrap()).unwrap(),
         old
     );
-    let installed = p.ok(&["client", "install", "--work", "INTAKE-001", "--accept"]);
+    let installed = p.ok(&[
+        "client",
+        "install",
+        "--client",
+        "codex",
+        "--work",
+        "INTAKE-001",
+        "--accept",
+    ]);
     assert_eq!(
         installed["configuration"]["hooks"]["PreToolUse"],
         old["hooks"]["PreToolUse"]
     );
     assert_eq!(installed["activation_verified"], false);
-    let repeated = p.ok(&["client", "install", "--work", "INTAKE-001", "--accept"]);
+    let repeated = p.ok(&[
+        "client",
+        "install",
+        "--client",
+        "codex",
+        "--work",
+        "INTAKE-001",
+        "--accept",
+    ]);
     assert_eq!(
         repeated["configuration"]["hooks"]["Stop"]
             .as_array()
@@ -249,9 +280,19 @@ fn foreign_project_event_and_forged_generic_binding_are_rejected() {
     let event =
         json!({"session_id":"foreign","cwd":other.0,"hook_event_name":"Stop","turn_id":"one"});
     assert!(
-        !p.run(&["client", "hook", "--work", "INTAKE-001"], Some(&event))
-            .status
-            .success()
+        !p.run(
+            &[
+                "client",
+                "hook",
+                "--client",
+                "codex",
+                "--work",
+                "INTAKE-001"
+            ],
+            Some(&event)
+        )
+        .status
+        .success()
     );
     let rev = p.ok(&["status"])["project_revision"].to_string();
     let forged = p.run(
@@ -269,7 +310,17 @@ fn foreign_project_event_and_forged_generic_binding_are_rejected() {
     );
     assert!(!forged.status.success());
     assert!(String::from_utf8_lossy(&forged.stderr).contains("reserved"));
-    assert!(p.ok(&["client", "show", "--external-session", "foreign"])["binding"].is_null());
+    assert!(
+        p.ok(&[
+            "client",
+            "show",
+            "--client",
+            "codex",
+            "--external-session",
+            "foreign"
+        ])["binding"]
+            .is_null()
+    );
 }
 
 #[test]
@@ -279,6 +330,8 @@ fn explicit_cross_client_handoff_carries_the_saved_next_action() {
     p.ok(&[
         "client",
         "progress",
+        "--client",
+        "codex",
         "--external-session",
         "old-client",
         "--next-action",
@@ -318,7 +371,15 @@ fn explicit_cross_client_handoff_carries_the_saved_next_action() {
 #[test]
 fn generated_shell_hook_runs_with_documented_native_output() {
     let p = Project::new();
-    let installed = p.ok(&["client", "install", "--work", "INTAKE-001", "--accept"]);
+    let installed = p.ok(&[
+        "client",
+        "install",
+        "--client",
+        "codex",
+        "--work",
+        "INTAKE-001",
+        "--accept",
+    ]);
     let command = installed["configuration"]["hooks"]["SessionStart"][0]["hooks"][0]["command"]
         .as_str()
         .unwrap();
@@ -347,6 +408,133 @@ fn generated_shell_hook_runs_with_documented_native_output() {
     );
     assert!(output.get("awr").is_none());
     assert!(
-        !p.ok(&["client", "show", "--external-session", "native-command"])["binding"].is_null()
+        !p.ok(&[
+            "client",
+            "show",
+            "--client",
+            "codex",
+            "--external-session",
+            "native-command"
+        ])["binding"]
+            .is_null()
     );
+}
+
+#[test]
+fn l2_install_rejects_generic_host_identity() {
+    let p = Project::new();
+    let failed = p.run(
+        &[
+            "client",
+            "install",
+            "--client",
+            "generic",
+            "--work",
+            "INTAKE-001",
+        ],
+        None,
+    );
+    assert!(!failed.status.success());
+    let error: Value = serde_json::from_slice(&failed.stderr).unwrap();
+    assert_eq!(error["code"], "Unsupported");
+    assert!(error["message"].as_str().unwrap().contains("Codex only"));
+}
+
+#[test]
+fn l0_generic_host_completes_the_same_lifecycle() {
+    let p = Project::new();
+    let event = |session: &str, name: &str, turn: Option<&str>| {
+        let mut e =
+            json!({"session_id":session,"hook_event_name":name,"cwd":p.0,"model":"client-test"});
+        if let Some(t) = turn {
+            e["turn_id"] = json!(t);
+        }
+        decode(p.run(
+            &[
+                "client",
+                "hook",
+                "--client",
+                "generic",
+                "--work",
+                "INTAKE-001",
+            ],
+            Some(&e),
+        ))
+    };
+    let started = event("cursor:conversation-a", "SessionStart", None);
+    assert!(
+        started["hookSpecificOutput"]["additionalContext"]
+            .as_str()
+            .unwrap()
+            .contains("INTAKE-001")
+    );
+    p.ok(&[
+        "client",
+        "progress",
+        "--client",
+        "generic",
+        "--external-session",
+        "cursor:conversation-a",
+        "--next-action",
+        "Finish the reviewed search handler",
+        "--open-loop",
+        "Independent review is pending",
+    ]);
+    let saved = event("cursor:conversation-a", "Stop", Some("turn-one"));
+    assert_eq!(saved["awr"]["checkpoint_saved"], true);
+    let shown = p.ok(&[
+        "client",
+        "show",
+        "--client",
+        "generic",
+        "--external-session",
+        "cursor:conversation-a",
+    ]);
+    assert_eq!(shown["binding"]["client"], "generic");
+    assert_eq!(
+        shown["binding"]["external_session"],
+        "cursor:conversation-a"
+    );
+    // A namespaced host id keeps identities separate without a new client enum.
+    let other = p.ok(&[
+        "client",
+        "show",
+        "--client",
+        "generic",
+        "--external-session",
+        "conversation-a",
+    ]);
+    assert!(other["binding"].is_null());
+}
+
+#[test]
+fn omitted_client_flag_is_rejected_loudly() {
+    let p = Project::new();
+    for args in [
+        vec![
+            "client",
+            "bind",
+            "--external-session",
+            "x",
+            "--work",
+            "INTAKE-001",
+        ],
+        vec![
+            "client",
+            "progress",
+            "--external-session",
+            "x",
+            "--next-action",
+            "y",
+        ],
+        vec!["client", "show", "--external-session", "x"],
+        vec!["client", "hook", "--work", "INTAKE-001"],
+        vec!["client", "install", "--work", "INTAKE-001"],
+    ] {
+        let out = p.run(&args, None);
+        assert_eq!(out.status.code(), Some(2), "{args:?}");
+        assert!(out.stdout.is_empty(), "{args:?}");
+        let error: Value = serde_json::from_slice(&out.stderr).unwrap();
+        assert_eq!(error["code"], "InvalidInput", "{args:?}");
+    }
 }

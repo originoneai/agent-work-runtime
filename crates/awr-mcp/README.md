@@ -11,6 +11,10 @@ for the project registry, client access, persistent conversations, wait/reply fl
 and request outcome recovery. Clients share one URL and select an authorized
 project on each call; projects retain separate sources and runtime databases.
 
+Host integration uses three layers: the generic L0 contract, short L1 host
+notes, and optional L2 native adapters. See
+[host integration layers](../../docs/integrations/README.md).
+
 A generic configuration for local stdio is:
 
 ```json
@@ -23,6 +27,10 @@ A generic configuration for local stdio is:
   }
 }
 ```
+
+Merge paths for named hosts are L1/L2 notes, not a second MCP protocol. Start
+from the [L0 session workflow](../../docs/integrations/session-workflow.md).
+Codex hook installation is an [optional L2 adapter](../../docs/integrations/codex.md).
 
 Initialize and index projects through `awr init` and `awr source reindex` first.
 Starting the server does not create or migrate a database. Stdio stays bound to its

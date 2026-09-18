@@ -1,5 +1,9 @@
 # Host workflows with less bookkeeping
 
+This document is the **application-host** argv workflow. Coding agents that
+speak MCP or call the CLI should start from
+[host integration layers](README.md), not here.
+
 The [host example](../../examples/host-app/README.md) keeps application-owned
 workflow state separate from AWR's authoritative project sources. A host can
 carry session identities, revisions and execution receipts so the agent spends

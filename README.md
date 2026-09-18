@@ -10,6 +10,10 @@ existing Markdown/YAML sources, records execution checkpoints and compiles a
 bounded context packet for the task at hand. Use it through a native Rust CLI or
 an MCP client. Context compilation runs locally and makes no model calls.
 
+AWR is host-agnostic. Any coding agent that can run the CLI or speak MCP uses
+the same project state. Deep lifecycle automation is optional; it is not the
+product boundary. See [host integration layers](docs/integrations/README.md).
+
 ```text
 Your project sources → AWR index + checkpoints → focused context → coding agent
        ↑                                                      │
@@ -110,13 +114,16 @@ plan and task sources, then runs `intake inspect` again. It does not invent your
 business intent. Nonstandard fields and statuses have explicit mappings such as
 `--status-map pending=planned` and `--field-map title=事项`.
 
-For local MCP, configure the client to launch `awr-mcp --project /absolute/project/path`
+For local MCP, configure any client to launch `awr-mcp --project /absolute/project/path`
 after initialization. AWR 0.4.0 also provides a [shared MCP service](docs/reference/mcp-service.md):
 one HTTP endpoint for multiple projects and clients, with persistent sessions,
-checkpoints, user waits and request recovery. See the [MCP setup and tools](crates/awr-mcp/README.md),
-[Codex guide](docs/integrations/codex.md),
-[checkpoint/resume example](examples/codex/README.md) and
+checkpoints, user waits and request recovery. Start from the
+[host integration layers](docs/integrations/README.md) (L0 generic contract, L1
+host notes, optional L2 adapters), then the [MCP tools](crates/awr-mcp/README.md),
+[L0 session workflow](docs/integrations/session-workflow.md),
+[CLI lifecycle example](examples/codex/README.md) and
 [project intake and execution guide](docs/TAKEOVER.md).
+Codex-specific hook installation remains an [optional L2 adapter](docs/integrations/codex.md).
 
 AWR can supervise commands it launches and bind supported client lifecycle events.
 Restoring an arbitrary existing process or the private memory of a native client

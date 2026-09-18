@@ -1,5 +1,10 @@
 # Continuing AWR work with Grok Build
 
+> **Layer: L1 host note.** Use the [L0 session workflow](session-workflow.md)
+> for the shared CLI/MCP path. This page records Grok merge paths, native
+> continuation flags, and a dated check. It does not add an L2 installer.
+> See [host integration layers](README.md).
+
 Use the local **Grok Build** client's terminal tool to call AWR, or connect its
 stdio MCP client to the same initialized project. This guide was checked against
 `grok 1.0.13 (5e9a58528b76)` on **2026-09-08**. Grok's web connectors are a separate

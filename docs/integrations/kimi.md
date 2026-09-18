@@ -1,5 +1,10 @@
 # Continuing AWR work with Kimi Code
 
+> **Layer: L1 host note.** Use the [L0 session workflow](session-workflow.md)
+> for the shared CLI/MCP path. This page records Kimi merge paths, native
+> session flags, and a dated check. It does not add an L2 installer.
+> See [host integration layers](README.md).
+
 Use Kimi Code's terminal tool to call the AWR CLI. Optionally connect the same
 project through AWR's stdio MCP server. AWR keeps work identity, claims and
 checkpoints independently of Kimi's conversation history.

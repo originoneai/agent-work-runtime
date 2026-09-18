@@ -84,14 +84,26 @@ To verify source-declared completion, use `awr intake inspect --source-sha FULL_
 
 ## Client checkpoints
 
-The Codex project adapter is installed with:
+Host integration is layered: L0 is CLI/MCP plus `awr client bind --client generic`;
+L1 records a named host; L2 optionally installs native hooks. See
+[host integration layers](integrations/README.md).
+
+The L0 binder attaches a host conversation to an active AWR session, or resumes
+a predecessor. It does not install hooks:
+
+```sh
+awr client bind --client generic --external-session HOST_CONVERSATION_ID \
+  --work INTAKE-001 --session AWR_SESSION_ID
+```
+
+An optional L2 Codex adapter is installed with:
 
 ```sh
 awr client install --client codex --work INTAKE-001
 awr client install --client codex --work INTAKE-001 --accept
 ```
 
-It merges `SessionStart`, `PreCompact`, `PostCompact`, `Stop`, `SessionEnd` and `Interrupt` handlers into the project's `.codex/hooks.json`, preserving existing handlers and config. Review and trust the exact definitions in a fresh client's `/hooks` view. Installation always reports `activation_verified: false`; a generated file or a synthetic receiver call is not proof that a native client activated the hooks. The adapter follows the [official lifecycle contract](https://learn.chatgpt.com/docs/hooks).
+It merges `SessionStart`, `PreCompact`, `PostCompact`, `Stop`, `SessionEnd` and `Interrupt` handlers into the project's `.codex/hooks.json`, preserving existing handlers and config. Review and trust the exact definitions in a fresh client's `/hooks` view. Installation always reports `activation_verified: false`; a generated file or a synthetic receiver call is not proof that a native client activated the hooks. The adapter follows the [official lifecycle contract](https://learn.chatgpt.com/docs/hooks). Other hosts stay on L0 until an L2 adapter exists.
 
 The receiver binds a native conversation ID to a work-bound AWR session. SessionStart/PostCompact return recovery context. Stop/PreCompact/SessionEnd/Interrupt save the persisted next action, open loops and actual AWR event/source delta. Shutdown hooks are advisory and do not terminate sessions, release claims or kill processes. Explicit session end/handoff retains those responsibilities.
 
@@ -112,7 +124,7 @@ awr client bind --client generic --external-session NEW_CLIENT_ID \
   --work INTAKE-001 --from-session AWR_PREDECESSOR_ID
 ```
 
-`generic` and `kimi` identities can use the normalized JSON receiver; automatic installation is currently provided for Codex only. The receiver accepts the documented `session_id`, `cwd`, `hook_event_name`, optional `turn_id` and `model` fields. Native mode emits only documented hook output fields; `--json` adds diagnostic AWR receipts. This does not start a native client or migrate its process memory.
+`--client generic` is the L0 identity. `kimi` is a documented native dialect for the same receiver; automatic L2 installation is currently provided for Codex only. The receiver accepts the documented `session_id`, `cwd`, `hook_event_name`, optional `turn_id` and `model` fields. Native mode emits only documented hook output fields; `--json` adds diagnostic AWR receipts. This does not start a native client or migrate its process memory.
 
 ## Executions
 

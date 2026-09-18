@@ -1,5 +1,10 @@
 # Using AWR from Codex
 
+> **Layer: L2 optional adapter.** AWR is not a Codex runtime. Use the
+> [L0 session workflow](session-workflow.md) for host-agnostic CLI/MCP
+> commands. This page keeps Codex merge paths, `client install`, and dated
+> verification. See [host integration layers](README.md).
+
 AWR supplies current project facts, work context and recoverable session memory.
 Codex performs the work using its available tools. The local workflow below uses
 AWR's CLI and stdio MCP against the same initialized project. AWR 0.3.3

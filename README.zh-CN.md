@@ -6,6 +6,8 @@
 
 项目做久了，目标、任务、规则和决策散落各处。新会话往往要重新翻资料，仍可能漏掉阻塞和下一步。AWR 读取已有 Markdown/YAML，保存工作检查点，按当前任务生成有 Token 预算的上下文。它提供 Rust CLI 和 MCP 接口，本地编译上下文，无需调用模型。
 
+AWR 不绑定某一个 Coding Agent。只要宿主能跑 CLI 或讲 MCP，就使用同一套项目状态。深度生命周期自动化是可选项，不是产品边界。分层说明见[宿主接入层级](docs/integrations/README.md)。
+
 ```text
 项目源文件 → AWR 索引与检查点 → 当前任务上下文 → Coding Agent
     ↑                                              │
@@ -84,9 +86,9 @@ awr --project /path/to/project intake inspect
 
 先预览，再接受映射。没有明确目标时，初始化可加 `--goal "你希望完成的事情"`。Agent 按诊断补齐目标与任务，随后重新检查；AWR 不会替你编造业务意图。自定义状态或中文字段可用 `--status-map pending=planned`、`--field-map title=事项` 映射。
 
-本地接入 MCP 时，让客户端启动 `awr-mcp --project /项目绝对路径`。0.4.0 同时支持[共享 MCP 常驻服务](docs/reference/mcp-service.md)：一个 HTTP 入口服务多个项目和客户端，保存独立的会话、检查点、用户等待和请求回执。这些能力均包含在 0.4.0 安装包中。
+本地接入 MCP 时，让任意客户端启动 `awr-mcp --project /项目绝对路径`。0.4.0 同时支持[共享 MCP 常驻服务](docs/reference/mcp-service.md)：一个 HTTP 入口服务多个项目和客户端，保存独立的会话、检查点、用户等待和请求回执。这些能力均包含在 0.4.0 安装包中。
 
-详见 [MCP 配置与工具](crates/awr-mcp/README.md)、[Codex 接入](docs/integrations/codex.md)、[检查点与恢复示例](examples/codex/README.md)、[项目接管指南](docs/TAKEOVER.md)。
+先看[宿主接入层级](docs/integrations/README.md)（L0 通用合同、L1 宿主注记、可选 L2 适配器），再看 [MCP 配置与工具](crates/awr-mcp/README.md)、[L0 会话流程](docs/integrations/session-workflow.md)、[CLI 生命周期示例](examples/codex/README.md)、[项目接管指南](docs/TAKEOVER.md)。Codex 的 hooks 安装仍是[可选 L2 适配器](docs/integrations/codex.md)。
 
 AWR 可托管自己启动的命令，并连接受支持的客户端生命周期事件。任意已有进程或客户端私有会话的恢复，需要对应客户端配合。
 

@@ -1,15 +1,17 @@
-# Codex integration examples
+# CLI lifecycle example
 
-Use the [integration guide](../../docs/integrations/codex.md) for the workflow on
-your actual project. These files support that guide:
+`lifecycle.py` is the **L0** CLI walkthrough: it invokes AWR, not a coding
+agent. The directory name is historical. For host-agnostic commands see the
+[L0 session workflow](../../docs/integrations/session-workflow.md). Codex-specific
+MCP/hooks remain in the [L2 Codex adapter](../../docs/integrations/codex.md).
 
-- `config.toml.example`: project-bound stdio MCP configuration. Replace absolute
-  paths and merge the table into an existing trusted project configuration.
-- `AGENTS.snippet.md`: instructions to adapt into the project's existing agent
-  guidance. Copying it does not install lifecycle hooks.
-- `lifecycle.py`: an executable CLI walkthrough using a fresh copy of
+- `lifecycle.py`: executable CLI walkthrough using a fresh copy of
   [the basic fixture](../basic/) with this directory's `work-ledger.yaml`, which
   declares the phase required by bootstrap. It retains a receipt for every command.
+- `config.toml.example`: Codex project-bound stdio MCP configuration. Replace
+  absolute paths and merge the table into an existing trusted project configuration.
+- `AGENTS.snippet.md`: Codex instruction snippet. Copying it does not install
+  lifecycle hooks.
 
 From the AWR repository root, with Python 3.9 or later and the Rust toolchain:
 
@@ -33,7 +35,7 @@ On failure, inspect the numbered JSON receipt and the retained project's
 mutation or discard a partly completed run. Runtime files and receipts are local
 inspection material, not source-ledger completion evidence.
 
-This script invokes AWR, not Codex or a model. Provider/model values are recorded
-metadata. Running it from a Codex terminal establishes a terminal workflow;
-native MCP discovery, lifecycle hooks and real business acceptance require their
-own evidence. See the guide's dated verification boundary.
+This script invokes AWR, not a coding agent or a model. Provider/model values are
+recorded metadata. Running it from any host terminal establishes a terminal
+workflow; native MCP discovery, lifecycle hooks and real business acceptance
+require their own evidence. See [host integration layers](../../docs/integrations/README.md).
