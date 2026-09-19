@@ -1,0 +1,9 @@
+{
+  "mcpServers": {
+    "awr": {
+      "type": "stdio",
+      "command": "/absolute/path/to/awr-mcp",
+      "args": ["--project", "/absolute/path/to/initialized/project"]
+    }
+  }
+}

@@ -67,7 +67,8 @@ events unreadable by older binaries; the namespaced ID avoids that. Use
 | Grok Build | L1 | [Grok note](grok.md) | Project MCP add, native `--continue` / `--resume`, dated check |
 | Kimi Code | L1 | [Kimi note](kimi.md) | `.kimi-code/mcp.json`, native session flags, dated check |
 | Codex | L2 | [Codex adapter](codex.md) | `.codex` MCP merge, `client install` hooks, AGENTS snippet |
-| Cursor, Claude Code, Windsurf, … | L0 | [Session workflow](session-workflow.md) | None needed: `--client generic` with a `host:`-prefixed conversation ID |
+| Cursor | L1 | [Cursor note](cursor.md) | `.cursor/mcp.json`, `type: stdio`, source-built grouped MCP, Cloud Agent HTTPS |
+| Claude Code, Windsurf, … | L0 | [Session workflow](session-workflow.md) | None needed: `--client generic` with a `host:`-prefixed conversation ID |
 
 Application hosts that invoke `awr` over argv follow the
 [host application contract](../reference/host-contract.md) and
@@ -95,3 +96,4 @@ what was actually called and on which host version. An L2 adapter must keep
 
 Cursor, Claude Code, Windsurf and similar hosts should enter at L0 or L1.
 They do not need a Codex-shaped installer to “count” as supported.
+Cursor MCP merge paths are an [L1 note](cursor.md).

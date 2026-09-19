@@ -31,6 +31,7 @@ A generic configuration for local stdio is:
 Merge paths for named hosts are L1/L2 notes, not a second MCP protocol. Start
 from the [L0 session workflow](../../docs/integrations/session-workflow.md).
 Codex hook installation is an [optional L2 adapter](../../docs/integrations/codex.md).
+Cursor stdio and HTTP merge paths are an [L1 host note](../../docs/integrations/cursor.md).
 
 Initialize and index projects through `awr init` and `awr source reindex` first.
 Starting the server does not create or migrate a database. Stdio stays bound to its

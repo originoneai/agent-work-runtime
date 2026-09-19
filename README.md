@@ -124,6 +124,7 @@ host notes, optional L2 adapters), then the [MCP tools](crates/awr-mcp/README.md
 [CLI lifecycle example](examples/codex/README.md) and
 [project intake and execution guide](docs/TAKEOVER.md).
 Codex-specific hook installation remains an [optional L2 adapter](docs/integrations/codex.md).
+Cursor merge paths are an [L1 host note](docs/integrations/cursor.md).
 
 AWR can supervise commands it launches and bind supported client lifecycle events.
 Restoring an arbitrary existing process or the private memory of a native client
