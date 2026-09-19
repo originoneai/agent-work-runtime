@@ -1,0 +1,490 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>AWR Inspector</title>
+<meta http-equiv="content-security-policy" content="default-src 'self'; script-src 'self'; style-src 'self'; connect-src 'self'; font-src 'self'; img-src 'self' data:; object-src 'none'; base-uri 'none'; form-action 'self'">
+<link rel="stylesheet" href="styles.css">
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'><text y='20' font-size='20'>🧭</text></svg>">
+</head>
+<body>
+
+<!-- ════════ 顶栏 ════════ -->
+<div class="topbar">
+  <span class="brand">
+    <svg viewBox="0 0 24 24" fill="none" stroke-width="1.7" aria-hidden="true">
+      <rect class="m1" x="3" y="3" width="18" height="18" rx="4"/>
+      <path class="m2" d="M8 12.5l3 3 5-6"/>
+      <circle class="m3" cx="17.5" cy="6.5" r="1.6" stroke="none"/>
+    </svg>
+    AWR<span class="sep">/</span>INSPECTOR
+  </span>
+  <span class="ver" id="verTag">v0.4.0</span>
+  <span class="projpick" title="当前项目目录">
+    <svg viewBox="0 0 24 24" fill="none" stroke-width="1.7" aria-hidden="true"><path d="M3 7a2 2 0 0 1 2-2h4l2 2h8a2 2 0 0 1 2 2v9a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/></svg>
+    项目 <em id="projPath">…</em>
+  </span>
+
+  <span class="spacer"></span>
+
+  <span class="tag" id="tagFresh" hidden></span>
+  <span class="tag info" id="tagBackend" hidden></span>
+  <span class="tag demo" id="tagDemo" hidden>演示数据</span>
+
+  <button class="icon-btn" id="btnRefresh" title="重新拉取数据">
+    <svg viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12a9 9 0 1 1-2.6-6.4"/><path d="M21 3v6h-6"/></svg>
+    刷新
+  </button>
+  <button class="icon-btn" id="btnGuide" title="新手引导">新手引导</button>
+  <button class="icon-btn" id="btnGloss" title="术语表">术语</button>
+  <button class="icon-btn" id="btnTheme" title="切换明暗主题">
+    <svg viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12.8A9 9 0 1 1 11.2 3a7 7 0 0 0 9.8 9.8z"/></svg>
+  </button>
+</div>
+
+<!-- 模式横幅 -->
+<div class="banner" id="modeBanner" hidden>
+  <span id="modeBannerText"></span>
+  <button class="close" id="modeBannerClose" aria-label="关闭">×</button>
+</div>
+
+<div class="shell">
+
+  <!-- ════════ 左侧导航 ════════ -->
+  <nav class="rail" aria-label="视图">
+    <span class="rail-head">运行时</span>
+    <a href="#overview" data-view="overview" aria-current="true">
+      <svg viewBox="0 0 24 24"><rect x="3" y="3" width="8" height="8" rx="1.5"/><rect x="13" y="3" width="8" height="8" rx="1.5"/><rect x="3" y="13" width="8" height="8" rx="1.5"/><rect x="13" y="13" width="8" height="8" rx="1.5"/></svg>
+      概览
+    </a>
+    <a href="#work" data-view="work">
+      <svg viewBox="0 0 24 24"><path d="M4 6h10M4 12h10M4 18h10"/><path d="M17 6l1.5 1.5L21 5M17 12l1.5 1.5L21 11M17 18l1.5 1.5L21 17"/></svg>
+      工作项 <i id="navWorkCount"></i>
+    </a>
+    <a href="#context" data-view="context">
+      <svg viewBox="0 0 24 24"><path d="M12 3l9 5-9 5-9-5 9-5z"/><path d="M3 12l9 5 9-5"/><path d="M3 16l9 5 9-5"/></svg>
+      上下文
+    </a>
+    <a href="#sources" data-view="sources">
+      <svg viewBox="0 0 24 24"><path d="M14 3H7a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V8z"/><path d="M14 3v5h5"/><path d="M9 13h6M9 17h6"/></svg>
+      索引源 <i id="navSourceCount"></i>
+    </a>
+  </nav>
+
+  <main>
+
+    <!-- ════════ 概览 ════════ -->
+    <section class="view" id="view-overview">
+      <div class="hero">
+        <div>
+          <span class="eyebrow">awr status</span>
+          <h1>现在该干什么</h1>
+          <p class="lede">
+            AWR 把项目里的 Markdown / YAML 索引成可查询的状态。这一页是它对
+            「当前进行中、可以领、在等人、被卡住」四个队列的回答。
+          </p>
+          <p class="lede lede-note">
+            这是一个观察工具：它不编辑权威源文件，不推进工作状态，不是 agent 客户端，
+            也不替代 CLI 或 MCP。
+          </p>
+        </div>
+        <div class="headline">
+          <span class="big" id="heroBig">—</span>
+          <span class="cap" id="heroCap">上下文压缩率</span>
+        </div>
+      </div>
+
+      <div class="stack-lg">
+
+        <div class="strip" id="statusStrip"></div>
+
+        <div class="panel lift">
+          <header>
+            <h2>每次编译的上下文体积</h2>
+            <button class="why" data-why="contextChart" aria-label="这是什么">?</button>
+            <span class="sub" id="cmpSub"></span>
+          </header>
+          <p class="why-note" data-note="contextChart" hidden>
+            agent 每开一个新会话，都要先「读懂项目」。<b>不用 AWR</b> 时它得把源文件整个读一遍；
+            <b>用 AWR</b> 时它只读一个编译好的上下文包。这张图比的就是这两者的 token 数——越短越省钱、越不容易超出模型的上下文窗口。
+          </p>
+          <div class="body">
+            <div class="cmp" id="cmpChart"></div>
+            <p class="figure-note" id="cmpNote"></p>
+          </div>
+        </div>
+
+        <div class="grid two">
+          <div class="panel">
+            <header>
+              <h2 id="queueTitle">队列</h2>
+              <button class="why" data-why="queues" aria-label="这是什么">?</button>
+              <span class="sub" id="queueSub"></span>
+            </header>
+            <p class="why-note" data-note="queues" hidden>
+              AWR 把所有工作项分进四个队列：<b>current</b> 有人正在做、<b>ready</b> 依赖都满足了可以开工、
+              <b>waiting</b> 在等一个回答或一个前置结果、<b>blocked</b> 真的被卡住了。
+              先看 blocked 和 waiting，那里才是进度停下来的地方。
+            </p>
+            <div class="chips chips-inset" id="queueTabs"></div>
+            <ul class="loops" id="queueList"></ul>
+          </div>
+
+          <div class="panel">
+            <header>
+              <h2>结构缺口</h2>
+              <button class="why" data-why="checkpoints" aria-label="这是什么">?</button>
+              <span class="sub" id="gapSub"></span>
+            </header>
+            <p class="why-note" data-note="checkpoints" hidden>
+              这些是 AWR 在你的源文件里没找到的东西：缺目标、缺计划、缺任务结构。
+              agent 开不了工，原因常常不在代码，而在这里——补齐源文件，队列自己就会动起来。
+            </p>
+            <ul class="loops" id="cpList"></ul>
+          </div>
+        </div>
+
+        <div class="panel" id="pendingPanel" hidden>
+          <header>
+            <h2>待查的运行时操作</h2>
+            <button class="why" data-why="pending" aria-label="这是什么">?</button>
+            <span class="sub" id="pendingSub"></span>
+          </header>
+          <p class="why-note" data-note="pending" hidden>
+            这些操作被中断过，结果未知——可能已经生效，也可能没有。
+            AWR 不替你猜，也不自动重试。先用 <code>awr recovery inspect</code> 查清楚再决定下一步。
+          </p>
+          <ul class="loops" id="pendingList"></ul>
+        </div>
+
+        <div class="panel">
+          <header>
+            <h2>连接方式</h2>
+            <button class="why" data-why="mcp" aria-label="这是什么">?</button>
+            <span class="sub" id="mcpSub"></span>
+          </header>
+          <p class="why-note" data-note="mcp" hidden>
+            它不直连数据库，每做一件事都在后台跑一条 <code>awr</code> 命令。
+            所以你在界面上看到的每条命令，复制到终端里跑，结果是一样的。
+            你的 agent 则通过 MCP 拿同样的数据。
+          </p>
+          <div class="body body-stack">
+            <div class="cmd">
+              <span class="prompt">$</span>
+              <code id="mcpCmd">awr-mcp --project …</code>
+              <button class="copy" data-copy-target="mcpCmd">复制</button>
+            </div>
+            <div class="chips">
+              <span class="chip">awr_project_status</span>
+              <span class="chip">awr_work_ready</span>
+              <span class="chip">awr_work_get</span>
+              <span class="chip">awr_context_compile</span>
+              <span class="chip">awr_search</span>
+            </div>
+            <p class="figure-note flush">
+              这五个是 agent 侧的只读工具，跑在一次性的内存快照上，不会改动你的项目状态。
+            </p>
+          </div>
+        </div>
+
+        <details class="panel rawbox" id="rawOverview">
+          <summary>原始 JSON（对不上字段时看这里）</summary>
+          <div class="body"><pre class="packet" id="rawOverviewBody"></pre></div>
+        </details>
+
+      </div>
+    </section>
+
+    <!-- ════════ 工作项 ════════ -->
+    <section class="view" id="view-work" hidden>
+      <div class="view-head">
+        <span class="eyebrow">awr status · awr work show</span>
+        <h1>工作项</h1>
+        <p class="lede">
+          点一行看它的目标、验收标准和卡住的原因。所有状态都来自被索引的源文件，
+          不是另一个独立的任务系统。
+        </p>
+      </div>
+
+      <div class="stack-lg">
+        <div class="chips" id="workFilters"></div>
+
+        <div class="panel lift">
+          <header>
+            <h2>清单</h2>
+            <span class="sub" id="workSub"></span>
+          </header>
+          <div class="scroller">
+            <table>
+              <thead>
+                <tr>
+                  <th>Work</th><th>标题</th><th>队列</th><th>源状态</th>
+                  <th>负责人</th><th>认领</th><th>诊断码</th><th class="num">Revision</th>
+                </tr>
+              </thead>
+              <tbody id="workRows"></tbody>
+            </table>
+          </div>
+          <div id="workEmpty"></div>
+        </div>
+
+        <div class="panel">
+          <header>
+            <h2 id="detailId">详情</h2>
+            <button class="why" data-why="criteria" aria-label="这是什么">?</button>
+            <span class="sub" id="detailStatus"></span>
+          </header>
+          <p class="why-note" data-note="criteria" hidden>
+            验收标准是逐字从源文件抄过来的。AWR 完成一个工作项时，要求每条标准都恰好对上一份证据
+            （evidence），所以这里的文字不能改写——改了就对不上号。
+          </p>
+          <div class="body detail" id="workDetail"></div>
+        </div>
+
+        <details class="panel rawbox" id="rawWork">
+          <summary>原始 JSON</summary>
+          <div class="body"><pre class="packet" id="rawWorkBody"></pre></div>
+        </details>
+      </div>
+    </section>
+
+    <!-- ════════ 上下文 ════════ -->
+    <section class="view" id="view-context" hidden>
+      <div class="view-head">
+        <span class="eyebrow">awr context compile</span>
+        <h1>编译一个上下文包</h1>
+        <p class="lede">
+          选好工作项和预算，AWR 会挑出这个任务真正需要的规则、验收标准、阻塞和源引文，
+          压成一段有上限的文本，交给 agent。
+        </p>
+      </div>
+
+      <div class="stack-lg">
+        <div class="panel lift">
+          <header>
+            <h2>参数</h2>
+            <span class="sub">与 CLI 一一对应</span>
+          </header>
+          <div class="body">
+            <div class="form">
+              <div class="field">
+                <label for="fWork">work <button class="why" data-why="fWork" aria-label="这是什么">?</button></label>
+                <select id="fWork"></select>
+                <span class="help">要为哪个工作项准备上下文。</span>
+              </div>
+              <div class="field">
+                <label for="fGoal">goal</label>
+                <input id="fGoal" spellcheck="false" placeholder="goal#demo">
+                <span class="help">这个任务服务于哪个目标。留空则用项目默认。</span>
+              </div>
+              <div class="field">
+                <label for="fBudget">budget（token 上限）</label>
+                <select id="fBudget">
+                  <option value="4000">4,000</option>
+                  <option value="5000">5,000</option>
+                  <option value="6000" selected>6,000</option>
+                  <option value="8000">8,000</option>
+                  <option value="16000">16,000</option>
+                </select>
+                <span class="help">只约束渲染出来的那段正文，不约束整个 JSON 响应。</span>
+              </div>
+              <div class="field">
+                <label for="fIntent">intent（可选）</label>
+                <input id="fIntent" spellcheck="false" placeholder="比如：修 Windows 路径的 flaky 测试">
+                <span class="help">一句话说明这次要干什么，帮它挑内容。</span>
+              </div>
+            </div>
+
+            <div class="actions">
+              <button class="btn" id="compileBtn">编译</button>
+              <span class="hint" id="compileHint">编译不写权威源，也不推进工作状态。</span>
+            </div>
+
+            <div class="gap-above">
+              <div class="cmd">
+                <span class="prompt">$</span>
+                <code id="cliMirror"></code>
+                <button class="copy" data-copy-target="cliMirror">复制</button>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="grid two">
+          <div class="panel">
+            <header>
+              <h2>包里装了什么</h2>
+              <span class="sub" id="packetTotal"></span>
+            </header>
+            <div class="body">
+              <div class="breakdown" id="breakdown"></div>
+              <p class="figure-note" id="packetNote"></p>
+            </div>
+          </div>
+
+          <div class="panel">
+            <header>
+              <h2>完整性</h2>
+              <button class="why" data-why="completeness" aria-label="这是什么">?</button>
+              <span class="sub" id="completeSub"></span>
+            </header>
+            <p class="why-note" data-note="completeness" hidden>
+              预算是个硬上限。装不下时 AWR 会省略一部分源引文，并把省略了什么如实告诉你。
+              如果这里报了「不完整」，说明 agent 拿到的信息是缺的——把 budget 调大再编译一次。
+            </p>
+            <div class="body" id="completeBody"></div>
+          </div>
+        </div>
+
+        <div class="panel">
+          <header>
+            <h2>渲染出来的包</h2>
+            <span class="sub">这就是 agent 会读到的全部内容</span>
+            <button class="copy copy-flush" data-copy-target="packetPreview">复制全文</button>
+          </header>
+          <div class="body">
+            <pre class="packet" id="packetPreview"></pre>
+          </div>
+        </div>
+
+        <details class="panel rawbox" id="rawContext">
+          <summary>原始 JSON</summary>
+          <div class="body"><pre class="packet" id="rawContextBody"></pre></div>
+        </details>
+      </div>
+    </section>
+
+    <!-- ════════ 索引源 ════════ -->
+    <section class="view" id="view-sources" hidden>
+      <div class="view-head">
+        <span class="eyebrow">awr intake inspect</span>
+        <h1>索引源</h1>
+        <p class="lede">
+          AWR 认定为权威的项目源。<b>新鲜度</b>不是 <code>fresh</code> 时，表示文件在上次索引之后改过，
+          投影已经陈旧——重新索引之前，这里和 agent 看到的都是过期的东西。
+        </p>
+      </div>
+
+      <div class="stack-lg">
+        <div class="panel lift">
+          <header>
+            <h2 id="srcTitle">文件</h2>
+            <span class="sub" id="srcSub"></span>
+            <button class="btn ghost push-left" id="reindexBtn">重新索引…</button>
+          </header>
+          <div class="scroller">
+            <table>
+              <thead>
+                <tr><th>路径</th><th>类型</th><th>角色</th><th>新鲜度</th><th class="num">Revision</th></tr>
+              </thead>
+              <tbody id="srcRows"></tbody>
+            </table>
+          </div>
+          <div id="srcEmpty"></div>
+          <div class="body body-divided">
+            <div class="cmd">
+              <span class="prompt">$</span>
+              <code id="srcCmd">awr intake inspect --json</code>
+              <button class="copy" data-copy-target="srcCmd">复制</button>
+            </div>
+          </div>
+        </div>
+
+        <div class="panel">
+          <header>
+            <h2>状态是什么意思</h2>
+          </header>
+          <div class="body">
+            <dl class="gloss">
+              <dt>fresh</dt><dd>源已索引，且文件从那以后没动过。这是正常状态。</dd>
+              <dt>stale</dt><dd>文件改过了，但还没重新索引。这里和 agent 看到的都是旧内容，读操作可能直接返回 <code>SourceStale</code>。</dd>
+              <dt>类型（domain）</dt><dd>AWR 把源按用途分：goal 目标、plan 计划、rules 规则、ledger 工作项台账。</dd>
+              <dt>角色（role）</dt><dd>同一类型可以有多个源，<code>primary</code> 是主的那个。</dd>
+              <dt>被规则挡下的源</dt><dd>最常见的是疑似写了密钥。那一行可展开，能看到位置和修复建议——AWR 不会把匹配到的原值回显出来。</dd>
+            </dl>
+          </div>
+        </div>
+
+        <details class="panel rawbox" id="rawSources">
+          <summary>原始 JSON</summary>
+          <div class="body"><pre class="packet" id="rawSourcesBody"></pre></div>
+        </details>
+      </div>
+    </section>
+
+    <footer class="page">
+      <span>AWR Inspector · 本地观察工具</span>
+      <span><a href="https://github.com/originoneai/agent-work-runtime" target="_blank" rel="noopener">github.com/originoneai/agent-work-runtime</a></span>
+      <span id="footMode"></span>
+    </footer>
+
+  </main>
+</div>
+
+<!-- ════════ 新手引导 ════════ -->
+<div class="scrim" id="tour" hidden>
+  <div class="sheet" role="dialog" aria-modal="true" aria-labelledby="tourTitle">
+    <header><h3 id="tourTitle"></h3></header>
+    <div class="body" id="tourBody"></div>
+    <footer>
+      <button class="btn ghost" id="tourSkip">跳过</button>
+      <button class="btn" id="tourNext">下一步</button>
+      <span class="step-dots" id="tourDots"></span>
+    </footer>
+  </div>
+</div>
+
+<!-- ════════ 术语表 ════════ -->
+<div class="scrim" id="glossary" hidden>
+  <div class="sheet" role="dialog" aria-modal="true" aria-labelledby="glossTitle">
+    <header>
+      <h3 id="glossTitle">术语表</h3>
+      <button class="icon-btn push-end" id="glossClose">关闭</button>
+    </header>
+    <div class="body">
+      <dl class="gloss">
+        <dt>work item（工作项）</dt>
+        <dd>一件要干的活，比如 <code>EXAMPLE-001</code>。它不住在某个任务系统里，就写在你项目的 Markdown / YAML 源文件中，AWR 只是把它索引出来。</dd>
+
+        <dt>queue（队列）</dt>
+        <dd>AWR 对工作项当前处境的判断：current 正在做、ready 可以开工、waiting 在等回答或前置、blocked 被卡住。它和源文件里写的 status 字段不是一回事，两者都会显示。</dd>
+
+        <dt>context packet（上下文包）</dt>
+        <dd>为某一个工作项编译出来的一段文本，装着 agent 动手前必须知道的东西：规则、验收标准、依赖、阻塞、源引文。有 token 上限。</dd>
+
+        <dt>budget（预算）</dt>
+        <dd>上下文包的 token 上限。装不下时 AWR 会省略源引文并如实告诉你省了什么，而不是悄悄截断。</dd>
+
+        <dt>checkpoint（检查点）</dt>
+        <dd>agent 干完一段活存下的存档点：消耗了什么、做到哪、下一步做什么。换会话继续干活靠它。</dd>
+
+        <dt>open loop（未了结的事）</dt>
+        <dd>悬着还没收尾的东西：一个待定的决策、一个没人 review 的改动、一个 flaky 测试。它们会被编进上下文包，免得新会话把同一个坑再踩一遍。</dd>
+
+        <dt>drift（漂移）</dt>
+        <dd>源文件改了，但还没重新索引。此时 AWR 的投影是旧的，读操作可能直接返回 <code>SourceStale</code>。</dd>
+
+        <dt>revision</dt>
+        <dd>项目状态的版本号。任何写操作都要先声明「我看到的是第几版」，版本对不上就拒绝——这是 AWR 防止并发踩踏的办法。</dd>
+
+        <dt>evidence（证据）</dt>
+        <dd>证明某条验收标准真的达成了的东西：一次测试运行、一份报告。完成一个工作项时，每条标准都要恰好对上一份证据。</dd>
+
+        <dt>source of record（记录来源）</dt>
+        <dd>你的 Markdown 和 YAML。AWR 的 SQLite 只是投影，随时可以重建；改内容永远是改源文件。</dd>
+
+        <dt>刷新与只读</dt>
+        <dd>这个工具不改你的 Markdown / YAML，也不推进任何工作状态。但读命令本身会刷新 AWR 的源投影（<code>status</code> 会报 <code>source_refresh_performed: true</code>），所以它不是「运行时完全只读」。重新索引是一次显式的维护操作，默认关闭。</dd>
+
+        <dt>MCP</dt>
+        <dd>agent 连接 AWR 的协议。本工具走 CLI，agent 走 MCP，两边读到的是同一份状态。</dd>
+      </dl>
+    </div>
+  </div>
+</div>
+
+<script src="demo-data.js"></script>
+<script src="app.js"></script>
+</body>
+</html>

@@ -1,0 +1,46 @@
+name: Inspector verification
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'tools/inspector/**'
+      - '.github/workflows/inspector.yml'
+  pull_request:
+    paths:
+      - 'tools/inspector/**'
+      - '.github/workflows/inspector.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  bridge:
+    name: bridge tests
+    runs-on: ubuntu-24.04
+    defaults:
+      run:
+        working-directory: tools/inspector
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '24'
+      - name: Syntax check
+        run: |
+          node --check server.js
+          node --check public/app.js
+          node --check public/demo-data.js
+      - name: Bridge tests
+        run: node --test test/*.test.js
+      - name: No external asset loads
+        run: |
+          # 这是本地工具：页面不得从外部拉任何资源。
+          # 只查会发起网络请求的写法，data: URI 里的 XML 命名空间不算。
+          # <a href> 是用户点的链接，不算加载；<link>/src/url()/@import 才算。
+          if grep -rnE '<link[^>]+href="https?://|src="https?://|url\(\s*["'"'"']?https?://|@import[^;]*https?://' \
+               --include='*.html' --include='*.css' public/; then
+            echo "在 public/ 里发现了外部资源加载"
+            exit 1
+          fi
