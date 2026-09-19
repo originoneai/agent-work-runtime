@@ -59,6 +59,8 @@ INSERT INTO awr_team.actors(tenant_id,id,kind,display_name,status) VALUES
    ('tenant-a','runner-a','system','Runner','active');
 INSERT INTO awr_team.projects(tenant_id,id,key,mode,coordinator_epoch,status)
    VALUES ('tenant-a','project-a','alpha','team','epoch-1','active');
+INSERT INTO awr_team.project_memberships(tenant_id,project_id,actor_id,role)
+   VALUES ('tenant-a','project-a','reviewer-a','reviewer');
 INSERT INTO awr_team.work_scopes(tenant_id,project_id,id,name,status)
    VALUES ('tenant-a','project-a','main','main','active');
 INSERT INTO awr_team.work_items(tenant_id,project_id,id,external_key)
@@ -162,6 +164,7 @@ async fn two_actors_handoff_review_and_complete_with_independent_oracle() {
             Some(b"oracle-bytes"),
             Some("in-1"),
             false,
+            Some(&prepared.id),
         )
         .await
         .unwrap();
@@ -183,6 +186,8 @@ async fn two_actors_handoff_review_and_complete_with_independent_oracle() {
             TENANT,
             PROJECT,
             "reviewer-a",
+            "client-reviewer",
+            "flow-complete-1",
             "work-a",
             "main",
             &evidence.id,

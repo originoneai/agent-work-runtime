@@ -591,40 +591,13 @@ fn parse_contract(files: &[(String, Vec<u8>)]) -> PgResult<WorkContract> {
     Ok(contract)
 }
 
-/// The reviewer must be a real, active account with an approval-capable
-/// membership in THIS project. A string that merely differs from the author
-/// proves nothing (CR #37 P2-1). Shared by approve() (new approvals) and
-/// activate_inner() (consuming existing approvals, including ones written
-/// before the identity check existed — CR #54 P2).
 async fn validate_reviewer(
     tx: &tokio_postgres::Transaction<'_>,
     tenant_id: &str,
     project_id: &str,
     reviewer_actor_id: &str,
 ) -> PgResult<()> {
-    let reviewer = tx
-        .query_opt(
-            "SELECT a.status, m.role
-             FROM awr_team.actors a
-             LEFT JOIN awr_team.project_memberships m
-               ON m.tenant_id=a.tenant_id AND m.actor_id=a.id
-              AND m.project_id=$2
-             WHERE a.tenant_id=$1 AND a.id=$3",
-            &[&tenant_id, &project_id, &reviewer_actor_id],
-        )
-        .await?;
-    let Some((status, role)) =
-        reviewer.map(|r| (r.get::<_, String>(0), r.get::<_, Option<String>>(1)))
-    else {
-        return Err(PgError::Forbidden);
-    };
-    if status != "active" {
-        return Err(PgError::Forbidden);
-    }
-    match role.as_deref() {
-        Some("admin") | Some("reviewer") => Ok(()),
-        _ => Err(PgError::Forbidden),
-    }
+    crate::tx::validate_reviewer(tx, tenant_id, project_id, reviewer_actor_id).await
 }
 
 fn files_from_ref(source_ref: &Value) -> PgResult<Vec<(String, Vec<u8>)>> {

@@ -320,3 +320,37 @@ fn hash_request(request: &CommandRequest) -> PgResult<String> {
 pub(crate) fn new_id() -> String {
     ulid::Ulid::new().to_string()
 }
+
+/// Shared reviewer/approver validation: the account must exist, be active,
+/// and hold an approval-capable membership (admin/reviewer) in the project
+/// (CR #42 P2-5; shared with the source approval path).
+pub(crate) async fn validate_reviewer(
+    tx: &tokio_postgres::Transaction<'_>,
+    tenant_id: &str,
+    project_id: &str,
+    reviewer_actor_id: &str,
+) -> PgResult<()> {
+    let reviewer = tx
+        .query_opt(
+            "SELECT a.status, m.role
+             FROM awr_team.actors a
+             LEFT JOIN awr_team.project_memberships m
+               ON m.tenant_id=a.tenant_id AND m.actor_id=a.id
+              AND m.project_id=$2
+             WHERE a.tenant_id=$1 AND a.id=$3",
+            &[&tenant_id, &project_id, &reviewer_actor_id],
+        )
+        .await?;
+    let Some((status, role)) =
+        reviewer.map(|r| (r.get::<_, String>(0), r.get::<_, Option<String>>(1)))
+    else {
+        return Err(PgError::Forbidden);
+    };
+    if status != "active" {
+        return Err(PgError::Forbidden);
+    }
+    match role.as_deref() {
+        Some("admin") | Some("reviewer") => Ok(()),
+        _ => Err(PgError::Forbidden),
+    }
+}

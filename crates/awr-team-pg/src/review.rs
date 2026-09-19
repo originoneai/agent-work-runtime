@@ -65,6 +65,7 @@ impl ReviewStore {
         artifact_bytes: Option<&[u8]>,
         input_digest: Option<&str>,
         dirty_tree: bool,
+        execution_id: Option<&str>,
     ) -> PgResult<EvidenceRecord> {
         let mut client = self.connect().await?;
         let tx = client.transaction().await?;
@@ -95,15 +96,28 @@ impl ReviewStore {
                 .as_object_mut()
                 .map(|map| map.insert("output_digest".into(), json!(digest)));
         }
-        let digest = sha256_hex(payload.to_string().as_bytes());
+        // The evidence digest binds the FULL context — work, contract,
+        // input and artifact identity — so an approval for one contract can
+        // never be reused by re-recording the same payload under another
+        // contract (CR #42 P2-3).
+        let digest = evidence_digest(
+            work_id,
+            contract_hash,
+            input_digest,
+            output_digest.as_deref(),
+            &payload,
+        )?;
         let mut artifact_id: Option<String> = None;
         if let Some(bytes) = artifact_bytes {
             let id = new_id();
+            // Persist the actual bytes WITH the metadata: 'finalized' means
+            // the content is durably readable, not merely described
+            // (CR #42 P2-2).
             tx.execute(
                 "INSERT INTO awr_team.artifacts(
                     tenant_id, project_id, id, object_key, sha256, byte_length,
-                    media_type, state, created_by)
-                 VALUES ($1,$2,$3,$4,$5,$6,'application/octet-stream','finalized',$7)",
+                    media_type, state, created_by, content)
+                 VALUES ($1,$2,$3,$4,$5,$6,'application/octet-stream','finalized',$7,$8)",
                 &[
                     &tenant_id,
                     &project_id,
@@ -112,6 +126,7 @@ impl ReviewStore {
                     &sha256_hex(bytes),
                     &(bytes.len() as i64),
                     &actor_id,
+                    &bytes,
                 ],
             )
             .await?;
@@ -120,15 +135,16 @@ impl ReviewStore {
         let id = new_id();
         tx.execute(
             "INSERT INTO awr_team.evidence(
-                tenant_id, project_id, id, work_id, artifact_id, contract_hash,
-                input_digest, output_digest, evidence_kind, trust_basis, digest,
-                payload_json, created_by)
-             VALUES ($1,$2,$3,$4,$5,$6,$7,$8,'report',$9,$10,$11,$12)",
+                tenant_id, project_id, id, work_id, execution_id, artifact_id,
+                contract_hash, input_digest, output_digest, evidence_kind,
+                trust_basis, digest, payload_json, created_by)
+             VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,'report',$10,$11,$12,$13)",
             &[
                 &tenant_id,
                 &project_id,
                 &id,
                 &work_id,
+                &execution_id.map(ToOwned::to_owned),
                 &artifact_id,
                 &contract_hash,
                 &input_digest.map(ToOwned::to_owned),
@@ -138,6 +154,16 @@ impl ReviewStore {
                 &payload,
                 &actor_id,
             ],
+        )
+        .await?;
+        crate::tx::emit_event(
+            &tx,
+            tenant_id,
+            project_id,
+            actor_id,
+            work_id,
+            "evidence.recorded",
+            json!({"evidence_id": id, "trust_basis": trust_basis, "digest": digest}),
         )
         .await?;
         tx.commit().await?;
@@ -166,6 +192,19 @@ impl ReviewStore {
         if evidence.work_id != work_id {
             return Err(PgError::EvidenceInvalid);
         }
+        // The author must be a real account in this tenant; accepting an
+        // arbitrary string proves nothing about author/reviewer separation
+        // (CR #42 P2-5).
+        let author_exists: bool = tx
+            .query_opt(
+                "SELECT 1 FROM awr_team.actors WHERE tenant_id=$1 AND id=$2",
+                &[&tenant_id, &author_actor_id],
+            )
+            .await?
+            .is_some();
+        if !author_exists {
+            return Err(PgError::Forbidden);
+        }
         invalidate_open_rounds(&tx, tenant_id, project_id, work_id, &evidence.digest).await?;
         let round_index: i32 = tx
             .query_one(
@@ -191,6 +230,16 @@ impl ReviewStore {
                 &evidence.contract_hash,
                 &author_actor_id,
             ],
+        )
+        .await?;
+        crate::tx::emit_event(
+            &tx,
+            tenant_id,
+            project_id,
+            author_actor_id,
+            work_id,
+            "review.opened",
+            json!({"round_id": id, "round_index": round_index, "bundle_hash": evidence.digest}),
         )
         .await?;
         tx.commit().await?;
@@ -240,6 +289,8 @@ impl ReviewStore {
         if reviewer_actor_id == author {
             return Err(PgError::AuthorCannotReview);
         }
+        // Reviewer: real, active, approval-capable member (status +
+        // membership role), and not an agent (CR #42 P2-5).
         let reviewer_kind: String = tx
             .query_opt(
                 "SELECT kind FROM awr_team.actors WHERE tenant_id=$1 AND id=$2",
@@ -251,6 +302,7 @@ impl ReviewStore {
         if reviewer_kind == "agent" {
             return Err(PgError::AuthorCannotReview);
         }
+        crate::tx::validate_reviewer(&tx, tenant_id, project_id, reviewer_actor_id).await?;
         let next = if decision == "approve" {
             "approved"
         } else {
@@ -280,6 +332,16 @@ impl ReviewStore {
             &[&tenant_id, &project_id, &round_id, &next],
         )
         .await?;
+        crate::tx::emit_event(
+            &tx,
+            tenant_id,
+            project_id,
+            reviewer_actor_id,
+            &work_id,
+            "review.decided",
+            json!({"round_id": round_id, "decision": decision}),
+        )
+        .await?;
         tx.commit().await?;
         Ok(ReviewRound {
             id: round_id.into(),
@@ -290,24 +352,68 @@ impl ReviewStore {
         })
     }
 
+    /// Complete a work. Idempotent on (client_id, request_id): the same
+    /// request returns the original receipt, changed parameters conflict
+    /// (CR #42 P2-9). All gates, the receipt, the dependency mapping and the
+    /// runtime update commit in ONE transaction (CR #42 P2-10).
     pub async fn complete(
         &self,
         tenant_id: &str,
         project_id: &str,
         actor_id: &str,
+        client_id: &str,
+        request_id: &str,
         work_id: &str,
         scope_id: &str,
         evidence_id: &str,
         requested_policy: Option<&str>,
         context_complete: bool,
     ) -> PgResult<CompletionReceipt> {
-        if !context_complete {
-            return Err(PgError::ContextIncomplete);
-        }
+        let op_args = json!({
+            "work_id": work_id,
+            "scope_id": scope_id,
+            "evidence_id": evidence_id,
+            "requested_policy": requested_policy,
+            "context_complete": context_complete,
+        });
+        let request_hash = awr_team::request_hash(&json!({
+            "op": "work.complete",
+            "request_id": request_id,
+            "args": op_args,
+        }))
+        .map_err(|e| PgError::Protocol(e.to_string()))?;
         let mut client = self.connect().await?;
         let tx = client.transaction().await?;
         bind_scope(&tx, tenant_id, project_id).await?;
         lock_project(&tx, tenant_id, project_id).await?;
+        if let Some((stored_hash, result)) =
+            load_operation(&tx, tenant_id, project_id, actor_id, client_id, request_id).await?
+        {
+            if stored_hash != request_hash {
+                return Err(PgError::IdempotencyConflict);
+            }
+            let receipt_id = result
+                .get("receipt_id")
+                .and_then(Value::as_str)
+                .ok_or_else(|| PgError::Protocol("stored completion receipt missing id".into()))?;
+            return Ok(CompletionReceipt {
+                id: receipt_id.into(),
+                work_id: work_id.into(),
+                contract_hash: result
+                    .get("contract_hash")
+                    .and_then(Value::as_str)
+                    .unwrap_or_default()
+                    .into(),
+                policy: result
+                    .get("policy")
+                    .and_then(Value::as_str)
+                    .unwrap_or_default()
+                    .into(),
+            });
+        }
+        if !context_complete {
+            return Err(PgError::ContextIncomplete);
+        }
         let unknown: i64 = tx
             .query_one(
                 "SELECT count(*) FROM awr_team.executions
@@ -317,6 +423,20 @@ impl ReviewStore {
             .await?
             .get(0);
         if unknown > 0 {
+            return Err(PgError::RecoveryBlocked);
+        }
+        // An explicit recovery block is a deliberate hold; completion must
+        // not skip it nor silently clear it (CR #42 P2-8).
+        let blocked: bool = tx
+            .query_opt(
+                "SELECT recovery_blocked FROM awr_team.work_runtime
+                 WHERE tenant_id=$1 AND project_id=$2 AND scope_id=$3 AND work_id=$4",
+                &[&tenant_id, &project_id, &scope_id, &work_id],
+            )
+            .await?
+            .map(|row| row.get(0))
+            .unwrap_or(false);
+        if blocked {
             return Err(PgError::RecoveryBlocked);
         }
         let contract = current_contract(&tx, tenant_id, project_id, scope_id, work_id).await?;
@@ -334,13 +454,13 @@ impl ReviewStore {
         {
             return Err(PgError::EvidenceInvalid);
         }
-        if evidence_bytes_changed(&evidence.payload, &evidence.digest) {
+        if evidence_bytes_changed(&evidence)? {
             return Err(PgError::EvidenceInvalid);
         }
         if evidence.artifact_id.is_some() {
             let row = tx
                 .query_opt(
-                    "SELECT sha256, state FROM awr_team.artifacts
+                    "SELECT sha256, state, content FROM awr_team.artifacts
                      WHERE tenant_id=$1 AND project_id=$2 AND id=$3",
                     &[&tenant_id, &project_id, &evidence.artifact_id],
                 )
@@ -348,13 +468,19 @@ impl ReviewStore {
                 .ok_or(PgError::EvidenceInvalid)?;
             let sha: String = row.get(0);
             let state: String = row.get(1);
-            if state != "finalized" || evidence.output_digest.as_deref() != Some(sha.as_str()) {
+            // The artifact must be ACTUALLY readable: re-read the persisted
+            // bytes and verify them against both the artifact digest and the
+            // evidence output digest (CR #42 P2-2). Metadata-only legacy
+            // records cannot satisfy completion.
+            let content: Option<Vec<u8>> = row.get(2);
+            let content = content.ok_or(PgError::EvidenceInvalid)?;
+            if state != "finalized"
+                || sha256_hex(&content) != sha
+                || evidence.output_digest.as_deref() != Some(sha.as_str())
+            {
                 return Err(PgError::EvidenceInvalid);
             }
         }
-        let binding_valid = dependency_bindings_valid(&tx, tenant_id, project_id, work_id).await?;
-        let mut review =
-            current_review(&tx, tenant_id, project_id, work_id, &evidence.digest).await?;
         let grade = match evidence.trust_basis.as_str() {
             "trusted_executor" => EvidenceGrade::TrustedExecutionReceipt,
             "human_review" => EvidenceGrade::AuthorizedReview,
@@ -371,9 +497,63 @@ impl ReviewStore {
             if kind != "human" {
                 return Err(PgError::Forbidden);
             }
-            review.required = false;
         } else if grade == EvidenceGrade::AgentSelfReport {
             return Err(PgError::EvidenceInvalid);
+        } else if grade == EvidenceGrade::TrustedExecutionReceipt {
+            // A trusted-execution grade must bind to a SUCCEEDED execution
+            // of the same contract and input by the delegated executor —
+            // actor kind alone proves nothing (CR #42 P2-1). A report that
+            // admits failure (passed=false) can never complete.
+            if evidence.payload.get("passed").and_then(Value::as_bool) == Some(false) {
+                return Err(PgError::EvidenceInvalid);
+            }
+            let execution_id = evidence
+                .execution_id
+                .as_deref()
+                .ok_or(PgError::EvidenceInvalid)?;
+            let exec = tx
+                .query_opt(
+                    "SELECT state, contract_hash, input_digest FROM awr_team.executions
+                     WHERE tenant_id=$1 AND project_id=$2 AND id=$3",
+                    &[&tenant_id, &project_id, &execution_id],
+                )
+                .await?
+                .ok_or(PgError::EvidenceInvalid)?;
+            let exec_state: String = exec.get(0);
+            let exec_contract: String = exec.get(1);
+            let exec_input: Option<String> = exec.get(2);
+            if exec_state != "succeeded" || exec_contract != evidence.contract_hash {
+                return Err(PgError::EvidenceInvalid);
+            }
+            if let Some(input) = &evidence.input_digest {
+                if exec_input.as_deref() != Some(input.as_str()) {
+                    return Err(PgError::EvidenceInvalid);
+                }
+            }
+        }
+        let (binding_valid, dependency_links) =
+            required_dependencies_covered(&tx, tenant_id, project_id, work_id, &contract).await?;
+        let mut review =
+            current_review(&tx, tenant_id, project_id, work_id, &evidence.digest).await?;
+        if policy == "ordinary_confirm" {
+            review.required = false;
+        }
+        // The consumed review must be for THIS contract's bundle — a new
+        // contract never reuses an old approval (CR #42 P2-3). Only applies
+        // where a review is required at all (ordinary_confirm has none).
+        if policy != "ordinary_confirm" {
+            let round_contract: Option<String> = tx
+                .query_opt(
+                    "SELECT contract_hash FROM awr_team.review_rounds
+                     WHERE tenant_id=$1 AND project_id=$2 AND work_id=$3 AND bundle_hash=$4
+                     ORDER BY round_index DESC LIMIT 1",
+                    &[&tenant_id, &project_id, &work_id, &evidence.digest],
+                )
+                .await?
+                .map(|row| row.get(0));
+            if round_contract.as_deref() != Some(evidence.contract_hash.as_str()) {
+                return Err(PgError::ReviewRequired);
+            }
         }
         let bundle = EvidenceBundle {
             grade,
@@ -393,8 +573,24 @@ impl ReviewStore {
         if view != CompletionView::CurrentlyVerified {
             return Err(PgError::CompletionRejected);
         }
+        // The receipt records the ACTUAL approver (from the pinned round's
+        // decision) separately from the submitter (CR #42 audit note).
+        let approver: Option<String> = tx
+            .query_opt(
+                "SELECT d.reviewer_actor_id FROM awr_team.review_decisions d
+                 JOIN awr_team.review_rounds r
+                   ON r.tenant_id=d.tenant_id AND r.project_id=d.project_id
+                  AND r.id=d.review_round_id
+                 WHERE d.tenant_id=$1 AND d.project_id=$2 AND r.work_id=$3
+                   AND r.bundle_hash=$4 AND d.decision='approve'
+                 ORDER BY d.created_at DESC LIMIT 1",
+                &[&tenant_id, &project_id, &work_id, &evidence.digest],
+            )
+            .await?
+            .map(|row| row.get(0));
+        let approved_by = json!({"approved_by": approver, "submitted_by": actor_id});
+        let dependency_binding_hash = sha256_hex(json!(dependency_links).to_string().as_bytes());
         let receipt_id = new_id();
-        let approved_by = json!({"actor_id": actor_id, "approved": review.approved});
         tx.execute(
             "INSERT INTO awr_team.completion_receipts(
                 tenant_id, project_id, id, work_id, scope_id, contract_hash,
@@ -409,21 +605,74 @@ impl ReviewStore {
                 &scope_id,
                 &evidence.contract_hash,
                 &evidence.digest,
-                &format!("bind:{}", binding_valid),
+                &dependency_binding_hash,
                 &evidence.digest,
                 &policy,
                 &approved_by,
             ],
         )
         .await?;
+        // Real mappings for audit: which evidence and which predecessor
+        // receipts this completion consumed (CR #42 audit note).
+        tx.execute(
+            "INSERT INTO awr_team.completion_evidence(
+                tenant_id, project_id, completion_id, evidence_id, criterion_id)
+             VALUES ($1,$2,$3,$4,'contract')",
+            &[&tenant_id, &project_id, &receipt_id, &evidence_id],
+        )
+        .await?;
+        for (upstream_work, upstream_receipt) in &dependency_links {
+            tx.execute(
+                "INSERT INTO awr_team.completion_dependencies(
+                    tenant_id, project_id, completion_id, predecessor_work_id,
+                    predecessor_completion_id)
+                 VALUES ($1,$2,$3,$4,$5)",
+                &[
+                    &tenant_id,
+                    &project_id,
+                    &receipt_id,
+                    &upstream_work,
+                    &upstream_receipt,
+                ],
+            )
+            .await?;
+        }
         tx.execute(
             "INSERT INTO awr_team.work_runtime(
                 tenant_id, project_id, scope_id, work_id, state, work_version, last_fence,
                 selected_completion_id)
              VALUES ($1,$2,$3,$4,'completed',1,0,$5)
              ON CONFLICT (tenant_id, project_id, scope_id, work_id)
-             DO UPDATE SET state='completed', selected_completion_id=$5",
+             DO UPDATE SET state='completed', selected_completion_id=$5,
+                 work_version = awr_team.work_runtime.work_version + 1",
             &[&tenant_id, &project_id, &scope_id, &work_id, &receipt_id],
+        )
+        .await?;
+        crate::tx::emit_event(
+            &tx,
+            tenant_id,
+            project_id,
+            actor_id,
+            work_id,
+            "work.completed",
+            json!({"receipt_id": receipt_id, "evidence_id": evidence_id, "policy": policy}),
+        )
+        .await?;
+        let result = json!({
+            "receipt_id": receipt_id,
+            "contract_hash": evidence.contract_hash,
+            "policy": policy,
+        });
+        store_operation(
+            &tx,
+            tenant_id,
+            project_id,
+            actor_id,
+            client_id,
+            request_id,
+            "work.complete",
+            &request_hash,
+            &result,
         )
         .await?;
         tx.commit().await?;
@@ -474,6 +723,8 @@ struct LoadedEvidence {
     payload: Value,
     artifact_id: Option<String>,
     output_digest: Option<String>,
+    input_digest: Option<String>,
+    execution_id: Option<String>,
 }
 
 fn assigned_trust(actor_kind: &str, claimed: Option<&str>) -> String {
@@ -491,8 +742,36 @@ fn sha256_hex(bytes: &[u8]) -> String {
     format!("{:x}", Sha256::digest(bytes))
 }
 
-fn evidence_bytes_changed(payload: &Value, digest: &str) -> bool {
-    sha256_hex(payload.to_string().as_bytes()) != digest
+/// Canonical evidence digest: bound to work/contract/input/artifact AND
+/// computed over canonical JSON, so a jsonb round-trip cannot drift it
+/// (CR #42 P2-3).
+fn evidence_digest(
+    work_id: &str,
+    contract_hash: &str,
+    input_digest: Option<&str>,
+    output_digest: Option<&str>,
+    payload: &Value,
+) -> PgResult<String> {
+    let canonical = awr_team::canonical_json(&json!({
+        "work_id": work_id,
+        "contract_hash": contract_hash,
+        "input_digest": input_digest,
+        "output_digest": output_digest,
+        "payload": payload,
+    }))
+    .map_err(|e| PgError::Protocol(e.to_string()))?;
+    Ok(sha256_hex(&canonical))
+}
+
+fn evidence_bytes_changed(evidence: &LoadedEvidence) -> PgResult<bool> {
+    let expected = evidence_digest(
+        &evidence.work_id,
+        &evidence.contract_hash,
+        evidence.input_digest.as_deref(),
+        evidence.output_digest.as_deref(),
+        &evidence.payload,
+    )?;
+    Ok(expected != evidence.digest)
 }
 
 fn current_contract_hash(contract: &Value) -> String {
@@ -525,7 +804,8 @@ async fn load_evidence(
 ) -> PgResult<LoadedEvidence> {
     let row = tx
         .query_opt(
-            "SELECT work_id, contract_hash, digest, trust_basis, payload_json, artifact_id, output_digest
+            "SELECT work_id, contract_hash, digest, trust_basis, payload_json, artifact_id, output_digest,
+                    input_digest, execution_id
              FROM awr_team.evidence
              WHERE tenant_id=$1 AND project_id=$2 AND id=$3",
             &[&tenant_id, &project_id, &evidence_id],
@@ -540,6 +820,8 @@ async fn load_evidence(
         payload: row.get(4),
         artifact_id: row.get(5),
         output_digest: row.get(6),
+        input_digest: row.get(7),
+        execution_id: row.get(8),
     })
 }
 
@@ -569,12 +851,18 @@ async fn current_contract(
     Ok(json)
 }
 
-async fn dependency_bindings_valid(
+/// Required-dependency coverage: every required predecessor of the current
+/// contract must have a completion receipt for ITS current contract; the
+/// actual (upstream_work, receipt) pairs are returned for the completion
+/// mapping. An empty required set passes; "no invalid binding rows" is NOT
+/// proof of coverage (CR #42 P2-6).
+async fn required_dependencies_covered(
     tx: &tokio_postgres::Transaction<'_>,
     tenant_id: &str,
     project_id: &str,
     work_id: &str,
-) -> PgResult<bool> {
+    contract: &Value,
+) -> PgResult<(bool, Vec<(String, String)>)> {
     let invalid: i64 = tx
         .query_one(
             "SELECT count(*) FROM awr_team.dependency_bindings
@@ -583,7 +871,96 @@ async fn dependency_bindings_valid(
         )
         .await?
         .get(0);
-    Ok(invalid == 0)
+    if invalid > 0 {
+        return Ok((false, vec![]));
+    }
+    // current_contract() returns the contract fields at the TOP level.
+    let required: Vec<String> = contract
+        .get("required_dependencies")
+        .and_then(Value::as_array)
+        .map(|rows| {
+            rows.iter()
+                .filter_map(|v| v.as_str().map(str::to_owned))
+                .collect()
+        })
+        .unwrap_or_default();
+    let mut links = Vec::new();
+    for upstream in &required {
+        let receipt: Option<String> = tx
+            .query_opt(
+                "SELECT r.id FROM awr_team.completion_receipts r
+                 JOIN awr_team.work_runtime w
+                   ON w.tenant_id=r.tenant_id AND w.project_id=r.project_id
+                  AND w.scope_id=r.scope_id AND w.work_id=r.work_id
+                  AND w.selected_completion_id=r.id AND w.state='completed'
+                 JOIN awr_team.work_contracts c
+                   ON c.tenant_id=r.tenant_id AND c.project_id=r.project_id
+                  AND c.work_id=r.work_id AND c.scope_id=r.scope_id
+                  AND c.contract_hash=r.contract_hash
+                 JOIN awr_team.projects p
+                   ON p.tenant_id=c.tenant_id AND p.id=c.project_id
+                  AND p.active_snapshot_id=c.snapshot_id
+                 WHERE r.tenant_id=$1 AND r.project_id=$2 AND r.work_id=$3",
+                &[&tenant_id, &project_id, upstream],
+            )
+            .await?
+            .map(|row| row.get(0));
+        match receipt {
+            Some(id) => links.push((upstream.clone(), id)),
+            None => return Ok((false, vec![])),
+        }
+    }
+    Ok((true, links))
+}
+
+async fn load_operation(
+    tx: &tokio_postgres::Transaction<'_>,
+    tenant_id: &str,
+    project_id: &str,
+    actor_id: &str,
+    client_id: &str,
+    request_id: &str,
+) -> PgResult<Option<(String, Value)>> {
+    let row = tx
+        .query_opt(
+            "SELECT request_hash, result_json FROM awr_team.operations
+             WHERE tenant_id=$1 AND project_id=$2 AND actor_id=$3 AND client_id=$4 AND request_id=$5",
+            &[&tenant_id, &project_id, &actor_id, &client_id, &request_id],
+        )
+        .await?;
+    Ok(row.map(|row| (row.get(0), row.get(1))))
+}
+
+async fn store_operation(
+    tx: &tokio_postgres::Transaction<'_>,
+    tenant_id: &str,
+    project_id: &str,
+    actor_id: &str,
+    client_id: &str,
+    request_id: &str,
+    op: &str,
+    request_hash: &str,
+    result: &Value,
+) -> PgResult<()> {
+    tx.execute(
+        "INSERT INTO awr_team.operations(
+            tenant_id, project_id, id, actor_id, client_id, request_id, op,
+            request_hash, state, result_json)
+         VALUES ($1,$2,$3,$4,$5,$6,$7,$8,'committed',$9)",
+        &[
+            &tenant_id,
+            &project_id,
+            &new_id(),
+            &actor_id,
+            &client_id,
+            &request_id,
+            &op,
+            &request_hash,
+            result,
+        ],
+    )
+    .await?;
+    Ok(())
 }
 
 async fn current_review(
@@ -595,7 +972,7 @@ async fn current_review(
 ) -> PgResult<ReviewPolicy> {
     let row = tx
         .query_opt(
-            "SELECT author_actor_id, state FROM awr_team.review_rounds
+            "SELECT id, author_actor_id, state FROM awr_team.review_rounds
              WHERE tenant_id=$1 AND project_id=$2 AND work_id=$3 AND bundle_hash=$4
              ORDER BY round_index DESC LIMIT 1",
             &[&tenant_id, &project_id, &work_id, &bundle_hash],
@@ -609,16 +986,18 @@ async fn current_review(
             reviewer_is_author: false,
         }),
         Some(row) => {
-            let author: String = row.get(0);
-            let state: String = row.get(1);
+            let round_id: String = row.get(0);
+            let author: String = row.get(1);
+            let state: String = row.get(2);
+            // Pin the round first, then read ITS decisions only: the latest
+            // round and the latest decision must not be picked from
+            // different rounds (CR #42 P2-4).
             let reviewer: Option<String> = tx
                 .query_opt(
                     "SELECT reviewer_actor_id FROM awr_team.review_decisions d
-                     JOIN awr_team.review_rounds r
-                       ON r.tenant_id=d.tenant_id AND r.project_id=d.project_id AND r.id=d.review_round_id
-                     WHERE d.tenant_id=$1 AND d.project_id=$2 AND r.work_id=$3 AND r.bundle_hash=$4
+                     WHERE d.tenant_id=$1 AND d.project_id=$2 AND d.review_round_id=$3
                      ORDER BY d.created_at DESC LIMIT 1",
-                    &[&tenant_id, &project_id, &work_id, &bundle_hash],
+                    &[&tenant_id, &project_id, &round_id],
                 )
                 .await?
                 .map(|row| row.get(0));

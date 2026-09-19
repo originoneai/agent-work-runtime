@@ -209,6 +209,7 @@ async fn main() {
                     bytes.as_deref(),
                     input,
                     dirty,
+                    None,
                 )
                 .await
             {
@@ -249,7 +250,18 @@ async fn main() {
             let ctx = args.get(7).map(|v| v == "true").unwrap_or(true);
             let review = reviews();
             match review
-                .complete(TENANT, &p, &a, &w, "main", &ev, policy.as_deref(), ctx)
+                .complete(
+                    TENANT,
+                    &p,
+                    &a,
+                    "cli",
+                    "cli-complete",
+                    &w,
+                    "main",
+                    &ev,
+                    policy.as_deref(),
+                    ctx,
+                )
                 .await
             {
                 Ok(r) => Ok(json!({"ok":true,"op":"complete","actor":a,"work":w,"receipt":r.id})),
@@ -634,7 +646,18 @@ async fn main() {
             let (p, w, a) = (arg(&args, 2), arg(&args, 3), arg(&args, 4));
             let review = reviews();
             match review
-                .complete(TENANT, &p, &a, &w, "main", "ev-nonexistent", None, true)
+                .complete(
+                    TENANT,
+                    &p,
+                    &a,
+                    "cli",
+                    "cli-direct",
+                    &w,
+                    "main",
+                    "ev-nonexistent",
+                    None,
+                    true,
+                )
                 .await
             {
                 Ok(_) => Err("direct complete unexpectedly succeeded".into()),
