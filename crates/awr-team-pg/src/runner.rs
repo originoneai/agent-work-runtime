@@ -80,6 +80,29 @@ impl ReferenceRunner {
         }
     }
 
+    /// Persist a recovery barrier under the same lock held throughout effects.
+    /// Waits for a current writer; after this returns, older tokens cannot write.
+    /// Call for every barrier returned by restore before clearing recovery state.
+    pub fn install_recovery_barrier(&self, barrier: &crate::FencingBarrier) -> Result<(), String> {
+        fs::create_dir_all(self.fencing_dir()).map_err(|e| e.to_string())?;
+        let delivery = OutboxDelivery {
+            tenant_id: barrier.tenant_id.clone(),
+            project_id: barrier.project_id.clone(),
+            scope_id: barrier.scope_id.clone(),
+            work_id: barrier.work_id.clone(),
+            fence: barrier.fence,
+            outbox_id: String::new(),
+            execution_id: String::new(),
+            effect_key: String::new(),
+            fencing_class: "hard_fence".into(),
+            declared_scope: json!([]),
+            payload: json!({}),
+            delivery_attempts: 0,
+        };
+        let _guard = self.acquire_fence(&delivery)?;
+        Ok(())
+    }
+
     /// Visible to pg-tests for crash-recovery fixtures.
     pub fn base_outcome(&self, delivery: &OutboxDelivery, state: &str) -> RunnerOutcome {
         self.base_outcome_impl(delivery, state)

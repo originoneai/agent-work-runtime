@@ -73,6 +73,25 @@ pub(crate) async fn emit_event(
     Ok(next)
 }
 
+/// Ordinary writes serialize with freeze/import/restore and require active state.
+pub(crate) async fn lock_active_project(
+    tx: &tokio_postgres::Transaction<'_>,
+    tenant: &str,
+    project: &str,
+) -> PgResult<()> {
+    let row = tx
+        .query_opt(
+            "SELECT status FROM awr_team.projects WHERE tenant_id=$1 AND id=$2 FOR UPDATE",
+            &[&tenant, &project],
+        )
+        .await?
+        .ok_or(PgError::ProjectNotAvailable)?;
+    if row.get::<_, String>(0) != "active" {
+        return Err(PgError::ProjectNotAvailable);
+    }
+    Ok(())
+}
+
 pub struct TeamStore {
     pool: crate::PgPool,
 }
@@ -123,6 +142,7 @@ impl TeamStore {
         let request_hash = hash_request(&request)?;
         let tx = client.transaction().await?;
         bind_scope(&tx, &request.tenant_id, &request.project_id).await?;
+        lock_active_project(&tx, &request.tenant_id, &request.project_id).await?;
         let locked = tx
             .query_opt(
                 "SELECT project_revision FROM awr_team.projects

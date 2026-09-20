@@ -587,7 +587,9 @@ async fn main() {
             // import-load <project> <actor> <key>
             let (p, a, k) = (arg(&args, 2), arg(&args, 3), arg(&args, 4));
             let imp = imports();
-            let manifest = json!({"works":[{"id":"work-i1","external_key":"IMP-1"}],"evidence":[{"id":"ev-1","claimed_trust":"trusted_executor","work_id":"work-i1"}]});
+            // Run freeze first. Imports require explicit contracts and material
+            // identities; claimed historical trust does not grant authority.
+            let manifest = json!({"format":"awr-team-import-v1","scopes":["main"],"works":[{"id":"work-i1","external_key":"IMP-1","contract":{"codec":"awr-team-contract-v1","work_id":"work-i1","external_key":"IMP-1","goals":[],"hard_rules":[],"scope_paths":[],"acceptance":["verify imported work"],"required_dependencies":[],"completion_policy":"ordinary_confirm","verification_requirements":[]}}],"evidence":[]});
             match imp.load(TENANT, &p, &a, &k, &manifest).await {
                 Ok(j) => Ok(
                     json!({"ok":true,"op":"import-load","actor":a,"job":j.id,"replayed":j.replayed,"state":j.state}),

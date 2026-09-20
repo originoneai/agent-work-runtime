@@ -1,45 +1,14 @@
 #![cfg(feature = "pg-tests")]
 
-use awr_team_pg::{Bootstrap, ImportStore, LeaseStore, PgError, check_schema, migrate};
-use std::sync::{Mutex, MutexGuard};
-use tokio_postgres::{Client, NoTls};
-
-static DB: Mutex<()> = Mutex::new(());
+use awr_team_pg::{ImportStore, LeaseStore, PgError, check_schema};
+use std::sync::MutexGuard;
+use tokio_postgres::Client;
+mod common;
+use common::{connect_config, fresh_team_schema, test_config, with_app_role, with_db};
 const TENANT: &str = "tenant-a";
 const PROJECT: &str = "project-a";
-
-fn admin_url() -> String {
-    std::env::var("AWR_TEAM_DATABASE_URL")
-        .unwrap_or_else(|_| "postgres://postgres:awr-test@127.0.0.1:55432/awr_team_test".into())
-}
-fn app_url() -> String {
-    admin_url().replacen("postgres:awr-test", "awr_app:app-test", 1)
-}
-async fn connect(url: &str) -> Client {
-    let (client, connection) = tokio_postgres::connect(url, NoTls)
-        .await
-        .expect("postgres 17 must be running for TEAM-P11");
-    tokio::spawn(async move {
-        let _ = connection.await;
-    });
-    client
-}
-
-async fn setup() -> (MutexGuard<'static, ()>, Client) {
-    let guard = DB.lock().unwrap_or_else(|e| e.into_inner());
-    let admin = connect(&admin_url()).await;
-    admin
-        .batch_execute("DROP SCHEMA IF EXISTS awr_team CASCADE")
-        .await
-        .unwrap();
-    migrate(&admin).await.unwrap();
-    admin
-        .batch_execute(
-            "DO $$ BEGIN CREATE ROLE awr_app LOGIN PASSWORD 'app-test' NOSUPERUSER NOBYPASSRLS; EXCEPTION WHEN duplicate_object THEN NULL; END $$",
-        )
-        .await
-        .unwrap();
-    Bootstrap::grant_app(&admin, "awr_app").await.unwrap();
+async fn setup() -> (MutexGuard<'static, ()>, Client, String) {
+    let (guard, admin, db) = fresh_team_schema().await;
     admin
         .batch_execute(
             "INSERT INTO awr_team.tenants(id,name,status) VALUES ('tenant-a','A','active');
@@ -55,14 +24,14 @@ async fn setup() -> (MutexGuard<'static, ()>, Client) {
         )
         .await
         .unwrap();
-    (guard, admin)
+    (guard, admin, db)
 }
 
 #[tokio::test]
 async fn two_clients_cannot_hold_the_same_claim() {
-    let (_lock, admin) = setup().await;
-    let left = LeaseStore::new(app_url());
-    let right = LeaseStore::new(app_url());
+    let (_lock, admin, db) = setup().await;
+    let left = LeaseStore::from_config(with_app_role(&test_config(), &db));
+    let right = LeaseStore::from_config(with_app_role(&test_config(), &db));
     let s1 = left
         .start_session(TENANT, PROJECT, "actor-a", "c1", "conv-a", "main", "work-a")
         .await
@@ -88,24 +57,20 @@ async fn two_clients_cannot_hold_the_same_claim() {
 
 #[tokio::test]
 async fn reconnect_after_drop_still_requires_matching_schema() {
-    let (_lock, _) = setup().await;
-    let client = connect(&admin_url()).await;
+    let (_lock, _, db) = setup().await;
+    let client = connect_config(&with_db(&test_config(), &db)).await;
     check_schema(&client).await.unwrap();
     drop(client);
-    let again = connect(&admin_url()).await;
+    let again = connect_config(&with_db(&test_config(), &db)).await;
     check_schema(&again).await.unwrap();
 }
 
 #[tokio::test]
 async fn missing_backup_objects_fail_closed() {
-    let (_lock, _) = setup().await;
-    let store = ImportStore::new(app_url());
-    let backup = store
-        .backup(TENANT, PROJECT, &["missing-art".into()], &["src".into()])
-        .await
-        .unwrap();
+    let (_lock, _, db) = setup().await;
+    let store = ImportStore::from_config(with_app_role(&test_config(), &db));
     let err = store
-        .restore(TENANT, PROJECT, &backup.id, false, false)
+        .backup(TENANT, PROJECT, &["missing-art".into()], &["src".into()])
         .await
         .unwrap_err();
     assert!(matches!(err, PgError::RestoreIncomplete));

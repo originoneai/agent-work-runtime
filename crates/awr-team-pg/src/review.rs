@@ -802,7 +802,7 @@ fn sha256_hex(bytes: &[u8]) -> String {
 /// Canonical evidence digest: bound to work/contract/input/artifact AND
 /// computed over canonical JSON, so a jsonb round-trip cannot drift it
 /// (CR #42 P2-3).
-fn evidence_digest(
+pub(crate) fn evidence_digest(
     work_id: &str,
     contract_hash: &str,
     input_digest: Option<&str>,
@@ -847,13 +847,7 @@ async fn lock_project(
     tenant_id: &str,
     project_id: &str,
 ) -> PgResult<()> {
-    tx.query_opt(
-        "SELECT id FROM awr_team.projects WHERE tenant_id=$1 AND id=$2 FOR UPDATE",
-        &[&tenant_id, &project_id],
-    )
-    .await?
-    .ok_or(PgError::ProjectNotAvailable)?;
-    Ok(())
+    crate::tx::lock_active_project(tx, tenant_id, project_id).await
 }
 
 async fn load_evidence(

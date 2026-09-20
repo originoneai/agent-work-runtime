@@ -159,8 +159,8 @@ impl ExecutionStore {
             "INSERT INTO awr_team.executions(
                 tenant_id, project_id, id, work_id, session_id, claim_id, fence,
                 contract_hash, input_digest, executor_actor_id, state, effect_key,
-                fencing_class, declared_scope_json, scope_id)
-             VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,'prepared',$11,$12,$13,$14)",
+                fencing_class, declared_scope_json, scope_id, coordinator_epoch)
+             VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,'prepared',$11,$12,$13,$14,(SELECT coordinator_epoch FROM awr_team.projects WHERE tenant_id=$1 AND id=$2))",
             &[
                 &tenant_id,
                 &project_id,
@@ -356,9 +356,10 @@ impl ExecutionStore {
         let mut client = self.connect().await?;
         let tx = client.transaction().await?;
         bind_scope(&tx, tenant_id, project_id).await?;
+        lock_project(&tx, tenant_id, project_id).await?;
         tx.execute(
             "UPDATE awr_team.outbox SET state='delivered'
-             WHERE tenant_id=$1 AND project_id=$2 AND id=$3",
+             WHERE tenant_id=$1 AND project_id=$2 AND id=$3 AND state='sending'",
             &[&tenant_id, &project_id, &outbox_id],
         )
         .await?;
@@ -962,7 +963,8 @@ impl ExecutionStore {
             .query_opt(
                 "SELECT e.state, e.fence, e.claim_id, e.scope_id, e.work_id,
                         w.last_fence,
-                        c.state AS claim_state, c.expires_at
+                        c.state AS claim_state, c.expires_at, w.recovery_blocked, e.coordinator_epoch,
+                        (SELECT coordinator_epoch FROM awr_team.projects WHERE tenant_id=e.tenant_id AND id=e.project_id)
                  FROM awr_team.executions e
                  JOIN awr_team.work_runtime w
                    ON w.tenant_id=e.tenant_id AND w.project_id=e.project_id
@@ -976,6 +978,12 @@ impl ExecutionStore {
             )
             .await?
             .ok_or(PgError::ExecutionNotFound)?;
+        if row.get::<_, bool>(8) {
+            return Err(PgError::RecoveryBlocked);
+        }
+        if row.get::<_, Option<String>>(9).as_deref() != Some(row.get::<_, String>(10).as_str()) {
+            return Err(PgError::EpochChanged);
+        }
         let state: String = row.get(0);
         let current_fence: i64 = row.get(1);
         // Admission must bind the CURRENT fence and a still-valid claim:
@@ -1099,13 +1107,7 @@ async fn lock_project(
     tenant_id: &str,
     project_id: &str,
 ) -> PgResult<()> {
-    tx.query_opt(
-        "SELECT id FROM awr_team.projects WHERE tenant_id=$1 AND id=$2 FOR UPDATE",
-        &[&tenant_id, &project_id],
-    )
-    .await?
-    .ok_or(PgError::ProjectNotAvailable)?;
-    Ok(())
+    crate::tx::lock_active_project(tx, tenant_id, project_id).await
 }
 
 async fn load_operation(
