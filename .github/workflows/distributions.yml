@@ -108,6 +108,13 @@ jobs:
         run: python scripts/release/build_packages.py --output .local/distribution
       - name: Install both packages and exercise CLI and MCP
         run: python scripts/release/smoke_install.py .local/distribution
+      - name: Rehearse matched 0.4.0 upgrade and rollback with the candidate binary
+        if: matrix.platform == 'darwin-arm64'
+        run: |
+          python -m venv .local/baseline-0.4.0
+          .local/baseline-0.4.0/bin/python -m pip install agent-work-runtime==0.4.0
+          OLD_AWR=$(.local/baseline-0.4.0/bin/python -c 'import pathlib,awr_binary; print(pathlib.Path(awr_binary.__file__).parent / "bin/awr")')
+          python scripts/release/host_upgrade_drill.py --old-awr "$OLD_AWR" --new-awr .local/dist-build/aarch64-apple-darwin/release/awr --output .local/distribution/upgrade-drill
       - uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a
         with:
           name: distribution-${{ matrix.platform }}-${{ github.sha }}
@@ -116,6 +123,7 @@ jobs:
             .local/distribution/manifest.json
             .local/distribution/installation-checks.json
             .local/distribution/SHA256SUMS
+            .local/distribution/upgrade-drill/report.json
           if-no-files-found: error
           retention-days: 30
 

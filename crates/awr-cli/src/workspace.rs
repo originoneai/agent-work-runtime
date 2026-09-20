@@ -917,10 +917,6 @@ mod tests {
         );
     }
 
-    /// A job that finishes inside the budget is reported as it finished,
-    /// including the "nothing worth saying" answer.
-    #[test]
-
     /// A slow job that checks cancel must observe the flag after the budget
     /// elapses, and must not be treated as a successful notice.
     #[test]
@@ -955,6 +951,9 @@ mod tests {
         );
     }
 
+    /// A job that finishes inside the budget is reported as it finished,
+    /// including the "nothing worth saying" answer.
+    #[test]
     fn a_job_inside_the_budget_is_reported() {
         assert_eq!(
             within_budget(Duration::from_secs(5), |_| Ok(None))
