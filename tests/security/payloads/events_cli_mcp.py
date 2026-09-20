@@ -3,11 +3,13 @@
 import argparse
 import importlib.util
 import json
+import os
 from pathlib import Path
 import sqlite3
 import subprocess
 import tempfile
 import unittest
+from unittest.mock import patch
 
 ROOT = Path(__file__).resolve().parents[3]
 spec = importlib.util.spec_from_file_location("event_parity_support", ROOT / "crates/awr-mcp/tests/cli_parity.py")
@@ -17,6 +19,8 @@ CAP = 1024 * 1024
 
 
 class EventTransports(unittest.TestCase):
+    exposure = "grouped"
+
     def setUp(self):
         temporary = tempfile.TemporaryDirectory(prefix="awr-event-transports-")
         self.addCleanup(temporary.cleanup)
@@ -26,7 +30,8 @@ class EventTransports(unittest.TestCase):
         (self.root / "goal.md").write_text("# Review customer analysis\n\nDeliver a useful analysis.\n")
         (self.root / "project.toml").write_text(support.MANIFEST)
         self.cli(["init", "--manifest", self.root / "project.toml", "--accept"])
-        self.client = support.Client(OPTIONS.mcp, self.root)
+        with patch.dict(os.environ, {"AWR_MCP_TOOL_EXPOSURE_MODE": self.exposure}):
+            self.client = support.Client(OPTIONS.mcp, self.root)
         self.addCleanup(self.client.close)
 
     def cli(self, args, error=False):
@@ -38,7 +43,10 @@ class EventTransports(unittest.TestCase):
         return body
 
     def tool(self, args, error=False):
-        response = self.client.rpc("tools/call", {"name": "awr_event_append", "arguments": args})
+        request = {"name": "awr_event_append", "arguments": args}
+        if self.exposure == "grouped":
+            request = {"name": "awr_evidence", "arguments": {"child_tool": "awr_event_append", "arguments": args}}
+        response = self.client.rpc("tools/call", request)
         self.assertNotIn("error", response)
         result = response["result"]
         self.assertEqual(bool(result.get("isError")), error)
@@ -105,8 +113,20 @@ class EventTransports(unittest.TestCase):
 
     def test_schema_is_explicit_and_valid_observations_keep_their_data(self):
         response = self.client.rpc("tools/list", {})
-        event_tool = next(tool for tool in response["result"]["tools"] if tool["name"] == "awr_event_append")
-        schema = event_tool["inputSchema"]["properties"]
+        if self.exposure == "grouped":
+            names = {tool["name"] for tool in response["result"]["tools"]}
+            self.assertIn("awr_evidence", names)
+            self.assertNotIn("awr_event_append", names)
+            discovery = self.client.rpc("tools/call", {"name": "awr_evidence", "arguments": {}})
+            result = discovery["result"]
+            self.assertFalse(result.get("isError", False))
+            manifest = result["structuredContent"]
+            self.assertEqual(manifest["domain"], "awr_evidence")
+            event_tool = next(tool for tool in manifest["children"] if tool["name"] == "awr_event_append")
+            schema = event_tool["input_schema"]["properties"]
+        else:
+            event_tool = next(tool for tool in response["result"]["tools"] if tool["name"] == "awr_event_append")
+            schema = event_tool["inputSchema"]["properties"]
         payload_schema = schema["payload"]
         self.assertIs(payload_schema["additionalProperties"], False)
         self.assertNotIn("private_prompt", payload_schema["properties"])
@@ -124,6 +144,10 @@ class EventTransports(unittest.TestCase):
         self.assertEqual(self.cli(["work", "show", "W"])["work"]["status"], "ready")
 
 
+class FlatEventTransports(EventTransports):
+    exposure = "flat"
+
+
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--awr", type=Path, default=ROOT / "target/debug/awr")
@@ -131,7 +155,9 @@ if __name__ == "__main__":
     OPTIONS = parser.parse_args()
     OPTIONS.awr = OPTIONS.awr.resolve(strict=True)
     OPTIONS.mcp = OPTIONS.mcp.resolve(strict=True)
-    result = unittest.TextTestRunner(verbosity=2).run(unittest.defaultTestLoader.loadTestsFromTestCase(EventTransports))
+    suite = unittest.TestSuite(unittest.defaultTestLoader.loadTestsFromTestCase(cls)
+                               for cls in (EventTransports, FlatEventTransports))
+    result = unittest.TextTestRunner(verbosity=2).run(suite)
     if result.wasSuccessful():
         print(f"AWR_EVENT_TRANSPORT_CHECKS {result.testsRun}")
     raise SystemExit(0 if result.wasSuccessful() else 1)

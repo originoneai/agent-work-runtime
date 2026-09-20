@@ -1,12 +1,25 @@
 #!/usr/bin/env python3
 """Synthetic publication and source-boundary regressions; no registry writes."""
 import copy
+import json
 import unittest
 
-from check_release import MEMBERS, validate_identity, validate_scope
+from check_release import MEMBERS, ROOT, validate_identity, validate_scope
 
 
 class ReleaseGuardTests(unittest.TestCase):
+    def test_specialist_contract_versions_and_counts_match_regression(self):
+        regression = json.loads((ROOT / "tests/regression/contract.json").read_text())
+        for gate in regression["gates"]:
+            if gate["kind"] != "contract":
+                continue
+            with self.subTest(gate=gate["id"]):
+                child = json.loads((ROOT / gate["contract"]).read_text())
+                self.assertEqual(gate["version"], child["version"])
+                conditions = child.get("cases", child.get("conditions", []))
+                self.assertEqual(gate["target_conditions"], len(conditions))
+                self.assertEqual(len(conditions), len({item["id"] for item in conditions}))
+
     def test_publish_requires_exact_manual_identity(self):
         sha = "a" * 40
         env = dict(RELEASE_PUBLISH="true", GITHUB_EVENT_NAME="workflow_dispatch",

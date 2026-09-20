@@ -79,7 +79,7 @@ For an optional source build, use [Rust](https://www.rust-lang.org/tools/install
 (the repository pins its toolchain):
 
 ```sh
-git clone https://github.com/originoneai/agent-work-runtime.git
+git clone --branch v0.5.0 --depth 1 https://github.com/originoneai/agent-work-runtime.git
 cd agent-work-runtime
 cargo install --locked --path crates/awr-cli
 cargo install --locked --path crates/awr-mcp

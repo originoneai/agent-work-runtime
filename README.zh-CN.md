@@ -57,7 +57,7 @@ python -m pip install agent-work-runtime==0.5.0
 也可安装 [Rust](https://www.rust-lang.org/tools/install)，选择源码构建：
 
 ```sh
-git clone https://github.com/originoneai/agent-work-runtime.git
+git clone --branch v0.5.0 --depth 1 https://github.com/originoneai/agent-work-runtime.git
 cd agent-work-runtime
 cargo install --locked --path crates/awr-cli
 cargo install --locked --path crates/awr-mcp
