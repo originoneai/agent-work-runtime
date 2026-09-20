@@ -1,13 +1,13 @@
 # Native npm and PyPI distributions
 
-AWR 0.4.0 is a stable package release. npm uses the `latest` channel and PyPI uses
-`0.4.0` without a prerelease suffix. Both install the same Rust CLI and MCP server;
+AWR 0.5.0 is a stable package release. npm uses the `latest` channel and PyPI uses
+`0.5.0` without a prerelease suffix. Both install the same Rust CLI and MCP server;
 no separate JavaScript or Python SDK is included.
 
 ```sh
-npm install -g @originoneai/agent-work-runtime@0.4.0
+npm install -g @originoneai/agent-work-runtime@0.5.0
 # or, in a virtual environment
-python -m pip install agent-work-runtime==0.4.0
+python -m pip install agent-work-runtime==0.5.0
 awr --version
 awr-mcp --version
 ```
@@ -37,7 +37,10 @@ The npm wrapper depends on exact-version optional native packages ending in
 There is no install script or network downloader. Wheels embed the binaries.
 Native payloads include source identity, binary hashes and dependency license notices.
 Only explicit packaging inputs and binaries are included; internal records and AWR
-runtime databases are excluded.
+runtime databases are excluded. The optional [Inspector](../../tools/inspector/README.md)
+is source-only: it is not shipped in npm/PyPI and adds no installed command. Personal
+[Workspace exchange](../reference/workspace-exchange.md) keeps independent local runtimes;
+it does not introduce Team authorization, scheduling or semantic merging.
 
 ## Build and verify
 
@@ -51,16 +54,21 @@ python scripts/release/smoke_install.py .local/distribution-001
 
 Each run uses a new output directory. The installation check uses isolated pip/npm
 installs, verifies both native versions and errors, initializes a Unicode project,
-compiles task context, checks intake diagnosis and verifies the exact 32-tool stdio
-MCP catalog. Shared HTTP exposes 30 tools, including project discovery. Previously
+compiles task context, checks intake diagnosis and verifies the exact grouped stdio
+MCP catalog. Grouped mode exposes **8 stdio / 9 HTTP** tools; flat compatibility
+mode exposes **32 stdio / 33 HTTP** tools. HTTP includes project discovery. Previously
 published versions retain their release catalog.
 These are installation checks, not proof of every real-agent business scenario.
 
 ## Publish reviewed builds
 
-The `distributions.yml` workflow builds and checks each native platform. Ordinary
-push and PR runs never publish. Manual publication is restricted to the `main`
-branch and the `package-registries` environment. npm and PyPI have independent jobs
+The `distributions.yml` workflow builds and checks each native platform. Assembly
+also requires the native five-platform contract and Inspector checks on the same
+source SHA. Ordinary push and PR runs never publish. For 0.5.0, manual publication
+requires `release/0.5.0`, exact version `0.5.0`, and `expected_source_sha` containing
+the full reviewed checkout SHA. The guard rejects missing or mismatched identity.
+The `package-registries` environment must allow this exact release branch; its
+existing policies remain in force. npm and PyPI have independent jobs
 so an authentication failure in one registry does not hide the other's result.
 Trusted publishers bind this repository, workflow and environment.
 
@@ -97,7 +105,7 @@ Invoke the executable by its absolute application-resource path with `--project 
 
 ## Matched upgrade and rollback checklist
 
-AWR 0.4.0 exposes a native `runtime.matched_snapshot` capability for
+AWR 0.5.0 exposes a native `runtime.matched_snapshot` capability for
 `runtime binding`, `backup`, `check`, `restore-preview`, `restore`, `restore-status`
 and `restore-recover`. See the [snapshot contract](../reference/runtime-snapshots.md)
 for exact program/configuration/source matching and offline history restoration.

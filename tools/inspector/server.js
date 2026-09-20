@@ -32,7 +32,7 @@ const LIMITS = {
   stderrBytes: 1 * 1024 * 1024,
   requestBytes: 64 * 1024,        // 请求体上限
   concurrent: envInt('AWR_INSPECTOR_CONCURRENT', 4),          // 同时在跑的 awr 子进程数
-  readTimeoutMs: envInt('AWR_INSPECTOR_READ_TIMEOUT_MS', 60000),   // 只读命令的超时
+  readTimeoutMs: envInt('AWR_INSPECTOR_READ_TIMEOUT_MS', 60000),   // 查询命令的超时
   writeTimeoutMs: envInt('AWR_INSPECTOR_WRITE_TIMEOUT_MS', 120000), // 写命令（reindex）的超时
 };
 
@@ -217,8 +217,8 @@ function buildArgv(commandKey, extra) {
  * stdout/stderr 按 Buffer 收集，跑完再整体解码——按块解码会把一个多字节
  * UTF-8 字符劈成两半，拼回来就是 U+FFFD。
  *
- * 超时的处理对读和写不一样：只读命令可以杀；`source reindex` 是这个界面唯一
- * 的写操作，杀掉它会留下一个「不知道成没成」的状态，所以不杀，只是不再等它。
+ * 查询可能刷新 SQLite 投影，并非运行态只读。查询超时会请求终止进程；
+ * 显式 `source reindex` 超时保留子进程并报告结果未知。
  */
 function execAwr(argv, opts) {
   const write = Boolean(opts && opts.write);
@@ -257,7 +257,7 @@ function execAwr(argv, opts) {
         // 槽位不在这里释放——等 close 事件。
         finish({ code: null, timedOut: true, outcomeUnknown: true, stdout: '', stderr: '' });
       } else {
-        // 只读命令：先礼后兵，SIGTERM 给 5 秒，再 SIGKILL。
+        // 查询命令：先礼后兵，SIGTERM 给 5 秒，再 SIGKILL。
         child.kill('SIGTERM');
         const hard = setTimeout(() => child.kill('SIGKILL'), 5000);
         hard.unref();
@@ -271,7 +271,7 @@ function execAwr(argv, opts) {
       outBytes += chunk.length;
       if (outBytes > LIMITS.stdoutBytes) {
         truncated = true;
-        // 只读命令可以杀。写命令不行——杀掉一个正在改状态的 reindex
+        // 查询命令可以杀。写命令不行——杀掉一个正在改状态的 reindex
         // 会留下不知道成没成的状态，而输出太大并不是终止它的理由。
         // 继续读，只是把超出的部分丢掉。
         if (!write) child.kill('SIGKILL');
@@ -352,7 +352,7 @@ async function runCommand(commandKey, extra) {
             }
           : {
               code: 'BridgeTimeout',
-              message: '命令超时，已终止。这是只读命令，重试是安全的。',
+              message: '查询超时，已请求终止。查询可能已刷新本地投影；请检查当前状态后再决定是否重试。',
             },
       };
     }

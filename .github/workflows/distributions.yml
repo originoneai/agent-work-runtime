@@ -13,7 +13,11 @@ on:
         description: Exact version expected in Cargo.toml
         type: string
         required: true
-        default: '0.4.0'
+        default: '0.5.0'
+      expected_source_sha:
+        description: Full reviewed source SHA (required for publication)
+        type: string
+        required: false
       registry:
         description: Registry publication targets
         type: choice
@@ -24,7 +28,35 @@ permissions:
   contents: read
 
 jobs:
+  guard:
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
+        with:
+          persist-credentials: false
+      - uses: actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97
+        with:
+          python-version: '3.12'
+      - name: Verify release scope and explicit publication identity
+        env:
+          EXPECTED_RELEASE_VERSION: ${{ inputs.version }}
+          EXPECTED_SOURCE_SHA: ${{ inputs.expected_source_sha }}
+          RELEASE_PUBLISH: ${{ inputs.publish }}
+        run: |
+          python scripts/release/check_version.py
+          python scripts/release/check_release.py
+          python scripts/release/test_release_guard.py
+
+  native:
+    needs: guard
+    uses: ./.github/workflows/platform.yml
+
+  inspector:
+    needs: guard
+    uses: ./.github/workflows/inspector.yml
+
   build:
+    needs: guard
     strategy:
       fail-fast: false
       matrix:
@@ -88,7 +120,7 @@ jobs:
           retention-days: 30
 
   assemble:
-    needs: build
+    needs: [build, native, inspector]
     runs-on: ubuntu-24.04
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
@@ -113,7 +145,7 @@ jobs:
           retention-days: 30
 
   publish_npm:
-    if: github.event_name == 'workflow_dispatch' && github.ref == 'refs/heads/main' && inputs.publish && (inputs.registry == 'both' || inputs.registry == 'npm')
+    if: github.event_name == 'workflow_dispatch' && inputs.publish && (inputs.registry == 'both' || inputs.registry == 'npm')
     needs: assemble
     runs-on: ubuntu-24.04
     environment: package-registries
@@ -139,7 +171,7 @@ jobs:
         run: python scripts/release/publish_npm.py .local/release --provenance
 
   publish_pypi:
-    if: github.event_name == 'workflow_dispatch' && github.ref == 'refs/heads/main' && inputs.publish && (inputs.registry == 'both' || inputs.registry == 'pypi')
+    if: github.event_name == 'workflow_dispatch' && inputs.publish && (inputs.registry == 'both' || inputs.registry == 'pypi')
     needs: assemble
     runs-on: ubuntu-24.04
     environment: package-registries

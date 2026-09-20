@@ -2,23 +2,23 @@
 
 Persistent work state and minimal context for long-running AI agents.
 
-AWR 0.4.0 includes the native Rust `awr` CLI and `awr-mcp` server for stdio and shared Streamable HTTP.
+AWR 0.5.0 includes the native Rust `awr` CLI and `awr-mcp` server for stdio and shared Streamable HTTP.
 It provides command-line tools; context compilation runs locally.
 
 ```sh
-python -m pip install agent-work-runtime==0.4.0
+python -m pip install agent-work-runtime==0.5.0
 awr --version
 awr --help
 awr-mcp --help
 ```
 
-For an isolated application installation, use `pipx install agent-work-runtime==0.4.0` or `uv tool install agent-work-runtime==0.4.0`.
+For an isolated application installation, use `pipx install agent-work-runtime==0.5.0` or `uv tool install agent-work-runtime==0.5.0`.
 
 The project must be initialized before running
 `awr-mcp --project /absolute/project`. Follow the
 [project documentation](https://github.com/originoneai/agent-work-runtime).
 
-The distribution targets macOS 15+ arm64 and Intel x64, Linux x64 with glibc 2.39+ (Ubuntu 24.04
+The distribution targets macOS 15+ arm64 and Intel x64, Linux arm64 and x64 with glibc 2.39+ (Ubuntu 24.04
 baseline), and Windows x64. Python 3.9+ is required for the launcher. Git is required
 for Git-bound work branch operations. SQLite is included in the binaries. Supported
 platforms install a prebuilt wheel and do not need a Rust compiler.

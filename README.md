@@ -63,17 +63,17 @@ source comparison does not establish model-token or billing savings, or announce
 
 ## Get started
 
-Install **0.4.0** through either registry; both supply `awr` and `awr-mcp`:
+Install **0.5.0** through either registry; both supply `awr` and `awr-mcp`:
 
 ```sh
-npm install -g @originoneai/agent-work-runtime@0.4.0
+npm install -g @originoneai/agent-work-runtime@0.5.0
 # or, in a Python virtual environment
-python -m pip install agent-work-runtime==0.4.0
+python -m pip install agent-work-runtime==0.5.0
 ```
 
-Prebuilt targets: macOS 15+ arm64 and Intel x64, Linux x64/glibc 2.39+, Windows x64.
+Prebuilt targets: macOS 15+ arm64 and Intel x64, Linux arm64 and x64/glibc 2.39+, Windows x64.
 Launchers require Node 22.14+ or Python 3.9+. See [distribution details](docs/release/DISTRIBUTIONS.md).
-See the [0.4.0 release notes](docs/release/0.4.0.md) for host capabilities and schema upgrade guidance.
+See the [0.5.0 release notes](docs/release/0.5.0.md) for changes, compatibility migrations and schema upgrade guidance.
 
 For an optional source build, use [Rust](https://www.rust-lang.org/tools/install)
 (the repository pins its toolchain):
@@ -115,7 +115,7 @@ business intent. Nonstandard fields and statuses have explicit mappings such as
 `--status-map pending=planned` and `--field-map title=事项`.
 
 For local MCP, configure any client to launch `awr-mcp --project /absolute/project/path`
-after initialization. AWR 0.4.0 also provides a [shared MCP service](docs/reference/mcp-service.md):
+after initialization. AWR 0.5.0 also provides a [shared MCP service](docs/reference/mcp-service.md):
 one HTTP endpoint for multiple projects and clients, with persistent sessions,
 checkpoints, user waits and request recovery. Start from the
 [host integration layers](docs/integrations/README.md) (L0 generic contract, L1
@@ -130,13 +130,13 @@ AWR can supervise commands it launches and bind supported client lifecycle event
 Restoring an arbitrary existing process or the private memory of a native client
 requires that client's cooperation.
 
-The current source also supports [native-compaction observations and precise
+AWR 0.5.0 supports [native-compaction observations and precise
 action guidance](docs/integrations/context-continuity.md). Keep native compaction
 enabled, report actual post-compaction occupancy, and prepare a user-approved
 handoff when appropriate. `work prepare --response-view action` returns one
 bounded conditional instruction while preserving required context.
 
-The current source also provides [daily work navigation and small edits](docs/reference/daily-work.md):
+AWR 0.5.0 provides [daily work navigation and small edits](docs/reference/daily-work.md):
 `status` separates continuation, claimable work, waits and blockers, and summarizes
 historical verification. `work edit` previews common field changes without manual
 YAML editing. Existing integrations can select `status --view full` for the earlier shape.

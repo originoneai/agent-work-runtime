@@ -43,16 +43,16 @@ AWR 不绑定某一个 Coding Agent。只要宿主能跑 CLI 或讲 MCP，就使
 
 ## 怎么用
 
-任选 npm 或 pip 安装 **0.4.0 正式版**，均提供 `awr` 和 `awr-mcp`：
+任选 npm 或 pip 安装 **0.5.0 正式版**，均提供 `awr` 和 `awr-mcp`：
 
 ```sh
-npm install -g @originoneai/agent-work-runtime@0.4.0
+npm install -g @originoneai/agent-work-runtime@0.5.0
 # 或在 Python 虚拟环境内
-python -m pip install agent-work-runtime==0.4.0
+python -m pip install agent-work-runtime==0.5.0
 ```
 
-预编译包支持 macOS 15+ Apple Silicon arm64 和 Intel x64、Linux x64/glibc 2.39+、Windows x64；启动器需要 Node 22.14+ 或 Python 3.9+。详见[安装边界](docs/release/DISTRIBUTIONS.md)。
-宿主能力和数据库升级说明见 [0.4.0 发布说明](docs/release/0.4.0.md)。
+预编译包支持 macOS 15+ Apple Silicon arm64 和 Intel x64、Linux arm64 和 x64/glibc 2.39+、Windows x64；启动器需要 Node 22.14+ 或 Python 3.9+。详见[安装边界](docs/release/DISTRIBUTIONS.md)。
+本次变化、兼容迁移与数据库升级说明见 [0.5.0 发布说明](docs/release/0.5.0.md)。
 
 也可安装 [Rust](https://www.rust-lang.org/tools/install)，选择源码构建：
 
@@ -86,7 +86,7 @@ awr --project /path/to/project intake inspect
 
 先预览，再接受映射。没有明确目标时，初始化可加 `--goal "你希望完成的事情"`。Agent 按诊断补齐目标与任务，随后重新检查；AWR 不会替你编造业务意图。自定义状态或中文字段可用 `--status-map pending=planned`、`--field-map title=事项` 映射。
 
-本地接入 MCP 时，让任意客户端启动 `awr-mcp --project /项目绝对路径`。0.4.0 同时支持[共享 MCP 常驻服务](docs/reference/mcp-service.md)：一个 HTTP 入口服务多个项目和客户端，保存独立的会话、检查点、用户等待和请求回执。这些能力均包含在 0.4.0 安装包中。
+本地接入 MCP 时，让任意客户端启动 `awr-mcp --project /项目绝对路径`。0.5.0 同时支持[共享 MCP 常驻服务](docs/reference/mcp-service.md)：一个 HTTP 入口服务多个项目和客户端，保存独立的会话、检查点、用户等待和请求回执。这些能力均包含在 0.5.0 安装包中。
 
 先看[宿主接入层级](docs/integrations/README.md)（L0 通用合同、L1 宿主注记、可选 L2 适配器），再看 [MCP 配置与工具](crates/awr-mcp/README.md)、[L0 会话流程](docs/integrations/session-workflow.md)、[CLI 生命周期示例](examples/codex/README.md)、[项目接管指南](docs/TAKEOVER.md)。Codex 的 hooks 安装仍是[可选 L2 适配器](docs/integrations/codex.md)。Cursor 合并路径是 [L1 宿主注记](docs/integrations/cursor.md)。
 
