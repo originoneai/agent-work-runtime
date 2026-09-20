@@ -34,7 +34,7 @@ def main():
     commands = [
         (["cargo", "test", "-p", "awr-store", "--test", "security_events", "--locked", "--", "--nocapture"],
          r"test result: ok\. (\d+) passed; 0 failed; 0 ignored", 7),
-        ([sys.executable, "tests/security/payloads/events_cli_mcp.py"], r"AWR_EVENT_TRANSPORT_CHECKS (\d+)", 3),
+        ([sys.executable, "tests/security/payloads/events_cli_mcp.py"], r"AWR_EVENT_TRANSPORT_CHECKS (\d+)", 6),
     ]
     observed = set()
     for index, (command, pattern, expected_count) in enumerate(commands, 1):

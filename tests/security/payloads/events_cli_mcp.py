@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 """Exercise event boundaries through built CLI and MCP on disposable projects."""
 import argparse
+from contextlib import closing
 import importlib.util
 import json
 import os
@@ -54,7 +55,9 @@ class EventTransports(unittest.TestCase):
         return result["structuredContent"]
 
     def state(self):
-        with sqlite3.connect(f"file:{self.root / '.awr/state.db'}?mode=ro", uri=True) as db:
+        # SQLite's transaction context manager does not close the connection.
+        # Close explicitly so Windows can remove the disposable database.
+        with closing(sqlite3.connect((self.root / '.awr/state.db').as_uri() + "?mode=ro", uri=True)) as db:
             tables = [row[0] for row in db.execute("SELECT name FROM sqlite_master WHERE type='table' ORDER BY name")]
             rows = {name: sorted(repr(row) for row in db.execute('SELECT * FROM "' + name.replace('"', '""') + '"'))
                     for name in tables}
@@ -150,8 +153,9 @@ class FlatEventTransports(EventTransports):
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description=__doc__)
-    parser.add_argument("--awr", type=Path, default=ROOT / "target/debug/awr")
-    parser.add_argument("--mcp", type=Path, default=ROOT / "target/debug/awr-mcp")
+    suffix = ".exe" if os.name == "nt" else ""
+    parser.add_argument("--awr", type=Path, default=ROOT / "target/debug" / ("awr" + suffix))
+    parser.add_argument("--mcp", type=Path, default=ROOT / "target/debug" / ("awr-mcp" + suffix))
     OPTIONS = parser.parse_args()
     OPTIONS.awr = OPTIONS.awr.resolve(strict=True)
     OPTIONS.mcp = OPTIONS.mcp.resolve(strict=True)

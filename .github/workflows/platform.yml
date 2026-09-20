@@ -63,7 +63,7 @@ jobs:
       - name: Execute native contract and preserve receipts
         run: python tests/platform/verify.py --platform '${{ matrix.platform }}' --output '.local/platform-${{ matrix.platform }}'
       - name: Verify event boundaries through grouped and flat MCP discovery
-        run: python tests/security/payloads/events_cli_mcp.py --awr target/debug/awr${{ runner.os == 'Windows' && '.exe' || '' }} --mcp target/debug/awr-mcp${{ runner.os == 'Windows' && '.exe' || '' }} > '.local/platform-${{ matrix.platform }}/evidence/event-transports.log' 2>&1
+        run: python tests/security/payloads/verify_events.py --report '.local/platform-${{ matrix.platform }}/evidence/event-transports.json'
       - name: Upload this platform's evidence, including failures
         if: always()
         uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
