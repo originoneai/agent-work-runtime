@@ -103,7 +103,11 @@ fn validate(value: &Value) -> Result<(), String> {
             let source = std::fs::read_to_string(root.join(path))
                 .map_err(|_| format!("missing test {path}"))?;
             require(
-                test["test_file_sha256"] == format!("{:x}", Sha256::digest(source.as_bytes())),
+                test["test_file_sha256"]
+                    == format!(
+                        "{:x}",
+                        Sha256::digest(source.replace("\r\n", "\n").as_bytes())
+                    ),
                 "stale test source fingerprint",
             )?;
             let file = syn::parse_file(&source).map_err(|_| format!("invalid Rust {path}"))?;

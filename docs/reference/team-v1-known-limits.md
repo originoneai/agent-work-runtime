@@ -3,7 +3,7 @@
 The matrix inventories 69 required scenarios; it does **not** establish full
 PostgreSQL coverage of all 69. Each automated reference identifies a Cargo
 package/target, test function, required features, assertion scope, coverage layer
-and reviewed source SHA plus a checked test-file fingerprint. The current mappings are deliberately partial: a
+and reviewed source SHA plus a checked LF-normalized test-file fingerprint. The current mappings are deliberately partial: a
 reference resolves to source, but `last_run: null` supplies no case-level run
 receipt. `real_postgresql` describes the test layer, not a successful execution.
 Counts are derived from individual records and checked by `pg_matrix`.
