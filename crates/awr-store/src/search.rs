@@ -168,7 +168,7 @@ struct Document {
     explicit_status: bool,
 }
 
-fn rebuild(conn: &Connection, project: Id, revision: i64) -> Result<()> {
+fn rebuild(conn: &Connection, project: Id, revision: i64, scoped: bool) -> Result<()> {
     let cached = conn
         .query_row(
             "SELECT project_revision,policy_version FROM search_state WHERE project_id=?1",
@@ -248,8 +248,13 @@ fn rebuild(conn: &Connection, project: Id, revision: i64) -> Result<()> {
         } else {
             "0"
         };
+        let visibility = if scoped {
+            crate::scoped_read::visible(table, "e.id")
+        } else {
+            "1".into()
+        };
         let sql = format!(
-            "SELECT e.id,{key},{title},{summary},{status},{work_key},{source_ref},{source_id},{revision_col},{explicit_status} FROM {table} e WHERE e.project_id=?1 {filter} ORDER BY e.id"
+            "SELECT e.id,{key},{title},{summary},{status},{work_key},{source_ref},{source_id},{revision_col},{explicit_status} FROM {table} e WHERE e.project_id=?1 {filter} AND {visibility} ORDER BY e.id"
         );
         let rows = conn
             .prepare(&sql)
@@ -307,6 +312,14 @@ fn rebuild(conn: &Connection, project: Id, revision: i64) -> Result<()> {
 impl Store {
     /// Refresh a derived index and search it in one transaction; source and runtime facts are untouched.
     pub fn search(&mut self, project: Id, query: &SearchQuery) -> Result<SearchReport> {
+        self.search_scoped(project, query, false)
+    }
+    pub(crate) fn search_scoped(
+        &mut self,
+        project: Id,
+        query: &SearchQuery,
+        scoped: bool,
+    ) -> Result<SearchReport> {
         awr_core::ensure_public_data(query)?;
         if query.limit == 0 || query.limit > 100 {
             return Err(Error::InvalidInput("search limit must be 1..100".into()));
@@ -335,7 +348,7 @@ impl Store {
             .optional()
             .map_err(db_error)?
             .ok_or_else(|| Error::NotFound(format!("project {project}")))?;
-        rebuild(&tx, project, revision)?;
+        rebuild(&tx, project, revision, scoped)?;
         let (join, match_clause, rank) = if text.is_some() {
             (
                 "JOIN search_fts ON search_fts.rowid=d.rowid",

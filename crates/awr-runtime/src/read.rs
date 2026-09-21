@@ -4,6 +4,79 @@ use sha2::{Digest, Sha256};
 use std::{io::Read, path::Path};
 
 impl Runtime<'_> {
+    /// Load current trusted policy before calling. The selected scope authorizes
+    /// metadata before the filesystem is touched; existing path/hash checks still
+    /// apply. This does not grant direct OS-file access or authorize execution.
+    pub fn read_artifact_in_workstream(
+        &self,
+        access: &WorkstreamAccess,
+        selection: &awr_store::WorkstreamReadSelection,
+        id: Id,
+        max_bytes: u64,
+    ) -> Result<(Artifact, Vec<u8>)> {
+        let view =
+            self.store
+                .read_workstream(self.project, access, selection, 256 * 1024 * 1024)?;
+        let artifact = view.artifact(id)?;
+        ensure_public_data(&artifact)?;
+        let bytes = read_registered_file(
+            self.store,
+            self.project,
+            &artifact.locator,
+            Some(artifact.size),
+            Some(&artifact.sha256),
+            max_bytes,
+        )?;
+        let current =
+            self.store
+                .read_workstream(self.project, access, selection, 256 * 1024 * 1024)?;
+        let checked = current.artifact(id)?;
+        if checked.sha256 != artifact.sha256
+            || checked.locator != artifact.locator
+            || checked.revision != artifact.revision
+        {
+            return Err(Error::SourceConflict(
+                "artifact changed during scoped read".into(),
+            ));
+        }
+        Ok((artifact, bytes))
+    }
+
+    pub fn read_evidence_report_in_workstream(
+        &self,
+        access: &WorkstreamAccess,
+        selection: &awr_store::WorkstreamReadSelection,
+        key: &str,
+        max_bytes: u64,
+    ) -> Result<(EvidenceRecord, Vec<u8>)> {
+        let view =
+            self.store
+                .read_workstream(self.project, access, selection, 256 * 1024 * 1024)?;
+        let record = view.evidence(key)?;
+        ensure_public_data(&record)?;
+        let bytes = read_registered_file(
+            self.store,
+            self.project,
+            &record.item.locator,
+            None,
+            record.item.sha256.as_deref(),
+            max_bytes,
+        )?;
+        let current =
+            self.store
+                .read_workstream(self.project, access, selection, 256 * 1024 * 1024)?;
+        let checked = current.evidence(&record.item.id.to_string())?;
+        if checked.item.revision != record.item.revision
+            || checked.item.locator != record.item.locator
+            || checked.item.sha256 != record.item.sha256
+        {
+            return Err(Error::SourceConflict(
+                "evidence changed during scoped read".into(),
+            ));
+        }
+        Ok((record, bytes))
+    }
+
     /// Explicit artifact body read. No content is returned until size and digest match its record.
     pub fn read_artifact(&self, id: Id, max_bytes: u64) -> Result<(Artifact, Vec<u8>)> {
         let artifact = self.store.artifact(self.project, id)?;
