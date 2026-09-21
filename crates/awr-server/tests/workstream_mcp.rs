@@ -259,6 +259,113 @@ async fn mcp_claims_reconnect_and_share_live_state_and_historical_http_receipts(
 }
 
 #[tokio::test]
+async fn execution_intents_share_http_mcp_identity_without_dispatching_effects() {
+    let (_guard, admin, _, store) = setup().await;
+    enable_writes(&admin).await;
+    let server = start(store).await;
+    let a = connect(&server, "one", A).await.unwrap();
+    let b = connect(&server, "one", B).await.unwrap();
+    let take=serde_json::to_value(command(&prepared(&a).await,"take","claim.acquire",
+        json!({"session_id":"session-a","expected_session_version":"1","expected_work_version":"0","ttl_seconds":60}))).unwrap();
+    let taken = call(&a, "awr_team_command", take, false).await;
+    let claim = &taken["receipt"]["data"];
+    for prepare_via_http in [true, false] {
+        let p = prepared(&a).await;
+        let id = if prepare_via_http {
+            "http-intent"
+        } else {
+            "mcp-intent"
+        };
+        let request=serde_json::to_value(command(&p,id,"execution.prepare",json!({"session_id":"session-a",
+            "expected_session_version":"1","claim_id":claim["claim_id"],"expected_fence":claim["fence"],
+            "expected_lease_version":claim["lease_version"],"expected_work_version":p["data"]["runtime"]["work_version"],
+            "input_digest":"a".repeat(64),"declared_scope":["src"]}))).unwrap();
+        let begun: Value = if prepare_via_http {
+            http()
+                .post(format!("{}/one/command", server.url))
+                .bearer_auth(A)
+                .json(&request)
+                .send()
+                .await
+                .unwrap()
+                .error_for_status()
+                .unwrap()
+                .json()
+                .await
+                .unwrap()
+        } else {
+            call(&a, "awr_team_command", request.clone(), false).await
+        };
+        let e = &begun["receipt"]["data"];
+        assert_eq!(begun["receipt"]["execution_authorized"], false);
+        assert_eq!(e["dispatched"], false);
+        let q = json!({"protocol_version":1,"op":"execution.inspect","work_id":"a","execution_id":e["execution_id"]});
+        assert_eq!(
+            call(&b, "awr_team_query", q.clone(), true).await["code"],
+            "Forbidden"
+        );
+        assert_eq!(
+            call(&a, "awr_team_query", q.clone(), false).await["data"]["state"],
+            "prepared"
+        );
+        let stop=serde_json::to_value(command(&prepared(&a).await,&format!("cancel-{id}"),"execution.cancel",
+            json!({"session_id":"session-a","expected_session_version":"1","execution_id":e["execution_id"],"expected_execution_version":"1"}))).unwrap();
+        let denied = http()
+            .post(format!("{}/one/command", server.url))
+            .bearer_auth(B)
+            .json(&stop)
+            .send()
+            .await
+            .unwrap();
+        assert_eq!(denied.status(), 403);
+        let cancelled: Value = if prepare_via_http {
+            call(&a, "awr_team_command", stop, false).await
+        } else {
+            http()
+                .post(format!("{}/one/command", server.url))
+                .bearer_auth(A)
+                .json(&stop)
+                .send()
+                .await
+                .unwrap()
+                .error_for_status()
+                .unwrap()
+                .json()
+                .await
+                .unwrap()
+        };
+        assert_eq!(cancelled["receipt"]["data"]["stop_confirmed"], true);
+        let replay = call(&a, "awr_team_command", request, false).await;
+        assert_eq!(replay["receipt"], begun["receipt"]);
+        assert_eq!(replay["replayed"], true);
+        let now: Value = http()
+            .post(format!("{}/one/query", server.url))
+            .bearer_auth(A)
+            .json(&q)
+            .send()
+            .await
+            .unwrap()
+            .error_for_status()
+            .unwrap()
+            .json()
+            .await
+            .unwrap();
+        assert_eq!(now["data"]["state"], "cancelled");
+        assert_eq!(now["data"]["execution_authorized"], false);
+    }
+    assert_eq!(
+        admin
+            .query_one("SELECT count(*) FROM awr_team.outbox", &[])
+            .await
+            .unwrap()
+            .get::<_, i64>(0),
+        0
+    );
+    a.cancel().await.unwrap();
+    b.cancel().await.unwrap();
+}
+
+#[tokio::test]
 async fn mcp_session_journal_reconnects_replays_and_shares_http_outcomes() {
     let (_guard, admin, _, store) = setup().await;
     enable_writes(&admin).await;

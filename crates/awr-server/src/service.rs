@@ -303,6 +303,7 @@ fn public_error(error: PgError) -> (StatusCode, Value) {
         | PgError::ClaimHeld
         | PgError::LeaseExpired
         | PgError::StaleFence
+        | PgError::ScopeExceeded
         | PgError::WaitOpen) => {
             let code = match e {
                 PgError::PreconditionsChanged => "PreconditionsChanged",
@@ -312,6 +313,7 @@ fn public_error(error: PgError) -> (StatusCode, Value) {
                 PgError::ClaimHeld => "ClaimHeld",
                 PgError::LeaseExpired => "LeaseExpired",
                 PgError::StaleFence => "StaleFence",
+                PgError::ScopeExceeded => "ScopeExceeded",
                 PgError::WaitOpen => "WaitOpen",
                 _ => "RecoveryBlocked",
             };

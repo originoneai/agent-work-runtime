@@ -1,7 +1,8 @@
 # Team workstream HTTP and MCP service
 
 The development branch provides authenticated, multi-project HTTP/MCP queries
-and durable session journaling and coordination claims backed by PostgreSQL. This is not a release
+and durable sessions, coordination claims and execution intents backed by
+PostgreSQL. This is not a release
 announcement or a complete Team execution service. It does not dispatch
 executions, resume agents or adopt cross-workstream deliveries. Use its live
 capabilities response to discover available operations.
@@ -9,7 +10,7 @@ capabilities response to discover available operations.
 ## Start an operator-bound service
 
 Build `awr-server` from this source branch. Migrate the intended database to
-schema 11 explicitly as its owner, and apply application-role grants using the
+schema 12 explicitly as its owner, and apply application-role grants using the
 [PostgreSQL setup](team-postgres.md). `serve` checks the schema without migrating
 it. Run the listener using the application connection, not an owner or superuser
 connection.
@@ -92,7 +93,7 @@ POST JSON to `/v1/projects/<alias>/query` with an
 {"protocol_version":1,"op":"capabilities"}
 ```
 
-The response advertises the following queries and six session/claim commands.
+The response advertises the following queries and eight session/claim/intent commands.
 The operation list describes implemented protocol, not a grant to invoke it.
 Unsupported operations or protocol versions fail explicitly.
 
@@ -107,6 +108,7 @@ Unsupported operations or protocol versions fail explicitly.
 | `work.recovery` | Required work/session; up to two current-ownership recovery candidates |
 | `command.inspect` | Required work/session and `request_id`; this actor/client's committed receipt or unknown outcome |
 | `claim.inspect` | Required work/session and `claim_id`; current lease state, ownership, fence and epoch validity |
+| `execution.inspect` | Required work/session and `execution_id`; current intent state/version, cancellation and contract/epoch validity |
 
 Work/session selectors derive the workstream. An explicit `workstream_id` must
 agree with them. Without work/session, a unique authorized workstream can be
@@ -157,7 +159,7 @@ It exposes two tools, with arguments identical to the corresponding HTTP JSON:
 
 - `awr_team_query`: the query operations above. Start with
   `{"protocol_version":1,"op":"capabilities"}`.
-- `awr_team_command`: the six session/claim commands below, with the same request
+- `awr_team_command`: the eight session/claim/intent commands below, with the same request
   identity and preconditions. Tool discovery is not a write grant.
 
 Initialization, discovery and notifications require current project/workstream
@@ -282,6 +284,58 @@ attribution. It does not infer ownership from today's source. Unattributed,
 reassigned or old-epoch active rows require explicit recovery/migration before
 replacement, even when their deadline has elapsed.
 
+## Execution intents and cancellation
+
+Execution intents persist a planned attempt under the same authenticated command
+transaction. They are a prerequisite for the remaining execution lifecycle, not
+permission to run a command. `execution.prepare` creates no outbox delivery and
+returns `dispatched: false`, `admission: "not_evaluated"` and
+`execution_authorized: false`. Starting, dispatching and reporting execution are
+not yet exposed; capabilities explicitly report those operations as unavailable.
+
+| Operation | Strict `args` object |
+| --- | --- |
+| `execution.prepare` | `session_id`, `expected_session_version`, `claim_id`, `expected_fence`, `expected_lease_version`, `expected_work_version`, `input_digest`, `declared_scope` |
+| `execution.cancel` | `session_id`, `expected_session_version`, `execution_id`, `expected_execution_version` |
+
+Preparation requires the active, exactly owned session and live claim, current
+work version, active workstream and enabled contract. It refuses completed work,
+open waits, recovery blocks, unfinished attempts and unknown resources. Each
+intent captures immutable actor/client, session/claim, workstream ownership,
+coordinator epoch, fence, contract and input digest. Another credential for a
+different client cannot act as that executor, even when the actor is the same.
+Preparation and cancellation advance work versions and atomically persist their
+state, scoped event and command receipt.
+
+`input_digest` is 64 lowercase hexadecimal characters identifying caller-held
+input; recording it does not independently verify those input bytes.
+`declared_scope` contains at most 128 unique, canonical, workspace-relative paths,
+each at most 4096 bytes and contained by a contract scope path. Absolute paths,
+parent/dot segments, repeated separators, backslashes, drive prefixes and control
+characters are rejected. This is **lexical contract validation**, not filesystem
+confinement, a resource reservation or a dependency check. The client cannot
+self-select a trusted executor identity, receipt kind or stronger fencing class;
+intents remain `uncontrolled` without an exactly-once claim.
+
+The original client may cancel an intent after its claim deadline or while its
+workstream is paused, provided it still owns the active session and has current
+write access. A frozen project continues to reject new mutations. Cancellation
+can synchronously mark an unexposed `prepared` intent as `cancelled`. Any outbox
+delivery or execution receipt, or a queued/accepted/running/unknown state, instead
+leaves the execution state intact and records `cancel_requested: true` with
+`stop_confirmed: false`. No cancellation releases resource reservations or clears
+a recovery block. A terminal execution cannot be rewritten through cancellation.
+
+An execution receipt's `execution_state_basis: "at_commit"` is historical.
+Replaying preparation after cancellation does not resurrect the attempt. Query
+`execution.inspect` to distinguish current state, executor ownership, live lease,
+contract currency and epoch currency; it never automatically resumes an attempt
+or grants execution. Missing, hidden and mismatched execution IDs share the same
+`Forbidden` response. Schema 12 leaves legacy execution attribution null rather
+than assigning it from today's source. Such history needs explicit migration;
+an old epoch can be inspected within its unchanged ownership but cannot be
+cancelled under a new epoch without the recovery protocol.
+
 ## Limits and errors
 
 Requests are limited to 64 KiB, pages to 100 items, search to 512 bytes, and
@@ -304,7 +358,7 @@ disconnects.
 | --- | --- |
 | 400 | Invalid JSON, selectors or bounds |
 | 403 | Missing/invalid credential, denied scope, or hidden/missing object |
-| 409 | Scope/cursor/context limits, stale preconditions/fence, held/expired lease, open wait, changed epoch, idempotency conflict, project barrier or unresolved recovery |
+| 409 | Scope/cursor/context limits, declared scope outside contract, stale preconditions/fence, held/expired lease, open wait, changed epoch, idempotency conflict, project barrier or unresolved recovery |
 | 413 | Request body too large |
 | 501 | Unsupported operation or protocol |
 | 503 | Busy, timed out, transient transaction conflict or unavailable data |
@@ -324,6 +378,9 @@ RMCP clients also verify discovery, simultaneous scope isolation, live revocatio
 reconnection, HTTP/MCP receipt parity and refusal of oversized envelopes. Claim
 checks cover concurrent acquisition, renewal/release, client ownership, epoch and
 fence changes, expiry, atomic rollback, migration preservation and historical
-replay versus live inspection over HTTP/MCP. Execution
-writes, history migration and enabled-project backup/restore remain
+replay versus live inspection over HTTP/MCP. Execution-intent checks cover exact
+client ownership, scope/version guards, preparation/cancellation rollback, live
+revocation, unknown-effect preservation, legacy migration and shared HTTP/MCP
+receipts without dispatch. Execution admission, dispatch, reporting, history
+migration and enabled-project backup/restore remain
 unavailable through this surface.

@@ -110,6 +110,7 @@ fn catalog() -> Vec<Tool> {
         "op":{"type":"string","enum":WorkstreamQuery::OPERATIONS},
         "workstream_id":{"type":"string"},"work_id":{"type":"string"},
         "session_id":{"type":"string"},"request_id":{"type":"string"},"claim_id":{"type":"string"},
+        "execution_id":{"type":"string"},
         "search":{"type":"string","maxLength":512},"cursor":{"type":"string","maxLength":4096},
         "limit":{"type":"integer","minimum":1,"maximum":100},
         "max_context_bytes":{"type":"integer","minimum":1,"maximum":262144}
@@ -126,7 +127,7 @@ fn catalog() -> Vec<Tool> {
         "expected_authority_version":{"type":"string","pattern":"^[1-9][0-9]*$"},
         "expected_ownership_version":{"type":"string","pattern":"^[1-9][0-9]*$"},
         "expected_contract_hash":{"type":"string"},
-        "args":{"type":"object","description":"start: conversation_id. checkpoint: session_id, expected_session_version, context_hash, next_action, open_loops. end: session_id, expected_session_version. All claim actions: session_id, expected_session_version. acquire adds expected_work_version (0 when runtime absent), ttl_seconds (1..3600). renew/release add claim_id, expected_fence, expected_lease_version; renew also ttl_seconds. Versions are decimal strings; unknown fields fail."}
+        "args":{"type":"object","description":"session.start: conversation_id. session.checkpoint: session_id, expected_session_version, context_hash, next_action, open_loops. session.end: session_id, expected_session_version. All claim/execution actions: session_id, expected_session_version. claim.acquire adds expected_work_version (0 when runtime absent), ttl_seconds (1..3600). claim.renew/release add claim_id, expected_fence, expected_lease_version; renew also ttl_seconds. execution.prepare adds claim_id, expected_fence, expected_lease_version, expected_work_version, input_digest (64 lowercase hex), declared_scope (canonical relative paths). execution.cancel adds execution_id, expected_execution_version. Versions are decimal strings; unknown fields fail."}
     }});
     vec![
         Tool::new("awr_team_query",
@@ -134,7 +135,7 @@ fn catalog() -> Vec<Tool> {
             query.as_object().unwrap().clone())
             .with_annotations(ToolAnnotations::new().read_only(true).destructive(false).idempotent(true).open_world(false)),
         Tool::new("awr_team_command",
-            "Durable session journals and coordination claims. Use work.prepare preconditions and a stable request_id. On uncertain outcome use query command.inspect; retry the exact original payload. Re-prepare after conflicts, never silently change a retry. Claims never grant execution or completion. Inspect a claim for its current lease; a replayed receipt is historical.",
+            "Durable sessions, coordination claims and execution intents. Use work.prepare preconditions and a stable request_id. On uncertain outcome query command.inspect; retry the exact original payload. Re-prepare after conflicts, never silently change a retry. Preparing an execution never dispatches or authorizes it. Cancellation may be only a request; inspect execution state. Claims grant no execution/completion. Replayed receipts are historical; inspect current state.",
             command.as_object().unwrap().clone())
             .with_annotations(ToolAnnotations::new().read_only(false).destructive(false).idempotent(true).open_world(false)),
     ]

@@ -744,7 +744,9 @@ async fn legacy_or_reassigned_active_rows_cannot_be_silently_adopted_after_expir
 async fn schema_eleven_is_atomic_and_preserves_unattributed_claim_history() {
     let (_guard, admin, _, _store) = setup().await;
     // Reconstruct schema 10 in this process's exclusive database.
-    admin.batch_execute("ALTER TABLE awr_team.claims DROP CONSTRAINT claims_workstream_binding;
+    admin.batch_execute("ALTER TABLE awr_team.executions DROP CONSTRAINT executions_workstream_binding;
+        ALTER TABLE awr_team.executions DROP COLUMN workstream_id,DROP COLUMN ownership_version,DROP COLUMN executor_client_id,DROP COLUMN execution_version;
+        ALTER TABLE awr_team.claims DROP CONSTRAINT claims_workstream_binding;
         ALTER TABLE awr_team.claims DROP COLUMN workstream_id,DROP COLUMN ownership_version,DROP COLUMN coordinator_epoch;
         UPDATE awr_team.schema_state SET version=10;
         INSERT INTO awr_team.claims(tenant_id,project_id,id,scope_id,work_id,session_id,actor_id,fence,expires_at,state)

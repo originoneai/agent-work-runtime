@@ -359,6 +359,28 @@ async fn owned(
     Ok(r)
 }
 
+pub(super) async fn require_live(
+    tx: &Transaction<'_>,
+    tenant: &str,
+    project: &str,
+    auth: &ReaderAuthority,
+    command: &WorkstreamCommand,
+    ownership: i64,
+    session: &str,
+    claim: &str,
+    fence: &str,
+    lease: &str,
+) -> PgResult<i64> {
+    let r = owned(
+        tx, tenant, project, auth, command, ownership, session, claim, fence, lease,
+    )
+    .await?;
+    if !r.get::<_, bool>(10) {
+        return Err(PgError::LeaseExpired);
+    }
+    Ok(r.get(3))
+}
+
 pub(crate) async fn inspect(
     tx: &Transaction<'_>,
     tenant: &str,

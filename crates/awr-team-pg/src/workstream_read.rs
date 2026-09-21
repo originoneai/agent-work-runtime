@@ -22,6 +22,7 @@ const QUERIES: &[&str] = &[
     "work.recovery",
     "command.inspect",
     "claim.inspect",
+    "execution.inspect",
 ];
 
 #[derive(Clone, Debug, Deserialize, Serialize)]
@@ -38,6 +39,7 @@ pub struct WorkstreamQuery {
     pub max_context_bytes: Option<usize>,
     pub request_id: Option<String>,
     pub claim_id: Option<String>,
+    pub execution_id: Option<String>,
 }
 
 impl WorkstreamQuery {
@@ -57,6 +59,7 @@ impl WorkstreamQuery {
             &self.session_id,
             &self.request_id,
             &self.claim_id,
+            &self.execution_id,
         ]
         .into_iter()
         .flatten()
@@ -84,6 +87,7 @@ impl WorkstreamQuery {
             || self.max_context_bytes.is_some() && self.op != "work.prepare"
             || self.request_id.is_some() != (self.op == "command.inspect")
             || self.claim_id.is_some() != (self.op == "claim.inspect")
+            || self.execution_id.is_some() != (self.op == "execution.inspect")
             || matches!(self.op.as_str(), "capabilities" | "workstreams.list")
                 && (self.work_id.is_some()
                     || self.session_id.is_some()
@@ -93,7 +97,11 @@ impl WorkstreamQuery {
             || self.op == "session.inspect" && self.session_id.is_none()
             || matches!(
                 self.op.as_str(),
-                "work.prepare" | "work.recovery" | "command.inspect" | "claim.inspect"
+                "work.prepare"
+                    | "work.recovery"
+                    | "command.inspect"
+                    | "claim.inspect"
+                    | "execution.inspect"
             ) && self.work_id.is_none()
                 && self.session_id.is_none()
         {
@@ -255,6 +263,7 @@ pub(crate) async fn read(
         "commands":crate::workstream_command::COMMANDS,"scope_id":"main","authentication":"bearer_per_request","authorization":"transactional_workstream_grants",
         "command_preconditions":"project_revision_v1","command_status_query":"command.inspect",
         "claim_semantics":"coordination_only","lease_ttl_seconds":{"min":1,"max":3600},
+        "execution_intents":true,"execution_dispatch":false,"execution_start":false,"execution_reports":false,
         "dependency_exports":false,"execution_admission":false,"artifact_content":false}),
         );
     }
@@ -324,6 +333,22 @@ pub(crate) async fn read(
     let c = cursor(q, &binding)?;
     let limit = i64::from(q.limit.unwrap_or(50));
     let data = match q.op.as_str() {
+        "execution.inspect" => {
+            let work = resolved.work_item_id.as_deref().ok_or(PgError::Forbidden)?;
+            let (_, ownership) = work_binding(tx, tenant, project, auth, work).await?;
+            crate::workstream_command::executions::inspect(
+                tx,
+                tenant,
+                project,
+                auth,
+                work,
+                &stream,
+                ownership,
+                q.execution_id.as_deref().ok_or(PgError::Forbidden)?,
+                q.session_id.as_deref(),
+            )
+            .await?
+        }
         "claim.inspect" => {
             let work = resolved.work_item_id.as_deref().ok_or(PgError::Forbidden)?;
             let (_, ownership) = work_binding(tx, tenant, project, auth, work).await?;

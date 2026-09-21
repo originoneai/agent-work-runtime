@@ -1,6 +1,7 @@
 //! Authenticated session journaling and coordination leases, not execution admission.
 //! Project serialization is retained until task-level read sets are implemented.
 pub(crate) mod claims;
+pub(crate) mod executions;
 
 use crate::workstream_auth::{ReaderAuthority, authenticate_writer};
 use crate::workstream_read::{WorkstreamQuery, read, work_binding};
@@ -18,6 +19,8 @@ pub(crate) const COMMANDS: &[&str] = &[
     "claim.acquire",
     "claim.renew",
     "claim.release",
+    "execution.prepare",
+    "execution.cancel",
 ];
 const RECEIPT_PROTOCOL: &str = "awr-team-workstream-command-v1";
 
@@ -62,6 +65,7 @@ enum Action {
     Checkpoint(Checkpoint),
     End(End),
     Claim(claims::Action),
+    Execution(executions::Action),
 }
 
 struct Applied {
@@ -106,6 +110,9 @@ impl WorkstreamCommand {
         }
         version(&self.expected_project_revision)?;
         match self.op.as_str() {
+            "execution.prepare" | "execution.cancel" => Ok(Action::Execution(
+                executions::Action::parse(&self.op, self.args.clone())?,
+            )),
             "claim.acquire" | "claim.renew" | "claim.release" => Ok(Action::Claim(
                 claims::Action::parse(&self.op, self.args.clone())?,
             )),
@@ -229,6 +236,7 @@ impl WorkstreamCommandStore {
         }
         if matches!(action, Action::Start(_))
             || matches!(&action, Action::Claim(a) if a.requires_active_stream())
+            || matches!(&action, Action::Execution(a) if a.requires_active_stream())
         {
             auth.access
                 .authorize(&auth.catalog, stream, WorkstreamAction::Write)?;
@@ -248,6 +256,12 @@ impl WorkstreamCommandStore {
             return Err(PgError::PreconditionsChanged);
         }
         let applied = match action {
+            Action::Execution(a) => {
+                executions::apply(
+                    &tx, tenant, project, &auth, &command, ownership, &contract, a,
+                )
+                .await?
+            }
             Action::Claim(a) => {
                 claims::apply(&tx, tenant, project, &auth, &command, ownership, a).await?
             }
@@ -259,6 +273,9 @@ impl WorkstreamCommandStore {
         let mut data = applied.data;
         if command.op.starts_with("claim.") {
             data["lease_state_basis"] = json!("at_commit");
+        }
+        if command.op.starts_with("execution.") {
+            data["execution_state_basis"] = json!("at_commit");
         }
         let next = auth
             .revision
@@ -306,7 +323,7 @@ async fn apply(
     action: Action,
 ) -> PgResult<Value> {
     match action {
-        Action::Claim(_) => Err(invalid()), // Claims are dispatched in the same outer transaction.
+        Action::Claim(_) | Action::Execution(_) => Err(invalid()), // Same outer transaction.
         Action::Start(a) => {
             let active: bool = tx.query_one("SELECT EXISTS(SELECT 1 FROM awr_team.sessions
                 WHERE tenant_id=$1 AND project_id=$2 AND actor_id=$3 AND client_id=$4 AND conversation_id=$5 AND work_id=$6 AND state='active')",
