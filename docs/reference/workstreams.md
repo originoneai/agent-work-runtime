@@ -5,6 +5,11 @@ release announcement. A capability is available only when the running service
 advertises it and enforces it at the relevant operation boundary. A source field
 or a database column alone does not establish support.
 
+The current domain module validates identity, ownership, scope selection and
+explicit grants. Transport authorization, persistence and execution enforcement
+are separate integration work; these domain rules do not enable isolated
+workstreams in an existing CLI, MCP service or Team coordinator.
+
 ## Identity and authority
 
 A project has one authoritative work graph and one or more workstreams. Each
@@ -94,6 +99,9 @@ explicit allocation rule; allocations sum to the original charge. Parallel
 wall time is distinct from summed execution time.
 
 Legacy projects retain one compatible default scope and existing identities.
+Existing project, work and session identifiers remain opaque strings, including
+Team identifiers that are not ULIDs. Tenant adapters must obtain catalog and
+permission records within the authenticated tenant before applying domain rules.
 Legacy project-revision checks remain available. A client that cannot represent
 scope must not silently write across newly isolated streams. Schema upgrades,
 scope enablement and source migration require explicit, recoverable transitions.
