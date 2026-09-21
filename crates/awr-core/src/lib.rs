@@ -1,4 +1,6 @@
 //! Domain contracts shared by storage, source adapters, runtime and interfaces.
+mod workstream_readset;
+pub use workstream_readset::*;
 mod branch;
 mod branch_close;
 mod completion;
@@ -14,7 +16,6 @@ mod runtime;
 mod secrets;
 mod work_action;
 mod workstream;
-mod workstream_readset;
 
 pub use branch::*;
 pub use branch_close::*;
@@ -31,7 +32,6 @@ pub use runtime::*;
 pub use secrets::*;
 pub use work_action::*;
 pub use workstream::*;
-pub use workstream_readset::*;
 pub const VERSION: &str = env!("CARGO_PKG_VERSION");
 
 pub fn now_millis() -> Result<i64> {
