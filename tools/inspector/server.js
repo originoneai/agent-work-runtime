@@ -72,6 +72,67 @@ function parseArgs(argv) {
 const ARGS = parseArgs(process.argv.slice(2));
 const PUBLIC_DIR = path.join(__dirname, 'public');
 
+// ───────────────────────── awr 路径解析 ─────────────────────────
+
+/**
+ * 解析 .cmd 文件，提取 Node.js 入口路径。
+ * npm 的 .cmd 包装器格式：`"%_prog%" "<entry_point>" %*`
+ * 测试 stub 的 .cmd 格式：`"node" "<entry_point>" %*`
+ * 返回展开 %dp0% 后的绝对路径，找不到返回 null。
+ */
+function parseCmdEntryPoint(cmdPath) {
+  try {
+    const content = fs.readFileSync(cmdPath, 'utf8');
+    const match = content.match(/"[^"]+"\s+"([^"]+)"\s+%\*/);
+    if (match) {
+      let entryPoint = match[1].replace(/%dp0%/g, path.dirname(cmdPath));
+      if (fs.existsSync(entryPoint)) return entryPoint;
+    }
+  } catch {}
+  return null;
+}
+
+/**
+ * 通过 PATH × PATHEXT 解析 awr 的完整路径，全程 shell: false。
+ *
+ * 返回 { exe, needsNode }：
+ *   - exe: 可执行文件路径（.exe / .cmd / 扩展名空的 POSIX 脚本）
+ *   - needsNode: true 时 exe 是 .cmd/.bat 包装器，spawn 时需用 process.execPath 作为 command，
+ *     exe 作为第一个参数；false 时 exe 可直接 spawn。
+ *   两者均找不到时 exe=null，调用方进 demo mode。
+ */
+function resolveAwr() {
+  const sep = process.platform === 'win32' ? ';' : ':';
+  const exts = process.platform === 'win32'
+    ? (process.env.PATHEXT || '.COM;.EXE;.BAT;.CMD').split(';').map(e => e.toUpperCase())
+    : [''];
+  const dirs = (process.env.PATH || '').split(sep);
+
+  for (const dir of dirs) {
+    for (const ext of exts) {
+      const candidate = path.join(dir, 'awr' + ext);
+      try {
+        const st = fs.statSync(candidate, { throwIfNoEntry: false });
+        if (st && st.isFile()) {
+          const extUpper = path.extname(candidate).toUpperCase();
+          // .EXE 或无扩展名（POSIX 脚本）可直接 spawn
+          if (extUpper === '.EXE' || extUpper === '') {
+            return { exe: candidate, needsNode: false };
+          }
+          // .CMD/.BAT 是 npm 包装器，需要解析出 Node 入口
+          if (extUpper === '.CMD' || extUpper === '.BAT') {
+            const entryPoint = parseCmdEntryPoint(candidate);
+            if (entryPoint) return { exe: candidate, needsNode: true, entryPoint };
+          }
+        }
+      } catch {}
+    }
+  }
+  return { exe: null, needsNode: false };
+}
+
+const AWR_RESOLVED = resolveAwr();
+
 // ───────────────────────── awr 探测 ─────────────────────────
 
 const runtime = {
@@ -89,7 +150,14 @@ const runtime = {
 function detectAwr() {
   return new Promise((resolve) => {
     if (ARGS.demo) return resolve();
-    execFile('awr', ['--version'], { timeout: 8000 }, (err, stdout) => {
+    if (!AWR_RESOLVED.exe) {
+      runtime.mode = 'demo';
+      runtime.reason = '没有找到 awr 命令。装好之后重启本进程即可看到真实数据。';
+      return resolve();
+    }
+    const args = AWR_RESOLVED.needsNode ? [AWR_RESOLVED.entryPoint, '--version'] : ['--version'];
+    const cmd = AWR_RESOLVED.needsNode ? process.execPath : AWR_RESOLVED.exe;
+    execFile(cmd, args, { timeout: 8000 }, (err, stdout) => {
       if (err) {
         runtime.mode = 'demo';
         runtime.reason = '没有找到 awr 命令。装好之后重启本进程即可看到真实数据。';
@@ -225,7 +293,9 @@ function execAwr(argv, opts) {
   const timeoutMs = write ? LIMITS.writeTimeoutMs : LIMITS.readTimeoutMs;
 
   return new Promise((resolve) => {
-    const child = spawn('awr', argv, { shell: false });
+    const cmd = AWR_RESOLVED.needsNode ? process.execPath : AWR_RESOLVED.exe;
+    const args = AWR_RESOLVED.needsNode ? [AWR_RESOLVED.entryPoint, ...argv] : argv;
+    const child = spawn(cmd, args, { stdio: 'pipe', windowsHide: true });
 
     // 槽位跟着子进程走，不跟着 HTTP 响应走。超时时我们会先回响应，
     // 但子进程还活着——那个槽必须留到它真的退出为止，否则上限形同虚设。

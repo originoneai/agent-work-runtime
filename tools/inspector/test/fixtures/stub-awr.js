@@ -68,10 +68,10 @@ if (mode === 'hugewrite') {
   return;
 }
 
-if (mode === 'incomplete') {
+if (mode === 'incomplete' && joined.includes('context compile')) {
   // 复现 `context compile` 的真实行为：上下文不完整时退出 1，
   // 但 stdout 上照样给出完整报告。
-  process.stdout.write(
+  fs.writeSync(1,
     JSON.stringify({
       ok: false,
       project_revision: 9,

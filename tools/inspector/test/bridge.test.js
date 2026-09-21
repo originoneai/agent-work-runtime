@@ -23,11 +23,14 @@ const GUARD = { 'x-awr-inspector': '1' };
 /** 造一个 bin 目录，里面的 `awr` 指向 stub。 */
 function makeStubBin() {
   const dir = fs.mkdtempSync(path.join(os.tmpdir(), 'awr-stub-'));
+  const stub = path.join(__dirname, 'fixtures', 'stub-awr.js');
+  if (process.platform === 'win32') {
+    const bin = path.join(dir, 'awr.cmd');
+    fs.writeFileSync(bin, `"${process.execPath}" "${stub}" %*\r\n`);
+    return dir;
+  }
   const bin = path.join(dir, 'awr');
-  fs.writeFileSync(
-    bin,
-    `#!/bin/sh\nexec "${process.execPath}" "${path.join(__dirname, 'fixtures', 'stub-awr.js')}" "$@"\n`
-  );
+  fs.writeFileSync(bin, `#!/bin/sh\nexec "${process.execPath}" "${stub}" "$@"\n`);
   fs.chmodSync(bin, 0o755);
   return dir;
 }
@@ -38,13 +41,16 @@ let nextPort = 7500;
 /** 起一个桥接进程，等它监听上，返回 { port, stop }。 */
 async function startBridge(opts = {}) {
   const port = nextPort++;
-  const args = ['server.js', '--no-open', '--port', String(port), '--project', ROOT];
+  const args = ['server.js', '--no-open', '--port', String(port)];
+  const project = opts.project || ROOT;
+  args.push('--project', project);
   if (opts.allowReindex) args.push('--allow-reindex');
   if (opts.demo) args.push('--demo');
 
+  const sep = process.platform === 'win32' ? ';' : ':';
   const child = spawn(process.execPath, args, {
     cwd: ROOT,
-    env: Object.assign({}, process.env, opts.env, { PATH: `${STUB_BIN}:${process.env.PATH}` }),
+    env: Object.assign({}, process.env, opts.env, { PATH: `${STUB_BIN}${sep}${process.env.PATH}` }),
     stdio: ['ignore', 'pipe', 'pipe'],
   });
 
@@ -494,6 +500,52 @@ test('超过 AWR 上限的 budget 直接拒绝，不悄悄换成默认值', asyn
   assert.equal(r.error.code, 'BadRequest');
   assert.ok(/100000/.test(r.error.message), `错误信息要给出范围: ${r.error.message}`);
   assert.ok(!r.command, '不该起子进程');
+});
+
+// ───────────── 9. shell:false 路径安全 ─────────────
+
+test('--project 含空格的路径正常工作', async () => {
+  const tmpDir = fs.mkdtempSync(path.join(os.tmpdir(), 'proj '));
+  try {
+    const b = await startBridge({ project: tmpDir });
+    try {
+      const r = await fetch(`${b.base}/api/status`, { headers: GUARD });
+      const body = await r.json();
+      assert.equal(body.ok, true, `含空格的项目路径应正常工作, got: ${JSON.stringify(body)}`);
+    } finally {
+      await b.stop();
+    }
+  } finally {
+    fs.rmSync(tmpDir, { recursive: true, force: true });
+  }
+});
+
+test('search preserves shell metacharacters as one literal argument', async () => {
+  const dir = fs.mkdtempSync(path.join(os.tmpdir(), 'awr-argv-'));
+  const argvLog = path.join(dir, 'argv.jsonl');
+  const text = 'literal & | ^ > < %PATH% "quoted words"';
+  let b;
+  try {
+    b = await startBridge({ env: { STUB_ARGV_OUT: argvLog } });
+    const res = await fetch(`${b.base}/api/search?text=${encodeURIComponent(text)}`, {
+      headers: GUARD,
+    });
+    const body = await res.json();
+    assert.equal(res.status, 200);
+    assert.equal(body.ok, true, JSON.stringify(body));
+    assert.equal(body.data.query.text, text);
+
+    const calls = fs.readFileSync(argvLog, 'utf8').trim().split('\n').map(JSON.parse);
+    const searches = calls.filter((args) => args.includes('search'));
+    assert.equal(searches.length, 1, 'Exactly one search command must run');
+    const args = searches[0];
+    const separator = args.indexOf('--');
+    assert.ok(separator >= 0, 'Search text must follow the option terminator');
+    assert.deepEqual(args.slice(separator + 1), [text]);
+  } finally {
+    if (b) await b.stop();
+    fs.rmSync(dir, { recursive: true, force: true });
+  }
 });
 
 test('分页参数传给 status，非法页大小和偏移不执行命令', async () => {
