@@ -4,6 +4,10 @@ pub type TeamResult<T> = Result<T, TeamError>;
 
 #[derive(Debug, Error, PartialEq, Eq)]
 pub enum TeamError {
+    #[error("operation or transport unsupported")]
+    Unsupported,
+    #[error("invalid input: {0}")]
+    InvalidInput(String),
     #[error("invalid identifier: {0}")]
     InvalidId(String),
     #[error("invalid version string: {0}")]
@@ -31,6 +35,8 @@ pub enum TeamError {
 impl TeamError {
     pub fn code(&self) -> &'static str {
         match self {
+            Self::Unsupported => "Unsupported",
+            Self::InvalidInput(_) => "InvalidInput",
             Self::ProtocolUnsupported => "PROTOCOL_UNSUPPORTED",
             Self::ProjectRequired => "PROJECT_NOT_AVAILABLE",
             Self::OfflineWriteForbidden => "SERVICE_UNAVAILABLE",

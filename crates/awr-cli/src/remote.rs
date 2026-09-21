@@ -44,10 +44,8 @@ pub fn run(project: &Path, command: &RemoteCommand, json: bool) -> Result<()> {
             if let Some(parent) = path.parent() {
                 fs::create_dir_all(parent)?;
             }
-            let toml = format!(
-                "endpoint = {:?}\nproject_key = {:?}\ncredential_env = {:?}\nprotocol_version = 1\n",
-                profile.endpoint, profile.project_key, profile.credential_env
-            );
+            let toml = toml::to_string(&profile)
+                .map_err(|_| Error::InvalidInput("remote serialization failed".into()))?;
             fs::write(&path, toml)?;
             if json {
                 println!("{}", profile.redacted());
@@ -76,7 +74,7 @@ pub fn load_profile(project: &Path, name: &str) -> Result<RemoteProfile> {
         fs::read_to_string(&path).map_err(|_| Error::NotFound(format!("team remote {name}")))?;
     let table = raw
         .parse::<toml::Table>()
-        .map_err(|e| Error::InvalidInput(e.to_string()))?;
+        .map_err(|_| Error::InvalidInput("invalid remote TOML".into()))?;
     let required = |key: &str| {
         table
             .get(key)
@@ -92,7 +90,8 @@ pub fn load_profile(project: &Path, name: &str) -> Result<RemoteProfile> {
         protocol_version: table
             .get("protocol_version")
             .and_then(|v| v.as_integer())
-            .unwrap_or(1) as u32,
+            .and_then(|v| u32::try_from(v).ok())
+            .ok_or_else(|| team_err(TeamError::ProtocolUnsupported))?,
     };
     profile.validate().map_err(team_err)?;
     Ok(profile)
@@ -100,6 +99,10 @@ pub fn load_profile(project: &Path, name: &str) -> Result<RemoteProfile> {
 
 pub fn team_err(error: TeamError) -> Error {
     match error {
+        TeamError::Unsupported => Error::Unsupported(
+            "Team command transport/dispatch is not implemented; nothing was submitted".into(),
+        ),
+        TeamError::InvalidInput(message) => Error::InvalidInput(message),
         TeamError::ProtocolUnsupported => Error::ProtocolUnsupported {
             requested: 0,
             supported: vec![1],

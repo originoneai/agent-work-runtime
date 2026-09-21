@@ -13,7 +13,7 @@ pub enum TeamCommand {
         #[arg(long)]
         remote: Option<String>,
     },
-    /// Submit a Team envelope. Refuses to succeed locally when the remote is missing or offline.
+    /// Check a Team envelope, then return Unsupported: remote submission is not implemented.
     Command {
         #[arg(long)]
         remote: Option<String>,

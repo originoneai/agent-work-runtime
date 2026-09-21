@@ -13,7 +13,7 @@ mod version;
 
 pub use access::{
     AuthContext, Envelope, RemoteProfile, SURFACES, authorize, execute, parse_envelope,
-    same_error_on_all_surfaces,
+    same_error_on_all_surfaces, validate_only,
 };
 pub use canonical::{
     HASH_CODEC, canonical_json, contract_hash, reject_unknown_required_fields, request_hash,
