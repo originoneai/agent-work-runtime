@@ -2,7 +2,7 @@ use crate::error::{PgError, PgResult};
 use crate::tx::{bind_scope, new_id};
 use serde::{Deserialize, Serialize};
 use serde_json::{Value, json};
-use std::collections::{HashMap, HashSet, VecDeque};
+use std::collections::HashSet;
 
 #[derive(Clone, Debug, PartialEq, Eq, Serialize, Deserialize)]
 pub struct DependencyEdge {
@@ -77,8 +77,8 @@ fn segment_prefix_overlap(a: &str, b: &str) -> bool {
 
 pub fn validate_required_graph(nodes: &[String], edges: &[DependencyEdge]) -> PgResult<()> {
     let known: HashSet<&str> = nodes.iter().map(|n| n.as_str()).collect();
-    let mut incoming: HashMap<&str, usize> = nodes.iter().map(|n| (n.as_str(), 0usize)).collect();
-    let mut outgoing: HashMap<&str, Vec<&str>> = HashMap::new();
+    // Preserve legacy input-order precedence for missing endpoints/self loops,
+    // duplicate node identities and ignored non-required edges.
     for edge in edges.iter().filter(|e| e.required) {
         if !known.contains(edge.from.as_str()) || !known.contains(edge.to.as_str()) {
             return Err(PgError::MissingDependency);
@@ -86,35 +86,18 @@ pub fn validate_required_graph(nodes: &[String], edges: &[DependencyEdge]) -> Pg
         if edge.from == edge.to {
             return Err(PgError::DependencyCycle);
         }
-        *incoming.entry(edge.to.as_str()).or_default() += 1;
-        outgoing
-            .entry(edge.from.as_str())
-            .or_default()
-            .push(edge.to.as_str());
     }
-    let mut queue: VecDeque<&str> = incoming
-        .iter()
-        .filter(|(_, c)| **c == 0)
-        .map(|(n, _)| *n)
-        .collect();
-    let mut seen = 0usize;
-    while let Some(node) = queue.pop_front() {
-        seen += 1;
-        if let Some(next) = outgoing.get(node) {
-            for child in next {
-                let count = incoming.get_mut(child).expect("node");
-                *count -= 1;
-                if *count == 0 {
-                    queue.push_back(child);
-                }
-            }
-        }
-    }
-    let required_nodes = incoming.len();
-    if seen != required_nodes {
-        return Err(PgError::DependencyCycle);
-    }
-    Ok(())
+    awr_core::validate_dependency_dag(
+        nodes.iter().map(String::as_str),
+        edges
+            .iter()
+            .filter(|e| e.required)
+            .map(|e| (e.from.as_str(), e.to.as_str())),
+    )
+    .map_err(|error| match error {
+        awr_core::DependencyDagError::MissingEndpoint => PgError::MissingDependency,
+        awr_core::DependencyDagError::Cycle(_) => PgError::DependencyCycle,
+    })
 }
 
 /// Directional containment for scope authorization: `path` must be the
@@ -598,6 +581,38 @@ impl GraphStore {
 #[cfg(test)]
 mod tests {
     use super::*;
+
+    #[test]
+    fn legacy_graph_semantics_survive_kernel_extraction() {
+        let nodes = vec!["a".into(), "a".into(), "b".into()];
+        let edge = |from: &str, to: &str, required| DependencyEdge {
+            from: from.into(),
+            to: to.into(),
+            relation: "arbitrary".into(),
+            required,
+        };
+        assert!(
+            validate_required_graph(
+                &nodes,
+                &[
+                    edge("a", "b", true),
+                    edge("a", "b", true),
+                    edge("b", "a", false),
+                    edge("missing", "missing", false)
+                ]
+            )
+            .is_ok()
+        );
+        assert!(matches!(
+            validate_required_graph(&nodes, &[edge("a", "a", true), edge("a", "missing", true)]),
+            Err(PgError::DependencyCycle)
+        ));
+        assert!(matches!(
+            validate_required_graph(&nodes, &[edge("a", "missing", true), edge("a", "a", true)]),
+            Err(PgError::MissingDependency)
+        ));
+        assert!(validate_required_graph(&[], &[]).is_ok());
+    }
 
     #[test]
     fn prefix_overlaps_segment_wise_not_string_prefix() {

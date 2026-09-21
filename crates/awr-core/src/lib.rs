@@ -1,4 +1,6 @@
 //! Domain contracts shared by storage, source adapters, runtime and interfaces.
+mod workstream_graph;
+pub use workstream_graph::*;
 mod workstream_readset;
 pub use workstream_readset::*;
 mod branch;
