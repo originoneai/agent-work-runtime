@@ -11,6 +11,7 @@ mod project;
 mod requests;
 mod schema;
 mod waiting;
+mod workstreams;
 
 use hub::{Hub, Principal, ProjectService};
 use rmcp::{ErrorData, RoleServer, ServerHandler, model::*, service::RequestContext};
@@ -53,6 +54,7 @@ impl AwrServer {
                 {
                     catalog.insert(0, tool);
                 }
+                catalog.push(crate::workstreams::tool());
             }
             catalog
         } else if shared {
@@ -74,7 +76,7 @@ impl ServerHandler for AwrServer {
     fn get_info(&self) -> ServerInfo {
         ServerInfo::new(ServerCapabilities::builder().enable_tools().build())
             .with_server_info(Implementation::new("awr-mcp", env!("CARGO_PKG_VERSION")))
-            .with_instructions("AWR is source-first. On shared HTTP, discover project keys with awr_projects_list and pass project on every project call. Start with awr_project_status and organization.actions; empty ledgers/intake drafts do not grant readiness. Use awr_work_prepare with response_view=action; consume required context and follow the condition, basis, next action and recheck trigger. Reads persist nothing; on SourceStale explicitly reindex and inspect again. Bind a stable conversation/session and claim before source transitions; HTTP connections do not select or end work sessions. Mutations need reviewed expected_revision; completion also needs bound evidence. Command/report metadata is never executed. Inspect interrupted-write receipts before retrying. Report compaction from host telemetry, keep it enabled, and obtain user approval before changing native windows.")
+            .with_instructions("AWR is source-first. On shared HTTP, discover project keys with awr_projects_list and pass project on every project call. For isolated workstreams, use awr_workstream capabilities/list and bind work/session; unsupported operations are rejected. For legacy projects, start with awr_project_status and organization.actions; empty ledgers/intake drafts do not grant readiness. Use awr_work_prepare with response_view=action; consume required context and follow the condition, basis, next action and recheck trigger. Reads persist nothing; on SourceStale explicitly reindex and inspect again. Bind a stable conversation/session and claim before source transitions; HTTP connections do not select or end work sessions. Mutations need reviewed expected_revision; completion also needs bound evidence. Command/report metadata is never executed. Inspect interrupted-write receipts before retrying. Report compaction from host telemetry, keep it enabled, and obtain user approval before changing native windows.")
     }
     async fn list_tools(
         &self,
@@ -220,7 +222,7 @@ impl ServerHandler for AwrServer {
         })?;
         let result = tokio::task::spawn_blocking(move || {
             let _permit = permit;
-            project.call(&name, args, principal.as_ref().map(|p| p.id.as_str()))
+            project.call(&name, args, principal.as_ref())
         })
         .await
         .map_err(|e| ErrorData::internal_error(format!("MCP domain worker failed: {e}"), None))?;

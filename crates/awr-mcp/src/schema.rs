@@ -623,5 +623,6 @@ pub(crate) fn shared_tools() -> Vec<Tool> {
         }
     }
     catalog.insert(0, tool("awr_projects_list", "List this authenticated client's registered project keys and access. Does not read project source files.", object(json!({}), &[]), true, false));
+    catalog.push(crate::workstreams::tool());
     catalog
 }

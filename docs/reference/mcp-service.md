@@ -4,6 +4,11 @@ AWR 0.3.3 supports a single Streamable HTTP endpoint for multiple projects
 and independent MCP clients. Both npm and PyPI packages include this capability.
 The existing `awr-mcp --project /absolute/project` stdio command remains available.
 
+The development source adds explicit [workstream reads](#workstream-reads-development-source)
+with registry version 2. The legacy lifecycle and write tools below remain for
+projects that have not enabled workstreams; enabling workstreams rejects those
+shared tools until an authorized implementation is available.
+
 Initialize each project on the server using `awr init`. Register its canonical
 absolute root and the `project_id` returned by `awr --json status`. AWR verifies
 that identity at startup and when handling requests. Source files and each
@@ -193,3 +198,81 @@ unknown. Absence of a response receipt does not prove absence of a side effect.
 
 These guarantees cover AWR's recorded domain actions. They do not make unrelated
 host tools, third-party API calls or filesystem changes exactly-once operations.
+
+## Workstream reads (development source)
+
+For projects explicitly using `yaml-workstream-ledger-v1`, use registry version
+2 and grant each client specific immutable workstream IDs and authority versions.
+These are operator-owned permissions. Project-level `read`/`write` grants alone
+do not authorize any isolated workstream. This extension currently grants reads;
+it cannot authorize mutations, content-file reads or Team PostgreSQL operations.
+
+```toml
+version = 2
+
+[[projects]]
+key = "billing"
+root = "/srv/projects/billing"
+project_id = "<actual project ID>"
+
+[[clients]]
+id = "api-reviewer"
+token_env = "AWR_API_REVIEWER_TOKEN"
+read = ["billing"]
+
+[[clients.workstreams]]
+project = "billing"
+workstream_id = "<actual immutable workstream ID>"
+authority_version = 1 # The actual version reviewed by the operator.
+```
+
+Restart the service after credential or grant changes. Each request authenticates
+the bearer credential and checks the pinned authority version against a fresh
+source snapshot. A changed authority requires an operator review and updated
+grant; a request cannot supply its own grant, switch subject, or refresh permission
+versions automatically. Unrelated streams' authority changes do not invalidate a
+request bound to an unchanged stream.
+
+Use the shared-only `awr_workstream` tool in either flat or hierarchical exposure:
+
+```json
+{"project":"billing","protocol_version":1,"action":"capabilities"}
+```
+
+The response reports supported actions and action arguments. Use `action: "list"`
+to discover only the client's authorized streams. Then bind a work/session or
+select an explicit `workstream`; multiple authorized streams without a selector
+are ambiguous and rejected. Work, session and explicit stream selectors must agree.
+
+```json
+{
+  "project": "billing",
+  "protocol_version": 1,
+  "action": "context",
+  "work": "INVOICE-001",
+  "args": {"budget": 5000}
+}
+```
+
+Supported reads include bounded context, catalog, search, object metadata, events
+and session recovery inspection. Counts and pagination are computed within the
+selected stream. Cursors are bound to the project, reader, stream and authority;
+do not share them across clients. A hidden object and an absent object both return
+access denied. Incomplete context remains a tool error with its required gaps.
+Artifact objects contain metadata only; source catalogs and content-file reads
+are unsupported.
+
+Enabled projects reject legacy shared tool calls, including their hierarchical
+aliases, source reindex and all writes, before dispatch. A scoped principal also
+cannot use its project grant to fall back to a broader tool on that project.
+Unknown protocol versions and actions return `Unsupported`. `capabilities` reports
+an empty write set; this is not a claim of complete workstream lifecycle support.
+Other legacy projects keep their existing tools and request contracts.
+
+Enablement and source reindex are local operator actions at this stage. Quiesce
+shared callers while changing the source authority, reindex explicitly, and update
+the service policy before resuming readers. Invalid or stale source boundaries
+fail closed without private source diagnostics. Server read grants protect the
+MCP boundary; local stdio/CLI remain trusted owner integrations, and filesystem
+confidentiality requires a separate host/OS sandbox. Team's existing `scope=main`
+and PostgreSQL authorization are unchanged by this personal-service extension.

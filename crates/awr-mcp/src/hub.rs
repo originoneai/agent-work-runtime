@@ -1,6 +1,6 @@
 //! Operator-owned project registry and per-request access for the shared service.
 use crate::{AwrServer, Error, Result, operations, project::database};
-use awr_core::Id;
+use awr_core::{Id, WorkstreamAccess, WorkstreamGrant};
 use awr_store::Store;
 use axum::{
     Router,
@@ -48,6 +48,17 @@ struct ClientConfig {
     read: Vec<String>,
     #[serde(default)]
     write: Vec<String>,
+    #[serde(default)]
+    workstreams: Vec<WorkstreamConfig>,
+}
+
+/// Operator policy, never a tool argument. Version 2 initially exposes reads.
+#[derive(Deserialize)]
+#[serde(deny_unknown_fields)]
+struct WorkstreamConfig {
+    project: String,
+    workstream_id: Id,
+    authority_version: u64,
 }
 
 pub(crate) struct ProjectService {
@@ -92,21 +103,44 @@ impl ProjectService {
         &self,
         name: &str,
         args: rmcp::model::JsonObject,
-        principal: Option<&str>,
+        principal: Option<&Principal>,
     ) -> Result<rmcp::model::CallToolResult> {
         if operations::is_read_only(name) {
             let _guard = self.operation.read().map_err(|_| {
                 Error::Storage("MCP project operation lock is poisoned; restart the server".into())
             })?;
             self.validate()?;
-            operations::call_as(&self.root, name, args, principal)
+            self.call_locked(name, args, principal)
         } else {
             let _guard = self.operation.write().map_err(|_| {
                 Error::Storage("MCP project operation lock is poisoned; restart the server".into())
             })?;
             self.validate()?;
-            operations::call_as(&self.root, name, args, principal)
+            self.call_locked(name, args, principal)
         }
+    }
+
+    fn call_locked(
+        &self,
+        name: &str,
+        args: rmcp::model::JsonObject,
+        principal: Option<&Principal>,
+    ) -> Result<rmcp::model::CallToolResult> {
+        if let Some(principal) = principal {
+            let id = self.id.expect("shared projects have a verified identity");
+            let access = principal.workstreams.get(&id);
+            if name == "awr_workstream" {
+                return crate::workstreams::call(&self.root, id, access, args);
+            }
+            // A project-wide grant must never become an implicit grant to every
+            // workstream. This also covers flat aliases in hierarchical mode.
+            if access.is_some() || crate::workstreams::enabled(&self.root, id)? {
+                return Err(Error::Unsupported(
+                    "shared workstream operations require awr_workstream; inspect its capabilities; this legacy operation was not executed".into(),
+                ));
+            }
+        }
+        operations::call_as(&self.root, name, args, principal.map(|p| p.id.as_str()))
     }
 }
 
@@ -115,6 +149,7 @@ pub(crate) struct Principal {
     pub id: String,
     read: BTreeSet<String>,
     write: BTreeSet<String>,
+    workstreams: BTreeMap<Id, WorkstreamAccess>,
 }
 struct Credential {
     hash: [u8; 32],
@@ -141,14 +176,14 @@ impl Hub {
         }
         let config: Config = toml::from_str(&std::fs::read_to_string(path)?)
             .map_err(|_| Error::InvalidInput("invalid MCP registry configuration".into()))?;
-        if config.version != 1
+        if !matches!(config.version, 1 | 2)
             || config.projects.is_empty()
             || config.clients.is_empty()
             || config.projects.len() > 1000
             || config.clients.len() > 1000
         {
             return Err(Error::InvalidInput(
-                "registry version must be 1 with 1..1000 projects and clients".into(),
+                "registry version must be 1 or 2 with 1..1000 projects and clients".into(),
             ));
         }
         let mut projects = BTreeMap::new();
@@ -205,12 +240,45 @@ impl Hub {
                     "client grants must name registered project keys".into(),
                 ));
             }
+            if config.version == 1 && !client.workstreams.is_empty() {
+                return Err(Error::InvalidInput(
+                    "workstream grants require registry version 2".into(),
+                ));
+            }
+            let mut workstreams = BTreeMap::<Id, WorkstreamAccess>::new();
+            for grant in client.workstreams {
+                if !read.contains(&grant.project) {
+                    return Err(Error::InvalidInput(
+                        "workstream grants require access to the registered project".into(),
+                    ));
+                }
+                let id = projects[&grant.project].id.expect("registered project id");
+                workstreams
+                    .entry(id)
+                    .or_insert_with(|| WorkstreamAccess {
+                        project_id: id.to_string(),
+                        subject: client.id.clone(),
+                        grants: Vec::new(),
+                    })
+                    .grants
+                    .push(WorkstreamGrant {
+                        workstream_id: grant.workstream_id,
+                        authority_version: grant.authority_version,
+                        read: true,
+                        write: false,
+                        manage: false,
+                    });
+            }
+            for access in workstreams.values() {
+                access.validate()?;
+            }
             credentials.push(Credential {
                 hash,
                 principal: Principal {
                     id: client.id,
                     read,
                     write,
+                    workstreams,
                 },
             });
         }

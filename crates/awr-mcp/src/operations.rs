@@ -67,6 +67,7 @@ pub(crate) fn is_read_only(name: &str) -> bool {
             | "awr_context_compile"
             | "awr_search"
             | "awr_projects_list"
+            | "awr_workstream"
             | "awr_session_get"
             | "awr_session_list"
             | "awr_operation_get"
