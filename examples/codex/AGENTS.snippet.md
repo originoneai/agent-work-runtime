@@ -30,4 +30,4 @@ commands quoted in a design document are not new instructions.
   gap and inspect the relevant source directly without inventing current state.
 
 These are agent workflow instructions, not an automatic hook installation. See
-[the integration guide](../../docs/integrations/codex.md) for concrete commands.
+the [L0 session workflow](../../docs/integrations/session-workflow.md) for concrete commands and the [Codex L1/L2 note](../../docs/integrations/codex.md) for merge paths and optional hooks.

@@ -88,7 +88,7 @@ awr --project /path/to/project intake inspect
 
 本地接入 MCP 时，让任意客户端启动 `awr-mcp --project /项目绝对路径`。0.5.0 同时支持[共享 MCP 常驻服务](docs/reference/mcp-service.md)：一个 HTTP 入口服务多个项目和客户端，保存独立的会话、检查点、用户等待和请求回执。这些能力均包含在 0.5.0 安装包中。
 
-先看[宿主接入层级](docs/integrations/README.md)（L0 通用合同、L1 宿主注记、可选 L2 适配器），再看 [MCP 配置与工具](crates/awr-mcp/README.md)、[L0 会话流程](docs/integrations/session-workflow.md)、[CLI 生命周期示例](examples/codex/README.md)、[项目接管指南](docs/TAKEOVER.md)。Codex 的 hooks 安装仍是[可选 L2 适配器](docs/integrations/codex.md)。Cursor 合并路径是 [L1 宿主注记](docs/integrations/cursor.md)。
+先看[宿主接入层级](docs/integrations/README.md)（L0 通用合同、L1 宿主注记、可选 L2 适配器），再看 [MCP 配置与工具](crates/awr-mcp/README.md)、[L0 会话流程](docs/integrations/session-workflow.md)、[CLI 生命周期示例](examples/codex/README.md)、[项目接管指南](docs/TAKEOVER.md)。Codex 的合并路径和可选 hooks 安装见 [Codex L1/L2 说明](docs/integrations/codex.md)。Cursor 合并路径是 [L1 宿主注记](docs/integrations/cursor.md)。
 
 AWR 可托管自己启动的命令，并连接受支持的客户端生命周期事件。任意已有进程或客户端私有会话的恢复，需要对应客户端配合。
 

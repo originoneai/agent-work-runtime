@@ -2,14 +2,19 @@
 
 `lifecycle.py` is the **L0** CLI walkthrough: it invokes AWR, not a coding
 agent. The directory name is historical. For host-agnostic commands see the
-[L0 session workflow](../../docs/integrations/session-workflow.md). Codex-specific
-MCP/hooks remain in the [L2 Codex adapter](../../docs/integrations/codex.md).
+[L0 session workflow](../../docs/integrations/session-workflow.md). Codex merge
+paths and the optional L2 lifecycle adapter remain in the
+[Codex L1/L2 note](../../docs/integrations/codex.md).
 
 - `lifecycle.py`: executable CLI walkthrough using a fresh copy of
   [the basic fixture](../basic/) with this directory's `work-ledger.yaml`, which
   declares the phase required by bootstrap. It retains a receipt for every command.
-- `config.toml.example`: Codex project-bound stdio MCP configuration. Replace
-  absolute paths and merge the table into an existing trusted project configuration.
+- `config.toml.example`: default Codex project-bound stdio configuration for the
+  grouped AWR 0.5.0 catalog. Replace both absolute paths and merge the table into
+  an existing trusted project configuration.
+- `config.flat.toml.example`: optional flat compatibility configuration that
+  sets `AWR_MCP_TOOL_EXPOSURE_MODE=flat` and keeps an exact top-level tool
+  allowlist. Reconnect Codex after changing exposure mode.
 - `AGENTS.snippet.md`: Codex instruction snippet. Copying it does not install
   lifecycle hooks.
 
