@@ -208,6 +208,7 @@ dependencies = [
  "axum",
  "clap",
  "reqwest",
+ "rmcp",
  "serde",
  "serde_json",
  "tokio",

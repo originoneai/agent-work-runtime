@@ -1,5 +1,7 @@
-//! Operator-bound multi-project HTTP service. Every request authenticates
+//! Operator-bound multi-project HTTP/MCP service. Every request authenticates
 //! inside PostgreSQL; tenant/actor/client/grants are never taken from its JSON.
+mod mcp;
+
 use awr_team_pg::{
     PgError, WorkstreamCommand, WorkstreamCommandStore, WorkstreamQuery, WorkstreamReadStore,
 };
@@ -92,7 +94,7 @@ struct StateData {
     commands: WorkstreamCommandStore,
     projects: BTreeMap<String, ProjectBinding>,
     hosts: Vec<String>,
-    permits: tokio::sync::Semaphore,
+    permits: Arc<tokio::sync::Semaphore>,
 }
 
 pub fn router(
@@ -115,13 +117,17 @@ pub fn router(
             .map(|p| (p.key.clone(), p))
             .collect(),
         hosts,
-        permits: tokio::sync::Semaphore::new(64),
+        permits: Arc::new(tokio::sync::Semaphore::new(64)),
     });
-    Ok(Router::new()
+    let mut router = Router::new()
         .route("/v1/projects/{project}/query", post(query))
         .route("/v1/projects/{project}/command", post(command))
         .layer(DefaultBodyLimit::max(65536))
-        .with_state(state))
+        .with_state(state.clone());
+    for project in state.projects.values() {
+        router = router.merge(mcp::router(state.clone(), project.clone()));
+    }
+    Ok(router)
 }
 
 fn response(status: StatusCode, value: Value) -> Response {
@@ -168,29 +174,10 @@ async fn dispatch(
     body: Bytes,
     write: bool,
 ) -> Response {
-    let host = headers.get("host").and_then(|h| h.to_str().ok());
-    if headers.contains_key("origin")
-        || !host.is_some_and(|h| {
-            state
-                .hosts
-                .iter()
-                .any(|allowed| h.eq_ignore_ascii_case(allowed))
-        })
-    {
+    if !allowed_request(&state, &headers) {
         return denied();
     }
-    let values: Vec<_> = headers.get_all("authorization").iter().collect();
-    let token = if values.len() == 1 {
-        values[0]
-            .to_str()
-            .ok()
-            .and_then(|s| s.split_once(' '))
-            .filter(|(kind, _)| kind.eq_ignore_ascii_case("Bearer"))
-            .map(|(_, token)| token)
-    } else {
-        None
-    };
-    let Some(token) = token else {
+    let Some(token) = bearer(&headers) else {
         return denied();
     };
     let Some(project) = state.projects.get(&key) else {
@@ -236,33 +223,83 @@ async fn dispatch(
     .await;
     match result {
         Ok(Ok(value)) => response(StatusCode::OK, value),
-        Ok(Err(PgError::Forbidden)) => denied(),
-        Ok(Err(PgError::Workstream(e))) => match e.code() {
-            "WorkstreamAccessDenied" | "WorkstreamUnavailable" => denied(),
-            _ => response(
+        Ok(Err(error)) => error_response(error),
+        Err(_) => unavailable(),
+    }
+}
+
+fn allowed_request(state: &StateData, headers: &HeaderMap) -> bool {
+    !headers.contains_key("origin")
+        && headers.get_all("host").iter().count() == 1
+        && headers
+            .get("host")
+            .and_then(|h| h.to_str().ok())
+            .is_some_and(|h| {
+                state
+                    .hosts
+                    .iter()
+                    .any(|allowed| h.eq_ignore_ascii_case(allowed))
+            })
+}
+
+fn bearer(headers: &HeaderMap) -> Option<&str> {
+    let mut values = headers.get_all("authorization").iter();
+    let value = values.next()?;
+    if values.next().is_some() {
+        return None;
+    }
+    value
+        .to_str()
+        .ok()?
+        .split_once(' ')
+        .filter(|(scheme, _)| scheme.eq_ignore_ascii_case("Bearer"))
+        .map(|(_, token)| token)
+}
+
+fn unavailable_value() -> Value {
+    json!({"code":"Unavailable","message":"request outcome unavailable; inspect a command before retrying with its original identity"})
+}
+
+fn unavailable() -> Response {
+    response(StatusCode::SERVICE_UNAVAILABLE, unavailable_value())
+}
+
+fn error_response(error: PgError) -> Response {
+    let (status, value) = public_error(error);
+    response(status, value)
+}
+
+// Shared by HTTP and MCP; never expose SQL, URLs, credentials or source bodies.
+fn public_error(error: PgError) -> (StatusCode, Value) {
+    match error {
+        PgError::Forbidden => (
+            StatusCode::FORBIDDEN,
+            json!({"code":"Forbidden","message":"access denied"}),
+        ),
+        PgError::Workstream(e) => match e.code() {
+            "WorkstreamAccessDenied" | "WorkstreamUnavailable" => public_error(PgError::Forbidden),
+            _ => (
                 StatusCode::CONFLICT,
                 json!({"code":e.code(),"message":e.to_string()}),
             ),
         },
-        Ok(Err(PgError::Unsupported(_))) => response(
+        PgError::Unsupported(_) => (
             StatusCode::NOT_IMPLEMENTED,
             json!({"code":"Unsupported","message":"operation or protocol is unavailable"}),
         ),
-        Ok(Err(PgError::Protocol(_))) => response(
+        PgError::Protocol(_) => (
             StatusCode::BAD_REQUEST,
             json!({"code":"InvalidInput","message":"query fields or bounds are invalid"}),
         ),
-        Ok(Err(PgError::CursorExpired)) => response(
+        PgError::CursorExpired => (
             StatusCode::CONFLICT,
             json!({"code":"CursorExpired","message":"refresh the scoped query"}),
         ),
-        Ok(Err(
-            e @ (PgError::PreconditionsChanged
-            | PgError::IdempotencyConflict
-            | PgError::EpochChanged
-            | PgError::ProjectNotAvailable
-            | PgError::RecoveryBlocked),
-        )) => {
+        e @ (PgError::PreconditionsChanged
+        | PgError::IdempotencyConflict
+        | PgError::EpochChanged
+        | PgError::ProjectNotAvailable
+        | PgError::RecoveryBlocked) => {
             let code = match e {
                 PgError::PreconditionsChanged => "PreconditionsChanged",
                 PgError::IdempotencyConflict => "IdempotencyConflict",
@@ -270,24 +307,20 @@ async fn dispatch(
                 PgError::ProjectNotAvailable => "ProjectNotAvailable",
                 _ => "RecoveryBlocked",
             };
-            response(
+            (
                 StatusCode::CONFLICT,
                 json!({"code":code,"message":e.to_string()}),
             )
         }
-        Ok(Err(PgError::ContextIncomplete)) => response(
+        PgError::ContextIncomplete => (
             StatusCode::CONFLICT,
             json!({"code":"ContextIncomplete","message":"required context exceeds the requested budget"}),
         ),
-        Ok(Err(PgError::ResponseTooLarge)) => response(
+        PgError::ResponseTooLarge => (
             StatusCode::CONFLICT,
-            json!({"code":"ResponseTooLarge","message":"response exceeds service limit; use a smaller page or a narrower selector"}),
+            json!({"code":"ResponseTooLarge","message":"response exceeds service limit; use a smaller page or a narrower selector; inspect a command before retrying"}),
         ),
-        // Never return SQL, driver errors, connection strings or source bodies.
-        _ => response(
-            StatusCode::SERVICE_UNAVAILABLE,
-            json!({"code":"Unavailable","message":"request outcome unavailable; inspect a command before retrying with its original identity"}),
-        ),
+        _ => (StatusCode::SERVICE_UNAVAILABLE, unavailable_value()),
     }
 }
 

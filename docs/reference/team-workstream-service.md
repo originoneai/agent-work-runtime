@@ -1,9 +1,9 @@
-# Team workstream HTTP service
+# Team workstream HTTP and MCP service
 
-The development branch provides authenticated, multi-project HTTP queries and
-durable session journaling backed by PostgreSQL. This is not a release announcement
-or a complete Team execution service. It does not dispatch executions, expose
-Team MCP tools, resume agents or adopt cross-workstream deliveries. Use its live
+The development branch provides authenticated, multi-project HTTP/MCP queries
+and durable session journaling backed by PostgreSQL. This is not a release
+announcement or a complete Team execution service. It does not dispatch
+executions, resume agents or adopt cross-workstream deliveries. Use its live
 capabilities response to discover available operations.
 
 ## Start an operator-bound service
@@ -140,6 +140,41 @@ or null when there is no checkpoint. Matching the contract alone does not prove
 current dependencies, claims or authority; `automatic_resume` stays false.
 Checkpoints from different ownership generations are not recovery candidates.
 
+## MCP clients
+
+The same listener serves Streamable HTTP MCP at
+`/v1/projects/<alias>/mcp`. Configure the client's remote MCP connection with
+that URL and its bearer credential in the Authorization header. Do not put
+credentials in URLs or tool arguments. Each URL selects one registered project;
+many clients and project endpoints share the same process and database pool.
+No process is started for an individual connection or work session.
+
+The transport uses the repository's RMCP SDK for protocol negotiation,
+initialization and tool dispatch. It is stateless, including for older supported
+MCP protocol versions: no `Mcp-Session-Id` carries permissions or selects work.
+It exposes two tools, with arguments identical to the corresponding HTTP JSON:
+
+- `awr_team_query`: the query operations above. Start with
+  `{"protocol_version":1,"op":"capabilities"}`.
+- `awr_team_command`: the three session commands below, with the same request
+  identity and preconditions. Tool discovery is not a write grant.
+
+Initialization, discovery and notifications require current project/workstream
+read access. Each tool call additionally checks authorization inside the same
+transaction as its selected operation; initialization never caches authority.
+Tools return structured content and a text fallback. Domain failures set
+`isError: true` and use the same sanitized `code` as HTTP. Authentication,
+transport limits and malformed MCP messages can fail at the HTTP/protocol layer
+before a tool result exists. Legacy personal tools and unimplemented execution
+operations cannot bypass this boundary.
+
+Closing or reconnecting an MCP connection does not end a durable work session.
+HTTP and MCP share command identities and receipts: a command submitted through
+one transport can be inspected or exactly replayed through the other. A timeout,
+disconnection or oversized response leaves the command outcome uncertain until
+`command.inspect` returns its committed receipt. An absent receipt is still
+`unknown`, not proof of non-execution.
+
 ## Durable session commands
 
 POST to `/v1/projects/<alias>/command` with the same bearer authentication. The
@@ -205,12 +240,17 @@ Requests are limited to 64 KiB, pages to 100 items, search to 512 bytes, and
 requested context to 256 KiB (default 64 KiB). Complete serialized responses
 have a 1 MiB ceiling. Oversized responses fail without truncating obligations;
 reduce the page or narrow the selector. An individual oversized checkpoint still
-requires a trusted operator recovery path. The listener permits 64 concurrent
-queries with a 30-second query timeout. Responses use `Cache-Control: no-store`.
+requires a trusted operator recovery path. The listener shares 64 concurrent
+request permits across HTTP and MCP, with a 30-second timeout. Responses use
+`Cache-Control: no-store`.
 Commands share the 64 KiB request limit, permits and timeout. A checkpoint's next
 action is limited to 8 KiB and its open loops to 32 entries of 4 KiB each, within
 the whole-request limit. HTTP timeout is not proof of transaction failure; use
-the outcome-query procedure above.
+the outcome-query procedure above. MCP limits include its entire JSON-RPC
+request and response envelopes, including the text fallback; a result that fits
+in HTTP JSON may need a smaller MCP page. Required text is never truncated.
+MCP handlers retain their request permit and deadline even if the receiver
+disconnects.
 
 | HTTP status | Meaning |
 | --- | --- |
@@ -231,6 +271,8 @@ tests use a real loopback listener and PostgreSQL with simultaneous clients.
 Session command checks cover owned journaling, concurrent replay/conflicts,
 write revocation while a command is waiting, full rollback after an event failure,
 frozen/paused state and unknown-execution preservation. These are
-protocol/integration checks, not native coding-client business acceptance. Execution
-writes, Team MCP, history migration and enabled-project backup/restore remain
+protocol/integration checks, not native coding-client business acceptance. Real
+RMCP clients also verify discovery, simultaneous scope isolation, live revocation,
+reconnection, HTTP/MCP receipt parity and refusal of oversized envelopes. Execution
+writes, history migration and enabled-project backup/restore remain
 unavailable through this surface.
