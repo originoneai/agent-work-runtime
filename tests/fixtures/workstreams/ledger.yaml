@@ -1,0 +1,31 @@
+workstreams:
+  version: 1
+  definitions:
+    - id: 01K00000000000000000000001
+      external_key: api
+      title: API
+      state: active
+      authority_version: 1
+      goal_keys: [delivery]
+      acceptance_contracts: [contracts/api-v1.json]
+    - id: 01K00000000000000000000002
+      external_key: client
+      title: Client
+      state: active
+      authority_version: 1
+      goal_keys: [delivery]
+      acceptance_contracts: [contracts/client-v1.json]
+goals:
+  - id: delivery
+    title: Deliver an API and client
+    status: active
+work_items:
+  - id: API-1
+    title: Define the interface
+    status: planned
+    workstream: api
+  - id: CLIENT-1
+    title: Implement the SDK
+    status: planned
+    workstream: client
+    depends_on: [API-1]

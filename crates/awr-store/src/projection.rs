@@ -343,6 +343,7 @@ impl Store {
         batch: ProjectionBatch,
     ) -> Result<Source> {
         awr_core::ensure_public_text(fingerprint)?;
+        let workstreams = batch.workstream_projection.clone();
         let payload = serde_json::to_value(batch)?;
         awr_core::ensure_public_value(&payload)?;
         if fingerprint.is_empty() || expected.revision >= i64::MAX as u64 {
@@ -376,6 +377,7 @@ impl Store {
                     params![source.project_id.to_string(),source.id.to_string(),serde_json::to_string(&keys)?]).map_err(db_error)?;
             }
             upsert_edges(tx,&source,fingerprint,&payload["edges"])?;
+            crate::workstream::project(tx,&source,fingerprint,workstreams.as_ref())?;
             tx.execute("UPDATE sources SET revision=revision+1,fingerprint=?1,freshness='fresh' WHERE id=?2",
                 params![fingerprint,source.id.to_string()]).map_err(db_error)?;
             source.revision+=1;

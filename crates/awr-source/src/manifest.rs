@@ -8,6 +8,7 @@ use std::{
 /// Adapter identifiers accepted by source manifests in this build.
 pub const SOURCE_ADAPTERS: &[&str] = &[
     "yaml-ledger-v1",
+    "yaml-workstream-ledger-v1",
     "markdown-ledger-v1",
     "markdown-heading-v1",
     "markdown-rules-v1",
@@ -132,7 +133,7 @@ impl Manifest {
             }
             if matches!(
                 source.adapter.as_str(),
-                "yaml-ledger-v1" | "markdown-ledger-v1"
+                "yaml-ledger-v1" | "yaml-workstream-ledger-v1" | "markdown-ledger-v1"
             ) {
                 let mapping = crate::LedgerMapping::from_spec(source)?;
                 if mapping.ordinary_work_policy.is_some()
@@ -141,6 +142,13 @@ impl Manifest {
                 {
                     return Err(Error::InvalidInput("ordinary policy is scoped to a ledger and requires explicit context_profile = minimal; configured rules still apply".into()));
                 }
+            }
+            if source.adapter == "yaml-workstream-ledger-v1"
+                && (source.domain != "ledger" || source.role != "primary")
+            {
+                return Err(Error::InvalidInput(
+                    "workstream ledger must be a primary ledger source".into(),
+                ));
             }
             if source
                 .path

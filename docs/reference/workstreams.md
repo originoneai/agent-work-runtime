@@ -6,9 +6,10 @@ advertises it and enforces it at the relevant operation boundary. A source field
 or a database column alone does not establish support.
 
 The current domain module validates identity, ownership, scope selection and
-explicit grants. Transport authorization, persistence and execution enforcement
-are separate integration work; these domain rules do not enable isolated
-workstreams in an existing CLI, MCP service or Team coordinator.
+explicit grants. Source import and SQLite projections retain the scope contract.
+Transport authorization and execution enforcement are separate integration work;
+these rules do not enable isolated workstreams in an existing CLI, MCP service
+or Team coordinator.
 
 ## Identity and authority
 
@@ -109,6 +110,32 @@ Old dependency and ownership checks remain until replacement protocols pass
 compatibility checks.
 
 ## Verification boundary
+
+### Source projection in the development branch
+
+`yaml-workstream-ledger-v1` is an explicit, read-only source adapter for one
+complete primary ledger. The synthetic [ledger fixture](../../tests/fixtures/workstreams/ledger.yaml)
+shows its `workstreams.version`, strict `definitions`, and one `workstream` key
+per work. Definitions retain stable IDs, goal references and acceptance-contract
+references. Contract references are identifiers, not evidence of acceptance.
+Unknown versions, duplicate scopes, missing ownership and unresolved goal
+references reject the candidate. Existing ledger adapters cannot silently consume
+this declaration. Multi-source ownership activation is not supported yet.
+
+The source fingerprint, catalog and complete ownership set commit together with
+the ordinary ledger projection. Failed imports retain the previous projection
+as stale; stale or retired authority cannot be read as current scope data.
+Titles can change without changing scope identity. Authority changes require a
+new authority version; established ownership changes require a separate runtime
+migration. Retained scopes must be archived rather than removed from the source.
+
+SQLite schema 5 gives legacy works a stable single-scope mapping without
+renumbering works or changing sessions, claims, checkpoints, evidence or events.
+The existing private-memory migration preview does not update the original
+database. Applying the schema migration is transactional; a failed migration
+can be retried after correcting its cause. Older binaries refuse a schema they
+cannot represent. Source projection support alone does not claim runtime
+isolation, dependency enforcement or a native-client acceptance result.
 
 The synthetic acceptance matrix is
 [`acceptance-matrix.json`](../../tests/fixtures/workstreams/acceptance-matrix.json).

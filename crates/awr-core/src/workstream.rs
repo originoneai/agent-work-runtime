@@ -243,6 +243,14 @@ pub struct WorkstreamSessionBinding {
     pub session_id: String,
 }
 
+/// A complete source projection, not caller-supplied execution authority.
+#[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
+#[serde(deny_unknown_fields)]
+pub struct WorkstreamProjection {
+    pub catalog: WorkstreamCatalog,
+    pub ownership: Vec<WorkstreamWorkBinding>,
+}
+
 fn validate_work_binding(
     catalog: &WorkstreamCatalog,
     binding: &WorkstreamWorkBinding,
