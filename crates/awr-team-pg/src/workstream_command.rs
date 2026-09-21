@@ -1,4 +1,4 @@
-//! Authenticated session journaling and coordination leases, not execution admission.
+//! Authenticated journals, coordination leases and scoped execution operations.
 //! Project serialization is retained until task-level read sets are implemented.
 pub(crate) mod claims;
 pub(crate) mod executions;
@@ -21,6 +21,8 @@ pub(crate) const COMMANDS: &[&str] = &[
     "claim.release",
     "execution.prepare",
     "execution.cancel",
+    "execution.start",
+    "execution.report",
 ];
 const RECEIPT_PROTOCOL: &str = "awr-team-workstream-command-v1";
 
@@ -110,9 +112,12 @@ impl WorkstreamCommand {
         }
         version(&self.expected_project_revision)?;
         match self.op.as_str() {
-            "execution.prepare" | "execution.cancel" => Ok(Action::Execution(
-                executions::Action::parse(&self.op, self.args.clone())?,
-            )),
+            "execution.prepare" | "execution.cancel" | "execution.start" | "execution.report" => {
+                Ok(Action::Execution(executions::Action::parse(
+                    &self.op,
+                    self.args.clone(),
+                )?))
+            }
             "claim.acquire" | "claim.renew" | "claim.release" => Ok(Action::Claim(
                 claims::Action::parse(&self.op, self.args.clone())?,
             )),
@@ -223,7 +228,7 @@ impl WorkstreamCommandStore {
                 ownership,
             )?;
             tx.commit().await?;
-            return Ok(json!({"replayed":true,"receipt":result}));
+            return Ok(json!({"replayed":true,"receipt":result,"execution_authorized":false}));
         }
         if auth.project_status != "active" {
             return Err(PgError::ProjectNotAvailable);
@@ -309,7 +314,11 @@ impl WorkstreamCommandStore {
             VALUES($1,$2,$3,$4,$5,$6,$7,$8,'committed',$9,$10)",
             &[&tenant,&project,&crate::tx::new_id(),&auth.actor_id,&auth.client_id,&command.request_id,&command.op,&request_hash,&next,&receipt]).await?;
         tx.commit().await?;
-        Ok(json!({"replayed":false,"receipt":receipt}))
+        // Only the original committed start response permits one caller-managed
+        // execution. Stored/replayed receipts are historical, never a new grant.
+        Ok(
+            json!({"replayed":false,"receipt":receipt,"execution_authorized":command.op == "execution.start"}),
+        )
     }
 }
 

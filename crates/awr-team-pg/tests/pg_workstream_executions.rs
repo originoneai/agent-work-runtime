@@ -51,6 +51,527 @@ async fn snapshot(admin: &Client) -> Value {
         &[&TENANT,&PROJECT]).await.unwrap().get(0)
 }
 
+async fn ready_intent(store: &WorkstreamReadStore) -> (Value, Value) {
+    let c = claim(store).await;
+    let e = store
+        .commands()
+        .execute(TENANT, PROJECT, A, intent(store, &c, "prepare").await)
+        .await
+        .unwrap()["receipt"]["data"]
+        .clone();
+    (c, e)
+}
+async fn admission(
+    store: &WorkstreamReadStore,
+    c: &Value,
+    e: &Value,
+    id: &str,
+) -> WorkstreamCommand {
+    let p = prepare(store, A, "a").await;
+    command(
+        &p,
+        id,
+        "execution.start",
+        json!({"session_id":"session-a","expected_session_version":"1",
+        "execution_id":e["execution_id"],"expected_execution_version":e["execution_version"],
+        "claim_id":c["claim_id"],"expected_fence":c["fence"],"expected_lease_version":c["lease_version"],
+        "expected_work_version":p["data"]["runtime"]["work_version"],"execution_mode":"caller_managed"}),
+    )
+}
+async fn report(
+    store: &WorkstreamReadStore,
+    e: &Value,
+    id: &str,
+    outcome: &str,
+) -> WorkstreamCommand {
+    command(
+        &prepare(store, A, "a").await,
+        id,
+        "execution.report",
+        json!({"session_id":"session-a",
+        "expected_session_version":"1","execution_id":e["execution_id"],"expected_execution_version":e["execution_version"],
+        "outcome":outcome,"output_digest":"b".repeat(64),"observed_paths":["src/api/result.json"],"note":"Client observed the process exit."}),
+    )
+}
+
+#[tokio::test]
+async fn admission_is_atomic_and_only_the_original_response_authorizes_one_start() {
+    let (_g, admin, _, store) = setup().await;
+    enable_writes(&admin).await;
+    let (c, e) = ready_intent(&store).await;
+    let cmd = admission(&store, &c, &e, "start").await;
+    let s = store.commands();
+    let (a, b) = tokio::join!(
+        s.execute(TENANT, PROJECT, A, cmd.clone()),
+        s.execute(TENANT, PROJECT, A, cmd.clone())
+    );
+    let (a, b) = (a.unwrap(), b.unwrap());
+    assert_eq!(a["receipt"], b["receipt"]);
+    assert_ne!(a["execution_authorized"], b["execution_authorized"]);
+    assert_eq!(a["execution_authorized"], !a["replayed"].as_bool().unwrap());
+    assert_eq!(b["execution_authorized"], !b["replayed"].as_bool().unwrap());
+    assert_eq!(a["receipt"]["execution_authorized"], false);
+    assert_eq!(a["receipt"]["data"]["admission"], "granted_at_commit");
+    let snap = snapshot(&admin).await;
+    assert_eq!(snap["resources"].as_array().unwrap().len(), 1);
+    assert_eq!(snap["resources"][0]["state"], "reserved");
+    assert!(snap["outbox"].is_null());
+    assert_eq!(inspect(&store, &e).await["execution_authorized"], false);
+    let running = a["receipt"]["data"].clone();
+    assert!(matches!(
+        s.execute(
+            TENANT,
+            PROJECT,
+            A,
+            admission(&store, &c, &running, "repeat-start").await
+        )
+        .await,
+        Err(PgError::PreconditionsChanged)
+    ));
+    // Cancellation cannot falsely confirm an already authorized external stop.
+    let cancelled = s
+        .execute(TENANT, PROJECT, A, cancel(&store, &running, "stop").await)
+        .await
+        .unwrap();
+    assert_eq!(cancelled["receipt"]["data"]["stop_confirmed"], false);
+    let before = snapshot(&admin).await;
+    let replay = s.execute(TENANT, PROJECT, A, cmd).await.unwrap();
+    assert_eq!(replay["execution_authorized"], false);
+    assert_eq!(replay["receipt"], a["receipt"]);
+    assert_eq!(snapshot(&admin).await, before);
+}
+
+#[tokio::test]
+async fn start_rechecks_wait_contract_lease_and_resources_without_partial_reservations() {
+    let (_g, admin, _, store) = setup().await;
+    enable_writes(&admin).await;
+    let (c, e) = ready_intent(&store).await;
+    admin.batch_execute("INSERT INTO awr_team.wait_items(tenant_id,project_id,id,session_id,work_id,question,state)
+        VALUES('reader-tenant','reader-project','wait','session-a','a','Confirm the change?','open')").await.unwrap();
+    let before = snapshot(&admin).await;
+    assert!(matches!(
+        store
+            .commands()
+            .execute(TENANT, PROJECT, A, admission(&store, &c, &e, "wait").await)
+            .await,
+        Err(PgError::WaitOpen)
+    ));
+    assert_eq!(snapshot(&admin).await, before);
+    admin.batch_execute("UPDATE awr_team.wait_items SET state='replied';
+        INSERT INTO awr_team.resource_reservations(tenant_id,project_id,id,work_id,resource_kind,canonical_key,state)
+        VALUES('reader-tenant','reader-project','private-owner','b-private','file','src/api/result.json','unknown')").await.unwrap();
+    let before = snapshot(&admin).await;
+    assert!(matches!(
+        store
+            .commands()
+            .execute(
+                TENANT,
+                PROJECT,
+                A,
+                admission(&store, &c, &e, "resource").await
+            )
+            .await,
+        Err(PgError::ResourceConflict)
+    ));
+    assert_eq!(snapshot(&admin).await, before);
+    admin
+        .batch_execute(
+            "UPDATE awr_team.resource_reservations SET state='released';
+        UPDATE awr_team.work_contracts SET definition_state='archived' WHERE work_id='a'",
+        )
+        .await
+        .unwrap();
+    assert!(matches!(
+        store
+            .commands()
+            .execute(
+                TENANT,
+                PROJECT,
+                A,
+                admission(&store, &c, &e, "archived").await
+            )
+            .await,
+        Err(PgError::PreconditionsChanged)
+    ));
+    admin
+        .batch_execute(
+            "UPDATE awr_team.work_contracts SET definition_state='enabled' WHERE work_id='a';
+        UPDATE awr_team.claims SET expires_at=clock_timestamp()-interval '1 second'",
+        )
+        .await
+        .unwrap();
+    let before = snapshot(&admin).await;
+    assert!(matches!(
+        store
+            .commands()
+            .execute(
+                TENANT,
+                PROJECT,
+                A,
+                admission(&store, &c, &e, "expired").await
+            )
+            .await,
+        Err(PgError::LeaseExpired)
+    ));
+    assert_eq!(snapshot(&admin).await, before);
+}
+
+#[tokio::test]
+async fn start_cannot_use_changed_contract_or_claim_caller_selected_trust() {
+    let (_g, admin, _, store) = setup().await;
+    enable_writes(&admin).await;
+    let (c, e) = ready_intent(&store).await;
+    let cmd = admission(&store, &c, &e, "start").await;
+    let before = snapshot(&admin).await;
+    for (field, value) in [
+        ("expected_execution_version", json!("3")),
+        ("expected_work_version", json!("999")),
+        ("expected_lease_version", json!("999")),
+        ("expected_session_version", json!("999")),
+    ] {
+        let mut request = cmd.clone();
+        request.args[field] = value;
+        assert!(matches!(
+            store.commands().execute(TENANT, PROJECT, A, request).await,
+            Err(PgError::PreconditionsChanged)
+        ));
+    }
+    let mut bad = cmd.clone();
+    bad.args["execution_mode"] = json!("hard_fence");
+    assert!(matches!(
+        store.commands().execute(TENANT, PROJECT, A, bad).await,
+        Err(PgError::Unsupported(_))
+    ));
+    for field in [
+        "receipt_kind",
+        "executor_actor_id",
+        "client_id",
+        "fencing_class",
+    ] {
+        let mut bad = cmd.clone();
+        bad.args[field] = json!("trusted_executor");
+        assert!(matches!(
+            store.commands().execute(TENANT, PROJECT, A, bad).await,
+            Err(PgError::Protocol(_))
+        ));
+    }
+    assert_eq!(snapshot(&admin).await, before);
+    let mut contract: awr_team::WorkContract = serde_json::from_value(
+        admin
+            .query_one(
+                "SELECT contract_json FROM awr_team.work_contracts WHERE work_id='a'",
+                &[],
+            )
+            .await
+            .unwrap()
+            .get(0),
+    )
+    .unwrap();
+    contract.acceptance.push("new acceptance".into());
+    admin.execute("UPDATE awr_team.work_contracts SET contract_json=$1,contract_hash=$2 WHERE work_id='a'",
+        &[&json!(contract),&contract.hash().unwrap()]).await.unwrap();
+    let before = snapshot(&admin).await;
+    assert!(matches!(
+        store
+            .commands()
+            .execute(
+                TENANT,
+                PROJECT,
+                A,
+                admission(&store, &c, &e, "current-contract").await
+            )
+            .await,
+        Err(PgError::PreconditionsChanged)
+    ));
+    assert_eq!(snapshot(&admin).await, before);
+}
+
+#[tokio::test]
+async fn required_dependencies_need_current_receipts_and_do_not_infer_cross_stream_exports() {
+    let (_g, admin, _, store) = setup().await;
+    enable_writes(&admin).await;
+    // Create a contract before preparation; upstream source/runtime status alone
+    // cannot substitute for a current accepted completion receipt.
+    let mut contract: awr_team::WorkContract = serde_json::from_value(
+        admin
+            .query_one(
+                "SELECT contract_json FROM awr_team.work_contracts WHERE work_id='a'",
+                &[],
+            )
+            .await
+            .unwrap()
+            .get(0),
+    )
+    .unwrap();
+    contract.required_dependencies = vec!["c".into()];
+    admin.execute("UPDATE awr_team.work_contracts SET contract_json=$1,contract_hash=$2 WHERE work_id='a'",
+        &[&json!(contract),&contract.hash().unwrap()]).await.unwrap();
+    assert!(
+        admin
+            .batch_execute(
+                "INSERT INTO awr_team.work_runtime(tenant_id,project_id,scope_id,work_id,state)
+        VALUES('reader-tenant','reader-project','main','c','completed')",
+            )
+            .await
+            .is_err()
+    );
+    admin
+        .batch_execute(
+            "INSERT INTO awr_team.work_runtime(tenant_id,project_id,scope_id,work_id,state)
+        VALUES('reader-tenant','reader-project','main','c','ready')",
+        )
+        .await
+        .unwrap();
+    let (c, e) = ready_intent(&store).await;
+    let before = snapshot(&admin).await;
+    assert!(matches!(
+        store
+            .commands()
+            .execute(
+                TENANT,
+                PROJECT,
+                A,
+                admission(&store, &c, &e, "dependency").await
+            )
+            .await,
+        Err(PgError::BindingInvalid)
+    ));
+    assert_eq!(snapshot(&admin).await, before);
+    // The same check fails closed even when the caller can read both streams.
+    admin
+        .execute(
+            "UPDATE awr_team.workstream_snapshot_ownership SET workstream_id=$1 WHERE work_id='c'",
+            &[&awr_core::Id::from(2).to_string()],
+        )
+        .await
+        .unwrap();
+    admin.execute("INSERT INTO awr_team.workstream_grants(tenant_id,project_id,actor_id,client_id,workstream_id,authority_version,can_read,can_write)
+        VALUES($1,$2,'agent','cli-a',$3,1,true,true)",&[&TENANT,&PROJECT,&awr_core::Id::from(2).to_string()]).await.unwrap();
+    assert!(matches!(
+        store
+            .commands()
+            .execute(
+                TENANT,
+                PROJECT,
+                A,
+                admission(&store, &c, &e, "cross-stream").await
+            )
+            .await,
+        Err(PgError::BindingInvalid)
+    ));
+    // A current accepted receipt is usable within its own stream; an old
+    // contract's receipt is not. These are pre-existing synthetic delivery rows,
+    // not a claim that this scoped surface already exposes completion creation.
+    admin
+        .execute(
+            "UPDATE awr_team.workstream_snapshot_ownership SET workstream_id=$1 WHERE work_id='c'",
+            &[&awr_core::Id::from(1).to_string()],
+        )
+        .await
+        .unwrap();
+    admin.batch_execute("INSERT INTO awr_team.completion_receipts(tenant_id,project_id,id,work_id,scope_id,contract_hash,result_digest,
+        dependency_binding_hash,evidence_bundle_hash,policy,approved_by_json)
+        VALUES('reader-tenant','reader-project','accepted','c','main','old-contract','result','dependencies','evidence','review','[\"reviewer\"]');
+        UPDATE awr_team.work_runtime SET state='completed',selected_completion_id='accepted' WHERE work_id='c'").await.unwrap();
+    assert!(matches!(
+        store
+            .commands()
+            .execute(
+                TENANT,
+                PROJECT,
+                A,
+                admission(&store, &c, &e, "old-receipt").await
+            )
+            .await,
+        Err(PgError::BindingInvalid)
+    ));
+    admin.batch_execute("INSERT INTO awr_team.completion_receipts(tenant_id,project_id,id,work_id,scope_id,contract_hash,result_digest,
+        dependency_binding_hash,evidence_bundle_hash,policy,approved_by_json)
+        SELECT tenant_id,project_id,'accepted-current',work_id,scope_id,contract_hash,'result','dependencies','evidence','review','[\"reviewer\"]'
+        FROM awr_team.work_contracts WHERE work_id='c';
+        UPDATE awr_team.work_runtime SET selected_completion_id='accepted-current' WHERE work_id='c'").await.unwrap();
+    let accepted = store
+        .commands()
+        .execute(
+            TENANT,
+            PROJECT,
+            A,
+            admission(&store, &c, &e, "accepted").await,
+        )
+        .await
+        .unwrap();
+    assert_eq!(
+        accepted["receipt"]["data"]["dependency_receipts"],
+        json!([["c", "accepted-current"]])
+    );
+    assert_eq!(accepted["execution_authorized"], true);
+}
+
+#[tokio::test]
+async fn caller_reports_preserve_observations_and_unknown_effects_after_lease_expiry() {
+    let (_g, admin, _, store) = setup().await;
+    enable_writes(&admin).await;
+    let (c, e) = ready_intent(&store).await;
+    let running = store
+        .commands()
+        .execute(TENANT, PROJECT, A, admission(&store, &c, &e, "start").await)
+        .await
+        .unwrap();
+    let e = &running["receipt"]["data"];
+    admin
+        .batch_execute(
+            "UPDATE awr_team.claims SET expires_at=clock_timestamp()-interval '1 second'",
+        )
+        .await
+        .unwrap();
+    let cmd = report(&store, e, "report", "succeeded").await;
+    let result = store
+        .commands()
+        .execute(TENANT, PROJECT, A, cmd.clone())
+        .await
+        .unwrap();
+    assert_eq!(result["receipt"]["data"]["state"], "unknown");
+    assert_eq!(result["receipt"]["data"]["reported_outcome"], "succeeded");
+    assert_eq!(result["receipt"]["data"]["work_completed"], false);
+    assert_eq!(result["execution_authorized"], false);
+    let snap = snapshot(&admin).await;
+    assert_eq!(snap["resources"][0]["state"], "unknown");
+    assert_eq!(snap["work"][0]["recovery_blocked"], true);
+    assert_eq!(snap["receipts"][0]["receipt_kind"], "caller_asserted");
+    assert_eq!(
+        snap["receipts"][0]["payload_json"]["output_digest"],
+        "b".repeat(64)
+    );
+    assert!(snap["execution"][0]["result_digest"].is_null());
+    let replay = store
+        .commands()
+        .execute(TENANT, PROJECT, A, cmd)
+        .await
+        .unwrap();
+    assert_eq!(replay["receipt"], result["receipt"]);
+    assert_eq!(snapshot(&admin).await, snap);
+    // Contradictory later observations are audit history, not a terminal rewrite.
+    let mut e = result["receipt"]["data"].clone();
+    for outcome in ["cancelled", "failed", "unknown"] {
+        let mut cmd = report(&store, &e, outcome, outcome).await;
+        cmd.args["observed_paths"] = json!(["outside/escaped.json"]);
+        let res = store
+            .commands()
+            .execute(TENANT, PROJECT, A, cmd)
+            .await
+            .unwrap();
+        assert_eq!(res["receipt"]["data"]["scope_violation"], true);
+        assert_eq!(res["receipt"]["data"]["state"], "unknown");
+        e = res["receipt"]["data"].clone();
+    }
+    assert_eq!(
+        snapshot(&admin).await["receipts"].as_array().unwrap().len(),
+        4
+    );
+}
+
+#[tokio::test]
+async fn another_client_cannot_start_or_report_and_report_cannot_invent_trust() {
+    let (_g, admin, _, store) = setup().await;
+    enable_writes(&admin).await;
+    let (c, e) = ready_intent(&store).await;
+    admin.execute("INSERT INTO awr_team.workstream_grants(tenant_id,project_id,actor_id,client_id,workstream_id,authority_version,can_read,can_write)
+        VALUES($1,$2,'agent','cli-b',$3,1,true,true)",&[&TENANT,&PROJECT,&awr_core::Id::from(1).to_string()]).await.unwrap();
+    let cmd = admission(&store, &c, &e, "start").await;
+    let before = snapshot(&admin).await;
+    assert!(matches!(
+        store
+            .commands()
+            .execute(TENANT, PROJECT, B, cmd.clone())
+            .await,
+        Err(PgError::Forbidden)
+    ));
+    assert!(matches!(
+        store
+            .commands()
+            .execute(
+                TENANT,
+                PROJECT,
+                A,
+                report(&store, &e, "early", "succeeded").await
+            )
+            .await,
+        Err(PgError::PreconditionsChanged)
+    ));
+    assert_eq!(snapshot(&admin).await, before);
+    let started = store
+        .commands()
+        .execute(TENANT, PROJECT, A, cmd)
+        .await
+        .unwrap();
+    let cmd = report(&store, &started["receipt"]["data"], "report", "succeeded").await;
+    let before = snapshot(&admin).await;
+    assert!(matches!(
+        store
+            .commands()
+            .execute(TENANT, PROJECT, B, cmd.clone())
+            .await,
+        Err(PgError::Forbidden)
+    ));
+    let mut trusted = cmd.clone();
+    trusted.args["receipt_kind"] = json!("trusted_executor");
+    assert!(matches!(
+        store.commands().execute(TENANT, PROJECT, A, trusted).await,
+        Err(PgError::Protocol(_))
+    ));
+    admin
+        .batch_execute(
+            "UPDATE awr_team.credentials SET revoked_at=clock_timestamp() WHERE id='reader-a'",
+        )
+        .await
+        .unwrap();
+    assert!(matches!(
+        store.commands().execute(TENANT, PROJECT, A, cmd).await,
+        Err(PgError::Forbidden)
+    ));
+    assert_eq!(snapshot(&admin).await, before);
+}
+
+#[tokio::test]
+async fn failed_start_and_report_events_roll_back_resources_receipts_and_runtime() {
+    let (_g, admin, _, store) = setup().await;
+    enable_writes(&admin).await;
+    let (c, e) = ready_intent(&store).await;
+    admin.batch_execute("CREATE FUNCTION awr_team.reject_lifecycle_event() RETURNS trigger LANGUAGE plpgsql AS $$ BEGIN
+        IF NEW.event_type IN ('execution.start','execution.report') THEN RAISE EXCEPTION 'synthetic failure'; END IF; RETURN NEW; END $$;
+        CREATE TRIGGER reject_lifecycle_event BEFORE INSERT ON awr_team.events FOR EACH ROW EXECUTE FUNCTION awr_team.reject_lifecycle_event()").await.unwrap();
+    let cmd = admission(&store, &c, &e, "start").await;
+    let before = snapshot(&admin).await;
+    assert!(matches!(
+        store
+            .commands()
+            .execute(TENANT, PROJECT, A, cmd.clone())
+            .await,
+        Err(PgError::Db(_))
+    ));
+    assert_eq!(snapshot(&admin).await, before);
+    admin
+        .batch_execute("ALTER TABLE awr_team.events DISABLE TRIGGER reject_lifecycle_event")
+        .await
+        .unwrap();
+    let started = store
+        .commands()
+        .execute(TENANT, PROJECT, A, cmd)
+        .await
+        .unwrap();
+    admin
+        .batch_execute("ALTER TABLE awr_team.events ENABLE TRIGGER reject_lifecycle_event")
+        .await
+        .unwrap();
+    let cmd = report(&store, &started["receipt"]["data"], "report", "succeeded").await;
+    let before = snapshot(&admin).await;
+    assert!(matches!(
+        store.commands().execute(TENANT, PROJECT, A, cmd).await,
+        Err(PgError::Db(_))
+    ));
+    assert_eq!(snapshot(&admin).await, before);
+}
+
 #[tokio::test]
 async fn intents_cancel_without_dispatch_and_replay_never_resurrects_them() {
     let (_g, admin, _, store) = setup().await;
@@ -72,7 +593,7 @@ async fn intents_cancel_without_dispatch_and_replay_never_resurrects_them() {
     assert_eq!(inspect(&store, e).await["owned_by_client"], true);
     assert_eq!(inspect(&store, e).await["execution_authorized"], false);
     let mut start = cmd.clone();
-    start.op = "execution.start".into();
+    start.op = "execution.dispatch".into();
     assert!(matches!(
         store.commands().execute(TENANT, PROJECT, A, start).await,
         Err(PgError::Unsupported(_))

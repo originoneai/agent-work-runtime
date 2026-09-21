@@ -1,5 +1,6 @@
-//! Durable execution intents under live workstream authority. Preparing an
-//! intent neither dispatches it nor grants permission to perform effects.
+//! Execution intents and caller-managed admission under live authority.
+//! Preparation never dispatches. Admission is not physical effect confinement.
+mod lifecycle;
 use super::*;
 use tokio_postgres::Row;
 
@@ -26,10 +27,14 @@ pub(super) struct Cancel {
 pub(super) enum Action {
     Prepare(Prepare),
     Cancel(Cancel),
+    Start(lifecycle::Start),
+    Report(lifecycle::Report),
 }
 impl Action {
     pub(super) fn parse(op: &str, args: Value) -> PgResult<Self> {
         let action = match op {
+            "execution.start" => Self::Start(lifecycle::Start::parse(args)?),
+            "execution.report" => Self::Report(lifecycle::Report::parse(args)?),
             "execution.prepare" => {
                 let a: Prepare = serde_json::from_value(args).map_err(|_| invalid())?;
                 if !identity(&a.claim_id)
@@ -69,10 +74,12 @@ impl Action {
         match self {
             Self::Prepare(a) => (&a.session_id, &a.expected_session_version),
             Self::Cancel(a) => (&a.session_id, &a.expected_session_version),
+            Self::Start(a) => (&a.session_id, &a.expected_session_version),
+            Self::Report(a) => (&a.session_id, &a.expected_session_version),
         }
     }
     pub(super) fn requires_active_stream(&self) -> bool {
-        matches!(self, Self::Prepare(_))
+        matches!(self, Self::Prepare(_) | Self::Start(_))
     }
 }
 
@@ -103,6 +110,12 @@ pub(super) async fn apply(
             prepare(tx, tenant, project, auth, command, ownership, contract, a).await?
         }
         Action::Cancel(a) => cancel(tx, tenant, project, auth, command, ownership, a).await?,
+        Action::Start(a) => {
+            lifecycle::start(tx, tenant, project, auth, command, ownership, contract, a).await?
+        }
+        Action::Report(a) => {
+            lifecycle::report(tx, tenant, project, auth, command, ownership, a).await?
+        }
     };
     Ok(Applied {
         data,
@@ -120,14 +133,7 @@ async fn prepare(
     contract: &awr_team::WorkContract,
     a: Prepare,
 ) -> PgResult<Value> {
-    let enabled: bool = tx.query_one("SELECT c.definition_state='enabled' AND s.status='active'
-        FROM awr_team.work_contracts c JOIN awr_team.work_scopes s
-          ON s.tenant_id=c.tenant_id AND s.project_id=c.project_id AND s.id=c.scope_id
-        WHERE c.tenant_id=$1 AND c.project_id=$2 AND c.snapshot_id=$3 AND c.scope_id='main' AND c.work_id=$4",
-        &[&tenant,&project,&auth.snapshot,&command.work_id]).await?.get(0);
-    if !enabled {
-        return Err(PgError::PreconditionsChanged);
-    }
+    require_enabled(tx, tenant, project, auth, command).await?;
     let fence = claims::require_live(
         tx,
         tenant,
@@ -141,46 +147,16 @@ async fn prepare(
         &a.expected_lease_version,
     )
     .await?;
-    let r = tx.query_one("SELECT state,work_version,recovery_blocked,selected_completion_id
-        FROM awr_team.work_runtime WHERE tenant_id=$1 AND project_id=$2 AND scope_id='main' AND work_id=$3 FOR UPDATE",
-        &[&tenant,&project,&command.work_id]).await?;
-    if r.get::<_, i64>(1) != version(&a.expected_work_version)?
-        || r.get::<_, i64>(1) == i64::MAX
-        || matches!(
-            r.get::<_, String>(0).as_str(),
-            "completed" | "cancelled" | "archived"
-        )
-        || r.get::<_, Option<String>>(3).is_some()
-    {
-        return Err(PgError::PreconditionsChanged);
-    }
-    let unresolved: bool = tx.query_one("SELECT
-        EXISTS(SELECT 1 FROM awr_team.executions WHERE tenant_id=$1 AND project_id=$2 AND work_id=$3
-            AND state NOT IN ('succeeded','failed','cancelled')) OR
-        EXISTS(SELECT 1 FROM awr_team.resource_reservations WHERE tenant_id=$1 AND project_id=$2 AND work_id=$3 AND state='unknown')",
-        &[&tenant,&project,&command.work_id]).await?.get(0);
-    if r.get::<_, bool>(2) || unresolved {
-        return Err(PgError::RecoveryBlocked);
-    }
-    let waiting: bool = tx
-        .query_one(
-            "SELECT EXISTS(SELECT 1 FROM awr_team.wait_items
-        WHERE tenant_id=$1 AND project_id=$2 AND work_id=$3 AND state='open')",
-            &[&tenant, &project, &command.work_id],
-        )
-        .await?
-        .get(0);
-    if waiting {
-        return Err(PgError::WaitOpen);
-    }
-    if a.declared_scope.iter().any(|p| {
-        !contract
-            .scope_paths
-            .iter()
-            .any(|s| canonical_path(s) && crate::graph::path_within_scope(s, p))
-    }) {
-        return Err(PgError::ScopeExceeded);
-    }
+    require_ready(
+        tx,
+        tenant,
+        project,
+        &command.work_id,
+        &a.expected_work_version,
+        "",
+    )
+    .await?;
+    require_paths(contract, &a.declared_scope)?;
     let id = crate::tx::new_id();
     let declared = json!(a.declared_scope);
     tx.execute("INSERT INTO awr_team.executions(tenant_id,project_id,id,work_id,session_id,claim_id,fence,
@@ -199,6 +175,80 @@ async fn prepare(
         "dispatched":false,"admission":"not_evaluated","fencing_class":"uncontrolled",
         "exactly_once_supported":false,"scope_validation":"lexical_contract_only"}),
     )
+}
+
+async fn require_enabled(
+    tx: &Transaction<'_>,
+    tenant: &str,
+    project: &str,
+    auth: &ReaderAuthority,
+    command: &WorkstreamCommand,
+) -> PgResult<()> {
+    let enabled: bool = tx.query_one("SELECT c.definition_state='enabled' AND s.status='active'
+        FROM awr_team.work_contracts c JOIN awr_team.work_scopes s
+          ON s.tenant_id=c.tenant_id AND s.project_id=c.project_id AND s.id=c.scope_id
+        WHERE c.tenant_id=$1 AND c.project_id=$2 AND c.snapshot_id=$3 AND c.scope_id='main' AND c.work_id=$4",
+        &[&tenant,&project,&auth.snapshot,&command.work_id]).await?.get(0);
+    if !enabled {
+        return Err(PgError::PreconditionsChanged);
+    }
+    Ok(())
+}
+
+async fn require_ready(
+    tx: &Transaction<'_>,
+    tenant: &str,
+    project: &str,
+    work: &str,
+    expected_version: &str,
+    except_execution: &str,
+) -> PgResult<()> {
+    let r = tx.query_one("SELECT state,work_version,recovery_blocked,selected_completion_id
+        FROM awr_team.work_runtime WHERE tenant_id=$1 AND project_id=$2 AND scope_id='main' AND work_id=$3 FOR UPDATE",
+        &[&tenant,&project,&work]).await?;
+    if r.get::<_, i64>(1) != version(expected_version)?
+        || r.get::<_, i64>(1) == i64::MAX
+        || matches!(
+            r.get::<_, String>(0).as_str(),
+            "completed" | "cancelled" | "archived"
+        )
+        || r.get::<_, Option<String>>(3).is_some()
+    {
+        return Err(PgError::PreconditionsChanged);
+    }
+    let unresolved: bool = tx.query_one("SELECT
+        EXISTS(SELECT 1 FROM awr_team.executions WHERE tenant_id=$1 AND project_id=$2 AND work_id=$3
+            AND id<>$4 AND state NOT IN ('succeeded','failed','cancelled')) OR
+        EXISTS(SELECT 1 FROM awr_team.resource_reservations WHERE tenant_id=$1 AND project_id=$2 AND work_id=$3 AND state='unknown')",
+        &[&tenant,&project,&work,&except_execution]).await?.get(0);
+    if r.get::<_, bool>(2) || unresolved {
+        return Err(PgError::RecoveryBlocked);
+    }
+    let waiting: bool = tx
+        .query_one(
+            "SELECT EXISTS(SELECT 1 FROM awr_team.wait_items
+        WHERE tenant_id=$1 AND project_id=$2 AND work_id=$3 AND state='open')",
+            &[&tenant, &project, &work],
+        )
+        .await?
+        .get(0);
+    if waiting {
+        return Err(PgError::WaitOpen);
+    }
+    Ok(())
+}
+
+fn require_paths(contract: &awr_team::WorkContract, paths: &[String]) -> PgResult<()> {
+    if paths.iter().any(|p| {
+        !canonical_path(p)
+            || !contract
+                .scope_paths
+                .iter()
+                .any(|s| canonical_path(s) && crate::graph::path_within_scope(s, p))
+    }) {
+        return Err(PgError::ScopeExceeded);
+    }
+    Ok(())
 }
 
 async fn cancel(

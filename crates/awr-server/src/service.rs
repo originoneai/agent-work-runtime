@@ -304,6 +304,8 @@ fn public_error(error: PgError) -> (StatusCode, Value) {
         | PgError::LeaseExpired
         | PgError::StaleFence
         | PgError::ScopeExceeded
+        | PgError::ResourceConflict
+        | PgError::BindingInvalid
         | PgError::WaitOpen) => {
             let code = match e {
                 PgError::PreconditionsChanged => "PreconditionsChanged",
@@ -314,6 +316,8 @@ fn public_error(error: PgError) -> (StatusCode, Value) {
                 PgError::LeaseExpired => "LeaseExpired",
                 PgError::StaleFence => "StaleFence",
                 PgError::ScopeExceeded => "ScopeExceeded",
+                PgError::ResourceConflict => "ResourceConflict",
+                PgError::BindingInvalid => "BindingInvalid",
                 PgError::WaitOpen => "WaitOpen",
                 _ => "RecoveryBlocked",
             };

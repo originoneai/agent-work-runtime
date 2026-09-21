@@ -132,7 +132,7 @@ async fn sdk_clients_negotiate_tools_and_isolate_workstreams_on_one_service() {
         assert_eq!(t.annotations.as_ref().unwrap().read_only_hint, Some(read));
         assert_eq!(t.input_schema["properties"]["op"]["enum"], caps[ops]);
     }
-    assert_eq!(caps["execution_admission"], false);
+    assert_eq!(caps["execution_admission"], true);
     let args = json!({"protocol_version":1,"op":"work.list"});
     let (ar, br) = tokio::join!(
         call(&a, "awr_team_query", args.clone(), false),
@@ -366,6 +366,79 @@ async fn execution_intents_share_http_mcp_identity_without_dispatching_effects()
 }
 
 #[tokio::test]
+async fn admitted_start_and_unverified_report_share_transport_identity_without_reauthorization() {
+    let (_guard, admin, _, store) = setup().await;
+    enable_writes(&admin).await;
+    let server = start(store).await;
+    let a = connect(&server, "one", A).await.unwrap();
+    let taken = call(&a,"awr_team_command",serde_json::to_value(command(&prepared(&a).await,"take","claim.acquire",
+        json!({"session_id":"session-a","expected_session_version":"1","expected_work_version":"0","ttl_seconds":60}))).unwrap(),false).await;
+    let claim = &taken["receipt"]["data"];
+    let p = prepared(&a).await;
+    let intent=call(&a,"awr_team_command",serde_json::to_value(command(&p,"intent","execution.prepare",
+        json!({"session_id":"session-a","expected_session_version":"1","claim_id":claim["claim_id"],
+        "expected_fence":claim["fence"],"expected_lease_version":claim["lease_version"],
+        "expected_work_version":p["data"]["runtime"]["work_version"],"input_digest":"a".repeat(64),"declared_scope":["src"]}))).unwrap(),false).await;
+    let e = &intent["receipt"]["data"];
+    let p = prepared(&a).await;
+    let request=serde_json::to_value(command(&p,"start","execution.start",json!({"session_id":"session-a",
+        "expected_session_version":"1","execution_id":e["execution_id"],"expected_execution_version":"1",
+        "claim_id":claim["claim_id"],"expected_fence":claim["fence"],"expected_lease_version":claim["lease_version"],
+        "expected_work_version":p["data"]["runtime"]["work_version"],"execution_mode":"caller_managed"}))).unwrap();
+    let started: Value = http()
+        .post(format!("{}/one/command", server.url))
+        .bearer_auth(A)
+        .json(&request)
+        .send()
+        .await
+        .unwrap()
+        .error_for_status()
+        .unwrap()
+        .json()
+        .await
+        .unwrap();
+    assert_eq!(started["execution_authorized"], true);
+    let replay = call(&a, "awr_team_command", request, false).await;
+    assert_eq!(replay["receipt"], started["receipt"]);
+    assert_eq!(replay["execution_authorized"], false);
+    let report=serde_json::to_value(command(&prepared(&a).await,"report","execution.report",json!({"session_id":"session-a",
+        "expected_session_version":"1","execution_id":e["execution_id"],"expected_execution_version":"2",
+        "outcome":"succeeded","output_digest":"b".repeat(64),"observed_paths":["src/output"],"note":"Caller observed an output."}))).unwrap();
+    let observed = call(&a, "awr_team_command", report.clone(), false).await;
+    assert_eq!(observed["receipt"]["data"]["state"], "unknown");
+    let retried: Value = http()
+        .post(format!("{}/one/command", server.url))
+        .bearer_auth(A)
+        .json(&report)
+        .send()
+        .await
+        .unwrap()
+        .error_for_status()
+        .unwrap()
+        .json()
+        .await
+        .unwrap();
+    assert_eq!(retried["receipt"], observed["receipt"]);
+    assert_eq!(retried["execution_authorized"], false);
+    let inspect = call(
+        &a,
+        "awr_team_query",
+        json!({"protocol_version":1,"op":"execution.inspect",
+        "work_id":"a","execution_id":e["execution_id"]}),
+        false,
+    )
+    .await;
+    assert_eq!(inspect["data"]["recovery_blocked"], true);
+    assert_eq!(inspect["data"]["automatic_resume"], false);
+    let r=admin.query_one("SELECT (SELECT count(*) FROM awr_team.execution_receipts),
+        (SELECT state FROM awr_team.resource_reservations LIMIT 1),(SELECT count(*) FROM awr_team.outbox)",&[]).await.unwrap();
+    assert_eq!(r.get::<_, i64>(0), 1);
+    assert_eq!(r.get::<_, String>(1), "unknown");
+    assert_eq!(r.get::<_, i64>(2), 0);
+    a.cancel().await.unwrap();
+}
+
+#[tokio::test]
 async fn mcp_session_journal_reconnects_replays_and_shares_http_outcomes() {
     let (_guard, admin, _, store) = setup().await;
     enable_writes(&admin).await;
@@ -544,7 +617,7 @@ async fn mcp_rejects_forged_identity_unsupported_operations_and_context_truncati
             "InvalidInput"
         );
     }
-    for op in ["execution.start", "work.complete", "claim.transfer"] {
+    for op in ["execution.dispatch", "work.complete", "claim.transfer"] {
         let c = serde_json::to_value(command(&prepared(&a).await, "unimplemented", op, json!({})))
             .unwrap();
         assert_eq!(

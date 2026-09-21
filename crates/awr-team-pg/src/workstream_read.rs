@@ -263,8 +263,12 @@ pub(crate) async fn read(
         "commands":crate::workstream_command::COMMANDS,"scope_id":"main","authentication":"bearer_per_request","authorization":"transactional_workstream_grants",
         "command_preconditions":"project_revision_v1","command_status_query":"command.inspect",
         "claim_semantics":"coordination_only","lease_ttl_seconds":{"min":1,"max":3600},
-        "execution_intents":true,"execution_dispatch":false,"execution_start":false,"execution_reports":false,
-        "dependency_exports":false,"execution_admission":false,"artifact_content":false}),
+        "execution_intents":true,"execution_dispatch":false,"execution_start":true,"execution_reports":true,
+        "execution_modes":["caller_managed"],"execution_report_authority":"caller_asserted",
+        "execution_reconciliation":false,"trusted_execution_results":false,
+        "dependency_exports":false,"execution_admission":true,
+        "execution_admission_scope":"same_client_current_lease_lexical_project_resources",
+        "artifact_content":false}),
         );
     }
     if q.op == "workstreams.list" {

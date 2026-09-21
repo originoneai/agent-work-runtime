@@ -912,7 +912,7 @@ async fn current_contract(
 /// actual (upstream_work, receipt) pairs are returned for the completion
 /// mapping. An empty required set passes; "no invalid binding rows" is NOT
 /// proof of coverage (CR #42 P2-6).
-async fn required_dependencies_covered(
+pub(crate) async fn required_dependencies_covered(
     tx: &tokio_postgres::Transaction<'_>,
     tenant_id: &str,
     project_id: &str,

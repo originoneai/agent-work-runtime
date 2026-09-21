@@ -1,7 +1,7 @@
 # Team workstream HTTP and MCP service
 
 The development branch provides authenticated, multi-project HTTP/MCP queries
-and durable sessions, coordination claims and execution intents backed by
+and durable sessions, coordination claims and caller-managed execution backed by
 PostgreSQL. This is not a release
 announcement or a complete Team execution service. It does not dispatch
 executions, resume agents or adopt cross-workstream deliveries. Use its live
@@ -290,8 +290,9 @@ Execution intents persist a planned attempt under the same authenticated command
 transaction. They are a prerequisite for the remaining execution lifecycle, not
 permission to run a command. `execution.prepare` creates no outbox delivery and
 returns `dispatched: false`, `admission: "not_evaluated"` and
-`execution_authorized: false`. Starting, dispatching and reporting execution are
-not yet exposed; capabilities explicitly report those operations as unavailable.
+`execution_authorized: false`. Explicit caller-managed start and observation
+reporting are available. Dispatch, trusted execution reports and reconciliation
+are not yet exposed; capabilities distinguish these operations.
 
 | Operation | Strict `args` object |
 | --- | --- |
@@ -336,6 +337,61 @@ than assigning it from today's source. Such history needs explicit migration;
 an old epoch can be inspected within its unchanged ownership but cannot be
 cancelled under a new epoch without the recovery protocol.
 
+## Caller-managed start and observations
+
+`execution.start` takes `session_id`, `expected_session_version`, `execution_id`,
+`expected_execution_version`, `claim_id`, `expected_fence`,
+`expected_lease_version`, `expected_work_version` and
+`execution_mode: "caller_managed"`. Other modes are rejected. The same
+transaction checks current authority and ownership, the original prepared
+contract, a live owned claim, open waits, recovery state and required completion
+receipts. It reserves every declared path as a project-scoped lexical prefix and
+moves the attempt to `running`. The admission receipt records its dependency
+receipts and reservation identities. It creates no outbox and launches no process.
+
+Only the **original successful response** has top-level
+`execution_authorized: true`, permitting one caller-managed run under that lease.
+The stored receipt always has `execution_authorized: false`; its
+`admission: "granted_at_commit"` is a historical observation. Exact retries,
+`command.inspect` and `execution.inspect` never issue fresh execution permission.
+If the first response is lost, inspect and recover the attempt instead of starting
+another external effect. A new request ID cannot restart an already running attempt.
+
+A same-workstream required predecessor needs a selected completion receipt for
+its current contract and completed runtime. A source status alone is insufficient.
+Cross-workstream dependencies remain blocked until explicit export/adoption is
+implemented, including when a client can read both workstreams. The admission
+check is a snapshot; ongoing selective invalidation is not yet implemented.
+
+The resource check covers cooperating AWR clients in this project's lexical path
+namespace. It does not inspect client filesystems, separate physical worktrees,
+reserve undeclared external services, stop a process, or provide a hard fence.
+The client must honor lease expiry and cancellation. `fencing_class` stays
+`uncontrolled` and `exactly_once_supported` stays false. Full workspace/external
+resource identity is a later protocol.
+
+`execution.report` takes `session_id`, `expected_session_version`, `execution_id`,
+`expected_execution_version`, `outcome` (`succeeded`, `failed`, `cancelled` or
+`unknown`), `output_digest` (64 lowercase hex, required for `succeeded`),
+`observed_paths` (at most 128 canonical paths) and a nonempty `note` (at most 4 KiB).
+Only the original actor/client with current write authority may report. An elapsed
+claim does not prevent recording an observation; current session, ownership and
+epoch binding still apply. Reports may be recorded while the workstream is paused.
+
+These are **caller assertions**, not trusted result or stop confirmations. Each
+report is kept verbatim in an attributed execution receipt, including observations
+outside the declared scope and conflicting later reports. The execution becomes
+`unknown`, recovery remains blocked and its work's reserved resources become
+`unknown`; work is not completed and resources are not released. An already
+terminal attempt cannot be rewritten by this operation. Unknown fields such as
+`receipt_kind: "trusted_executor"` are rejected. A newer current contract does
+not erase observations against the original execution contract.
+
+This increment deliberately does not provide the trusted recovery path needed to
+settle these reports. It is not yet a complete recurring execution loop. The next
+protocol step must add authorized reconciliation and supported executor authority;
+ordinary callers cannot self-certify their way past this boundary.
+
 ## Limits and errors
 
 Requests are limited to 64 KiB, pages to 100 items, search to 512 bytes, and
@@ -358,7 +414,7 @@ disconnects.
 | --- | --- |
 | 400 | Invalid JSON, selectors or bounds |
 | 403 | Missing/invalid credential, denied scope, or hidden/missing object |
-| 409 | Scope/cursor/context limits, declared scope outside contract, stale preconditions/fence, held/expired lease, open wait, changed epoch, idempotency conflict, project barrier or unresolved recovery |
+| 409 | Scope/cursor/context limits, unavailable required dependency receipt, resource conflict, declared scope outside contract, stale preconditions/fence, held/expired lease, open wait, changed epoch, idempotency conflict, project barrier or unresolved recovery |
 | 413 | Request body too large |
 | 501 | Unsupported operation or protocol |
 | 503 | Busy, timed out, transient transaction conflict or unavailable data |
@@ -381,6 +437,8 @@ fence changes, expiry, atomic rollback, migration preservation and historical
 replay versus live inspection over HTTP/MCP. Execution-intent checks cover exact
 client ownership, scope/version guards, preparation/cancellation rollback, live
 revocation, unknown-effect preservation, legacy migration and shared HTTP/MCP
-receipts without dispatch. Execution admission, dispatch, reporting, history
-migration and enabled-project backup/restore remain
+receipts without dispatch. Admission tests additionally cover live lease/contract/
+wait/resource checks, required receipt coverage, one-time start responses, atomic
+rollback and preservation of unverified reports. Dispatch, trusted reporting,
+reconciliation, history migration and enabled-project backup/restore remain
 unavailable through this surface.
