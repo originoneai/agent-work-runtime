@@ -22,6 +22,21 @@ pub enum CatalogKind {
     Artifact,
     Evidence,
 }
+impl CatalogKind {
+    pub(crate) fn table(self) -> &'static str {
+        match self {
+            Self::Goal => "goals",
+            Self::Plan => "plans",
+            Self::Rule => "rules",
+            Self::Work => "work_items",
+            Self::Decision => "decisions",
+            Self::Source => "sources",
+            Self::Relation => "edges",
+            Self::Artifact => "artifacts",
+            Self::Evidence => "evidence",
+        }
+    }
+}
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize)]
 #[serde(rename_all = "snake_case")]
@@ -75,6 +90,18 @@ impl Store {
         cursor: Option<&CatalogCursor>,
         limit: usize,
     ) -> Result<CatalogPage> {
+        self.catalog_page_scoped(project, revision, kind, scope, cursor, limit, false)
+    }
+    pub(crate) fn catalog_page_scoped(
+        &self,
+        project: Id,
+        revision: Revision,
+        kind: CatalogKind,
+        scope: CatalogScope,
+        cursor: Option<&CatalogCursor>,
+        limit: usize,
+        scoped: bool,
+    ) -> Result<CatalogPage> {
         if !(1..=200).contains(&limit) {
             return Err(Error::InvalidInput("catalog limit must be 1..200".into()));
         }
@@ -102,18 +129,13 @@ impl Store {
                 });
             }
         }
-        let table = match kind {
-            CatalogKind::Goal => "goals",
-            CatalogKind::Plan => "plans",
-            CatalogKind::Rule => "rules",
-            CatalogKind::Work => "work_items",
-            CatalogKind::Decision => "decisions",
-            CatalogKind::Source => "sources",
-            CatalogKind::Relation => "edges",
-            CatalogKind::Artifact => "artifacts",
-            CatalogKind::Evidence => "evidence",
-        };
+        let table = kind.table();
         let has_source = !matches!(kind, CatalogKind::Source | CatalogKind::Artifact);
+        let visibility = if scoped {
+            crate::scoped_read::visible(table, "e.id")
+        } else {
+            "1".into()
+        };
         let from = if has_source {
             format!(
                 "{table} e LEFT JOIN sources s ON s.id=e.source_id AND s.project_id=e.project_id"
@@ -133,7 +155,7 @@ impl Store {
             CatalogScope::All => "1".into(),
         };
         let (active_total, retired_total): (u64, u64) = self.conn.query_row(
-            &format!("SELECT coalesce(sum(CASE WHEN {active} THEN 1 ELSE 0 END),0), coalesce(sum(CASE WHEN {active} THEN 0 ELSE 1 END),0) FROM {from} WHERE e.project_id=?1"),
+            &format!("SELECT coalesce(sum(CASE WHEN {active} THEN 1 ELSE 0 END),0), coalesce(sum(CASE WHEN {active} THEN 0 ELSE 1 END),0) FROM {from} WHERE e.project_id=?1 AND {visibility}"),
             [project.to_string()], |r| Ok((revision_at(r,0)?, revision_at(r,1)?))).map_err(db_error)?;
         let payload = match kind {
             CatalogKind::Source => {
@@ -159,7 +181,7 @@ impl Store {
                 .join(",")
         };
         let sql = format!(
-            "SELECT {source_columns},{payload},({active}) FROM {from} WHERE e.project_id=?1 AND {filter} AND (?2 IS NULL OR e.id>?2) ORDER BY e.id LIMIT ?3"
+            "SELECT {source_columns},{payload},({active}) FROM {from} WHERE e.project_id=?1 AND {filter} AND {visibility} AND (?2 IS NULL OR e.id>?2) ORDER BY e.id LIMIT ?3"
         );
         let mut rows = self
             .conn

@@ -8,7 +8,9 @@ or a database column alone does not establish support.
 The current domain module validates identity, ownership, scope selection and
 explicit grants. Source import and SQLite projections retain the scope contract.
 Session attribution, work-wide claims and reviewed ownership movement are wired
-through the personal runtime. Transport authorization and resource/dependency
+through the personal runtime. Explicit scoped read snapshots and registered-file
+read APIs are available to trusted Rust integrations. Default context compilation,
+transport authorization and resource/dependency
 enforcement are separate integration work;
 these rules do not enable isolated workstreams in an existing CLI, MCP service
 or Team coordinator.
@@ -185,3 +187,44 @@ across branches. Resolve them through the previous runtime before retrying; the
 migration never chooses a winner or deletes claims. An ambiguous historical
 workless session retains an unknown scope instead of guessing. Preview and failed
 migration leave the original schema and records unchanged.
+
+## Scoped read snapshots
+
+`Store::read_workstream` accepts current trusted `WorkstreamAccess` plus work,
+session, explicit scope or conversation selectors. It resolves those selectors
+against a coherent private-memory snapshot. Multiple authorized scopes without a
+selector are rejected. A selector never grants permission. The returned
+`WorkstreamRead` has no raw Store handle or mutation methods.
+
+Catalog counts and pages, event feeds, artifact/evidence metadata, checkpoint
+recovery and search use one derived visibility set. Filtering happens before
+limits and counts. Search builds its FTS corpus from visible objects only, so
+another scope's documents cannot affect BM25 scores or truncation. Scope-bound
+cursors include the project, subject and authority version; they do not confer
+access to an otherwise invisible object. The original database and its search
+cache remain unchanged.
+
+Goals use explicit workstream goal references. Plans and decisions need explicit
+local or shared references; mixed or unknown private scope is withheld. Existing
+rule scope expresses applicability, not confidentiality: the project rule source
+remains shared policy, including hard and unknown rules. Whole-source catalogs
+require the project administration interface. A dependency edge alone does not
+authorize disclosure of the other workstream's private objects.
+
+Session events keep immutable attribution. Work-only events use ownership at
+their recorded revision. Runtime evidence follows its creation event; artifacts
+and late artifact registrations follow their originating event. Moving work does
+not move historical events, checkpoints, evidence or artifacts into the new
+reader's scope. Recovery candidates are filtered before selecting the newest two.
+
+`Runtime::read_artifact_in_workstream` and
+`Runtime::read_evidence_report_in_workstream` authorize metadata before filesystem
+access, retain path/size/digest checks, and recheck the binding before returning
+content. Reading a report does not promote its evidence level.
+
+These are frozen read APIs, not reusable execution grants. Integrations must load
+current authenticated policy for each request and revalidate authority at action
+boundaries. Default context compilation, versioned semantic context identities,
+and authenticated CLI/HTTP/MCP/Team integration are not yet connected to this
+boundary. This implementation does not establish complete workstream isolation
+or business acceptance.

@@ -83,16 +83,30 @@ impl Store {
         work: Option<&str>,
         branch: Option<Id>,
     ) -> Result<Vec<Session>> {
+        self.resume_candidates_scoped(project, work, branch, false)
+    }
+    pub(crate) fn resume_candidates_scoped(
+        &self,
+        project: Id,
+        work: Option<&str>,
+        branch: Option<Id>,
+        scoped: bool,
+    ) -> Result<Vec<Session>> {
         let columns = SESSION_COLUMNS
             .split(',')
             .map(|c| format!("s.{c}"))
             .collect::<Vec<_>>()
             .join(",");
+        let visibility = if scoped {
+            crate::scoped_read::visible("sessions", "s.id")
+        } else {
+            "1".into()
+        };
         self.conn.prepare(&format!("SELECT {columns} FROM sessions s JOIN work_items w ON s.work_item_id=w.id AND s.project_id=w.project_id
             JOIN session_workstreams b ON b.project_id=s.project_id AND b.session_id=s.id
             JOIN workstream_ownership o ON o.project_id=b.project_id AND o.work_item_id=b.work_item_id AND o.workstream_id=b.workstream_id AND o.revision=b.ownership_revision
             JOIN sources src ON w.source_id=src.id AND w.project_id=src.project_id WHERE s.project_id=?1 AND s.branch_id IS ?2
-            AND w.active=1 AND src.active=1 AND w.status NOT IN ('completed','cancelled','unknown')
+            AND {visibility} AND w.active=1 AND src.active=1 AND w.status NOT IN ('completed','cancelled','unknown')
             AND (s.status IN ('active','incomplete','interrupted') OR (?3 IS NOT NULL AND s.status='ended'))
             AND (?3 IS NULL OR w.external_key=?3)
             AND NOT EXISTS(SELECT 1 FROM events e WHERE e.project_id=s.project_id AND e.event_type='session.resumed' AND json_extract(e.payload_json,'$.from_session_id')=s.id)

@@ -194,17 +194,21 @@ impl Store {
         self.conn.query_row("SELECT id,project_id,work_item_id,session_id,branch_id,event_type,importance,summary,payload_json,project_revision,created_at FROM events WHERE project_id=?1 AND id=?2",params![project.to_string(),id.to_string()],event_row).optional().map_err(db_error)?.ok_or_else(||Error::NotFound(format!("event {id}")))
     }
     pub fn query_events(&self, project: Id, query: &EventQuery) -> Result<EventPage> {
-        self.query_events_filtered(project, query, false)
+        self.query_events_filtered(project, query, false, false)
+    }
+    pub(crate) fn query_events_scoped(&self, project: Id, query: &EventQuery) -> Result<EventPage> {
+        self.query_events_filtered(project, query, false, true)
     }
     /// Reuse event ordering, cursor validation and immutable upper bounds for source consumers.
     pub fn query_source_events(&self, project: Id, query: &EventQuery) -> Result<EventPage> {
-        self.query_events_filtered(project, query, true)
+        self.query_events_filtered(project, query, true, false)
     }
     fn query_events_filtered(
         &self,
         project: Id,
         query: &EventQuery,
         sources_only: bool,
+        scoped: bool,
     ) -> Result<EventPage> {
         if query.limit == 0 || query.limit > 1000 {
             return Err(Error::InvalidInput("event limit must be 1..1000".into()));
@@ -279,14 +283,19 @@ impl Store {
                 ));
             }
         }
-        let mut events=tx.prepare("SELECT id,project_id,work_item_id,session_id,branch_id,event_type,importance,summary,payload_json,project_revision,created_at
-            FROM events WHERE project_id=?1 AND (?2 IS NULL OR work_item_id=?2) AND (?3 IS NULL OR session_id=?3)
+        let visibility = if scoped {
+            crate::scoped_read::visible("events", "events.id")
+        } else {
+            "1".into()
+        };
+        let mut events=tx.prepare(&format!("SELECT id,project_id,work_item_id,session_id,branch_id,event_type,importance,summary,payload_json,project_revision,created_at
+            FROM events WHERE project_id=?1 AND {visibility} AND (?2 IS NULL OR work_item_id=?2) AND (?3 IS NULL OR session_id=?3)
               AND (?4 OR branch_id IS ?5) AND (?6 IS NULL OR event_type=?6) AND (?7 IS NULL OR importance=?7)
               AND project_revision>?8 AND (?9 IS NULL OR (project_revision,created_at,id)>(?9,?10,?11))
               AND (?13 IS NULL OR (event_type LIKE 'source.%' AND json_extract(payload_json,'$.source_id')=?13))
               AND (?14 IS NULL OR project_revision<=?14)
               AND (NOT ?15 OR event_type LIKE 'source.%')
-            ORDER BY project_revision,created_at,id LIMIT ?12").map_err(db_error)?
+            ORDER BY project_revision,created_at,id LIMIT ?12")).map_err(db_error)?
             .query_map(params![project.to_string(),query.work_item_id.map(|id|id.to_string()),query.session_id.map(|id|id.to_string()),all_branches,branch.map(|id|id.to_string()),query.event_type,query.importance,sqlite_revision(query.after_revision)?,query.cursor.as_ref().map(|c|sqlite_revision(c.project_revision)).transpose()?,query.cursor.as_ref().map(|c|c.created_at),query.cursor.as_ref().map(|c|c.event_id.to_string()),(query.limit+1) as i64,query.source_id.map(|id|id.to_string()),query.through_revision.map(sqlite_revision).transpose()?,sources_only],event_row).map_err(db_error)?.collect::<rusqlite::Result<Vec<_>>>().map_err(db_error)?;
         let more = events.len() > query.limit;
         events.truncate(query.limit);
