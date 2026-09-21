@@ -83,6 +83,7 @@ impl SourceStore {
         let mut client = self.connect().await?;
         let tx = client.transaction().await?;
         bind_scope(&tx, &request.tenant_id, &request.project_id).await?;
+        crate::tx::lock_active_project(&tx, &request.tenant_id, &request.project_id).await?;
         let project = tx
             .query_opt(
                 "SELECT authority_epoch FROM awr_team.projects
@@ -114,16 +115,17 @@ impl SourceStore {
         tx.execute(
             "INSERT INTO awr_team.artifacts(
                 tenant_id, project_id, id, object_key, sha256, byte_length,
-                media_type, state, created_by)
-             VALUES ($1,$2,$3,$4,$5,$6,'application/json','finalized',$7)",
+                media_type, state, created_by, content)
+             VALUES ($1,$2,$3,$4,$5,$6,'application/json','finalized',$7,$8)",
             &[
                 &request.tenant_id,
                 &request.project_id,
                 &artifact_id,
                 &format!("snapshots/{snapshot_id}"),
                 &manifest_digest,
-                &(files.iter().map(|(_, b)| b.len() as i64).sum::<i64>()),
+                &(manifest.to_string().len() as i64),
                 &request.actor_id,
+                &manifest.to_string().into_bytes(),
             ],
         )
         .await?;
@@ -182,6 +184,7 @@ impl SourceStore {
         let mut client = self.connect().await?;
         let tx = client.transaction().await?;
         bind_scope(&tx, tenant_id, project_id).await?;
+        crate::tx::lock_active_project(&tx, tenant_id, project_id).await?;
         let row = tx
             .query_opt(
                 "SELECT p.author_actor_id, s.manifest_digest, p.state
@@ -275,6 +278,7 @@ impl SourceStore {
         let mut client = self.connect().await?;
         let tx = client.transaction().await?;
         bind_scope(&tx, tenant_id, project_id).await?;
+        crate::tx::lock_active_project(&tx, tenant_id, project_id).await?;
         let locked = tx
             .query_opt(
                 "SELECT authority_epoch, active_snapshot_id, project_revision
@@ -562,7 +566,7 @@ fn sha256_hex(bytes: &[u8]) -> String {
     format!("{:x}", Sha256::digest(bytes))
 }
 
-fn build_manifest(parser_version: &str, files: &[(String, Vec<u8>)]) -> PgResult<Value> {
+pub(crate) fn build_manifest(parser_version: &str, files: &[(String, Vec<u8>)]) -> PgResult<Value> {
     Ok(json!({
         "schema_version": 1,
         "parser_version": parser_version,
@@ -600,7 +604,7 @@ async fn validate_reviewer(
     crate::tx::validate_reviewer(tx, tenant_id, project_id, reviewer_actor_id).await
 }
 
-fn files_from_ref(source_ref: &Value) -> PgResult<Vec<(String, Vec<u8>)>> {
+pub(crate) fn files_from_ref(source_ref: &Value) -> PgResult<Vec<(String, Vec<u8>)>> {
     let files = source_ref
         .get("files")
         .and_then(Value::as_array)

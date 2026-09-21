@@ -80,6 +80,31 @@ impl ReferenceRunner {
         }
     }
 
+    /// Persist a recovery barrier under the same lock held throughout effects.
+    /// Waits for a current writer; after this returns, older tokens cannot write.
+    /// Call for every barrier returned by restore before clearing recovery state.
+    pub fn install_recovery_barrier(&self, barrier: &crate::FencingBarrier) -> Result<(), String> {
+        fs::create_dir_all(self.fencing_dir()).map_err(|e| e.to_string())?;
+        let delivery = OutboxDelivery {
+            coordinator_epoch: barrier.coordinator_epoch.clone(),
+            tenant_id: barrier.tenant_id.clone(),
+            project_id: barrier.project_id.clone(),
+            scope_id: barrier.scope_id.clone(),
+            work_id: barrier.work_id.clone(),
+            fence: barrier.fence,
+            outbox_id: String::new(),
+            execution_id: String::new(),
+            effect_key: String::new(),
+            fencing_class: "hard_fence".into(),
+            declared_scope: json!([]),
+            payload: json!({}),
+            delivery_attempts: 0,
+        };
+        let _generation = self.acquire_generation(&delivery, true)?;
+        let _guard = self.acquire_work_fence(&delivery, true)?;
+        Ok(())
+    }
+
     /// Visible to pg-tests for crash-recovery fixtures.
     pub fn base_outcome(&self, delivery: &OutboxDelivery, state: &str) -> RunnerOutcome {
         self.base_outcome_impl(delivery, state)
@@ -136,11 +161,82 @@ impl ReferenceRunner {
         }
     }
 
+    /// One durable generation per PROJECT, not per epoch or work. This also
+    /// retires delayed commands for work created after the database backup.
+    /// The trusted recovery controller installs barriers; delivery cannot rotate
+    /// the generation. Hold this lock throughout each effect and installation.
+    fn acquire_generation(
+        &self,
+        delivery: &OutboxDelivery,
+        install: bool,
+    ) -> Result<OsLock, String> {
+        if delivery.coordinator_epoch.is_empty() {
+            return Err("missing coordinator generation; recovery barrier required".into());
+        }
+        let key = fence_key(&delivery.tenant_id, &delivery.project_id, "", "");
+        let path = self.fencing_dir().join(format!("generation-{key}"));
+        let lock = self.fencing_dir().join(format!("generation-lock-{key}"));
+        let guard = self.acquire_os_lock(&lock, "generation ledger")?;
+        let identity = json!([delivery.tenant_id, delivery.project_id]);
+        let mut record = match fs::read(&path) {
+            Ok(bytes) => {
+                let value: Value =
+                    serde_json::from_slice(&bytes).map_err(|_| "generation ledger is corrupt")?;
+                if value["identity"] != identity
+                    || !value["epoch"].is_string()
+                    || !value["retired"]
+                        .as_array()
+                        .is_some_and(|a| a.iter().all(Value::is_string))
+                {
+                    return Err("generation ledger is corrupt".into());
+                }
+                value
+            }
+            Err(e) if e.kind() == ErrorKind::NotFound => {
+                json!({"identity": identity, "epoch": delivery.coordinator_epoch, "retired": []})
+            }
+            Err(e) => return Err(format!("generation ledger unreadable: {e}")),
+        };
+        if record["epoch"] != delivery.coordinator_epoch {
+            if !install {
+                return Err("stale coordinator generation".into());
+            }
+            if record["retired"]
+                .as_array()
+                .unwrap()
+                .iter()
+                .any(|v| *v == delivery.coordinator_epoch)
+            {
+                return Err("retired coordinator generation".into());
+            }
+            let old = record["epoch"].clone();
+            record["retired"].as_array_mut().unwrap().push(old);
+            record["epoch"] = json!(delivery.coordinator_epoch);
+        }
+        // Sync before allowing any effect. A torn record fails closed on restart.
+        use std::io::Write;
+        let mut file = fs::File::create(&path).map_err(|e| e.to_string())?;
+        file.write_all(record.to_string().as_bytes())
+            .map_err(|e| e.to_string())?;
+        file.sync_all().map_err(|e| e.to_string())?;
+        Ok(guard)
+    }
+
+    fn acquire_fence(&self, delivery: &OutboxDelivery) -> Result<(OsLock, OsLock), String> {
+        let generation = self.acquire_generation(delivery, false)?;
+        let work = self.acquire_work_fence(delivery, false)?;
+        Ok((generation, work))
+    }
+
     /// Resource-end fencing under the per-identity OS lock. The caller keeps
     /// the guard for the WHOLE effect phase, so a stale executor that passed
     /// an earlier check cannot reorder its writes past a newer one
     /// (CR #58 r3/r4).
-    fn acquire_fence(&self, delivery: &OutboxDelivery) -> Result<OsLock, String> {
+    fn acquire_work_fence(
+        &self,
+        delivery: &OutboxDelivery,
+        install: bool,
+    ) -> Result<OsLock, String> {
         let (ledger, lock) = self.fence_paths(delivery);
         let guard = self.acquire_os_lock(&lock, "fence ledger")?;
         let identity = json!([
@@ -159,12 +255,19 @@ impl ReferenceRunner {
                 if record.get("identity") != Some(&identity) {
                     return Err("fence ledger identity mismatch".to_string());
                 }
+                if !record["epoch"].is_string() && !install {
+                    return Err("legacy fence ledger requires recovery barrier".into());
+                }
                 let fence = record
                     .get("fence")
                     .and_then(Value::as_str)
                     .and_then(|s| s.parse().ok())
                     .ok_or_else(|| "fence ledger is corrupt".to_string())?;
-                Some(fence)
+                if record["epoch"] == delivery.coordinator_epoch {
+                    Some(fence)
+                } else {
+                    None
+                }
             }
             Err(error) if error.kind() == ErrorKind::NotFound => None,
             Err(error) => return Err(format!("fence ledger unreadable: {error}")),
@@ -187,7 +290,7 @@ impl ReferenceRunner {
                 .open(&ledger)
                 .map_err(|e| format!("fence ledger persist failed: {e}"))?;
             use std::io::Write;
-            let record = json!({"identity": identity, "fence": delivery.fence.to_string()});
+            let record = json!({"identity": identity, "epoch": delivery.coordinator_epoch, "fence": delivery.fence.to_string()});
             file.write_all(record.to_string().as_bytes())
                 .map_err(|e| format!("fence ledger persist failed: {e}"))?;
             file.sync_all()

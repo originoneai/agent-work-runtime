@@ -97,14 +97,25 @@ function install() {
   const byId = new Map();
   for (const id of IDS) byId.set(id, new StubElement('div'));
 
+  // 按选择器取的元素（app.js 用 [data-note="..."] 找说明段落）。
+  const bySelector = new Map();
+  for (const note of ['contextChart', 'queues', 'checkpoints', 'mcp', 'criteria', 'completeness', 'pending']) {
+    bySelector.set(`[data-note="${note}"]`, new StubElement('p'));
+  }
+
   const document = {
     getElementById: (id) => {
       if (!byId.has(id)) byId.set(id, new StubElement('div'));
       return byId.get(id);
     },
     createElement: (tag) => new StubElement(tag),
+    createTextNode: (text) => {
+      const node = new StubElement('#text');
+      node.textContent = text;
+      return node;
+    },
     querySelectorAll: () => [],
-    querySelector: () => null,
+    querySelector: (sel) => bySelector.get(sel) || null,
     addEventListener: () => {},
     documentElement: new StubElement('html'),
   };
@@ -132,7 +143,7 @@ function install() {
     writable: true,
   });
 
-  return { document, byId };
+  return { document, byId, bySelector };
 }
 
 module.exports = { install, StubElement };

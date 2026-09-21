@@ -154,13 +154,7 @@ async fn lock_project(
     tenant_id: &str,
     project_id: &str,
 ) -> PgResult<()> {
-    tx.query_opt(
-        "SELECT id FROM awr_team.projects WHERE tenant_id=$1 AND id=$2 FOR UPDATE",
-        &[&tenant_id, &project_id],
-    )
-    .await?
-    .ok_or(PgError::ProjectNotAvailable)?;
-    Ok(())
+    crate::tx::lock_active_project(tx, tenant_id, project_id).await
 }
 
 pub struct GraphStore {
@@ -481,6 +475,7 @@ impl GraphStore {
         let mut client = self.connect().await?;
         let tx = client.transaction().await?;
         bind_scope(&tx, tenant_id, project_id).await?;
+        lock_project(&tx, tenant_id, project_id).await?;
         tx.execute(
             "INSERT INTO awr_team.dependency_bindings(
                 tenant_id, project_id, downstream_work_id, upstream_work_id, binding_hash, valid)
@@ -509,6 +504,7 @@ impl GraphStore {
         let mut client = self.connect().await?;
         let tx = client.transaction().await?;
         bind_scope(&tx, tenant_id, project_id).await?;
+        lock_project(&tx, tenant_id, project_id).await?;
         let count = tx
             .execute(
                 "UPDATE awr_team.dependency_bindings SET valid=false

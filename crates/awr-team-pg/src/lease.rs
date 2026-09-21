@@ -838,13 +838,7 @@ async fn lock_project(
     tenant_id: &str,
     project_id: &str,
 ) -> PgResult<()> {
-    tx.query_opt(
-        "SELECT id FROM awr_team.projects WHERE tenant_id=$1 AND id=$2 FOR UPDATE",
-        &[&tenant_id, &project_id],
-    )
-    .await?
-    .ok_or(PgError::ProjectNotAvailable)?;
-    Ok(())
+    crate::tx::lock_active_project(tx, tenant_id, project_id).await
 }
 
 /// Expire due claims. Every claim that actually transitions is returned

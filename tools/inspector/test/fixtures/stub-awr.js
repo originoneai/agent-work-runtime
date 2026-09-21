@@ -68,6 +68,37 @@ if (mode === 'hugewrite') {
   return;
 }
 
+if (mode === 'incomplete') {
+  // 复现 `context compile` 的真实行为：上下文不完整时退出 1，
+  // 但 stdout 上照样给出完整报告。
+  process.stdout.write(
+    JSON.stringify({
+      ok: false,
+      project_revision: 9,
+      error: { code: 'ContextIncomplete', message: 'context incomplete: L1 has required gaps' },
+      completeness: {
+        complete: false,
+        status: 'CONTEXT INCOMPLETE',
+        project_revision: 9,
+        rules_complete: false,
+        acceptance_complete: true,
+        issues: [{ code: 'hard_rule_unresolved', field: 'rules_complete' }],
+        evidence_gaps: [],
+        unresolved_required_dependencies: [],
+      },
+      work_context: {
+        rendered_context: '# 不完整但仍然有内容',
+        token_estimate: 120,
+        required_tokens: 100,
+        token_budget: 8000,
+        selected_chunks: [{ key: 'rules/a', section: 'rules', required: true }],
+        omitted_chunks: [],
+      },
+    })
+  );
+  process.exit(1);
+}
+
 if (mode === 'huge') {
   // 远超 stdout 上限。用 writeSync：process.stdout.write 是异步的，
   // 紧接着 process.exit() 会把还在管道缓冲里的数据丢掉。

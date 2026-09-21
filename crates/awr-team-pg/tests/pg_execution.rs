@@ -573,9 +573,13 @@ async fn reconcile_keeps_block_while_other_unknowns_remain() {
     let (_session, claim) = claimed(&leases).await;
     let e1 = prepare_default(&store, &claim, "prep-r1").await;
     let e2 = prepare_default(&store, &claim, "prep-r2").await;
-    for (id, req) in [(&e1, "u1"), (&e2, "u2")] {
+    // Both effects began before uncertainty was observed. Once the first
+    // unknown report lands, the recovery gate correctly refuses new starts.
+    for id in [&e1, &e2] {
         store.accept(TENANT, PROJECT, id, 1).await.unwrap();
         store.start(TENANT, PROJECT, id, 1).await.unwrap();
+    }
+    for (id, req) in [(&e1, "u1"), (&e2, "u2")] {
         store
             .report(
                 TENANT,
@@ -864,6 +868,7 @@ fn delivery_on_work(
     scope: &[&str],
 ) -> awr_team_pg::OutboxDelivery {
     awr_team_pg::OutboxDelivery {
+        coordinator_epoch: "epoch-1".into(),
         outbox_id: format!("ob-{id}"),
         execution_id: id.into(),
         effect_key: id.into(),

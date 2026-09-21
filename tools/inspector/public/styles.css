@@ -295,7 +295,9 @@ button { font: inherit; color: inherit; }
   }
 }
 
-main { position: relative; z-index: 1; padding: 30px 16px 64px; max-width: 1120px; }
+/* 不设固定宽度上限，铺满可用空间。
+   正文、注脚这类按 ch 限了行长，宽屏下也不会拉成一行读不完的长句。 */
+main { position: relative; z-index: 1; padding: 30px 16px 64px; }
 @media (min-width: 940px) { main { padding: 38px 40px 80px; } }
 
 /* ───────── 标题区 ───────── */

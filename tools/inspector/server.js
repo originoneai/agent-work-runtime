@@ -391,6 +391,13 @@ async function runCommand(commandKey, extra) {
       const errJson =
         (parsed && (parsed.code || parsed.error) ? parsed : null) || tryParseJson(result.stderr);
       const domain = errJson && (errJson.error || errJson);
+
+      // 退出码非 0 不等于「没有结果」。
+      // 比如 `context compile` 在上下文不完整时会退出 1，但 stdout 上照样给出
+      // 完整的报告——完整性的各个维度、issues、证据缺口全在里面，那正是这时候
+      // 最需要看的东西。能解析出真正的载荷就一并带上，让界面自己决定怎么呈现。
+      const payload = carriesPayload(parsed) ? parsed : null;
+
       return {
         ok: false,
         command,
@@ -398,6 +405,7 @@ async function runCommand(commandKey, extra) {
         error: domain && domain.code
           ? domain
           : { code: 'CommandFailed', message: (result.stderr || result.stdout || '').trim() },
+        data: payload,
         raw: errJson || null,
       };
     }
@@ -413,6 +421,16 @@ async function runCommand(commandKey, extra) {
 
     return { ok: true, command, data: parsed };
   }
+}
+
+/**
+ * 判断一个解析出来的 JSON 是不是真的载荷，而不只是一个错误壳子。
+ * 只有 code / message / error / details 这类字段的，是错误本身，不是结果。
+ */
+function carriesPayload(value) {
+  if (!value || typeof value !== 'object' || Array.isArray(value)) return false;
+  const shell = ['code', 'message', 'error', 'details', 'ok'];
+  return Object.keys(value).some((k) => shell.indexOf(k) < 0);
 }
 
 /** 只认「不认识 --json」这一种情况，别的参数报错不算。 */
@@ -507,8 +525,17 @@ const routes = {
     const goal = asKey(body.goal);
     if (goal) extra.push('--goal', goal);
 
-    const budget = Number(body.budget);
-    if (Number.isInteger(budget) && budget >= 500 && budget <= 200000) {
+    // 上限跟着 AWR 走：crates/awr-context/src/budget.rs 里是 1..100000。
+    // 超限就明确拒绝。之前是悄悄不传 --budget 让 AWR 用默认的 5000——
+    // 结果一个 105000 的请求会以 5000 跑一遍再失败，谁也看不懂发生了什么。
+    if (body.budget !== undefined && body.budget !== null && body.budget !== '') {
+      const budget = Number(body.budget);
+      if (!Number.isInteger(budget) || budget < 500 || budget > 100000) {
+        return {
+          ok: false,
+          error: { code: 'BadRequest', message: 'budget 必须是 500 到 100000 之间的整数' },
+        };
+      }
       extra.push('--budget', String(budget));
     }
 

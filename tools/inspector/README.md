@@ -64,6 +64,7 @@ node server.js --project /你的/项目路径
 | 位置 | 观察字段 |
 | --- | --- |
 | 概览 · 状态条 | 四个队列计数、结构缺口数、组织状态、project revision |
+| 上下文 · 这个包有多大 | 必需内容 / 这次装进去的 / 预算上限，都是这次编译实际返回的数。就画在编译按钮下面 |
 | 概览 · 结构缺口 | `organization.gaps` 的 code / target / 说明 |
 | 概览 · 待查的运行时操作 | `pending_operations`——被中断、结果未知的操作（字段缺失时整块隐藏）|
 | 工作项 · 表格 | 队列、源状态、负责人、认领状态、诊断码、source revision |
@@ -73,8 +74,8 @@ node server.js --project /你的/项目路径
 
 ### 拿不到的两项
 
-`awr session list` 和 `awr event history` 在**发布版 0.4.0 和当前源码树里都返回
-`Unsupported`**（`operation is not implemented`），所以：
+`awr session list` 和 `awr event history` 到 **0.5.0 为止仍返回 `Unsupported`**
+（`operation is not implemented`），所以：
 
 - 最近 checkpoint / open loop 列表
 - 事件时间线
@@ -133,20 +134,22 @@ stdout / stderr / 请求体都有字节上限，并发子进程数有上限。
 
 ## 界面上的数字对不上？
 
-四条命令的映射都跑过真实的 `awr 0.4.0`（`examples/basic` 初始化出来的项目）核对过。
+四条命令的映射在真实的 `awr 0.4.0` 和 `0.5.0` 上都核对过。
 
 ### 版本差异
 
-已发布的 0.4.0 和当前源码树的 `status` 输出**不是同一个形状**，本工具两种都认：
+0.4.0 和 0.5.0 的 `status` 输出**不是同一个形状**，本工具两种都认：
 
-| | 发布版 0.4.0 | 当前源码树 |
+| | 0.4.0 | 0.5.0 及以后 |
 | --- | --- | --- |
 | `status` 的队列 | 只有 `current` 数组 | `current`/`ready`/`waiting`/`blocked` 四个数组 |
 | ready 列表从哪来 | 另跑 `awr ready` | `status` 自带 |
 | waiting 队列 | **没有** | 有 |
 | 截断条数 | `ready_total` 减列表长度 | `omissions.<队列>` |
+| `pending_operations` | 没有 | 有 |
 
-发布版没有的队列，界面显示「—」并说明原因，不拿 0 冒充「没有」。
+版本里没有的队列，界面显示「—」并说明原因，不拿 0 冒充「没有」；
+`pending_operations` 缺失时整块面板隐藏。0.5.0 发布后本工具未改一行代码即适配。
 
 遇到某一格显示「—」：
 
@@ -156,6 +159,13 @@ stdout / stderr / 请求体都有字节上限，并发子进程数有上限。
 
 所有字段映射都集中在那一张表里，别处不猜字段。
 
+### 一个测不出来的数
+
+界面上没有「不用 AWR 要读多少 token」这种对比条。AWR 不报语料体积，浏览器里也没有
+o200k 分词器，这个数造不出来。仓库公开 benchmark 的那组对比（18,955 → 4,998）写在
+新手引导第一页，并标明那是 39 个活跃任务上的测量值、不是你项目的数。
+你自己项目的实测，在「上下文」页编译一次就有。
+
 ---
 
 ## 测试
@@ -164,7 +174,7 @@ stdout / stderr / 请求体都有字节上限，并发子进程数有上限。
 node --test test/*.test.js
 ```
 
-32 个用例，零依赖，分两档：
+48 个用例，零依赖，分三档：
 
 - `test/bridge.test.js` —— 起真实的 `server.js` 子进程、打真实 HTTP 请求，PATH 上放一个
   假 `awr`（`test/fixtures/stub-awr.js`）。覆盖请求来源边界、命令构造、子进程输出、
@@ -172,6 +182,12 @@ node --test test/*.test.js
 - `test/detail.test.js` —— 在一个最小 DOM 替身（`test/fixtures/dom-stub.js`）上跑
   `app.js` 里**真正的** `renderWorkDetail()`，不是抄一份副本来测。覆盖缓存命中时
   详情与原始响应是否配套、迟到响应（成功与失败）的丢弃、刷新后旧响应的作废。
+- `test/packet-size.test.js` —— 同样在替身上跑真正的 `renderPacketSize()` 和
+  `doCompile()`。覆盖编译后体积面板会不会填上、三条数字是否原样取自 AWR、
+  空态有没有承诺做不到的事、换一次编译旧数字会不会残留。另外三条查页面自身的一致性：
+  每个 `?` 都有对应的说明段落（点了没反应的按钮界面上看不出来）、没有打不开的说明、
+  主区不再有固定宽度上限。再三条守 `BudgetExceeded` 的处理：重试按钮不超过 AWR 的上限、
+  必需量本身超上限时不给必然失败的按钮、先成功再失败时上一次的数字不残留。
 
 CI 见 `.github/workflows/inspector.yml`。
 
@@ -195,8 +211,11 @@ public/
   app.js             字段映射、渲染、新手引导
   demo-data.js       演示数据（结构与真实 JSON 一致）
 test/
-  bridge.test.js     桥接测试
+  bridge.test.js        桥接测试
+  detail.test.js        详情面板的前端回归
+  packet-size.test.js   上下文体积面板的回归
   fixtures/stub-awr.js  假的 awr，用来制造边界情况
+  fixtures/dom-stub.js  最小 DOM 替身，让 app.js 能在 Node 里跑
 ```
 
 ---

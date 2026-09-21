@@ -195,6 +195,9 @@
   ];
   const queueMeta = (k) => QUEUES.find((q) => q.key === k) || { label: k || '—', dot: '', why: '' };
 
+  /** AWR 的预算上限（crates/awr-context/src/budget.rs 里是 1..100000）。桥接和这里必须一致。 */
+  const BUDGET_MAX = 100000;
+
   // ───────────────────────── 代际守卫 ─────────────────────────
 
   /**
@@ -380,7 +383,6 @@
       orgState: pick(raw, M.orgState, null),
       freshness: pick(raw, M.freshness, null),
       guidance: pick(raw, M.guidance, null),
-      contextSample: raw && raw.context_sample ? raw.context_sample : null,
     };
   }
 
@@ -439,8 +441,13 @@
 
     const omissions = (pick(raw, M.omissions, []) || []).map((o) =>
       typeof o === 'string'
-        ? { detail: o }
-        : { detail: [o.key, o.section].filter((x) => x != null).join(' · ') || JSON.stringify(o), reason: o.reason }
+        ? { detail: o, key: o, section: null, reason: null }
+        : {
+            key: o.key || null,
+            section: o.section != null ? String(o.section) : null,
+            reason: o.reason || null,
+            detail: [o.key, o.section].filter((x) => x != null).join(' · ') || JSON.stringify(o),
+          }
     );
 
     // 完整性的各个维度。AWR 给的是一组布尔，缺哪一维要能一眼看到。
@@ -459,6 +466,7 @@
 
     return {
       rendered: pick(raw, M.rendered, ''),
+      work: pick(raw, ['work_context.identity.work_item_key'], null),
       sections,
       chunkTotal: chunks.length,
       dimensions,
@@ -521,6 +529,30 @@
     box.appendChild(t);
     box.appendChild(el('div', 'msg', msg));
     if (advice) box.appendChild(el('div', 'msg', advice));
+
+    // AWR 会在 details 里给出实际需要多少 token，直接做成一个按钮，省得人自己算。
+    const required = error && error.details && Number(error.details.required);
+    if (code === 'BudgetExceeded' && Number.isFinite(required)) {
+      if (required > BUDGET_MAX) {
+        // 必需内容本身就超过了 AWR 的上限，没有任何预算能编译成功——
+        // 给按钮就是骗人，说清楚原因。
+        box.appendChild(el('div', 'msg',
+          `必需内容就有 ${group(required)} tokens，已经超过 AWR 的上限 ${group(BUDGET_MAX)}。` +
+          '调预算解决不了，得减少这件活关联的规则、依赖或源引文。'));
+      } else {
+        // 留 10% 余量，但不能超过 AWR 的上限——超了桥接会拒，等于白点一次。
+        const target = Math.min(BUDGET_MAX, Math.ceil((required * 1.1) / 500) * 500);
+        const act = el('div', 'actions');
+        const bump = el('button', 'btn', `把 budget 调到 ${group(target)} 并重编译`);
+        bump.addEventListener('click', () => {
+          $('fBudget').value = String(target);
+          updateCliMirror();
+          doCompile();
+        });
+        act.appendChild(bump);
+        box.appendChild(act);
+      }
+    }
     if (command) {
       const cmd = el('div', 'cmd');
       cmd.appendChild(el('span', 'prompt', '$'));
@@ -595,7 +627,6 @@
       strip.appendChild(kv);
     }
 
-    renderContextChart(s);
     renderQueueTabs();
     renderQueueList();
     renderGaps(s);
@@ -606,37 +637,42 @@
     setText('mcpSub', state.mode === 'live' ? '本工具走 CLI，agent 走 MCP' : '演示模式');
   }
 
-  function renderContextChart(s) {
-    const wrap = $('cmpChart');
+  /**
+   * 这个包有多大。
+   *
+   * 三条都是 AWR 这次编译直接给出的数，不做任何推算：必需内容 / 装进去的 / 预算上限。
+   * 它就画在编译按钮下面——度量和产生它的动作在同一页，不必跨页保存状态。
+   *
+   * 「读全量源码要多少 token」这类对比这里做不出来：AWR 不报语料体积，
+   * 浏览器里也没有 o200k 分词器。造一个数不如不做。
+   */
+  function renderPacketSize(ctx) {
+    const wrap = $('sizeChart');
     clear(wrap);
-    const sample = s.contextSample;
 
-    if (!sample) {
-      setText('heroBig', '—');
-      setText('heroCap', '还没有编译记录');
-      wrap.appendChild(stateBlock('empty', '还没有可对比的数据',
-        '去「上下文」页编译一次，这里就会显示这个项目自己的体积对比。'));
-      setText('cmpNote', '');
-      setText('cmpSub', '');
+    if (!ctx || ctx.total == null) {
+      setText('ctxBig', '—');
+      setText('ctxCap', '还没有编译');
+      setText('sizeSub', '');
+      setText('sizeNote', '');
+      wrap.appendChild(stateBlock('empty', '还没有编译',
+        '在上面选好工作项和预算，点「编译」，这里会显示这个包的实测体积。'));
       return;
     }
 
-    const full = sample.full_corpus_tokens;
+    const budget = ctx.budget || ctx.total || 1;
     const rows = [
-      { label: '读完整源码', tokens: full, lead: false },
-      { label: 'CLI JSON 全量响应', tokens: sample.json_dump_tokens, lead: false },
-      { label: 'AWR 编译包', tokens: sample.compiled_tokens, lead: true },
-    ];
+      { label: '必需内容', tokens: ctx.requiredTokens, lead: false },
+      { label: '这次装进去的', tokens: ctx.total, lead: true },
+      { label: '预算上限', tokens: ctx.budget, lead: false },
+    ].filter((r) => Number.isFinite(r.tokens));
 
     for (const r of rows) {
-      const pct = full ? (r.tokens / full) * 100 : 0;
+      const pct = Math.min(100, (r.tokens / budget) * 100);
       const row = el('div', 'cmp-row' + (r.lead ? ' is-lead' : ''));
       const label = el('div', 'cmp-label');
       label.appendChild(document.createTextNode(r.label + ' '));
       label.appendChild(el('span', 'num', group(r.tokens) + ' tokens'));
-      if (r.tokens !== full) {
-        label.appendChild(el('span', 'delta', '−' + (100 - pct).toFixed(1) + '%'));
-      }
       row.appendChild(label);
       const track = el('div', 'cmp-track');
       const fill = el('div', 'cmp-fill');
@@ -646,11 +682,13 @@
       wrap.appendChild(row);
     }
 
-    const saved = full ? (100 - (sample.compiled_tokens / full) * 100).toFixed(1) : '0';
-    setText('heroBig', '−' + saved + '%');
-    setText('heroCap', '上下文 token 对比全量源码');
-    setText('cmpSub', sample.note ? '公开基准值' : '本项目实测');
-    setText('cmpNote', sample.note || '');
+    const used = ctx.budget ? Math.round((ctx.total / ctx.budget) * 100) : null;
+    setText('ctxBig', group(ctx.total));
+    setText('ctxCap', 'tokens' + (ctx.work ? ' · ' + ctx.work : ''));
+    setText('sizeSub', used != null ? `用掉预算的 ${used}%` : '');
+    setText('sizeNote', ctx.omissions.length
+      ? `因预算省略了 ${ctx.omissions.length} 块，详见右侧完整性面板。`
+      : '没有内容被省略。');
   }
 
   function renderQueueTabs() {
@@ -1093,25 +1131,48 @@
       });
       state.raw.context = res;
       showRaw('rawContextBody', res);
-      if (res.ok) ctx = normContext(res.data);
-      else failure = res;
+      if (res.ok) {
+        ctx = normContext(res.data);
+      } else if (res.data) {
+        // 上下文不完整时 AWR 会退出 1，但报告是完整给出来的。
+        // 这正是要看完整性面板的时候——照常渲染，同时把诊断显示出来。
+        ctx = normContext(res.data);
+        failure = res;
+      } else {
+        failure = res;
+      }
     }
 
     btn.disabled = false;
+    if (ctx) ctx.work = ctx.work || work;
     state.compile = ctx;
 
-    if (failure) {
+    // 拿不到任何报告才算真失败。
+    if (failure && !ctx) {
+      // 先按「没有编译结果」把所有面板归零——体积、大数字、省略折叠区、组成、
+      // 完整性、预览——否则上一次成功的数字会留在页面上，和这次的错误摆在一起。
+      renderCompile();
       clear($('breakdown'));
       $('breakdown').appendChild(errorBlock(failure.error, failure.command));
-      clear($('completeBody'));
-      setText('packetTotal', '');
-      setText('packetNote', '');
-      setText('packetPreview', '');
       setText('compileHint', '编译失败。');
       return;
     }
 
     renderCompile();
+
+    if (failure) {
+      // 报告有，只是 AWR 判定它不完整——把它的原话放在完整性面板顶上。
+      const cb = $('completeBody');
+      const note = el('div', 'state err');
+      note.style.padding = '12px 0 0';
+      const t = el('div', 'title');
+      t.appendChild(el('span', 'errcode', (failure.error && failure.error.code) || 'Error'));
+      note.appendChild(t);
+      note.appendChild(el('div', 'msg', (failure.error && failure.error.message) || ''));
+      cb.appendChild(note);
+      setText('compileHint', 'AWR 判定这份上下文不完整，下面写明了缺什么。');
+      return;
+    }
     setText('compileHint', ctx.revision != null
       ? `revision ${ctx.revision} · 不写权威源，可能刷新投影`
       : '不写权威源，可能刷新投影');
@@ -1119,12 +1180,18 @@
 
   function renderCompile() {
     const ctx = state.compile;
+    renderPacketSize(ctx);
+
     const bd = $('breakdown');
     clear(bd);
     if (!ctx) {
+      resetOmissions();
       bd.appendChild(stateBlock('empty', '还没有编译', '在上面选好参数，点「编译」。'));
       clear($('completeBody'));
       $('completeBody').appendChild(stateBlock('empty', '—', '编译之后这里会显示有没有内容被省略。'));
+      setText('packetTotal', '');
+      setText('packetNote', '');
+      setText('completeSub', '');
       setText('packetPreview', '');
       return;
     }
@@ -1216,21 +1283,69 @@
       cb.appendChild(ul);
     }
 
-    if (ctx.omissions.length) {
-      const ul = el('ul', 'crit-list');
-      ul.style.marginTop = '14px';
-      for (const o of ctx.omissions) {
-        const item = el('li');
-        item.appendChild(el('span', 'box', '—'));
-        item.appendChild(el('span', null, o.reason ? `${o.detail}（${o.reason}）` : o.detail));
-        ul.appendChild(item);
-      }
-      cb.appendChild(ul);
-      const tip = el('p', 'figure-note', '把 budget 调大再编译一次，就能把这些装回去。');
-      cb.appendChild(tip);
-    }
+    renderOmissions(ctx, cb);
 
     setText('packetPreview', ctx.rendered || '（这次编译没有返回渲染文本）');
+  }
+
+  /**
+   * 被省略的块。
+   *
+   * 这里的 key 形如 `change:01M2Z...:01M2Z...`——内部 ULID，对人没有任何信息量。
+   * 逐条列出来只会把真正要看的东西（缺哪一维、少什么证据）挤到屏幕外。
+   * 所以先按 section 归并给出数量，原始 id 收进折叠区，需要的人再展开。
+   */
+  /** 折叠区归零：隐藏之外还要清空内容。只隐藏的话旧 id 留在 DOM 里，之后一显示就是上一次的。 */
+  function resetOmissions() {
+    const box = $('omittedBox');
+    if (box) {
+      box.hidden = true;
+      box.open = false;
+    }
+    setText('omittedSummary', '');
+    setText('omittedList', '');
+  }
+
+  function renderOmissions(ctx, cb) {
+    const box = $('omittedBox');
+    if (!ctx.omissions.length) {
+      resetOmissions();
+      return;
+    }
+
+    const bySection = new Map();
+    const reasons = new Set();
+    for (const o of ctx.omissions) {
+      const name = o.section || '未分段';
+      bySection.set(name, (bySection.get(name) || 0) + 1);
+      if (o.reason) reasons.add(o.reason);
+    }
+
+    const line = el('p', 'figure-note');
+    line.style.marginTop = '14px';
+    const parts = [...bySection.entries()]
+      .sort((a, b) => b[1] - a[1])
+      .map(([name, n]) => `${name} ${n}`);
+    line.appendChild(el('b', null, `因预算省略 ${ctx.omissions.length} 块`));
+    line.appendChild(document.createTextNode('：' + parts.join(' · ')));
+    if (reasons.size) {
+      line.appendChild(document.createTextNode('。原因：' + [...reasons].join('、')));
+    }
+    cb.appendChild(line);
+
+    const tip = el('p', 'figure-note', '把 budget 调大再编译一次，就能把这些装回去。');
+    tip.style.marginTop = '4px';
+    cb.appendChild(tip);
+
+    if (box) {
+      box.hidden = false;
+      box.open = false;
+      setText('omittedSummary', `展开这 ${ctx.omissions.length} 块的内部 id`);
+      setText(
+        'omittedList',
+        ctx.omissions.map((o) => `${o.section || '—'}\t${o.key || o.detail}`).join('\n')
+      );
+    }
   }
 
   // ───────────────────────── 索引源 ─────────────────────────
@@ -1461,6 +1576,7 @@
         '<p>你的 coding agent 每开一个新会话，都得先搞清楚「这个项目在干嘛、我该接着做什么」。AWR 就是替它记住这些事的那一层。</p>',
         '<p>AWR Inspector 是给<b>人</b>看的那一面：agent 看到的状态，你也能看到同一份。</p>',
         '<div class="tour-art"><div class="row"><span>源文件</span><span class="bar on"></span></div><div class="row"><span>AWR 索引</span><span class="bar on"></span></div><div class="row"><span>上下文包</span><span class="bar on bar-short"></span></div></div>',
+        '<p>仓库公开 benchmark 里，读全量源码要 <code>18,955</code> tokens，AWR 编译出的包最大 <code>4,998</code>——少 73.6%。那是 39 个活跃任务上的测量值，不是你项目的数；你自己项目的实测在「上下文」页编译一次就能看到。</p>',
       ].join(''),
     },
     {
@@ -1620,6 +1736,9 @@
 
   // 给测试用。浏览器里没有 module，这一段不执行。
   if (typeof module !== 'undefined' && module.exports) {
-    module.exports = { createGenerationGuard, state, detailGuard, renderWorkDetail };
+    module.exports = {
+      createGenerationGuard, state, detailGuard, renderWorkDetail,
+      renderPacketSize, doCompile,
+    };
   }
 })();
