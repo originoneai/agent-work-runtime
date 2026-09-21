@@ -1,7 +1,7 @@
 # Team workstream HTTP and MCP service
 
 The development branch provides authenticated, multi-project HTTP/MCP queries
-and durable session journaling backed by PostgreSQL. This is not a release
+and durable session journaling and coordination claims backed by PostgreSQL. This is not a release
 announcement or a complete Team execution service. It does not dispatch
 executions, resume agents or adopt cross-workstream deliveries. Use its live
 capabilities response to discover available operations.
@@ -9,7 +9,7 @@ capabilities response to discover available operations.
 ## Start an operator-bound service
 
 Build `awr-server` from this source branch. Migrate the intended database to
-schema 10 explicitly as its owner, and apply application-role grants using the
+schema 11 explicitly as its owner, and apply application-role grants using the
 [PostgreSQL setup](team-postgres.md). `serve` checks the schema without migrating
 it. Run the listener using the application connection, not an owner or superuser
 connection.
@@ -92,7 +92,7 @@ POST JSON to `/v1/projects/<alias>/query` with an
 {"protocol_version":1,"op":"capabilities"}
 ```
 
-The response advertises the following queries and three session commands.
+The response advertises the following queries and six session/claim commands.
 The operation list describes implemented protocol, not a grant to invoke it.
 Unsupported operations or protocol versions fail explicitly.
 
@@ -106,6 +106,7 @@ Unsupported operations or protocol versions fail explicitly.
 | `session.inspect` | Required `session_id`; its current-ownership checkpoint |
 | `work.recovery` | Required work/session; up to two current-ownership recovery candidates |
 | `command.inspect` | Required work/session and `request_id`; this actor/client's committed receipt or unknown outcome |
+| `claim.inspect` | Required work/session and `claim_id`; current lease state, ownership, fence and epoch validity |
 
 Work/session selectors derive the workstream. An explicit `workstream_id` must
 agree with them. Without work/session, a unique authorized workstream can be
@@ -156,7 +157,7 @@ It exposes two tools, with arguments identical to the corresponding HTTP JSON:
 
 - `awr_team_query`: the query operations above. Start with
   `{"protocol_version":1,"op":"capabilities"}`.
-- `awr_team_command`: the three session commands below, with the same request
+- `awr_team_command`: the six session/claim commands below, with the same request
   identity and preconditions. Tool discovery is not a write grant.
 
 Initialization, discovery and notifications require current project/workstream
@@ -178,7 +179,7 @@ disconnection or oversized response leaves the command outcome uncertain until
 ## Durable session commands
 
 POST to `/v1/projects/<alias>/command` with the same bearer authentication. The
-currently supported operations record a session journal, not execution rights:
+following operations record a session journal and grant no execution rights:
 
 | Operation | Strict `args` object |
 | --- | --- |
@@ -234,6 +235,53 @@ checkpoint or event; changing the payload returns `IdempotencyConflict`. Current
 authorization and epoch/ownership still apply to replay. Already committed
 receipts remain queryable during a freeze; replay performs no new mutation.
 
+## Coordination claims
+
+These commands use the same command envelope, live write authorization,
+project revision, transaction and outcome protocol as session commands:
+
+| Operation | Strict `args` object |
+| --- | --- |
+| `claim.acquire` | `session_id`, `expected_session_version`, `expected_work_version`, `ttl_seconds` |
+| `claim.renew` | `session_id`, `expected_session_version`, `claim_id`, `expected_fence`, `expected_lease_version`, `ttl_seconds` |
+| `claim.release` | `session_id`, `expected_session_version`, `claim_id`, `expected_fence`, `expected_lease_version` |
+
+TTL is an integer from 1 to 3600 seconds. Version/fence fields are canonical
+decimal strings; use work version `"0"` only when preparation reports no runtime
+row. Fence and lease versions must be positive. The active session must belong
+to the authenticated actor **and client**, selected work, current workstream and
+ownership generation. Another client for the same actor cannot renew or release
+the lease. Acquire and renew require an active stream and enabled work contract.
+Release is also allowed for a paused/archived stream with current write access;
+a frozen/importing/degraded project still refuses new mutations.
+
+A claim records coordination ownership, not dependency admission, a resource
+reservation or permission to perform effects. Capabilities advertise
+`claim_semantics: "coordination_only"`, and receipts retain
+`execution_authorized: false`. Acquiring a claim does not make a work item ready
+or validate its upstream deliveries. Live competing claims, open waits, completed
+work and unresolved executions/recovery block acquisition. Expiry cannot clear
+unknown effects. A safely expired claim can be replaced atomically with a new
+monotonic fence. An expired lease cannot be renewed.
+
+Release requires the exact owner, epoch, current fence and lease version, and
+resolved execution/recovery state. The owner may release an elapsed lease without
+renewing it first. Release does not release resources; the receipt explicitly
+reports `resource_release_performed: false`. Claimed work becomes `unclaimed`,
+without inventing readiness.
+
+Receipts are historical: `lease_state_basis: "at_commit"` describes the original
+commit. Replaying an old acquire after expiry or release returns that same receipt
+without creating or extending a lease. Use `claim.inspect` for current state:
+`lease_live`, `owned_by_client`, `epoch_matches_current`, and `current_fence`.
+Even a live lease is not execution permission. Missing/hidden/mismatched claims
+return `Forbidden`; inspection never transfers ownership.
+
+Schema 11 preserves legacy claim rows with null workstream/ownership/epoch
+attribution. It does not infer ownership from today's source. Unattributed,
+reassigned or old-epoch active rows require explicit recovery/migration before
+replacement, even when their deadline has elapsed.
+
 ## Limits and errors
 
 Requests are limited to 64 KiB, pages to 100 items, search to 512 bytes, and
@@ -256,7 +304,7 @@ disconnects.
 | --- | --- |
 | 400 | Invalid JSON, selectors or bounds |
 | 403 | Missing/invalid credential, denied scope, or hidden/missing object |
-| 409 | Scope/cursor/context limits, stale preconditions, changed epoch, idempotency conflict, project barrier or unresolved recovery |
+| 409 | Scope/cursor/context limits, stale preconditions/fence, held/expired lease, open wait, changed epoch, idempotency conflict, project barrier or unresolved recovery |
 | 413 | Request body too large |
 | 501 | Unsupported operation or protocol |
 | 503 | Busy, timed out, transient transaction conflict or unavailable data |
@@ -273,6 +321,9 @@ write revocation while a command is waiting, full rollback after an event failur
 frozen/paused state and unknown-execution preservation. These are
 protocol/integration checks, not native coding-client business acceptance. Real
 RMCP clients also verify discovery, simultaneous scope isolation, live revocation,
-reconnection, HTTP/MCP receipt parity and refusal of oversized envelopes. Execution
+reconnection, HTTP/MCP receipt parity and refusal of oversized envelopes. Claim
+checks cover concurrent acquisition, renewal/release, client ownership, epoch and
+fence changes, expiry, atomic rollback, migration preservation and historical
+replay versus live inspection over HTTP/MCP. Execution
 writes, history migration and enabled-project backup/restore remain
 unavailable through this surface.

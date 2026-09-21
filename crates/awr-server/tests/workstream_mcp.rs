@@ -168,6 +168,97 @@ async fn sdk_clients_negotiate_tools_and_isolate_workstreams_on_one_service() {
 }
 
 #[tokio::test]
+async fn mcp_claims_reconnect_and_share_live_state_and_historical_http_receipts() {
+    let (_guard, admin, _, store) = setup().await;
+    enable_writes(&admin).await;
+    let server = start(store).await;
+    let a = connect(&server, "one", A).await.unwrap();
+    let b = connect(&server, "one", B).await.unwrap();
+    let request = serde_json::to_value(command(&prepared(&a).await,"mcp-take","claim.acquire",
+        json!({"session_id":"session-a","expected_session_version":"1","expected_work_version":"0","ttl_seconds":60}))).unwrap();
+    let denied = call(&b, "awr_team_command", request.clone(), true).await;
+    assert_eq!(denied["code"], "Forbidden");
+    let taken = call(&a, "awr_team_command", request.clone(), false).await;
+    assert_eq!(taken["receipt"]["execution_authorized"], false);
+    let claim = &taken["receipt"]["data"];
+    let query = json!({"protocol_version":1,"op":"claim.inspect","session_id":"session-a","claim_id":claim["claim_id"]});
+    a.cancel().await.unwrap();
+    let a = connect(&server, "one", A).await.unwrap();
+    assert_eq!(
+        call(&a, "awr_team_query", query.clone(), false).await["data"]["lease_live"],
+        true
+    );
+    let hidden = call(&b, "awr_team_query", query.clone(), true).await;
+    assert_eq!(hidden["code"], "Forbidden");
+    let mut args = json!({"session_id":"session-a","expected_session_version":"1","claim_id":claim["claim_id"],
+        "expected_fence":claim["fence"],"expected_lease_version":"1","ttl_seconds":120});
+    let renew = serde_json::to_value(command(
+        &prepared(&a).await,
+        "http-renew",
+        "claim.renew",
+        args.clone(),
+    ))
+    .unwrap();
+    let renewed: Value = http()
+        .post(format!("{}/one/command", server.url))
+        .bearer_auth(A)
+        .json(&renew)
+        .send()
+        .await
+        .unwrap()
+        .error_for_status()
+        .unwrap()
+        .json()
+        .await
+        .unwrap();
+    assert_eq!(renewed["receipt"]["data"]["lease_version"], "2");
+    let stale = serde_json::to_value(command(
+        &prepared(&a).await,
+        "stale-renew",
+        "claim.renew",
+        args.clone(),
+    ))
+    .unwrap();
+    assert_eq!(
+        call(&a, "awr_team_command", stale, true).await["code"],
+        "PreconditionsChanged"
+    );
+    args["expected_lease_version"] = json!("2");
+    args.as_object_mut().unwrap().remove("ttl_seconds");
+    let release = serde_json::to_value(command(
+        &prepared(&a).await,
+        "mcp-release",
+        "claim.release",
+        args,
+    ))
+    .unwrap();
+    let released = call(&a, "awr_team_command", release, false).await;
+    assert_eq!(released["receipt"]["data"]["state"], "released");
+    assert_eq!(
+        released["receipt"]["data"]["resource_release_performed"],
+        false
+    );
+    let replay = call(&a, "awr_team_command", request, false).await;
+    assert_eq!(replay["replayed"], true);
+    assert_eq!(replay["receipt"], taken["receipt"]);
+    assert_eq!(
+        call(&a, "awr_team_query", query, false).await["data"]["lease_live"],
+        false
+    );
+    let observed = call(
+        &a,
+        "awr_team_query",
+        json!({"protocol_version":1,"op":"command.inspect",
+        "work_id":"a","request_id":"http-renew"}),
+        false,
+    )
+    .await;
+    assert_eq!(observed["data"]["receipt"], renewed["receipt"]);
+    a.cancel().await.unwrap();
+    b.cancel().await.unwrap();
+}
+
+#[tokio::test]
 async fn mcp_session_journal_reconnects_replays_and_shares_http_outcomes() {
     let (_guard, admin, _, store) = setup().await;
     enable_writes(&admin).await;
@@ -346,7 +437,7 @@ async fn mcp_rejects_forged_identity_unsupported_operations_and_context_truncati
             "InvalidInput"
         );
     }
-    for op in ["execution.start", "work.complete", "claim.acquire"] {
+    for op in ["execution.start", "work.complete", "claim.transfer"] {
         let c = serde_json::to_value(command(&prepared(&a).await, "unimplemented", op, json!({})))
             .unwrap();
         assert_eq!(

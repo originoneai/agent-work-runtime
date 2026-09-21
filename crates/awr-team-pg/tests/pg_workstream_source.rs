@@ -268,7 +268,7 @@ async fn migration_from_schema_nine_preserves_legacy_history_and_failed_ddl_is_a
             after.get::<_, i64>(2),
             after.get::<_, i64>(3)
         ),
-        (10, 1, 1, 1)
+        (awr_team_pg::EXPECTED_SCHEMA_VERSION, 1, 1, 1)
     );
 }
 

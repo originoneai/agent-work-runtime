@@ -299,12 +299,20 @@ fn public_error(error: PgError) -> (StatusCode, Value) {
         | PgError::IdempotencyConflict
         | PgError::EpochChanged
         | PgError::ProjectNotAvailable
-        | PgError::RecoveryBlocked) => {
+        | PgError::RecoveryBlocked
+        | PgError::ClaimHeld
+        | PgError::LeaseExpired
+        | PgError::StaleFence
+        | PgError::WaitOpen) => {
             let code = match e {
                 PgError::PreconditionsChanged => "PreconditionsChanged",
                 PgError::IdempotencyConflict => "IdempotencyConflict",
                 PgError::EpochChanged => "EpochChanged",
                 PgError::ProjectNotAvailable => "ProjectNotAvailable",
+                PgError::ClaimHeld => "ClaimHeld",
+                PgError::LeaseExpired => "LeaseExpired",
+                PgError::StaleFence => "StaleFence",
+                PgError::WaitOpen => "WaitOpen",
                 _ => "RecoveryBlocked",
             };
             (

@@ -129,7 +129,7 @@ async fn http_requires_live_auth_and_never_accepts_grants_or_identity_from_a_bod
         .unwrap();
     assert_eq!(
         cap["commands"],
-        json!(["session.start", "session.checkpoint", "session.end"])
+        json!(awr_team_pg::WorkstreamCommand::OPERATIONS)
     );
     assert_eq!(cap["execution_admission"], false);
     for field in ["tenant_id", "project_id", "actor_id", "client_id", "grants"] {
@@ -172,6 +172,127 @@ async fn http_prepare(server: &Server) -> Value {
     .json()
     .await
     .unwrap()
+}
+
+#[tokio::test]
+async fn http_claims_require_write_authority_and_report_live_lease_conflicts() {
+    let (_guard, admin, _, store) = setup().await;
+    let server = start(store).await;
+    let acquire_args = json!({"session_id":"session-a","expected_session_version":"1",
+        "expected_work_version":"0","ttl_seconds":60});
+    let denied = serde_json::to_value(command(
+        &http_prepare(&server).await,
+        "denied",
+        "claim.acquire",
+        acquire_args.clone(),
+    ))
+    .unwrap();
+    assert_eq!(post_command(&server, A, denied).await.status(), 403);
+    enable_writes(&admin).await;
+    let request = serde_json::to_value(command(
+        &http_prepare(&server).await,
+        "take",
+        "claim.acquire",
+        acquire_args.clone(),
+    ))
+    .unwrap();
+    let taken = post_command(&server, A, request.clone()).await;
+    assert_eq!(taken.status(), 200);
+    let taken: Value = taken.json().await.unwrap();
+    let claim = &taken["receipt"]["data"];
+    assert_eq!(taken["receipt"]["execution_authorized"], false);
+    let query = json!({"protocol_version":1,"op":"claim.inspect","work_id":"a","claim_id":claim["claim_id"]});
+    assert_eq!(post(&server, "one", B, query.clone()).await.status(), 403);
+    let inspected: Value = post(&server, "one", A, query.clone())
+        .await
+        .json()
+        .await
+        .unwrap();
+    assert_eq!(inspected["data"]["lease_live"], true);
+    let mut competing = acquire_args;
+    competing["expected_work_version"] = json!("1");
+    let conflict = post_command(
+        &server,
+        A,
+        serde_json::to_value(command(
+            &http_prepare(&server).await,
+            "competing",
+            "claim.acquire",
+            competing,
+        ))
+        .unwrap(),
+    )
+    .await;
+    assert_eq!(conflict.status(), 409);
+    assert_eq!(conflict.json::<Value>().await.unwrap()["code"], "ClaimHeld");
+    let mut args = json!({"session_id":"session-a","expected_session_version":"1",
+        "claim_id":claim["claim_id"],"expected_fence":claim["fence"],"expected_lease_version":"1","ttl_seconds":120});
+    let renew = serde_json::to_value(command(
+        &http_prepare(&server).await,
+        "renew",
+        "claim.renew",
+        args.clone(),
+    ))
+    .unwrap();
+    assert_eq!(post_command(&server, B, renew.clone()).await.status(), 403);
+    let renewed = post_command(&server, A, renew).await;
+    assert_eq!(renewed.status(), 200);
+    assert_eq!(
+        renewed.json::<Value>().await.unwrap()["receipt"]["data"]["lease_version"],
+        "2"
+    );
+    args["expected_lease_version"] = json!("2");
+    admin
+        .batch_execute(
+            "UPDATE awr_team.claims SET expires_at=clock_timestamp()-interval '1 second'",
+        )
+        .await
+        .unwrap();
+    let expired = post_command(
+        &server,
+        A,
+        serde_json::to_value(command(
+            &http_prepare(&server).await,
+            "expired",
+            "claim.renew",
+            args.clone(),
+        ))
+        .unwrap(),
+    )
+    .await;
+    assert_eq!(expired.status(), 409);
+    assert_eq!(
+        expired.json::<Value>().await.unwrap()["code"],
+        "LeaseExpired"
+    );
+    args.as_object_mut().unwrap().remove("ttl_seconds");
+    let released = post_command(
+        &server,
+        A,
+        serde_json::to_value(command(
+            &http_prepare(&server).await,
+            "release",
+            "claim.release",
+            args,
+        ))
+        .unwrap(),
+    )
+    .await;
+    assert_eq!(released.status(), 200);
+    assert_eq!(
+        released.json::<Value>().await.unwrap()["receipt"]["data"]["state"],
+        "released"
+    );
+    let replay: Value = post_command(&server, A, request)
+        .await
+        .json()
+        .await
+        .unwrap();
+    assert_eq!(replay["replayed"], true);
+    assert_eq!(replay["receipt"], taken["receipt"]);
+    let now: Value = post(&server, "one", A, query).await.json().await.unwrap();
+    assert_eq!(now["data"]["lease_live"], false);
+    assert_eq!(now["data"]["state"], "released");
 }
 
 #[tokio::test]

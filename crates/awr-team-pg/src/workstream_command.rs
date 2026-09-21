@@ -1,5 +1,7 @@
-//! Authenticated session journaling. These commands never grant execution rights.
+//! Authenticated session journaling and coordination leases, not execution admission.
 //! Project serialization is retained until task-level read sets are implemented.
+pub(crate) mod claims;
+
 use crate::workstream_auth::{ReaderAuthority, authenticate_writer};
 use crate::workstream_read::{WorkstreamQuery, read, work_binding};
 use crate::{PgError, PgPool, PgResult};
@@ -9,7 +11,14 @@ use serde_json::{Value, json};
 use std::sync::Arc;
 use tokio_postgres::Transaction;
 
-pub(crate) const COMMANDS: &[&str] = &["session.start", "session.checkpoint", "session.end"];
+pub(crate) const COMMANDS: &[&str] = &[
+    "session.start",
+    "session.checkpoint",
+    "session.end",
+    "claim.acquire",
+    "claim.renew",
+    "claim.release",
+];
 const RECEIPT_PROTOCOL: &str = "awr-team-workstream-command-v1";
 
 #[derive(Clone, Debug, Serialize, Deserialize)]
@@ -52,6 +61,12 @@ enum Action {
     Start(Start),
     Checkpoint(Checkpoint),
     End(End),
+    Claim(claims::Action),
+}
+
+struct Applied {
+    data: Value,
+    preceding_events: Vec<(&'static str, Value)>,
 }
 
 fn invalid() -> PgError {
@@ -74,9 +89,11 @@ fn digest(s: &str) -> bool {
 }
 
 impl WorkstreamCommand {
+    pub const OPERATIONS: &'static [&'static str] = COMMANDS;
+
     fn action(&self) -> PgResult<Action> {
         if self.protocol_version != 1 || !COMMANDS.contains(&self.op.as_str()) {
-            return Err(PgError::Unsupported("scoped session command".into()));
+            return Err(PgError::Unsupported("scoped command".into()));
         }
         if !identity(&self.request_id)
             || !identity(&self.work_id)
@@ -89,6 +106,9 @@ impl WorkstreamCommand {
         }
         version(&self.expected_project_revision)?;
         match self.op.as_str() {
+            "claim.acquire" | "claim.renew" | "claim.release" => Ok(Action::Claim(
+                claims::Action::parse(&self.op, self.args.clone())?,
+            )),
             "session.start" => {
                 let a: Start = serde_json::from_value(self.args.clone()).map_err(|_| invalid())?;
                 if !identity(&a.conversation_id) {
@@ -207,7 +227,9 @@ impl WorkstreamCommandStore {
         {
             return Err(PgError::PreconditionsChanged);
         }
-        if matches!(action, Action::Start(_)) {
+        if matches!(action, Action::Start(_))
+            || matches!(&action, Action::Claim(a) if a.requires_active_stream())
+        {
             auth.access
                 .authorize(&auth.catalog, stream, WorkstreamAction::Write)?;
         }
@@ -225,7 +247,19 @@ impl WorkstreamCommandStore {
         if contract_hash != command.expected_contract_hash {
             return Err(PgError::PreconditionsChanged);
         }
-        let data = apply(&tx, tenant, project, &auth, &command, ownership, action).await?;
+        let applied = match action {
+            Action::Claim(a) => {
+                claims::apply(&tx, tenant, project, &auth, &command, ownership, a).await?
+            }
+            a => Applied {
+                data: apply(&tx, tenant, project, &auth, &command, ownership, a).await?,
+                preceding_events: Vec::new(),
+            },
+        };
+        let mut data = applied.data;
+        if command.op.starts_with("claim.") {
+            data["lease_state_basis"] = json!("at_commit");
+        }
         let next = auth
             .revision
             .checked_add(1)
@@ -243,9 +277,17 @@ impl WorkstreamCommandStore {
             &[&tenant, &project, &next],
         )
         .await?;
-        tx.execute("INSERT INTO awr_team.events(tenant_id,project_id,id,project_revision,event_index,event_type,actor_id,work_id,payload_json,workstream_id)
-            VALUES($1,$2,$3,$4,0,$5,$6,$7,$8,$9)",
-            &[&tenant,&project,&crate::tx::new_id(),&next,&command.op,&auth.actor_id,&command.work_id,&data,&stream.to_string()]).await?;
+        for (index, (kind, payload)) in applied
+            .preceding_events
+            .iter()
+            .map(|(kind, payload)| (*kind, payload))
+            .chain(std::iter::once((command.op.as_str(), &data)))
+            .enumerate()
+        {
+            tx.execute("INSERT INTO awr_team.events(tenant_id,project_id,id,project_revision,event_index,event_type,actor_id,work_id,payload_json,workstream_id)
+                VALUES($1,$2,$3,$4,$5,$6,$7,$8,$9,$10)",
+                &[&tenant,&project,&crate::tx::new_id(),&next,&(index as i32),&kind,&auth.actor_id,&command.work_id,&payload,&stream.to_string()]).await?;
+        }
         tx.execute("INSERT INTO awr_team.operations(tenant_id,project_id,id,actor_id,client_id,request_id,op,request_hash,state,committed_project_revision,result_json)
             VALUES($1,$2,$3,$4,$5,$6,$7,$8,'committed',$9,$10)",
             &[&tenant,&project,&crate::tx::new_id(),&auth.actor_id,&auth.client_id,&command.request_id,&command.op,&request_hash,&next,&receipt]).await?;
@@ -264,6 +306,7 @@ async fn apply(
     action: Action,
 ) -> PgResult<Value> {
     match action {
+        Action::Claim(_) => Err(invalid()), // Claims are dispatched in the same outer transaction.
         Action::Start(a) => {
             let active: bool = tx.query_one("SELECT EXISTS(SELECT 1 FROM awr_team.sessions
                 WHERE tenant_id=$1 AND project_id=$2 AND actor_id=$3 AND client_id=$4 AND conversation_id=$5 AND work_id=$6 AND state='active')",

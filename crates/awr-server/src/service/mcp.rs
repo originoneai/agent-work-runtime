@@ -107,9 +107,9 @@ fn catalog() -> Vec<Tool> {
     let query = json!({"type":"object","additionalProperties":false,
     "required":["protocol_version","op"],"properties":{
         "protocol_version":{"type":"integer","const":1},
-        "op":{"type":"string","enum":["capabilities","workstreams.list","work.list","work.search","work.prepare","events.list","session.inspect","work.recovery","command.inspect"]},
+        "op":{"type":"string","enum":WorkstreamQuery::OPERATIONS},
         "workstream_id":{"type":"string"},"work_id":{"type":"string"},
-        "session_id":{"type":"string"},"request_id":{"type":"string"},
+        "session_id":{"type":"string"},"request_id":{"type":"string"},"claim_id":{"type":"string"},
         "search":{"type":"string","maxLength":512},"cursor":{"type":"string","maxLength":4096},
         "limit":{"type":"integer","minimum":1,"maximum":100},
         "max_context_bytes":{"type":"integer","minimum":1,"maximum":262144}
@@ -118,7 +118,7 @@ fn catalog() -> Vec<Tool> {
     "required":["protocol_version","request_id","op","workstream_id","work_id","coordinator_epoch","expected_project_revision","expected_authority_version","expected_ownership_version","expected_contract_hash","args"],
     "properties":{
         "protocol_version":{"type":"integer","const":1},
-        "op":{"type":"string","enum":["session.start","session.checkpoint","session.end"]},
+        "op":{"type":"string","enum":WorkstreamCommand::OPERATIONS},
         "request_id":{"type":"string","maxLength":128},
         "workstream_id":{"type":"string"},"work_id":{"type":"string"},
         "coordinator_epoch":{"type":"string"},
@@ -126,7 +126,7 @@ fn catalog() -> Vec<Tool> {
         "expected_authority_version":{"type":"string","pattern":"^[1-9][0-9]*$"},
         "expected_ownership_version":{"type":"string","pattern":"^[1-9][0-9]*$"},
         "expected_contract_hash":{"type":"string"},
-        "args":{"type":"object","description":"start: conversation_id. checkpoint: session_id, expected_session_version, context_hash, next_action, open_loops. end: session_id, expected_session_version. Versions are decimal strings; unknown fields fail."}
+        "args":{"type":"object","description":"start: conversation_id. checkpoint: session_id, expected_session_version, context_hash, next_action, open_loops. end: session_id, expected_session_version. All claim actions: session_id, expected_session_version. acquire adds expected_work_version (0 when runtime absent), ttl_seconds (1..3600). renew/release add claim_id, expected_fence, expected_lease_version; renew also ttl_seconds. Versions are decimal strings; unknown fields fail."}
     }});
     vec![
         Tool::new("awr_team_query",
@@ -134,7 +134,7 @@ fn catalog() -> Vec<Tool> {
             query.as_object().unwrap().clone())
             .with_annotations(ToolAnnotations::new().read_only(true).destructive(false).idempotent(true).open_world(false)),
         Tool::new("awr_team_command",
-            "Durable session journaling only. Use work.prepare preconditions and a stable request_id. On uncertain outcome use query command.inspect; retry the exact original payload. Re-prepare after conflicts, never silently change a retry. No claims, execution or completion.",
+            "Durable session journals and coordination claims. Use work.prepare preconditions and a stable request_id. On uncertain outcome use query command.inspect; retry the exact original payload. Re-prepare after conflicts, never silently change a retry. Claims never grant execution or completion. Inspect a claim for its current lease; a replayed receipt is historical.",
             command.as_object().unwrap().clone())
             .with_annotations(ToolAnnotations::new().read_only(false).destructive(false).idempotent(true).open_world(false)),
     ]
@@ -144,7 +144,7 @@ impl ServerHandler for Endpoint {
     fn get_info(&self) -> ServerInfo {
         ServerInfo::new(ServerCapabilities::builder().enable_tools().build())
             .with_server_info(Implementation::new("awr-team-mcp", env!("CARGO_PKG_VERSION")))
-            .with_instructions("The URL binds one operator-registered project; bearer credentials are checked on every request. Begin with awr_team_query capabilities. Work/session selectors bind a workstream; missing permissions never mean satisfied dependencies. Consume work.prepare before checkpointing. Session journaling grants no execution rights. If a command outcome is unknown, inspect its original request_id before an exact retry. Recheck context and permission after relevant changes. MCP connection closure never closes a durable work session.")
+            .with_instructions("The URL binds one operator-registered project; bearer credentials are checked on every request. Begin with awr_team_query capabilities. Work/session selectors bind a workstream; missing permissions never mean satisfied dependencies. Consume work.prepare before checkpointing. Session journals and claims grant no execution rights. Claim replay is a historical receipt; use claim.inspect for current lease state. If a command outcome is unknown, inspect its original request_id before an exact retry. Recheck context and permission after relevant changes. MCP connection closure never closes a durable work session.")
     }
 
     fn get_tool(&self, name: &str) -> Option<Tool> {
