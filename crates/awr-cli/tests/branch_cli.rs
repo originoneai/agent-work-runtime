@@ -179,7 +179,7 @@ fn named_context_combines_current_shared_sources_with_fork_delta_without_switchi
     let a = Fixture::success(&f.create("analysis", &["--git-ref", "main"]));
     let aid = a["branch"]["id"].as_str().unwrap();
     Fixture::success(&f.switch("analysis"));
-    let session = f.start("executor", true);
+    let session = f.start("executor", false);
     let sid = session["session"]["id"].as_str().unwrap();
     f.event(sid, "Branch finding before checkpoint");
     f.evidence("analysis-report", None);
@@ -203,7 +203,7 @@ fn named_context_combines_current_shared_sources_with_fork_delta_without_switchi
     f.event(sid, "Branch finding after checkpoint");
     let child = Fixture::success(&f.create("child", &[]));
     Fixture::success(&f.switch("child"));
-    let sibling_session = f.start("executor", true);
+    let sibling_session = f.start("executor", false);
     let ss = sibling_session["session"]["id"].as_str().unwrap();
     f.event(ss, "CHILD_RUNTIME_SENTINEL");
     f.evidence("child-report", None);
@@ -744,10 +744,28 @@ fn switching_keeps_existing_runtime_records_and_shared_source_claim_guards() {
     let changed = Fixture::success(&f.switch("parallel"));
     assert_eq!(changed["selection"]["retained_active_sessions"], 1);
     assert_eq!(changed["selection"]["retained_active_claims"], 1);
-    let child = f.start("branch-worker", true);
+    Fixture::error(
+        &f.run(&[
+            "session",
+            "start",
+            "--work",
+            "W",
+            "--agent",
+            "branch-worker",
+            "--provider",
+            "fixture",
+            "--model",
+            "local",
+            "--claim",
+            "--expected-revision",
+            &f.revision(),
+        ]),
+        "ClaimConflict",
+    );
+    let child = f.start("branch-worker", false);
     let cs = child["session"]["id"].as_str().unwrap();
     assert_eq!(child["session"]["branch_id"], bid);
-    assert_eq!(child["claim"]["branch_id"], bid);
+    assert!(child["claim"].is_null());
     let ce = f.event(cs, "BRANCH_PROCESS_FACT");
     assert_eq!(ce.branch_id, Some(bid.parse().unwrap()));
     assert!(f.event(ms, "ANOTHER_MAIN_FACT").branch_id.is_none());
@@ -774,6 +792,15 @@ fn switching_keeps_existing_runtime_records_and_shared_source_claim_guards() {
         ms,
         "--claim",
         main["claim"]["id"].as_str().unwrap(),
+        "--expected-revision",
+        &f.revision(),
+    ]);
+    f.ok(&[
+        "work",
+        "claim",
+        "W",
+        "--session",
+        cs,
         "--expected-revision",
         &f.revision(),
     ]);

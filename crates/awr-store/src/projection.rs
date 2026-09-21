@@ -342,7 +342,46 @@ impl Store {
         fingerprint: &str,
         batch: ProjectionBatch,
     ) -> Result<Source> {
+        self.commit_source_projection_inner(expected, fingerprint, batch, None, &[])
+    }
+
+    /// Reviewed source-first ownership change. The source must already be marked
+    /// stale after its candidate edit; failed imports retain that recovery state.
+    /// Runtime history is immutable, and the exact project/ownership revisions
+    /// and every requested move are checked inside the projection transaction.
+    pub fn commit_source_projection_with_moves(
+        &mut self,
+        expected_revision: awr_core::Revision,
+        expected: &Source,
+        fingerprint: &str,
+        batch: ProjectionBatch,
+        moves: &[awr_core::WorkstreamMove],
+    ) -> Result<Source> {
+        if moves.is_empty() || checked_source(&self.conn, expected)?.freshness == Freshness::Fresh {
+            return Err(Error::InvalidInput(
+                "reviewed moves require a nonempty move set and an already invalidated source"
+                    .into(),
+            ));
+        }
+        self.commit_source_projection_inner(
+            expected,
+            fingerprint,
+            batch,
+            Some(expected_revision),
+            moves,
+        )
+    }
+
+    fn commit_source_projection_inner(
+        &mut self,
+        expected: &Source,
+        fingerprint: &str,
+        batch: ProjectionBatch,
+        expected_revision: Option<awr_core::Revision>,
+        moves: &[awr_core::WorkstreamMove],
+    ) -> Result<Source> {
         awr_core::ensure_public_text(fingerprint)?;
+        awr_core::ensure_public_data(&moves)?;
         let workstreams = batch.workstream_projection.clone();
         let payload = serde_json::to_value(batch)?;
         awr_core::ensure_public_value(&payload)?;
@@ -352,14 +391,24 @@ impl Store {
             ));
         }
         let current = checked_source(&self.conn, expected)?;
-        if current.freshness == Freshness::Fresh && current.fingerprint == fingerprint {
+        if moves.is_empty()
+            && current.freshness == Freshness::Fresh
+            && current.fingerprint == fingerprint
+        {
             return Ok(current);
         }
-        self.mark_source_freshness(expected, Freshness::Stale)?;
-        let revision = self.project(expected.project_id)?.project_revision;
+        let revision = if let Some(revision) = expected_revision {
+            revision
+        } else {
+            self.mark_source_freshness(expected, Freshness::Stale)?;
+            self.project(expected.project_id)?.project_revision
+        };
         let mut event = EventDraft::new("source.projected", "Source projection committed");
         event.payload = json!({"source_id":expected.id,"source_revision":expected.revision+1,
             "fingerprint":fingerprint,"warnings":payload["warnings"]});
+        if !moves.is_empty() {
+            event.payload["workstream_moves"] = serde_json::to_value(moves)?;
+        }
         let (source,_)=self.runtime_transaction_with_event(expected.project_id,revision,event,|tx,_,event| {
             let mut source=checked_source(tx,expected)?;
             let before = SourceState::from_source(&source, true);
@@ -377,7 +426,7 @@ impl Store {
                     params![source.project_id.to_string(),source.id.to_string(),serde_json::to_string(&keys)?]).map_err(db_error)?;
             }
             upsert_edges(tx,&source,fingerprint,&payload["edges"])?;
-            crate::workstream::project(tx,&source,fingerprint,workstreams.as_ref())?;
+            crate::workstream::project(tx,&source,fingerprint,workstreams.as_ref(),moves)?;
             tx.execute("UPDATE sources SET revision=revision+1,fingerprint=?1,freshness='fresh' WHERE id=?2",
                 params![fingerprint,source.id.to_string()]).map_err(db_error)?;
             source.revision+=1;

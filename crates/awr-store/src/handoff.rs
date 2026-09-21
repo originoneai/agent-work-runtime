@@ -40,6 +40,9 @@ impl Store {
                 if receiver.id == from || receiver.work_item_id != Some(work) || receiver.branch_id != sender.branch_id {
                     return Err(Error::InvalidInput("receiving session must be different and bound to the same work and branch".into()));
                 }
+                crate::workstream_runtime::require_current(tx,&sender)?;
+                crate::workstream_runtime::require_current(tx,receiver)?;
+                crate::workstream_runtime::require_same(tx,project,from,receiver.id)?;
             }
             let at = now_millis()?;
             let override_expiration = expires_at(at, ttl_ms)?;
@@ -77,6 +80,7 @@ impl Store {
         let id: Id = serde_json::from_value(payload["checkpoint_id"].clone())?;
         let checkpoint = self.checkpoint(project, id)?;
         let sender = self.session(project, checkpoint.session_id)?;
+        crate::workstream_runtime::require_same(&self.conn, project, sender.id, receiver.id)?;
         if sender.id == receiver.id
             || sender.work_item_id != receiver.work_item_id
             || sender.branch_id != receiver.branch_id

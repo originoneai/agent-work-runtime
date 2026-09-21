@@ -107,6 +107,7 @@ pub(crate) fn acquire(
     event: &mut EventDraft,
 ) -> Result<Claim> {
     require_active(session)?;
+    crate::workstream_runtime::require_current(conn, session)?;
     require_branch(conn, session.project_id, session.branch_id)?;
     let work_id = session
         .work_item_id
@@ -156,9 +157,9 @@ pub(crate) fn acquire(
             &diagnostics,
         )?));
     }
-    let expired=conn.prepare("SELECT id FROM claims WHERE project_id=?1 AND work_item_id=?2 AND branch_id IS ?3 AND status='active' AND expires_at<=?4").map_err(db_error)?
-        .query_map(params![session.project_id.to_string(),work_id.to_string(),session.branch_id.map(|id|id.to_string()),at],|r|id_at(r,0)).map_err(db_error)?.collect::<rusqlite::Result<Vec<_>>>().map_err(db_error)?;
-    conn.execute("UPDATE claims SET status='expired',revision=revision+1 WHERE project_id=?1 AND work_item_id=?2 AND branch_id IS ?3 AND status='active' AND expires_at<=?4",params![session.project_id.to_string(),work_id.to_string(),session.branch_id.map(|id|id.to_string()),at]).map_err(db_error)?;
+    let expired=conn.prepare("SELECT id FROM claims WHERE project_id=?1 AND work_item_id=?2 AND status='active' AND expires_at<=?3").map_err(db_error)?
+        .query_map(params![session.project_id.to_string(),work_id.to_string(),at],|r|id_at(r,0)).map_err(db_error)?.collect::<rusqlite::Result<Vec<_>>>().map_err(db_error)?;
+    conn.execute("UPDATE claims SET status='expired',revision=revision+1 WHERE project_id=?1 AND work_item_id=?2 AND status='active' AND expires_at<=?3",params![session.project_id.to_string(),work_id.to_string(),at]).map_err(db_error)?;
     let claim = Claim {
         id: Id::new(),
         project_id: session.project_id,
@@ -263,7 +264,7 @@ impl Store {
         expected: Revision,
         draft: SessionDraft,
     ) -> Result<(SessionStarted, Event)> {
-        self.start_session_inner(project, expected, draft, None)
+        self.start_session_inner(project, expected, draft, None, None)
     }
     pub fn start_bound_session(
         &mut self,
@@ -273,7 +274,20 @@ impl Store {
         binding: McpSessionBinding,
     ) -> Result<(SessionStarted, Event)> {
         binding.validate()?;
-        self.start_session_inner(project, expected, draft, Some(binding))
+        self.start_session_inner(project, expected, draft, Some(binding), None)
+    }
+    pub fn start_session_in_workstream(
+        &mut self,
+        project: Id,
+        expected: Revision,
+        draft: SessionDraft,
+        binding: Option<McpSessionBinding>,
+        workstream: Id,
+    ) -> Result<(SessionStarted, Event)> {
+        if let Some(binding) = &binding {
+            binding.validate()?;
+        }
+        self.start_session_inner(project, expected, draft, binding, Some(workstream))
     }
     fn start_session_inner(
         &mut self,
@@ -281,6 +295,7 @@ impl Store {
         expected: Revision,
         draft: SessionDraft,
         binding: Option<McpSessionBinding>,
+        workstream: Option<Id>,
     ) -> Result<(SessionStarted, Event)> {
         if [&draft.agent_id, &draft.provider, &draft.model]
             .iter()
@@ -314,7 +329,8 @@ impl Store {
             let session=Session {id,project_id:project,work_item_id:work.as_ref().map(|w|w.item.meta.id),branch_id:draft.branch_id,agent_id:draft.agent_id,provider:draft.provider,model:draft.model,status:"active".into(),started_at:now_millis()?,ended_at:None,start_project_revision:expected,end_project_revision:None,last_checkpoint_id:None,revision:1};
             tx.execute("INSERT INTO sessions(id,project_id,work_item_id,branch_id,agent_id,provider,model,status,started_at,start_project_revision,revision)
                 VALUES(?1,?2,?3,?4,?5,?6,?7,'active',?8,?9,1)",params![id.to_string(),project.to_string(),session.work_item_id.map(|id|id.to_string()),session.branch_id.map(|id|id.to_string()),session.agent_id,session.provider,session.model,session.started_at,sqlite_revision(expected)?]).map_err(db_error)?;
-            event.work_item_id=session.work_item_id;event.payload=serde_json::json!({"agent_id":session.agent_id,"provider":session.provider,"model":session.model,"start_project_revision":expected});
+            let scope=crate::workstream_runtime::bind(tx,&session,workstream,binding.as_ref())?;
+            event.work_item_id=session.work_item_id;event.payload=serde_json::json!({"agent_id":session.agent_id,"provider":session.provider,"model":session.model,"start_project_revision":expected,"workstream_binding":scope});
             if let Some(binding)=binding { event.payload["mcp_binding"]=serde_json::to_value(binding)?; }
             let claim=if draft.claim {Some(acquire(tx,&session,draft.claim_ttl_ms,expected,event)?)} else {None};
             Ok(SessionStarted {session,claim})

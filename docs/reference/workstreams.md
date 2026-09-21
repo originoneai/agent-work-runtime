@@ -7,7 +7,9 @@ or a database column alone does not establish support.
 
 The current domain module validates identity, ownership, scope selection and
 explicit grants. Source import and SQLite projections retain the scope contract.
-Transport authorization and execution enforcement are separate integration work;
+Session attribution, work-wide claims and reviewed ownership movement are wired
+through the personal runtime. Transport authorization and resource/dependency
+enforcement are separate integration work;
 these rules do not enable isolated workstreams in an existing CLI, MCP service
 or Team coordinator.
 
@@ -143,3 +145,42 @@ It defines required counterexamples, not executed results. Domain tests,
 SQLite/PG integration tests, native-client checks and complete business
 acceptance remain distinct. Report actual evidence and missing coverage rather
 than inferring availability or performance from this specification.
+
+## Session attribution and reviewed movement
+
+Schema 6 captures workstream and ownership revision when each session starts.
+Claims and checkpoints retain that immutable session attribution. Starting a
+work-bound session derives its scope from the work; a conflicting explicit scope
+is rejected. Workless sessions need an explicit scope or a client/conversation
+default when several scopes exist. Changing that default never rebinds existing
+sessions, and a resumed session inherits its predecessor's scope.
+
+Execution ownership is exclusive per work across work branches. Different works
+can retain independent claims. Handoff and resume validate the current scope and
+ownership generation before transferring execution rights. Paused or unavailable
+authority still permits recovery checkpoints, release, session closure and an
+unassigned handoff; it does not permit a new execution transfer.
+
+The trusted Store API `commit_source_projection_with_moves` imports a reviewed
+source candidate together with an exact move set. `workstream_ownership` provides
+the current binding and revision for that review. The caller first invalidates
+the edited source and supplies its current source/project revisions. An ordinary
+reindex cannot silently move established work. Each move checks the previous
+scope and ownership revision, requires an active destination, and rejects active
+sessions, effective claims, unfinished checkpoint saves and nonterminal execution
+records. An external success report alone does not establish a supervised terminal
+outcome. Candidate ownership, source fingerprint and the move receipt commit
+atomically; failed imports retain the previous projection marked stale.
+
+Movement leaves historical sessions, checkpoints and claims in their original
+scope. New sessions capture the new ownership generation; automatic recovery does
+not import checkpoints from a previous generation, and old sessions cannot resume
+execution after movement. This storage API does not itself edit files, authenticate
+clients or implement cross-scope delivery adoption. Transport navigation and scoped
+permission enforcement remain separate implementation stages.
+
+Schema migration refuses simultaneous effective legacy claims for the same work
+across branches. Resolve them through the previous runtime before retrying; the
+migration never chooses a winner or deletes claims. An ambiguous historical
+workless session retains an unknown scope instead of guessing. Preview and failed
+migration leave the original schema and records unchanged.

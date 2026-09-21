@@ -7,7 +7,7 @@ fn decode(value: String) -> Result<Execution> {
     serde_json::from_str(&value)
         .map_err(|_| Error::Storage("invalid execution journal record".into()))
 }
-fn at(conn: &Connection, project: Id, id: Id) -> Result<Execution> {
+pub(crate) fn at(conn: &Connection, project: Id, id: Id) -> Result<Execution> {
     let value: Option<String> = conn.query_row(
         "SELECT json_extract(payload_json,'$.execution') FROM events WHERE project_id=?1 AND event_type IN ('execution.registered','execution.starting','execution.running','execution.finished') AND json_extract(payload_json,'$.execution.id')=?2 ORDER BY project_revision DESC LIMIT 1",
         params![project.to_string(),id.to_string()], |r| r.get(0)).optional().map_err(db_error)?;
@@ -150,6 +150,7 @@ impl Store {
         event.session_id = Some(session);
         self.runtime_transaction_with_event(project, expected, event, |tx, next, event| {
             let s = crate::session::session_at(tx, project, session)?;
+            crate::workstream_runtime::require_current(tx, &s)?;
             let work = s.work_item_id.ok_or_else(|| {
                 Error::InvalidInput("execution needs a work-bound session".into())
             })?;

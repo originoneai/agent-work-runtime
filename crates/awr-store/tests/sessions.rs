@@ -250,7 +250,7 @@ fn session_requires_known_work_branch_and_executable_claim_state() {
 }
 
 #[test]
-fn claims_are_isolated_by_work_branch_and_session_provenance_is_preserved() {
+fn claims_are_work_exclusive_and_session_branch_provenance_is_preserved() {
     let mut f = Fixture::new();
     f.commit(ProjectionBatch {
         work_items: vec![work(&f, "ready")],
@@ -266,6 +266,20 @@ fn claims_are_isolated_by_work_branch_and_session_provenance_is_preserved() {
         .unwrap();
     let mut request = draft("branch-agent", true, None);
     request.branch_id = Some(branch);
+    assert!(matches!(
+        f.store
+            .start_session(f.project.id, event.project_revision, request.clone()),
+        Err(Error::ClaimConflict(_))
+    ));
+    let (_, event) = f
+        .store
+        .end_session(
+            f.project.id,
+            event.project_revision,
+            unbranched.session.id,
+            SessionOutcome::Ended,
+        )
+        .unwrap();
     let (branched, event) = f
         .store
         .start_session(f.project.id, event.project_revision, request)
@@ -281,11 +295,12 @@ fn claims_are_isolated_by_work_branch_and_session_provenance_is_preserved() {
             SessionOutcome::Ended,
         )
         .unwrap();
-    assert!(
+    assert_eq!(
         f.store
             .claim(f.project.id, unbranched.claim.unwrap().id)
             .unwrap()
-            .active_at(now_millis().unwrap())
+            .status,
+        "released"
     );
     assert_eq!(
         f.store

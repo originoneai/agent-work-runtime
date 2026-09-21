@@ -44,6 +44,10 @@ pub(crate) fn write_checkpoint(
     draft: CheckpointDraft,
     event: &mut EventDraft,
 ) -> Result<Checkpoint> {
+    let workstream_binding = crate::workstream_runtime::recorded(tx, project, session.id)?;
+    if workstream_binding.work_item_id != session.work_item_id.map(|id| id.to_string()) {
+        return Err(WorkstreamError::BindingMismatch.into());
+    }
     let checkpoint = Checkpoint {
         id: Id::new(),
         session_id: session.id,
@@ -62,7 +66,7 @@ pub(crate) fn write_checkpoint(
     event.session_id = Some(session.id);
     event.work_item_id = session.work_item_id;
     event.branch_id = session.branch_id;
-    event.payload = serde_json::json!({"checkpoint_id":checkpoint.id,"context_hash":checkpoint.context_hash,"checkpoint_project_revision":base_revision,"changed_entities":checkpoint.changed_entities,"next_action":checkpoint.next_action});
+    event.payload = serde_json::json!({"workstream_binding":workstream_binding,"checkpoint_id":checkpoint.id,"context_hash":checkpoint.context_hash,"checkpoint_project_revision":base_revision,"changed_entities":checkpoint.changed_entities,"next_action":checkpoint.next_action});
     Ok(checkpoint)
 }
 
@@ -74,7 +78,7 @@ impl Store {
         work: Id,
         branch: Option<Id>,
     ) -> Result<Option<Checkpoint>> {
-        let id=self.conn.query_row("SELECT c.id FROM checkpoints c JOIN sessions s ON s.id=c.session_id WHERE s.project_id=?1 AND s.work_item_id=?2 AND s.branch_id IS ?3 AND s.status!='active' ORDER BY c.project_revision DESC,c.created_at DESC,c.id DESC LIMIT 1",params![project.to_string(),work.to_string(),branch.map(|id|id.to_string())],|r|id_at(r,0)).optional().map_err(db_error)?;
+        let id=self.conn.query_row("SELECT c.id FROM checkpoints c JOIN sessions s ON s.id=c.session_id JOIN session_workstreams b ON b.project_id=s.project_id AND b.session_id=s.id JOIN workstream_ownership o ON o.project_id=b.project_id AND o.work_item_id=b.work_item_id AND o.workstream_id=b.workstream_id AND o.revision=b.ownership_revision WHERE s.project_id=?1 AND s.work_item_id=?2 AND s.branch_id IS ?3 AND s.status!='active' ORDER BY c.project_revision DESC,c.created_at DESC,c.id DESC LIMIT 1",params![project.to_string(),work.to_string(),branch.map(|id|id.to_string())],|r|id_at(r,0)).optional().map_err(db_error)?;
         id.map(|id| self.checkpoint(project, id)).transpose()
     }
     pub fn create_checkpoint(
