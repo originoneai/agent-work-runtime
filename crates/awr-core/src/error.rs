@@ -6,6 +6,8 @@ pub type Result<T> = std::result::Result<T, Error>;
 
 #[derive(Debug, Error)]
 pub enum Error {
+    #[error(transparent)]
+    Workstream(#[from] crate::WorkstreamError),
     #[error("not found: {0}")]
     NotFound(String),
     #[error("source unavailable: {0}")]
@@ -152,6 +154,7 @@ pub fn render_diagnostic_details(details: Option<&serde_json::Value>) -> String 
 impl Error {
     pub fn code(&self) -> &'static str {
         match self {
+            Self::Workstream(error) => error.code(),
             Self::NotFound(_) => "NotFound",
             Self::SourceUnavailable(_) => "SourceUnavailable",
             Self::SourceStale(_) => "SourceStale",

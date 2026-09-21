@@ -13,6 +13,7 @@ mod query;
 mod runtime;
 mod secrets;
 mod work_action;
+mod workstream;
 
 pub use branch::*;
 pub use branch_close::*;
@@ -28,6 +29,7 @@ pub use query::*;
 pub use runtime::*;
 pub use secrets::*;
 pub use work_action::*;
+pub use workstream::*;
 pub const VERSION: &str = env!("CARGO_PKG_VERSION");
 
 pub fn now_millis() -> Result<i64> {
