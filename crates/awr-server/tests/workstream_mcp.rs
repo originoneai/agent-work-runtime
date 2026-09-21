@@ -366,9 +366,19 @@ async fn execution_intents_share_http_mcp_identity_without_dispatching_effects()
 }
 
 #[tokio::test]
-async fn admitted_start_and_unverified_report_share_transport_identity_without_reauthorization() {
+async fn admission_observation_and_authorized_recovery_share_transport_identity() {
+    for trusted in [false, true] {
+        recovery_over_transports(trusted).await;
+    }
+}
+
+async fn recovery_over_transports(trusted: bool) {
     let (_guard, admin, _, store) = setup().await;
     enable_writes(&admin).await;
+    if trusted {
+        admin.batch_execute("UPDATE awr_team.actors SET kind='system' WHERE id='agent';
+            UPDATE awr_team.workstream_grants SET can_attest_execution=true WHERE client_id='cli-a'").await.unwrap();
+    }
     let server = start(store).await;
     let a = connect(&server, "one", A).await.unwrap();
     let taken = call(&a,"awr_team_command",serde_json::to_value(command(&prepared(&a).await,"take","claim.acquire",
@@ -435,6 +445,119 @@ async fn admitted_start_and_unverified_report_share_transport_identity_without_r
     assert_eq!(r.get::<_, i64>(0), 1);
     assert_eq!(r.get::<_, String>(1), "unknown");
     assert_eq!(r.get::<_, i64>(2), 0);
+    let facts = json!({"outcome":"succeeded","input_digest":"a".repeat(64),"output_digest":"b".repeat(64),
+        "environment_digest":"c".repeat(64),"observed_paths":["src/output"],"note":"Reviewed the actual effect and its output."});
+    let attestation = serde_json::to_value(command(&prepared(&a).await, "attest", "execution.attest",
+        json!({"session_id":"session-a","expected_session_version":"1","execution_id":e["execution_id"],
+        "expected_execution_version":"3","facts":facts}))).unwrap();
+    let attested = call(&a, "awr_team_command", attestation.clone(), !trusted).await;
+    if trusted {
+        assert_eq!(
+            attested["receipt"]["data"]["receipt_kind"],
+            "trusted_executor"
+        );
+        assert_eq!(attested["receipt"]["data"]["recovery_blocked"], true);
+        let replay: Value = http()
+            .post(format!("{}/one/command", server.url))
+            .bearer_auth(A)
+            .json(&attestation)
+            .send()
+            .await
+            .unwrap()
+            .error_for_status()
+            .unwrap()
+            .json()
+            .await
+            .unwrap();
+        assert_eq!(replay["receipt"], attested["receipt"]);
+        assert_eq!(replay["execution_authorized"], false);
+    }
+    let inspected = call(
+        &a,
+        "awr_team_query",
+        json!({"protocol_version":1,"op":"execution.inspect",
+        "work_id":"a","execution_id":e["execution_id"]}),
+        false,
+    )
+    .await;
+    let p = prepared(&a).await;
+    let denied = serde_json::to_value(command(&p,"unprivileged-recovery","execution.reconcile",
+        json!({"session_id":"session-a","expected_session_version":"1","execution_id":e["execution_id"],
+        "expected_execution_version":inspected["data"]["execution_version"],"expected_work_version":p["data"]["runtime"]["work_version"],
+        "reviewed_receipt_id":inspected["data"]["latest_receipt"]["receipt_id"],"clear_recovery_block":true,"facts":facts}))).unwrap();
+    call(&a, "awr_team_command", denied, true).await;
+    const OP: &str =
+        "awr1.operator.dddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd";
+    admin
+        .batch_execute(
+            "INSERT INTO awr_team.actors(tenant_id,id,kind,display_name,status)
+        VALUES('reader-tenant','operator','human','Operator','active');
+        INSERT INTO awr_team.project_memberships(tenant_id,project_id,actor_id,role)
+        VALUES('reader-tenant','reader-project','operator','admin')",
+        )
+        .await
+        .unwrap();
+    admin
+        .execute(
+            "INSERT INTO awr_team.credentials(tenant_id,id,actor_id,client_id,secret_hash)
+        VALUES($1,'operator','operator','operator-cli',$2)",
+            &[
+                &TENANT,
+                &awr_team_pg::workstream_credential_hash(OP).unwrap(),
+            ],
+        )
+        .await
+        .unwrap();
+    admin.execute("INSERT INTO awr_team.workstream_grants(tenant_id,project_id,actor_id,client_id,workstream_id,authority_version,
+        can_read,can_write,can_manage,can_reconcile_execution) VALUES($1,$2,'operator','operator-cli',$3,1,true,true,true,true)",
+        &[&TENANT,&PROJECT,&awr_core::Id::from(1).to_string()]).await.unwrap();
+    let op = connect(&server, "one", OP).await.unwrap();
+    let session = call(
+        &op,
+        "awr_team_command",
+        serde_json::to_value(command(
+            &prepared(&op).await,
+            "operator-session",
+            "session.start",
+            json!({"conversation_id":"recovery"}),
+        ))
+        .unwrap(),
+        false,
+    )
+    .await;
+    let viewed = call(
+        &op,
+        "awr_team_query",
+        json!({"protocol_version":1,"op":"execution.inspect",
+        "work_id":"a","execution_id":e["execution_id"]}),
+        false,
+    )
+    .await;
+    assert_eq!(viewed["data"]["reconciliation_authority"], true);
+    let p = prepared(&op).await;
+    let request = serde_json::to_value(command(&p,"operator-recovery","execution.reconcile",
+        json!({"session_id":session["receipt"]["data"]["session_id"],"expected_session_version":"1","execution_id":e["execution_id"],
+        "expected_execution_version":viewed["data"]["execution_version"],"expected_work_version":p["data"]["runtime"]["work_version"],
+        "reviewed_receipt_id":viewed["data"]["latest_receipt"]["receipt_id"],"clear_recovery_block":true,"facts":facts}))).unwrap();
+    let settled: Value = http()
+        .post(format!("{}/one/command", server.url))
+        .bearer_auth(OP)
+        .json(&request)
+        .send()
+        .await
+        .unwrap()
+        .error_for_status()
+        .unwrap()
+        .json()
+        .await
+        .unwrap();
+    assert_eq!(settled["receipt"]["data"]["receipt_kind"], "reconcile");
+    assert_eq!(settled["receipt"]["data"]["recovery_blocked"], false);
+    assert_eq!(settled["receipt"]["data"]["work_completed"], false);
+    let replay = call(&op, "awr_team_command", request, false).await;
+    assert_eq!(replay["receipt"], settled["receipt"]);
+    assert_eq!(replay["execution_authorized"], false);
+    op.cancel().await.unwrap();
     a.cancel().await.unwrap();
 }
 

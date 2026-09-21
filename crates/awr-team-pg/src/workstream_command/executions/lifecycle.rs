@@ -218,8 +218,8 @@ pub(super) async fn start(
     let mut resources = vec![];
     for path in &paths {
         let id = crate::tx::new_id();
-        tx.execute("INSERT INTO awr_team.resource_reservations(tenant_id,project_id,id,work_id,resource_kind,canonical_key,state)
-            VALUES($1,$2,$3,$4,'prefix',$5,'reserved')", &[&tenant,&project,&id,&command.work_id,path]).await?;
+        tx.execute("INSERT INTO awr_team.resource_reservations(tenant_id,project_id,id,work_id,resource_kind,canonical_key,state,execution_id)
+            VALUES($1,$2,$3,$4,'prefix',$5,'reserved',$6)", &[&tenant,&project,&id,&command.work_id,path,&a.execution_id]).await?;
         resources.push(json!({"reservation_id":id,"kind":"prefix","key":path}));
     }
     // Time advances during dependency/resource checks even while rows are locked.
@@ -236,10 +236,15 @@ pub(super) async fn start(
         &a.expected_lease_version,
     )
     .await?;
+    let attestation_grant = auth
+        .execution_access
+        .get(&command.workstream_id)
+        .filter(|a| a.attest)
+        .map(|_| auth.grant_versions[&command.workstream_id]);
     tx.execute(
-        "UPDATE awr_team.executions SET state='running',execution_version=execution_version+1
+        "UPDATE awr_team.executions SET state='running',execution_version=execution_version+1,attestation_grant_version=$4
         WHERE tenant_id=$1 AND project_id=$2 AND id=$3",
-        &[&tenant, &project, &a.execution_id],
+        &[&tenant, &project, &a.execution_id, &attestation_grant],
     )
     .await?;
     let work_version = advance_work(tx, tenant, project, &command.work_id).await?;
@@ -250,6 +255,7 @@ pub(super) async fn start(
         "admission":"granted_at_commit","execution_mode":"caller_managed","dispatched":false,
         "fencing_class":"uncontrolled","exactly_once_supported":false,"scope_validation":"lexical_contract_only",
         "dependency_receipts":dependencies,"resources":resources,
+        "result_authority":if attestation_grant.is_some() {"trusted_executor"} else {"caller_asserted"},
         "next_action":"Execute once under the current lease; report observations. A replay or unknown response never authorizes another start."}),
     )
 }
@@ -322,7 +328,7 @@ pub(super) async fn report(
         "session_id":a.session_id,"state":"unknown","receipt_id":id,"receipt_kind":"caller_asserted",
         "reported_outcome":a.outcome,"scope_violation":exceeded,"recovery_blocked":true,
         "work_version":work_version.to_string(),"work_completed":false,"resource_release_performed":false,
-        "reconciliation_supported":false,
-        "next_action":"Preserve effects and request operator recovery; this endpoint cannot yet reconcile. Do not retry or complete while recovery is blocked."}),
+        "reconciliation_supported":true,
+        "next_action":"Have an authorized recovery operator inspect the receipt and reconcile actual effects. Do not retry or complete while recovery is blocked."}),
     )
 }

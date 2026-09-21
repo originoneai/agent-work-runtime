@@ -40,6 +40,8 @@ fn token_id(token: &str) -> PgResult<&str> {
 pub(crate) struct ReaderAuthority {
     pub actor_id: String,
     pub client_id: String,
+    pub actor_kind: String,
+    pub execution_access: BTreeMap<Id, ExecutionAccess>,
     pub access: WorkstreamAccess,
     pub catalog: WorkstreamCatalog,
     pub snapshot: String,
@@ -48,6 +50,12 @@ pub(crate) struct ReaderAuthority {
     pub revision: i64,
     pub binding: String,
     pub grant_versions: BTreeMap<Id, i64>,
+}
+
+#[derive(Clone, Copy, Default)]
+pub(crate) struct ExecutionAccess {
+    pub attest: bool,
+    pub reconcile: bool,
 }
 
 /// Resolve every security fact in the action transaction. Row locks make a
@@ -104,7 +112,7 @@ async fn authenticate_inner(
         .query_opt(project_query, &[&tenant, &project])
         .await?
         .ok_or(PgError::Forbidden)?;
-    let identity = tx.query_opt("SELECT c.actor_id,c.client_id,m.membership_version,m.role
+    let identity = tx.query_opt("SELECT c.actor_id,c.client_id,m.membership_version,m.role,a.kind
         FROM awr_team.credentials c
         JOIN awr_team.tenants t ON t.id=c.tenant_id
         JOIN awr_team.actors a ON a.tenant_id=c.tenant_id AND a.id=c.actor_id
@@ -122,6 +130,7 @@ async fn authenticate_inner(
     let client: String = identity.get(1);
     let membership: i64 = identity.get(2);
     let role: String = identity.get(3);
+    let actor_kind: String = identity.get(4);
     let snapshot: String = p
         .get::<_, Option<String>>(0)
         .ok_or(PgError::InactiveCandidate)?;
@@ -139,29 +148,43 @@ async fn authenticate_inner(
     if catalog.project_id != project {
         return Err(PgError::SourceDivergence);
     }
-    let rows = tx.query("SELECT workstream_id,authority_version,can_read,can_write,can_manage,grant_version
+    let rows = tx.query("SELECT workstream_id,authority_version,can_read,can_write,can_manage,grant_version,
+        can_attest_execution,can_reconcile_execution
         FROM awr_team.workstream_grants WHERE tenant_id=$1 AND project_id=$2 AND actor_id=$3 AND client_id=$4 AND active
         ORDER BY workstream_id FOR SHARE", &[&tenant,&project,&actor,&client]).await?;
     let mut grants = Vec::new();
     let mut grant_versions = BTreeMap::new();
+    let mut execution_access = BTreeMap::new();
     for row in rows {
         let id: Id = row
             .get::<_, String>(0)
             .parse()
             .map_err(|_| PgError::Forbidden)?;
         let authority: i64 = row.get(1);
+        let write = row.get::<_, bool>(3) && role != "reader";
+        let manage = row.get::<_, bool>(4) && role == "admin";
+        execution_access.insert(
+            id,
+            ExecutionAccess {
+                attest: write && actor_kind == "system" && row.get::<_, bool>(6),
+                reconcile: write
+                    && manage
+                    && matches!(actor_kind.as_str(), "system" | "human")
+                    && row.get::<_, bool>(7),
+            },
+        );
         grants.push(WorkstreamGrant {
             workstream_id: id,
             authority_version: authority.try_into().map_err(|_| PgError::Forbidden)?,
             read: row.get(2),
-            write: row.get::<_, bool>(3) && role != "reader",
-            manage: row.get::<_, bool>(4) && role == "admin",
+            write,
+            manage,
         });
         grant_versions.insert(id, row.get(5));
     }
     let binding = awr_team::request_hash(
         &json!({"tenant":tenant,"project":project,"credential":credential_id,
-        "actor":actor,"client":client,"membership":membership,"role":role}),
+        "actor":actor,"client":client,"actor_kind":actor_kind,"membership":membership,"role":role}),
     )
     .map_err(|_| PgError::Forbidden)?;
     let access = WorkstreamAccess {
@@ -173,6 +196,8 @@ async fn authenticate_inner(
     Ok(ReaderAuthority {
         actor_id: actor,
         client_id: client,
+        actor_kind,
+        execution_access,
         access,
         catalog,
         snapshot,

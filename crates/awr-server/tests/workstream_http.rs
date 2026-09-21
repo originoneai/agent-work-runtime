@@ -133,8 +133,8 @@ async fn http_requires_live_auth_and_never_accepts_grants_or_identity_from_a_bod
     );
     assert_eq!(cap["execution_admission"], true);
     assert_eq!(cap["execution_modes"], json!(["caller_managed"]));
-    assert_eq!(cap["trusted_execution_results"], false);
-    assert_eq!(cap["execution_reconciliation"], false);
+    assert_eq!(cap["trusted_execution_results"], true);
+    assert_eq!(cap["execution_reconciliation"], true);
     for field in ["tenant_id", "project_id", "actor_id", "client_id", "grants"] {
         let mut request = body.clone();
         request[field] = json!("forged");

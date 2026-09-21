@@ -1101,7 +1101,11 @@ async fn barriers_and_active_contract_checks_preserve_recovery_only_cancellation
 #[tokio::test]
 async fn schema_twelve_preserves_legacy_executions_and_failed_migration_is_atomic() {
     let (_g, admin, _, _store) = setup().await;
-    admin.batch_execute("ALTER TABLE awr_team.executions DROP CONSTRAINT executions_workstream_binding;
+    admin.batch_execute("ALTER TABLE awr_team.resource_reservations DROP COLUMN execution_id;
+        ALTER TABLE awr_team.executions DROP CONSTRAINT executions_resource_identity;
+        ALTER TABLE awr_team.executions DROP COLUMN attestation_grant_version;
+        ALTER TABLE awr_team.workstream_grants DROP COLUMN can_attest_execution,DROP COLUMN can_reconcile_execution;
+        ALTER TABLE awr_team.executions DROP CONSTRAINT executions_workstream_binding;
         ALTER TABLE awr_team.executions DROP COLUMN workstream_id,DROP COLUMN ownership_version,DROP COLUMN executor_client_id,DROP COLUMN execution_version;
         UPDATE awr_team.schema_state SET version=11;
         INSERT INTO awr_team.executions(tenant_id,project_id,id,work_id,fence,contract_hash,executor_actor_id,state)

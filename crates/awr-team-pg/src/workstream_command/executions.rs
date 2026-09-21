@@ -1,6 +1,7 @@
 //! Execution intents and caller-managed admission under live authority.
 //! Preparation never dispatches. Admission is not physical effect confinement.
 mod lifecycle;
+mod recovery;
 use super::*;
 use tokio_postgres::Row;
 
@@ -29,12 +30,16 @@ pub(super) enum Action {
     Cancel(Cancel),
     Start(lifecycle::Start),
     Report(lifecycle::Report),
+    Recovery(recovery::Action),
 }
 impl Action {
     pub(super) fn parse(op: &str, args: Value) -> PgResult<Self> {
         let action = match op {
             "execution.start" => Self::Start(lifecycle::Start::parse(args)?),
             "execution.report" => Self::Report(lifecycle::Report::parse(args)?),
+            "execution.attest" | "execution.reconcile" => {
+                Self::Recovery(recovery::Action::parse(op, args)?)
+            }
             "execution.prepare" => {
                 let a: Prepare = serde_json::from_value(args).map_err(|_| invalid())?;
                 if !identity(&a.claim_id)
@@ -76,6 +81,7 @@ impl Action {
             Self::Cancel(a) => (&a.session_id, &a.expected_session_version),
             Self::Start(a) => (&a.session_id, &a.expected_session_version),
             Self::Report(a) => (&a.session_id, &a.expected_session_version),
+            Self::Recovery(a) => a.session(),
         }
     }
     pub(super) fn requires_active_stream(&self) -> bool {
@@ -115,6 +121,9 @@ pub(super) async fn apply(
         }
         Action::Report(a) => {
             lifecycle::report(tx, tenant, project, auth, command, ownership, a).await?
+        }
+        Action::Recovery(a) => {
+            recovery::apply(tx, tenant, project, auth, command, ownership, a).await?
         }
     };
     Ok(Applied {
@@ -388,6 +397,20 @@ pub(crate) async fn inspect(
         )
         .await?
         .get(0);
+    let owned = r.get::<_, String>("executor_actor_id") == auth.actor_id
+        && r.get::<_, Option<String>>("executor_client_id").as_deref() == Some(&auth.client_id);
+    let stream_id: Id = stream.parse().map_err(|_| PgError::Forbidden)?;
+    let authority = auth
+        .execution_access
+        .get(&stream_id)
+        .copied()
+        .unwrap_or_default();
+    let receipt_visible = owned || authority.reconcile;
+    let latest = if receipt_visible {
+        recovery::latest_receipt(tx, tenant, project, id).await?
+    } else {
+        None
+    };
     Ok(
         json!({"execution_id":id,"execution_version":r.get::<_,i64>("execution_version").to_string(),
         "work_id":work,"session_id":r.get::<_,Option<String>>("session_id"),"claim_id":r.get::<_,Option<String>>("claim_id"),
@@ -395,8 +418,9 @@ pub(crate) async fn inspect(
         "cancel_requested":r.get::<_,bool>("cancel_requested"),"contract_hash":r.get::<_,String>("contract_hash"),
         "contract_matches_current":r.get::<_,String>("contract_hash")==current_hash,
         "epoch_matches_current":epoch_matches,"lease_live":r.get::<_,bool>("lease_live")&&epoch_matches,
-        "owned_by_client":r.get::<_,String>("executor_actor_id")==auth.actor_id
-            && r.get::<_,Option<String>>("executor_client_id").as_deref()==Some(&auth.client_id),
+        "owned_by_client":owned,"attestation_authority":authority.attest && owned && r.get::<_,Option<i64>>("attestation_grant_version").is_some(),
+        "reconciliation_authority":authority.reconcile,"receipt_details_available":receipt_visible,
+        "latest_receipt":latest,
         "recovery_blocked":r.get::<_,bool>("recovery_blocked"),
         "execution_authorized":false,"automatic_resume":false}),
     )

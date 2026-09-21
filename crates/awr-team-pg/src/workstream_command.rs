@@ -23,6 +23,8 @@ pub(crate) const COMMANDS: &[&str] = &[
     "execution.cancel",
     "execution.start",
     "execution.report",
+    "execution.attest",
+    "execution.reconcile",
 ];
 const RECEIPT_PROTOCOL: &str = "awr-team-workstream-command-v1";
 
@@ -112,12 +114,15 @@ impl WorkstreamCommand {
         }
         version(&self.expected_project_revision)?;
         match self.op.as_str() {
-            "execution.prepare" | "execution.cancel" | "execution.start" | "execution.report" => {
-                Ok(Action::Execution(executions::Action::parse(
-                    &self.op,
-                    self.args.clone(),
-                )?))
-            }
+            "execution.prepare"
+            | "execution.cancel"
+            | "execution.start"
+            | "execution.report"
+            | "execution.attest"
+            | "execution.reconcile" => Ok(Action::Execution(executions::Action::parse(
+                &self.op,
+                self.args.clone(),
+            )?)),
             "claim.acquire" | "claim.renew" | "claim.release" => Ok(Action::Claim(
                 claims::Action::parse(&self.op, self.args.clone())?,
             )),

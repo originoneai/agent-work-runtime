@@ -10,7 +10,7 @@ capabilities response to discover available operations.
 ## Start an operator-bound service
 
 Build `awr-server` from this source branch. Migrate the intended database to
-schema 12 explicitly as its owner, and apply application-role grants using the
+schema 13 explicitly as its owner, and apply application-role grants using the
 [PostgreSQL setup](team-postgres.md). `serve` checks the schema without migrating
 it. Run the listener using the application connection, not an owner or superuser
 connection.
@@ -93,7 +93,7 @@ POST JSON to `/v1/projects/<alias>/query` with an
 {"protocol_version":1,"op":"capabilities"}
 ```
 
-The response advertises the following queries and eight session/claim/intent commands.
+The response advertises the following queries and twelve session/claim/execution commands.
 The operation list describes implemented protocol, not a grant to invoke it.
 Unsupported operations or protocol versions fail explicitly.
 
@@ -291,8 +291,8 @@ transaction. They are a prerequisite for the remaining execution lifecycle, not
 permission to run a command. `execution.prepare` creates no outbox delivery and
 returns `dispatched: false`, `admission: "not_evaluated"` and
 `execution_authorized: false`. Explicit caller-managed start and observation
-reporting are available. Dispatch, trusted execution reports and reconciliation
-are not yet exposed; capabilities distinguish these operations.
+reporting, explicitly authorized executor attestations and operator reconciliation
+are available. Dispatch is not exposed; capabilities distinguish these operations.
 
 | Operation | Strict `args` object |
 | --- | --- |
@@ -387,10 +387,70 @@ terminal attempt cannot be rewritten by this operation. Unknown fields such as
 `receipt_kind: "trusted_executor"` are rejected. A newer current contract does
 not erase observations against the original execution contract.
 
-This increment deliberately does not provide the trusted recovery path needed to
-settle these reports. It is not yet a complete recurring execution loop. The next
-protocol step must add authorized reconciliation and supported executor authority;
-ordinary callers cannot self-certify their way past this boundary.
+## Executor attestations and operator reconciliation
+
+Two commands can settle actual execution effects. Neither completes work, selects
+a completion receipt, upgrades its execution policy or grants permission to run
+again. Use `execution.inspect` first, then fresh `work.prepare` preconditions.
+
+| Operation | Strict `args` object |
+| --- | --- |
+| `execution.attest` | `session_id`, `expected_session_version`, `execution_id`, `expected_execution_version`, `facts` |
+| `execution.reconcile` | The same fields plus `expected_work_version`, `reviewed_receipt_id` (the latest inspected receipt ID, or null when absent), `clear_recovery_block` |
+
+`facts` contains `outcome` (`succeeded`, `failed`, `cancelled`, `unknown`), the
+original `input_digest`, optional `output_digest` (required for success),
+`environment_digest`, `observed_paths` and `note`. Digests are 64 lowercase hex
+characters. Paths and notes have the same bounds as `execution.report`. These
+facts identify what the authorized reporter verified; the server does not inspect
+the external process or independently hash its outputs.
+
+An attestation requires an operator-provisioned `system` actor, effective write
+access and the explicit `can_attest_execution` workstream grant. That authority
+must exist **both at admission and when reporting**. Admission captures its grant
+version and returns `result_authority: "trusted_executor"`; ordinary admission
+returns `caller_asserted`. A later privilege change cannot upgrade an ordinary
+or legacy attempt into trusted execution. Only the original actor/client/session
+can attest, and the receipt kind is derived by the server as `trusted_executor`.
+Caller strings cannot grant trust. An ordinary `execution.report` always remains
+`caller_asserted`, even when submitted by a trusted executor.
+
+Reconciliation requires an operator-provisioned `human` or `system` actor, admin
+membership, effective write/manage access and explicit `can_reconcile_execution`.
+An `agent` actor or admin membership alone is insufficient. The operator uses its
+own current work-bound session and confirms the exact execution/work versions and
+latest reviewed receipt. The new receipt is `reconcile`, never `trusted_executor`;
+the original observation and executor attribution remain in history. Claim expiry
+does not prevent settlement. Current ownership and coordinator epoch still apply;
+adopting old ownership/epoch history requires a separate recovery protocol.
+
+Terminal facts release only reservations bound to that execution. Unknown facts
+retain reservations and block recovery. An executor that reports paths outside
+its declared scope leaves the attempt unknown for operator review; an operator
+cannot certify an out-of-scope success, but may reconcile failure or cancellation.
+Existing terminal facts cannot be rewritten; an operator may confirm identical
+facts to resolve an outstanding block.
+
+Only reconciliation with `clear_recovery_block: true` may clear an existing work
+block, and only when the result is settled and no other nonterminal execution or
+reserved/unknown resource remains on the work. Clearing an unknown result is
+rejected. Partial settlement keeps the remaining barrier and does not release
+another attempt's resources. An executor cannot clear a work recovery block.
+
+`execution.inspect` exposes current `attestation_authority` and
+`reconciliation_authority`. Full `latest_receipt` facts are visible only to the
+original actor/client or a currently authorized reconciliation operator; other
+readers get metadata and `receipt_details_available: false`. Recheck after grant,
+ownership, epoch, receipt or work-version changes. Exact retries return historical
+command receipts and never repeat effects or issue execution permission.
+
+Schema 13 gives existing grants neither new authority, leaves existing admissions
+without attestation delegation, and retains legacy resource reservations as
+unbound. It does not infer a resource's execution from today's work owner. Such
+reservations cannot be released by these commands. Provisioning remains an
+operator integration through the database administration boundary; a supported
+provisioning CLI, bundled executor integration and enabled-project history
+migration are still required for the complete Team execution workflow.
 
 ## Limits and errors
 
