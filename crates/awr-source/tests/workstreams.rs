@@ -6,6 +6,24 @@ use std::{fs, path::PathBuf};
 
 const LEDGER: &str = include_str!("../../../tests/fixtures/workstreams/ledger.yaml");
 
+// Normalize at the text mutation boundary so checkout line endings cannot make
+// a candidate silently identical to the baseline.
+fn replace_fixture(text: &str, from: &str, to: &str) -> String {
+    let normalized = text.replace("\r\n", "\n");
+    let changed = normalized.replace(from, to);
+    assert_ne!(
+        changed, normalized,
+        "fixture mutation did not occur: {from:?}"
+    );
+    changed
+}
+
+fn ledger_line_endings() -> [String; 2] {
+    let lf = LEDGER.replace("\r\n", "\n");
+    let crlf = lf.replace('\n', "\r\n");
+    [lf, crlf]
+}
+
 struct Fixture(PathBuf);
 impl Fixture {
     fn new() -> Self {
@@ -33,7 +51,14 @@ fn manifest() -> Manifest {
 
 #[test]
 fn complete_source_import_is_idempotent_and_preserves_work_identity() {
+    for ledger in ledger_line_endings() {
+        check_complete_source_import(&ledger);
+    }
+}
+
+fn check_complete_source_import(ledger: &str) {
     let fixture = Fixture::new();
+    fixture.write(ledger);
     let mut store = fixture.store();
     let initial = index_project(&mut store, &fixture.0, &manifest(), false).unwrap();
     assert!(initial.ok, "{initial:?}");
@@ -55,9 +80,22 @@ fn complete_source_import_is_idempotent_and_preserves_work_identity() {
     let again = index_project(&mut store, &fixture.0, &manifest(), false).unwrap();
     assert!(again.ok);
     assert_eq!(again.project_revision, initial.project_revision);
-    fixture.write(&LEDGER.replace("title: API\n", "title: API contract\n"));
+    fixture.write(&replace_fixture(
+        ledger,
+        "title: API\n",
+        "title: API contract\n",
+    ));
     let changed = index_project(&mut store, &fixture.0, &manifest(), false).unwrap();
     assert!(changed.ok, "{changed:?}");
+    assert!(changed.project_revision > initial.project_revision);
+    assert_eq!(
+        store
+            .workstream_catalog(initial.project_id)
+            .unwrap()
+            .workstreams[0]
+            .title,
+        "API contract"
+    );
     assert_eq!(
         store
             .work_item(initial.project_id, "API-1")
@@ -86,22 +124,37 @@ fn complete_source_import_is_idempotent_and_preserves_work_identity() {
 
 #[test]
 fn invalid_scopes_rollback_the_entire_candidate_and_block_stale_catalog_reads() {
+    for ledger in ledger_line_endings() {
+        check_invalid_scopes(&ledger);
+    }
+}
+
+fn check_invalid_scopes(ledger: &str) {
     let invalid = [
-        LEDGER.replace("version: 1", "version: 9"),
-        LEDGER.replace("workstream: api", "workstream: missing"),
-        LEDGER.replace("    workstream: api\n", ""),
-        LEDGER.replace("workstream: api", "workstream: [api, client]"),
-        LEDGER.replace("external_key: client", "external_key: api"),
-        LEDGER.replace("00000002", "00000001"),
-        LEDGER.replace("goal_keys: [delivery]", "goal_keys: [missing]"),
-        LEDGER.replace("  version: 1", "  version: 1\n  grant: all"),
-        LEDGER.replace("title: API\n", "title: API\n      project_id: foreign"),
-        LEDGER.replace("state: active", "state: paused"), // unchanged authority version
-        LEDGER.replace("workstream: api", "workstream: client"), // no silent movement
-        LEDGER.replace("01K00000000000000000000002", "01K00000000000000000000003"),
+        replace_fixture(ledger, "version: 1", "version: 9"),
+        replace_fixture(ledger, "workstream: api", "workstream: missing"),
+        replace_fixture(ledger, "    workstream: api\n", ""),
+        replace_fixture(ledger, "workstream: api", "workstream: [api, client]"),
+        replace_fixture(ledger, "external_key: client", "external_key: api"),
+        replace_fixture(ledger, "00000002", "00000001"),
+        replace_fixture(ledger, "goal_keys: [delivery]", "goal_keys: [missing]"),
+        replace_fixture(ledger, "  version: 1", "  version: 1\n  grant: all"),
+        replace_fixture(
+            ledger,
+            "title: API\n",
+            "title: API\n      project_id: foreign",
+        ),
+        replace_fixture(ledger, "state: active", "state: paused"), // unchanged authority version
+        replace_fixture(ledger, "workstream: api", "workstream: client"), // no silent movement
+        replace_fixture(
+            ledger,
+            "01K00000000000000000000002",
+            "01K00000000000000000000003",
+        ),
     ];
     for text in invalid {
         let fixture = Fixture::new();
+        fixture.write(ledger);
         let mut store = fixture.store();
         let initial = index_project(&mut store, &fixture.0, &manifest(), false).unwrap();
         assert!(initial.ok);
@@ -109,7 +162,11 @@ fn invalid_scopes_rollback_the_entire_candidate_and_block_stale_catalog_reads() 
         let baseline = store
             .source_projection_payloads(&source, EntityKind::WorkItem)
             .unwrap();
-        fixture.write(&text.replace("Define the interface", "Candidate title"));
+        fixture.write(&replace_fixture(
+            &text,
+            "Define the interface",
+            "Candidate title",
+        ));
         let rejected = index_project(&mut store, &fixture.0, &manifest(), false).unwrap();
         assert!(!rejected.ok, "invalid candidate was accepted: {text}");
         assert!(matches!(
@@ -122,7 +179,7 @@ fn invalid_scopes_rollback_the_entire_candidate_and_block_stale_catalog_reads() 
                 .unwrap(),
             baseline
         );
-        fixture.write(LEDGER);
+        fixture.write(ledger);
         let recovered = index_project(&mut store, &fixture.0, &manifest(), false).unwrap();
         assert!(recovered.ok, "{recovered:?}");
         assert_eq!(
@@ -152,9 +209,11 @@ fn source_adapter_downgrade_and_secondary_authority_are_rejected() {
     extra.sources.push(spec);
     fs::write(
         fixture.0.join("other.yaml"),
-        LEDGER
-            .replace("API-1", "API-2")
-            .replace("CLIENT-1", "CLIENT-2"),
+        replace_fixture(
+            &replace_fixture(LEDGER, "API-1", "API-2"),
+            "CLIENT-1",
+            "CLIENT-2",
+        ),
     )
     .unwrap();
     assert!(
