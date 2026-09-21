@@ -1,47 +1,13 @@
 #![cfg(feature = "pg-tests")]
 
-use awr_team_pg::{Bootstrap, LeaseStore, migrate};
-use std::sync::{Mutex, MutexGuard};
+use awr_team_pg::LeaseStore;
 use std::time::Instant;
-use tokio_postgres::{Client, NoTls};
-
-static DB: Mutex<()> = Mutex::new(());
-
-fn admin_url() -> String {
-    std::env::var("AWR_TEAM_DATABASE_URL")
-        .unwrap_or_else(|_| "postgres://postgres:awr-test@127.0.0.1:55432/awr_team_test".into())
-}
-fn app_url() -> String {
-    admin_url().replacen("postgres:awr-test", "awr_app:app-test", 1)
-}
-async fn connect(url: &str) -> Client {
-    let (client, connection) = tokio_postgres::connect(url, NoTls)
-        .await
-        .expect("postgres 17 must be running for TEAM-P11");
-    tokio::spawn(async move {
-        let _ = connection.await;
-    });
-    client
-}
+mod common;
+use common::{fresh_team_schema, test_config, with_app_role};
 
 #[tokio::test]
-async fn records_actual_claim_rate_without_declaring_an_sla() {
-    let _guard: MutexGuard<_> = DB.lock().unwrap_or_else(|e| e.into_inner());
-    let admin = connect(&admin_url()).await;
-    admin
-        .batch_execute("DROP SCHEMA IF EXISTS awr_team CASCADE")
-        .await
-        .unwrap();
-    migrate(&admin).await.unwrap();
-    admin
-        .batch_execute(
-            "DO $$ BEGIN CREATE ROLE awr_app LOGIN PASSWORD 'app-test' NOSUPERUSER NOBYPASSRLS; EXCEPTION WHEN duplicate_object THEN NULL; END $$",
-        )
-        .await
-        .unwrap();
-    awr_team_pg::Bootstrap::grant_app(&admin, "awr_app")
-        .await
-        .unwrap();
+async fn records_combined_workflow_rate_without_declaring_an_sla() {
+    let (_guard, admin, db) = fresh_team_schema().await;
     admin
         .batch_execute(
             "INSERT INTO awr_team.tenants(id,name,status) VALUES ('tenant-a','A','active');
@@ -54,7 +20,7 @@ async fn records_actual_claim_rate_without_declaring_an_sla() {
         )
         .await
         .unwrap();
-    let store = LeaseStore::new(app_url());
+    let store = LeaseStore::from_config(with_app_role(&test_config(), &db));
     let n = 20usize;
     let start = Instant::now();
     for i in 0..n {
@@ -101,8 +67,37 @@ async fn records_actual_claim_rate_without_declaring_an_sla() {
     // Recorded measurement only. Do not treat this as a production SLA.
     assert!(rate > 0.0);
     assert!(pg.starts_with('1'));
-    eprintln!(
-        "capacity_probe clients=1 ops={n} elapsed_ms={} rate_ops_s={rate:.2} pg={pg}",
-        elapsed.as_millis()
-    );
+    let report = serde_json::json!({
+        "metric": "combined_workflows_per_second",
+        "steps": ["insert_work_item", "start_session", "claim"],
+        "clients": 1, "workflows": n, "elapsed_seconds": elapsed.as_secs_f64(),
+        "workflows_per_second": rate, "postgres_version": pg,
+        "os": std::env::consts::OS, "architecture": std::env::consts::ARCH,
+        "source_sha": std::env::var("AWR_TEST_SOURCE_SHA").ok(),
+        "source_dirty": std::env::var("AWR_TEST_SOURCE_DIRTY").ok(),
+        "measured_at_unix_ms": std::time::SystemTime::now()
+            .duration_since(std::time::UNIX_EPOCH).unwrap().as_millis(),
+        "production_sla": false
+    });
+    eprintln!("capacity_probe={report}");
+    if let Ok(path) = std::env::var("AWR_CAPACITY_REPORT") {
+        assert!(
+            report["source_sha"].as_str().is_some_and(|s| s.len() == 40),
+            "AWR_TEST_SOURCE_SHA is required for a persisted measurement"
+        );
+        assert!(
+            report["source_dirty"]
+                .as_str()
+                .is_some_and(|s| s == "true" || s == "false"),
+            "AWR_TEST_SOURCE_DIRTY must describe the measured working tree"
+        );
+        // Never silently replace a previous measurement.
+        use std::io::Write;
+        let mut file = std::fs::OpenOptions::new()
+            .write(true)
+            .create_new(true)
+            .open(path)
+            .unwrap();
+        writeln!(file, "{}", serde_json::to_string_pretty(&report).unwrap()).unwrap();
+    }
 }

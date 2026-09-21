@@ -75,3 +75,45 @@ async fn missing_backup_objects_fail_closed() {
         .unwrap_err();
     assert!(matches!(err, PgError::RestoreIncomplete));
 }
+
+#[tokio::test]
+async fn reconnect_rejects_incompatible_or_missing_schema_without_changing_work() {
+    let (_lock, admin, db) = setup().await;
+    let before: serde_json::Value = admin
+        .query_one(
+            "SELECT to_jsonb(w) FROM awr_team.work_items w WHERE id='work-a'",
+            &[],
+        )
+        .await
+        .unwrap()
+        .get(0);
+    let client = connect_config(&with_db(&test_config(), &db)).await;
+    check_schema(&client).await.unwrap();
+    drop(client);
+    admin
+        .batch_execute("UPDATE awr_team.schema_state SET version=999 WHERE component='awr_team'")
+        .await
+        .unwrap();
+    for missing in [false, true] {
+        if missing {
+            admin
+                .batch_execute("DELETE FROM awr_team.schema_state WHERE component='awr_team'")
+                .await
+                .unwrap();
+        }
+        let again = connect_config(&with_db(&test_config(), &db)).await;
+        assert!(matches!(
+            check_schema(&again).await,
+            Err(PgError::SchemaIncompatible(_))
+        ));
+        let after: serde_json::Value = admin
+            .query_one(
+                "SELECT to_jsonb(w) FROM awr_team.work_items w WHERE id='work-a'",
+                &[],
+            )
+            .await
+            .unwrap()
+            .get(0);
+        assert_eq!(before, after);
+    }
+}

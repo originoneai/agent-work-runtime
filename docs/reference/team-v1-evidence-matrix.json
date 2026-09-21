@@ -1,1129 +1,2281 @@
 {
- "schema_version": 1,
- "title": "AWR Team V1 evidence matrix",
- "notice": "Automated protocol coverage is not a production SLA. real_agent_accepted counts per-case live replays by Kimi Code CLI 2.0.0 and ZCode CLI 0.16.5 (GLM) with independent oracle checks. The remaining protocol_covered_not_agent_accepted cases are fault-injection, timing and DB-internal invariants kept under automated probe coverage; agent replay is not claimed for them. Do not tag a release from this matrix.",
- "release_candidate": false,
- "tag_pushed": false,
- "counts": {
-  "required": 69,
-  "protocol_implemented": 69,
-  "real_agent_accepted": 42,
-  "probe_only_not_agent_replayable": 27
- },
- "cases": [
-  {
-   "id": "TC-001",
-   "title": "源声明 completed 不能直接完成团队任务",
-   "phase": "P8",
-   "required": true,
-   "protocol_implemented": true,
-   "automated_tests": [
-    "crates/awr-team-pg/tests/pg_review.rs"
-   ],
-   "real_postgresql": true,
-   "two_process_or_fault": false,
-   "real_agent_clients": true,
-   "status": "real_agent_accepted",
-   "blocker": null,
-   "agent_evidence": "ledger/evidence/TEAM-P13/TC-001.json"
-  },
-  {
-   "id": "TC-002",
-   "title": "Agent 自报不能升级为可信验证",
-   "phase": "P8",
-   "required": true,
-   "protocol_implemented": true,
-   "automated_tests": [
-    "crates/awr-team-pg/tests/pg_review.rs"
-   ],
-   "real_postgresql": true,
-   "two_process_or_fault": false,
-   "real_agent_clients": true,
-   "status": "real_agent_accepted",
-   "blocker": null,
-   "agent_evidence": "ledger/evidence/TEAM-P13/TC-002.json"
-  },
-  {
-   "id": "TC-003",
-   "title": "同任务跨进程竞争",
-   "phase": "P5",
-   "required": true,
-   "protocol_implemented": true,
-   "automated_tests": [
-    "crates/awr-team-pg/tests/pg_lease.rs"
-   ],
-   "real_postgresql": true,
-   "two_process_or_fault": false,
-   "real_agent_clients": true,
-   "status": "real_agent_accepted",
-   "blocker": null,
-   "agent_evidence": "ledger/evidence/TEAM-P13/TC-003.json"
-  },
-  {
-   "id": "TC-004",
-   "title": "不同任务不因全局客户端 CAS 相互失败",
-   "phase": "P5",
-   "required": true,
-   "protocol_implemented": true,
-   "automated_tests": [
-    "crates/awr-team-pg/tests/pg_lease.rs"
-   ],
-   "real_postgresql": true,
-   "two_process_or_fault": false,
-   "real_agent_clients": true,
-   "status": "real_agent_accepted",
-   "blocker": null,
-   "agent_evidence": "ledger/evidence/TEAM-P13/TC-004.json"
-  },
-  {
-   "id": "TC-005",
-   "title": "过期租约不得由晚到续租复活",
-   "phase": "P5",
-   "required": true,
-   "protocol_implemented": true,
-   "automated_tests": [
-    "crates/awr-team-pg/tests/pg_lease.rs"
-   ],
-   "real_postgresql": true,
-   "two_process_or_fault": false,
-   "real_agent_clients": false,
-   "status": "protocol_covered_not_agent_accepted",
-   "blocker": null
-  },
-  {
-   "id": "TC-006",
-   "title": "旧 fence 不能推进当前工作",
-   "phase": "P5",
-   "required": true,
-   "protocol_implemented": true,
-   "automated_tests": [
-    "crates/awr-team-pg/tests/pg_lease.rs"
-   ],
-   "real_postgresql": true,
-   "two_process_or_fault": false,
-   "real_agent_clients": true,
-   "status": "real_agent_accepted",
-   "blocker": null,
-   "agent_evidence": "ledger/evidence/TEAM-P13/TC-006.json"
-  },
-  {
-   "id": "TC-007",
-   "title": "续租幂等重放不能再次延长期限",
-   "phase": "P5",
-   "required": true,
-   "protocol_implemented": true,
-   "automated_tests": [
-    "crates/awr-team-pg/tests/pg_lease.rs"
-   ],
-   "real_postgresql": true,
-   "two_process_or_fault": false,
-   "real_agent_clients": false,
-   "status": "protocol_covered_not_agent_accepted",
-   "blocker": null
-  },
-  {
-   "id": "TC-008",
-   "title": "受影响任务占用时拒绝合同激活",
-   "phase": "P6",
-   "required": true,
-   "protocol_implemented": true,
-   "automated_tests": [
-    "crates/awr-team-pg/tests/pg_graph.rs"
-   ],
-   "real_postgresql": true,
-   "two_process_or_fault": false,
-   "real_agent_clients": true,
-   "status": "real_agent_accepted",
-   "blocker": null,
-   "agent_evidence": "ledger/evidence/TEAM-P13/TC-008.json"
-  },
-  {
-   "id": "TC-009",
-   "title": "旧合同证据不能完成新合同",
-   "phase": "P8",
-   "required": true,
-   "protocol_implemented": true,
-   "automated_tests": [
-    "crates/awr-team-pg/tests/pg_review.rs"
-   ],
-   "real_postgresql": true,
-   "two_process_or_fault": false,
-   "real_agent_clients": true,
-   "status": "real_agent_accepted",
-   "blocker": null,
-   "agent_evidence": "ledger/evidence/TEAM-P13/TC-009.json"
-  },
-  {
-   "id": "TC-010",
-   "title": "候选依赖图完整验证",
-   "phase": "P6",
-   "required": true,
-   "protocol_implemented": true,
-   "automated_tests": [
-    "crates/awr-team-pg/tests/pg_graph.rs"
-   ],
-   "real_postgresql": true,
-   "two_process_or_fault": false,
-   "real_agent_clients": true,
-   "status": "real_agent_accepted",
-   "blocker": null,
-   "agent_evidence": "ledger/evidence/TEAM-P13/TC-010.json"
-  },
-  {
-   "id": "TC-011",
-   "title": "conversation 不能跨参与者劫持",
-   "phase": "P5",
-   "required": true,
-   "protocol_implemented": true,
-   "automated_tests": [
-    "crates/awr-team-pg/tests/pg_lease.rs"
-   ],
-   "real_postgresql": true,
-   "two_process_or_fault": false,
-   "real_agent_clients": true,
-   "status": "real_agent_accepted",
-   "blocker": null,
-   "agent_evidence": "ledger/evidence/TEAM-P13/TC-011.json"
-  },
-  {
-   "id": "TC-012",
-   "title": "等待、回复和重启连续性",
-   "phase": "P5",
-   "required": true,
-   "protocol_implemented": true,
-   "automated_tests": [
-    "crates/awr-team-pg/tests/pg_lease.rs"
-   ],
-   "real_postgresql": true,
-   "two_process_or_fault": false,
-   "real_agent_clients": false,
-   "status": "protocol_covered_not_agent_accepted",
-   "blocker": null
-  },
-  {
-   "id": "TC-013",
-   "title": "交接原子化与旧权限失效",
-   "phase": "P5",
-   "required": true,
-   "protocol_implemented": true,
-   "automated_tests": [
-    "crates/awr-team-pg/tests/pg_lease.rs"
-   ],
-   "real_postgresql": true,
-   "two_process_or_fault": false,
-   "real_agent_clients": true,
-   "status": "real_agent_accepted",
-   "blocker": null,
-   "agent_evidence": "ledger/evidence/TEAM-P13/TC-013.json"
-  },
-  {
-   "id": "TC-014",
-   "title": "未知执行阻止不安全再派发",
-   "phase": "P7",
-   "required": true,
-   "protocol_implemented": true,
-   "automated_tests": [
-    "crates/awr-team-pg/tests/pg_execution.rs"
-   ],
-   "real_postgresql": true,
-   "two_process_or_fault": false,
-   "real_agent_clients": true,
-   "status": "real_agent_accepted",
-   "blocker": null,
-   "agent_evidence": "ledger/evidence/TEAM-P13/TC-014.json"
-  },
-  {
-   "id": "TC-015",
-   "title": "领域事务中途失败无部分修改",
-   "phase": "P2",
-   "required": true,
-   "protocol_implemented": true,
-   "automated_tests": [
-    "crates/awr-team-pg/tests/pg_skeleton.rs"
-   ],
-   "real_postgresql": true,
-   "two_process_or_fault": false,
-   "real_agent_clients": false,
-   "status": "protocol_covered_not_agent_accepted",
-   "blocker": null
-  },
-  {
-   "id": "TC-016",
-   "title": "同请求多次提交只执行一次领域动作",
-   "phase": "P2",
-   "required": true,
-   "protocol_implemented": true,
-   "automated_tests": [
-    "crates/awr-team-pg/tests/pg_skeleton.rs"
-   ],
-   "real_postgresql": true,
-   "two_process_or_fault": false,
-   "real_agent_clients": true,
-   "status": "real_agent_accepted",
-   "blocker": null,
-   "agent_evidence": "ledger/evidence/TEAM-P13/TC-016.json"
-  },
-  {
-   "id": "TC-017",
-   "title": "同请求身份更换参数拒绝",
-   "phase": "P2",
-   "required": true,
-   "protocol_implemented": true,
-   "automated_tests": [
-    "crates/awr-team-pg/tests/pg_skeleton.rs"
-   ],
-   "real_postgresql": true,
-   "two_process_or_fault": false,
-   "real_agent_clients": true,
-   "status": "real_agent_accepted",
-   "blocker": null,
-   "agent_evidence": "ledger/evidence/TEAM-P13/TC-017.json"
-  },
-  {
-   "id": "TC-018",
-   "title": "提交成功但响应丢失",
-   "phase": "P7",
-   "required": true,
-   "protocol_implemented": true,
-   "automated_tests": [
-    "crates/awr-team-pg/tests/pg_execution.rs"
-   ],
-   "real_postgresql": true,
-   "two_process_or_fault": false,
-   "real_agent_clients": false,
-   "status": "protocol_covered_not_agent_accepted",
-   "blocker": null
-  },
-  {
-   "id": "TC-019",
-   "title": "外部动作成功但执行回执丢失",
-   "phase": "P7",
-   "required": true,
-   "protocol_implemented": true,
-   "automated_tests": [
-    "crates/awr-team-pg/tests/pg_execution.rs"
-   ],
-   "real_postgresql": true,
-   "two_process_or_fault": false,
-   "real_agent_clients": false,
-   "status": "protocol_covered_not_agent_accepted",
-   "blocker": null
-  },
-  {
-   "id": "TC-020",
-   "title": "必需报告字节变化",
-   "phase": "P8",
-   "required": true,
-   "protocol_implemented": true,
-   "automated_tests": [
-    "crates/awr-team-pg/tests/pg_review.rs"
-   ],
-   "real_postgresql": true,
-   "two_process_or_fault": false,
-   "real_agent_clients": true,
-   "status": "real_agent_accepted",
-   "blocker": null,
-   "agent_evidence": "ledger/evidence/TEAM-P13/TC-020.json"
-  },
-  {
-   "id": "TC-021",
-   "title": "作者与独立评审职责分离",
-   "phase": "P8",
-   "required": true,
-   "protocol_implemented": true,
-   "automated_tests": [
-    "crates/awr-team-pg/tests/pg_review.rs"
-   ],
-   "real_postgresql": true,
-   "two_process_or_fault": false,
-   "real_agent_clients": true,
-   "status": "real_agent_accepted",
-   "blocker": null,
-   "agent_evidence": "ledger/evidence/TEAM-P13/TC-021.json"
-  },
-  {
-   "id": "TC-022",
-   "title": "重复导入幂等",
-   "phase": "P9",
-   "required": true,
-   "protocol_implemented": true,
-   "automated_tests": [
-    "crates/awr-team-pg/tests/pg_import.rs"
-   ],
-   "real_postgresql": true,
-   "two_process_or_fault": false,
-   "real_agent_clients": true,
-   "status": "real_agent_accepted",
-   "blocker": null,
-   "agent_evidence": "ledger/evidence/TEAM-P13/TC-022.json"
-  },
-  {
-   "id": "TC-023",
-   "title": "多个本地源分歧不得自动最后写入胜出",
-   "phase": "P9",
-   "required": true,
-   "protocol_implemented": true,
-   "automated_tests": [
-    "crates/awr-team-pg/tests/pg_import.rs"
-   ],
-   "real_postgresql": true,
-   "two_process_or_fault": false,
-   "real_agent_clients": true,
-   "status": "real_agent_accepted",
-   "blocker": null,
-   "agent_evidence": "ledger/evidence/TEAM-P13/TC-023.json"
-  },
-  {
-   "id": "TC-024",
-   "title": "源对象与 PG 激活之间的崩溃",
-   "phase": "P3",
-   "required": true,
-   "protocol_implemented": true,
-   "automated_tests": [
-    "crates/awr-team-pg/tests/pg_source.rs"
-   ],
-   "real_postgresql": true,
-   "two_process_or_fault": false,
-   "real_agent_clients": false,
-   "status": "protocol_covered_not_agent_accepted",
-   "blocker": null
-  },
-  {
-   "id": "TC-025",
-   "title": "事件提交游标的逆序事务反例",
-   "phase": "P4",
-   "required": true,
-   "protocol_implemented": true,
-   "automated_tests": [
-    "crates/awr-team-pg/tests/pg_read.rs"
-   ],
-   "real_postgresql": true,
-   "two_process_or_fault": false,
-   "real_agent_clients": false,
-   "status": "protocol_covered_not_agent_accepted",
-   "blocker": null
-  },
-  {
-   "id": "TC-026",
-   "title": "同 revision 多事件分页",
-   "phase": "P4",
-   "required": true,
-   "protocol_implemented": true,
-   "automated_tests": [
-    "crates/awr-team-pg/tests/pg_read.rs"
-   ],
-   "real_postgresql": true,
-   "two_process_or_fault": false,
-   "real_agent_clients": true,
-   "status": "real_agent_accepted",
-   "blocker": null,
-   "agent_evidence": "ledger/evidence/TEAM-P13/TC-026.json"
-  },
-  {
-   "id": "TC-027",
-   "title": "跨项目读取隔离",
-   "phase": "P2",
-   "required": true,
-   "protocol_implemented": true,
-   "automated_tests": [
-    "crates/awr-team-pg/tests/pg_skeleton.rs"
-   ],
-   "real_postgresql": true,
-   "two_process_or_fault": false,
-   "real_agent_clients": true,
-   "status": "real_agent_accepted",
-   "blocker": null,
-   "agent_evidence": "ledger/evidence/TEAM-P13/TC-027.json"
-  },
-  {
-   "id": "TC-028",
-   "title": "跨项目关联写入隔离",
-   "phase": "P2",
-   "required": true,
-   "protocol_implemented": true,
-   "automated_tests": [
-    "crates/awr-team-pg/tests/pg_skeleton.rs"
-   ],
-   "real_postgresql": true,
-   "two_process_or_fault": false,
-   "real_agent_clients": true,
-   "status": "real_agent_accepted",
-   "blocker": null,
-   "agent_evidence": "ledger/evidence/TEAM-P13/TC-028.json"
-  },
-  {
-   "id": "TC-029",
-   "title": "连接池事务上下文不残留",
-   "phase": "P2",
-   "required": true,
-   "protocol_implemented": true,
-   "automated_tests": [
-    "crates/awr-team-pg/tests/pg_skeleton.rs"
-   ],
-   "real_postgresql": true,
-   "two_process_or_fault": false,
-   "real_agent_clients": false,
-   "status": "protocol_covered_not_agent_accepted",
-   "blocker": null
-  },
-  {
-   "id": "TC-030",
-   "title": "上下文缺必需事实不能标完整",
-   "phase": "P8",
-   "required": true,
-   "protocol_implemented": true,
-   "automated_tests": [
-    "crates/awr-team-pg/tests/pg_review.rs"
-   ],
-   "real_postgresql": true,
-   "two_process_or_fault": false,
-   "real_agent_clients": true,
-   "status": "real_agent_accepted",
-   "blocker": null,
-   "agent_evidence": "ledger/evidence/TEAM-P13/TC-030.json"
-  },
-  {
-   "id": "TC-031",
-   "title": "旧客户端不静默进入 Team 语义",
-   "phase": "P10",
-   "required": true,
-   "protocol_implemented": true,
-   "automated_tests": [
-    "crates/awr-team/tests/access.rs",
-    "crates/awr-cli/tests/team_cli.rs"
-   ],
-   "real_postgresql": false,
-   "two_process_or_fault": false,
-   "real_agent_clients": true,
-   "status": "real_agent_accepted",
-   "blocker": null,
-   "agent_evidence": "ledger/evidence/TEAM-P13/TC-031.json"
-  },
-  {
-   "id": "TC-032",
-   "title": "锁等待后的租约时间检查",
-   "phase": "P5",
-   "required": true,
-   "protocol_implemented": true,
-   "automated_tests": [
-    "crates/awr-team-pg/tests/pg_lease.rs"
-   ],
-   "real_postgresql": true,
-   "two_process_or_fault": false,
-   "real_agent_clients": false,
-   "status": "protocol_covered_not_agent_accepted",
-   "blocker": null
-  },
-  {
-   "id": "TC-033",
-   "title": "无权释放他人租约",
-   "phase": "P5",
-   "required": true,
-   "protocol_implemented": true,
-   "automated_tests": [
-    "crates/awr-team-pg/tests/pg_lease.rs"
-   ],
-   "real_postgresql": true,
-   "two_process_or_fault": false,
-   "real_agent_clients": true,
-   "status": "real_agent_accepted",
-   "blocker": null,
-   "agent_evidence": "ledger/evidence/TEAM-P13/TC-033.json"
-  },
-  {
-   "id": "TC-034",
-   "title": "过期认领保留历史与危险资源",
-   "phase": "P5",
-   "required": true,
-   "protocol_implemented": true,
-   "automated_tests": [
-    "crates/awr-team-pg/tests/pg_lease.rs"
-   ],
-   "real_postgresql": true,
-   "two_process_or_fault": false,
-   "real_agent_clients": false,
-   "status": "protocol_covered_not_agent_accepted",
-   "blocker": null
-  },
-  {
-   "id": "TC-035",
-   "title": "应用角色不能绕过 RLS 或改历史",
-   "phase": "P2",
-   "required": true,
-   "protocol_implemented": true,
-   "automated_tests": [
-    "crates/awr-team-pg/tests/pg_skeleton.rs"
-   ],
-   "real_postgresql": true,
-   "two_process_or_fault": false,
-   "real_agent_clients": false,
-   "status": "protocol_covered_not_agent_accepted",
-   "blocker": null
-  },
-  {
-   "id": "TC-036",
-   "title": "源上传路径与包安全",
-   "phase": "P3",
-   "required": true,
-   "protocol_implemented": true,
-   "automated_tests": [
-    "crates/awr-team-pg/tests/pg_source.rs"
-   ],
-   "real_postgresql": true,
-   "two_process_or_fault": false,
-   "real_agent_clients": true,
-   "status": "real_agent_accepted",
-   "blocker": null,
-   "agent_evidence": "ledger/evidence/TEAM-P13/TC-036.json"
-  },
-  {
-   "id": "TC-037",
-   "title": "outbox 重复投递",
-   "phase": "P7",
-   "required": true,
-   "protocol_implemented": true,
-   "automated_tests": [
-    "crates/awr-team-pg/tests/pg_execution.rs"
-   ],
-   "real_postgresql": true,
-   "two_process_or_fault": false,
-   "real_agent_clients": false,
-   "status": "protocol_covered_not_agent_accepted",
-   "blocker": null
-  },
-  {
-   "id": "TC-038",
-   "title": "runner 启动边界崩溃",
-   "phase": "P7",
-   "required": true,
-   "protocol_implemented": true,
-   "automated_tests": [
-    "crates/awr-team-pg/tests/pg_execution.rs"
-   ],
-   "real_postgresql": true,
-   "two_process_or_fault": false,
-   "real_agent_clients": false,
-   "status": "protocol_covered_not_agent_accepted",
-   "blocker": null
-  },
-  {
-   "id": "TC-039",
-   "title": "远端断线不能本地接管团队权威",
-   "phase": "P10",
-   "required": true,
-   "protocol_implemented": true,
-   "automated_tests": [
-    "crates/awr-team/tests/access.rs",
-    "crates/awr-cli/tests/team_cli.rs"
-   ],
-   "real_postgresql": false,
-   "two_process_or_fault": false,
-   "real_agent_clients": true,
-   "status": "real_agent_accepted",
-   "blocker": null,
-   "agent_evidence": "ledger/evidence/TEAM-P13/TC-039.json"
-  },
-  {
-   "id": "TC-040",
-   "title": "恢复后旧 coordinator epoch 被隔离",
-   "phase": "P9",
-   "required": true,
-   "protocol_implemented": true,
-   "automated_tests": [
-    "crates/awr-team-pg/tests/pg_import.rs"
-   ],
-   "real_postgresql": true,
-   "two_process_or_fault": false,
-   "real_agent_clients": false,
-   "status": "protocol_covered_not_agent_accepted",
-   "blocker": null
-  },
-  {
-   "id": "TC-041",
-   "title": "个人模式回归",
-   "phase": "P10",
-   "required": true,
-   "protocol_implemented": true,
-   "automated_tests": [
-    "crates/awr-team/tests/access.rs",
-    "crates/awr-cli/tests/team_cli.rs"
-   ],
-   "real_postgresql": false,
-   "two_process_or_fault": false,
-   "real_agent_clients": true,
-   "status": "real_agent_accepted",
-   "blocker": null,
-   "agent_evidence": "ledger/evidence/TEAM-P13/TC-041.json"
-  },
-  {
-   "id": "TC-042",
-   "title": "canonical 编码与版本转换",
-   "phase": "P1",
-   "required": true,
-   "protocol_implemented": true,
-   "automated_tests": [
-    "crates/awr-team/tests/contract_rules.rs",
-    "crates/awr-team/tests/access.rs"
-   ],
-   "real_postgresql": false,
-   "two_process_or_fault": false,
-   "real_agent_clients": true,
-   "status": "real_agent_accepted",
-   "blocker": null,
-   "agent_evidence": "ledger/evidence/TEAM-P13/TC-042.json"
-  },
-  {
-   "id": "TC-043",
-   "title": "显式远端项目选择",
-   "phase": "P10",
-   "required": true,
-   "protocol_implemented": true,
-   "automated_tests": [
-    "crates/awr-team/tests/access.rs",
-    "crates/awr-cli/tests/team_cli.rs"
-   ],
-   "real_postgresql": false,
-   "two_process_or_fault": false,
-   "real_agent_clients": true,
-   "status": "real_agent_accepted",
-   "blocker": null,
-   "agent_evidence": "ledger/evidence/TEAM-P13/TC-043.json"
-  },
-  {
-   "id": "TC-044",
-   "title": "目录前缀资源冲突",
-   "phase": "P6",
-   "required": true,
-   "protocol_implemented": true,
-   "automated_tests": [
-    "crates/awr-team-pg/tests/pg_graph.rs"
-   ],
-   "real_postgresql": true,
-   "two_process_or_fault": false,
-   "real_agent_clients": true,
-   "status": "real_agent_accepted",
-   "blocker": null,
-   "agent_evidence": "ledger/evidence/TEAM-P13/TC-044.json"
-  },
-  {
-   "id": "TC-045",
-   "title": "不支持的工作范围明确拒绝",
-   "phase": "P6",
-   "required": true,
-   "protocol_implemented": true,
-   "automated_tests": [
-    "crates/awr-team-pg/tests/pg_graph.rs"
-   ],
-   "real_postgresql": true,
-   "two_process_or_fault": false,
-   "real_agent_clients": true,
-   "status": "real_agent_accepted",
-   "blocker": null,
-   "agent_evidence": "ledger/evidence/TEAM-P13/TC-045.json"
-  },
-  {
-   "id": "TC-046",
-   "title": "批量源发布没有半套生效投影",
-   "phase": "P6",
-   "required": true,
-   "protocol_implemented": true,
-   "automated_tests": [
-    "crates/awr-team-pg/tests/pg_graph.rs"
-   ],
-   "real_postgresql": true,
-   "two_process_or_fault": false,
-   "real_agent_clients": false,
-   "status": "protocol_covered_not_agent_accepted",
-   "blocker": null
-  },
-  {
-   "id": "TC-047",
-   "title": "迁移 / schema 不兼容时禁止误启动",
-   "phase": "P9",
-   "required": true,
-   "protocol_implemented": true,
-   "automated_tests": [
-    "crates/awr-team-pg/tests/pg_import.rs"
-   ],
-   "real_postgresql": true,
-   "two_process_or_fault": false,
-   "real_agent_clients": false,
-   "status": "protocol_covered_not_agent_accepted",
-   "blocker": null
-  },
-  {
-   "id": "TC-048",
-   "title": "凭证撤销与已接受请求边界",
-   "phase": "P9",
-   "required": true,
-   "protocol_implemented": true,
-   "automated_tests": [
-    "crates/awr-team-pg/tests/pg_import.rs"
-   ],
-   "real_postgresql": true,
-   "two_process_or_fault": false,
-   "real_agent_clients": false,
-   "status": "protocol_covered_not_agent_accepted",
-   "blocker": null
-  },
-  {
-   "id": "TC-049",
-   "title": "图和发布预算超限不得假装完整",
-   "phase": "P6",
-   "required": true,
-   "protocol_implemented": true,
-   "automated_tests": [
-    "crates/awr-team-pg/tests/pg_graph.rs"
-   ],
-   "real_postgresql": true,
-   "two_process_or_fault": false,
-   "real_agent_clients": true,
-   "status": "real_agent_accepted",
-   "blocker": null,
-   "agent_evidence": "ledger/evidence/TEAM-P13/TC-049.json"
-  },
-  {
-   "id": "TC-050",
-   "title": "实际改动超出申报范围",
-   "phase": "P7",
-   "required": true,
-   "protocol_implemented": true,
-   "automated_tests": [
-    "crates/awr-team-pg/tests/pg_execution.rs"
-   ],
-   "real_postgresql": true,
-   "two_process_or_fault": false,
-   "real_agent_clients": true,
-   "status": "real_agent_accepted",
-   "blocker": null,
-   "agent_evidence": "ledger/evidence/TEAM-P13/TC-050.json"
-  },
-  {
-   "id": "TC-051",
-   "title": "普通确认类策略不得由执行者降级",
-   "phase": "P8",
-   "required": true,
-   "protocol_implemented": true,
-   "automated_tests": [
-    "crates/awr-team-pg/tests/pg_review.rs"
-   ],
-   "real_postgresql": true,
-   "two_process_or_fault": false,
-   "real_agent_clients": true,
-   "status": "real_agent_accepted",
-   "blocker": null,
-   "agent_evidence": "ledger/evidence/TEAM-P13/TC-051.json"
-  },
-  {
-   "id": "TC-052",
-   "title": "子任务结束不能替代父级集成验收",
-   "phase": "P6",
-   "required": true,
-   "protocol_implemented": true,
-   "automated_tests": [
-    "crates/awr-team-pg/tests/pg_graph.rs"
-   ],
-   "real_postgresql": true,
-   "two_process_or_fault": false,
-   "real_agent_clients": true,
-   "status": "real_agent_accepted",
-   "blocker": null,
-   "agent_evidence": "ledger/evidence/TEAM-P13/TC-052.json"
-  },
-  {
-   "id": "TC-053",
-   "title": "取消晚到不能伪造已撤销结果",
-   "phase": "P7",
-   "required": true,
-   "protocol_implemented": true,
-   "automated_tests": [
-    "crates/awr-team-pg/tests/pg_execution.rs"
-   ],
-   "real_postgresql": true,
-   "two_process_or_fault": false,
-   "real_agent_clients": false,
-   "status": "protocol_covered_not_agent_accepted",
-   "blocker": null
-  },
-  {
-   "id": "TC-054",
-   "title": "外部 fencing 能力显式分级",
-   "phase": "P7",
-   "required": true,
-   "protocol_implemented": true,
-   "automated_tests": [
-    "crates/awr-team-pg/tests/pg_execution.rs"
-   ],
-   "real_postgresql": true,
-   "two_process_or_fault": false,
-   "real_agent_clients": false,
-   "status": "protocol_covered_not_agent_accepted",
-   "blocker": null
-  },
-  {
-   "id": "TC-055",
-   "title": "评审材料变化使旧批准失效",
-   "phase": "P8",
-   "required": true,
-   "protocol_implemented": true,
-   "automated_tests": [
-    "crates/awr-team-pg/tests/pg_review.rs"
-   ],
-   "real_postgresql": true,
-   "two_process_or_fault": false,
-   "real_agent_clients": true,
-   "status": "real_agent_accepted",
-   "blocker": null,
-   "agent_evidence": "ledger/evidence/TEAM-P13/TC-055.json"
-  },
-  {
-   "id": "TC-056",
-   "title": "选定证据缺失不能由另一个报告替代",
-   "phase": "P8",
-   "required": true,
-   "protocol_implemented": true,
-   "automated_tests": [
-    "crates/awr-team-pg/tests/pg_review.rs"
-   ],
-   "real_postgresql": true,
-   "two_process_or_fault": false,
-   "real_agent_clients": true,
-   "status": "real_agent_accepted",
-   "blocker": null,
-   "agent_evidence": "ledger/evidence/TEAM-P13/TC-056.json"
-  },
-  {
-   "id": "TC-057",
-   "title": "重启不会刷新租约期限",
-   "phase": "P5",
-   "required": true,
-   "protocol_implemented": true,
-   "automated_tests": [
-    "crates/awr-team-pg/tests/pg_lease.rs"
-   ],
-   "real_postgresql": true,
-   "two_process_or_fault": false,
-   "real_agent_clients": false,
-   "status": "protocol_covered_not_agent_accepted",
-   "blocker": null
-  },
-  {
-   "id": "TC-058",
-   "title": "交接只迁移工作资料不伪称私有会话恢复",
-   "phase": "P5",
-   "required": true,
-   "protocol_implemented": true,
-   "automated_tests": [
-    "crates/awr-team-pg/tests/pg_lease.rs"
-   ],
-   "real_postgresql": true,
-   "two_process_or_fault": false,
-   "real_agent_clients": true,
-   "status": "real_agent_accepted",
-   "blocker": null,
-   "agent_evidence": "ledger/evidence/TEAM-P13/TC-058.json"
-  },
-  {
-   "id": "TC-059",
-   "title": "64位版本数字无精度损失",
-   "phase": "P10",
-   "required": true,
-   "protocol_implemented": true,
-   "automated_tests": [
-    "crates/awr-team/tests/access.rs",
-    "crates/awr-cli/tests/team_cli.rs"
-   ],
-   "real_postgresql": false,
-   "two_process_or_fault": false,
-   "real_agent_clients": true,
-   "status": "real_agent_accepted",
-   "blocker": null,
-   "agent_evidence": "ledger/evidence/TEAM-P13/TC-059.json"
-  },
-  {
-   "id": "TC-060",
-   "title": "快照与增量衔接不漏事件",
-   "phase": "P10",
-   "required": true,
-   "protocol_implemented": true,
-   "automated_tests": [
-    "crates/awr-team/tests/access.rs",
-    "crates/awr-cli/tests/team_cli.rs"
-   ],
-   "real_postgresql": false,
-   "two_process_or_fault": false,
-   "real_agent_clients": false,
-   "status": "protocol_covered_not_agent_accepted",
-   "blocker": null
-  },
-  {
-   "id": "TC-061",
-   "title": "解析器升级不能静默改已生效合同",
-   "phase": "P3",
-   "required": true,
-   "protocol_implemented": true,
-   "automated_tests": [
-    "crates/awr-team-pg/tests/pg_source.rs"
-   ],
-   "real_postgresql": true,
-   "two_process_or_fault": false,
-   "real_agent_clients": false,
-   "status": "protocol_covered_not_agent_accepted",
-   "blocker": null
-  },
-  {
-   "id": "TC-062",
-   "title": "上游变更使下游旧依据失效",
-   "phase": "P6",
-   "required": true,
-   "protocol_implemented": true,
-   "automated_tests": [
-    "crates/awr-team-pg/tests/pg_graph.rs"
-   ],
-   "real_postgresql": true,
-   "two_process_or_fault": false,
-   "real_agent_clients": true,
-   "status": "real_agent_accepted",
-   "blocker": null,
-   "agent_evidence": "ledger/evidence/TEAM-P13/TC-062.json"
-  },
-  {
-   "id": "TC-063",
-   "title": "dirty worktree 必须绑定实际字节",
-   "phase": "P8",
-   "required": true,
-   "protocol_implemented": true,
-   "automated_tests": [
-    "crates/awr-team-pg/tests/pg_review.rs"
-   ],
-   "real_postgresql": true,
-   "two_process_or_fault": false,
-   "real_agent_clients": true,
-   "status": "real_agent_accepted",
-   "blocker": null,
-   "agent_evidence": "ledger/evidence/TEAM-P13/TC-063.json"
-  },
-  {
-   "id": "TC-064",
-   "title": "历史身份与证据导入不提升可信度",
-   "phase": "P9",
-   "required": true,
-   "protocol_implemented": true,
-   "automated_tests": [
-    "crates/awr-team-pg/tests/pg_import.rs"
-   ],
-   "real_postgresql": true,
-   "two_process_or_fault": false,
-   "real_agent_clients": true,
-   "status": "real_agent_accepted",
-   "blocker": null,
-   "agent_evidence": "ledger/evidence/TEAM-P13/TC-064.json"
-  },
-  {
-   "id": "TC-065",
-   "title": "数据库存在但必要产物缺失时恢复失败关闭",
-   "phase": "P9",
-   "required": true,
-   "protocol_implemented": true,
-   "automated_tests": [
-    "crates/awr-team-pg/tests/pg_import.rs"
-   ],
-   "real_postgresql": true,
-   "two_process_or_fault": false,
-   "real_agent_clients": false,
-   "status": "protocol_covered_not_agent_accepted",
-   "blocker": null
-  },
-  {
-   "id": "TC-066",
-   "title": "恢复 outbox 不能自动重复历史副作用",
-   "phase": "P9",
-   "required": true,
-   "protocol_implemented": true,
-   "automated_tests": [
-    "crates/awr-team-pg/tests/pg_import.rs"
-   ],
-   "real_postgresql": true,
-   "two_process_or_fault": false,
-   "real_agent_clients": false,
-   "status": "protocol_covered_not_agent_accepted",
-   "blocker": null
-  },
-  {
-   "id": "TC-067",
-   "title": "团队已有新写入时禁止直接回滚旧 SQLite",
-   "phase": "P9",
-   "required": true,
-   "protocol_implemented": true,
-   "automated_tests": [
-    "crates/awr-team-pg/tests/pg_import.rs"
-   ],
-   "real_postgresql": true,
-   "two_process_or_fault": false,
-   "real_agent_clients": false,
-   "status": "protocol_covered_not_agent_accepted",
-   "blocker": null
-  },
-  {
-   "id": "TC-068",
-   "title": "旧本地客户端产生的状态不覆盖团队",
-   "phase": "P9",
-   "required": true,
-   "protocol_implemented": true,
-   "automated_tests": [
-    "crates/awr-team-pg/tests/pg_import.rs"
-   ],
-   "real_postgresql": true,
-   "two_process_or_fault": false,
-   "real_agent_clients": false,
-   "status": "protocol_covered_not_agent_accepted",
-   "blocker": null
-  },
-  {
-   "id": "TC-069",
-   "title": "HTTP MCP CLI 三入口语义一致",
-   "phase": "P10",
-   "required": true,
-   "protocol_implemented": true,
-   "automated_tests": [
-    "crates/awr-team/tests/access.rs",
-    "crates/awr-cli/tests/team_cli.rs"
-   ],
-   "real_postgresql": false,
-   "two_process_or_fault": false,
-   "real_agent_clients": true,
-   "status": "real_agent_accepted",
-   "blocker": null,
-   "agent_evidence": "ledger/evidence/TEAM-P13/TC-069.json"
-  }
- ],
- "live_agent_run": {
-  "status": "locally_verified",
-  "git_head": "313f501b1a36086dff68d081b03f18acd6acf18e",
-  "clients": [
-   {
-    "product": "Kimi Code CLI",
-    "version": "2.0.0",
-    "actor_id": "kimi-cli"
-   },
-   {
-    "product": "ZCode CLI",
-    "version": "0.16.5",
-    "actor_id": "zcode-cli"
-   }
+  "schema_version": 2,
+  "title": "AWR Team V1 evidence matrix",
+  "notice": "Test references describe partial assertion coverage at reviewed_source_sha, not executed evidence. last_run=null means no bound per-case run. Historical real_agent_accepted records remain independent and are not revalidated by this matrix. TC-060 snapshot/delta continuity lacks direct proof; TC-069 real authenticated HTTP/MCP/CLI dispatch is unimplemented. No release authorization.",
+  "release_candidate": false,
+  "tag_pushed": false,
+  "counts": {
+    "required": 69,
+    "protocol_implemented": 67,
+    "real_agent_accepted": 42,
+    "automated_partial": 69,
+    "automated_evidence_pending": 27
+  },
+  "cases": [
+    {
+      "id": "TC-001",
+      "title": "源声明 completed 不能直接完成团队任务",
+      "phase": "P8",
+      "required": true,
+      "protocol_implemented": true,
+      "automated_tests": [
+        {
+          "path": "crates/awr-team-pg/tests/pg_review.rs",
+          "package": "awr-team-pg",
+          "target": "pg_review",
+          "function": "source_declared_completed_does_not_write_a_team_receipt",
+          "features": [
+            "pg-tests"
+          ],
+          "level": "postgres_integration",
+          "key_assertion": "源声明不创建团队完成回执",
+          "reviewed_source_sha": "259b235de75f63ee45832a8352deaad7e8366ce5",
+          "last_run": null,
+          "test_file_sha256": "08fdbc807ac1a4ad7529db90f1d6bc7f1b74169a47d001c82b10832b04faf31b"
+        }
+      ],
+      "real_postgresql": true,
+      "two_process_or_fault": false,
+      "real_agent_clients": true,
+      "status": "real_agent_accepted",
+      "blocker": null,
+      "agent_evidence": "ledger/evidence/TEAM-P13/TC-001.json",
+      "automated_coverage": {
+        "status": "partial",
+        "gap": "源声明不创建团队完成回执；此映射未绑定本轮逐项执行回执，不能据此宣称完整场景覆盖。"
+      }
+    },
+    {
+      "id": "TC-002",
+      "title": "Agent 自报不能升级为可信验证",
+      "phase": "P8",
+      "required": true,
+      "protocol_implemented": true,
+      "automated_tests": [
+        {
+          "path": "crates/awr-team-pg/tests/pg_review.rs",
+          "package": "awr-team-pg",
+          "target": "pg_review",
+          "function": "agent_cannot_upgrade_self_report_or_self_review",
+          "features": [
+            "pg-tests"
+          ],
+          "level": "postgres_integration",
+          "key_assertion": "自报证据不能完成且作者不能自审",
+          "reviewed_source_sha": "259b235de75f63ee45832a8352deaad7e8366ce5",
+          "last_run": null,
+          "test_file_sha256": "08fdbc807ac1a4ad7529db90f1d6bc7f1b74169a47d001c82b10832b04faf31b"
+        }
+      ],
+      "real_postgresql": true,
+      "two_process_or_fault": false,
+      "real_agent_clients": true,
+      "status": "real_agent_accepted",
+      "blocker": null,
+      "agent_evidence": "ledger/evidence/TEAM-P13/TC-002.json",
+      "automated_coverage": {
+        "status": "partial",
+        "gap": "自报证据不能完成且作者不能自审；此映射未绑定本轮逐项执行回执，不能据此宣称完整场景覆盖。"
+      }
+    },
+    {
+      "id": "TC-003",
+      "title": "同任务跨进程竞争",
+      "phase": "P5",
+      "required": true,
+      "protocol_implemented": true,
+      "automated_tests": [
+        {
+          "path": "crates/awr-team-pg/tests/pg_lease.rs",
+          "package": "awr-team-pg",
+          "target": "pg_lease",
+          "function": "concurrent_claims_exactly_one_wins",
+          "features": [
+            "pg-tests"
+          ],
+          "level": "postgres_integration",
+          "key_assertion": "同进程并发竞争只有一个胜者；跨进程竞争仍缺专门断言",
+          "reviewed_source_sha": "259b235de75f63ee45832a8352deaad7e8366ce5",
+          "last_run": null,
+          "test_file_sha256": "904adcf53e61144a866863fba3cf4956ea39a39ad6539fefc04a7c108d7e77c2"
+        }
+      ],
+      "real_postgresql": true,
+      "two_process_or_fault": false,
+      "real_agent_clients": true,
+      "status": "real_agent_accepted",
+      "blocker": null,
+      "agent_evidence": "ledger/evidence/TEAM-P13/TC-003.json",
+      "automated_coverage": {
+        "status": "partial",
+        "gap": "同进程并发竞争只有一个胜者；跨进程竞争仍缺专门断言；此映射未绑定本轮逐项执行回执，不能据此宣称完整场景覆盖。"
+      }
+    },
+    {
+      "id": "TC-004",
+      "title": "不同任务不因全局客户端 CAS 相互失败",
+      "phase": "P5",
+      "required": true,
+      "protocol_implemented": true,
+      "automated_tests": [
+        {
+          "path": "crates/awr-team-pg/tests/pg_lease.rs",
+          "package": "awr-team-pg",
+          "target": "pg_lease",
+          "function": "different_work_items_do_not_share_a_global_cas",
+          "features": [
+            "pg-tests"
+          ],
+          "level": "postgres_integration",
+          "key_assertion": "不同任务分别认领成功",
+          "reviewed_source_sha": "259b235de75f63ee45832a8352deaad7e8366ce5",
+          "last_run": null,
+          "test_file_sha256": "904adcf53e61144a866863fba3cf4956ea39a39ad6539fefc04a7c108d7e77c2"
+        }
+      ],
+      "real_postgresql": true,
+      "two_process_or_fault": false,
+      "real_agent_clients": true,
+      "status": "real_agent_accepted",
+      "blocker": null,
+      "agent_evidence": "ledger/evidence/TEAM-P13/TC-004.json",
+      "automated_coverage": {
+        "status": "partial",
+        "gap": "不同任务分别认领成功；此映射未绑定本轮逐项执行回执，不能据此宣称完整场景覆盖。"
+      }
+    },
+    {
+      "id": "TC-005",
+      "title": "过期租约不得由晚到续租复活",
+      "phase": "P5",
+      "required": true,
+      "protocol_implemented": true,
+      "automated_tests": [
+        {
+          "path": "crates/awr-team-pg/tests/pg_lease.rs",
+          "package": "awr-team-pg",
+          "target": "pg_lease",
+          "function": "expired_claim_is_not_revived_and_row_is_kept",
+          "features": [
+            "pg-tests"
+          ],
+          "level": "postgres_integration",
+          "key_assertion": "过期续租拒绝且保留expired行",
+          "reviewed_source_sha": "259b235de75f63ee45832a8352deaad7e8366ce5",
+          "last_run": null,
+          "test_file_sha256": "904adcf53e61144a866863fba3cf4956ea39a39ad6539fefc04a7c108d7e77c2"
+        }
+      ],
+      "real_postgresql": true,
+      "two_process_or_fault": false,
+      "real_agent_clients": false,
+      "status": "automated_evidence_pending",
+      "blocker": "过期续租拒绝且保留expired行；此映射未绑定本轮逐项执行回执，不能据此宣称完整场景覆盖。",
+      "automated_coverage": {
+        "status": "partial",
+        "gap": "过期续租拒绝且保留expired行；此映射未绑定本轮逐项执行回执，不能据此宣称完整场景覆盖。"
+      }
+    },
+    {
+      "id": "TC-006",
+      "title": "旧 fence 不能推进当前工作",
+      "phase": "P5",
+      "required": true,
+      "protocol_implemented": true,
+      "automated_tests": [
+        {
+          "path": "crates/awr-team-pg/tests/pg_lease.rs",
+          "package": "awr-team-pg",
+          "target": "pg_lease",
+          "function": "renew_replay_does_not_move_expiry_and_handoff_invalidates_old_fence",
+          "features": [
+            "pg-tests"
+          ],
+          "level": "postgres_integration",
+          "key_assertion": "交接提高fence并拒绝旧fence",
+          "reviewed_source_sha": "259b235de75f63ee45832a8352deaad7e8366ce5",
+          "last_run": null,
+          "test_file_sha256": "904adcf53e61144a866863fba3cf4956ea39a39ad6539fefc04a7c108d7e77c2"
+        }
+      ],
+      "real_postgresql": true,
+      "two_process_or_fault": false,
+      "real_agent_clients": true,
+      "status": "real_agent_accepted",
+      "blocker": null,
+      "agent_evidence": "ledger/evidence/TEAM-P13/TC-006.json",
+      "automated_coverage": {
+        "status": "partial",
+        "gap": "交接提高fence并拒绝旧fence；此映射未绑定本轮逐项执行回执，不能据此宣称完整场景覆盖。"
+      }
+    },
+    {
+      "id": "TC-007",
+      "title": "续租幂等重放不能再次延长期限",
+      "phase": "P5",
+      "required": true,
+      "protocol_implemented": true,
+      "automated_tests": [
+        {
+          "path": "crates/awr-team-pg/tests/pg_lease.rs",
+          "package": "awr-team-pg",
+          "target": "pg_lease",
+          "function": "renew_replay_does_not_move_expiry_and_handoff_invalidates_old_fence",
+          "features": [
+            "pg-tests"
+          ],
+          "level": "postgres_integration",
+          "key_assertion": "重放不改变expires_at和lease_version",
+          "reviewed_source_sha": "259b235de75f63ee45832a8352deaad7e8366ce5",
+          "last_run": null,
+          "test_file_sha256": "904adcf53e61144a866863fba3cf4956ea39a39ad6539fefc04a7c108d7e77c2"
+        }
+      ],
+      "real_postgresql": true,
+      "two_process_or_fault": false,
+      "real_agent_clients": false,
+      "status": "automated_evidence_pending",
+      "blocker": "重放不改变expires_at和lease_version；此映射未绑定本轮逐项执行回执，不能据此宣称完整场景覆盖。",
+      "automated_coverage": {
+        "status": "partial",
+        "gap": "重放不改变expires_at和lease_version；此映射未绑定本轮逐项执行回执，不能据此宣称完整场景覆盖。"
+      }
+    },
+    {
+      "id": "TC-008",
+      "title": "受影响任务占用时拒绝合同激活",
+      "phase": "P6",
+      "required": true,
+      "protocol_implemented": true,
+      "automated_tests": [
+        {
+          "path": "crates/awr-team-pg/tests/pg_graph.rs",
+          "package": "awr-team-pg",
+          "target": "pg_graph",
+          "function": "claimed_work_blocks_contract_change_and_unknown_scope_is_explicit",
+          "features": [
+            "pg-tests"
+          ],
+          "level": "postgres_integration",
+          "key_assertion": "占用任务合同变化拒绝",
+          "reviewed_source_sha": "259b235de75f63ee45832a8352deaad7e8366ce5",
+          "last_run": null,
+          "test_file_sha256": "008329671c6169b09a45dcedfeebf6960aac685996972b9dd0f0f82911fb284c"
+        }
+      ],
+      "real_postgresql": true,
+      "two_process_or_fault": false,
+      "real_agent_clients": true,
+      "status": "real_agent_accepted",
+      "blocker": null,
+      "agent_evidence": "ledger/evidence/TEAM-P13/TC-008.json",
+      "automated_coverage": {
+        "status": "partial",
+        "gap": "占用任务合同变化拒绝；此映射未绑定本轮逐项执行回执，不能据此宣称完整场景覆盖。"
+      }
+    },
+    {
+      "id": "TC-009",
+      "title": "旧合同证据不能完成新合同",
+      "phase": "P8",
+      "required": true,
+      "protocol_implemented": true,
+      "automated_tests": [
+        {
+          "path": "crates/awr-team-pg/tests/pg_review.rs",
+          "package": "awr-team-pg",
+          "target": "pg_review",
+          "function": "trusted_receipt_with_independent_review_completes_and_old_contract_does_not",
+          "features": [
+            "pg-tests"
+          ],
+          "level": "postgres_integration",
+          "key_assertion": "旧合同证据拒绝完成",
+          "reviewed_source_sha": "259b235de75f63ee45832a8352deaad7e8366ce5",
+          "last_run": null,
+          "test_file_sha256": "08fdbc807ac1a4ad7529db90f1d6bc7f1b74169a47d001c82b10832b04faf31b"
+        }
+      ],
+      "real_postgresql": true,
+      "two_process_or_fault": false,
+      "real_agent_clients": true,
+      "status": "real_agent_accepted",
+      "blocker": null,
+      "agent_evidence": "ledger/evidence/TEAM-P13/TC-009.json",
+      "automated_coverage": {
+        "status": "partial",
+        "gap": "旧合同证据拒绝完成；此映射未绑定本轮逐项执行回执，不能据此宣称完整场景覆盖。"
+      }
+    },
+    {
+      "id": "TC-010",
+      "title": "候选依赖图完整验证",
+      "phase": "P6",
+      "required": true,
+      "protocol_implemented": true,
+      "automated_tests": [
+        {
+          "path": "crates/awr-team-pg/tests/pg_graph.rs",
+          "package": "awr-team-pg",
+          "target": "pg_graph",
+          "function": "invalid_graph_is_rejected_without_partial_edges",
+          "features": [
+            "pg-tests"
+          ],
+          "level": "postgres_integration",
+          "key_assertion": "循环依赖拒绝且无残留边",
+          "reviewed_source_sha": "259b235de75f63ee45832a8352deaad7e8366ce5",
+          "last_run": null,
+          "test_file_sha256": "008329671c6169b09a45dcedfeebf6960aac685996972b9dd0f0f82911fb284c"
+        }
+      ],
+      "real_postgresql": true,
+      "two_process_or_fault": false,
+      "real_agent_clients": true,
+      "status": "real_agent_accepted",
+      "blocker": null,
+      "agent_evidence": "ledger/evidence/TEAM-P13/TC-010.json",
+      "automated_coverage": {
+        "status": "partial",
+        "gap": "循环依赖拒绝且无残留边；此映射未绑定本轮逐项执行回执，不能据此宣称完整场景覆盖。"
+      }
+    },
+    {
+      "id": "TC-011",
+      "title": "conversation 不能跨参与者劫持",
+      "phase": "P5",
+      "required": true,
+      "protocol_implemented": true,
+      "automated_tests": [
+        {
+          "path": "crates/awr-team-pg/tests/pg_lease.rs",
+          "package": "awr-team-pg",
+          "target": "pg_lease",
+          "function": "renew_keeps_the_session_client_binding",
+          "features": [
+            "pg-tests"
+          ],
+          "level": "postgres_integration",
+          "key_assertion": "续租客户端绑定拒绝；conversation劫持仍缺专门覆盖",
+          "reviewed_source_sha": "259b235de75f63ee45832a8352deaad7e8366ce5",
+          "last_run": null,
+          "test_file_sha256": "904adcf53e61144a866863fba3cf4956ea39a39ad6539fefc04a7c108d7e77c2"
+        }
+      ],
+      "real_postgresql": true,
+      "two_process_or_fault": false,
+      "real_agent_clients": true,
+      "status": "real_agent_accepted",
+      "blocker": null,
+      "agent_evidence": "ledger/evidence/TEAM-P13/TC-011.json",
+      "automated_coverage": {
+        "status": "partial",
+        "gap": "续租客户端绑定拒绝；conversation劫持仍缺专门覆盖；此映射未绑定本轮逐项执行回执，不能据此宣称完整场景覆盖。"
+      }
+    },
+    {
+      "id": "TC-012",
+      "title": "等待、回复和重启连续性",
+      "phase": "P5",
+      "required": true,
+      "protocol_implemented": true,
+      "automated_tests": [
+        {
+          "path": "crates/awr-team-pg/tests/pg_lease.rs",
+          "package": "awr-team-pg",
+          "target": "pg_lease",
+          "function": "wait_does_not_renew_and_recovery_block_stops_new_claims",
+          "features": [
+            "pg-tests"
+          ],
+          "level": "postgres_integration",
+          "key_assertion": "等待和恢复阻断认领；跨重启连续性仍待验证",
+          "reviewed_source_sha": "259b235de75f63ee45832a8352deaad7e8366ce5",
+          "last_run": null,
+          "test_file_sha256": "904adcf53e61144a866863fba3cf4956ea39a39ad6539fefc04a7c108d7e77c2"
+        }
+      ],
+      "real_postgresql": true,
+      "two_process_or_fault": false,
+      "real_agent_clients": false,
+      "status": "automated_evidence_pending",
+      "blocker": "等待和恢复阻断认领；跨重启连续性仍待验证；此映射未绑定本轮逐项执行回执，不能据此宣称完整场景覆盖。",
+      "automated_coverage": {
+        "status": "partial",
+        "gap": "等待和恢复阻断认领；跨重启连续性仍待验证；此映射未绑定本轮逐项执行回执，不能据此宣称完整场景覆盖。"
+      }
+    },
+    {
+      "id": "TC-013",
+      "title": "交接原子化与旧权限失效",
+      "phase": "P5",
+      "required": true,
+      "protocol_implemented": true,
+      "automated_tests": [
+        {
+          "path": "crates/awr-team-pg/tests/pg_lease.rs",
+          "package": "awr-team-pg",
+          "target": "pg_lease",
+          "function": "renew_replay_does_not_move_expiry_and_handoff_invalidates_old_fence",
+          "features": [
+            "pg-tests"
+          ],
+          "level": "postgres_integration",
+          "key_assertion": "交接废止旧fence；事务故障原子性待补",
+          "reviewed_source_sha": "259b235de75f63ee45832a8352deaad7e8366ce5",
+          "last_run": null,
+          "test_file_sha256": "904adcf53e61144a866863fba3cf4956ea39a39ad6539fefc04a7c108d7e77c2"
+        }
+      ],
+      "real_postgresql": true,
+      "two_process_or_fault": false,
+      "real_agent_clients": true,
+      "status": "real_agent_accepted",
+      "blocker": null,
+      "agent_evidence": "ledger/evidence/TEAM-P13/TC-013.json",
+      "automated_coverage": {
+        "status": "partial",
+        "gap": "交接废止旧fence；事务故障原子性待补；此映射未绑定本轮逐项执行回执，不能据此宣称完整场景覆盖。"
+      }
+    },
+    {
+      "id": "TC-014",
+      "title": "未知执行阻止不安全再派发",
+      "phase": "P7",
+      "required": true,
+      "protocol_implemented": true,
+      "automated_tests": [
+        {
+          "path": "crates/awr-team-pg/tests/pg_execution.rs",
+          "package": "awr-team-pg",
+          "target": "pg_execution",
+          "function": "unknown_outcome_blocks_redispatch_and_keeps_reservations",
+          "features": [
+            "pg-tests"
+          ],
+          "level": "postgres_integration",
+          "key_assertion": "unknown阻止再派发并保留资源",
+          "reviewed_source_sha": "259b235de75f63ee45832a8352deaad7e8366ce5",
+          "last_run": null,
+          "test_file_sha256": "1c7f10e2f716262b8132507c072148afdfab533efaf7fb58a3b2763049f540ba"
+        }
+      ],
+      "real_postgresql": true,
+      "two_process_or_fault": false,
+      "real_agent_clients": true,
+      "status": "real_agent_accepted",
+      "blocker": null,
+      "agent_evidence": "ledger/evidence/TEAM-P13/TC-014.json",
+      "automated_coverage": {
+        "status": "partial",
+        "gap": "unknown阻止再派发并保留资源；此映射未绑定本轮逐项执行回执，不能据此宣称完整场景覆盖。"
+      }
+    },
+    {
+      "id": "TC-015",
+      "title": "领域事务中途失败无部分修改",
+      "phase": "P2",
+      "required": true,
+      "protocol_implemented": true,
+      "automated_tests": [
+        {
+          "path": "crates/awr-team-pg/tests/pg_skeleton.rs",
+          "package": "awr-team-pg",
+          "target": "pg_skeleton",
+          "function": "domain_transaction_rolls_back_partial_writes",
+          "features": [
+            "pg-tests"
+          ],
+          "level": "postgres_integration",
+          "key_assertion": "失败事务没有留下工作行",
+          "reviewed_source_sha": "259b235de75f63ee45832a8352deaad7e8366ce5",
+          "last_run": null,
+          "test_file_sha256": "5a816b5397a999440ed2fc9883c489544579ad01442ebeef7a1a67c5b2489164"
+        }
+      ],
+      "real_postgresql": true,
+      "two_process_or_fault": false,
+      "real_agent_clients": false,
+      "status": "automated_evidence_pending",
+      "blocker": "失败事务没有留下工作行；此映射未绑定本轮逐项执行回执，不能据此宣称完整场景覆盖。",
+      "automated_coverage": {
+        "status": "partial",
+        "gap": "失败事务没有留下工作行；此映射未绑定本轮逐项执行回执，不能据此宣称完整场景覆盖。"
+      }
+    },
+    {
+      "id": "TC-016",
+      "title": "同请求多次提交只执行一次领域动作",
+      "phase": "P2",
+      "required": true,
+      "protocol_implemented": true,
+      "automated_tests": [
+        {
+          "path": "crates/awr-team-pg/tests/pg_skeleton.rs",
+          "package": "awr-team-pg",
+          "target": "pg_skeleton",
+          "function": "identical_request_replays_without_a_second_event",
+          "features": [
+            "pg-tests"
+          ],
+          "level": "postgres_integration",
+          "key_assertion": "重复请求返回相同revision且只产生一个事件",
+          "reviewed_source_sha": "259b235de75f63ee45832a8352deaad7e8366ce5",
+          "last_run": null,
+          "test_file_sha256": "5a816b5397a999440ed2fc9883c489544579ad01442ebeef7a1a67c5b2489164"
+        }
+      ],
+      "real_postgresql": true,
+      "two_process_or_fault": false,
+      "real_agent_clients": true,
+      "status": "real_agent_accepted",
+      "blocker": null,
+      "agent_evidence": "ledger/evidence/TEAM-P13/TC-016.json",
+      "automated_coverage": {
+        "status": "partial",
+        "gap": "重复请求返回相同revision且只产生一个事件；此映射未绑定本轮逐项执行回执，不能据此宣称完整场景覆盖。"
+      }
+    },
+    {
+      "id": "TC-017",
+      "title": "同请求身份更换参数拒绝",
+      "phase": "P2",
+      "required": true,
+      "protocol_implemented": true,
+      "automated_tests": [
+        {
+          "path": "crates/awr-team-pg/tests/pg_skeleton.rs",
+          "package": "awr-team-pg",
+          "target": "pg_skeleton",
+          "function": "same_request_id_with_new_args_conflicts",
+          "features": [
+            "pg-tests"
+          ],
+          "level": "postgres_integration",
+          "key_assertion": "参数变化产生IdempotencyConflict",
+          "reviewed_source_sha": "259b235de75f63ee45832a8352deaad7e8366ce5",
+          "last_run": null,
+          "test_file_sha256": "5a816b5397a999440ed2fc9883c489544579ad01442ebeef7a1a67c5b2489164"
+        }
+      ],
+      "real_postgresql": true,
+      "two_process_or_fault": false,
+      "real_agent_clients": true,
+      "status": "real_agent_accepted",
+      "blocker": null,
+      "agent_evidence": "ledger/evidence/TEAM-P13/TC-017.json",
+      "automated_coverage": {
+        "status": "partial",
+        "gap": "参数变化产生IdempotencyConflict；此映射未绑定本轮逐项执行回执，不能据此宣称完整场景覆盖。"
+      }
+    },
+    {
+      "id": "TC-018",
+      "title": "提交成功但响应丢失",
+      "phase": "P7",
+      "required": true,
+      "protocol_implemented": true,
+      "automated_tests": [
+        {
+          "path": "crates/awr-team-pg/tests/pg_execution.rs",
+          "package": "awr-team-pg",
+          "target": "pg_execution",
+          "function": "request_id_replay_returns_the_committed_execution",
+          "features": [
+            "pg-tests"
+          ],
+          "level": "postgres_integration",
+          "key_assertion": "重放取得已提交执行；响应丢失注入待补",
+          "reviewed_source_sha": "259b235de75f63ee45832a8352deaad7e8366ce5",
+          "last_run": null,
+          "test_file_sha256": "1c7f10e2f716262b8132507c072148afdfab533efaf7fb58a3b2763049f540ba"
+        }
+      ],
+      "real_postgresql": true,
+      "two_process_or_fault": false,
+      "real_agent_clients": false,
+      "status": "automated_evidence_pending",
+      "blocker": "重放取得已提交执行；响应丢失注入待补；此映射未绑定本轮逐项执行回执，不能据此宣称完整场景覆盖。",
+      "automated_coverage": {
+        "status": "partial",
+        "gap": "重放取得已提交执行；响应丢失注入待补；此映射未绑定本轮逐项执行回执，不能据此宣称完整场景覆盖。"
+      }
+    },
+    {
+      "id": "TC-019",
+      "title": "外部动作成功但执行回执丢失",
+      "phase": "P7",
+      "required": true,
+      "protocol_implemented": true,
+      "automated_tests": [
+        {
+          "path": "crates/awr-team-pg/tests/pg_execution.rs",
+          "package": "awr-team-pg",
+          "target": "pg_execution",
+          "function": "unknown_outcome_blocks_redispatch_and_keeps_reservations",
+          "features": [
+            "pg-tests"
+          ],
+          "level": "postgres_integration",
+          "key_assertion": "unknown阻断重复执行；真实外部回执丢失待补",
+          "reviewed_source_sha": "259b235de75f63ee45832a8352deaad7e8366ce5",
+          "last_run": null,
+          "test_file_sha256": "1c7f10e2f716262b8132507c072148afdfab533efaf7fb58a3b2763049f540ba"
+        }
+      ],
+      "real_postgresql": true,
+      "two_process_or_fault": false,
+      "real_agent_clients": false,
+      "status": "automated_evidence_pending",
+      "blocker": "unknown阻断重复执行；真实外部回执丢失待补；此映射未绑定本轮逐项执行回执，不能据此宣称完整场景覆盖。",
+      "automated_coverage": {
+        "status": "partial",
+        "gap": "unknown阻断重复执行；真实外部回执丢失待补；此映射未绑定本轮逐项执行回执，不能据此宣称完整场景覆盖。"
+      }
+    },
+    {
+      "id": "TC-020",
+      "title": "必需报告字节变化",
+      "phase": "P8",
+      "required": true,
+      "protocol_implemented": true,
+      "automated_tests": [
+        {
+          "path": "crates/awr-team-pg/tests/pg_review.rs",
+          "package": "awr-team-pg",
+          "target": "pg_review",
+          "function": "changed_bytes_and_material_invalidate_review_and_forbid_policy_downgrade",
+          "features": [
+            "pg-tests"
+          ],
+          "level": "postgres_integration",
+          "key_assertion": "材料变化拒绝旧评审",
+          "reviewed_source_sha": "259b235de75f63ee45832a8352deaad7e8366ce5",
+          "last_run": null,
+          "test_file_sha256": "08fdbc807ac1a4ad7529db90f1d6bc7f1b74169a47d001c82b10832b04faf31b"
+        }
+      ],
+      "real_postgresql": true,
+      "two_process_or_fault": false,
+      "real_agent_clients": true,
+      "status": "real_agent_accepted",
+      "blocker": null,
+      "agent_evidence": "ledger/evidence/TEAM-P13/TC-020.json",
+      "automated_coverage": {
+        "status": "partial",
+        "gap": "材料变化拒绝旧评审；此映射未绑定本轮逐项执行回执，不能据此宣称完整场景覆盖。"
+      }
+    },
+    {
+      "id": "TC-021",
+      "title": "作者与独立评审职责分离",
+      "phase": "P8",
+      "required": true,
+      "protocol_implemented": true,
+      "automated_tests": [
+        {
+          "path": "crates/awr-team-pg/tests/pg_review.rs",
+          "package": "awr-team-pg",
+          "target": "pg_review",
+          "function": "agent_cannot_upgrade_self_report_or_self_review",
+          "features": [
+            "pg-tests"
+          ],
+          "level": "postgres_integration",
+          "key_assertion": "拒绝作者自审",
+          "reviewed_source_sha": "259b235de75f63ee45832a8352deaad7e8366ce5",
+          "last_run": null,
+          "test_file_sha256": "08fdbc807ac1a4ad7529db90f1d6bc7f1b74169a47d001c82b10832b04faf31b"
+        }
+      ],
+      "real_postgresql": true,
+      "two_process_or_fault": false,
+      "real_agent_clients": true,
+      "status": "real_agent_accepted",
+      "blocker": null,
+      "agent_evidence": "ledger/evidence/TEAM-P13/TC-021.json",
+      "automated_coverage": {
+        "status": "partial",
+        "gap": "拒绝作者自审；此映射未绑定本轮逐项执行回执，不能据此宣称完整场景覆盖。"
+      }
+    },
+    {
+      "id": "TC-022",
+      "title": "重复导入幂等",
+      "phase": "P9",
+      "required": true,
+      "protocol_implemented": true,
+      "automated_tests": [
+        {
+          "path": "crates/awr-team-pg/tests/pg_import.rs",
+          "package": "awr-team-pg",
+          "target": "pg_import",
+          "function": "duplicate_import_is_idempotent_and_does_not_copy_local_claims",
+          "features": [
+            "pg-tests"
+          ],
+          "level": "postgres_integration",
+          "key_assertion": "导入重放且不复制本地租约",
+          "reviewed_source_sha": "259b235de75f63ee45832a8352deaad7e8366ce5",
+          "last_run": null,
+          "test_file_sha256": "25c565bdee92086ba44781c555154aff1f8447718fecf59bc9a8decd4155900a"
+        }
+      ],
+      "real_postgresql": true,
+      "two_process_or_fault": false,
+      "real_agent_clients": true,
+      "status": "real_agent_accepted",
+      "blocker": null,
+      "agent_evidence": "ledger/evidence/TEAM-P13/TC-022.json",
+      "automated_coverage": {
+        "status": "partial",
+        "gap": "导入重放且不复制本地租约；此映射未绑定本轮逐项执行回执，不能据此宣称完整场景覆盖。"
+      }
+    },
+    {
+      "id": "TC-023",
+      "title": "多个本地源分歧不得自动最后写入胜出",
+      "phase": "P9",
+      "required": true,
+      "protocol_implemented": true,
+      "automated_tests": [
+        {
+          "path": "crates/awr-team-pg/tests/pg_import.rs",
+          "package": "awr-team-pg",
+          "target": "pg_import",
+          "function": "source_divergence_is_not_resolved_by_mtime",
+          "features": [
+            "pg-tests"
+          ],
+          "level": "postgres_integration",
+          "key_assertion": "源分歧拒绝自动激活",
+          "reviewed_source_sha": "259b235de75f63ee45832a8352deaad7e8366ce5",
+          "last_run": null,
+          "test_file_sha256": "25c565bdee92086ba44781c555154aff1f8447718fecf59bc9a8decd4155900a"
+        }
+      ],
+      "real_postgresql": true,
+      "two_process_or_fault": false,
+      "real_agent_clients": true,
+      "status": "real_agent_accepted",
+      "blocker": null,
+      "agent_evidence": "ledger/evidence/TEAM-P13/TC-023.json",
+      "automated_coverage": {
+        "status": "partial",
+        "gap": "源分歧拒绝自动激活；此映射未绑定本轮逐项执行回执，不能据此宣称完整场景覆盖。"
+      }
+    },
+    {
+      "id": "TC-024",
+      "title": "源对象与 PG 激活之间的崩溃",
+      "phase": "P3",
+      "required": true,
+      "protocol_implemented": true,
+      "automated_tests": [
+        {
+          "path": "crates/awr-team-pg/tests/pg_source.rs",
+          "package": "awr-team-pg",
+          "target": "pg_source",
+          "function": "crash_between_projection_write_and_commit_keeps_old_source",
+          "features": [
+            "pg-tests"
+          ],
+          "level": "postgres_integration",
+          "key_assertion": "投影提交前失败保留旧源",
+          "reviewed_source_sha": "259b235de75f63ee45832a8352deaad7e8366ce5",
+          "last_run": null,
+          "test_file_sha256": "c8448571476c047129c02dcc5bf76280582d0ca5c8f047de4b29027b37163e2c"
+        }
+      ],
+      "real_postgresql": true,
+      "two_process_or_fault": false,
+      "real_agent_clients": false,
+      "status": "automated_evidence_pending",
+      "blocker": "投影提交前失败保留旧源；此映射未绑定本轮逐项执行回执，不能据此宣称完整场景覆盖。",
+      "automated_coverage": {
+        "status": "partial",
+        "gap": "投影提交前失败保留旧源；此映射未绑定本轮逐项执行回执，不能据此宣称完整场景覆盖。"
+      }
+    },
+    {
+      "id": "TC-025",
+      "title": "事件提交游标的逆序事务反例",
+      "phase": "P4",
+      "required": true,
+      "protocol_implemented": true,
+      "automated_tests": [
+        {
+          "path": "crates/awr-team-pg/tests/pg_read.rs",
+          "package": "awr-team-pg",
+          "target": "pg_read",
+          "function": "concurrent_commits_are_ordered_by_project_revision_not_a_sequence",
+          "features": [
+            "pg-tests"
+          ],
+          "level": "postgres_integration",
+          "key_assertion": "并发提交返回有序project revision",
+          "reviewed_source_sha": "259b235de75f63ee45832a8352deaad7e8366ce5",
+          "last_run": null,
+          "test_file_sha256": "bfe933c057283f667128e0909fcc198feaae569ba6b7bdd7671c2c3749c19d8f"
+        }
+      ],
+      "real_postgresql": true,
+      "two_process_or_fault": false,
+      "real_agent_clients": false,
+      "status": "automated_evidence_pending",
+      "blocker": "并发提交返回有序project revision；此映射未绑定本轮逐项执行回执，不能据此宣称完整场景覆盖。",
+      "automated_coverage": {
+        "status": "partial",
+        "gap": "并发提交返回有序project revision；此映射未绑定本轮逐项执行回执，不能据此宣称完整场景覆盖。"
+      }
+    },
+    {
+      "id": "TC-026",
+      "title": "同 revision 多事件分页",
+      "phase": "P4",
+      "required": true,
+      "protocol_implemented": true,
+      "automated_tests": [
+        {
+          "path": "crates/awr-team-pg/tests/pg_read.rs",
+          "package": "awr-team-pg",
+          "target": "pg_read",
+          "function": "event_pages_include_event_index_and_survive_reconnect",
+          "features": [
+            "pg-tests"
+          ],
+          "level": "postgres_integration",
+          "key_assertion": "单条分页覆盖同revision的三个event_index",
+          "reviewed_source_sha": "259b235de75f63ee45832a8352deaad7e8366ce5",
+          "last_run": null,
+          "test_file_sha256": "bfe933c057283f667128e0909fcc198feaae569ba6b7bdd7671c2c3749c19d8f"
+        }
+      ],
+      "real_postgresql": true,
+      "two_process_or_fault": false,
+      "real_agent_clients": true,
+      "status": "real_agent_accepted",
+      "blocker": null,
+      "agent_evidence": "ledger/evidence/TEAM-P13/TC-026.json",
+      "automated_coverage": {
+        "status": "partial",
+        "gap": "单条分页覆盖同revision的三个event_index；此映射未绑定本轮逐项执行回执，不能据此宣称完整场景覆盖。"
+      }
+    },
+    {
+      "id": "TC-027",
+      "title": "跨项目读取隔离",
+      "phase": "P2",
+      "required": true,
+      "protocol_implemented": true,
+      "automated_tests": [
+        {
+          "path": "crates/awr-team-pg/tests/pg_skeleton.rs",
+          "package": "awr-team-pg",
+          "target": "pg_skeleton",
+          "function": "rls_hides_other_projects_and_local_config_does_not_leak",
+          "features": [
+            "pg-tests"
+          ],
+          "level": "postgres_integration",
+          "key_assertion": "事务只看本项目，提交后上下文不泄漏",
+          "reviewed_source_sha": "259b235de75f63ee45832a8352deaad7e8366ce5",
+          "last_run": null,
+          "test_file_sha256": "5a816b5397a999440ed2fc9883c489544579ad01442ebeef7a1a67c5b2489164"
+        }
+      ],
+      "real_postgresql": true,
+      "two_process_or_fault": false,
+      "real_agent_clients": true,
+      "status": "real_agent_accepted",
+      "blocker": null,
+      "agent_evidence": "ledger/evidence/TEAM-P13/TC-027.json",
+      "automated_coverage": {
+        "status": "partial",
+        "gap": "事务只看本项目，提交后上下文不泄漏；此映射未绑定本轮逐项执行回执，不能据此宣称完整场景覆盖。"
+      }
+    },
+    {
+      "id": "TC-028",
+      "title": "跨项目关联写入隔离",
+      "phase": "P2",
+      "required": true,
+      "protocol_implemented": true,
+      "automated_tests": [
+        {
+          "path": "crates/awr-team-pg/tests/pg_skeleton.rs",
+          "package": "awr-team-pg",
+          "target": "pg_skeleton",
+          "function": "rls_hides_other_projects_and_local_config_does_not_leak",
+          "features": [
+            "pg-tests"
+          ],
+          "level": "postgres_integration",
+          "key_assertion": "跨项目写入拒绝；所有关联外键组合未穷举",
+          "reviewed_source_sha": "259b235de75f63ee45832a8352deaad7e8366ce5",
+          "last_run": null,
+          "test_file_sha256": "5a816b5397a999440ed2fc9883c489544579ad01442ebeef7a1a67c5b2489164"
+        }
+      ],
+      "real_postgresql": true,
+      "two_process_or_fault": false,
+      "real_agent_clients": true,
+      "status": "real_agent_accepted",
+      "blocker": null,
+      "agent_evidence": "ledger/evidence/TEAM-P13/TC-028.json",
+      "automated_coverage": {
+        "status": "partial",
+        "gap": "跨项目写入拒绝；所有关联外键组合未穷举；此映射未绑定本轮逐项执行回执，不能据此宣称完整场景覆盖。"
+      }
+    },
+    {
+      "id": "TC-029",
+      "title": "连接池事务上下文不残留",
+      "phase": "P2",
+      "required": true,
+      "protocol_implemented": true,
+      "automated_tests": [
+        {
+          "path": "crates/awr-team-pg/tests/pg_skeleton.rs",
+          "package": "awr-team-pg",
+          "target": "pg_skeleton",
+          "function": "rls_hides_other_projects_and_local_config_does_not_leak",
+          "features": [
+            "pg-tests"
+          ],
+          "level": "postgres_integration",
+          "key_assertion": "事务结束后无上下文时不可见；连接池复用场景待补",
+          "reviewed_source_sha": "259b235de75f63ee45832a8352deaad7e8366ce5",
+          "last_run": null,
+          "test_file_sha256": "5a816b5397a999440ed2fc9883c489544579ad01442ebeef7a1a67c5b2489164"
+        }
+      ],
+      "real_postgresql": true,
+      "two_process_or_fault": false,
+      "real_agent_clients": false,
+      "status": "automated_evidence_pending",
+      "blocker": "事务结束后无上下文时不可见；连接池复用场景待补；此映射未绑定本轮逐项执行回执，不能据此宣称完整场景覆盖。",
+      "automated_coverage": {
+        "status": "partial",
+        "gap": "事务结束后无上下文时不可见；连接池复用场景待补；此映射未绑定本轮逐项执行回执，不能据此宣称完整场景覆盖。"
+      }
+    },
+    {
+      "id": "TC-030",
+      "title": "上下文缺必需事实不能标完整",
+      "phase": "P8",
+      "required": true,
+      "protocol_implemented": true,
+      "automated_tests": [
+        {
+          "path": "crates/awr-team-pg/tests/pg_read.rs",
+          "package": "awr-team-pg",
+          "target": "pg_read",
+          "function": "prepare_marks_missing_goals_as_incomplete",
+          "features": [
+            "pg-tests"
+          ],
+          "level": "postgres_integration",
+          "key_assertion": "缺goals返回incomplete和missing_goals",
+          "reviewed_source_sha": "259b235de75f63ee45832a8352deaad7e8366ce5",
+          "last_run": null,
+          "test_file_sha256": "bfe933c057283f667128e0909fcc198feaae569ba6b7bdd7671c2c3749c19d8f"
+        }
+      ],
+      "real_postgresql": true,
+      "two_process_or_fault": false,
+      "real_agent_clients": true,
+      "status": "real_agent_accepted",
+      "blocker": null,
+      "agent_evidence": "ledger/evidence/TEAM-P13/TC-030.json",
+      "automated_coverage": {
+        "status": "partial",
+        "gap": "缺goals返回incomplete和missing_goals；此映射未绑定本轮逐项执行回执，不能据此宣称完整场景覆盖。"
+      }
+    },
+    {
+      "id": "TC-031",
+      "title": "旧客户端不静默进入 Team 语义",
+      "phase": "P10",
+      "required": true,
+      "protocol_implemented": true,
+      "automated_tests": [
+        {
+          "path": "crates/awr-team/tests/access.rs",
+          "package": "awr-team",
+          "target": "access",
+          "function": "old_client_without_protocol_is_rejected",
+          "features": [],
+          "level": "pure_function",
+          "key_assertion": "旧客户端缺协议被拒绝",
+          "reviewed_source_sha": "259b235de75f63ee45832a8352deaad7e8366ce5",
+          "last_run": null,
+          "test_file_sha256": "7eb3abf439495699921bc7921232916eb1ff2354ed90021ffe640824a269f13b"
+        }
+      ],
+      "real_postgresql": false,
+      "two_process_or_fault": false,
+      "real_agent_clients": true,
+      "status": "real_agent_accepted",
+      "blocker": null,
+      "agent_evidence": "ledger/evidence/TEAM-P13/TC-031.json",
+      "automated_coverage": {
+        "status": "partial",
+        "gap": "旧客户端缺协议被拒绝；此映射未绑定本轮逐项执行回执，不能据此宣称完整场景覆盖。"
+      }
+    },
+    {
+      "id": "TC-032",
+      "title": "锁等待后的租约时间检查",
+      "phase": "P5",
+      "required": true,
+      "protocol_implemented": true,
+      "automated_tests": [
+        {
+          "path": "crates/awr-team-pg/tests/pg_lease.rs",
+          "package": "awr-team-pg",
+          "target": "pg_lease",
+          "function": "expired_but_unswept_claim_cannot_handoff_wait_or_fence",
+          "features": [
+            "pg-tests"
+          ],
+          "level": "postgres_integration",
+          "key_assertion": "过期但未清扫的认领拒绝；锁等待时钟边界待补",
+          "reviewed_source_sha": "259b235de75f63ee45832a8352deaad7e8366ce5",
+          "last_run": null,
+          "test_file_sha256": "904adcf53e61144a866863fba3cf4956ea39a39ad6539fefc04a7c108d7e77c2"
+        }
+      ],
+      "real_postgresql": true,
+      "two_process_or_fault": false,
+      "real_agent_clients": false,
+      "status": "automated_evidence_pending",
+      "blocker": "过期但未清扫的认领拒绝；锁等待时钟边界待补；此映射未绑定本轮逐项执行回执，不能据此宣称完整场景覆盖。",
+      "automated_coverage": {
+        "status": "partial",
+        "gap": "过期但未清扫的认领拒绝；锁等待时钟边界待补；此映射未绑定本轮逐项执行回执，不能据此宣称完整场景覆盖。"
+      }
+    },
+    {
+      "id": "TC-033",
+      "title": "无权释放他人租约",
+      "phase": "P5",
+      "required": true,
+      "protocol_implemented": true,
+      "automated_tests": [
+        {
+          "path": "crates/awr-team-pg/tests/pg_lease.rs",
+          "package": "awr-team-pg",
+          "target": "pg_lease",
+          "function": "cannot_release_someone_elses_claim",
+          "features": [
+            "pg-tests"
+          ],
+          "level": "postgres_integration",
+          "key_assertion": "拒绝释放他人认领",
+          "reviewed_source_sha": "259b235de75f63ee45832a8352deaad7e8366ce5",
+          "last_run": null,
+          "test_file_sha256": "904adcf53e61144a866863fba3cf4956ea39a39ad6539fefc04a7c108d7e77c2"
+        }
+      ],
+      "real_postgresql": true,
+      "two_process_or_fault": false,
+      "real_agent_clients": true,
+      "status": "real_agent_accepted",
+      "blocker": null,
+      "agent_evidence": "ledger/evidence/TEAM-P13/TC-033.json",
+      "automated_coverage": {
+        "status": "partial",
+        "gap": "拒绝释放他人认领；此映射未绑定本轮逐项执行回执，不能据此宣称完整场景覆盖。"
+      }
+    },
+    {
+      "id": "TC-034",
+      "title": "过期认领保留历史与危险资源",
+      "phase": "P5",
+      "required": true,
+      "protocol_implemented": true,
+      "automated_tests": [
+        {
+          "path": "crates/awr-team-pg/tests/pg_lease.rs",
+          "package": "awr-team-pg",
+          "target": "pg_lease",
+          "function": "expired_claim_is_not_revived_and_row_is_kept",
+          "features": [
+            "pg-tests"
+          ],
+          "level": "postgres_integration",
+          "key_assertion": "保留expired行；危险资源保留另需证据",
+          "reviewed_source_sha": "259b235de75f63ee45832a8352deaad7e8366ce5",
+          "last_run": null,
+          "test_file_sha256": "904adcf53e61144a866863fba3cf4956ea39a39ad6539fefc04a7c108d7e77c2"
+        }
+      ],
+      "real_postgresql": true,
+      "two_process_or_fault": false,
+      "real_agent_clients": false,
+      "status": "automated_evidence_pending",
+      "blocker": "保留expired行；危险资源保留另需证据；此映射未绑定本轮逐项执行回执，不能据此宣称完整场景覆盖。",
+      "automated_coverage": {
+        "status": "partial",
+        "gap": "保留expired行；危险资源保留另需证据；此映射未绑定本轮逐项执行回执，不能据此宣称完整场景覆盖。"
+      }
+    },
+    {
+      "id": "TC-035",
+      "title": "应用角色不能绕过 RLS 或改历史",
+      "phase": "P2",
+      "required": true,
+      "protocol_implemented": true,
+      "automated_tests": [
+        {
+          "path": "crates/awr-team-pg/tests/pg_skeleton.rs",
+          "package": "awr-team-pg",
+          "target": "pg_skeleton",
+          "function": "app_role_is_not_owner_and_has_no_bypassrls",
+          "features": [
+            "pg-tests"
+          ],
+          "level": "postgres_integration",
+          "key_assertion": "应用角色非owner非superuser无bypassrls；历史不可变另有测试",
+          "reviewed_source_sha": "259b235de75f63ee45832a8352deaad7e8366ce5",
+          "last_run": null,
+          "test_file_sha256": "5a816b5397a999440ed2fc9883c489544579ad01442ebeef7a1a67c5b2489164"
+        }
+      ],
+      "real_postgresql": true,
+      "two_process_or_fault": false,
+      "real_agent_clients": false,
+      "status": "automated_evidence_pending",
+      "blocker": "应用角色非owner非superuser无bypassrls；历史不可变另有测试；此映射未绑定本轮逐项执行回执，不能据此宣称完整场景覆盖。",
+      "automated_coverage": {
+        "status": "partial",
+        "gap": "应用角色非owner非superuser无bypassrls；历史不可变另有测试；此映射未绑定本轮逐项执行回执，不能据此宣称完整场景覆盖。"
+      }
+    },
+    {
+      "id": "TC-036",
+      "title": "源上传路径与包安全",
+      "phase": "P3",
+      "required": true,
+      "protocol_implemented": true,
+      "automated_tests": [
+        {
+          "path": "crates/awr-team-pg/tests/pg_source.rs",
+          "package": "awr-team-pg",
+          "target": "pg_source",
+          "function": "path_safety_is_enforced_without_postgres",
+          "features": [
+            "pg-tests"
+          ],
+          "level": "pure_function",
+          "key_assertion": "路径安全纯规则；完整包攻击矩阵待补",
+          "reviewed_source_sha": "259b235de75f63ee45832a8352deaad7e8366ce5",
+          "last_run": null,
+          "test_file_sha256": "c8448571476c047129c02dcc5bf76280582d0ca5c8f047de4b29027b37163e2c"
+        }
+      ],
+      "real_postgresql": false,
+      "two_process_or_fault": false,
+      "real_agent_clients": true,
+      "status": "real_agent_accepted",
+      "blocker": null,
+      "agent_evidence": "ledger/evidence/TEAM-P13/TC-036.json",
+      "automated_coverage": {
+        "status": "partial",
+        "gap": "路径安全纯规则；完整包攻击矩阵待补；此映射未绑定本轮逐项执行回执，不能据此宣称完整场景覆盖。"
+      }
+    },
+    {
+      "id": "TC-037",
+      "title": "outbox 重复投递",
+      "phase": "P7",
+      "required": true,
+      "protocol_implemented": true,
+      "automated_tests": [
+        {
+          "path": "crates/awr-team-pg/tests/pg_execution.rs",
+          "package": "awr-team-pg",
+          "target": "pg_execution",
+          "function": "duplicate_outbox_delivery_reuses_effect_key",
+          "features": [
+            "pg-tests"
+          ],
+          "level": "postgres_integration",
+          "key_assertion": "重复投递复用effect_key",
+          "reviewed_source_sha": "259b235de75f63ee45832a8352deaad7e8366ce5",
+          "last_run": null,
+          "test_file_sha256": "1c7f10e2f716262b8132507c072148afdfab533efaf7fb58a3b2763049f540ba"
+        }
+      ],
+      "real_postgresql": true,
+      "two_process_or_fault": false,
+      "real_agent_clients": false,
+      "status": "automated_evidence_pending",
+      "blocker": "重复投递复用effect_key；此映射未绑定本轮逐项执行回执，不能据此宣称完整场景覆盖。",
+      "automated_coverage": {
+        "status": "partial",
+        "gap": "重复投递复用effect_key；此映射未绑定本轮逐项执行回执，不能据此宣称完整场景覆盖。"
+      }
+    },
+    {
+      "id": "TC-038",
+      "title": "runner 启动边界崩溃",
+      "phase": "P7",
+      "required": true,
+      "protocol_implemented": true,
+      "automated_tests": [
+        {
+          "path": "crates/awr-team-pg/tests/pg_execution.rs",
+          "package": "awr-team-pg",
+          "target": "pg_execution",
+          "function": "crash_before_journal_is_not_started_and_late_cancel_is_not_cancelled",
+          "features": [
+            "pg-tests"
+          ],
+          "level": "postgres_integration",
+          "key_assertion": "日志前崩溃与晚到取消语义",
+          "reviewed_source_sha": "259b235de75f63ee45832a8352deaad7e8366ce5",
+          "last_run": null,
+          "test_file_sha256": "1c7f10e2f716262b8132507c072148afdfab533efaf7fb58a3b2763049f540ba"
+        }
+      ],
+      "real_postgresql": true,
+      "two_process_or_fault": false,
+      "real_agent_clients": false,
+      "status": "automated_evidence_pending",
+      "blocker": "日志前崩溃与晚到取消语义；此映射未绑定本轮逐项执行回执，不能据此宣称完整场景覆盖。",
+      "automated_coverage": {
+        "status": "partial",
+        "gap": "日志前崩溃与晚到取消语义；此映射未绑定本轮逐项执行回执，不能据此宣称完整场景覆盖。"
+      }
+    },
+    {
+      "id": "TC-039",
+      "title": "远端断线不能本地接管团队权威",
+      "phase": "P10",
+      "required": true,
+      "protocol_implemented": true,
+      "automated_tests": [
+        {
+          "path": "crates/awr-cli/tests/team_cli.rs",
+          "package": "awr-cli",
+          "target": "team_cli",
+          "function": "configured_online_command_is_explicitly_unsupported_and_sends_nothing",
+          "features": [],
+          "level": "cli_process",
+          "key_assertion": "真实CLI返回Unsupported且未连接；远端认证传输尚未实现",
+          "reviewed_source_sha": "259b235de75f63ee45832a8352deaad7e8366ce5",
+          "last_run": null,
+          "test_file_sha256": "5f814e48969c25de8019b42f129604618dff3d2b73e00829fe9d8a99c063312f"
+        }
+      ],
+      "real_postgresql": false,
+      "two_process_or_fault": false,
+      "real_agent_clients": true,
+      "status": "real_agent_accepted",
+      "blocker": null,
+      "agent_evidence": "ledger/evidence/TEAM-P13/TC-039.json",
+      "automated_coverage": {
+        "status": "partial",
+        "gap": "真实CLI返回Unsupported且未连接；远端认证传输尚未实现；此映射未绑定本轮逐项执行回执，不能据此宣称完整场景覆盖。"
+      }
+    },
+    {
+      "id": "TC-040",
+      "title": "恢复后旧 coordinator epoch 被隔离",
+      "phase": "P9",
+      "required": true,
+      "protocol_implemented": true,
+      "automated_tests": [
+        {
+          "path": "crates/awr-team-pg/tests/pg_import.rs",
+          "package": "awr-team-pg",
+          "target": "pg_import",
+          "function": "restore_isolates_old_epoch_and_does_not_replay_outbox",
+          "features": [
+            "pg-tests"
+          ],
+          "level": "postgres_integration",
+          "key_assertion": "恢复更换epoch并拒绝旧epoch",
+          "reviewed_source_sha": "259b235de75f63ee45832a8352deaad7e8366ce5",
+          "last_run": null,
+          "test_file_sha256": "25c565bdee92086ba44781c555154aff1f8447718fecf59bc9a8decd4155900a"
+        }
+      ],
+      "real_postgresql": true,
+      "two_process_or_fault": false,
+      "real_agent_clients": false,
+      "status": "automated_evidence_pending",
+      "blocker": "恢复更换epoch并拒绝旧epoch；此映射未绑定本轮逐项执行回执，不能据此宣称完整场景覆盖。",
+      "automated_coverage": {
+        "status": "partial",
+        "gap": "恢复更换epoch并拒绝旧epoch；此映射未绑定本轮逐项执行回执，不能据此宣称完整场景覆盖。"
+      }
+    },
+    {
+      "id": "TC-041",
+      "title": "个人模式回归",
+      "phase": "P10",
+      "required": true,
+      "protocol_implemented": true,
+      "automated_tests": [
+        {
+          "path": "crates/awr-team/tests/access.rs",
+          "package": "awr-team",
+          "target": "access",
+          "function": "personal_crates_do_not_depend_on_team_postgres",
+          "features": [],
+          "level": "pure_function",
+          "key_assertion": "依赖边界检查；个人模式业务回归不由本条证明",
+          "reviewed_source_sha": "259b235de75f63ee45832a8352deaad7e8366ce5",
+          "last_run": null,
+          "test_file_sha256": "7eb3abf439495699921bc7921232916eb1ff2354ed90021ffe640824a269f13b"
+        }
+      ],
+      "real_postgresql": false,
+      "two_process_or_fault": false,
+      "real_agent_clients": true,
+      "status": "real_agent_accepted",
+      "blocker": null,
+      "agent_evidence": "ledger/evidence/TEAM-P13/TC-041.json",
+      "automated_coverage": {
+        "status": "partial",
+        "gap": "依赖边界检查；个人模式业务回归不由本条证明；此映射未绑定本轮逐项执行回执，不能据此宣称完整场景覆盖。"
+      }
+    },
+    {
+      "id": "TC-042",
+      "title": "canonical 编码与版本转换",
+      "phase": "P1",
+      "required": true,
+      "protocol_implemented": true,
+      "automated_tests": [
+        {
+          "path": "crates/awr-team/tests/contract_rules.rs",
+          "package": "awr-team",
+          "target": "contract_rules",
+          "function": "identical_semantics_hash_stably_and_ignore_input_order",
+          "features": [],
+          "level": "pure_function",
+          "key_assertion": "同语义忽略输入顺序得到稳定hash；版本转换另需证据",
+          "reviewed_source_sha": "259b235de75f63ee45832a8352deaad7e8366ce5",
+          "last_run": null,
+          "test_file_sha256": "58ba42764aca8eef7c7f2855f31ede38e5b24bda17b0db160fef4a0d2b1ce32a"
+        }
+      ],
+      "real_postgresql": false,
+      "two_process_or_fault": false,
+      "real_agent_clients": true,
+      "status": "real_agent_accepted",
+      "blocker": null,
+      "agent_evidence": "ledger/evidence/TEAM-P13/TC-042.json",
+      "automated_coverage": {
+        "status": "partial",
+        "gap": "同语义忽略输入顺序得到稳定hash；版本转换另需证据；此映射未绑定本轮逐项执行回执，不能据此宣称完整场景覆盖。"
+      }
+    },
+    {
+      "id": "TC-043",
+      "title": "显式远端项目选择",
+      "phase": "P10",
+      "required": true,
+      "protocol_implemented": true,
+      "automated_tests": [
+        {
+          "path": "crates/awr-team/tests/access.rs",
+          "package": "awr-team",
+          "target": "access",
+          "function": "missing_project_selection_is_rejected",
+          "features": [],
+          "level": "pure_function",
+          "key_assertion": "缺少显式项目选择拒绝",
+          "reviewed_source_sha": "259b235de75f63ee45832a8352deaad7e8366ce5",
+          "last_run": null,
+          "test_file_sha256": "7eb3abf439495699921bc7921232916eb1ff2354ed90021ffe640824a269f13b"
+        }
+      ],
+      "real_postgresql": false,
+      "two_process_or_fault": false,
+      "real_agent_clients": true,
+      "status": "real_agent_accepted",
+      "blocker": null,
+      "agent_evidence": "ledger/evidence/TEAM-P13/TC-043.json",
+      "automated_coverage": {
+        "status": "partial",
+        "gap": "缺少显式项目选择拒绝；此映射未绑定本轮逐项执行回执，不能据此宣称完整场景覆盖。"
+      }
+    },
+    {
+      "id": "TC-044",
+      "title": "目录前缀资源冲突",
+      "phase": "P6",
+      "required": true,
+      "protocol_implemented": true,
+      "automated_tests": [
+        {
+          "path": "crates/awr-team-pg/tests/pg_graph.rs",
+          "package": "awr-team-pg",
+          "target": "pg_graph",
+          "function": "prefix_conflict_is_not_string_equality",
+          "features": [
+            "pg-tests"
+          ],
+          "level": "postgres_integration",
+          "key_assertion": "路径段冲突拒绝且相似前缀允许",
+          "reviewed_source_sha": "259b235de75f63ee45832a8352deaad7e8366ce5",
+          "last_run": null,
+          "test_file_sha256": "008329671c6169b09a45dcedfeebf6960aac685996972b9dd0f0f82911fb284c"
+        }
+      ],
+      "real_postgresql": true,
+      "two_process_or_fault": false,
+      "real_agent_clients": true,
+      "status": "real_agent_accepted",
+      "blocker": null,
+      "agent_evidence": "ledger/evidence/TEAM-P13/TC-044.json",
+      "automated_coverage": {
+        "status": "partial",
+        "gap": "路径段冲突拒绝且相似前缀允许；此映射未绑定本轮逐项执行回执，不能据此宣称完整场景覆盖。"
+      }
+    },
+    {
+      "id": "TC-045",
+      "title": "不支持的工作范围明确拒绝",
+      "phase": "P6",
+      "required": true,
+      "protocol_implemented": true,
+      "automated_tests": [
+        {
+          "path": "crates/awr-team-pg/tests/pg_graph.rs",
+          "package": "awr-team-pg",
+          "target": "pg_graph",
+          "function": "claimed_work_blocks_contract_change_and_unknown_scope_is_explicit",
+          "features": [
+            "pg-tests"
+          ],
+          "level": "postgres_integration",
+          "key_assertion": "不支持scope明确报错",
+          "reviewed_source_sha": "259b235de75f63ee45832a8352deaad7e8366ce5",
+          "last_run": null,
+          "test_file_sha256": "008329671c6169b09a45dcedfeebf6960aac685996972b9dd0f0f82911fb284c"
+        }
+      ],
+      "real_postgresql": true,
+      "two_process_or_fault": false,
+      "real_agent_clients": true,
+      "status": "real_agent_accepted",
+      "blocker": null,
+      "agent_evidence": "ledger/evidence/TEAM-P13/TC-045.json",
+      "automated_coverage": {
+        "status": "partial",
+        "gap": "不支持scope明确报错；此映射未绑定本轮逐项执行回执，不能据此宣称完整场景覆盖。"
+      }
+    },
+    {
+      "id": "TC-046",
+      "title": "批量源发布没有半套生效投影",
+      "phase": "P6",
+      "required": true,
+      "protocol_implemented": true,
+      "automated_tests": [
+        {
+          "path": "crates/awr-team-pg/tests/pg_source.rs",
+          "package": "awr-team-pg",
+          "target": "pg_source",
+          "function": "crash_between_projection_write_and_commit_keeps_old_source",
+          "features": [
+            "pg-tests"
+          ],
+          "level": "postgres_integration",
+          "key_assertion": "单候选事务失败不半生效；批量发布待补",
+          "reviewed_source_sha": "259b235de75f63ee45832a8352deaad7e8366ce5",
+          "last_run": null,
+          "test_file_sha256": "c8448571476c047129c02dcc5bf76280582d0ca5c8f047de4b29027b37163e2c"
+        }
+      ],
+      "real_postgresql": true,
+      "two_process_or_fault": false,
+      "real_agent_clients": false,
+      "status": "automated_evidence_pending",
+      "blocker": "单候选事务失败不半生效；批量发布待补；此映射未绑定本轮逐项执行回执，不能据此宣称完整场景覆盖。",
+      "automated_coverage": {
+        "status": "partial",
+        "gap": "单候选事务失败不半生效；批量发布待补；此映射未绑定本轮逐项执行回执，不能据此宣称完整场景覆盖。"
+      }
+    },
+    {
+      "id": "TC-047",
+      "title": "迁移 / schema 不兼容时禁止误启动",
+      "phase": "P9",
+      "required": true,
+      "protocol_implemented": true,
+      "automated_tests": [
+        {
+          "path": "crates/awr-team-pg/tests/pg_skeleton.rs",
+          "package": "awr-team-pg",
+          "target": "pg_skeleton",
+          "function": "clean_migration_and_incompatible_schema_refuses_start",
+          "features": [
+            "pg-tests"
+          ],
+          "level": "postgres_integration",
+          "key_assertion": "不兼容版本被拒绝",
+          "reviewed_source_sha": "259b235de75f63ee45832a8352deaad7e8366ce5",
+          "last_run": null,
+          "test_file_sha256": "5a816b5397a999440ed2fc9883c489544579ad01442ebeef7a1a67c5b2489164"
+        }
+      ],
+      "real_postgresql": true,
+      "two_process_or_fault": false,
+      "real_agent_clients": false,
+      "status": "automated_evidence_pending",
+      "blocker": "不兼容版本被拒绝；此映射未绑定本轮逐项执行回执，不能据此宣称完整场景覆盖。",
+      "automated_coverage": {
+        "status": "partial",
+        "gap": "不兼容版本被拒绝；此映射未绑定本轮逐项执行回执，不能据此宣称完整场景覆盖。"
+      }
+    },
+    {
+      "id": "TC-048",
+      "title": "凭证撤销与已接受请求边界",
+      "phase": "P9",
+      "required": true,
+      "protocol_implemented": true,
+      "automated_tests": [
+        {
+          "path": "crates/awr-team-pg/tests/pg_import.rs",
+          "package": "awr-team-pg",
+          "target": "pg_import",
+          "function": "restore_isolates_old_epoch_and_does_not_replay_outbox",
+          "features": [
+            "pg-tests"
+          ],
+          "level": "postgres_integration",
+          "key_assertion": "恢复撤销凭据；在线已受理请求边界待补",
+          "reviewed_source_sha": "259b235de75f63ee45832a8352deaad7e8366ce5",
+          "last_run": null,
+          "test_file_sha256": "25c565bdee92086ba44781c555154aff1f8447718fecf59bc9a8decd4155900a"
+        }
+      ],
+      "real_postgresql": true,
+      "two_process_or_fault": false,
+      "real_agent_clients": false,
+      "status": "automated_evidence_pending",
+      "blocker": "恢复撤销凭据；在线已受理请求边界待补；此映射未绑定本轮逐项执行回执，不能据此宣称完整场景覆盖。",
+      "automated_coverage": {
+        "status": "partial",
+        "gap": "恢复撤销凭据；在线已受理请求边界待补；此映射未绑定本轮逐项执行回执，不能据此宣称完整场景覆盖。"
+      }
+    },
+    {
+      "id": "TC-049",
+      "title": "图和发布预算超限不得假装完整",
+      "phase": "P6",
+      "required": true,
+      "protocol_implemented": true,
+      "automated_tests": [
+        {
+          "path": "crates/awr-team-pg/tests/pg_graph.rs",
+          "package": "awr-team-pg",
+          "target": "pg_graph",
+          "function": "claimed_work_blocks_contract_change_and_unknown_scope_is_explicit",
+          "features": [
+            "pg-tests"
+          ],
+          "level": "postgres_integration",
+          "key_assertion": "图预算超限拒绝；发布预算另需覆盖",
+          "reviewed_source_sha": "259b235de75f63ee45832a8352deaad7e8366ce5",
+          "last_run": null,
+          "test_file_sha256": "008329671c6169b09a45dcedfeebf6960aac685996972b9dd0f0f82911fb284c"
+        }
+      ],
+      "real_postgresql": true,
+      "two_process_or_fault": false,
+      "real_agent_clients": true,
+      "status": "real_agent_accepted",
+      "blocker": null,
+      "agent_evidence": "ledger/evidence/TEAM-P13/TC-049.json",
+      "automated_coverage": {
+        "status": "partial",
+        "gap": "图预算超限拒绝；发布预算另需覆盖；此映射未绑定本轮逐项执行回执，不能据此宣称完整场景覆盖。"
+      }
+    },
+    {
+      "id": "TC-050",
+      "title": "实际改动超出申报范围",
+      "phase": "P7",
+      "required": true,
+      "protocol_implemented": true,
+      "automated_tests": [
+        {
+          "path": "crates/awr-team-pg/tests/pg_execution.rs",
+          "package": "awr-team-pg",
+          "target": "pg_execution",
+          "function": "observed_paths_outside_scope_are_rejected_and_uncontrolled_has_no_exactly_once",
+          "features": [
+            "pg-tests"
+          ],
+          "level": "postgres_integration",
+          "key_assertion": "越界路径拒绝且不承诺无控制exactly-once",
+          "reviewed_source_sha": "259b235de75f63ee45832a8352deaad7e8366ce5",
+          "last_run": null,
+          "test_file_sha256": "1c7f10e2f716262b8132507c072148afdfab533efaf7fb58a3b2763049f540ba"
+        }
+      ],
+      "real_postgresql": true,
+      "two_process_or_fault": false,
+      "real_agent_clients": true,
+      "status": "real_agent_accepted",
+      "blocker": null,
+      "agent_evidence": "ledger/evidence/TEAM-P13/TC-050.json",
+      "automated_coverage": {
+        "status": "partial",
+        "gap": "越界路径拒绝且不承诺无控制exactly-once；此映射未绑定本轮逐项执行回执，不能据此宣称完整场景覆盖。"
+      }
+    },
+    {
+      "id": "TC-051",
+      "title": "普通确认类策略不得由执行者降级",
+      "phase": "P8",
+      "required": true,
+      "protocol_implemented": true,
+      "automated_tests": [
+        {
+          "path": "crates/awr-team-pg/tests/pg_review.rs",
+          "package": "awr-team-pg",
+          "target": "pg_review",
+          "function": "changed_bytes_and_material_invalidate_review_and_forbid_policy_downgrade",
+          "features": [
+            "pg-tests"
+          ],
+          "level": "postgres_integration",
+          "key_assertion": "禁止策略降级",
+          "reviewed_source_sha": "259b235de75f63ee45832a8352deaad7e8366ce5",
+          "last_run": null,
+          "test_file_sha256": "08fdbc807ac1a4ad7529db90f1d6bc7f1b74169a47d001c82b10832b04faf31b"
+        }
+      ],
+      "real_postgresql": true,
+      "two_process_or_fault": false,
+      "real_agent_clients": true,
+      "status": "real_agent_accepted",
+      "blocker": null,
+      "agent_evidence": "ledger/evidence/TEAM-P13/TC-051.json",
+      "automated_coverage": {
+        "status": "partial",
+        "gap": "禁止策略降级；此映射未绑定本轮逐项执行回执，不能据此宣称完整场景覆盖。"
+      }
+    },
+    {
+      "id": "TC-052",
+      "title": "子任务结束不能替代父级集成验收",
+      "phase": "P6",
+      "required": true,
+      "protocol_implemented": true,
+      "automated_tests": [
+        {
+          "path": "crates/awr-team-pg/tests/pg_graph.rs",
+          "package": "awr-team-pg",
+          "target": "pg_graph",
+          "function": "split_children_do_not_complete_parent_and_bindings_invalidate",
+          "features": [
+            "pg-tests"
+          ],
+          "level": "postgres_integration",
+          "key_assertion": "子项完成不能替代父级证据",
+          "reviewed_source_sha": "259b235de75f63ee45832a8352deaad7e8366ce5",
+          "last_run": null,
+          "test_file_sha256": "008329671c6169b09a45dcedfeebf6960aac685996972b9dd0f0f82911fb284c"
+        }
+      ],
+      "real_postgresql": true,
+      "two_process_or_fault": false,
+      "real_agent_clients": true,
+      "status": "real_agent_accepted",
+      "blocker": null,
+      "agent_evidence": "ledger/evidence/TEAM-P13/TC-052.json",
+      "automated_coverage": {
+        "status": "partial",
+        "gap": "子项完成不能替代父级证据；此映射未绑定本轮逐项执行回执，不能据此宣称完整场景覆盖。"
+      }
+    },
+    {
+      "id": "TC-053",
+      "title": "取消晚到不能伪造已撤销结果",
+      "phase": "P7",
+      "required": true,
+      "protocol_implemented": true,
+      "automated_tests": [
+        {
+          "path": "crates/awr-team-pg/tests/pg_execution.rs",
+          "package": "awr-team-pg",
+          "target": "pg_execution",
+          "function": "crash_before_journal_is_not_started_and_late_cancel_is_not_cancelled",
+          "features": [
+            "pg-tests"
+          ],
+          "level": "postgres_integration",
+          "key_assertion": "晚到取消不伪造cancelled",
+          "reviewed_source_sha": "259b235de75f63ee45832a8352deaad7e8366ce5",
+          "last_run": null,
+          "test_file_sha256": "1c7f10e2f716262b8132507c072148afdfab533efaf7fb58a3b2763049f540ba"
+        }
+      ],
+      "real_postgresql": true,
+      "two_process_or_fault": false,
+      "real_agent_clients": false,
+      "status": "automated_evidence_pending",
+      "blocker": "晚到取消不伪造cancelled；此映射未绑定本轮逐项执行回执，不能据此宣称完整场景覆盖。",
+      "automated_coverage": {
+        "status": "partial",
+        "gap": "晚到取消不伪造cancelled；此映射未绑定本轮逐项执行回执，不能据此宣称完整场景覆盖。"
+      }
+    },
+    {
+      "id": "TC-054",
+      "title": "外部 fencing 能力显式分级",
+      "phase": "P7",
+      "required": true,
+      "protocol_implemented": true,
+      "automated_tests": [
+        {
+          "path": "crates/awr-team-pg/tests/pg_execution.rs",
+          "package": "awr-team-pg",
+          "target": "pg_execution",
+          "function": "observed_paths_outside_scope_are_rejected_and_uncontrolled_has_no_exactly_once",
+          "features": [
+            "pg-tests"
+          ],
+          "level": "postgres_integration",
+          "key_assertion": "无控制外部动作不宣称exactly-once",
+          "reviewed_source_sha": "259b235de75f63ee45832a8352deaad7e8366ce5",
+          "last_run": null,
+          "test_file_sha256": "1c7f10e2f716262b8132507c072148afdfab533efaf7fb58a3b2763049f540ba"
+        }
+      ],
+      "real_postgresql": true,
+      "two_process_or_fault": false,
+      "real_agent_clients": false,
+      "status": "automated_evidence_pending",
+      "blocker": "无控制外部动作不宣称exactly-once；此映射未绑定本轮逐项执行回执，不能据此宣称完整场景覆盖。",
+      "automated_coverage": {
+        "status": "partial",
+        "gap": "无控制外部动作不宣称exactly-once；此映射未绑定本轮逐项执行回执，不能据此宣称完整场景覆盖。"
+      }
+    },
+    {
+      "id": "TC-055",
+      "title": "评审材料变化使旧批准失效",
+      "phase": "P8",
+      "required": true,
+      "protocol_implemented": true,
+      "automated_tests": [
+        {
+          "path": "crates/awr-team-pg/tests/pg_review.rs",
+          "package": "awr-team-pg",
+          "target": "pg_review",
+          "function": "changed_bytes_and_material_invalidate_review_and_forbid_policy_downgrade",
+          "features": [
+            "pg-tests"
+          ],
+          "level": "postgres_integration",
+          "key_assertion": "材料变化使旧批准失效",
+          "reviewed_source_sha": "259b235de75f63ee45832a8352deaad7e8366ce5",
+          "last_run": null,
+          "test_file_sha256": "08fdbc807ac1a4ad7529db90f1d6bc7f1b74169a47d001c82b10832b04faf31b"
+        }
+      ],
+      "real_postgresql": true,
+      "two_process_or_fault": false,
+      "real_agent_clients": true,
+      "status": "real_agent_accepted",
+      "blocker": null,
+      "agent_evidence": "ledger/evidence/TEAM-P13/TC-055.json",
+      "automated_coverage": {
+        "status": "partial",
+        "gap": "材料变化使旧批准失效；此映射未绑定本轮逐项执行回执，不能据此宣称完整场景覆盖。"
+      }
+    },
+    {
+      "id": "TC-056",
+      "title": "选定证据缺失不能由另一个报告替代",
+      "phase": "P8",
+      "required": true,
+      "protocol_implemented": true,
+      "automated_tests": [
+        {
+          "path": "crates/awr-team-pg/tests/pg_review.rs",
+          "package": "awr-team-pg",
+          "target": "pg_review",
+          "function": "artifact_bytes_round_trip_and_are_reverified",
+          "features": [
+            "pg-tests"
+          ],
+          "level": "postgres_integration",
+          "key_assertion": "按证据读取和重验字节；另一个报告替代的精确对照待补",
+          "reviewed_source_sha": "259b235de75f63ee45832a8352deaad7e8366ce5",
+          "last_run": null,
+          "test_file_sha256": "08fdbc807ac1a4ad7529db90f1d6bc7f1b74169a47d001c82b10832b04faf31b"
+        }
+      ],
+      "real_postgresql": true,
+      "two_process_or_fault": false,
+      "real_agent_clients": true,
+      "status": "real_agent_accepted",
+      "blocker": null,
+      "agent_evidence": "ledger/evidence/TEAM-P13/TC-056.json",
+      "automated_coverage": {
+        "status": "partial",
+        "gap": "按证据读取和重验字节；另一个报告替代的精确对照待补；此映射未绑定本轮逐项执行回执，不能据此宣称完整场景覆盖。"
+      }
+    },
+    {
+      "id": "TC-057",
+      "title": "重启不会刷新租约期限",
+      "phase": "P5",
+      "required": true,
+      "protocol_implemented": true,
+      "automated_tests": [
+        {
+          "path": "crates/awr-team-pg/tests/pg_lease.rs",
+          "package": "awr-team-pg",
+          "target": "pg_lease",
+          "function": "renew_replay_does_not_move_expiry_and_handoff_invalidates_old_fence",
+          "features": [
+            "pg-tests"
+          ],
+          "level": "postgres_integration",
+          "key_assertion": "重放不刷新期限；实际进程重启待补",
+          "reviewed_source_sha": "259b235de75f63ee45832a8352deaad7e8366ce5",
+          "last_run": null,
+          "test_file_sha256": "904adcf53e61144a866863fba3cf4956ea39a39ad6539fefc04a7c108d7e77c2"
+        }
+      ],
+      "real_postgresql": true,
+      "two_process_or_fault": false,
+      "real_agent_clients": false,
+      "status": "automated_evidence_pending",
+      "blocker": "重放不刷新期限；实际进程重启待补；此映射未绑定本轮逐项执行回执，不能据此宣称完整场景覆盖。",
+      "automated_coverage": {
+        "status": "partial",
+        "gap": "重放不刷新期限；实际进程重启待补；此映射未绑定本轮逐项执行回执，不能据此宣称完整场景覆盖。"
+      }
+    },
+    {
+      "id": "TC-058",
+      "title": "交接只迁移工作资料不伪称私有会话恢复",
+      "phase": "P5",
+      "required": true,
+      "protocol_implemented": true,
+      "automated_tests": [
+        {
+          "path": "crates/awr-team-pg/tests/pg_lease.rs",
+          "package": "awr-team-pg",
+          "target": "pg_lease",
+          "function": "renew_replay_does_not_move_expiry_and_handoff_invalidates_old_fence",
+          "features": [
+            "pg-tests"
+          ],
+          "level": "postgres_integration",
+          "key_assertion": "仅验证租约交接；私有会话恢复未验证",
+          "reviewed_source_sha": "259b235de75f63ee45832a8352deaad7e8366ce5",
+          "last_run": null,
+          "test_file_sha256": "904adcf53e61144a866863fba3cf4956ea39a39ad6539fefc04a7c108d7e77c2"
+        }
+      ],
+      "real_postgresql": true,
+      "two_process_or_fault": false,
+      "real_agent_clients": true,
+      "status": "real_agent_accepted",
+      "blocker": null,
+      "agent_evidence": "ledger/evidence/TEAM-P13/TC-058.json",
+      "automated_coverage": {
+        "status": "partial",
+        "gap": "仅验证租约交接；私有会话恢复未验证；此映射未绑定本轮逐项执行回执，不能据此宣称完整场景覆盖。"
+      }
+    },
+    {
+      "id": "TC-059",
+      "title": "64位版本数字无精度损失",
+      "phase": "P10",
+      "required": true,
+      "protocol_implemented": true,
+      "automated_tests": [
+        {
+          "path": "crates/awr-team/tests/access.rs",
+          "package": "awr-team",
+          "target": "access",
+          "function": "u64_versions_round_trip_without_float_rounding",
+          "features": [],
+          "level": "pure_function",
+          "key_assertion": "u64最大值字符串往返",
+          "reviewed_source_sha": "259b235de75f63ee45832a8352deaad7e8366ce5",
+          "last_run": null,
+          "test_file_sha256": "7eb3abf439495699921bc7921232916eb1ff2354ed90021ffe640824a269f13b"
+        }
+      ],
+      "real_postgresql": false,
+      "two_process_or_fault": false,
+      "real_agent_clients": true,
+      "status": "real_agent_accepted",
+      "blocker": null,
+      "agent_evidence": "ledger/evidence/TEAM-P13/TC-059.json",
+      "automated_coverage": {
+        "status": "partial",
+        "gap": "u64最大值字符串往返；此映射未绑定本轮逐项执行回执，不能据此宣称完整场景覆盖。"
+      }
+    },
+    {
+      "id": "TC-060",
+      "title": "快照与增量衔接不漏事件",
+      "phase": "P10",
+      "required": true,
+      "protocol_implemented": false,
+      "automated_tests": [
+        {
+          "path": "crates/awr-team-pg/tests/pg_read.rs",
+          "package": "awr-team-pg",
+          "target": "pg_read",
+          "function": "event_pages_include_event_index_and_survive_reconnect",
+          "features": [
+            "pg-tests"
+          ],
+          "level": "postgres_integration",
+          "key_assertion": "仅事件分页；缺快照边界与增量衔接断言",
+          "reviewed_source_sha": "259b235de75f63ee45832a8352deaad7e8366ce5",
+          "last_run": null,
+          "test_file_sha256": "bfe933c057283f667128e0909fcc198feaae569ba6b7bdd7671c2c3749c19d8f"
+        }
+      ],
+      "real_postgresql": true,
+      "two_process_or_fault": false,
+      "real_agent_clients": false,
+      "status": "automated_evidence_pending",
+      "blocker": "仅事件分页；缺快照边界与增量衔接断言；此映射未绑定本轮逐项执行回执，不能据此宣称完整场景覆盖。",
+      "automated_coverage": {
+        "status": "partial",
+        "gap": "仅事件分页；缺快照边界与增量衔接断言；此映射未绑定本轮逐项执行回执，不能据此宣称完整场景覆盖。"
+      }
+    },
+    {
+      "id": "TC-061",
+      "title": "解析器升级不能静默改已生效合同",
+      "phase": "P3",
+      "required": true,
+      "protocol_implemented": true,
+      "automated_tests": [
+        {
+          "path": "crates/awr-team-pg/tests/pg_source.rs",
+          "package": "awr-team-pg",
+          "target": "pg_source",
+          "function": "parser_upgrade_does_not_silently_change_active_contract",
+          "features": [
+            "pg-tests"
+          ],
+          "level": "postgres_integration",
+          "key_assertion": "解析器升级不改变已激活合同",
+          "reviewed_source_sha": "259b235de75f63ee45832a8352deaad7e8366ce5",
+          "last_run": null,
+          "test_file_sha256": "c8448571476c047129c02dcc5bf76280582d0ca5c8f047de4b29027b37163e2c"
+        }
+      ],
+      "real_postgresql": true,
+      "two_process_or_fault": false,
+      "real_agent_clients": false,
+      "status": "automated_evidence_pending",
+      "blocker": "解析器升级不改变已激活合同；此映射未绑定本轮逐项执行回执，不能据此宣称完整场景覆盖。",
+      "automated_coverage": {
+        "status": "partial",
+        "gap": "解析器升级不改变已激活合同；此映射未绑定本轮逐项执行回执，不能据此宣称完整场景覆盖。"
+      }
+    },
+    {
+      "id": "TC-062",
+      "title": "上游变更使下游旧依据失效",
+      "phase": "P6",
+      "required": true,
+      "protocol_implemented": true,
+      "automated_tests": [
+        {
+          "path": "crates/awr-team-pg/tests/pg_graph.rs",
+          "package": "awr-team-pg",
+          "target": "pg_graph",
+          "function": "split_children_do_not_complete_parent_and_bindings_invalidate",
+          "features": [
+            "pg-tests"
+          ],
+          "level": "postgres_integration",
+          "key_assertion": "上游合同变化使依赖绑定失效",
+          "reviewed_source_sha": "259b235de75f63ee45832a8352deaad7e8366ce5",
+          "last_run": null,
+          "test_file_sha256": "008329671c6169b09a45dcedfeebf6960aac685996972b9dd0f0f82911fb284c"
+        }
+      ],
+      "real_postgresql": true,
+      "two_process_or_fault": false,
+      "real_agent_clients": true,
+      "status": "real_agent_accepted",
+      "blocker": null,
+      "agent_evidence": "ledger/evidence/TEAM-P13/TC-062.json",
+      "automated_coverage": {
+        "status": "partial",
+        "gap": "上游合同变化使依赖绑定失效；此映射未绑定本轮逐项执行回执，不能据此宣称完整场景覆盖。"
+      }
+    },
+    {
+      "id": "TC-063",
+      "title": "dirty worktree 必须绑定实际字节",
+      "phase": "P8",
+      "required": true,
+      "protocol_implemented": true,
+      "automated_tests": [
+        {
+          "path": "crates/awr-team-pg/tests/pg_review.rs",
+          "package": "awr-team-pg",
+          "target": "pg_review",
+          "function": "ordinary_confirm_works_for_humans_and_dirty_tree_needs_bytes",
+          "features": [
+            "pg-tests"
+          ],
+          "level": "postgres_integration",
+          "key_assertion": "dirty状态缺字节拒绝",
+          "reviewed_source_sha": "259b235de75f63ee45832a8352deaad7e8366ce5",
+          "last_run": null,
+          "test_file_sha256": "08fdbc807ac1a4ad7529db90f1d6bc7f1b74169a47d001c82b10832b04faf31b"
+        }
+      ],
+      "real_postgresql": true,
+      "two_process_or_fault": false,
+      "real_agent_clients": true,
+      "status": "real_agent_accepted",
+      "blocker": null,
+      "agent_evidence": "ledger/evidence/TEAM-P13/TC-063.json",
+      "automated_coverage": {
+        "status": "partial",
+        "gap": "dirty状态缺字节拒绝；此映射未绑定本轮逐项执行回执，不能据此宣称完整场景覆盖。"
+      }
+    },
+    {
+      "id": "TC-064",
+      "title": "历史身份与证据导入不提升可信度",
+      "phase": "P9",
+      "required": true,
+      "protocol_implemented": true,
+      "automated_tests": [
+        {
+          "path": "crates/awr-team-pg/tests/pg_import.rs",
+          "package": "awr-team-pg",
+          "target": "pg_import",
+          "function": "imported_contracts_prepare_and_evidence_roundtrips_without_trust_upgrade",
+          "features": [
+            "pg-tests"
+          ],
+          "level": "postgres_integration",
+          "key_assertion": "导入证据保持caller_asserted及无执行绑定",
+          "reviewed_source_sha": "259b235de75f63ee45832a8352deaad7e8366ce5",
+          "last_run": null,
+          "test_file_sha256": "25c565bdee92086ba44781c555154aff1f8447718fecf59bc9a8decd4155900a"
+        }
+      ],
+      "real_postgresql": true,
+      "two_process_or_fault": false,
+      "real_agent_clients": true,
+      "status": "real_agent_accepted",
+      "blocker": null,
+      "agent_evidence": "ledger/evidence/TEAM-P13/TC-064.json",
+      "automated_coverage": {
+        "status": "partial",
+        "gap": "导入证据保持caller_asserted及无执行绑定；此映射未绑定本轮逐项执行回执，不能据此宣称完整场景覆盖。"
+      }
+    },
+    {
+      "id": "TC-065",
+      "title": "数据库存在但必要产物缺失时恢复失败关闭",
+      "phase": "P9",
+      "required": true,
+      "protocol_implemented": true,
+      "automated_tests": [
+        {
+          "path": "crates/awr-team-pg/tests/pg_import.rs",
+          "package": "awr-team-pg",
+          "target": "pg_import",
+          "function": "backup_verifies_real_bytes_and_restore_detects_missing_or_drifted_objects",
+          "features": [
+            "pg-tests"
+          ],
+          "level": "postgres_integration",
+          "key_assertion": "缺失或漂移对象使备份恢复拒绝",
+          "reviewed_source_sha": "259b235de75f63ee45832a8352deaad7e8366ce5",
+          "last_run": null,
+          "test_file_sha256": "25c565bdee92086ba44781c555154aff1f8447718fecf59bc9a8decd4155900a"
+        }
+      ],
+      "real_postgresql": true,
+      "two_process_or_fault": false,
+      "real_agent_clients": false,
+      "status": "automated_evidence_pending",
+      "blocker": "缺失或漂移对象使备份恢复拒绝；此映射未绑定本轮逐项执行回执，不能据此宣称完整场景覆盖。",
+      "automated_coverage": {
+        "status": "partial",
+        "gap": "缺失或漂移对象使备份恢复拒绝；此映射未绑定本轮逐项执行回执，不能据此宣称完整场景覆盖。"
+      }
+    },
+    {
+      "id": "TC-066",
+      "title": "恢复 outbox 不能自动重复历史副作用",
+      "phase": "P9",
+      "required": true,
+      "protocol_implemented": true,
+      "automated_tests": [
+        {
+          "path": "crates/awr-team-pg/tests/pg_import.rs",
+          "package": "awr-team-pg",
+          "target": "pg_import",
+          "function": "restore_isolates_old_epoch_and_does_not_replay_outbox",
+          "features": [
+            "pg-tests"
+          ],
+          "level": "postgres_integration",
+          "key_assertion": "恢复拒绝outbox重放且pending数为零",
+          "reviewed_source_sha": "259b235de75f63ee45832a8352deaad7e8366ce5",
+          "last_run": null,
+          "test_file_sha256": "25c565bdee92086ba44781c555154aff1f8447718fecf59bc9a8decd4155900a"
+        }
+      ],
+      "real_postgresql": true,
+      "two_process_or_fault": false,
+      "real_agent_clients": false,
+      "status": "automated_evidence_pending",
+      "blocker": "恢复拒绝outbox重放且pending数为零；此映射未绑定本轮逐项执行回执，不能据此宣称完整场景覆盖。",
+      "automated_coverage": {
+        "status": "partial",
+        "gap": "恢复拒绝outbox重放且pending数为零；此映射未绑定本轮逐项执行回执，不能据此宣称完整场景覆盖。"
+      }
+    },
+    {
+      "id": "TC-067",
+      "title": "团队已有新写入时禁止直接回滚旧 SQLite",
+      "phase": "P9",
+      "required": true,
+      "protocol_implemented": true,
+      "automated_tests": [
+        {
+          "path": "crates/awr-team-pg/tests/pg_import.rs",
+          "package": "awr-team-pg",
+          "target": "pg_import",
+          "function": "new_team_writes_block_sqlite_rollback_and_unknown_blocks_activate",
+          "features": [
+            "pg-tests"
+          ],
+          "level": "postgres_integration",
+          "key_assertion": "新写入后拒绝SQLite回滚",
+          "reviewed_source_sha": "259b235de75f63ee45832a8352deaad7e8366ce5",
+          "last_run": null,
+          "test_file_sha256": "25c565bdee92086ba44781c555154aff1f8447718fecf59bc9a8decd4155900a"
+        }
+      ],
+      "real_postgresql": true,
+      "two_process_or_fault": false,
+      "real_agent_clients": false,
+      "status": "automated_evidence_pending",
+      "blocker": "新写入后拒绝SQLite回滚；此映射未绑定本轮逐项执行回执，不能据此宣称完整场景覆盖。",
+      "automated_coverage": {
+        "status": "partial",
+        "gap": "新写入后拒绝SQLite回滚；此映射未绑定本轮逐项执行回执，不能据此宣称完整场景覆盖。"
+      }
+    },
+    {
+      "id": "TC-068",
+      "title": "旧本地客户端产生的状态不覆盖团队",
+      "phase": "P9",
+      "required": true,
+      "protocol_implemented": true,
+      "automated_tests": [
+        {
+          "path": "crates/awr-team-pg/tests/pg_import.rs",
+          "package": "awr-team-pg",
+          "target": "pg_import",
+          "function": "duplicate_import_is_idempotent_and_does_not_copy_local_claims",
+          "features": [
+            "pg-tests"
+          ],
+          "level": "postgres_integration",
+          "key_assertion": "不导入本地认领；旧客户端持续写入冲突待补",
+          "reviewed_source_sha": "259b235de75f63ee45832a8352deaad7e8366ce5",
+          "last_run": null,
+          "test_file_sha256": "25c565bdee92086ba44781c555154aff1f8447718fecf59bc9a8decd4155900a"
+        }
+      ],
+      "real_postgresql": true,
+      "two_process_or_fault": false,
+      "real_agent_clients": false,
+      "status": "automated_evidence_pending",
+      "blocker": "不导入本地认领；旧客户端持续写入冲突待补；此映射未绑定本轮逐项执行回执，不能据此宣称完整场景覆盖。",
+      "automated_coverage": {
+        "status": "partial",
+        "gap": "不导入本地认领；旧客户端持续写入冲突待补；此映射未绑定本轮逐项执行回执，不能据此宣称完整场景覆盖。"
+      }
+    },
+    {
+      "id": "TC-069",
+      "title": "HTTP MCP CLI 三入口语义一致",
+      "phase": "P10",
+      "required": true,
+      "protocol_implemented": false,
+      "automated_tests": [
+        {
+          "path": "crates/awr-team/tests/access.rs",
+          "package": "awr-team",
+          "target": "access",
+          "function": "three_surfaces_share_error_and_success_semantics",
+          "features": [],
+          "level": "pure_function",
+          "key_assertion": "仅共享函数标签一致；实际HTTP/MCP传输和Team域派发未实现",
+          "reviewed_source_sha": "259b235de75f63ee45832a8352deaad7e8366ce5",
+          "last_run": null,
+          "test_file_sha256": "7eb3abf439495699921bc7921232916eb1ff2354ed90021ffe640824a269f13b"
+        }
+      ],
+      "real_postgresql": false,
+      "two_process_or_fault": false,
+      "real_agent_clients": true,
+      "status": "real_agent_accepted",
+      "blocker": null,
+      "agent_evidence": "ledger/evidence/TEAM-P13/TC-069.json",
+      "automated_coverage": {
+        "status": "partial",
+        "gap": "仅共享函数标签一致；实际HTTP/MCP传输和Team域派发未实现；此映射未绑定本轮逐项执行回执，不能据此宣称完整场景覆盖。"
+      }
+    }
   ],
-  "project_key": "p11-live",
-  "work_id": "work-p11",
-  "receipt_id": "01M2RW29SNQ0738MVTCKF0ZSX7",
-  "execution_id": "01M2RW1CPY4JYJB8E9C9A81YA3",
-  "oracle": {
-   "receipts": 1,
-   "active_holder": "zcode-cli",
-   "executions": 1,
-   "pass": true
-  },
-  "flow": "kimi claimed and fixed add(); handoff; zcode verified and extended tests; human reviewer approved; complete",
-  "evidence_path": "ledger/evidence/TEAM-P11/live-dual-cli.json",
-  "not_a_release_tag": true
- }
+  "live_agent_run": {
+    "status": "locally_verified",
+    "git_head": "313f501b1a36086dff68d081b03f18acd6acf18e",
+    "clients": [
+      {
+        "product": "Kimi Code CLI",
+        "version": "2.0.0",
+        "actor_id": "kimi-cli"
+      },
+      {
+        "product": "ZCode CLI",
+        "version": "0.16.5",
+        "actor_id": "zcode-cli"
+      }
+    ],
+    "project_key": "p11-live",
+    "work_id": "work-p11",
+    "receipt_id": "01M2RW29SNQ0738MVTCKF0ZSX7",
+    "execution_id": "01M2RW1CPY4JYJB8E9C9A81YA3",
+    "oracle": {
+      "receipts": 1,
+      "active_holder": "zcode-cli",
+      "executions": 1,
+      "pass": true
+    },
+    "flow": "kimi claimed and fixed add(); handoff; zcode verified and extended tests; human reviewer approved; complete",
+    "evidence_path": "ledger/evidence/TEAM-P11/live-dual-cli.json",
+    "not_a_release_tag": true
+  }
 }
