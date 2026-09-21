@@ -36,13 +36,10 @@ pub fn prepare_work(store: &mut Store, root: &Path, request: &PrepareWorkRequest
         Some(branch) => compile_branch_context(store, root, branch, &ctx)?,
         None => compile_context(store, root, &ctx)?,
     };
-    let branch = if let Some(session) = request.session {
-        store.session(project.id, session)?.branch_id
-    } else if let Some(branch) = &request.branch {
-        store.resolve_branch(project.id, branch)?
-    } else {
-        project.current_branch_id
-    };
+    // Context selection is authoritative for the runtime branch. In a scoped
+    // project an omitted branch means main, even if another workstream changed
+    // the project's legacy branch default.
+    let branch = context.completeness.branch_id;
     let readiness = store.work_readiness(project.id, &request.work, branch, now_millis()?)?;
     let complete = context.completeness.complete;
     let waits = request

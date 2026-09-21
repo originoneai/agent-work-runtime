@@ -12,10 +12,12 @@ pub use bootstrap::{BootstrapContext, BootstrapPack, BootstrapRequest, bootstrap
 pub use branch::BranchContextBinding;
 pub use budget::{
     BUDGET_POLICY, BudgetedContext, ContextChunk, ContextIdentity, ContextSection, RankedChunk,
-    SelectedEntity, TOKEN_COUNT_SCOPE, TOKENIZER, budget_context, hard_chunks, token_count,
+    SelectedEntity, TOKEN_COUNT_SCOPE, TOKENIZER, WORKSTREAM_BUDGET_POLICY,
+    WorkstreamContextIdentity, budget_context, budget_workstream_context, hard_chunks, token_count,
 };
 pub use compile::{
     ContextOmission, ContextRequest, WorkContextReport, compile_branch_context, compile_context,
+    compile_workstream_context,
 };
 pub use completeness::{
     CompletenessIssue, CompletenessRequest, ContextCompleteness, check_completeness,

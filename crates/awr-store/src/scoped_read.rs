@@ -145,6 +145,9 @@ fn private_lookup(error: Error) -> Error {
 }
 
 impl WorkstreamRead {
+    pub fn scope_binding(&self) -> &str {
+        &self.binding
+    }
     pub fn project_id(&self) -> Id {
         self.project
     }

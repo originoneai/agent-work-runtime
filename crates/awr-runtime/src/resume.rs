@@ -182,6 +182,7 @@ fn resume_inner(
         session_id: None,
         detached: true,
         agent_id: Some(request.agent_id.clone()),
+        branch_id: from.branch_id,
         paths: request.paths.clone(),
         tags: request.tags.clone(),
         goal_keys: request.goal_keys.clone(),

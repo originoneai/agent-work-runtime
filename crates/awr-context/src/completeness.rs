@@ -3,7 +3,7 @@ use crate::{
     related_work,
 };
 use awr_core::*;
-use awr_source::{IndexReport, Manifest, index_project};
+use awr_source::IndexReport;
 use awr_store::Store;
 use serde::{Deserialize, Serialize};
 use std::path::Path;
@@ -413,11 +413,33 @@ pub fn inspect_completeness(
     refresh: Option<&IndexReport>,
 ) -> Result<ContextCompleteness> {
     let project = store.project(project_id)?;
-    let binding = crate::branch::branch_binding(store, &project, request.branch_id)?;
     if request.work_item_key.trim().is_empty() {
         return Err(Error::InvalidInput("work key must not be blank".into()));
     }
-    let work = match store.work_item(project_id, &request.work_item_key) {
+    let read = crate::compile::scoped_read(
+        store,
+        &project,
+        &crate::ContextRequest {
+            work_item_key: Some(request.work_item_key.clone()),
+            ..Default::default()
+        },
+        None,
+    )?;
+    if let Some(read) = &read {
+        if refresh.is_some_and(|r| !r.ok || r.pending > 0) {
+            return Err(Error::ContextIncomplete(
+                "Source refresh failed; the workstream boundary cannot be proven current".into(),
+            ));
+        }
+        if let Some(branch) = request.branch_id {
+            read.context_branch(&branch.to_string())?;
+        }
+    }
+    let binding = crate::branch::branch_binding(store, &project, request.branch_id)?;
+    let work = match read.as_ref().map_or_else(
+        || store.work_item(project_id, &request.work_item_key),
+        |read| read.work_item(&request.work_item_key),
+    ) {
         Ok(work) => Some(work),
         Err(Error::NotFound(_)) => None,
         Err(e) => return Err(e),
@@ -437,17 +459,44 @@ pub fn inspect_completeness(
     let related = work
         .as_ref()
         .map(|_| {
-            related_work(
-                store,
-                project_id,
-                &request.work_item_key,
-                request.branch_id,
-                request.source_sha.as_deref(),
-                request.scope.paths.as_deref(),
-            )
+            if let Some(read) = &read {
+                crate::related_work_in_workstream(
+                    read,
+                    &request.work_item_key,
+                    request.branch_id,
+                    request.source_sha.as_deref(),
+                    request.scope.paths.as_deref(),
+                )
+            } else {
+                related_work(
+                    store,
+                    project_id,
+                    &request.work_item_key,
+                    request.branch_id,
+                    request.source_sha.as_deref(),
+                    request.scope.paths.as_deref(),
+                )
+            }
         })
         .transpose()?;
-    let sources = store.sources(project_id)?;
+    let mut sources = store.sources(project_id)?;
+    if let Some(read) = &read {
+        let mut ids = std::collections::BTreeSet::new();
+        ids.extend(work.iter().map(|w| w.source.id));
+        ids.extend(
+            hard.iter()
+                .flat_map(|h| h.source_revisions.iter().map(|s| s.id)),
+        );
+        ids.extend(
+            related
+                .iter()
+                .flat_map(|r| r.source_revisions.iter().map(|s| s.id)),
+        );
+        if let Some(source) = read.authority_source()? {
+            ids.insert(source.id);
+        }
+        sources.retain(|s| ids.contains(&s.id) || s.domain == "rules");
+    }
     let mut report = assess_completeness(CompletenessFacts {
         project: &project,
         branch: request.branch_id,
@@ -459,6 +508,20 @@ pub fn inspect_completeness(
         refresh,
     })?;
     report.branch_context = Some(binding);
+    if read
+        .as_ref()
+        .is_some_and(|r| r.workstream().state != WorkstreamState::Active)
+    {
+        report.work_state_complete = false;
+        report.complete = false;
+        report.status = "CONTEXT INCOMPLETE";
+        report.issues.push(CompletenessIssue {
+            field: "work_state_complete",
+            code: "workstream_inactive",
+            reference: request.work_item_key.clone(),
+            reason: "Workstream is paused or archived; inspect current policy before continuing execution".into(),
+        });
+    }
     let actual = store.project(project_id)?.project_revision;
     if actual != project.project_revision {
         return Err(Error::RevisionConflict {
@@ -475,9 +538,13 @@ pub fn check_completeness(
     root: &Path,
     request: &CompletenessRequest,
 ) -> Result<ContextCompleteness> {
-    let manifest = Manifest::load(root)?;
-    let refresh = index_project(store, root, &manifest, false)?;
-    inspect_completeness(store, refresh.project_id, request, Some(&refresh))
+    let snapshot = awr_source::refresh_snapshot(store, root)?;
+    inspect_completeness(
+        &snapshot.store,
+        snapshot.refresh.project_id,
+        request,
+        Some(&snapshot.refresh),
+    )
 }
 
 #[cfg(test)]

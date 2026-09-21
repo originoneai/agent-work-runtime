@@ -7,7 +7,7 @@ use crate::{
 use awr_core::{Error, Id, Result, Revision};
 use rusqlite::{OptionalExtension, params};
 use serde::{Deserialize, Serialize};
-use std::collections::BTreeMap;
+use std::collections::{BTreeMap, BTreeSet};
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct EventReference {
@@ -69,6 +69,14 @@ pub struct DeltaEvents {
     pub important_event_count: usize,
     pub omitted_important_events: usize,
     pub process_history: Vec<HistoryCount>,
+    #[serde(default, skip_serializing_if = "Vec::is_empty")]
+    pub scope_gaps: Vec<String>,
+}
+
+pub(crate) struct DeltaVisibility {
+    pub entities: BTreeSet<(String, Id)>,
+    pub work_keys: BTreeMap<String, Revision>,
+    pub work_generations: BTreeMap<Id, Revision>,
 }
 
 impl Store {
@@ -83,6 +91,28 @@ impl Store {
         after: Revision,
         event_limit: usize,
         entity_limit_per_source: usize,
+    ) -> Result<DeltaEvents> {
+        self.delta_events_selected(
+            project,
+            expected,
+            work,
+            branch,
+            after,
+            event_limit,
+            entity_limit_per_source,
+            None,
+        )
+    }
+    pub(crate) fn delta_events_selected(
+        &self,
+        project: Id,
+        expected: Revision,
+        work: Id,
+        branch: Option<Id>,
+        after: Revision,
+        event_limit: usize,
+        entity_limit_per_source: usize,
+        scope: Option<&DeltaVisibility>,
     ) -> Result<DeltaEvents> {
         if event_limit == 0
             || event_limit > 100
@@ -121,6 +151,7 @@ impl Store {
         if !exists {
             return Err(Error::NotFound(format!("work item {work}")));
         }
+        let mut scope_gaps = Vec::new();
         let mut sources: BTreeMap<Id, (SourceDelta, BTreeMap<(String, Id), EntityDelta>)> =
             BTreeMap::new();
         {
@@ -167,7 +198,7 @@ impl Store {
                 } else {
                     None
                 };
-                let changes =
+                let mut changes =
                     if known {
                         serde_json::from_str::<Vec<ProjectionChange>>(&changes_json.ok_or_else(
                             || Error::Storage("source receipt missing changes".into()),
@@ -175,6 +206,46 @@ impl Store {
                     } else {
                         vec![]
                     };
+                if let Some(scope) = scope {
+                    if !known {
+                        scope_gaps.push("Legacy source history cannot be attributed to this workstream; inspect the authorized project history before relying on the delta".into());
+                        continue;
+                    }
+                    changes.retain_mut(|change| {
+                        if change.kind == "edges" {
+                            // Dependency declarations belong to the visible declaring
+                            // work. The target key is never disclosed by this receipt.
+                            let edge =
+                                serde_json::from_str::<Vec<String>>(&change.external_key).ok();
+                            if edge.as_ref().is_some_and(|e| {
+                                e.len() == 5
+                                    && e[0] == "work_item"
+                                    && scope
+                                        .work_keys
+                                        .get(&e[1])
+                                        .is_some_and(|start| event.project_revision >= *start)
+                                    && e[2] == "depends_on"
+                                    && e[3] == "work_item"
+                            }) {
+                                change.external_key = format!("dependency:{}", change.id);
+                                return true;
+                            }
+                            return false;
+                        }
+                        if change.kind == "work_items"
+                            && scope
+                                .work_generations
+                                .get(&change.id)
+                                .is_none_or(|start| event.project_revision < *start)
+                        {
+                            return false;
+                        }
+                        scope.entities.contains(&(change.kind.clone(), change.id))
+                    });
+                    if changes.is_empty() {
+                        continue;
+                    }
+                }
                 let (fold, entities) = sources.entry(source).or_insert_with(|| {
                     (
                         SourceDelta {
@@ -241,10 +312,18 @@ impl Store {
                 source
             })
             .collect();
-        let process_history = tx.prepare("SELECT event_type,importance,
+        let visibility = if scope.is_some() {
+            format!(
+                "events.work_item_id=?2 AND {} AND NOT EXISTS(SELECT 1 FROM temp.awr_read_moves m WHERE m.work_item_id=events.work_item_id AND m.at_revision>events.project_revision)",
+                crate::scoped_read::visible("events", "events.id")
+            )
+        } else {
+            "1".into()
+        };
+        let process_history = tx.prepare(&format!("SELECT event_type,importance,
             sum(CASE WHEN project_revision<=?4 THEN 1 ELSE 0 END),sum(CASE WHEN project_revision>?4 THEN 1 ELSE 0 END)
-            FROM events WHERE project_id=?1 AND (work_item_id IS NULL OR work_item_id=?2) AND branch_id IS ?3
-            AND event_type NOT LIKE 'source.%' GROUP BY event_type,importance ORDER BY event_type,importance").map_err(db_error)?
+            FROM events WHERE ({visibility}) AND project_id=?1 AND (work_item_id IS NULL OR work_item_id=?2) AND branch_id IS ?3
+            AND event_type NOT LIKE 'source.%' GROUP BY event_type,importance ORDER BY event_type,importance")).map_err(db_error)?
             .query_map(params![project.to_string(), work.to_string(), branch.map(|b| b.to_string()), sqlite_revision(after)?], |r| Ok(HistoryCount {
                 event_type: r.get(0)?, importance: r.get(1)?, before_or_at_baseline: r.get::<_, i64>(2)? as usize, after_baseline: r.get::<_, i64>(3)? as usize,
             })).map_err(db_error)?.collect::<rusqlite::Result<Vec<_>>>().map_err(db_error)?;
@@ -253,11 +332,11 @@ impl Store {
             .filter(|g| matches!(g.importance.as_str(), "high" | "critical"))
             .map(|g| g.after_baseline)
             .sum::<usize>();
-        let important_events = tx.prepare("SELECT id,project_revision,created_at,event_type,importance,substr(summary,1,240),
+        let important_events = tx.prepare(&format!("SELECT id,project_revision,created_at,event_type,importance,substr(summary,1,240),
             work_item_id,session_id,branch_id,length(summary)>240
-            FROM events WHERE project_id=?1 AND (work_item_id IS NULL OR work_item_id=?2) AND branch_id IS ?3
+            FROM events WHERE ({visibility}) AND project_id=?1 AND (work_item_id IS NULL OR work_item_id=?2) AND branch_id IS ?3
             AND project_revision>?4 AND importance IN ('high','critical') AND event_type NOT LIKE 'source.%'
-            ORDER BY CASE importance WHEN 'critical' THEN 0 ELSE 1 END,project_revision DESC,created_at DESC,id DESC LIMIT ?5").map_err(db_error)?
+            ORDER BY CASE importance WHEN 'critical' THEN 0 ELSE 1 END,project_revision DESC,created_at DESC,id DESC LIMIT ?5")).map_err(db_error)?
             .query_map(params![project.to_string(),work.to_string(),branch.map(|b| b.to_string()),sqlite_revision(after)?,event_limit as i64], |r| {
                 let mut summary = r.get::<_, String>(5)?;
                 if r.get::<_, bool>(9)? { summary.push('…'); }
@@ -267,6 +346,8 @@ impl Store {
                 })
             }).map_err(db_error)?.collect::<rusqlite::Result<Vec<_>>>().map_err(db_error)?;
         tx.commit().map_err(db_error)?;
+        scope_gaps.sort();
+        scope_gaps.dedup();
         Ok(DeltaEvents {
             project_revision: actual,
             source_changes,
@@ -274,6 +355,7 @@ impl Store {
             important_event_count,
             important_events,
             process_history,
+            scope_gaps,
         })
     }
 }

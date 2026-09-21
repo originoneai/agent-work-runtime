@@ -94,6 +94,69 @@ async fn action_view_preserves_exact_context_and_compaction_stdio_matches_runtim
 struct Fixture {
     root: PathBuf,
 }
+
+#[tokio::test]
+async fn scoped_context_transport_preserves_semantic_identity_and_opaque_dependency_gaps() {
+    let root = std::env::temp_dir().join(format!("awr-scoped-context-mcp-{}", Id::new()));
+    fs::create_dir_all(root.join(".awr")).unwrap();
+    let work = include_str!("../../../tests/fixtures/workstreams/context.yaml");
+    fs::write(root.join("work.yaml"), work).unwrap();
+    fs::write(
+        root.join("rules.md"),
+        "# Shared {#shared severity=hard scope=project value=*}\n\nPreserve approved contracts.\n",
+    )
+    .unwrap();
+    fs::write(
+        root.join(".awr/project.toml"),
+        include_str!("../../../tests/fixtures/workstreams/context.toml"),
+    )
+    .unwrap();
+    let f = Fixture { root };
+    let mut store = Store::open(&f.db()).unwrap();
+    assert!(
+        index_project(
+            &mut store,
+            &f.root,
+            &Manifest::load(&f.root).unwrap(),
+            false
+        )
+        .unwrap()
+        .ok
+    );
+    drop(store);
+    let client = f.client().await;
+    let before = success(call(&client, "awr_context_compile", json!({"work":"API-1"})).await);
+    assert_eq!(before["work_context"]["policy"], "awr.workstream_chunks.v1");
+    assert!(
+        !serde_json::to_string(&before)
+            .unwrap()
+            .contains("PRIVATE_CLIENT")
+    );
+    fs::write(
+        f.root.join("work.yaml"),
+        work.replace("Implement the client.", "Review the client."),
+    )
+    .unwrap();
+    error(
+        call(&client, "awr_context_compile", json!({"work":"API-1"})).await,
+        "SourceStale",
+    );
+    f.reindex();
+    let after = success(call(&client, "awr_context_compile", json!({"work":"API-1"})).await);
+    for field in ["context_hash", "rendered_context"] {
+        assert_eq!(before["work_context"][field], after["work_context"][field]);
+    }
+    let blocked = call(&client, "awr_context_compile", json!({"work":"CLIENT-1"})).await;
+    assert_eq!(blocked.is_error, Some(true));
+    let report = body(&blocked);
+    assert_eq!(report["completeness"]["dependencies_complete"], false);
+    assert!(
+        !serde_json::to_string(&report)
+            .unwrap()
+            .contains("Implement the interface.")
+    );
+    client.cancel().await.unwrap();
+}
 impl Fixture {
     fn new() -> Self {
         let path = std::env::temp_dir().join(format!("awr-mcp-{}", Id::new()));

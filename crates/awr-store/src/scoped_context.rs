@@ -4,6 +4,112 @@ use awr_core::*;
 use rusqlite::params;
 
 impl WorkstreamRead {
+    pub fn authority_source(&self) -> Result<Option<Source>> {
+        let id: Option<String> = self
+            .store
+            .conn
+            .query_row(
+                "SELECT source_id FROM workstream_catalogs WHERE project_id=?1",
+                [self.project.to_string()],
+                |r| r.get(0),
+            )
+            .map_err(db_error)?;
+        id.map(|id| {
+            self.store.source(
+                self.project,
+                id.parse()
+                    .map_err(|_| Error::Storage("invalid authority source identity".into()))?,
+            )
+        })
+        .transpose()
+    }
+
+    pub fn ownership(&self, work: &str) -> Result<WorkstreamOwnership> {
+        let work = self.work_item(work)?;
+        self.store
+            .workstream_ownership(self.project, work.item.meta.id)
+    }
+    pub fn context_branch(&self, reference: &str) -> Result<Option<Id>> {
+        let id =
+            self.store
+                .resolve_branch(self.project, reference)
+                .map_err(|error| match error {
+                    Error::NotFound(_) => Error::Workstream(WorkstreamError::AccessDenied),
+                    e => e,
+                })?;
+        if let Some(id) = id {
+            self.require("branches", id)?;
+        }
+        Ok(id)
+    }
+    pub fn session_recovery_revision(&self, id: Id) -> Result<Revision> {
+        self.context_session(id)?;
+        self.store.session_recovery_revision(self.project, id)
+    }
+
+    /// Facts are a narrowing selector, never an access grant. The compiler uses
+    /// this after selecting its goals/rules/decisions/dependencies. Filtering
+    /// precedes source folding, runtime counts and all limits.
+    pub fn context_delta_events(
+        &self,
+        work: &str,
+        branch: Option<Id>,
+        after: Revision,
+        event_limit: usize,
+        entity_limit_per_source: usize,
+        facts: &[(String, Id)],
+    ) -> Result<crate::DeltaEvents> {
+        let work = self.work_item(work)?;
+        if let Some(id) = branch {
+            self.require("branches", id)?;
+        }
+        if !self.explicit_workstreams()? {
+            return self.store.delta_events(
+                self.project,
+                self.project_revision(),
+                work.item.meta.id,
+                branch,
+                after,
+                event_limit,
+                entity_limit_per_source,
+            );
+        }
+        let mut entities = std::collections::BTreeSet::new();
+        for (kind, id) in facts {
+            self.require(kind, *id)?;
+            entities.insert((kind.clone(), *id));
+        }
+        let graph = self.dependency_closure(&work.item.meta.external_key, true)?;
+        let mut work_keys = std::collections::BTreeMap::new();
+        let mut work_generations = std::collections::BTreeMap::new();
+        for selected in std::iter::once(&work).chain(&graph.graph.dependencies) {
+            let id = selected.item.meta.id;
+            let generation = self.store.conn.query_row(
+                "SELECT coalesce(max(at_revision),0) FROM temp.awr_read_moves WHERE work_item_id=?1",
+                [id.to_string()], |r| crate::catalog::revision_at(r,0),
+            ).map_err(db_error)?;
+            entities.insert(("work_items".into(), id));
+            work_keys.insert(selected.item.meta.external_key.clone(), generation);
+            work_generations.insert(id, generation);
+        }
+        for edge in graph.graph.edges {
+            entities.insert(("edges".into(), edge.item.id));
+        }
+        self.store.delta_events_selected(
+            self.project,
+            self.project_revision(),
+            work.item.meta.id,
+            branch,
+            after,
+            event_limit,
+            entity_limit_per_source,
+            Some(&crate::delta::DeltaVisibility {
+                entities,
+                work_keys,
+                work_generations,
+            }),
+        )
+    }
     fn explicit_workstreams(&self) -> Result<bool> {
         self.store
             .conn
