@@ -8,6 +8,8 @@ use std::{
 };
 const WORK: &str = "work_items:\n- id: W\n  title: Build resumable context\n  milestone: M4\n  status: in_progress\n  next_action: Continue the current task\n  acceptance: [Keep exact acceptance text]\n  depends_on: [DEP]\n- id: DEP\n  title: Required input\n  status: blocked\n  blocker: Waiting for the source\n  next_action: Read the missing input\n  acceptance: [Input is available]\n- id: OLD\n  title: UNRELATED_TASK_BODY_SENTINEL\n  status: completed\n  summary: UNRELATED_TASK_BODY_SENTINEL\n";
 const RULE: &str = "# Authority {#authority severity=hard scope=project value=*}\n\nPreserve all hard source facts exactly.\n";
+const SCOPED_WORK: &str = include_str!("../../../tests/fixtures/workstreams/context.yaml");
+const SCOPED_MANIFEST: &str = include_str!("../../../tests/fixtures/workstreams/context.toml");
 struct Fixture(PathBuf);
 impl Fixture {
     fn new() -> Self {
@@ -59,6 +61,70 @@ impl Fixture {
             &self.revision(),
         ])
     }
+}
+
+#[test]
+fn scoped_cli_context_and_bootstrap_ignore_unrelated_source_edits() {
+    let root = std::env::temp_dir().join(format!("awr-scoped-context-cli-{}", Id::new()));
+    fs::create_dir_all(&root).unwrap();
+    fs::write(root.join("work.yaml"), SCOPED_WORK).unwrap();
+    fs::write(root.join("rules.md"), RULE).unwrap();
+    fs::write(root.join("sources.toml"), SCOPED_MANIFEST).unwrap();
+    let f = Fixture(root);
+    f.ok(&["init", "--manifest", "sources.toml", "--accept"]);
+    let compiled = f.ok(&["context", "compile", "--work", "API-1"]);
+    let bootstrap = f.ok(&[
+        "context",
+        "bootstrap",
+        "--work",
+        "API-1",
+        "--budget",
+        "5000",
+    ]);
+    assert_eq!(
+        compiled["work_context"]["policy"],
+        "awr.workstream_chunks.v1"
+    );
+    assert!(
+        !serde_json::to_string(&compiled)
+            .unwrap()
+            .contains("PRIVATE_CLIENT")
+    );
+    assert!(
+        !serde_json::to_string(&bootstrap)
+            .unwrap()
+            .contains("PRIVATE_CLIENT")
+    );
+    fs::write(
+        f.0.join("work.yaml"),
+        SCOPED_WORK.replace("Implement the client.", "Review the client."),
+    )
+    .unwrap();
+    let after = f.ok(&["context", "compile", "--work", "API-1"]);
+    let oriented = f.ok(&[
+        "context",
+        "bootstrap",
+        "--work",
+        "API-1",
+        "--budget",
+        "5000",
+    ]);
+    for field in ["context_hash", "rendered_context"] {
+        assert_eq!(
+            compiled["work_context"][field],
+            after["work_context"][field]
+        );
+        assert_eq!(bootstrap[field], oriented[field]);
+    }
+    let hidden = f.run(&["context", "compile", "--work", "CLIENT-1"]);
+    assert!(!hidden.status.success());
+    let report: Value = serde_json::from_slice(&hidden.stdout).unwrap();
+    assert_eq!(report["completeness"]["dependencies_complete"], false);
+    assert!(
+        !serde_json::to_string(&report)
+            .unwrap()
+            .contains("Implement the interface.")
+    );
 }
 impl Drop for Fixture {
     fn drop(&mut self) {

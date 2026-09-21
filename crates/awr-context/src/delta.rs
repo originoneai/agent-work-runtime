@@ -1,5 +1,5 @@
 use awr_core::{Checkpoint, Error, Freshness, Id, Result, Revision, Session};
-use awr_store::{DeltaEvents, Store};
+use awr_store::{DeltaEvents, Store, WorkstreamRead};
 use serde::{Deserialize, Serialize};
 use std::path::Path;
 
@@ -67,37 +67,76 @@ fn context_delta_selected(
     let refresh = snapshot.refresh;
     let store = &snapshot.store;
     let project = store.project_by_root(&root.canonicalize()?)?;
-    let branch = match reference {
-        Some(reference) => store.resolve_branch(project.id, reference)?,
-        None => project.current_branch_id,
+    let ctx_request = crate::ContextRequest {
+        work_item_key: request.work_item_key.clone(),
+        session_id: request.delta.session_id,
+        agent_id: request.agent_id.clone(),
+        ..Default::default()
+    };
+    let read = crate::compile::scoped_read(store, &project, &ctx_request, None)?;
+    if read.is_some() && (!refresh.ok || refresh.pending > 0) {
+        return Err(Error::ContextIncomplete(
+            "Source refresh failed; the workstream boundary cannot be proven current".into(),
+        ));
+    }
+    let branch = match (&read, reference) {
+        (Some(read), Some(reference)) => read.context_branch(reference)?,
+        (Some(read), None) => request
+            .delta
+            .session_id
+            .map(|id| read.context_session(id).map(|s| s.branch_id))
+            .transpose()?
+            .flatten(),
+        (None, Some(reference)) => store.resolve_branch(project.id, reference)?,
+        (None, None) => project.current_branch_id,
     };
     let branch_context = crate::branch::branch_binding(store, &project, branch)?;
-    let selected = crate::compile::select_work(
-        store,
-        &project,
-        branch,
-        &crate::ContextRequest {
-            work_item_key: request.work_item_key.clone(),
-            session_id: request.delta.session_id,
-            agent_id: request.agent_id.clone(),
-            ..Default::default()
-        },
-    )?;
+    let selected =
+        crate::compile::select_work_scoped(store, &project, branch, &ctx_request, read.as_ref())?;
     let work = selected.work.ok_or_else(|| {
         Error::ContextIncomplete(
             "no current work item; use event/source history to inspect retained records".into(),
         )
     })?;
-    let delta = recent_delta(
-        store,
-        project.id,
-        &work.item.meta.external_key,
-        branch,
-        &DeltaRequest {
-            session_id: selected.session.map(|s| s.id),
-            ..request.delta.clone()
-        },
-    )?;
+    let delta_request = DeltaRequest {
+        session_id: selected.session.as_ref().map(|s| s.id),
+        ..request.delta.clone()
+    };
+    let delta = if let Some(read) = &read {
+        let scope = crate::RuleScopeInput {
+            agent_id: request
+                .agent_id
+                .clone()
+                .or_else(|| selected.session.as_ref().map(|s| s.agent_id.clone())),
+            ..Default::default()
+        };
+        let rules = crate::select_rules(store, &project, Some(&work), &scope)?;
+        let goals = crate::compile::scoped_goals(read, &[])?;
+        let related = crate::related_work_in_workstream(
+            read,
+            &work.item.meta.external_key,
+            branch,
+            None,
+            None,
+        )?;
+        let facts = crate::compile::delta_facts(&goals, &rules, &related);
+        recent_delta_in_workstream(
+            store,
+            read,
+            &work.item.meta.external_key,
+            branch,
+            &delta_request,
+            &facts,
+        )?
+    } else {
+        recent_delta(
+            store,
+            project.id,
+            &work.item.meta.external_key,
+            branch,
+            &delta_request,
+        )?
+    };
     if delta.events.project_revision != refresh.project_revision {
         return Err(Error::RevisionConflict {
             expected: refresh.project_revision,
@@ -201,7 +240,32 @@ pub fn recent_delta(
 ) -> Result<RecentDelta> {
     awr_core::ensure_public_data(&(work_key, request))?;
     crate::public_context(recent_delta_selected(
-        store, project_id, work_key, branch, request,
+        store,
+        project_id,
+        work_key,
+        branch,
+        request,
+        None,
+        &[],
+    ))
+}
+
+pub(crate) fn recent_delta_in_workstream(
+    store: &Store,
+    read: &WorkstreamRead,
+    work_key: &str,
+    branch: Option<Id>,
+    request: &DeltaRequest,
+    facts: &[(String, Id)],
+) -> Result<RecentDelta> {
+    crate::public_context(recent_delta_selected(
+        store,
+        read.project_id(),
+        work_key,
+        branch,
+        request,
+        Some(read),
+        facts,
     ))
 }
 
@@ -211,14 +275,22 @@ fn recent_delta_selected(
     work_key: &str,
     branch: Option<Id>,
     request: &DeltaRequest,
+    read: Option<&WorkstreamRead>,
+    facts: &[(String, Id)],
 ) -> Result<RecentDelta> {
     let project = store.project(project_id)?;
     let binding = crate::branch::branch_binding(store, &project, branch)?;
     let fork = binding.fork_project_revision;
-    let work = store.work_item(project_id, work_key)?;
+    let work = match read {
+        Some(read) => read.work_item(work_key)?,
+        None => store.work_item(project_id, work_key)?,
+    };
     let session = request
         .session_id
-        .map(|id| store.session(project_id, id))
+        .map(|id| match read {
+            Some(read) => read.context_session(id),
+            None => store.session(project_id, id),
+        })
         .transpose()?;
     if session
         .as_ref()
@@ -230,20 +302,52 @@ fn recent_delta_selected(
     }
     let (checkpoint, mut origin) = match request.baseline {
         DeltaBaseline::Checkpoint { id } => (
-            Some(store.checkpoint(project_id, id)?),
+            Some(match read {
+                Some(read) => read.context_checkpoint(id, work_key, branch)?,
+                None => store.checkpoint(project_id, id)?,
+            }),
             "explicit_checkpoint",
         ),
         DeltaBaseline::Revision { .. } => (None, "explicit_revision"),
-        DeltaBaseline::Auto | DeltaBaseline::BranchFork => context_checkpoint(
-            store,
-            project_id,
-            work.item.meta.id,
-            branch,
-            session.as_ref(),
-        )?,
+        DeltaBaseline::Auto | DeltaBaseline::BranchFork => {
+            if let Some(read) = read {
+                let recovered = session
+                    .as_ref()
+                    .map(|s| read.context_recovery_checkpoint(s.id))
+                    .transpose()?
+                    .flatten();
+                if let Some(cp) = recovered {
+                    let origin = if session.as_ref().is_some_and(|s| s.id == cp.session_id) {
+                        "session"
+                    } else {
+                        "handoff"
+                    };
+                    (Some(cp), origin)
+                } else {
+                    let cp = read.latest_work_checkpoint(work_key, branch)?;
+                    let origin = if cp.is_some() {
+                        "previous_closed_session"
+                    } else {
+                        "none"
+                    };
+                    (cp, origin)
+                }
+            } else {
+                context_checkpoint(
+                    store,
+                    project_id,
+                    work.item.meta.id,
+                    branch,
+                    session.as_ref(),
+                )?
+            }
+        }
     };
     if let Some(cp) = &checkpoint {
-        let owner = store.session(project_id, cp.session_id)?;
+        let owner = match read {
+            Some(read) => read.context_session(cp.session_id)?,
+            None => store.session(project_id, cp.session_id)?,
+        };
         if owner.work_item_id != Some(work.item.meta.id) || owner.branch_id != branch {
             return Err(Error::InvalidInput(
                 "delta checkpoint belongs to a different work item or branch".into(),
@@ -268,7 +372,10 @@ fn recent_delta_selected(
         (_, DeltaBaseline::Revision { revision }) => *revision,
         _ => {
             if let Some(session) = &session {
-                let revision = store.session_recovery_revision(project_id, session.id)?;
+                let revision = match read {
+                    Some(read) => read.session_recovery_revision(session.id)?,
+                    None => store.session_recovery_revision(project_id, session.id)?,
+                };
                 origin = if revision < session.start_project_revision {
                     "resumed_session_start"
                 } else {
@@ -293,16 +400,27 @@ fn recent_delta_selected(
         after_revision = fork;
         origin = "branch_fork";
     }
-    let events = store.delta_events(
-        project_id,
-        project.project_revision,
-        work.item.meta.id,
-        branch,
-        after_revision,
-        request.event_limit,
-        request.entity_limit_per_source,
-    )?;
-    let mut gaps = Vec::new();
+    let events = if let Some(read) = read {
+        read.context_delta_events(
+            work_key,
+            branch,
+            after_revision,
+            request.event_limit,
+            request.entity_limit_per_source,
+            facts,
+        )?
+    } else {
+        store.delta_events(
+            project_id,
+            project.project_revision,
+            work.item.meta.id,
+            branch,
+            after_revision,
+            request.event_limit,
+            request.entity_limit_per_source,
+        )?
+    };
+    let mut gaps = events.scope_gaps.clone();
     if work.source.freshness != Freshness::Fresh {
         gaps.push("current work projection is not fresh".into());
     }
@@ -325,8 +443,20 @@ fn recent_delta_selected(
         }
     }
     Ok(RecentDelta {
-        project_id, work_item_id: work.item.meta.id, work_item_key: work_key.into(), branch_id: branch,
-        after_revision, fork_project_revision: fork, baseline_origin: origin.into(), checkpoint_id: checkpoint.map(|cp| cp.id), events, gaps,
-        history_scope: "Source changes: all project sources after baseline, including retired sources. Process history: this work or project-global events on the exact branch; high/critical summaries after baseline. Full immutable events remain available through Store.event/project EventQuery; omitted counts are explicit.".into(),
+        project_id,
+        work_item_id: work.item.meta.id,
+        work_item_key: work_key.into(),
+        branch_id: branch,
+        after_revision,
+        fork_project_revision: fork,
+        baseline_origin: origin.into(),
+        checkpoint_id: checkpoint.map(|cp| cp.id),
+        events,
+        gaps,
+        history_scope: if read.is_some() {
+            "Source changes: selected scoped facts; global source states are audit metadata. Runtime: current ownership of this work on the exact branch; filtering precedes counts and limits.".into()
+        } else {
+            "Source changes: all project sources after baseline, including retired sources. Process history: this work or project-global events on the exact branch; high/critical summaries after baseline. Full immutable events remain available through Store.event/project EventQuery; omitted counts are explicit.".into()
+        },
     })
 }

@@ -1,7 +1,7 @@
 use crate::completeness::{CompletenessFacts, assess_completeness};
 use crate::*;
 use awr_core::*;
-use awr_store::Store;
+use awr_store::{Store, WorkstreamRead, WorkstreamReadSelection};
 use serde::{Deserialize, Serialize};
 use std::{collections::BTreeSet, path::Path};
 
@@ -13,7 +13,8 @@ pub struct ContextRequest {
     #[serde(default, skip_serializing_if = "is_false")]
     pub detached: bool,
     pub agent_id: Option<String>,
-    /// None selects the current default; Some reads that branch without switching.
+    /// None uses the legacy project default, or the explicit session's branch/main
+    /// for workstream-enabled projects. Some reads that branch without switching.
     /// Use compile_branch_context for a name or an explicit main baseline.
     pub branch_id: Option<Id>,
     pub goal_keys: Vec<String>,
@@ -80,11 +81,12 @@ pub(crate) struct Selection {
     pub session: Option<Session>,
     pub basis: &'static str,
 }
-pub(crate) fn select_work(
+pub(crate) fn select_work_scoped(
     store: &Store,
     project: &Project,
     branch: Option<Id>,
     request: &ContextRequest,
+    read: Option<&WorkstreamRead>,
 ) -> Result<Selection> {
     if request.detached && (request.session_id.is_some() || request.work_item_key.is_none()) {
         return Err(Error::InvalidInput(
@@ -92,7 +94,10 @@ pub(crate) fn select_work(
         ));
     }
     let mut work = match request.work_item_key.as_deref() {
-        Some(key) => match store.work_item(project.id, key) {
+        Some(key) => match read.map_or_else(
+            || store.work_item(project.id, key),
+            |read| read.work_item(key),
+        ) {
             Ok(w) => Some(w),
             Err(Error::NotFound(_)) => None,
             Err(e) => return Err(e),
@@ -110,7 +115,10 @@ pub(crate) fn select_work(
     let session = if request.detached {
         None
     } else if let Some(id) = request.session_id {
-        let session = store.session(project.id, id)?;
+        let session = read.map_or_else(
+            || store.session(project.id, id),
+            |read| read.context_session(id),
+        )?;
         if session.branch_id != branch
             || request
                 .agent_id
@@ -126,13 +134,22 @@ pub(crate) fn select_work(
         }
         Some(session)
     } else {
-        match store.select_active_session(
-            project.id,
-            None,
-            work.as_ref().map(|w| w.item.meta.id),
-            request.agent_id.as_deref(),
-            branch,
-        ) {
+        let active = if let Some(read) = read {
+            read.select_active_session(
+                work.as_ref().map(|w| w.item.meta.id),
+                request.agent_id.as_deref(),
+                branch,
+            )
+        } else {
+            store.select_active_session(
+                project.id,
+                None,
+                work.as_ref().map(|w| w.item.meta.id),
+                request.agent_id.as_deref(),
+                branch,
+            )
+        };
+        match active {
             Ok(s) => Some(s),
             Err(Error::NotFound(_)) => None,
             Err(e) => return Err(e),
@@ -147,7 +164,10 @@ pub(crate) fn select_work(
     };
     if work.is_none() {
         if let Some(id) = session.as_ref().and_then(|s| s.work_item_id) {
-            work = match store.work_item_by_id(project.id, id) {
+            work = match read.map_or_else(
+                || store.work_item_by_id(project.id, id),
+                |read| read.work_item(&id.to_string()),
+            ) {
                 Ok(w) => Some(w),
                 Err(Error::NotFound(_)) => None,
                 Err(e) => return Err(e),
@@ -158,8 +178,8 @@ pub(crate) fn select_work(
                 "session_work_retired"
             };
         } else {
-            let mut candidates = store
-                .work_items(project.id)?
+            let mut candidates = read
+                .map_or_else(|| store.work_items(project.id), |read| read.work_items())?
                 .into_iter()
                 .filter(|w| matches!(w.item.status, WorkStatus::Claimed | WorkStatus::InProgress))
                 .collect::<Vec<_>>();
@@ -310,7 +330,7 @@ pub fn compile_context(
     request: &ContextRequest,
 ) -> Result<WorkContextReport> {
     awr_core::ensure_public_data(request)?;
-    crate::public_context(compile_context_selected(store, root, request, None))
+    crate::public_context(compile_context_selected(store, root, request, None, None))
 }
 
 /// Read a named branch overlay without changing project defaults or any runtime ownership.
@@ -332,6 +352,41 @@ pub fn compile_branch_context(
         root,
         &request,
         Some(reference),
+        None,
+    ))
+}
+
+/// Access is loaded by a trusted host, never deserialized from request data.
+/// Selection narrows those grants and does not confer execution permission.
+pub fn compile_workstream_context(
+    store: &mut Store,
+    root: &Path,
+    request: &ContextRequest,
+    access: &WorkstreamAccess,
+    selection: &WorkstreamReadSelection,
+) -> Result<WorkContextReport> {
+    let mut request = request.clone();
+    if selection
+        .work_item_key
+        .as_ref()
+        .zip(request.work_item_key.as_ref())
+        .is_some_and(|(a, b)| a != b)
+        || selection
+            .session_id
+            .zip(request.session_id)
+            .is_some_and(|(a, b)| a != b)
+    {
+        return Err(WorkstreamError::BindingMismatch.into());
+    }
+    request.work_item_key = request.work_item_key.or(selection.work_item_key.clone());
+    request.session_id = request.session_id.or(selection.session_id);
+    awr_core::ensure_public_data(&request)?;
+    crate::public_context(compile_context_selected(
+        store,
+        root,
+        &request,
+        None,
+        Some((access, selection)),
     ))
 }
 
@@ -340,6 +395,7 @@ fn compile_context_selected(
     root: &Path,
     request: &ContextRequest,
     reference: Option<&str>,
+    access: Option<(&WorkstreamAccess, &WorkstreamReadSelection)>,
 ) -> Result<WorkContextReport> {
     if request.token_budget == 0
         || request.token_budget > 100000
@@ -368,17 +424,40 @@ fn compile_context_selected(
     let refresh = snapshot.refresh;
     let store = &snapshot.store;
     let project = store.project(refresh.project_id)?;
-    let branch = match reference {
-        Some(reference) => store.resolve_branch(project.id, reference)?,
-        None => request.branch_id.or(project.current_branch_id),
+    let read = scoped_read(store, &project, request, access)?;
+    if read.is_some() && (!refresh.ok || refresh.pending > 0) {
+        return Err(Error::ContextIncomplete(
+            "Source refresh failed; the workstream boundary cannot be proven current".into(),
+        ));
+    }
+    let branch = match (&read, reference) {
+        (Some(read), Some(reference)) => read.context_branch(reference)?,
+        (Some(read), None) => {
+            if let Some(id) = request.branch_id {
+                read.context_branch(&id.to_string())?
+            } else if let Some(id) = request.session_id {
+                read.context_session(id)?.branch_id
+            } else {
+                None
+            }
+        }
+        (None, Some(reference)) => store.resolve_branch(project.id, reference)?,
+        (None, None) => request.branch_id.or(project.current_branch_id),
     };
     let branch_context = crate::branch::branch_binding(store, &project, branch)?;
-    let sources = store.sources(project.id)?;
-    let selection = select_work(store, &project, branch, request)?;
-    let goal_basis = if request.goal_keys.is_empty() {
-        "project_primary_goal_sources"
-    } else {
+    let mut sources = store.sources(project.id)?;
+    let selection = select_work_scoped(store, &project, branch, request, read.as_ref())?;
+    if read.is_some() && selection.work.is_none() {
+        return Err(Error::ContextIncomplete(
+            "No current task in the selected workstream; specify a work item".into(),
+        ));
+    }
+    let goal_basis = if !request.goal_keys.is_empty() {
         "explicit_goal_keys"
+    } else if read.is_some() {
+        "workstream_goal_references"
+    } else {
+        "project_primary_goal_sources"
     };
     let key = selection
         .work
@@ -431,24 +510,51 @@ fn compile_context_selected(
         });
     };
     let scope = scope(request, selection.session.as_ref());
-    let mut related =
-        crate::related::RelatedSelection::dependencies(store, project.id, key, branch)?;
     let hard = hard_context(store, project.id, key, branch, &scope)?;
     let rules = select_rules(store, &project, Some(work), &scope)?;
-    related.decisions(store, scope.paths.as_deref())?;
-    let delta = recent_delta(
-        store,
-        project.id,
-        key,
-        branch,
-        &DeltaRequest {
-            baseline: request.delta_baseline.clone(),
-            session_id: selection.session.as_ref().map(|s| s.id),
-            ..Default::default()
-        },
-    )?;
-    related.branch_evidence(store, request.source_sha.as_deref())?;
-    let related = related.finish(store)?;
+    let related = if let Some(read) = &read {
+        related_work_in_workstream(
+            read,
+            key,
+            branch,
+            request.source_sha.as_deref(),
+            scope.paths.as_deref(),
+        )?
+    } else {
+        let mut related =
+            crate::related::RelatedSelection::dependencies(store, project.id, key, branch)?;
+        related.decisions(store, scope.paths.as_deref())?;
+        related.branch_evidence(store, request.source_sha.as_deref())?;
+        related.finish(store)?
+    };
+    let selected_goals = if let Some(read) = &read {
+        scoped_goals(read, &request.goal_keys)?
+    } else {
+        goals(store, &project, &sources, &request.goal_keys)?
+    };
+    if let Some(read) = &read {
+        let mut ids = BTreeSet::from([work.source.id]);
+        ids.extend(hard.source_revisions.iter().map(|s| s.id));
+        ids.extend(related.source_revisions.iter().map(|s| s.id));
+        ids.extend(selected_goals.iter().map(|g| g.source.id));
+        ids.extend(rules.soft.iter().chain(&rules.info).map(|r| r.source.id));
+        ids.extend(rules.unknown.iter().map(|r| r.rule.source.id));
+        if let Some(source) = read.authority_source()? {
+            ids.insert(source.id);
+        }
+        sources.retain(|s| ids.contains(&s.id) || s.domain == "rules");
+    }
+    let delta_request = DeltaRequest {
+        baseline: request.delta_baseline.clone(),
+        session_id: selection.session.as_ref().map(|s| s.id),
+        ..Default::default()
+    };
+    let delta = if let Some(read) = &read {
+        let facts = delta_facts(&selected_goals, &rules, &related);
+        crate::delta::recent_delta_in_workstream(store, read, key, branch, &delta_request, &facts)?
+    } else {
+        recent_delta(store, project.id, key, branch, &delta_request)?
+    };
     let mut completeness = assess_completeness(CompletenessFacts {
         project: &project,
         branch,
@@ -460,7 +566,28 @@ fn compile_context_selected(
         refresh: Some(&refresh),
     })?;
     completeness.branch_context = Some(branch_context.clone());
-    let selected_goals = goals(store, &project, &sources, &request.goal_keys)?;
+    if read
+        .as_ref()
+        .is_some_and(|read| read.workstream().state != WorkstreamState::Active)
+    {
+        completeness.work_state_complete = false;
+        add_issue(
+            &mut completeness,
+            "work_state_complete",
+            "workstream_inactive",
+            key,
+            "Workstream is paused or archived; inspect current policy before continuing execution",
+        );
+    }
+    if read.is_some() && !delta.gaps.is_empty() {
+        add_issue(
+            &mut completeness,
+            "recent_delta",
+            "scoped_delta_incomplete",
+            key,
+            delta.gaps.join("; "),
+        );
+    }
     let mut goal_complete = !selected_goals.is_empty();
     if selected_goals.is_empty() {
         add_issue(
@@ -487,6 +614,22 @@ fn compile_context_selected(
         }
     }
     let mut required = hard_chunks(&hard)?;
+    if read.is_some() {
+        for unknown in &hard.unresolved {
+            required.push(chunk(
+                format!("unresolved-rule:{}", unknown.rule.item.meta.id),
+                ContextSection::Rules,
+                format!(
+                    "Applicability/severity unresolved: {}\nScope: {}\n{}",
+                    unknown.reasons.join("; "),
+                    serde_json::to_string(&unknown.rule.item.scope)?,
+                    unknown.rule.item.text
+                ),
+                vec![entity(&unknown.rule.item.meta, "rule")],
+            ));
+        }
+    }
+
     if let Some(policy) = OrdinaryWorkPolicy::from_config(&work.source.config)? {
         if policy.work_items.iter().any(|w| w == key) {
             required.push(chunk("ordinary-work-policy", ContextSection::Metadata,
@@ -499,11 +642,12 @@ fn compile_context_selected(
     }
     // Every execution on this work/branch is mandatory, including completed results and
     // unverified nonterminal records. Budget overflow is explicit, never silent omission.
-    for execution in store
-        .executions(project.id, Some(work.item.meta.id))?
-        .iter()
-        .filter(|e| e.branch_id == branch)
-    {
+    let executions = if let Some(read) = &read {
+        read.context_executions(key, branch)?
+    } else {
+        store.executions(project.id, Some(work.item.meta.id))?
+    };
+    for execution in executions.iter().filter(|e| e.branch_id == branch) {
         required.push(chunk(
             format!("execution:{}", execution.id),
             ContextSection::Executions,
@@ -609,6 +753,10 @@ fn compile_context_selected(
             ),
         ));
     }
+    for dependency in &related.unavailable_dependencies {
+        required.push(chunk(format!("unavailable-dependency:{}",dependency.edge_id),ContextSection::Dependencies,
+            format!("Required dependency {} declared by {} is unavailable in this workstream. Obtain an authorized delivery; do not treat it as satisfied.",dependency.edge_id,dependency.from_work_key),vec![]));
+    }
     for dependency in &related.unresolved_dependencies {
         required.push(chunk(format!("required:{}",dependency.meta.external_key),ContextSection::Dependencies,format!("{}\nStatus: {} (raw {})\nFreshness: {:?}\nBlocker present: {}\nBlocker:\n{}\nNext Action:\n{}",dependency.title,serde_json::to_string(&dependency.status)?,serde_json::to_string(&dependency.raw_status)?,dependency.freshness,dependency.blocker.is_some(),dependency.blocker.as_deref().unwrap_or(""),dependency.next_action),vec![entity(&dependency.meta,"work_item")]));
     }
@@ -688,9 +836,43 @@ fn compile_context_selected(
             vec![entity(&decision.meta, "decision")],
         ));
     }
-    required.push(chunk("delta-baseline",ContextSection::Delta,format!("After project revision {} ({}) through {}. Checkpoint: {}. Important events: {}; omitted by event limit: {}.",delta.after_revision,delta.baseline_origin,delta.events.project_revision,delta.checkpoint_id.map(|id|id.to_string()).unwrap_or_else(||"none".into()),delta.events.important_event_count,delta.events.omitted_important_events),vec![]));
+    let delta_text = if read.is_some() {
+        format!(
+            "Scoped changes after revision {} ({}). Checkpoint: {}. Important events: {}; omitted by event limit: {}.",
+            delta.after_revision,
+            delta.baseline_origin,
+            delta
+                .checkpoint_id
+                .map(|id| id.to_string())
+                .unwrap_or_else(|| "none".into()),
+            delta.events.important_event_count,
+            delta.events.omitted_important_events
+        )
+    } else {
+        format!(
+            "After project revision {} ({}) through {}. Checkpoint: {}. Important events: {}; omitted by event limit: {}.",
+            delta.after_revision,
+            delta.baseline_origin,
+            delta.events.project_revision,
+            delta
+                .checkpoint_id
+                .map(|id| id.to_string())
+                .unwrap_or_else(|| "none".into()),
+            delta.events.important_event_count,
+            delta.events.omitted_important_events
+        )
+    };
+    required.push(chunk(
+        "delta-baseline",
+        ContextSection::Delta,
+        delta_text,
+        vec![],
+    ));
     if let Some(id) = delta.checkpoint_id {
-        let cp = store.checkpoint(project.id, id)?;
+        let cp = match &read {
+            Some(read) => read.context_checkpoint(id, key, branch)?,
+            None => store.checkpoint(project.id, id)?,
+        };
         required.push(chunk("checkpoint",ContextSection::Delta,format!("Checkpoint context hash: {}\nCheckpoint Next Action:\n{}\nCheckpoint Open Loops:\n{}",cp.context_hash,cp.next_action,cp.open_loops.join("\n")),vec![SelectedEntity{kind:"checkpoint".into(),id,revision:cp.revision}]));
         optional_chunks.push(optional(
             25,
@@ -708,7 +890,12 @@ fn compile_context_selected(
         ));
     }
     for source in &delta.events.source_changes {
-        required.push(chunk(format!("source:{}",source.source_id),ContextSection::Delta,format!("{} source events; latest {}. Before known: {}\nBefore: {}\nAfter: {}\nChanged identities: {}; omitted identities: {}; legacy events without entity history: {}.\nHistory events: {} .. {} (r{}..r{})",source.event_count,source.latest_operation,source.before_known,source_state(source.before.as_ref()),source_state(source.after.as_ref()),source.changed_entity_count,source.omitted_entities,source.legacy_events,source.first_event.id,source.last_event.id,source.first_event.project_revision,source.last_event.project_revision),vec![]));
+        if read.is_some() {
+            required.push(chunk(format!("source:{}",source.source_id),ContextSection::Delta,
+                format!("Scoped source changes: {} identities; {} details omitted; {} events lack entity history.",source.changed_entity_count,source.omitted_entities,source.legacy_events),vec![]));
+        } else {
+            required.push(chunk(format!("source:{}",source.source_id),ContextSection::Delta,format!("{} source events; latest {}. Before known: {}\nBefore: {}\nAfter: {}\nChanged identities: {}; omitted identities: {}; legacy events without entity history: {}.\nHistory events: {} .. {} (r{}..r{})",source.event_count,source.latest_operation,source.before_known,source_state(source.before.as_ref()),source_state(source.after.as_ref()),source.changed_entity_count,source.omitted_entities,source.legacy_events,source.first_event.id,source.last_event.id,source.first_event.project_revision,source.last_event.project_revision),vec![]));
+        }
         for changed in &source.changed_entities {
             optional_chunks.push(optional(
                 35,
@@ -789,7 +976,17 @@ fn compile_context_selected(
     if !folded.is_empty() {
         optional_chunks.push(optional(
             60,
-            project.project_revision,
+            if read.is_some() {
+                delta
+                    .events
+                    .important_events
+                    .iter()
+                    .map(|e| e.event.project_revision)
+                    .max()
+                    .unwrap_or(delta.after_revision)
+            } else {
+                project.project_revision
+            },
             chunk(
                 "folded-process-history",
                 ContextSection::Delta,
@@ -886,14 +1083,44 @@ fn compile_context_selected(
         values.sort();
         values.dedup();
     }
-    let binding = serde_json::json!({"request":normalized_request,"effective_rule_scope":hard.scope,"selection":selection.basis,"goal_selection":goal_basis,"session":selection.session.as_ref().map(|s|s.id),"delta_baseline":delta.after_revision,"checkpoint":delta.checkpoint_id,"completeness":completeness,"omitted_refs":omitted_refs});
-    let budget = budget_context(
-        &identity,
-        &binding,
-        &required,
-        &optional_chunks,
-        request.token_budget,
-    )?;
+    let completeness_binding = if read.is_some() {
+        serde_json::json!({
+            "complete":completeness.complete,"source_fresh":completeness.source_fresh,"work_state_complete":completeness.work_state_complete,
+            "acceptance_complete":completeness.acceptance_complete,"rules_complete":completeness.rules_complete,
+            "dependencies_complete":completeness.dependencies_complete,"decision_context_complete":completeness.decision_context_complete,
+            "goal_context_complete":completeness.goal_context_complete,"unresolved_dependencies":completeness.unresolved_required_dependencies,
+            "evidence_gaps":completeness.evidence_gaps,"issues":completeness.issues
+        })
+    } else {
+        serde_json::to_value(&completeness)?
+    };
+    let mut binding = serde_json::json!({"request":normalized_request,"effective_rule_scope":hard.scope,"selection":selection.basis,"goal_selection":goal_basis,"session":selection.session.as_ref().map(|s|s.id),"delta_baseline":delta.after_revision,"checkpoint":delta.checkpoint_id,"completeness":completeness_binding,"omitted_refs":omitted_refs});
+    let budget = if let Some(read) = &read {
+        binding["source_policies"] = serde_json::to_value(sources.iter().map(|s|serde_json::json!({"id":s.id,"adapter":s.adapter,"format":s.format,"role":s.role,"config":s.config})).collect::<Vec<_>>())?;
+        let scope = WorkstreamContextIdentity {
+            version: 1,
+            workstream_id: read.workstream().id,
+            authority_version: read.workstream().authority_version,
+            ownership_revision: read.ownership(key)?.revision,
+            reader_binding: read.scope_binding().into(),
+        };
+        budget_workstream_context(
+            &identity,
+            &scope,
+            &binding,
+            &required,
+            &optional_chunks,
+            request.token_budget,
+        )?
+    } else {
+        budget_context(
+            &identity,
+            &binding,
+            &required,
+            &optional_chunks,
+            request.token_budget,
+        )?
+    };
     let actual = store.project(project.id)?.project_revision;
     if actual != project.project_revision {
         return Err(Error::RevisionConflict {
@@ -913,4 +1140,106 @@ fn compile_context_selected(
         omitted_refs,
         diagnostic_text: None,
     })
+}
+
+pub(crate) fn scoped_read(
+    store: &Store,
+    project: &Project,
+    request: &ContextRequest,
+    trusted: Option<(&WorkstreamAccess, &WorkstreamReadSelection)>,
+) -> Result<Option<WorkstreamRead>> {
+    if trusted.is_none() && !store.workstreams_enabled(project.id)? {
+        return Ok(None);
+    }
+    let local;
+    let (access, mut selection) = if let Some((access, selection)) = trusted {
+        (access, selection.clone())
+    } else {
+        let catalog = store.workstream_catalog(project.id)?;
+        local = WorkstreamAccess {
+            project_id: project.id.to_string(),
+            subject: "local-project-owner".into(),
+            grants: catalog
+                .workstreams
+                .iter()
+                .map(|s| WorkstreamGrant {
+                    workstream_id: s.id,
+                    authority_version: s.authority_version,
+                    read: true,
+                    write: false,
+                    manage: false,
+                })
+                .collect(),
+        };
+        (&local, WorkstreamReadSelection::default())
+    };
+    selection.work_item_key = request.work_item_key.clone();
+    selection.session_id = request.session_id;
+    Ok(Some(store.read_workstream(
+        project.id,
+        access,
+        &selection,
+        256 * 1024 * 1024,
+    )?))
+}
+pub(crate) fn scoped_goals(read: &WorkstreamRead, keys: &[String]) -> Result<Vec<Projected<Goal>>> {
+    let mut goals = read.goals()?;
+    if !keys.is_empty() {
+        if keys
+            .iter()
+            .any(|key| !goals.iter().any(|g| g.item.meta.external_key == *key))
+        {
+            return Err(WorkstreamError::AccessDenied.into());
+        }
+        goals.retain(|g| keys.contains(&g.item.meta.external_key));
+    } else {
+        goals.retain(|g| {
+            ![
+                "completed",
+                "done",
+                "cancelled",
+                "canceled",
+                "archived",
+                "retired",
+            ]
+            .contains(&g.item.status.to_ascii_lowercase().as_str())
+        });
+    }
+    Ok(goals)
+}
+pub(crate) fn delta_facts(
+    goals: &[Projected<Goal>],
+    rules: &RuleSelection,
+    related: &RelatedWorkContext,
+) -> Vec<(String, Id)> {
+    let mut facts = Vec::new();
+    facts.extend(goals.iter().map(|g| ("goals".into(), g.item.meta.id)));
+    facts.extend(
+        rules
+            .hard
+            .iter()
+            .chain(&rules.soft)
+            .chain(&rules.info)
+            .map(|r| ("rules".into(), r.item.meta.id)),
+    );
+    facts.extend(
+        rules
+            .unknown
+            .iter()
+            .map(|r| ("rules".into(), r.rule.item.meta.id)),
+    );
+    facts.extend(
+        related
+            .accepted_decisions
+            .iter()
+            .map(|d| ("decisions".into(), d.meta.id)),
+    );
+    facts.extend(
+        related
+            .uncertain_decisions
+            .iter()
+            .map(|d| ("decisions".into(), d.meta.id)),
+    );
+    facts.extend(related.evidence.iter().map(|e| ("evidence".into(), e.id)));
+    facts
 }

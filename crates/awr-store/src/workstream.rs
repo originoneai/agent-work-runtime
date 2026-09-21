@@ -115,6 +115,18 @@ pub(crate) fn require_fresh_catalog(conn: &Connection, project: &str) -> Result<
 }
 
 impl Store {
+    /// Explicit source enablement is distinct from a legacy catalog with one scope.
+    pub fn workstreams_enabled(&self, project: Id) -> Result<bool> {
+        self.workstream_catalog(project)?;
+        self.conn
+            .query_row(
+                "SELECT mode='source' FROM workstream_catalogs WHERE project_id=?1",
+                [project.to_string()],
+                |r| r.get(0),
+            )
+            .map_err(db_error)
+    }
+
     /// Internal domain query. Service adapters must authorize access before
     /// exposing this project-wide catalog to a caller.
     pub fn workstream_catalog(&self, project: Id) -> Result<WorkstreamCatalog> {

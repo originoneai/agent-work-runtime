@@ -66,6 +66,8 @@ pub struct BootstrapContext {
 #[derive(Debug, Clone, Serialize)]
 pub struct BootstrapPack {
     pub level: &'static str,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub workstream_identity: Option<crate::WorkstreamContextIdentity>,
     pub context: BootstrapContext,
     pub rendered_context: String,
     pub context_hash: String,
@@ -97,20 +99,57 @@ fn reference(meta: &ProjectionMeta) -> String {
     )
 }
 
-fn render(context: &BootstrapContext) -> String {
-    let mut text = format!(
-        "AWR L0 Bootstrap\nProject: {} [{}] {}\nRevision: {} | Branch: {}\n",
-        context.project_name,
-        context.project_key,
-        context.project_id,
-        context.project_revision,
-        context
-            .branch_id
-            .map(|id| id.to_string())
-            .unwrap_or_else(|| "main".into())
-    );
+fn render(context: &BootstrapContext, scope: Option<&crate::WorkstreamContextIdentity>) -> String {
+    let mut text = if let Some(scope) = scope {
+        format!(
+            "AWR L0 Bootstrap\nProject: {} [{}] {}\nWorkstream: {} | authority {} | ownership {} | Branch: {}\n",
+            context.project_name,
+            context.project_key,
+            context.project_id,
+            scope.workstream_id,
+            scope.authority_version,
+            scope.ownership_revision,
+            context
+                .branch_id
+                .map(|id| id.to_string())
+                .unwrap_or_else(|| "main".into()),
+        )
+    } else {
+        format!(
+            "AWR L0 Bootstrap\nProject: {} [{}] {}\nRevision: {} | Branch: {}\n",
+            context.project_name,
+            context.project_key,
+            context.project_id,
+            context.project_revision,
+            context
+                .branch_id
+                .map(|id| id.to_string())
+                .unwrap_or_else(|| "main".into())
+        )
+    };
     if let Some(work) = &context.work {
-        text.push_str(&format!("Work: {} [{}] r{} — {}\nPhase: {} | Status: {} ({:?})\nNext: {}\nBlocker: {}\nWork source: {}{}@r{}\n",work.external_key,work.id,work.revision,work.title,work.phase.as_deref().unwrap_or("unspecified"),work.raw_status,work.status,work.next_action,work.blocker.as_deref().unwrap_or("none"),work.source_ref.source_id,work.source_ref.pointer.as_deref().unwrap_or_default(),work.source_ref.source_revision));
+        text.push_str(&format!(
+            "Work: {} [{}] r{} — {}\nPhase: {} | Status: {} ({:?})\nNext: {}\nBlocker: {}\n",
+            work.external_key,
+            work.id,
+            work.revision,
+            work.title,
+            work.phase.as_deref().unwrap_or("unspecified"),
+            work.raw_status,
+            work.status,
+            work.next_action,
+            work.blocker.as_deref().unwrap_or("none")
+        ));
+        if scope.is_some() {
+            text.push_str(&format!("Work source: {}\n", work.source_ref.source_id));
+        } else {
+            text.push_str(&format!(
+                "Work source: {}{}@r{}\n",
+                work.source_ref.source_id,
+                work.source_ref.pointer.as_deref().unwrap_or_default(),
+                work.source_ref.source_revision
+            ));
+        }
     } else {
         text.push_str("Work: unselected\n");
     }
@@ -133,18 +172,36 @@ fn render(context: &BootstrapContext) -> String {
     for rule in &context.critical_rules {
         let source = &rule.meta.source_ref;
         rule_groups
-            .entry((source.source_id, source.source_revision))
+            .entry((
+                source.source_id,
+                if scope.is_some() {
+                    0
+                } else {
+                    source.source_revision
+                },
+            ))
             .or_insert_with(Vec::new)
             .push(rule);
     }
     for ((source_id, revision), rules) in rule_groups {
-        text.push_str(&format!("Hard rules [{source_id}@r{revision}]:\n"));
+        if scope.is_some() {
+            text.push_str(&format!("Required rules [{source_id}]:\n"));
+        } else {
+            text.push_str(&format!("Hard rules [{source_id}@r{revision}]:\n"));
+        }
         for rule in rules {
-            text.push_str(&format!(
-                "[{}]\n{}\n",
-                rule.meta.source_ref.pointer.as_deref().unwrap_or("/"),
-                rule.text
-            ));
+            if scope.is_some() {
+                text.push_str(&format!(
+                    "[{}@r{}]\n{}\n",
+                    rule.meta.id, rule.meta.revision, rule.text
+                ));
+            } else {
+                text.push_str(&format!(
+                    "[{}]\n{}\n",
+                    rule.meta.source_ref.pointer.as_deref().unwrap_or("/"),
+                    rule.text
+                ));
+            }
         }
     }
     if let Some(cp) = &context.checkpoint {
@@ -233,85 +290,124 @@ fn bootstrap_selected(
             &issue.message,
         );
     }
-    let mut selected = request
-        .work_item_key
-        .as_deref()
-        .map(|key| store.work_item(project.id, key))
-        .transpose()?;
-    let session = if let Some(id) = request.session_id {
-        let session = store.session(project.id, id)?;
-        if request
-            .agent_id
-            .as_ref()
-            .is_some_and(|agent| agent != &session.agent_id)
-            || selected
-                .as_ref()
-                .is_some_and(|work| session.work_item_id != Some(work.item.meta.id))
-        {
-            return Err(Error::InvalidInput(
-                "session does not match requested agent or work".into(),
+    let ctx_request = crate::ContextRequest {
+        work_item_key: request.work_item_key.clone(),
+        session_id: request.session_id,
+        agent_id: request.agent_id.clone(),
+        ..Default::default()
+    };
+    let read = crate::compile::scoped_read(store, &project, &ctx_request, None)?;
+    let (selected, session, branch, selection_basis) = if let Some(read) = &read {
+        if !refresh.ok || refresh.pending > 0 {
+            return Err(Error::ContextIncomplete(
+                "Source refresh failed; the workstream boundary cannot be proven current".into(),
             ));
         }
-        Some(session)
-    } else {
-        match store.select_active_session(
-            project.id,
-            None,
-            selected.as_ref().map(|w| w.item.meta.id),
-            request.agent_id.as_deref(),
-            project.current_branch_id,
-        ) {
-            Ok(session) => Some(session),
-            Err(Error::NotFound(_)) => None,
-            Err(error) => return Err(error),
+        let branch = request
+            .session_id
+            .map(|id| read.context_session(id).map(|s| s.branch_id))
+            .transpose()?
+            .flatten();
+        let selection =
+            crate::compile::select_work_scoped(store, &project, branch, &ctx_request, Some(read))?;
+        if selection.work.is_none() {
+            return Err(Error::ContextIncomplete(
+                "No current task in the selected workstream; specify a work item".into(),
+            ));
         }
-    };
-    let branch = session
-        .as_ref()
-        .map(|s| s.branch_id)
-        .unwrap_or(project.current_branch_id);
-    let mut selection_basis = if request.work_item_key.is_some() {
-        "explicit_work"
+        if read.workstream().state != WorkstreamState::Active {
+            gap(
+                &mut gaps,
+                "workstream_inactive",
+                read.workstream().id.to_string(),
+                "Workstream is paused or archived; inspect current policy before continuing execution",
+            );
+        }
+        (selection.work, selection.session, branch, selection.basis)
     } else {
-        "none"
-    };
-    if selected.is_none() {
-        if let Some(id) = session.as_ref().and_then(|s| s.work_item_id) {
-            match store.work_item_by_id(project.id, id) {
-                Ok(work) => {
-                    selected = Some(work);
-                    selection_basis = "session";
-                }
-                Err(Error::NotFound(_)) => gap(
-                    &mut gaps,
-                    "retired_session_work",
-                    id.to_string(),
-                    "session work is no longer projected from current sources",
-                ),
+        let mut selected = request
+            .work_item_key
+            .as_deref()
+            .map(|key| store.work_item(project.id, key))
+            .transpose()?;
+        let session = if let Some(id) = request.session_id {
+            let session = store.session(project.id, id)?;
+            if request
+                .agent_id
+                .as_ref()
+                .is_some_and(|agent| agent != &session.agent_id)
+                || selected
+                    .as_ref()
+                    .is_some_and(|work| session.work_item_id != Some(work.item.meta.id))
+            {
+                return Err(Error::InvalidInput(
+                    "session does not match requested agent or work".into(),
+                ));
+            }
+            Some(session)
+        } else {
+            match store.select_active_session(
+                project.id,
+                None,
+                selected.as_ref().map(|w| w.item.meta.id),
+                request.agent_id.as_deref(),
+                project.current_branch_id,
+            ) {
+                Ok(session) => Some(session),
+                Err(Error::NotFound(_)) => None,
                 Err(error) => return Err(error),
             }
+        };
+        let branch = session
+            .as_ref()
+            .map(|s| s.branch_id)
+            .unwrap_or(project.current_branch_id);
+        let mut selection_basis = if request.work_item_key.is_some() {
+            "explicit_work"
         } else {
-            let mut candidates = store
-                .work_items(project.id)?
-                .into_iter()
-                .filter(|w| matches!(w.item.status, WorkStatus::Claimed | WorkStatus::InProgress))
-                .collect::<Vec<_>>();
-            if candidates.len() > 1 {
-                return Err(Error::InvalidInput(format!(
-                    "multiple current work items; specify --work: {}",
-                    candidates
-                        .iter()
-                        .map(|w| w.item.meta.external_key.as_str())
-                        .collect::<Vec<_>>()
-                        .join(", ")
-                )));
-            }
-            selected = candidates.pop();
-            if selected.is_some() {
-                selection_basis = "source_current";
+            "none"
+        };
+        if selected.is_none() {
+            if let Some(id) = session.as_ref().and_then(|s| s.work_item_id) {
+                match store.work_item_by_id(project.id, id) {
+                    Ok(work) => {
+                        selected = Some(work);
+                        selection_basis = "session";
+                    }
+                    Err(Error::NotFound(_)) => gap(
+                        &mut gaps,
+                        "retired_session_work",
+                        id.to_string(),
+                        "session work is no longer projected from current sources",
+                    ),
+                    Err(error) => return Err(error),
+                }
+            } else {
+                let mut candidates = store
+                    .work_items(project.id)?
+                    .into_iter()
+                    .filter(|w| {
+                        matches!(w.item.status, WorkStatus::Claimed | WorkStatus::InProgress)
+                    })
+                    .collect::<Vec<_>>();
+                if candidates.len() > 1 {
+                    return Err(Error::InvalidInput(format!(
+                        "multiple current work items; specify --work: {}",
+                        candidates
+                            .iter()
+                            .map(|w| w.item.meta.external_key.as_str())
+                            .collect::<Vec<_>>()
+                            .join(", ")
+                    )));
+                }
+                selected = candidates.pop();
+                if selected.is_some() {
+                    selection_basis = "source_current";
+                }
             }
         }
-    }
+        (selected, session, branch, selection_basis)
+    };
     if selected.is_none() {
         gap(
             &mut gaps,
@@ -321,6 +417,11 @@ fn bootstrap_selected(
         );
     }
     let mut used_sources = BTreeSet::new();
+    if let Some(read) = &read {
+        if let Some(source) = read.authority_source()? {
+            used_sources.insert(source.id);
+        }
+    }
     if let Some(work) = &selected {
         used_sources.insert(work.source.id);
         if work.source.freshness != Freshness::Fresh {
@@ -402,9 +503,19 @@ fn bootstrap_selected(
         gap(
             &mut gaps,
             "rule_applicability_unknown",
-            reference(&matched.rule.item.meta),
+            if read.is_some() {
+                matched.rule.item.meta.id.to_string()
+            } else {
+                reference(&matched.rule.item.meta)
+            },
             matched.reasons.join("; "),
         );
+        if read.is_some()
+            && (matched.rule.item.severity.is_none()
+                || matched.rule.item.severity == Some(Severity::Hard))
+        {
+            critical_rules.push(matched.rule.item);
+        }
     }
     for rule in selection.hard {
         used_sources.insert(rule.source.id);
@@ -423,11 +534,15 @@ fn bootstrap_selected(
     }
     critical_rules.sort_by_key(|r| r.meta.id);
     let mut checkpoint = if let Some(session) = &session {
-        let own = store.latest_checkpoint(project.id, session.id)?;
-        let inherited = store.incoming_handoff(project.id, session.id)?;
-        own.into_iter()
-            .chain(inherited)
-            .max_by_key(|c| (c.project_revision, c.created_at, c.id))
+        if let Some(read) = &read {
+            read.context_recovery_checkpoint(session.id)?
+        } else {
+            let own = store.latest_checkpoint(project.id, session.id)?;
+            let inherited = store.incoming_handoff(project.id, session.id)?;
+            own.into_iter()
+                .chain(inherited)
+                .max_by_key(|c| (c.project_revision, c.created_at, c.id))
+        }
     } else {
         None
     };
@@ -442,12 +557,23 @@ fn bootstrap_selected(
     };
     if checkpoint.is_none() {
         if let Some(work) = &selected {
-            checkpoint = store.latest_work_checkpoint(project.id, work.item.meta.id, branch)?;
+            checkpoint = if let Some(read) = &read {
+                read.latest_work_checkpoint(&work.item.meta.external_key, branch)?
+            } else {
+                store.latest_work_checkpoint(project.id, work.item.meta.id, branch)?
+            };
             if checkpoint.is_some() {
                 checkpoint_origin = "previous_closed_session";
             }
         }
     }
+    let source_policies = if read.is_some() {
+        Some(serde_json::to_value(sources.iter().filter(|s|used_sources.contains(&s.id)).map(|s|
+            serde_json::json!({"id":s.id,"adapter":s.adapter,"format":s.format,"role":s.role,"config":s.config})
+        ).collect::<Vec<_>>())?)
+    } else {
+        None
+    };
     let source_revisions = sources
         .into_iter()
         .filter(|s| used_sources.contains(&s.id))
@@ -460,14 +586,31 @@ fn bootstrap_selected(
         })
         .collect();
     let executions = if let Some(work) = &selected {
-        store
-            .executions(project.id, Some(work.item.meta.id))?
-            .into_iter()
-            .filter(|e| e.branch_id == branch)
-            .collect()
+        if let Some(read) = &read {
+            read.context_executions(&work.item.meta.external_key, branch)?
+        } else {
+            store
+                .executions(project.id, Some(work.item.meta.id))?
+                .into_iter()
+                .filter(|e| e.branch_id == branch)
+                .collect()
+        }
     } else {
         Vec::new()
     };
+    let workstream_identity = read
+        .as_ref()
+        .zip(selected.as_ref())
+        .map(|(read, work)| {
+            Ok::<_, Error>(crate::WorkstreamContextIdentity {
+                version: 1,
+                workstream_id: read.workstream().id,
+                authority_version: read.workstream().authority_version,
+                ownership_revision: read.ownership(&work.item.meta.external_key)?.revision,
+                reader_binding: read.scope_binding().into(),
+            })
+        })
+        .transpose()?;
     let context = BootstrapContext {
         project_id: project.id,
         project_key: project.external_key,
@@ -497,7 +640,7 @@ fn bootstrap_selected(
         gaps,
         execution_context_complete: false,
     };
-    let rendered_context = render(&context);
+    let rendered_context = render(&context, workstream_identity.as_ref());
     let token_estimate = crate::token_count(&rendered_context);
     if token_estimate > request.token_budget {
         return Err(Error::BudgetExceeded {
@@ -513,12 +656,45 @@ fn bootstrap_selected(
         });
     }
     let mut hasher = Sha256::new();
-    hasher.update(b"awr.bootstrap.v2\0o200k_base\0");
+    if let Some(scope) = &workstream_identity {
+        hasher.update(b"awr.workstream_bootstrap.v1\0o200k_base\0");
+        hasher.update(serde_json::to_vec(scope)?);
+        hasher.update(serde_json::to_vec(&source_policies)?);
+    } else {
+        hasher.update(b"awr.bootstrap.v2\0o200k_base\0");
+    }
     hasher.update(serde_json::to_vec(request)?);
-    hasher.update(serde_json::to_vec(&context)?);
+    if workstream_identity.is_some() {
+        // Preserve the complete audit envelope in the response, but bind the
+        // semantic cache only to selected facts and stable source identities.
+        let mut semantic = serde_json::to_value(&context)?;
+        semantic.as_object_mut().unwrap().remove("project_revision");
+        if let Some(work) = semantic.get_mut("work").filter(|w| !w.is_null()) {
+            work["source_ref"] = stable_source_ref(&context.work.as_ref().unwrap().source_ref);
+        }
+        for (rule, original) in semantic["critical_rules"]
+            .as_array_mut()
+            .unwrap()
+            .iter_mut()
+            .zip(&context.critical_rules)
+        {
+            rule["source_ref"] = stable_source_ref(&original.meta.source_ref);
+        }
+        semantic["source_revisions"] = serde_json::to_value(
+            context
+                .source_revisions
+                .iter()
+                .map(|s| serde_json::json!({"id":s.id,"locator":s.locator,"freshness":s.freshness}))
+                .collect::<Vec<_>>(),
+        )?;
+        hasher.update(serde_json::to_vec(&semantic)?);
+    } else {
+        hasher.update(serde_json::to_vec(&context)?);
+    }
     hasher.update(rendered_context.as_bytes());
     Ok(BootstrapPack {
         level: "L0",
+        workstream_identity,
         context,
         rendered_context,
         context_hash: format!("{:x}", hasher.finalize()),
@@ -527,4 +703,8 @@ fn bootstrap_selected(
         tokenizer: "o200k_base",
         token_scope: "rendered_context; excludes transport envelope and surrounding conversation",
     })
+}
+
+fn stable_source_ref(source: &SourceRef) -> serde_json::Value {
+    serde_json::json!({"source_id":source.source_id,"locator":source.locator})
 }

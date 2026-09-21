@@ -1,0 +1,40 @@
+workstreams:
+  version: 1
+  definitions:
+    - id: 01K00000000000000000000001
+      external_key: api
+      title: API
+      state: active
+      authority_version: 1
+      goal_keys: [api-delivery]
+      acceptance_contracts: []
+    - id: 01K00000000000000000000002
+      external_key: client
+      title: Client
+      state: active
+      authority_version: 1
+      goal_keys: [client-delivery]
+      acceptance_contracts: []
+goals:
+  - id: api-delivery
+    title: Deliver the API
+    status: active
+  - id: client-delivery
+    title: PRIVATE_CLIENT_GOAL
+    status: active
+work_items:
+  - id: API-1
+    title: Define the interface
+    status: in_progress
+    milestone: delivery
+    workstream: api
+    next_action: Implement the interface.
+    acceptance: [Verify the interface contract.]
+  - id: CLIENT-1
+    title: PRIVATE_CLIENT_TASK
+    status: in_progress
+    milestone: delivery
+    workstream: client
+    next_action: Implement the client.
+    acceptance: [Verify the client.]
+    depends_on: [API-1]

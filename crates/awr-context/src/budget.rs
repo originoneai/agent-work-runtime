@@ -9,6 +9,7 @@ use std::fmt::Write;
 
 pub const TOKENIZER: &str = "o200k_base";
 pub const BUDGET_POLICY: &str = "awr.whole_chunks.v1";
+pub const WORKSTREAM_BUDGET_POLICY: &str = "awr.workstream_chunks.v1";
 pub const TOKEN_COUNT_SCOPE: &str = "Exact o200k_base ordinary-text token count of rendered_context, including headings, references and omission footer. JSON transport/envelope, tool framing and surrounding conversation are excluded. Counts for other model tokenizers may differ; no cross-tokenizer error bound is claimed.";
 
 pub fn token_count(text: &str) -> usize {
@@ -64,6 +65,17 @@ pub struct ContextIdentity {
     pub branch_id: Option<Id>,
     pub source_versions: Vec<SourceVersion>,
 }
+/// Stable semantic identity. Global/source audit cursors stay in ContextIdentity;
+/// they are not inputs to this version's rendered text or cache hash.
+#[derive(Debug, Clone, Serialize)]
+pub struct WorkstreamContextIdentity {
+    pub version: u32,
+    pub workstream_id: Id,
+    pub authority_version: Revision,
+    pub ownership_revision: Revision,
+    pub reader_binding: String,
+}
+
 #[derive(Debug, Clone, Serialize)]
 pub struct ContextChunk {
     /// Unique within a section. It is an identifier, never truncated by the budgeter.
@@ -96,6 +108,8 @@ pub struct OmittedChunk {
 #[derive(Debug, Clone, Serialize)]
 pub struct BudgetedContext {
     pub identity: ContextIdentity,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub workstream_identity: Option<WorkstreamContextIdentity>,
     pub rendered_context: String,
     pub context_hash: String,
     pub token_estimate: usize,
@@ -221,21 +235,52 @@ fn normalize_chunk(chunk: &ContextChunk) -> Result<ContextChunk> {
     Ok(chunk)
 }
 
-fn render(identity: &ContextIdentity, chunks: &[(&ContextChunk, bool)], omitted: usize) -> String {
-    let mut text = format!(
-        "Project: {} [{}] r{}\nWork: {} [{}] r{}\nBranch: {}\nSources:\n",
-        identity.project_key,
-        identity.project_id,
-        identity.project_revision,
-        identity.work_item_key,
-        identity.work_item_id,
-        identity.work_item_revision,
-        identity
-            .branch_id
-            .map(|id| id.to_string())
-            .unwrap_or_else(|| "main".into())
-    );
+fn render(
+    identity: &ContextIdentity,
+    chunks: &[(&ContextChunk, bool)],
+    omitted: usize,
+    scope: Option<&WorkstreamContextIdentity>,
+) -> String {
+    let mut text = if let Some(scope) = scope {
+        format!(
+            "Project: {} [{}]\nWorkstream: {} | authority {} | ownership {}\nWork: {} [{}] r{}\nBranch: {}\nSources:\n",
+            identity.project_key,
+            identity.project_id,
+            scope.workstream_id,
+            scope.authority_version,
+            scope.ownership_revision,
+            identity.work_item_key,
+            identity.work_item_id,
+            identity.work_item_revision,
+            identity
+                .branch_id
+                .map(|id| id.to_string())
+                .unwrap_or_else(|| "main".into())
+        )
+    } else {
+        format!(
+            "Project: {} [{}] r{}\nWork: {} [{}] r{}\nBranch: {}\nSources:\n",
+            identity.project_key,
+            identity.project_id,
+            identity.project_revision,
+            identity.work_item_key,
+            identity.work_item_id,
+            identity.work_item_revision,
+            identity
+                .branch_id
+                .map(|id| id.to_string())
+                .unwrap_or_else(|| "main".into())
+        )
+    };
     for source in &identity.source_versions {
+        if scope.is_some() {
+            let _ = writeln!(
+                text,
+                "{} {:?} {}",
+                source.id, source.freshness, source.locator
+            );
+            continue;
+        }
         let _ = writeln!(
             text,
             "{} r{} {} {:?} {}",
@@ -286,6 +331,51 @@ pub fn budget_context(
     required: &[ContextChunk],
     optional: &[RankedChunk],
     token_budget: usize,
+) -> Result<BudgetedContext> {
+    budget_context_selected(
+        identity,
+        request_binding,
+        required,
+        optional,
+        token_budget,
+        None,
+    )
+}
+
+pub fn budget_workstream_context(
+    identity: &ContextIdentity,
+    scope: &WorkstreamContextIdentity,
+    request_binding: &Value,
+    required: &[ContextChunk],
+    optional: &[RankedChunk],
+    token_budget: usize,
+) -> Result<BudgetedContext> {
+    if scope.version != 1
+        || scope.authority_version == 0
+        || scope.ownership_revision == 0
+        || scope.reader_binding.is_empty()
+    {
+        return Err(Error::InvalidInput(
+            "invalid workstream context identity".into(),
+        ));
+    }
+    budget_context_selected(
+        identity,
+        request_binding,
+        required,
+        optional,
+        token_budget,
+        Some(scope),
+    )
+}
+
+fn budget_context_selected(
+    identity: &ContextIdentity,
+    request_binding: &Value,
+    required: &[ContextChunk],
+    optional: &[RankedChunk],
+    token_budget: usize,
+    scope: Option<&WorkstreamContextIdentity>,
 ) -> Result<BudgetedContext> {
     if token_budget == 0 || token_budget > 100_000 {
         return Err(Error::InvalidInput(
@@ -346,7 +436,7 @@ pub fn budget_context(
         .iter()
         .map(|chunk| (chunk, true))
         .collect::<Vec<_>>();
-    let required_tokens = token_count(&render(&identity, &selected, optional.len()));
+    let required_tokens = token_count(&render(&identity, &selected, optional.len(), scope));
     if required_tokens > token_budget {
         return Err(Error::BudgetExceeded {
             required: required_tokens,
@@ -357,7 +447,12 @@ pub fn budget_context(
     let mut omitted_chunks = Vec::new();
     for candidate in &optional {
         selected.push((&candidate.chunk, false));
-        let trial = render(&identity, &selected, optional.len() - selected_optional - 1);
+        let trial = render(
+            &identity,
+            &selected,
+            optional.len() - selected_optional - 1,
+            scope,
+        );
         if token_count(&trial) <= token_budget {
             selected_optional += 1;
         } else {
@@ -370,7 +465,7 @@ pub fn budget_context(
             });
         }
     }
-    let rendered_context = render(&identity, &selected, omitted_chunks.len());
+    let rendered_context = render(&identity, &selected, omitted_chunks.len(), scope);
     let token_estimate = token_count(&rendered_context);
     if token_estimate > token_budget {
         return Err(Error::BudgetExceeded {
@@ -399,14 +494,28 @@ pub fn budget_context(
     });
     selected_entities.sort();
     selected_entities.dedup();
+    let policy = if scope.is_some() {
+        WORKSTREAM_BUDGET_POLICY
+    } else {
+        BUDGET_POLICY
+    };
+    let hash_identity = if let Some(scope) = scope {
+        serde_json::json!({"project_id":identity.project_id,"project_key":identity.project_key,
+            "work_item_id":identity.work_item_id,"work_item_key":identity.work_item_key,
+            "work_item_revision":identity.work_item_revision,"branch_id":identity.branch_id,
+            "scope":scope,"sources":identity.source_versions.iter().map(|s|serde_json::json!({"id":s.id,"locator":s.locator,"freshness":s.freshness})).collect::<Vec<_>>()})
+    } else {
+        serde_json::to_value(&identity)?
+    };
     let binding = canonical(
-        &serde_json::json!({"policy":BUDGET_POLICY,"tokenizer":TOKENIZER,"budget":token_budget,
-        "identity":identity,"request":request_binding,"selected_chunks":selected_chunks,"selected_entities":selected_entities,
+        &serde_json::json!({"policy":policy,"tokenizer":TOKENIZER,"budget":token_budget,
+        "identity":hash_identity,"request":request_binding,"selected_chunks":selected_chunks,"selected_entities":selected_entities,
         "omitted_chunks":omitted_chunks,"rendered_context":rendered_context}),
     );
     let context_hash = format!("{:x}", Sha256::digest(serde_json::to_vec(&binding)?));
     Ok(BudgetedContext {
         identity,
+        workstream_identity: scope.cloned(),
         rendered_context,
         context_hash,
         token_estimate,
@@ -414,7 +523,7 @@ pub fn budget_context(
         token_budget,
         tokenizer: TOKENIZER,
         token_count_scope: TOKEN_COUNT_SCOPE,
-        policy: BUDGET_POLICY,
+        policy,
         selected_chunks,
         selected_entities,
         omitted_chunks,

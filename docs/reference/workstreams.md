@@ -9,11 +9,11 @@ The current domain module validates identity, ownership, scope selection and
 explicit grants. Source import and SQLite projections retain the scope contract.
 Session attribution, work-wide claims and reviewed ownership movement are wired
 through the personal runtime. Explicit scoped read snapshots and registered-file
-read APIs are available to trusted Rust integrations. Default context compilation,
-transport authorization and resource/dependency
-enforcement are separate integration work;
-these rules do not enable isolated workstreams in an existing CLI, MCP service
-or Team coordinator.
+read APIs are available to trusted Rust integrations. Local L0/L1 context,
+required-fact completeness and context delta use scoped facts when sources
+explicitly enable workstreams. Authenticated transport authorization and
+resource/dependency enforcement remain separate integration work. These read
+paths do not establish complete isolation for every CLI, MCP or Team operation.
 
 ## Identity and authority
 
@@ -241,7 +241,56 @@ dependency and related-fact responses keep their previous shape.
 
 These are frozen read APIs, not reusable execution grants. Integrations must load
 current authenticated policy for each request and revalidate authority at action
-boundaries. Default context compilation, versioned semantic context identities,
-and authenticated CLI/HTTP/MCP/Team integration are not yet connected to this
-boundary. This implementation does not establish complete workstream isolation
-or business acceptance.
+boundaries. Authenticated CLI/HTTP/MCP/Team integration remains a separate stage.
+This implementation does not establish complete workstream isolation or business
+acceptance.
+
+## Scoped context and semantic identity
+
+The default compiler detects explicit source enablement; a legacy catalog with
+one compatible scope keeps its existing behavior and serialized shape. In an
+enabled project, work and session selectors determine the scope. Ambiguous
+selection is rejected. Without an explicit session/branch, context uses `main`;
+another workstream's global branch selection cannot redirect it. An explicit
+session supplies its own branch. Branch reads require visibility in that scope.
+
+L1 includes the selected work, workstream-referenced goals, shared applicable
+hard rules, visible required dependencies and scoped decisions/evidence. Missing
+or inaccessible required dependencies remain opaque gaps, even when their
+source status says completed. Unknown hard-rule text remains required. Inactive
+workstreams are incomplete for continued execution. Required facts are never
+truncated to meet a budget; insufficient budgets return `BudgetExceeded`.
+
+L0 bootstrap uses the same work/session and ownership boundary and retains
+unknown hard obligations. It remains orientation, and always requires L1 before
+execution. Standalone completeness uses a coherent refreshed snapshot and the
+same dependency visibility. An unprovable source refresh fails closed with a
+generic diagnostic instead of exposing another stream's source errors.
+
+Context delta narrows source changes to the selected facts and required
+dependency declarations before folding, counting or limiting. Removed dependency
+edges remain opaque change references. Work and dependency changes from earlier
+ownership generations are excluded. Runtime counts and important events use
+the selected work, exact branch and current ownership generation. Unattributed
+project events and other work's events cannot crowd out the selected work.
+
+L1's `awr.workstream_chunks.v1` policy adds `workstream_identity` with scope,
+authority version, ownership revision and reader binding. L0 uses the separate
+`awr.workstream_bootstrap.v1` hash domain and exposes the same identity. Rendered
+text and semantic hashes exclude global project/source audit cursors and
+whole-file fingerprints. Selected fact revisions, required policy, source
+identity/configuration, reader, scope and ownership remain bound. An unrelated
+task or goal edit in the same source file can advance audit metadata without
+changing the selected work's rendered text or hash.
+
+The complete JSON audit envelope intentionally still contains observed source
+versions/fingerprints and project revision. It is not byte-stable across unrelated
+updates, and semantic hashes do not replace mutation revision checks. Cached text
+is never permission to execute: current authorization and action preconditions
+must still be checked. Existing MCP reads retain their explicit reindex
+requirement when source files differ from the stored projection.
+
+The synthetic [context fixture](../../tests/fixtures/workstreams/context.yaml)
+and [manifest](../../tests/fixtures/workstreams/context.toml) exercise the native
+CLI and MCP stdio compilation paths. These are protocol/fixture checks, not
+complete business acceptance or authenticated multi-client isolation.

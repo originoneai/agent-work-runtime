@@ -1,0 +1,15 @@
+[project]
+name = "Scoped context fixture"
+external_key = "scoped-context-fixture"
+
+[[sources]]
+domain = "ledger"
+role = "primary"
+path = "work.yaml"
+adapter = "yaml-workstream-ledger-v1"
+
+[[sources]]
+domain = "rules"
+role = "primary"
+path = "rules.md"
+adapter = "markdown-rules-v1"
