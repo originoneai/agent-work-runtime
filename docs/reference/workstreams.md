@@ -11,9 +11,11 @@ Session attribution, work-wide claims and reviewed ownership movement are wired
 through the personal runtime. Explicit scoped read snapshots and registered-file
 read APIs are available to trusted Rust integrations. Local L0/L1 context,
 required-fact completeness and context delta use scoped facts when sources
-explicitly enable workstreams. Authenticated transport authorization and
-resource/dependency enforcement remain separate integration work. These read
-paths do not establish complete isolation for every CLI, MCP or Team operation.
+explicitly enable workstreams. The shared personal MCP service has an explicit
+authenticated read boundary; unsupported shared operations are rejected for
+enabled workstreams. Team PostgreSQL authorization and resource/dependency
+enforcement remain separate integration work. These paths do not establish
+complete isolation for every CLI, MCP or Team operation.
 
 ## Identity and authority
 

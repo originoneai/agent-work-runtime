@@ -206,6 +206,25 @@ struct ProjectFixture {
     id: Id,
 }
 impl ProjectFixture {
+    fn workstreams() -> Self {
+        let fixture = Self::new("Workstream fixture");
+        fs::write(fixture.root.join(".awr/project.toml"), "[project]\nname='Workstream HTTP fixture'\ncontext_profile='minimal'\n[[sources]]\ndomain='ledger'\nrole='primary'\npath='work.yaml'\nadapter='yaml-workstream-ledger-v1'\n").unwrap();
+        let ledger = include_str!("../../../tests/fixtures/workstreams/context.yaml");
+        fs::write(fixture.root.join("work.yaml"), format!("{ledger}\n  - id: API-2\n    title: Review the interface\n    status: planned\n    workstream: api\n    acceptance: [Review the interface]\n")).unwrap();
+        fixture.reindex();
+        fixture
+    }
+    fn reindex(&self) {
+        let mut store = Store::open_existing(&self.root.join(".awr/state.db")).unwrap();
+        let report = index_project(
+            &mut store,
+            &self.root,
+            &Manifest::load(&self.root).unwrap(),
+            false,
+        )
+        .unwrap();
+        assert!(report.ok, "{report:?}");
+    }
     fn new(title: &str) -> Self {
         let path = std::env::temp_dir().join(format!("awr-shared-project-{}", Id::new()));
         fs::create_dir_all(path.join(".awr")).unwrap();
@@ -241,6 +260,9 @@ struct Server {
 }
 impl Server {
     async fn start(registry: &std::path::Path) -> Self {
+        Self::start_mode(registry, "hierarchical").await
+    }
+    async fn start_mode(registry: &std::path::Path, mode: &str) -> Self {
         let mut child = Command::new(env!("CARGO_BIN_EXE_awr-mcp"))
             .arg("--registry")
             .arg(registry)
@@ -249,6 +271,7 @@ impl Server {
             .env("AWR_FIXTURE_WRITER", WRITER)
             .env("AWR_FIXTURE_READER", READER)
             .env("AWR_FIXTURE_COLLEAGUE", COLLEAGUE)
+            .env("AWR_MCP_TOOL_EXPOSURE_MODE", mode)
             .stdout(Stdio::null())
             .stderr(Stdio::piped())
             .kill_on_drop(true)
@@ -498,10 +521,12 @@ async fn official_sdk_clients_discover_and_call_the_same_http_endpoint() {
         // Default hierarchical exposure advertises project discovery plus
         // bounded domains; flat child names remain callable for integrated hosts.
         let tools = client.list_all_tools().await.unwrap();
-        assert_eq!(tools.len(), awr_mcp::domains::DOMAINS.len() + 1);
+        assert_eq!(tools.len(), awr_mcp::domains::DOMAINS.len() + 2);
         assert!(tools.iter().any(|tool| tool.name == "awr_projects_list"));
         assert!(tools.iter().all(|tool| {
-            tool.name == "awr_projects_list" || awr_mcp::domains::is_public_domain(&tool.name)
+            tool.name == "awr_projects_list"
+                || tool.name == "awr_workstream"
+                || awr_mcp::domains::is_public_domain(&tool.name)
         }));
         let manifest = client
             .call_tool(
@@ -1101,5 +1126,626 @@ async fn management_is_client_bound_and_recovers_an_unknown_response_without_rep
         .await);
     assert_eq!(assessed["decision"]["mode"], "continuous");
     assert_eq!(fs::read(a.root.join("work.yaml")).unwrap(), source);
+    server.stop().await;
+}
+
+const API_SCOPE: &str = "01K00000000000000000000001";
+const CLIENT_SCOPE: &str = "01K00000000000000000000002";
+
+fn scoped_registry(a: &ProjectFixture, b: &ProjectFixture) -> PathBuf {
+    let path = a.root.join("service.toml");
+    fs::write(
+        &path,
+        format!(
+            r#"version=2
+[[projects]]
+key='alpha'
+root={}
+project_id='{}'
+[[projects]]
+key='beta'
+root={}
+project_id='{}'
+[[clients]]
+id='writer'
+token_env='AWR_FIXTURE_WRITER'
+write=['alpha','beta']
+[[clients.workstreams]]
+project='alpha'
+workstream_id='{API_SCOPE}'
+authority_version=1
+[[clients.workstreams]]
+project='alpha'
+workstream_id='{CLIENT_SCOPE}'
+authority_version=1
+[[clients]]
+id='reader'
+token_env='AWR_FIXTURE_READER'
+read=['alpha']
+[[clients.workstreams]]
+project='alpha'
+workstream_id='{API_SCOPE}'
+authority_version=1
+[[clients]]
+id='colleague'
+token_env='AWR_FIXTURE_COLLEAGUE'
+write=['alpha']
+[[clients.workstreams]]
+project='alpha'
+workstream_id='{CLIENT_SCOPE}'
+authority_version=1
+"#,
+            json!(a.root),
+            a.id,
+            json!(b.root),
+            b.id
+        ),
+    )
+    .unwrap();
+    path
+}
+fn scoped(action: &str, work: Option<&str>, args: Value) -> Value {
+    let mut request = json!({"project":"alpha","protocol_version":1,"action":action,"args":args});
+    if let Some(work) = work {
+        request["work"] = json!(work);
+    }
+    request
+}
+
+#[tokio::test]
+async fn workstream_http_grants_filter_context_objects_counts_and_search() {
+    let a = ProjectFixture::workstreams();
+    let b = ProjectFixture::new("Unchanged legacy project");
+    let mut server = Server::start(&scoped_registry(&a, &b)).await;
+    let before = a.revision();
+    let caps = ok(server
+        .call(
+            READER,
+            "awr_workstream",
+            scoped("capabilities", None, json!({})),
+        )
+        .await);
+    assert_eq!(caps["writes"], json!([]));
+    assert_eq!(caps["team_postgres"], false);
+    let list = ok(server
+        .call(READER, "awr_workstream", scoped("list", None, json!({})))
+        .await);
+    assert_eq!(list["workstreams"].as_array().unwrap().len(), 1);
+    assert_eq!(list["workstreams"][0]["id"], API_SCOPE);
+    let context = ok(server
+        .call(
+            READER,
+            "awr_workstream",
+            scoped("context", Some("API-1"), json!({"budget":8000})),
+        )
+        .await);
+    assert_eq!(context["result"]["completeness"]["complete"], true);
+    assert!(!context.to_string().contains("PRIVATE_CLIENT"));
+    assert!(!context.to_string().contains("CLIENT-1"));
+    let catalog = ok(server
+        .call(
+            READER,
+            "awr_workstream",
+            scoped("catalog", None, json!({"kind":"work"})),
+        )
+        .await);
+    assert_eq!(catalog["result"]["page"]["total"], 2);
+    assert!(!catalog.to_string().contains("PRIVATE_CLIENT"));
+    let search = ok(server
+        .call(
+            READER,
+            "awr_workstream",
+            scoped("search", None, json!({"text":"PRIVATE_CLIENT"})),
+        )
+        .await);
+    assert_eq!(search["result"]["hits"], json!([]));
+    for hidden in ["CLIENT-1", "nonexistent"] {
+        error(
+            server
+                .call(
+                    READER,
+                    "awr_workstream",
+                    scoped("context", Some(hidden), json!({})),
+                )
+                .await,
+            "WorkstreamAccessDenied",
+        );
+        error(
+            server
+                .call(
+                    READER,
+                    "awr_workstream",
+                    scoped(
+                        "object",
+                        Some("API-1"),
+                        json!({"kind":"work","reference":hidden}),
+                    ),
+                )
+                .await,
+            "WorkstreamAccessDenied",
+        );
+    }
+    error(
+        server
+            .call(
+                WRITER,
+                "awr_workstream",
+                scoped("catalog", None, json!({"kind":"work"})),
+            )
+            .await,
+        "WorkstreamScopeRequired",
+    );
+    let mut conflict = scoped("context", Some("API-1"), json!({}));
+    conflict["workstream"] = json!(CLIENT_SCOPE);
+    error(
+        server.call(WRITER, "awr_workstream", conflict).await,
+        "WorkstreamBindingMismatch",
+    );
+    // The same actor's unrelated legacy project retains its established tools.
+    ok(server
+        .call(WRITER, "awr_work_get", json!({"project":"beta","work":"W"}))
+        .await);
+    assert_eq!(a.revision(), before);
+    server.stop().await;
+}
+
+#[tokio::test]
+async fn workstream_http_denies_legacy_aliases_writes_and_request_grants() {
+    let a = ProjectFixture::workstreams();
+    let b = ProjectFixture::new("Other project");
+    let mut server = Server::start_mode(&scoped_registry(&a, &b), "hierarchical").await;
+    let before = a.revision();
+    for name in [
+        "awr_project_status",
+        "awr_work_get",
+        "awr_search",
+        "awr_context_compile",
+        "awr_session_list",
+        "awr_operation_get",
+        "awr_work_transition",
+        "awr_session_start",
+        "awr_source_reindex",
+        "awr_event_append",
+        "awr_change_apply",
+    ] {
+        error(
+            server
+                .call(WRITER, name, json!({"project":"alpha","work":"API-1"}))
+                .await,
+            "Unsupported",
+        );
+    }
+    error(
+        server
+            .call(
+                WRITER,
+                "awr_query",
+                json!({"project":"alpha","child_tool":"awr_work_get","arguments":{"work":"API-1"}}),
+            )
+            .await,
+        "Unsupported",
+    );
+    let mut forged = scoped("context", Some("CLIENT-1"), json!({}));
+    forged["grants"] = json!([{ "workstream_id":CLIENT_SCOPE,"read":true,"authority_version":1 }]);
+    error(
+        server.call(READER, "awr_workstream", forged).await,
+        "InvalidInput",
+    );
+    let mut unknown = scoped("context", Some("API-1"), json!({}));
+    unknown["protocol_version"] = json!(2);
+    error(
+        server.call(READER, "awr_workstream", unknown).await,
+        "Unsupported",
+    );
+    error(
+        server
+            .call(
+                WRITER,
+                "awr_workstream",
+                scoped("claim", Some("API-1"), json!({})),
+            )
+            .await,
+        "Unsupported",
+    );
+    ok(server
+        .call(READER, "awr_workstream", scoped("list", None, json!({})))
+        .await);
+    assert_eq!(a.revision(), before);
+    server.stop().await;
+    // A legacy project-level grant is never upgraded to access all streams.
+    let mut server = Server::start(&registry(&a, &b)).await;
+    error(
+        server
+            .call(
+                WRITER,
+                "awr_work_get",
+                json!({"project":"alpha","work":"API-1"}),
+            )
+            .await,
+        "Unsupported",
+    );
+    error(
+        server
+            .call(WRITER, "awr_workstream", scoped("list", None, json!({})))
+            .await,
+        "WorkstreamAccessDenied",
+    );
+    server.stop().await;
+}
+
+#[tokio::test]
+async fn workstream_http_cursors_are_bound_to_client_and_scope() {
+    let a = ProjectFixture::workstreams();
+    let b = ProjectFixture::new("Other project");
+    let mut server = Server::start(&scoped_registry(&a, &b)).await;
+    let page = ok(server
+        .call(
+            READER,
+            "awr_workstream",
+            scoped("catalog", None, json!({"kind":"work","limit":1})),
+        )
+        .await);
+    let cursor = page["result"]["next_cursor"].clone();
+    assert!(cursor.is_object());
+    let next = ok(server
+        .call(
+            READER,
+            "awr_workstream",
+            scoped(
+                "catalog",
+                None,
+                json!({"kind":"work","limit":1,"cursor":cursor}),
+            ),
+        )
+        .await);
+    assert_ne!(
+        next["result"]["page"]["items"],
+        page["result"]["page"]["items"]
+    );
+    error(
+        server
+            .call(
+                COLLEAGUE,
+                "awr_workstream",
+                scoped(
+                    "catalog",
+                    None,
+                    json!({"kind":"work","limit":1,"cursor":cursor}),
+                ),
+            )
+            .await,
+        "WorkstreamAccessDenied",
+    );
+    error(
+        server
+            .call(
+                WRITER,
+                "awr_workstream",
+                scoped(
+                    "catalog",
+                    Some("API-1"),
+                    json!({"kind":"work","limit":1,"cursor":cursor}),
+                ),
+            )
+            .await,
+        "WorkstreamAccessDenied",
+    );
+    server.stop().await;
+}
+
+#[tokio::test]
+async fn workstream_http_stale_authority_never_falls_back_to_project_access() {
+    let a = ProjectFixture::workstreams();
+    let b = ProjectFixture::new("Other project");
+    let mut server = Server::start(&scoped_registry(&a, &b)).await;
+    let path = a.root.join("work.yaml");
+    let text = fs::read_to_string(&path).unwrap();
+    fs::write(
+        &path,
+        text.replacen("authority_version: 1", "authority_version: 2", 1),
+    )
+    .unwrap();
+    error(
+        server
+            .call(
+                READER,
+                "awr_workstream",
+                scoped("context", Some("API-1"), json!({})),
+            )
+            .await,
+        "SourceStale",
+    );
+    a.reindex();
+    error(
+        server
+            .call(
+                READER,
+                "awr_workstream",
+                scoped("context", Some("API-1"), json!({})),
+            )
+            .await,
+        "WorkstreamStaleAuthority",
+    );
+    error(
+        server
+            .call(
+                WRITER,
+                "awr_work_get",
+                json!({"project":"alpha","work":"API-1"}),
+            )
+            .await,
+        "Unsupported",
+    );
+    // A separately authorized stream is unaffected by another grant's staleness.
+    ok(server
+        .call(
+            COLLEAGUE,
+            "awr_workstream",
+            scoped("catalog", None, json!({"kind":"work"})),
+        )
+        .await);
+    server.stop().await;
+}
+
+#[tokio::test]
+async fn workstream_http_events_recovery_and_session_selectors_stay_scoped() {
+    let a = ProjectFixture::workstreams();
+    let b = ProjectFixture::new("Other project");
+    let mut store = Store::open_existing(&a.root.join(".awr/state.db")).unwrap();
+    let mut sessions = Vec::new();
+    for work in ["API-1", "CLIENT-1"] {
+        let rev = store.project(a.id).unwrap().project_revision;
+        let started = store
+            .start_session(
+                a.id,
+                rev,
+                SessionDraft {
+                    work_item_key: Some(work.into()),
+                    agent_id: format!("agent-{work}"),
+                    provider: "fixture".into(),
+                    model: "fixture".into(),
+                    branch_id: None,
+                    claim: false,
+                    claim_ttl_ms: None,
+                },
+            )
+            .unwrap()
+            .0;
+        sessions.push(started.session.id);
+    }
+    drop(store);
+    let mut server = Server::start(&scoped_registry(&a, &b)).await;
+    let events = ok(server
+        .call(READER, "awr_workstream", scoped("events", None, json!({})))
+        .await);
+    assert_eq!(
+        events["result"]["page"]["events"].as_array().unwrap().len(),
+        1
+    );
+    assert_eq!(
+        events["result"]["page"]["events"][0]["session_id"],
+        sessions[0].to_string()
+    );
+    let recovery = ok(server
+        .call(
+            READER,
+            "awr_workstream",
+            scoped("recovery", None, json!({})),
+        )
+        .await);
+    assert_eq!(
+        recovery["result"]["candidates"].as_array().unwrap().len(),
+        1
+    );
+    let mut own = scoped("recovery", None, json!({}));
+    own["session"] = json!(sessions[0]);
+    ok(server.call(READER, "awr_workstream", own).await);
+    let mut foreign = scoped("recovery", None, json!({}));
+    foreign["session"] = json!(sessions[1]);
+    error(
+        server.call(READER, "awr_workstream", foreign).await,
+        "WorkstreamAccessDenied",
+    );
+    error(
+        server
+            .call(
+                READER,
+                "awr_workstream",
+                scoped(
+                    "object",
+                    None,
+                    json!({"kind":"session","reference":sessions[1]}),
+                ),
+            )
+            .await,
+        "WorkstreamAccessDenied",
+    );
+    server.stop().await;
+}
+
+#[tokio::test]
+async fn workstream_http_artifacts_and_checkpoints_do_not_leak_through_objects() {
+    let a = ProjectFixture::workstreams();
+    let b = ProjectFixture::new("Other project");
+    let mut store = Store::open_existing(&a.root.join(".awr/state.db")).unwrap();
+    let mut objects = Vec::new();
+    for work in ["API-1", "CLIENT-1"] {
+        let rev = store.project(a.id).unwrap().project_revision;
+        let (started, event) = store
+            .start_session(
+                a.id,
+                rev,
+                SessionDraft {
+                    work_item_key: Some(work.into()),
+                    agent_id: format!("agent-{work}"),
+                    provider: "fixture".into(),
+                    model: "fixture".into(),
+                    branch_id: None,
+                    claim: false,
+                    claim_ttl_ms: None,
+                },
+            )
+            .unwrap();
+        let rev = store.project(a.id).unwrap().project_revision;
+        let (cp, _) = store
+            .create_checkpoint(
+                a.id,
+                rev,
+                started.session.id,
+                CheckpointDraft {
+                    context_hash: "a".repeat(64),
+                    digest: format!("{work} checkpoint"),
+                    next_action: "Review the draft".into(),
+                    open_loops: vec![],
+                    changed_entities: vec![],
+                },
+            )
+            .unwrap();
+        let rev = store.project(a.id).unwrap().project_revision;
+        let (artifact, _) = store
+            .record_artifact(
+                a.id,
+                rev,
+                ArtifactDraft {
+                    artifact_type: "document".into(),
+                    locator: format!("https://example.test/{work}"),
+                    sha256: "a".repeat(64),
+                    size: 17,
+                    mime: "text/plain".into(),
+                    source_event_id: event.id,
+                },
+            )
+            .unwrap();
+        objects.push((cp.id, artifact.id, event.id));
+    }
+    drop(store);
+    let mut server = Server::start(&scoped_registry(&a, &b)).await;
+    for (kind, own, other) in [
+        ("checkpoint", objects[0].0, objects[1].0),
+        ("artifact", objects[0].1, objects[1].1),
+        ("event", objects[0].2, objects[1].2),
+    ] {
+        ok(server
+            .call(
+                READER,
+                "awr_workstream",
+                scoped("object", None, json!({"kind":kind,"reference":own})),
+            )
+            .await);
+        let denied = server
+            .call(
+                READER,
+                "awr_workstream",
+                scoped("object", None, json!({"kind":kind,"reference":other})),
+            )
+            .await;
+        assert!(!denied.to_string().contains("CLIENT-1"));
+        error(denied, "WorkstreamAccessDenied");
+    }
+    let catalog = ok(server
+        .call(
+            READER,
+            "awr_workstream",
+            scoped("catalog", None, json!({"kind":"artifact"})),
+        )
+        .await);
+    assert_eq!(catalog["result"]["page"]["total"], 1);
+    assert!(!catalog.to_string().contains("CLIENT-1"));
+    // Whole-source and artifact-byte readers have no scoped transport implementation.
+    error(
+        server
+            .call(
+                READER,
+                "awr_workstream",
+                scoped("catalog", None, json!({"kind":"source"})),
+            )
+            .await,
+        "Unsupported",
+    );
+    error(
+        server
+            .call(
+                READER,
+                "awr_workstream",
+                scoped("artifact_read", None, json!({})),
+            )
+            .await,
+        "Unsupported",
+    );
+    server.stop().await;
+}
+
+#[tokio::test]
+async fn workstream_registry_requires_explicit_valid_versioned_operator_grants() {
+    let a = ProjectFixture::workstreams();
+    let b = ProjectFixture::new("Other project");
+    let path = scoped_registry(&a, &b);
+    let original = fs::read_to_string(&path).unwrap();
+    for bad in [
+        original.replacen("version=2", "version=1", 1),
+        original.replacen("authority_version=1", "authority_version=0", 1),
+        original.replacen("authority_version=1", "authority_version=1\nwrite=true", 1),
+        original.replace(
+            "workstream_id='01K00000000000000000000002'",
+            "workstream_id='01K00000000000000000000001'",
+        ),
+    ] {
+        fs::write(&path, bad).unwrap();
+        let mut child = Command::new(env!("CARGO_BIN_EXE_awr-mcp"));
+        child
+            .args([
+                "--registry",
+                path.to_str().unwrap(),
+                "--listen",
+                "127.0.0.1:0",
+            ])
+            .env("AWR_FIXTURE_WRITER", WRITER)
+            .env("AWR_FIXTURE_READER", READER)
+            .env("AWR_FIXTURE_COLLEAGUE", COLLEAGUE)
+            .kill_on_drop(true);
+        let output = timeout(Duration::from_secs(10), child.output())
+            .await
+            .expect("invalid policy must exit")
+            .unwrap();
+        assert!(!output.status.success());
+        let err = String::from_utf8_lossy(&output.stderr);
+        assert!(!err.contains(WRITER));
+        assert!(!err.contains("listening at"));
+    }
+}
+
+#[tokio::test]
+async fn workstream_pending_enablement_cannot_use_old_shared_mutations() {
+    let a = ProjectFixture::new("Legacy source");
+    let b = ProjectFixture::new("Other project");
+    let mut server = Server::start(&registry(&a, &b)).await;
+    fs::write(a.root.join(".awr/project.toml"),"[project]\nname='Pending enablement'\ncontext_profile='minimal'\n[[sources]]\ndomain='ledger'\nrole='primary'\npath='work.yaml'\nadapter='yaml-workstream-ledger-v1'\n").unwrap();
+    fs::write(
+        a.root.join("work.yaml"),
+        include_str!("../../../tests/fixtures/workstreams/context.yaml"),
+    )
+    .unwrap();
+    let before = a.revision();
+    error(
+        server
+            .call(
+                WRITER,
+                "awr_work_get",
+                json!({"project":"alpha","work":"W"}),
+            )
+            .await,
+        "Unsupported",
+    );
+    error(
+        server
+            .call(
+                WRITER,
+                "awr_source_reindex",
+                json!({"project":"alpha","expected_revision":before}),
+            )
+            .await,
+        "Unsupported",
+    );
+    assert_eq!(a.revision(), before);
     server.stop().await;
 }
