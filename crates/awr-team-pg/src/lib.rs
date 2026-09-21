@@ -13,6 +13,7 @@ mod pool;
 mod read;
 mod review;
 mod runner;
+mod scoped_runner;
 mod source;
 mod tx;
 mod workstream_auth;
@@ -42,6 +43,10 @@ pub use review::{CompletionReceipt, EvidenceRecord, ReviewRound, ReviewStore};
 #[doc(hidden)]
 pub use runner::fence_key;
 pub use runner::{CrashPoint, ReferenceRunner, RunnerOutcome};
+pub use scoped_runner::{
+    ReferenceReportRequest, ReferenceRunRequest, ReferenceWrite, ReferenceWritePlan,
+    ScopedReferenceRunner,
+};
 pub use source::{
     CandidateRecord, CurrentSource, CurrentWorkstreamSource, IngestRequest, SourceFile, SourceStore,
 };

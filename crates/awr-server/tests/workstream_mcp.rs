@@ -368,11 +368,12 @@ async fn execution_intents_share_http_mcp_identity_without_dispatching_effects()
 #[tokio::test]
 async fn admission_observation_and_authorized_recovery_share_transport_identity() {
     for trusted in [false, true] {
-        recovery_over_transports(trusted).await;
+        recovery_over_transports(trusted, "caller_managed").await;
     }
+    recovery_over_transports(true, "reference_write_v1").await;
 }
 
-async fn recovery_over_transports(trusted: bool) {
+async fn recovery_over_transports(trusted: bool, mode: &str) {
     let (_guard, admin, _, store) = setup().await;
     enable_writes(&admin).await;
     if trusted {
@@ -394,7 +395,21 @@ async fn recovery_over_transports(trusted: bool) {
     let request=serde_json::to_value(command(&p,"start","execution.start",json!({"session_id":"session-a",
         "expected_session_version":"1","execution_id":e["execution_id"],"expected_execution_version":"1",
         "claim_id":claim["claim_id"],"expected_fence":claim["fence"],"expected_lease_version":claim["lease_version"],
-        "expected_work_version":p["data"]["runtime"]["work_version"],"execution_mode":"caller_managed"}))).unwrap();
+        "expected_work_version":p["data"]["runtime"]["work_version"],"execution_mode":mode,
+        "expected_input_digest":"a".repeat(64)}))).unwrap();
+    if !trusted {
+        let mut denied = request.clone();
+        denied["request_id"] = json!("denied-reference-mode");
+        denied["args"]["execution_mode"] = json!("reference_write_v1");
+        let response = http()
+            .post(format!("{}/one/command", server.url))
+            .bearer_auth(A)
+            .json(&denied)
+            .send()
+            .await
+            .unwrap();
+        assert_eq!(response.status(), 403);
+    }
     let started: Value = http()
         .post(format!("{}/one/command", server.url))
         .bearer_auth(A)
@@ -408,6 +423,8 @@ async fn recovery_over_transports(trusted: bool) {
         .await
         .unwrap();
     assert_eq!(started["execution_authorized"], true);
+    assert_eq!(started["receipt"]["data"]["execution_mode"], mode);
+    assert_eq!(started["receipt"]["data"]["input_digest"], "a".repeat(64));
     let replay = call(&a, "awr_team_command", request, false).await;
     assert_eq!(replay["receipt"], started["receipt"]);
     assert_eq!(replay["execution_authorized"], false);

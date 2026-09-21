@@ -132,7 +132,10 @@ async fn http_requires_live_auth_and_never_accepts_grants_or_identity_from_a_bod
         json!(awr_team_pg::WorkstreamCommand::OPERATIONS)
     );
     assert_eq!(cap["execution_admission"], true);
-    assert_eq!(cap["execution_modes"], json!(["caller_managed"]));
+    assert_eq!(
+        cap["execution_modes"],
+        json!(["caller_managed", "reference_write_v1"])
+    );
     assert_eq!(cap["trusted_execution_results"], true);
     assert_eq!(cap["execution_reconciliation"], true);
     for field in ["tenant_id", "project_id", "actor_id", "client_id", "grants"] {

@@ -1,4 +1,5 @@
 mod access;
+mod runner;
 use clap::{Parser, Subcommand};
 use serde_json::{Value, json};
 use std::process::ExitCode;
@@ -16,6 +17,11 @@ struct Args {
 
 #[derive(Subcommand)]
 enum Command {
+    /// Run bounded file plans under an explicitly delegated scoped identity.
+    Runner {
+        #[command(subcommand)]
+        command: runner::RunnerCommand,
+    },
     /// Provision scoped clients using an explicit schema-owner connection.
     Access {
         #[command(subcommand)]
@@ -74,6 +80,13 @@ enum Command {
 async fn main() -> ExitCode {
     let args = Args::parse();
     match args.command {
+        Command::Runner { command } => match runner::run(command).await {
+            Ok(value) => {
+                println!("{value}");
+                ExitCode::SUCCESS
+            }
+            Err((code, message)) => fail(code, message),
+        },
         Command::Access { command } => match access::run(command).await {
             Ok(value) => {
                 println!("{value}");

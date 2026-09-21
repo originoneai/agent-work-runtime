@@ -14,6 +14,7 @@ pub(crate) struct Start {
     expected_fence: String,
     expected_lease_version: String,
     execution_mode: String,
+    expected_input_digest: Option<String>,
 }
 impl Start {
     pub(super) fn parse(args: Value) -> PgResult<Self> {
@@ -27,8 +28,16 @@ impl Start {
         {
             return Err(invalid());
         }
-        if a.execution_mode != "caller_managed" {
+        if !matches!(
+            a.execution_mode.as_str(),
+            "caller_managed" | "reference_write_v1"
+        ) {
             return Err(PgError::Unsupported("execution mode".into()));
+        }
+        if a.expected_input_digest.as_ref().is_some_and(|s| !digest(s))
+            || (a.execution_mode == "reference_write_v1" && a.expected_input_digest.is_none())
+        {
+            return Err(invalid());
         }
         Ok(a)
     }
@@ -125,6 +134,22 @@ pub(super) async fn start(
         &a.expected_execution_version,
     )
     .await?;
+    if a.expected_input_digest
+        .as_ref()
+        .is_some_and(|input| r.get::<_, Option<String>>("input_digest").as_ref() != Some(input))
+    {
+        return Err(PgError::PreconditionsChanged);
+    }
+    // The bundled adapter may attest only when the operator delegated that
+    // authority before admission. A mode name cannot grant executor trust.
+    if a.execution_mode == "reference_write_v1"
+        && !auth
+            .execution_access
+            .get(&command.workstream_id)
+            .is_some_and(|a| a.attest)
+    {
+        return Err(PgError::Forbidden);
+    }
     if r.get::<_, String>("state") != "prepared"
         || r.get::<_, bool>("cancel_requested")
         || r.get::<_, String>("contract_hash") != command.expected_contract_hash
@@ -248,11 +273,24 @@ pub(super) async fn start(
     )
     .await?;
     let work_version = advance_work(tx, tenant, project, &command.work_id).await?;
+    let remaining: i64 = tx
+        .query_one(
+            "SELECT floor(extract(epoch FROM (expires_at-clock_timestamp()))*1000)::bigint
+        FROM awr_team.claims WHERE tenant_id=$1 AND project_id=$2 AND id=$3",
+            &[&tenant, &project, &a.claim_id],
+        )
+        .await?
+        .get(0);
+    if remaining <= 0 {
+        return Err(PgError::PreconditionsChanged);
+    }
     Ok(
         json!({"execution_id":a.execution_id,"execution_version":(r.get::<_,i64>("execution_version")+1).to_string(),
         "session_id":a.session_id,"claim_id":a.claim_id,"state":"running","fence":a.expected_fence,
         "effect_key":r.get::<_,Option<String>>("effect_key"),"work_version":work_version.to_string(),
-        "admission":"granted_at_commit","execution_mode":"caller_managed","dispatched":false,
+        "admission":"granted_at_commit","execution_mode":a.execution_mode,"dispatched":false,
+        "input_digest":r.get::<_,Option<String>>("input_digest"),"declared_scope":paths,
+        "lease_remaining_ms":remaining.to_string(),
         "fencing_class":"uncontrolled","exactly_once_supported":false,"scope_validation":"lexical_contract_only",
         "dependency_receipts":dependencies,"resources":resources,
         "result_authority":if attestation_grant.is_some() {"trusted_executor"} else {"caller_asserted"},

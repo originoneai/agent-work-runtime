@@ -6,6 +6,8 @@ PostgreSQL. This is not a release
 announcement or a complete Team execution service. It does not dispatch
 executions, resume agents or adopt cross-workstream deliveries. Use its live
 capabilities response to discover available operations.
+An operator-local [reference runner](team-reference-runner.md) can consume scoped
+admissions for bounded file writes and attest their results.
 
 ## Start an operator-bound service
 
@@ -343,12 +345,17 @@ cancelled under a new epoch without the recovery protocol.
 `execution.start` takes `session_id`, `expected_session_version`, `execution_id`,
 `expected_execution_version`, `claim_id`, `expected_fence`,
 `expected_lease_version`, `expected_work_version` and
-`execution_mode: "caller_managed"`. Other modes are rejected. The same
+`execution_mode: "caller_managed"`. The optional `expected_input_digest` must
+match the prepared input when provided. The bundled adapter uses
+`reference_write_v1`, which requires that digest and explicit system attestation
+authority at admission; other modes are rejected. The same
 transaction checks current authority and ownership, the original prepared
 contract, a live owned claim, open waits, recovery state and required completion
 receipts. It reserves every declared path as a project-scoped lexical prefix and
 moves the attempt to `running`. The admission receipt records its dependency
 receipts and reservation identities. It creates no outbox and launches no process.
+It also records the original input digest, declared scope and a conservative
+remaining lease duration in milliseconds for a cooperating local adapter.
 
 Only the **original successful response** has top-level
 `execution_authorized: true`, permitting one caller-managed run under that lease.
