@@ -134,6 +134,19 @@ def main():
     }
     primary = stage / "npm"
     shutil.copytree(ROOT / "packaging/npm", primary)
+    # Ship a curated subset of the CLI contract docs so local `npm i -g` users
+    # can discover JSON output shapes without reading the GitHub repo. The npm
+    # `files` allowlist (packaging/npm/package.json) must list "docs" for these
+    # to be published.
+    contract_docs = [
+        "docs/reference/cli-mcp-contract.md",
+        "docs/integrations/session-workflow.md",
+        "docs/reference/daily-work.md",
+    ]
+    for rel in contract_docs:
+        dest = primary / rel
+        dest.parent.mkdir(parents=True, exist_ok=True)
+        shutil.copyfile(ROOT / rel, dest)
     shutil.copyfile(ROOT / "LICENSE", primary / "LICENSE")
     package = json.loads((primary / "package.json").read_text())
     package["version"] = version

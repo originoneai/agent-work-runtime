@@ -39,6 +39,15 @@ pub enum SessionCommand {
     /// Refresh current facts and continue work in a new agent/provider/model session.
     Resume(crate::resume::ResumeArgs),
     /// Refresh sources and start a session at the supplied project revision.
+    ///
+    /// JSON output (`--json`): one object with `ok`, `project_revision`,
+    /// `session`, `claim` and `event`.
+    /// - `session.id` is the AWR session id to reuse in later `--session`
+    ///   options (e.g. `jq -er '.session.id'`); it is not the native chat id.
+    /// - `claim` is the acquired claim or `null` without `--claim`; it carries
+    ///   `id`, `work_item_id`, `agent_id`, `session_id`, `status`.
+    /// - The claim is runtime ownership only; it does not rewrite source
+    ///   work status.
     Start {
         #[arg(long)]
         work: Option<String>,

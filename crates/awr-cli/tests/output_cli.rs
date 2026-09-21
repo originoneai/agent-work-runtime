@@ -59,3 +59,35 @@ fn help_version_and_unsupported_have_explicit_exit_contracts() {
         "Unsupported"
     );
 }
+
+#[test]
+fn session_start_help_documents_json_output_shape() {
+    let output = Command::new(env!("CARGO_BIN_EXE_awr"))
+        .args(["session", "start", "--help"])
+        .output()
+        .unwrap();
+    assert!(output.status.success());
+    assert!(output.stderr.is_empty());
+    let text = String::from_utf8_lossy(&output.stdout);
+    assert!(
+        text.contains("session.id"),
+        "session start --help must surface the session.id JSON path"
+    );
+}
+
+#[test]
+fn evidence_add_help_documents_required_draft_fields() {
+    let output = Command::new(env!("CARGO_BIN_EXE_awr"))
+        .args(["evidence", "add", "--help"])
+        .output()
+        .unwrap();
+    assert!(output.status.success());
+    assert!(output.stderr.is_empty());
+    let text = String::from_utf8_lossy(&output.stdout);
+    for needle in ["external_key", "work_item_key", "locator"] {
+        assert!(
+            text.contains(needle),
+            "evidence add --help must mention {needle}"
+        );
+    }
+}

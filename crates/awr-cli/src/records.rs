@@ -12,6 +12,19 @@ use std::{
 #[derive(Debug, Subcommand)]
 pub enum EvidenceCommand {
     /// Register a JSON EvidenceDraft. Command and verification fields are assertions, never executed.
+    ///
+    /// The `--input` JSON object fields:
+    /// - `work_item_key` — external key of the work item to bind.
+    /// - `external_key` — this evidence's own key. **Required**.
+    /// - `evidence_type`, `summary`, `locator` (path of the report file) —
+    ///   **required**; `level` (e.g. `locally_verified`).
+    /// - `sha256`, `source_sha` — full lowercase hex of the report/ledger.
+    /// - `command`, `scope` (non-empty string array) + `verified_at`
+    ///   (epoch milliseconds). `command` is an assertion, never executed.
+    /// - `branch_id` — internal id; explicit `null` = main branch,
+    ///   omitted = current branch.
+    /// Receipt returns `evidence` (stored record incl. `id`), `event_id` and
+    /// `validation_basis=caller_supplied_bindings`.
     Add {
         #[arg(long)]
         input: PathBuf,
