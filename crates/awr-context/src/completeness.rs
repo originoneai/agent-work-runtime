@@ -253,6 +253,13 @@ pub(crate) fn assess_completeness(facts: CompletenessFacts<'_>) -> Result<Contex
     let mut unresolved_required_dependencies = Vec::new();
     let mut evidence_gaps = Vec::new();
     if let Some(related) = related {
+        for dependency in &related.unavailable_dependencies {
+            let reference = format!("dependency:{}", dependency.edge_id);
+            issue("dependencies_complete", "required_dependency_unavailable", reference.clone(),
+                "Required dependency is unavailable in this workstream; obtain an authorized delivery before proceeding".into());
+            unresolved_required_dependencies.push(reference);
+            dependencies_complete = false;
+        }
         for key in &related.missing_dependencies {
             issue(
                 "dependencies_complete",
@@ -471,4 +478,55 @@ pub fn check_completeness(
     let manifest = Manifest::load(root)?;
     let refresh = index_project(store, root, &manifest, false)?;
     inspect_completeness(store, refresh.project_id, request, Some(&refresh))
+}
+
+#[cfg(test)]
+#[allow(dead_code)]
+#[path = "../../awr-store/tests/support/workstreams.rs"]
+mod scoped_fixture;
+#[cfg(test)]
+mod scoped_tests {
+    use super::scoped_fixture as fixture;
+    use super::*;
+
+    #[test]
+    fn opaque_dependency_boundary_is_an_incomplete_required_fact() {
+        let mut f = fixture::Fixture::new();
+        f.dependency("W0", "W1", true);
+        f.batch.work_items[1].status = WorkStatus::Completed;
+        f.batch.work_items[1].raw_status = "completed".into();
+        f.reproject();
+        let read = f.read(0);
+        let mut related = crate::related_work_in_workstream(&read, "W0", None, None, None).unwrap();
+        let project = f.store.project(f.project).unwrap();
+        let work = read.work_item("W0").unwrap();
+        let sources = f.store.sources(f.project).unwrap();
+        let assess = |related: &RelatedWorkContext| {
+            assess_completeness(CompletenessFacts {
+                project: &project,
+                branch: None,
+                work_key: "W0",
+                work: Some(&work),
+                hard: None,
+                related: Some(related),
+                sources: &sources,
+                refresh: None,
+            })
+            .unwrap()
+        };
+        let report = assess(&related);
+        assert!(!report.dependencies_complete);
+        assert_eq!(report.unresolved_required_dependencies.len(), 1);
+        assert!(
+            report
+                .issues
+                .iter()
+                .any(|i| i.code == "required_dependency_unavailable")
+        );
+        assert!(!serde_json::to_string(&report).unwrap().contains("\"W1\""));
+        related.unavailable_dependencies.clear();
+        // The unavailable boundary, not an unrelated missing hard-rule/refresh
+        // diagnostic, is what makes the dependency fact set incomplete.
+        assert!(assess(&related).dependencies_complete);
+    }
 }

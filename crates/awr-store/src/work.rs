@@ -9,22 +9,68 @@ use rusqlite::{Connection, OptionalExtension, params};
 use std::collections::BTreeSet;
 
 // UNION, rather than UNION ALL, terminates cycles and deduplicates diamonds/duplicate edges.
-const REACHABLE: &str = "WITH RECURSIVE deps(from_key,to_key) AS (
-    SELECT DISTINCT e.from_key,e.to_key FROM edges e JOIN sources s ON e.source_id=s.id AND e.project_id=s.project_id
-    WHERE e.project_id=?1 AND e.active=1 AND s.active=1 AND e.from_kind='work_item'
-      AND e.to_kind='work_item' AND e.relation='depends_on' AND (?3=0 OR e.required=1)
-), reachable(key) AS (VALUES(?2) UNION SELECT d.to_key FROM deps d JOIN reachable r ON d.from_key=r.key)";
+fn reachable(scoped: bool) -> String {
+    let visibility = if scoped {
+        format!("{} AND EXISTS(SELECT 1 FROM work_items w JOIN sources ws ON ws.id=w.source_id AND ws.project_id=w.project_id
+            WHERE w.project_id=e.project_id AND w.external_key=e.to_key AND w.active=1 AND ws.active=1 AND {})",
+            crate::scoped_read::visible("edges", "e.id"),
+            crate::scoped_read::visible("work_items", "w.id"))
+    } else {
+        "1".into()
+    };
+    format!("WITH RECURSIVE deps(from_key,to_key) AS (
+        SELECT DISTINCT e.from_key,e.to_key FROM edges e JOIN sources s ON e.source_id=s.id AND e.project_id=s.project_id
+        WHERE e.project_id=?1 AND e.active=1 AND s.active=1 AND e.from_kind='work_item'
+        AND e.to_kind='work_item' AND e.relation='depends_on' AND (?3=0 OR e.required=1) AND ({visibility})
+    ), reachable(key) AS (VALUES(?2) UNION SELECT d.to_key FROM deps d JOIN reachable r ON d.from_key=r.key)")
+}
 
-fn graph(
+/// A boundary reference says nothing about the target's identity or existence.
+#[derive(Debug, Clone, serde::Serialize)]
+pub struct UnavailableDependency {
+    pub edge_id: Id,
+    pub from_work_key: String,
+}
+
+#[derive(Debug, Clone, serde::Serialize)]
+pub struct ScopedDependencyGraph {
+    pub graph: DependencyGraph,
+    pub unavailable_dependencies: Vec<UnavailableDependency>,
+}
+
+pub(crate) fn unavailable_dependencies(
+    conn: &Connection,
+    project: Id,
+    key: &str,
+    required_only: bool,
+) -> Result<Vec<UnavailableDependency>> {
+    let reachable = reachable(true);
+    conn.prepare(&format!("{reachable} SELECT e.id,e.from_key FROM edges e
+        JOIN sources s ON s.id=e.source_id AND s.project_id=e.project_id
+        JOIN reachable r ON r.key=e.from_key
+        WHERE e.project_id=?1 AND e.active=1 AND s.active=1
+        AND e.from_kind='work_item' AND e.to_kind='work_item'
+        AND e.relation='depends_on' AND (?3=0 OR e.required=1)
+        AND NOT EXISTS(SELECT 1 FROM work_items w JOIN sources ws ON ws.id=w.source_id AND ws.project_id=w.project_id
+            WHERE w.project_id=e.project_id AND w.external_key=e.to_key AND w.active=1 AND ws.active=1 AND {})
+        ORDER BY e.from_key,e.id", crate::scoped_read::visible("work_items", "w.id")))
+        .map_err(db_error)?.query_map(params![project.to_string(),key,required_only], |r| Ok(UnavailableDependency {
+            edge_id: id_at(r,0)?, from_work_key:r.get(1)?,
+        })).map_err(db_error)?.collect::<rusqlite::Result<Vec<_>>>().map_err(db_error)
+}
+
+pub(crate) fn graph(
     conn: &Connection,
     project: Id,
     key: &str,
     required_only: bool,
     revision: Revision,
+    scoped: bool,
 ) -> Result<DependencyGraph> {
+    let reachable = reachable(scoped);
     let keys = conn
         .prepare(&format!(
-            "{REACHABLE} SELECT key FROM reachable ORDER BY key"
+            "{reachable} SELECT key FROM reachable ORDER BY key"
         ))
         .map_err(db_error)?
         .query_map(params![project.to_string(), key, required_only], |r| {
@@ -35,7 +81,7 @@ fn graph(
         .map_err(db_error)?;
     let cycle_keys = conn
         .prepare(&format!(
-            "{REACHABLE}, paths(origin,node) AS (
+            "{reachable}, paths(origin,node) AS (
         SELECT d.from_key,d.to_key FROM deps d JOIN reachable r ON d.from_key=r.key
         UNION SELECT p.origin,d.to_key FROM paths p JOIN deps d ON p.node=d.from_key
     ) SELECT origin FROM paths WHERE origin=node ORDER BY origin"
@@ -61,10 +107,15 @@ fn graph(
         .map(|c| format!("s.{c}"))
         .collect::<Vec<_>>()
         .join(",");
-    let edges=conn.prepare(&format!("{REACHABLE} SELECT {columns},e.id,e.from_key,e.to_key,e.required,e.revision,e.source_ref_json FROM edges e
+    let edge_visibility = if scoped {
+        crate::scoped_read::visible("edges", "e.id")
+    } else {
+        "1".into()
+    };
+    let edges=conn.prepare(&format!("{reachable} SELECT {columns},e.id,e.from_key,e.to_key,e.required,e.revision,e.source_ref_json FROM edges e
         JOIN sources s ON s.id=e.source_id AND s.project_id=e.project_id JOIN reachable r ON e.from_key=r.key
         WHERE e.project_id=?1 AND e.active=1 AND s.active=1 AND e.from_kind='work_item' AND e.to_kind='work_item'
-          AND e.relation='depends_on' AND (?3=0 OR e.required=1) ORDER BY e.from_key,e.to_key,e.id")).map_err(db_error)?
+          AND e.relation='depends_on' AND (?3=0 OR e.required=1) AND ({edge_visibility}) AND e.to_key IN (SELECT key FROM reachable) ORDER BY e.from_key,e.to_key,e.id")).map_err(db_error)?
         .query_map(params![project.to_string(),key,required_only],|row| {
             let source_ref=serde_json::from_str(&row.get::<_,String>(16)?).map_err(|error|
                 rusqlite::Error::FromSqlConversionFailure(16,rusqlite::types::Type::Text,Box::new(error)))?;
@@ -152,7 +203,7 @@ pub(crate) fn readiness(
     revision: Revision,
 ) -> Result<WorkReadiness> {
     let work: Projected<WorkItem> = projection(conn, project, EntityKind::WorkItem, key)?;
-    let dependencies = graph(conn, project, key, true, revision)?;
+    let dependencies = graph(conn, project, key, true, revision, false)?;
     let active_claims = active_claims(conn, project, work.item.meta.id, branch, at)?;
     let mut diagnostics = BTreeSet::new();
     let mut add = |code: &str, work_key: &str, detail: String| {
@@ -300,7 +351,14 @@ impl Store {
     ) -> Result<DependencyGraph> {
         let tx = self.conn.unchecked_transaction().map_err(db_error)?;
         let work: Projected<WorkItem> = projection(&tx, project, EntityKind::WorkItem, key)?;
-        let result = graph(&tx, project, key, required_only, work.project_revision)?;
+        let result = graph(
+            &tx,
+            project,
+            key,
+            required_only,
+            work.project_revision,
+            false,
+        )?;
         tx.commit().map_err(db_error)?;
         Ok(result)
     }

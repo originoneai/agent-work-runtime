@@ -8,14 +8,20 @@ use awr_core::*;
 use rusqlite::{Connection, params};
 
 fn evidence_rows(conn: &Connection, project: Id, key: Option<&str>) -> Result<Vec<EvidenceRecord>> {
-    evidence_rows_by(conn, project, key, false)
+    evidence_rows_by(conn, project, key, false, false)
 }
 fn evidence_rows_by(
     conn: &Connection,
     project: Id,
     key: Option<&str>,
     exact_id: bool,
+    scoped: bool,
 ) -> Result<Vec<EvidenceRecord>> {
+    let visibility = if scoped {
+        crate::scoped_read::visible("evidence", "e.id")
+    } else {
+        "1".into()
+    };
     let columns = SOURCE_COLUMNS
         .split(',')
         .map(|c| format!("s.{c}"))
@@ -23,7 +29,7 @@ fn evidence_rows_by(
         .join(",");
     conn.prepare(&format!("SELECT {columns},e.payload_json,p.project_revision FROM evidence e
         LEFT JOIN sources s ON s.id=e.source_id AND s.project_id=e.project_id JOIN projects p ON p.id=e.project_id
-        WHERE e.project_id=?1 AND e.active=1 AND (e.source_id IS NULL OR s.active=1) AND (?2 IS NULL OR (NOT ?3 AND e.external_key=?2) OR e.id=?2)
+        WHERE ({visibility}) AND e.project_id=?1 AND e.active=1 AND (e.source_id IS NULL OR s.active=1) AND (?2 IS NULL OR (NOT ?3 AND e.external_key=?2) OR e.id=?2)
         ORDER BY e.external_key")).map_err(db_error)?.query_map(params![project.to_string(),key,exact_id],|r| {
             let item=serde_json::from_str(&r.get::<_,String>(11)?).map_err(|e|rusqlite::Error::FromSqlConversionFailure(11,rusqlite::types::Type::Text,Box::new(e)))?;
             let source=if r.get::<_,Option<String>>(0)?.is_some() {Some(source_row(r)?)} else {None};
@@ -32,7 +38,7 @@ fn evidence_rows_by(
 }
 
 pub(crate) fn evidence_by_id(conn: &Connection, project: Id, id: Id) -> Result<EvidenceRecord> {
-    evidence_rows_by(conn, project, Some(&id.to_string()), true)?
+    evidence_rows_by(conn, project, Some(&id.to_string()), true, false)?
         .pop()
         .ok_or_else(|| {
             Error::EvidenceMissing(format!("bound evidence {id} is no longer available"))
@@ -71,13 +77,25 @@ impl Store {
         key: &str,
         paths: Option<&[String]>,
     ) -> Result<Vec<RelatedDecision>> {
+        self.decisions_for_work_scoped(project, key, paths, false)
+    }
+    pub(crate) fn decisions_for_work_scoped(
+        &self,
+        project: Id,
+        key: &str,
+        paths: Option<&[String]>,
+        scoped: bool,
+    ) -> Result<Vec<RelatedDecision>> {
         let tx = self.conn.unchecked_transaction().map_err(db_error)?;
         let work: Projected<WorkItem> = projection(&tx, project, EntityKind::WorkItem, key)?;
         let known_paths = concrete_scope_paths(
             paths.or_else(|| (!work.item.paths.is_empty()).then_some(work.item.paths.as_slice())),
         );
-        let decisions: Vec<Projected<Decision>> =
-            projections(&tx, project, EntityKind::Decision, None)?;
+        let decisions: Vec<Projected<Decision>> = if scoped {
+            crate::query::scoped_projections(&tx, project, EntityKind::Decision)?
+        } else {
+            projections(&tx, project, EntityKind::Decision, None)?
+        };
         let mut result = Vec::new();
         for decision in decisions
             .into_iter()
@@ -161,6 +179,16 @@ impl Store {
         source_sha: Option<&str>,
         branch: Option<Id>,
     ) -> Result<Vec<EvidenceAssessment>> {
+        self.evidence_for_work_scoped(project, key, source_sha, branch, false)
+    }
+    pub(crate) fn evidence_for_work_scoped(
+        &self,
+        project: Id,
+        key: &str,
+        source_sha: Option<&str>,
+        branch: Option<Id>,
+        scoped: bool,
+    ) -> Result<Vec<EvidenceAssessment>> {
         if source_sha.is_some_and(|s| !is_source_sha(s)) {
             return Err(Error::InvalidInput(
                 "evidence currency requires a full source SHA".into(),
@@ -169,7 +197,7 @@ impl Store {
         let tx = self.conn.unchecked_transaction().map_err(db_error)?;
         let work: Projected<WorkItem> = projection(&tx, project, EntityKind::WorkItem, key)?;
         let mut results = Vec::new();
-        for record in evidence_rows(&tx, project, None)? {
+        for record in evidence_rows_by(&tx, project, None, false, scoped)? {
             let (linked, link_stale):(bool,bool)=tx.query_row("SELECT count(*)>0,coalesce(max(s.freshness!='fresh'),0) FROM edges e JOIN sources s ON s.id=e.source_id AND s.project_id=e.project_id
                 WHERE e.project_id=?1 AND e.active=1 AND s.active=1 AND e.from_kind='work_item' AND e.from_key=?2
                   AND e.relation='supported_by' AND e.to_kind='evidence' AND e.to_key=?3",params![project.to_string(),key,record.item.external_key],|r|Ok((r.get(0)?,r.get(1)?))).map_err(db_error)?;

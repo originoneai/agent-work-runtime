@@ -16,6 +16,12 @@ pub struct Fixture {
 }
 impl Fixture {
     pub fn new() -> Self {
+        Self::with_workstreams(true)
+    }
+    pub fn legacy() -> Self {
+        Self::with_workstreams(false)
+    }
+    fn with_workstreams(explicit: bool) -> Self {
         let root = std::env::temp_dir().join(format!("awr-scoped-read-{}", Id::new()));
         fs::create_dir(&root).unwrap();
         let mut store = Store::open(&root.join("state.db")).unwrap();
@@ -80,7 +86,7 @@ impl Fixture {
             work_items,
             rules,
             plans,
-            workstream_projection: Some(WorkstreamProjection {
+            workstream_projection: explicit.then_some(WorkstreamProjection {
                 catalog,
                 ownership: works
                     .iter()
@@ -97,6 +103,12 @@ impl Fixture {
         let source = store
             .commit_source_projection(&source, "v1", batch.clone())
             .unwrap();
+        let scopes = if explicit {
+            scopes
+        } else {
+            let id = store.workstream_catalog(project).unwrap().workstreams[0].id;
+            [id, id]
+        };
         Self {
             root,
             store,
@@ -202,6 +214,55 @@ impl Fixture {
             )
             .unwrap()
             .0
+    }
+    pub fn dependency(&mut self, from: &str, to: &str, required: bool) -> Id {
+        let id = Id::new();
+        self.batch.edges.push(Edge {
+            id,
+            project_id: self.project,
+            from_kind: EntityKind::WorkItem,
+            from_key: from.into(),
+            relation: "depends_on".into(),
+            to_kind: EntityKind::WorkItem,
+            to_key: to.into(),
+            required,
+            revision: 1,
+            source_ref: self.batch.work_items[0].meta.source_ref.clone(),
+        });
+        id
+    }
+    pub fn reproject(&mut self) {
+        self.source = self
+            .store
+            .mark_source_freshness(&self.source, Freshness::Stale)
+            .unwrap();
+        let fingerprint = format!("fixture-r{}", self.source.revision + 1);
+        let mut value = serde_json::to_value(&self.batch).unwrap();
+        fn references(value: &mut serde_json::Value, revision: Revision, fingerprint: &str) {
+            match value {
+                serde_json::Value::Object(map) => {
+                    if map.contains_key("source_id") && map.contains_key("source_revision") {
+                        map.insert("source_revision".into(), revision.into());
+                        map.insert("source_fingerprint".into(), fingerprint.into());
+                    }
+                    for v in map.values_mut() {
+                        references(v, revision, fingerprint);
+                    }
+                }
+                serde_json::Value::Array(items) => {
+                    for v in items {
+                        references(v, revision, fingerprint);
+                    }
+                }
+                _ => (),
+            }
+        }
+        references(&mut value, self.source.revision + 1, &fingerprint);
+        self.batch = serde_json::from_value(value).unwrap();
+        self.source = self
+            .store
+            .commit_source_projection(&self.source, &fingerprint, self.batch.clone())
+            .unwrap();
     }
     pub fn move_work(&mut self, i: usize, to: usize) {
         let ownership = self
