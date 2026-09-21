@@ -199,6 +199,7 @@ pub fn status(
         cached,
         None,
         false,
+        None,
     )
 }
 pub fn status_with_scope(
@@ -209,6 +210,7 @@ pub fn status_with_scope(
     cached: bool,
     scope: Option<&awr_runtime::StatusScope>,
     action_view: bool,
+    page: Option<(&str, usize, usize)>,
 ) -> Result<()> {
     if source_sha.is_some_and(|s| !is_source_sha(s)) {
         return Err(Error::InvalidInput(
@@ -251,19 +253,26 @@ pub fn status_with_scope(
         &report,
     )?;
     if let Some(scope) = scope {
-        let project_status = if action_view {
-            awr_runtime::action_status
+        let mut value = if action_view {
+            awr_runtime::action_status_page(
+                &query.store,
+                &query.project,
+                scope,
+                &works,
+                &report,
+                &organization,
+                page,
+            )?
         } else {
-            awr_runtime::summarize_status
+            awr_runtime::summarize_status(
+                &query.store,
+                &query.project,
+                scope,
+                &works,
+                &report,
+                &organization,
+            )?
         };
-        let mut value = project_status(
-            &query.store,
-            &query.project,
-            scope,
-            &works,
-            &report,
-            &organization,
-        )?;
         for (key, item) in query.metadata().as_object().expect("query metadata") {
             value[key] = item.clone();
         }

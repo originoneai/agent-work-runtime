@@ -16,6 +16,18 @@ pub fn action_status(
     readiness: &ReadyReport,
     organization: &OrganizationReport,
 ) -> Result<Value> {
+    action_status_page(store, project, scope, works, readiness, organization, None)
+}
+
+pub fn action_status_page(
+    store: &Store,
+    project: &Project,
+    scope: &StatusScope,
+    works: &[Projected<WorkItem>],
+    readiness: &ReadyReport,
+    organization: &OrganizationReport,
+    page: Option<(&str, usize, usize)>,
+) -> Result<Value> {
     let selected = select_work(store, project, scope, works)?;
     let by_key: BTreeMap<_, _> = readiness
         .ready
@@ -152,8 +164,7 @@ pub fn action_status(
         json!({"when":"No actionable work in this selection","basis":"Current diagnostics and source status; history is not newly verified","next_action":"Inspect the cited current gap or selected completed work and its original evidence","recheck":"Source correction or explicit verification result"})
     };
     let pending = store.inspect_runtime(project.id, now_millis()?)?;
-    Ok(
-        json!({"view":"action","schema_version":1,"project":project.name,"project_id":project.id,
+    let mut response = json!({"view":"action","schema_version":1,"project":project.name,"project_id":project.id,
         "branch_id":readiness.branch_id,"scope":scope,"scope_combination":"intersection",
         "total":selected.len(),"project_work_total":works.len(),"counts":counts,
         "count_basis":"source status; queue buckets are navigation, not execution authorization or completion proof",
@@ -173,6 +184,86 @@ pub fn action_status(
         "pending_operations":{"basis":"project-wide registered runtime findings; not a count of unfinished source tasks","total":pending.findings.len(),"items":pending.findings.iter().take(5).map(|f|json!({"code":f.code,"kind":f.object_kind,"id":f.object_id})).collect::<Vec<_>>(),"details":"recovery inspect"},
         "omissions":{"current":current.len().saturating_sub(5),"ready":ready.len().saturating_sub(5),"waiting":waiting.len().saturating_sub(5),"blocked":blocked.len().saturating_sub(5),
             "gaps":gaps.len().saturating_sub(5),"organization_scan_truncated":organization.truncated,"pending_operations":pending.findings.len().saturating_sub(5),"outside_scope":works.len()-selected.len(),
-            "not_evaluated":["host-private or filesystem-only receipts","live execution probes"],"details":"status --view full; work show KEY; ready remains the claim queue"}}),
+            "not_evaluated":["host-private or filesystem-only receipts","live execution probes"],"details":"status --view full; work show KEY; ready remains the claim queue"}});
+    if let Some((queue, offset, limit)) = page {
+        response["page"] = queue_page(
+            &[
+                ("current", &current),
+                ("ready", &ready),
+                ("waiting", &waiting),
+                ("blocked", &blocked),
+            ],
+            queue,
+            offset,
+            limit,
+        )?;
+    }
+    Ok(response)
+}
+
+fn queue_page(
+    queues: &[(&str, &Vec<Value>)],
+    queue: &str,
+    offset: usize,
+    limit: usize,
+) -> Result<Value> {
+    if !(1..=100).contains(&limit)
+        || !["all", "current", "ready", "waiting", "blocked"].contains(&queue)
+    {
+        return Err(Error::InvalidInput(
+            "queue must be all/current/ready/waiting/blocked; limit must be 1..100".into(),
+        ));
+    }
+    let rows: Vec<_> = queues
+        .iter()
+        .filter(|(name, _)| queue == "all" || *name == queue)
+        .flat_map(|(name, items)| {
+            items.iter().map(move |item| {
+                let mut row = item.clone();
+                row["queue"] = json!(name);
+                row
+            })
+        })
+        .collect();
+    let total = rows.len();
+    let items: Vec<_> = rows.into_iter().skip(offset).take(limit).collect();
+    let next = offset.saturating_add(items.len());
+    Ok(
+        json!({"queue":queue,"offset":offset,"limit":limit,"total":total,
+        "has_more":next < total,"items":items}),
     )
+}
+
+#[cfg(test)]
+mod pagination_tests {
+    use super::*;
+    #[test]
+    fn pages_cover_every_queue_without_duplicates() {
+        let current = (0..7).map(|i| json!({"key":format!("C{i}")})).collect();
+        let ready = (0..117).map(|i| json!({"key":format!("R{i}")})).collect();
+        let queues = [("current", &current), ("ready", &ready)];
+        let first = queue_page(&queues, "ready", 0, 100).unwrap();
+        let last = queue_page(&queues, "ready", 100, 100).unwrap();
+        assert_eq!(first["total"], 117);
+        assert_eq!(first["items"].as_array().unwrap().len(), 100);
+        assert_eq!(last["items"].as_array().unwrap().len(), 17);
+        assert_eq!(last["has_more"], false);
+        assert_eq!(last["items"][0]["key"], "R100");
+        assert_eq!(
+            queue_page(&queues, "current", 5, 5).unwrap()["items"]
+                .as_array()
+                .unwrap()
+                .len(),
+            2
+        );
+        assert_eq!(queue_page(&queues, "all", 0, 10).unwrap()["total"], 124);
+        assert!(
+            queue_page(&queues, "all", 999, 10).unwrap()["items"]
+                .as_array()
+                .unwrap()
+                .is_empty()
+        );
+        assert!(queue_page(&queues, "all", 0, 0).is_err());
+        assert!(queue_page(&queues, "other", 0, 10).is_err());
+    }
 }

@@ -108,6 +108,13 @@ enum Command {
     },
     /// Refresh source projections and summarize current project work.
     Status {
+        /// Return one page of current queue items (does not include terminal history).
+        #[arg(long, value_parser=["all","current","ready","waiting","blocked"])]
+        queue: Option<String>,
+        #[arg(long, default_value_t = 0, requires = "queue")]
+        offset: usize,
+        #[arg(long, default_value_t = 20, value_parser=clap::value_parser!(u16).range(1..=100), requires = "queue")]
+        page_size: u16,
         /// Action is the daily queue; full/summary retain the earlier diagnostic views.
         #[arg(long, default_value="action", value_parser=["action","full","summary"])]
         view: String,
@@ -216,6 +223,9 @@ fn run(cli: &Cli) -> Result<()> {
         Some(Command::Recovery { command }) => recovery::run(&cli.project, command, cli.json),
         Some(Command::Source { command }) => source::run(&cli.project, command, cli.json),
         Some(Command::Status {
+            queue,
+            offset,
+            page_size,
             branch,
             source_sha,
             cached,
@@ -229,6 +239,11 @@ fn run(cli: &Cli) -> Result<()> {
                 goal: goal.clone(),
                 milestone: milestone.clone(),
             };
+            if queue.is_some() && view != "action" {
+                return Err(awr_core::Error::InvalidInput(
+                    "--queue requires --view action".into(),
+                ));
+            }
             if view == "full" && !scope.is_empty() {
                 return Err(awr_core::Error::InvalidInput(
                     "scope selectors require --view action or summary".into(),
@@ -242,6 +257,9 @@ fn run(cli: &Cli) -> Result<()> {
                 *cached,
                 (view != "full").then_some(&scope),
                 view == "action",
+                queue
+                    .as_deref()
+                    .map(|q| (q, *offset, usize::from(*page_size))),
             )
         }
         Some(Command::Ready {

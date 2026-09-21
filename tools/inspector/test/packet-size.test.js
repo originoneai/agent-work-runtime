@@ -49,6 +49,12 @@ beforeEach(() => {
   app.state.status = {};
   app.state.raw = {};
   $('sizeChart').textContent = '';
+  $('fWork').textContent = '';
+  for (const key of ['RECON-040', 'RECON-013']) {
+    const option = document.createElement('option');
+    option.value = key;
+    $('fWork').appendChild(option);
+  }
   $('fWork').value = 'RECON-040';
   $('fGoal').value = '';
   $('fBudget').value = '16000';

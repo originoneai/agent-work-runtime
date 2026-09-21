@@ -19,13 +19,24 @@ class StubElement {
     this.attributes = {};
     this.listeners = {};
     this.hidden = false;
-    this.value = '';
+    this._value = '';
     this.own = ''; // 自身文本，不含子节点
+  }
+
+  get value() {
+    return this._value;
+  }
+
+  set value(value) {
+    value = String(value);
+    this._value = this.tagName === 'SELECT' && !this.children.some(c => c.value === value)
+      ? '' : value;
   }
 
   set textContent(v) {
     this.own = v == null ? '' : String(v);
     this.children = [];
+    if (this.tagName === 'SELECT') this._value = '';
   }
 
   get textContent() {
@@ -42,11 +53,13 @@ class StubElement {
 
   appendChild(child) {
     this.children.push(child);
+    if (this.tagName === 'SELECT' && this.children.length === 1) this._value = child.value;
     return child;
   }
 
   removeChild(child) {
     this.children = this.children.filter((c) => c !== child);
+    if (this.tagName === 'SELECT' && child.value === this._value) this._value = this.children[0]?.value || '';
     return child;
   }
 
@@ -63,7 +76,7 @@ class StubElement {
   }
 
   click() {
-    for (const fn of this.listeners.click || []) fn({ target: this });
+    return Promise.all((this.listeners.click || []).map(fn => fn({ target: this })));
   }
 
   querySelectorAll() {
@@ -95,7 +108,7 @@ const IDS = [
 
 function install() {
   const byId = new Map();
-  for (const id of IDS) byId.set(id, new StubElement('div'));
+  for (const id of IDS) byId.set(id, new StubElement(id === 'fWork' ? 'select' : 'div'));
 
   // 按选择器取的元素（app.js 用 [data-note="..."] 找说明段落）。
   const bySelector = new Map();

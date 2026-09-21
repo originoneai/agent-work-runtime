@@ -495,3 +495,12 @@ test('超过 AWR 上限的 budget 直接拒绝，不悄悄换成默认值', asyn
   assert.ok(/100000/.test(r.error.message), `错误信息要给出范围: ${r.error.message}`);
   assert.ok(!r.command, '不该起子进程');
 });
+
+test('分页参数传给 status，非法页大小和偏移不执行命令', async () => {
+  const result = await (await fetch(`${bridge.base}/api/work-page?queue=ready&offset=10&limit=20`, {headers:GUARD})).json();
+  assert.match(result.command, /--queue ready --offset 10 --page-size 20/);
+  for (const query of ['queue=other', 'offset=-1', 'offset=1.5', 'limit=0', 'limit=101']) {
+    const invalid=await (await fetch(`${bridge.base}/api/work-page?${query}`, {headers:GUARD})).json();
+    assert.equal(invalid.ok,false); assert.equal(invalid.error.code,'BadRequest');
+  }
+});

@@ -170,7 +170,7 @@ pub use batch::*;
 mod status_summary;
 pub use status_summary::{StatusScope, summarize_status};
 mod status_action;
-pub use status_action::action_status;
+pub use status_action::{action_status, action_status_page};
 
 mod organization_change;
 pub use organization_change::{

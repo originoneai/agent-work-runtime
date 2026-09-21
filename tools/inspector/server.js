@@ -487,6 +487,18 @@ const routes = {
     return runCommand('status', extra);
   },
 
+  'GET /api/work-page': async (url) => {
+    const queue = url.searchParams.get('queue') || 'all';
+    const offset = Number(url.searchParams.get('offset') || '0');
+    const limit = Number(url.searchParams.get('limit') || '10');
+    if (!['all', 'current', 'ready', 'waiting', 'blocked'].includes(queue) ||
+        !Number.isSafeInteger(offset) || offset < 0 ||
+        !Number.isInteger(limit) || limit < 1 || limit > 100) {
+      return { ok: false, error: { code: 'BadRequest', message: '分页参数无效' } };
+    }
+    return runCommand('status', ['--queue', queue, '--offset', String(offset), '--page-size', String(limit)]);
+  },
+
   'GET /api/ready': async (url) => {
     const extra = [];
     const limit = Number(url.searchParams.get('limit'));
