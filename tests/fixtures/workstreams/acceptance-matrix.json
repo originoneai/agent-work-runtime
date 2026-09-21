@@ -1,0 +1,132 @@
+{
+  "version": 1,
+  "kind": "workstream-protocol-acceptance",
+  "scope": "same-project workstreams",
+  "results_included": false,
+  "required_cases": [
+    {
+      "id": "independent_writes",
+      "dimensions": [
+        "concurrency",
+        "scope"
+      ],
+      "required_result": "Unrelated work updates succeed without semantic conflicts or another stream's context/denominator changing."
+    },
+    {
+      "id": "contended_work",
+      "dimensions": [
+        "ownership",
+        "branch"
+      ],
+      "required_result": "Only one valid writer owns a work; changing work branches cannot evade the guard."
+    },
+    {
+      "id": "resource_domains",
+      "dimensions": [
+        "workspace",
+        "external_resources"
+      ],
+      "required_result": "Separate worktrees can edit their files independently; shared external and integration resources still conflict."
+    },
+    {
+      "id": "stale_actors",
+      "dimensions": [
+        "lease",
+        "restore",
+        "handoff"
+      ],
+      "required_result": "Old fences and epochs cannot update current ownership or dispatch new effects."
+    },
+    {
+      "id": "idempotency_and_unknown",
+      "dimensions": [
+        "recovery",
+        "accounting"
+      ],
+      "required_result": "Identical requests replay receipts, unknown effects retain reservations, duplicate usage receipts are not double charged."
+    },
+    {
+      "id": "concurrent_graph_cycle",
+      "dimensions": [
+        "dependency",
+        "concurrency"
+      ],
+      "required_result": "A cyclic union cannot commit even when concurrent graph edits are individually acyclic; cross-stream task DAGs remain usable."
+    },
+    {
+      "id": "revoked_dependency",
+      "dimensions": [
+        "dependency",
+        "dispatch"
+      ],
+      "required_result": "Revocation after preparation blocks affected dispatch/completion without erasing history."
+    },
+    {
+      "id": "pinned_delivery",
+      "dimensions": [
+        "dependency",
+        "version"
+      ],
+      "required_result": "A valid pinned delivery survives unrelated newer work; explicit revocation requires reassessment."
+    },
+    {
+      "id": "authorization_surfaces",
+      "dimensions": [
+        "access",
+        "read",
+        "cache"
+      ],
+      "required_result": "Search/count/event/artifact/recovery/cache paths cannot leak unauthorized stream state; permitted dependency exports remain usable."
+    },
+    {
+      "id": "source_atomicity",
+      "dimensions": [
+        "source",
+        "crash",
+        "recovery"
+      ],
+      "required_result": "Concurrent sources and interrupted activation cannot lose updates or expose a mixed authoritative snapshot."
+    },
+    {
+      "id": "accounting_scope",
+      "dimensions": [
+        "contract",
+        "usage",
+        "time"
+      ],
+      "required_result": "Shared work counts once, planning does not change contract denominators, unknown usage stays unknown and parallel time is not summed wall time."
+    },
+    {
+      "id": "barriers_and_legacy",
+      "dimensions": [
+        "freeze",
+        "restore",
+        "compatibility"
+      ],
+      "required_result": "Administrative barriers hold across concurrent writers and legacy clients retain compatible behavior or receive an explicit refusal."
+    }
+  ],
+  "performance": {
+    "workstream_counts": [
+      1,
+      4
+    ],
+    "metrics": [
+      "semantic_conflicts_on_unrelated_writes",
+      "true_conflict_detection",
+      "database_wait",
+      "p50_ms",
+      "p95_ms",
+      "tool_calls",
+      "returned_tokens",
+      "required_fact_retention",
+      "usage_coverage"
+    ],
+    "hard_gates": {
+      "lost_updates": 0,
+      "unrelated_semantic_conflicts": 0,
+      "required_fact_retention": 1
+    },
+    "latency_and_tokens": "Compare the same workload and facts against the recorded pre-change binary. Report distribution, database serialization and absent measurements. A domain benchmark alone cannot establish native-client cost or latency."
+  }
+}
