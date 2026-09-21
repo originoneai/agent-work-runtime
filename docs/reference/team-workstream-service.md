@@ -10,7 +10,7 @@ capabilities response to discover available operations.
 ## Start an operator-bound service
 
 Build `awr-server` from this source branch. Migrate the intended database to
-schema 13 explicitly as its owner, and apply application-role grants using the
+schema 14 explicitly as its owner, and apply application-role grants using the
 [PostgreSQL setup](team-postgres.md). `serve` checks the schema without migrating
 it. Run the listener using the application connection, not an owner or superuser
 connection.
@@ -50,11 +50,12 @@ authentication; old Team operations continue to refuse enabled projects.
 
 ## Credential and grant provisioning
 
-Provisioning is currently a trusted operator integration, not a public HTTP
-endpoint or an installed credential-management CLI. The operator creates an
-active tenant and actor, project membership, a credential, and explicit
-workstream grants using the coordinator database administration boundary.
-Do not give agent clients direct database credentials.
+Use [`awr-server access`](team-operator-access.md) to generate a local bearer file, inspect
+and preview one client's policy, apply it with a state digest, and query an
+uncertain result. This schema-owner CLI creates actors, project membership,
+credentials and explicit workstream grants for an already enabled project.
+It is not a public HTTP/MCP admin endpoint. Do not give agent clients direct
+database credentials or use the owner connection for the running service.
 
 A bearer has the form `awr1.<credential-id>.<secret>`. The ID contains 1–128 ASCII
 letters, digits, underscores or hyphens; the secret is 32 cryptographically random
@@ -447,10 +448,10 @@ command receipts and never repeat effects or issue execution permission.
 Schema 13 gives existing grants neither new authority, leaves existing admissions
 without attestation delegation, and retains legacy resource reservations as
 unbound. It does not infer a resource's execution from today's work owner. Such
-reservations cannot be released by these commands. Provisioning remains an
-operator integration through the database administration boundary; a supported
-provisioning CLI, bundled executor integration and enabled-project history
-migration are still required for the complete Team execution workflow.
+reservations cannot be released by these commands. Schema 14 adds the operator
+provisioning CLI and its immutable receipts without granting existing clients
+new rights. Bundled executor integration and enabled-project history migration
+are still required for the complete Team execution workflow.
 
 ## Limits and errors
 

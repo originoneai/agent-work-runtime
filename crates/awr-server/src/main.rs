@@ -1,3 +1,4 @@
+mod access;
 use clap::{Parser, Subcommand};
 use serde_json::{Value, json};
 use std::process::ExitCode;
@@ -15,6 +16,11 @@ struct Args {
 
 #[derive(Subcommand)]
 enum Command {
+    /// Provision scoped clients using an explicit schema-owner connection.
+    Access {
+        #[command(subcommand)]
+        command: access::AccessCommand,
+    },
     /// Run authenticated multi-project reads and durable session journaling.
     Serve {
         #[arg(long)]
@@ -68,6 +74,13 @@ enum Command {
 async fn main() -> ExitCode {
     let args = Args::parse();
     match args.command {
+        Command::Access { command } => match access::run(command).await {
+            Ok(value) => {
+                println!("{value}");
+                ExitCode::SUCCESS
+            }
+            Err((code, message)) => fail(code, message),
+        },
         Command::Serve { config } => match awr_server::service::serve(&config).await {
             Ok(()) => ExitCode::SUCCESS,
             Err(error) => fail("ServiceFailed", error),

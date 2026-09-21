@@ -207,6 +207,7 @@ dependencies = [
  "awr-team-pg",
  "axum",
  "clap",
+ "getrandom 0.4.3",
  "reqwest",
  "rmcp",
  "serde",

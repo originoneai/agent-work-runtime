@@ -1,10 +1,11 @@
 # Team command validation and remote profiles
 
 The development branch separately provides a
-[Team workstream HTTP service](team-workstream-service.md). It authenticates
-reads and three session-journal commands in PostgreSQL. Execution commands remain
-unavailable. The legacy command limitations below still apply; personal MCP and
-remote-profile commands do not route to that service.
+[Team workstream HTTP/MCP service](team-workstream-service.md). It authenticates
+queries, sessions, claims, caller-managed execution and authorized recovery in
+PostgreSQL. [Operator access provisioning](team-operator-access.md) uses a separate
+schema-owner CLI. The legacy command limitations below still apply; personal MCP
+and remote-profile commands do not route to that service.
 
 The public Team command path does **not** yet implement authenticated HTTP/MCP
 transport, credential loading, queuing or domain dispatch. `awr team command`
