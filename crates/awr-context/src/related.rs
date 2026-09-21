@@ -1,8 +1,8 @@
 use crate::SourceVersion;
 use awr_core::*;
-use awr_store::Store;
+use awr_store::{Store, UnavailableDependency, WorkstreamRead};
 use serde::Serialize;
-use std::collections::BTreeSet;
+use std::collections::BTreeMap;
 
 #[derive(Debug, Clone, Serialize)]
 pub struct DependencyFact {
@@ -66,6 +66,8 @@ pub struct RelatedWorkContext {
     pub resolved_dependencies: Vec<DependencyFact>,
     pub required_edges: Vec<Edge>,
     pub missing_dependencies: Vec<String>,
+    #[serde(skip_serializing_if = "Vec::is_empty")]
+    pub unavailable_dependencies: Vec<UnavailableDependency>,
     pub dependency_cycles: Vec<String>,
     pub accepted_decisions: Vec<DecisionFact>,
     pub uncertain_decisions: Vec<DecisionGap>,
@@ -98,7 +100,7 @@ pub fn related_work(
 /// Internal staged selection lets L1 place rule and delta resolution between these read phases.
 pub(crate) struct RelatedSelection {
     context: RelatedWorkContext,
-    ids: BTreeSet<Id>,
+    sources: BTreeMap<Id, Source>,
 }
 impl RelatedSelection {
     pub(crate) fn dependencies(
@@ -111,11 +113,20 @@ impl RelatedSelection {
         crate::branch::branch_binding(store, &project, branch)?;
         let work = store.work_item(project.id, work_key)?;
         let graph = store.dependency_closure(project.id, work_key, true)?;
-        let mut ids = BTreeSet::from([work.source.id]);
+        Self::from_graph(project.id, work, branch, graph, vec![])
+    }
+    fn from_graph(
+        project: Id,
+        work: Projected<WorkItem>,
+        branch: Option<Id>,
+        graph: DependencyGraph,
+        unavailable_dependencies: Vec<UnavailableDependency>,
+    ) -> Result<Self> {
+        let mut sources = BTreeMap::from([(work.source.id, work.source.clone())]);
         let mut unresolved_dependencies = Vec::new();
         let mut resolved_dependencies = Vec::new();
         for dependency in graph.dependencies {
-            ids.insert(dependency.source.id);
+            sources.insert(dependency.source.id, dependency.source.clone());
             let item = dependency.item;
             let fact = DependencyFact {
                 meta: item.meta,
@@ -136,22 +147,23 @@ impl RelatedSelection {
             .edges
             .into_iter()
             .map(|edge| {
-                ids.insert(edge.source.id);
+                sources.insert(edge.source.id, edge.source);
                 edge.item
             })
             .collect();
         Ok(Self {
             context: RelatedWorkContext {
-                project_id: project.id,
-                project_revision: project.project_revision,
+                project_id: project,
+                project_revision: work.project_revision,
                 work_item_id: work.item.meta.id,
-                work_item_key: work_key.into(),
+                work_item_key: work.item.meta.external_key,
                 branch_id: branch,
                 requested_source_sha: None,
                 unresolved_dependencies,
                 resolved_dependencies,
                 required_edges,
                 missing_dependencies: graph.missing_keys,
+                unavailable_dependencies,
                 dependency_cycles: graph.cycle_keys,
                 accepted_decisions: vec![],
                 uncertain_decisions: vec![],
@@ -160,17 +172,22 @@ impl RelatedSelection {
                 source_revisions: vec![],
                 source_issues: vec![],
             },
-            ids,
+            sources,
         })
     }
     pub(crate) fn decisions(&mut self, store: &Store, paths: Option<&[String]>) -> Result<()> {
-        let work_key = self.context.work_item_key.as_str();
+        self.select_decisions(store.decisions_for_work_with_paths(
+            self.context.project_id,
+            &self.context.work_item_key,
+            paths,
+        )?)
+    }
+    fn select_decisions(&mut self, decisions: Vec<RelatedDecision>) -> Result<()> {
         let mut accepted_decisions = Vec::new();
         let mut uncertain_decisions = Vec::new();
-        for related in
-            store.decisions_for_work_with_paths(self.context.project_id, work_key, paths)?
-        {
-            self.ids.insert(related.decision.source.id);
+        for related in decisions {
+            self.sources
+                .insert(related.decision.source.id, related.decision.source);
             let item = related.decision.item;
             if related.relevance == Applicability::Applicable {
                 if item.decision.trim().is_empty() {
@@ -216,10 +233,26 @@ impl RelatedSelection {
         source_sha: Option<&str>,
         isolate_runtime: bool,
     ) -> Result<()> {
+        self.assess_evidence(
+            store.evidence_for_work(
+                self.context.project_id,
+                &self.context.work_item_key,
+                source_sha,
+                self.context.branch_id,
+            )?,
+            source_sha,
+            isolate_runtime,
+        )
+    }
+    fn assess_evidence(
+        &mut self,
+        assessments: Vec<EvidenceAssessment>,
+        source_sha: Option<&str>,
+        isolate_runtime: bool,
+    ) -> Result<()> {
         let work_key = self.context.work_item_key.as_str();
         let branch = self.context.branch_id;
-        let assessments = store
-            .evidence_for_work(self.context.project_id, work_key, source_sha, branch)?
+        let assessments = assessments
             .into_iter()
             .filter(|a| {
                 !isolate_runtime
@@ -238,7 +271,7 @@ impl RelatedSelection {
         }
         for assessment in assessments {
             if let Some(source) = &assessment.evidence.source {
-                self.ids.insert(source.id);
+                self.sources.insert(source.id, source.clone());
             }
             let item = assessment.evidence.item;
             if !assessment.missing_bindings.is_empty() {
@@ -296,18 +329,7 @@ impl RelatedSelection {
         self.context.requested_source_sha = source_sha.map(str::to_owned);
         Ok(())
     }
-    pub(crate) fn finish(mut self, store: &Store) -> Result<RelatedWorkContext> {
-        let source_revisions = store
-            .sources(self.context.project_id)?
-            .into_iter()
-            .filter(|s| self.ids.contains(&s.id))
-            .map(SourceVersion::from)
-            .collect::<Vec<_>>();
-        let source_issues = source_revisions
-            .iter()
-            .filter(|s| s.freshness != Freshness::Fresh)
-            .map(|s| format!("source {} is {:?}", s.id, s.freshness))
-            .collect();
+    pub(crate) fn finish(self, store: &Store) -> Result<RelatedWorkContext> {
         let actual = store.project(self.context.project_id)?.project_revision;
         if actual != self.context.project_revision {
             return Err(Error::RevisionConflict {
@@ -315,8 +337,51 @@ impl RelatedSelection {
                 actual,
             });
         }
+        self.finish_snapshot()
+    }
+    fn finish_snapshot(mut self) -> Result<RelatedWorkContext> {
+        let mut sources = self.sources.into_values().collect::<Vec<_>>();
+        // Preserve the trusted legacy catalog ordering and metadata semantics.
+        sources.sort_by(|a, b| (&a.domain, &a.locator, a.id).cmp(&(&b.domain, &b.locator, b.id)));
+        let source_revisions = sources
+            .into_iter()
+            .map(SourceVersion::from)
+            .collect::<Vec<_>>();
+        self.context.source_issues = source_revisions
+            .iter()
+            .filter(|s| s.freshness != Freshness::Fresh)
+            .map(|s| format!("source {} is {:?}", s.id, s.freshness))
+            .collect();
         self.context.source_revisions = source_revisions;
-        self.context.source_issues = source_issues;
         Ok(self.context)
     }
+}
+
+/// Read only the selected workstream's typed related facts from one immutable
+/// authorized snapshot. Opaque dependency boundaries are retained as gaps; a
+/// source-declared completed target outside this scope cannot satisfy them.
+/// This does not authorize execution or implement cross-stream delivery adoption.
+pub fn related_work_in_workstream(
+    read: &WorkstreamRead,
+    work_key: &str,
+    branch: Option<Id>,
+    source_sha: Option<&str>,
+    paths: Option<&[String]>,
+) -> Result<RelatedWorkContext> {
+    let work = read.work_item(work_key)?;
+    let graph = read.dependency_closure(work_key, true)?;
+    let mut selection = RelatedSelection::from_graph(
+        read.project_id(),
+        work,
+        branch,
+        graph.graph,
+        graph.unavailable_dependencies,
+    )?;
+    selection.select_decisions(read.decisions_for_work(work_key, paths)?)?;
+    selection.assess_evidence(
+        read.context_evidence_for_work(work_key, source_sha, branch)?,
+        source_sha,
+        true,
+    )?;
+    crate::public_context(selection.finish_snapshot())
 }

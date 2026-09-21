@@ -16,7 +16,7 @@ pub(crate) fn projections<T: DeserializeOwned>(
     kind: EntityKind,
     key: Option<&str>,
 ) -> Result<Vec<Projected<T>>> {
-    matching_projections(conn, project, kind, key, false)
+    matching_projections(conn, project, kind, key, false, false)
 }
 
 fn matching_projections<T: DeserializeOwned>(
@@ -25,7 +25,13 @@ fn matching_projections<T: DeserializeOwned>(
     kind: EntityKind,
     key: Option<&str>,
     match_id: bool,
+    scoped: bool,
 ) -> Result<Vec<Projected<T>>> {
+    let visibility = if scoped {
+        crate::scoped_read::visible(table(kind), "e.id")
+    } else {
+        "1".into()
+    };
     let source_columns = SOURCE_COLUMNS
         .split(',')
         .map(|c| format!("s.{c}"))
@@ -36,7 +42,7 @@ fn matching_projections<T: DeserializeOwned>(
         "SELECT {source_columns},e.payload_json,p.project_revision FROM {} e
         JOIN sources s ON e.source_id=s.id AND e.project_id=s.project_id
         JOIN projects p ON e.project_id=p.id
-        WHERE e.project_id=?1 AND e.active=1 AND s.active=1 AND (?2 IS NULL OR e.external_key=?2 OR (?3 AND e.id=?2))
+        WHERE ({visibility}) AND e.project_id=?1 AND e.active=1 AND s.active=1 AND (?2 IS NULL OR e.external_key=?2 OR (?3 AND e.id=?2))
         ORDER BY e.external_key",
         table(kind)
     );
@@ -59,6 +65,14 @@ fn matching_projections<T: DeserializeOwned>(
         .map_err(db_error)?
         .collect::<rusqlite::Result<Vec<_>>>()
         .map_err(db_error)
+}
+
+pub(crate) fn scoped_projections<T: DeserializeOwned>(
+    conn: &Connection,
+    project: Id,
+    kind: EntityKind,
+) -> Result<Vec<Projected<T>>> {
+    matching_projections(conn, project, kind, None, false, true)
 }
 
 pub(crate) fn projection<T: DeserializeOwned>(
@@ -89,7 +103,8 @@ impl Store {
                 "use the decision/evidence domain reader for these object kinds".into(),
             ));
         }
-        let mut rows = matching_projections(&self.conn, project, kind, Some(reference), true)?;
+        let mut rows =
+            matching_projections(&self.conn, project, kind, Some(reference), true, false)?;
         if rows.len() > 1 {
             return Err(Error::InvalidInput(format!(
                 "ambiguous {kind:?} reference {reference}"

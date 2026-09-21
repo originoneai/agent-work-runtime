@@ -30,8 +30,8 @@ pub struct ScopedCursor<T> {
 /// current authenticated grants for every new request and revalidate at action
 /// boundaries. No writes, raw Store, or filesystem readers are exposed here.
 pub struct WorkstreamRead {
-    store: Store,
-    project: Id,
+    pub(super) store: Store,
+    pub(super) project: Id,
     stream: Workstream,
     revision: Revision,
     binding: String,
@@ -155,7 +155,7 @@ impl WorkstreamRead {
         self.revision
     }
 
-    fn require(&self, kind: &str, id: Id) -> Result<()> {
+    pub(super) fn require(&self, kind: &str, id: Id) -> Result<()> {
         let allowed: bool = self
             .store
             .conn

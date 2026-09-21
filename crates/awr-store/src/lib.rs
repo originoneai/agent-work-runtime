@@ -25,6 +25,7 @@ mod resume;
 mod runtime_lease;
 mod schema;
 mod scope_membership;
+mod scoped_context;
 mod scoped_read;
 mod search;
 mod session;
@@ -54,6 +55,7 @@ pub use search::{SearchHit, SearchQuery, SearchReport};
 use serde::Serialize;
 pub use source_changes::{ProjectionChange, SourceState};
 use std::{path::Path, time::Duration};
+pub use work::{ScopedDependencyGraph, UnavailableDependency};
 
 const APPLICATION_ID: i64 = 0x41575231;
 /// Schema written by this build. Exposed for offline host compatibility negotiation.

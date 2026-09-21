@@ -221,6 +221,24 @@ reader's scope. Recovery candidates are filtered before selecting the newest two
 access, retain path/size/digest checks, and recheck the binding before returning
 content. Reading a report does not promote its evidence level.
 
+The typed context readers use that same visibility set for goals, rules, current
+work, accepted decisions and evidence associations. `dependency_closure` walks
+only visible active tasks. A missing or inaccessible target produces an opaque
+`unavailable_dependencies` entry containing the declaring task and an edge
+reference; it reveals neither the target's identity/status nor its descendants.
+Optional references are excluded when requesting required dependencies. Visible
+cycles remain explicit, and an unavailable required dependency makes required
+context incomplete. `awr_context::related_work_in_workstream` assembles these
+scoped facts without access to the underlying Store. This is not cross-stream
+versioned delivery adoption or execution admission.
+
+Current-context session, checkpoint, execution and runtime-evidence readers also
+check ownership history. Moving a task away and back does not make earlier
+ownership generations current again. Historical receipts remain readable in
+their original scope; ordinary work progress does not change ownership. Active
+session selection applies scope before testing ambiguity. Legacy single-scope
+dependency and related-fact responses keep their previous shape.
+
 These are frozen read APIs, not reusable execution grants. Integrations must load
 current authenticated policy for each request and revalidate authority at action
 boundaries. Default context compilation, versioned semantic context identities,

@@ -195,8 +195,27 @@ impl Store {
         agent: Option<&str>,
         branch: Option<Id>,
     ) -> Result<Session> {
+        self.select_active_session_scoped(project, explicit, work, agent, branch, false)
+    }
+    pub(crate) fn select_active_session_scoped(
+        &self,
+        project: Id,
+        explicit: Option<Id>,
+        work: Option<Id>,
+        agent: Option<&str>,
+        branch: Option<Id>,
+        scoped: bool,
+    ) -> Result<Session> {
         self.project(project)?;
-        let sessions = self.conn.prepare(&format!("SELECT {SESSION_COLUMNS} FROM sessions WHERE project_id=?1 AND status='active' AND (?2 IS NULL OR id=?2) AND (?3 IS NULL OR work_item_id=?3) AND (?4 IS NULL OR agent_id=?4) AND (?2 IS NOT NULL OR branch_id IS ?5) ORDER BY id LIMIT 2")).map_err(db_error)?
+        let visibility = if scoped {
+            format!(
+                "{} AND (work_item_id IS NULL OR EXISTS(SELECT 1 FROM session_workstreams b JOIN workstream_ownership o ON o.project_id=b.project_id AND o.work_item_id=b.work_item_id AND o.workstream_id=b.workstream_id AND o.revision=b.ownership_revision WHERE b.session_id=sessions.id))",
+                crate::scoped_read::visible("sessions", "sessions.id")
+            )
+        } else {
+            "1".into()
+        };
+        let sessions = self.conn.prepare(&format!("SELECT {SESSION_COLUMNS} FROM sessions WHERE ({visibility}) AND project_id=?1 AND status='active' AND (?2 IS NULL OR id=?2) AND (?3 IS NULL OR work_item_id=?3) AND (?4 IS NULL OR agent_id=?4) AND (?2 IS NOT NULL OR branch_id IS ?5) ORDER BY id LIMIT 2")).map_err(db_error)?
             .query_map(params![project.to_string(),explicit.map(|id|id.to_string()),work.map(|id|id.to_string()),agent,branch.map(|id|id.to_string())],session_row).map_err(db_error)?.collect::<rusqlite::Result<Vec<_>>>().map_err(db_error)?;
         match sessions.len() {
             0 => Err(Error::NotFound(

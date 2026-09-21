@@ -30,7 +30,7 @@ pub use hard::{
 };
 pub use related::{
     DecisionFact, DecisionGap, DependencyFact, EvidenceGap, EvidenceSummary, RelatedWorkContext,
-    related_work,
+    related_work, related_work_in_workstream,
 };
 
 /// Withholding selected facts must never produce a falsely complete context packet.
