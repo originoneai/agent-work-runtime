@@ -1,6 +1,7 @@
 //! Validate the owned schema against the shipped migrations without repairing it.
 use crate::{
-    CATALOG_SQL, DOMAIN_SQL, DRAFT_WORK_SQL, MigrationInfo, SCHEMA_VERSION, SEARCH_SQL, db_error,
+    CATALOG_SQL, DOMAIN_SQL, DRAFT_WORK_SQL, MigrationInfo, SCHEMA_VERSION, SEARCH_SQL,
+    WORKSTREAM_SQL, db_error,
 };
 use awr_core::{Error, Result};
 use rusqlite::Connection;
@@ -9,7 +10,7 @@ use std::{collections::BTreeMap, sync::OnceLock};
 type Definition = (String, String, String);
 type Objects = BTreeMap<String, Definition>;
 static EXPECTED: OnceLock<std::result::Result<Vec<Objects>, String>> = OnceLock::new();
-const MIGRATION_NAMES: [&str; 4] = ["catalog", "domain", "search", "draft_work"];
+const MIGRATION_NAMES: [&str; 5] = ["catalog", "domain", "search", "draft_work", "workstreams"];
 
 fn objects(conn: &Connection) -> rusqlite::Result<Objects> {
     conn.prepare("SELECT name,type,tbl_name,sql FROM sqlite_master WHERE sql IS NOT NULL AND name NOT LIKE 'sqlite_%' ORDER BY name")?
@@ -24,7 +25,13 @@ fn expected() -> Result<&'static Vec<Objects>> {
                 let conn = Connection::open_in_memory()?;
                 conn.pragma_update(None, "legacy_alter_table", true)?;
                 let mut versions = Vec::new();
-                for sql in [CATALOG_SQL, DOMAIN_SQL, SEARCH_SQL, DRAFT_WORK_SQL] {
+                for sql in [
+                    CATALOG_SQL,
+                    DOMAIN_SQL,
+                    SEARCH_SQL,
+                    DRAFT_WORK_SQL,
+                    WORKSTREAM_SQL,
+                ] {
                     conn.execute_batch(sql)?;
                     versions.push(objects(&conn)?);
                 }

@@ -303,6 +303,9 @@ pub struct ProjectionBatch {
     pub decisions: Vec<Decision>,
     pub evidence: Vec<Evidence>,
     pub warnings: Vec<String>,
+    /// Explicit source-owned scope definitions; absence retains legacy behavior.
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub workstream_projection: Option<crate::WorkstreamProjection>,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]

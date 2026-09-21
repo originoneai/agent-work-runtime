@@ -6,7 +6,7 @@ pub const YAML_READ_CAP: u64 = 4 * 1024 * 1024;
 /// Inclusive byte limits for the supported source adapters, independent of transport.
 pub fn source_read_cap(adapter: &str) -> Result<u64> {
     match adapter {
-        "yaml-ledger-v1" => Ok(YAML_READ_CAP),
+        "yaml-ledger-v1" | "yaml-workstream-ledger-v1" => Ok(YAML_READ_CAP),
         "markdown-ledger-v1"
         | "markdown-heading-v1"
         | "markdown-rules-v1"

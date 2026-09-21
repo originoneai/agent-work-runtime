@@ -159,6 +159,7 @@ impl Store {
             };
             tx.execute("INSERT INTO projects(id,external_key,name,root,authority_mode) VALUES(?1,?2,?3,?4,'source_first')",
                 params![project.id.to_string(),external_key,name,project.root.to_str()]).map_err(db_error)?;
+            crate::workstream::ensure_legacy(&tx, &project.id.to_string())?;
             project
         };
         tx.commit().map_err(db_error)?;

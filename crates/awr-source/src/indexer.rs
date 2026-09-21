@@ -75,6 +75,7 @@ impl IndexReport {
 pub fn source_adapter(name: &str) -> Result<Box<dyn SourceAdapter>> {
     match name {
         "yaml-ledger-v1" => Ok(Box::new(YamlLedgerAdapter)),
+        "yaml-workstream-ledger-v1" => Ok(Box::new(crate::YamlWorkstreamLedgerAdapter)),
         "markdown-ledger-v1" => Ok(Box::new(crate::MarkdownLedgerAdapter)),
         "markdown-heading-v1" => Ok(Box::new(MarkdownHeadingAdapter)),
         "markdown-rules-v1" => Ok(Box::new(MarkdownRulesAdapter)),
@@ -252,6 +253,9 @@ fn process_project(
         }
         plans.push((key, spec, adapter, discovered));
     }
+    // The complete workstream ledger validates goal references against the
+    // candidate's already indexed supporting sources, regardless of TOML order.
+    plans.sort_by_key(|(_, spec, _, _)| spec.adapter == "yaml-workstream-ledger-v1");
     let mut seen = BTreeSet::new();
     let mut discovered_mappings = BTreeSet::new();
     for (key, spec, adapter, discovered) in plans {
@@ -359,6 +363,11 @@ fn process_project(
             }
         }
     }
+    if mode.is_some() && report.ok {
+        if let Err(error) = store.workstream_catalog(project.id) {
+            report.issue("workstream_catalog", None, &error);
+        }
+    }
     report.project_revision = store.project(project.id)?.project_revision;
     report.change_window.through_revision = report.project_revision;
     report.projection_complete = report.ok && report.pending == 0;
@@ -383,7 +392,10 @@ fn index_one(
             domain: &spec.domain,
             role: &spec.role,
             locator: identity,
-            format: if spec.adapter == "yaml-ledger-v1" {
+            format: if matches!(
+                spec.adapter.as_str(),
+                "yaml-ledger-v1" | "yaml-workstream-ledger-v1"
+            ) {
                 "yaml"
             } else {
                 "markdown"

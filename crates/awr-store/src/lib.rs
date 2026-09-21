@@ -33,6 +33,7 @@ pub use source_lock::SourceLock;
 mod transaction;
 mod work;
 mod work_action;
+mod workstream;
 use awr_core::{Error, Result, now_millis};
 pub use catalog::SourceRegistration;
 pub use checkpoint_save::{
@@ -52,11 +53,12 @@ use std::{path::Path, time::Duration};
 
 const APPLICATION_ID: i64 = 0x41575231;
 /// Schema written by this build. Exposed for offline host compatibility negotiation.
-pub const SCHEMA_VERSION: i64 = 4;
+pub const SCHEMA_VERSION: i64 = 5;
 const CATALOG_SQL: &str = include_str!("../migrations/001_catalog.sql");
 const DOMAIN_SQL: &str = include_str!("../migrations/002_domain.sql");
 const SEARCH_SQL: &str = include_str!("../migrations/003_search.sql");
 const DRAFT_WORK_SQL: &str = include_str!("../migrations/004_draft_work.sql");
+const WORKSTREAM_SQL: &str = include_str!("../migrations/005_workstreams.sql");
 
 /// Domain operations own database writes; no SQL handle is exposed to callers.
 ///
@@ -401,6 +403,11 @@ impl Store {
                     tx.execute_batch(&sql).map_err(db_error)?;
                 }
                 tx.execute("INSERT INTO schema_migrations(version,name,applied_at) VALUES(4,'draft_work',?1)",[now_millis()?]).map_err(db_error)?;
+            }
+            if version < 5 {
+                tx.execute_batch(WORKSTREAM_SQL).map_err(db_error)?;
+                workstream::migrate_legacy(&tx)?;
+                tx.execute("INSERT INTO schema_migrations(version,name,applied_at) VALUES(5,'workstreams',?1)",[now_millis()?]).map_err(db_error)?;
             }
             tx.pragma_update(None, "user_version", SCHEMA_VERSION)
                 .map_err(db_error)?;

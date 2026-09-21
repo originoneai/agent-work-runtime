@@ -50,7 +50,7 @@ pub use safe_fs::{open_dir_exact, open_file_exact};
 pub use yaml_create::{
     PreparedWorkCreation, prepare_work_creation, prepare_work_creation_with_fields,
 };
-pub use yaml_ledger::YamlLedgerAdapter;
+pub use yaml_ledger::{YamlLedgerAdapter, YamlWorkstreamLedgerAdapter};
 pub use yaml_mutation::{
     PreparedYamlMutation, parse_mutation_projection, prepare_yaml_mutation,
     read_yaml_mutation_record, yaml_field_writable,

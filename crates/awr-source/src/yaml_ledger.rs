@@ -7,6 +7,31 @@ use serde_json::Value;
 use std::{collections::BTreeSet, path::Path};
 
 pub struct YamlLedgerAdapter;
+/// Explicit protocol opt-in. Older builds reject this adapter rather than
+/// silently dropping ownership fields from an otherwise valid YAML ledger.
+pub struct YamlWorkstreamLedgerAdapter;
+
+impl SourceAdapter for YamlWorkstreamLedgerAdapter {
+    fn name(&self) -> &'static str {
+        "yaml-workstream-ledger-v1"
+    }
+    fn discover(
+        &self,
+        root: &Path,
+        manifest: &Manifest,
+        spec: &SourceSpec,
+    ) -> Result<Vec<Locator>> {
+        YamlLedgerAdapter.discover(root, manifest, spec)
+    }
+    fn parse(
+        &self,
+        snapshot: &SourceSnapshot,
+        context: &ParseContext<'_>,
+        spec: &SourceSpec,
+    ) -> Result<ProjectionBatch> {
+        YamlLedgerAdapter.parse(snapshot, context, spec)
+    }
+}
 
 struct Entry<'a> {
     key: String,
@@ -206,7 +231,12 @@ impl SourceAdapter for YamlLedgerAdapter {
             ));
         }
         let mapping = crate::LedgerMapping::from_spec(spec)?;
-        let result = Self::parse_document(snapshot, context, &mapping);
+        let result = Self::parse_document(
+            snapshot,
+            context,
+            &mapping,
+            spec.adapter == "yaml-workstream-ledger-v1",
+        );
         result.map_err(|mut error| {
             if let Error::InvalidSource(diagnostic) = &mut error {
                 diagnostic.location.locator = Some(snapshot.locator.clone());
@@ -238,6 +268,7 @@ impl YamlLedgerAdapter {
         snapshot: &SourceSnapshot,
         context: &ParseContext<'_>,
         mapping: &crate::LedgerMapping,
+        scoped: bool,
     ) -> Result<ProjectionBatch> {
         let yaml: serde_yaml_ng::Value = serde_yaml_ng::from_str(snapshot.text()?)
         .map_err(|error| Error::InvalidSource(Box::new(SourceDiagnostic {
@@ -253,6 +284,11 @@ impl YamlLedgerAdapter {
         let document = serde_json::to_value(yaml)?;
         awr_core::ensure_public_value(&document)?;
         let document = mapping.document(document)?;
+        if !scoped && document.get("workstreams").is_some() {
+            return Err(Error::Unsupported(
+                "workstream declarations require yaml-workstream-ledger-v1".into(),
+            ));
+        }
         if !document.is_object()
             || !["work_items", "milestones", "goals"]
                 .iter()
@@ -549,8 +585,104 @@ impl YamlLedgerAdapter {
             parse_evidence(context, snapshot, value, &work, &pointer, &mut batch)?;
             batch.work_items.push(work);
         }
+        if scoped {
+            batch.workstream_projection = Some(parse_workstreams(&document, context, &batch)?);
+        }
         Ok(batch)
     }
+}
+
+fn parse_workstreams(
+    document: &Value,
+    context: &ParseContext<'_>,
+    batch: &ProjectionBatch,
+) -> Result<awr_core::WorkstreamProjection> {
+    use awr_core::{
+        Workstream, WorkstreamCatalog, WorkstreamProjection, WorkstreamState,
+        WorkstreamWorkBinding, validate_workstream_ownership,
+    };
+    use serde::Deserialize;
+    #[derive(Deserialize)]
+    #[serde(deny_unknown_fields)]
+    struct Definition {
+        id: Id,
+        external_key: String,
+        title: String,
+        state: WorkstreamState,
+        authority_version: u64,
+        goal_keys: Vec<String>,
+        acceptance_contracts: Vec<String>,
+    }
+    #[derive(Deserialize)]
+    #[serde(deny_unknown_fields)]
+    struct Definitions {
+        version: u32,
+        legacy_default: Option<Id>,
+        definitions: Vec<Definition>,
+    }
+    let definitions: Definitions = serde_json::from_value(document["workstreams"].clone()).map_err(|_| invalid(
+        "/workstreams", "workstreams.catalog", "workstream definitions do not match the versioned schema",
+        "Supply version, definitions and optional legacy_default; each definition needs a stable ID, key, title, state, authority_version, goal_keys and acceptance_contracts."
+    ))?;
+    let project_id = context.source.project_id.to_string();
+    let catalog = WorkstreamCatalog {
+        version: definitions.version,
+        project_id: project_id.clone(),
+        legacy_default: definitions.legacy_default,
+        workstreams: definitions
+            .definitions
+            .into_iter()
+            .map(|d| Workstream {
+                id: d.id,
+                project_id: project_id.clone(),
+                external_key: d.external_key,
+                title: d.title,
+                state: d.state,
+                authority_version: d.authority_version,
+                goal_keys: d.goal_keys,
+                acceptance_contracts: d.acceptance_contracts,
+            })
+            .collect(),
+    };
+    catalog.validate()?;
+    let scopes = catalog
+        .workstreams
+        .iter()
+        .map(|s| (s.external_key.as_str(), s.id))
+        .collect::<std::collections::BTreeMap<_, _>>();
+    let works = batch
+        .work_items
+        .iter()
+        .map(|w| (w.meta.external_key.as_str(), w.meta.id.to_string()))
+        .collect::<std::collections::BTreeMap<_, _>>();
+    let mut ownership = Vec::new();
+    for entry in entries(document, "work_items")? {
+        let scope = entry.value["workstream"]
+            .as_str()
+            .and_then(|key| scopes.get(key))
+            .ok_or_else(|| {
+                invalid(
+                    &format!("{}/workstream", entry.pointer),
+                    "workstreams.ownership",
+                    "work needs exactly one declared workstream key",
+                    "Set workstream to the external_key of a definition in this ledger.",
+                )
+            })?;
+        ownership.push(WorkstreamWorkBinding {
+            project_id: project_id.clone(),
+            workstream_id: *scope,
+            work_item_id: works
+                .get(entry.key.as_str())
+                .ok_or_else(|| Error::SourceConflict("missing parsed work identity".into()))?
+                .clone(),
+        });
+    }
+    validate_workstream_ownership(
+        &catalog,
+        &works.into_values().collect::<Vec<_>>(),
+        &ownership,
+    )?;
+    Ok(WorkstreamProjection { catalog, ownership })
 }
 
 fn edge(
