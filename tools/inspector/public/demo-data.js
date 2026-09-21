@@ -216,13 +216,6 @@
           { code: 'plan_not_found', target: 'project', detail: '项目没有可索引的计划文件' },
         ],
       },
-      // 概览那张对比图用的数字（公开 benchmark，不是本项目实测）
-      context_sample: {
-        full_corpus_tokens: 18955,
-        json_dump_tokens: 12748,
-        compiled_tokens: 4998,
-        note: '公开 benchmark 值（39 个活跃任务，o200k_base 计数），不是本项目实测。',
-      },
     },
 
     /** work show 的响应 */

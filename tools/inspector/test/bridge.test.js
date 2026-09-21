@@ -426,3 +426,72 @@ test('刷新会作废在途的详情请求', () => {
   assert.equal(guard.isCurrent(older), false);
   assert.equal(guard.isCurrent(fresh), true);
 });
+
+test('退出码非 0 但带完整报告时，报告仍然交给前端', async () => {
+  // `context compile` 判定上下文不完整时会退出 1，可 stdout 上的报告是完整的——
+  // 那份诊断正是这时候最该看的东西，不能因为退出码就丢掉。
+  const b = await startBridge({ env: { STUB_MODE: 'incomplete' } });
+  try {
+    const r = await (
+      await fetch(`${b.base}/api/context/compile`, {
+        method: 'POST',
+        headers: Object.assign({ 'content-type': 'application/json' }, GUARD),
+        body: JSON.stringify({ work: 'RECON-020', budget: 8000 }),
+      })
+    ).json();
+
+    assert.equal(r.ok, false, '退出码非 0，如实报为失败');
+    assert.equal(r.error.code, 'ContextIncomplete');
+    assert.ok(r.data, '报告必须一并带上，否则完整性面板什么也显示不了');
+    assert.equal(r.data.completeness.status, 'CONTEXT INCOMPLETE');
+    assert.equal(r.data.completeness.rules_complete, false);
+    assert.ok(r.data.work_context.rendered_context.length > 0);
+  } finally {
+    await b.stop();
+  }
+});
+
+test('纯错误响应不会被误当成报告', async () => {
+  // 只有 code/message 的错误壳子不算载荷。
+  const b = await startBridge({ env: { STUB_MODE: 'stderrjson' } });
+  try {
+    const r = await (await fetch(`${b.base}/api/status`, { headers: GUARD })).json();
+    assert.equal(r.ok, false);
+    assert.equal(r.error.code, 'SourceStale');
+    assert.ok(!r.data, '错误壳子不该被当成数据交给前端');
+  } finally {
+    await b.stop();
+  }
+});
+
+// ───────────── 8. issue #63：预算上限 ─────────────
+
+test('budget 放得到 AWR 的上限，界面不该再卡在 16000', async () => {
+  // issue #63 第 1 条：下拉框封顶 16000。
+  // 真实上限是 100000（crates/awr-context/src/budget.rs），不是 issue 里说的 200000——
+  // 那个数是桥接自己的旧常量。
+  const r = await (
+    await fetch(`${bridge.base}/api/context/compile`, {
+      method: 'POST',
+      headers: Object.assign({ 'content-type': 'application/json' }, GUARD),
+      body: JSON.stringify({ work: 'RECON-001', budget: 100000 }),
+    })
+  ).json();
+  assert.ok(r.command.includes('--budget 100000'), `预算没透传: ${r.command}`);
+});
+
+test('超过 AWR 上限的 budget 直接拒绝，不悄悄换成默认值', async () => {
+  const r = await (
+    await fetch(`${bridge.base}/api/context/compile`, {
+      method: 'POST',
+      headers: Object.assign({ 'content-type': 'application/json' }, GUARD),
+      body: JSON.stringify({ work: 'RECON-001', budget: 100001 }),
+    })
+  ).json();
+  // 之前是不带 --budget 让 AWR 用默认 5000——一个 105000 的请求会以 5000 跑一遍再失败。
+  // 现在明确拒，错误里写清范围。
+  assert.equal(r.ok, false);
+  assert.equal(r.error.code, 'BadRequest');
+  assert.ok(/100000/.test(r.error.message), `错误信息要给出范围: ${r.error.message}`);
+  assert.ok(!r.command, '不该起子进程');
+});
