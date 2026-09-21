@@ -3,7 +3,11 @@ use serde_json::{Value, json};
 use std::process::ExitCode;
 
 #[derive(Parser)]
-#[command(name = "awr-server", version, about = "AWR Team server skeleton")]
+#[command(
+    name = "awr-server",
+    version,
+    about = "AWR Team coordinator and scoped read service"
+)]
 struct Args {
     #[command(subcommand)]
     command: Command,
@@ -11,6 +15,11 @@ struct Args {
 
 #[derive(Subcommand)]
 enum Command {
+    /// Run the authenticated, operator-bound multi-project workstream read service.
+    Serve {
+        #[arg(long)]
+        config: std::path::PathBuf,
+    },
     /// Apply owner migrations, then refuse to start if schema is incompatible.
     Migrate {
         /// Re-apply the application role grants after migrating (idempotent).
@@ -59,6 +68,10 @@ enum Command {
 async fn main() -> ExitCode {
     let args = Args::parse();
     match args.command {
+        Command::Serve { config } => match awr_server::service::serve(&config).await {
+            Ok(()) => ExitCode::SUCCESS,
+            Err(error) => fail("ServiceFailed", error),
+        },
         Command::Query { op, body } => run_query(&op, body.as_deref()).await,
         Command::Command { op, body } => run_command(&op, body.as_deref(), None).await,
         Command::ValidateCommand {

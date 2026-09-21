@@ -202,11 +202,17 @@ dependencies = [
 name = "awr-server"
 version = "0.4.0"
 dependencies = [
+ "awr-core",
  "awr-team",
  "awr-team-pg",
+ "axum",
  "clap",
+ "reqwest",
+ "serde",
  "serde_json",
  "tokio",
+ "tokio-postgres",
+ "toml",
 ]
 
 [[package]]
