@@ -5,7 +5,7 @@ edition.workspace = true
 rust-version.workspace = true
 license.workspace = true
 repository.workspace = true
-description = "AWR Team coordinator and authenticated scoped read service."
+description = "AWR Team coordinator with scoped HTTP queries and session journaling."
 
 [dependencies]
 awr-team-pg = { path = "../awr-team-pg" }

@@ -38,6 +38,8 @@ fn token_id(token: &str) -> PgResult<&str> {
 }
 
 pub(crate) struct ReaderAuthority {
+    pub actor_id: String,
+    pub client_id: String,
     pub access: WorkstreamAccess,
     pub catalog: WorkstreamCatalog,
     pub snapshot: String,
@@ -57,6 +59,25 @@ pub(crate) async fn authenticate(
     project: &str,
     token: &str,
 ) -> PgResult<ReaderAuthority> {
+    authenticate_inner(tx, tenant, project, token, false).await
+}
+
+pub(crate) async fn authenticate_writer(
+    tx: &Transaction<'_>,
+    tenant: &str,
+    project: &str,
+    token: &str,
+) -> PgResult<ReaderAuthority> {
+    authenticate_inner(tx, tenant, project, token, true).await
+}
+
+async fn authenticate_inner(
+    tx: &Transaction<'_>,
+    tenant: &str,
+    project: &str,
+    token: &str,
+    write: bool,
+) -> PgResult<ReaderAuthority> {
     let credential_id = token_id(token)?;
     let hash = workstream_credential_hash(token)?;
     crate::tx::bind_workstream_scope(tx, tenant, project).await?;
@@ -70,12 +91,17 @@ pub(crate) async fn authenticate(
         .ok_or(PgError::Forbidden)?;
     // Lock the project before identity/policy records; source/admin protocols
     // use the same admission -> project order.
+    // Writers keep the existing project serialization barrier until the
+    // operation-read-set protocol replaces it. Never upgrade a shared lock.
+    let project_query = if write {
+        "SELECT active_snapshot_id,coordinator_epoch,project_revision,status FROM awr_team.projects
+        WHERE tenant_id=$1 AND id=$2 FOR UPDATE"
+    } else {
+        "SELECT active_snapshot_id,coordinator_epoch,project_revision,status FROM awr_team.projects
+        WHERE tenant_id=$1 AND id=$2 FOR SHARE"
+    };
     let p = tx
-        .query_opt(
-            "SELECT active_snapshot_id,coordinator_epoch,project_revision,status FROM awr_team.projects
-        WHERE tenant_id=$1 AND id=$2 FOR SHARE",
-            &[&tenant, &project],
-        )
+        .query_opt(project_query, &[&tenant, &project])
         .await?
         .ok_or(PgError::Forbidden)?;
     let identity = tx.query_opt("SELECT c.actor_id,c.client_id,m.membership_version,m.role
@@ -145,6 +171,8 @@ pub(crate) async fn authenticate(
     };
     access.validate()?;
     Ok(ReaderAuthority {
+        actor_id: actor,
+        client_id: client,
         access,
         catalog,
         snapshot,

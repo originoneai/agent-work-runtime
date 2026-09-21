@@ -20,6 +20,7 @@ const QUERIES: &[&str] = &[
     "events.list",
     "session.inspect",
     "work.recovery",
+    "command.inspect",
 ];
 
 #[derive(Clone, Debug, Deserialize, Serialize)]
@@ -34,6 +35,7 @@ pub struct WorkstreamQuery {
     pub cursor: Option<String>,
     pub limit: Option<u16>,
     pub max_context_bytes: Option<usize>,
+    pub request_id: Option<String>,
 }
 
 impl WorkstreamQuery {
@@ -46,7 +48,10 @@ impl WorkstreamQuery {
         if !QUERIES.contains(&self.op.as_str()) {
             return Err(PgError::Unsupported("workstream query operation".into()));
         }
-        for id in [&self.work_id, &self.session_id].into_iter().flatten() {
+        for id in [&self.work_id, &self.session_id, &self.request_id]
+            .into_iter()
+            .flatten()
+        {
             if id.is_empty() || id.len() > 128 || id.chars().any(char::is_control) {
                 return Err(PgError::Protocol("invalid selector".into()));
             }
@@ -68,6 +73,7 @@ impl WorkstreamQuery {
                 .as_ref()
                 .is_some_and(|s| s.is_empty() || s.len() > 512 || s.chars().any(char::is_control))
             || self.max_context_bytes.is_some() && self.op != "work.prepare"
+            || self.request_id.is_some() != (self.op == "command.inspect")
             || matches!(self.op.as_str(), "capabilities" | "workstreams.list")
                 && (self.work_id.is_some()
                     || self.session_id.is_some()
@@ -75,8 +81,10 @@ impl WorkstreamQuery {
             || matches!(self.op.as_str(), "work.list" | "work.search")
                 && (self.work_id.is_some() || self.session_id.is_some())
             || self.op == "session.inspect" && self.session_id.is_none()
-            || matches!(self.op.as_str(), "work.prepare" | "work.recovery")
-                && self.work_id.is_none()
+            || matches!(
+                self.op.as_str(),
+                "work.prepare" | "work.recovery" | "command.inspect"
+            ) && self.work_id.is_none()
                 && self.session_id.is_none()
         {
             return Err(PgError::Protocol(
@@ -88,19 +96,24 @@ impl WorkstreamQuery {
 }
 
 pub struct WorkstreamReadStore {
-    pool: PgPool,
+    pool: std::sync::Arc<PgPool>,
 }
 
 impl WorkstreamReadStore {
     pub fn new(url: impl Into<String>) -> Self {
         Self {
-            pool: PgPool::new(url),
+            pool: std::sync::Arc::new(PgPool::new(url)),
         }
     }
     pub fn from_config(config: tokio_postgres::Config) -> Self {
         Self {
-            pool: PgPool::from_config(config),
+            pool: std::sync::Arc::new(PgPool::from_config(config)),
         }
+    }
+
+    /// Use the same pool and authority boundary for durable session commands.
+    pub fn commands(&self) -> crate::WorkstreamCommandStore {
+        crate::WorkstreamCommandStore::from_pool(self.pool.clone())
     }
 
     pub async fn query(
@@ -174,7 +187,7 @@ fn next_cursor(binding: &str, key: &str, revision: i64, index: i32) -> Value {
     )
 }
 
-async fn work_binding(
+pub(crate) async fn work_binding(
     tx: &Transaction<'_>,
     tenant: &str,
     project: &str,
@@ -206,7 +219,7 @@ async fn work_binding(
     ))
 }
 
-async fn read(
+pub(crate) async fn read(
     tx: &Transaction<'_>,
     tenant: &str,
     project: &str,
@@ -229,7 +242,8 @@ async fn read(
     if q.op == "capabilities" {
         return Ok(
             json!({"protocol":"awr-team-workstream","protocol_version":1,"queries":QUERIES,
-        "commands":[],"scope_id":"main","authentication":"bearer_per_request","authorization":"transactional_workstream_grants",
+        "commands":crate::workstream_command::COMMANDS,"scope_id":"main","authentication":"bearer_per_request","authorization":"transactional_workstream_grants",
+        "command_preconditions":"project_revision_v1","command_status_query":"command.inspect",
         "dependency_exports":false,"execution_admission":false,"artifact_content":false}),
         );
     }
@@ -299,6 +313,21 @@ async fn read(
     let c = cursor(q, &binding)?;
     let limit = i64::from(q.limit.unwrap_or(50));
     let data = match q.op.as_str() {
+        "command.inspect" => {
+            let work = resolved.work_item_id.as_deref().ok_or(PgError::Forbidden)?;
+            let (_, ownership) = work_binding(tx, tenant, project, auth, work).await?;
+            crate::workstream_command::inspect(
+                tx,
+                tenant,
+                project,
+                auth,
+                q.request_id.as_deref().ok_or(PgError::Forbidden)?,
+                work,
+                &stream,
+                ownership,
+            )
+            .await?
+        }
         "work.list" | "work.search" => {
             let term = q.search.clone().unwrap_or_default();
             // Filter before both the page and count. Search has no global corpus
@@ -433,7 +462,7 @@ async fn read(
         _ => return Err(PgError::Unsupported("workstream query operation".into())),
     };
     Ok(
-        json!({"protocol_version":1,"workstream_id":stream,"scope_id":"main","selection_basis":resolved.basis,
+        json!({"protocol_version":1,"workstream_id":stream,"authority_version":resolved.authority_version.to_string(),"scope_id":"main","selection_basis":resolved.basis,
         "coordinator_epoch":auth.epoch,"project_status":auth.project_status,"source_snapshot_id":auth.snapshot,"project_revision":auth.revision.to_string(),"data":data}),
     )
 }

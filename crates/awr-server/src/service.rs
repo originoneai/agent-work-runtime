@@ -1,6 +1,8 @@
-//! Operator-bound multi-project HTTP read service. Every request authenticates
+//! Operator-bound multi-project HTTP service. Every request authenticates
 //! inside PostgreSQL; tenant/actor/client/grants are never taken from its JSON.
-use awr_team_pg::{PgError, WorkstreamQuery, WorkstreamReadStore};
+use awr_team_pg::{
+    PgError, WorkstreamCommand, WorkstreamCommandStore, WorkstreamQuery, WorkstreamReadStore,
+};
 use axum::{
     Router,
     body::Bytes,
@@ -87,6 +89,7 @@ impl ServiceConfig {
 
 struct StateData {
     store: WorkstreamReadStore,
+    commands: WorkstreamCommandStore,
     projects: BTreeMap<String, ProjectBinding>,
     hosts: Vec<String>,
     permits: tokio::sync::Semaphore,
@@ -104,6 +107,7 @@ pub fn router(
         hosts.push(format!("localhost:{}", actual.port()));
     }
     let state = Arc::new(StateData {
+        commands: store.commands(),
         store,
         projects: config
             .projects
@@ -115,6 +119,7 @@ pub fn router(
     });
     Ok(Router::new()
         .route("/v1/projects/{project}/query", post(query))
+        .route("/v1/projects/{project}/command", post(command))
         .layer(DefaultBodyLimit::max(65536))
         .with_state(state))
 }
@@ -144,6 +149,25 @@ async fn query(
     headers: HeaderMap,
     body: Bytes,
 ) -> Response {
+    dispatch(state, key, headers, body, false).await
+}
+
+async fn command(
+    State(state): State<Arc<StateData>>,
+    Path(key): Path<String>,
+    headers: HeaderMap,
+    body: Bytes,
+) -> Response {
+    dispatch(state, key, headers, body, true).await
+}
+
+async fn dispatch(
+    state: Arc<StateData>,
+    key: String,
+    headers: HeaderMap,
+    body: Bytes,
+    write: bool,
+) -> Response {
     let host = headers.get("host").and_then(|h| h.to_str().ok());
     if headers.contains_key("origin")
         || !host.is_some_and(|h| {
@@ -172,24 +196,43 @@ async fn query(
     let Some(project) = state.projects.get(&key) else {
         return denied();
     };
-    let request: WorkstreamQuery = match serde_json::from_slice(&body) {
+    enum Request {
+        Query(WorkstreamQuery),
+        Command(WorkstreamCommand),
+    }
+    let parsed = if write {
+        serde_json::from_slice(&body).map(Request::Command)
+    } else {
+        serde_json::from_slice(&body).map(Request::Query)
+    };
+    let request = match parsed {
         Ok(r) => r,
         Err(_) => {
             return response(
                 StatusCode::BAD_REQUEST,
-                json!({"code":"InvalidInput","message":"invalid workstream query"}),
+                json!({"code":"InvalidInput","message":"invalid workstream request"}),
             );
         }
     };
     let Ok(_permit) = state.permits.try_acquire() else {
         return response(StatusCode::SERVICE_UNAVAILABLE, json!({"code":"Busy"}));
     };
-    let result = tokio::time::timeout(
-        Duration::from_secs(30),
-        state
-            .store
-            .query(&project.tenant_id, &project.project_id, token, request),
-    )
+    let result = tokio::time::timeout(Duration::from_secs(30), async {
+        match request {
+            Request::Query(q) => {
+                state
+                    .store
+                    .query(&project.tenant_id, &project.project_id, token, q)
+                    .await
+            }
+            Request::Command(c) => {
+                state
+                    .commands
+                    .execute(&project.tenant_id, &project.project_id, token, c)
+                    .await
+            }
+        }
+    })
     .await;
     match result {
         Ok(Ok(value)) => response(StatusCode::OK, value),
@@ -213,6 +256,25 @@ async fn query(
             StatusCode::CONFLICT,
             json!({"code":"CursorExpired","message":"refresh the scoped query"}),
         ),
+        Ok(Err(
+            e @ (PgError::PreconditionsChanged
+            | PgError::IdempotencyConflict
+            | PgError::EpochChanged
+            | PgError::ProjectNotAvailable
+            | PgError::RecoveryBlocked),
+        )) => {
+            let code = match e {
+                PgError::PreconditionsChanged => "PreconditionsChanged",
+                PgError::IdempotencyConflict => "IdempotencyConflict",
+                PgError::EpochChanged => "EpochChanged",
+                PgError::ProjectNotAvailable => "ProjectNotAvailable",
+                _ => "RecoveryBlocked",
+            };
+            response(
+                StatusCode::CONFLICT,
+                json!({"code":code,"message":e.to_string()}),
+            )
+        }
         Ok(Err(PgError::ContextIncomplete)) => response(
             StatusCode::CONFLICT,
             json!({"code":"ContextIncomplete","message":"required context exceeds the requested budget"}),
@@ -224,7 +286,7 @@ async fn query(
         // Never return SQL, driver errors, connection strings or source bodies.
         _ => response(
             StatusCode::SERVICE_UNAVAILABLE,
-            json!({"code":"Unavailable","message":"query could not be completed"}),
+            json!({"code":"Unavailable","message":"request outcome unavailable; inspect a command before retrying with its original identity"}),
         ),
     }
 }
@@ -248,7 +310,7 @@ pub async fn serve(path: &FilePath) -> Result<(), String> {
     let router = router(config, actual, WorkstreamReadStore::new(url))?;
     println!(
         "{}",
-        json!({"service":"awr-team-workstream-read","listen":actual.to_string(),"protocol_version":1})
+        json!({"service":"awr-team-workstream","listen":actual.to_string(),"protocol_version":1})
     );
     axum::serve(listener, router)
         .with_graceful_shutdown(async {

@@ -86,6 +86,8 @@ pub enum PgError {
     ContextIncomplete,
     #[error("serialized response exceeds service limit")]
     ResponseTooLarge,
+    #[error("command preconditions changed; refresh the selected work or session")]
+    PreconditionsChanged,
     #[error("source divergence")]
     SourceDivergence,
     #[error("restore incomplete")]

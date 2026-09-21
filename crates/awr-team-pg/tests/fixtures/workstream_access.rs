@@ -22,6 +22,29 @@ pub fn query(op: &str) -> WorkstreamQuery {
     serde_json::from_value(serde_json::json!({"protocol_version":1,"op":op})).unwrap()
 }
 
+pub fn command(
+    prepared: &serde_json::Value,
+    request: &str,
+    op: &str,
+    args: serde_json::Value,
+) -> awr_team_pg::WorkstreamCommand {
+    serde_json::from_value(serde_json::json!({"protocol_version":1,"request_id":request,"op":op,
+        "workstream_id":prepared["workstream_id"],"work_id":prepared["data"]["work_id"],
+        "coordinator_epoch":prepared["coordinator_epoch"],"expected_project_revision":prepared["project_revision"],
+        "expected_authority_version":prepared["authority_version"],"expected_ownership_version":prepared["data"]["ownership_version"],
+        "expected_contract_hash":prepared["data"]["contract_hash"],"args":args})).unwrap()
+}
+
+pub async fn prepare(store: &WorkstreamReadStore, token: &str, work: &str) -> serde_json::Value {
+    let mut q = query("work.prepare");
+    q.work_id = Some(work.into());
+    store.query(TENANT, PROJECT, token, q).await.unwrap()
+}
+
+pub async fn enable_writes(admin: &Client) {
+    admin.batch_execute("UPDATE awr_team.workstream_grants SET can_write=true,grant_version=grant_version+1 WHERE client_id='cli-a'").await.unwrap();
+}
+
 pub async fn setup() -> (MutexGuard<'static, ()>, Client, String, WorkstreamReadStore) {
     let (guard, admin, db) = common::fresh_team_schema().await;
     admin.batch_execute("INSERT INTO awr_team.tenants(id,name,status) VALUES('reader-tenant','Readers','active'),('other-tenant','Other','active');

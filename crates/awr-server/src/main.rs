@@ -6,7 +6,7 @@ use std::process::ExitCode;
 #[command(
     name = "awr-server",
     version,
-    about = "AWR Team coordinator and scoped read service"
+    about = "AWR Team coordinator and scoped HTTP service"
 )]
 struct Args {
     #[command(subcommand)]
@@ -15,7 +15,7 @@ struct Args {
 
 #[derive(Subcommand)]
 enum Command {
-    /// Run the authenticated, operator-bound multi-project workstream read service.
+    /// Run authenticated multi-project reads and durable session journaling.
     Serve {
         #[arg(long)]
         config: std::path::PathBuf,

@@ -127,7 +127,10 @@ async fn http_requires_live_auth_and_never_accepts_grants_or_identity_from_a_bod
         .json()
         .await
         .unwrap();
-    assert!(cap["commands"].as_array().unwrap().is_empty());
+    assert_eq!(
+        cap["commands"],
+        json!(["session.start", "session.checkpoint", "session.end"])
+    );
     assert_eq!(cap["execution_admission"], false);
     for field in ["tenant_id", "project_id", "actor_id", "client_id", "grants"] {
         let mut request = body.clone();
@@ -146,6 +149,131 @@ async fn http_requires_live_auth_and_never_accepts_grants_or_identity_from_a_bod
         .unwrap();
     assert_eq!(post(&server, "one", A, body.clone()).await.status(), 403);
     assert_eq!(post(&server, "one", B, body).await.status(), 200);
+}
+
+async fn post_command(server: &Server, token: &str, body: Value) -> reqwest::Response {
+    http()
+        .post(format!("{}/one/command", server.url))
+        .bearer_auth(token)
+        .json(&body)
+        .send()
+        .await
+        .unwrap()
+}
+
+async fn http_prepare(server: &Server) -> Value {
+    post(
+        server,
+        "one",
+        A,
+        json!({"protocol_version":1,"op":"work.prepare","work_id":"a"}),
+    )
+    .await
+    .json()
+    .await
+    .unwrap()
+}
+
+#[tokio::test]
+async fn http_session_journal_survives_an_unconsumed_reply_and_rejects_cross_client_writes() {
+    let (_guard, admin, _, store) = setup().await;
+    enable_writes(&admin).await;
+    let server = start(store).await;
+    let prepared = http_prepare(&server).await;
+    let request = serde_json::to_value(command(
+        &prepared,
+        "http-start",
+        "session.start",
+        json!({"conversation_id":"http-conversation"}),
+    ))
+    .unwrap();
+    let initial = post_command(&server, A, request.clone()).await;
+    assert_eq!(initial.status(), 200);
+    drop(initial); // The caller did not consume the committed result.
+    let inspected:Value=post(&server,"one",A,json!({"protocol_version":1,"op":"command.inspect","work_id":"a","request_id":"http-start"})).await.json().await.unwrap();
+    assert_eq!(inspected["data"]["state"], "committed");
+    let replay: Value = post_command(&server, A, request)
+        .await
+        .json()
+        .await
+        .unwrap();
+    assert_eq!(replay["replayed"], true);
+    assert_eq!(replay["receipt"], inspected["data"]["receipt"]);
+    let id = replay["receipt"]["data"]["session_id"].as_str().unwrap();
+    let prepared = http_prepare(&server).await;
+    let checkpoint=serde_json::to_value(command(&prepared,"http-checkpoint","session.checkpoint",json!({"session_id":id,
+        "expected_session_version":"1","context_hash":prepared["data"]["context_hash"],"next_action":"Review HTTP behavior","open_loops":["independent acceptance pending"]}))).unwrap();
+    assert_eq!(
+        post_command(&server, B, checkpoint.clone()).await.status(),
+        403
+    );
+    let saved = post_command(&server, A, checkpoint).await;
+    assert_eq!(saved.status(), 200);
+    assert_eq!(saved.headers()["cache-control"], "no-store");
+    let recovered: Value = post(
+        &server,
+        "one",
+        A,
+        json!({"protocol_version":1,"op":"session.inspect","session_id":id}),
+    )
+    .await
+    .json()
+    .await
+    .unwrap();
+    assert_eq!(
+        recovered["data"]["items"][0]["next_action"],
+        "Review HTTP behavior"
+    );
+    let end = serde_json::to_value(command(
+        &http_prepare(&server).await,
+        "http-end",
+        "session.end",
+        json!({"session_id":id,"expected_session_version":"2"}),
+    ))
+    .unwrap();
+    assert_eq!(post_command(&server, A, end).await.status(), 200);
+    let rows: i64 = admin
+        .query_one(
+            "SELECT count(*) FROM awr_team.operations WHERE client_id='cli-a'",
+            &[],
+        )
+        .await
+        .unwrap()
+        .get(0);
+    assert_eq!(rows, 3);
+}
+
+#[tokio::test]
+async fn http_command_conflicts_and_forged_authority_return_explicit_errors_without_writes() {
+    let (_guard, admin, _, store) = setup().await;
+    enable_writes(&admin).await;
+    let server = start(store).await;
+    let request = serde_json::to_value(command(
+        &http_prepare(&server).await,
+        "http-invalid",
+        "session.start",
+        json!({"conversation_id":"test"}),
+    ))
+    .unwrap();
+    let mut forged = request.clone();
+    forged["actor_id"] = json!("operator");
+    assert_eq!(post_command(&server, A, forged).await.status(), 400);
+    let mut stale = request.clone();
+    stale["expected_project_revision"] = json!("0");
+    let result = post_command(&server, A, stale).await;
+    assert_eq!(result.status(), 409);
+    assert_eq!(
+        result.json::<Value>().await.unwrap()["code"],
+        "PreconditionsChanged"
+    );
+    admin.batch_execute("UPDATE awr_team.workstream_grants SET can_write=false,grant_version=grant_version+1 WHERE client_id='cli-a'").await.unwrap();
+    assert_eq!(post_command(&server, A, request).await.status(), 403);
+    let rows: i64 = admin
+        .query_one("SELECT count(*) FROM awr_team.operations", &[])
+        .await
+        .unwrap()
+        .get(0);
+    assert_eq!(rows, 0);
 }
 
 #[tokio::test]

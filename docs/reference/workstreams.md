@@ -13,8 +13,8 @@ read APIs are available to trusted Rust integrations. Local L0/L1 context,
 required-fact completeness and context delta use scoped facts when sources
 explicitly enable workstreams. The shared personal MCP service has an explicit
 authenticated read boundary; unsupported shared operations are rejected for
-enabled workstreams. Team PostgreSQL now has an authenticated scoped HTTP read
-surface; authenticated writes and resource/dependency enforcement remain
+enabled workstreams. Team PostgreSQL now has authenticated scoped HTTP queries
+and session journaling; execution writes and resource/dependency enforcement remain
 separate integration work. These paths do not establish
 complete isolation for every CLI, MCP or Team operation.
 
@@ -171,9 +171,10 @@ progress. Historical data is never reassigned just to unblock enablement.
 
 `SourceStore` remains a trusted coordinator API, not a client authorization
 boundary. Source bundles cannot carry grants and activation grants no reader or
-writer permissions. The [Team HTTP read service](team-workstream-service.md)
-checks live credentials, actor/membership and grants transactionally. Authenticated
-writes, Team MCP, enabled-project backup/restore, and real-client acceptance remain outstanding;
+writer permissions. The [Team HTTP service](team-workstream-service.md)
+checks live credentials, actor/membership and grants transactionally. Session
+creation, checkpoints, closure and outcome lookup are supported; execution writes,
+Team MCP, enabled-project backup/restore, and real-client acceptance remain outstanding;
 the current legacy import/restore APIs refuse enabled projects. The shared
 personal MCP read boundary described elsewhere does not provide Team access.
 
