@@ -4,6 +4,8 @@ pub type PgResult<T> = Result<T, PgError>;
 
 #[derive(Debug, Error)]
 pub enum PgError {
+    #[error(transparent)]
+    Workstream(#[from] awr_core::WorkstreamError),
     #[error("schema incompatible: {0}")]
     SchemaIncompatible(String),
     #[error("idempotency conflict")]

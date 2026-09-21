@@ -17,6 +17,12 @@ enabled workstreams. Team PostgreSQL authorization and resource/dependency
 enforcement remain separate integration work. These paths do not establish
 complete isolation for every CLI, MCP or Team operation.
 
+The Team source coordinator also accepts an explicit multi-work source bundle
+and commits its catalog, ownership, contracts and required graph together. This
+operator API establishes source identity, not authenticated Team access or
+versioned delivery adoption. See the development boundary below before enabling
+it; legacy execution entrypoints refuse enabled projects.
+
 ## Identity and authority
 
 A project has one authoritative work graph and one or more workstreams. Each
@@ -93,6 +99,11 @@ already observed external effects. References do not implicitly become hard
 dependencies. Cross-project or cross-organization dependencies are outside this
 version of the contract.
 
+The Team source bundle can already represent and validate the acyclic
+`interface → sdk → integration` example across workstream ownership. This is
+source graph validation only. Delivery receipts, adoption, dispatch admission
+and selective invalidation are not yet implemented by that source path.
+
 ## Accounting and compatibility
 
 Progress uses an explicit versioned required-work set, not the number of tasks
@@ -116,6 +127,53 @@ Old dependency and ownership checks remain until replacement protocols pass
 compatibility checks.
 
 ## Verification boundary
+
+### Team source projection in the development branch
+
+PostgreSQL schema 10 retains `scope_id='main'` as the existing execution branch
+dimension. Workstream identity is separate. Upgrading schema creates a disabled
+mode for existing projects and leaves historical sessions/events unattributed;
+it does not enable workstreams or infer historical ownership.
+
+The trusted `SourceStore` accepts one `workstreams.json` with codec
+`awr-team-workstreams-v1`, containing a complete catalog and an array of
+`{workstream_id, contract}` entries. Nested contracts keep their closed V1 codec
+and hashes. `contract.json` and `workstreams.json` cannot coexist. The source
+package keeps its existing file-count and byte limits. Required dependencies in
+this bundle refer to exact work IDs in the same complete bundle; missing works,
+duplicate dependencies and cycles are rejected. Nonempty `graph.json` remains
+unsupported and is never silently dropped.
+
+The reviewed candidate must be activated explicitly with
+`SourceStore::activate_workstreams`. Its result separates `projection_hash` from
+the per-work `contract_hashes`. The legacy `activate` API retains the meaning of
+its singular `contract_hash` and refuses the new codec. Full manifest bytes,
+candidate digest, parser version, source epoch and reviewer are checked again
+before activation. Catalog, contracts, ownership, edges, mode and source pointer
+commit atomically. Rollback preserves the prior projection.
+
+This stage permits enablement only without existing session history or live
+claims/nonterminal executions. Legacy-session migration and reviewed ownership
+movement are not yet implemented for Team. Updates retain scope IDs, keys and
+ownership; authority changes require increased versions, and retained scopes
+must be archived instead of removed. Existing work keys cannot change through
+the new codec. A source update also refuses live claims and nonterminal
+executions until a narrower activation protocol is available. Downgrade to a
+legacy source cannot silently disable isolation.
+
+Legacy Team query, execution and import/restore entrypoints take a shared
+admission lock before reading or writing project state. Scope activation takes that separate row exclusively
+before the project lock. An already admitted legacy operation finishes before
+enablement is rechecked; later unscoped entrypoints return unsupported. Ordinary
+legacy source activation still permits repeatable-read snapshots and concurrent
+progress. Historical data is never reassigned just to unblock enablement.
+
+`SourceStore` remains a trusted coordinator API, not a client authorization
+boundary. Source bundles cannot carry grants and activation grants no reader or
+writer permissions. Authenticated Team scoped operations, server transport,
+enabled-project backup/restore, and real-client acceptance remain outstanding;
+the current legacy import/restore APIs refuse enabled projects. The shared
+personal MCP read boundary described elsewhere does not provide Team access.
 
 ### Source projection in the development branch
 

@@ -8,6 +8,7 @@ repository.workspace = true
 description = "PostgreSQL coordination store for AWR Team V1. Not used by the personal SQLite runtime."
 
 [dependencies]
+awr-core.workspace = true
 awr-team = { path = "../awr-team" }
 serde.workspace = true
 serde_json.workspace = true

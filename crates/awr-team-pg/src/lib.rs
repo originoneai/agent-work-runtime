@@ -37,7 +37,9 @@ pub use review::{CompletionReceipt, EvidenceRecord, ReviewRound, ReviewStore};
 #[doc(hidden)]
 pub use runner::fence_key;
 pub use runner::{CrashPoint, ReferenceRunner, RunnerOutcome};
-pub use source::{CandidateRecord, CurrentSource, IngestRequest, SourceFile, SourceStore};
+pub use source::{
+    CandidateRecord, CurrentSource, CurrentWorkstreamSource, IngestRequest, SourceFile, SourceStore,
+};
 pub use tx::{CommandOutcome, CommandRequest, TeamStore};
 
 pub const SCHEMA: &str = "awr_team";
@@ -55,6 +57,6 @@ mod tests {
     #[test]
     fn schema_contract_is_stable() {
         assert_eq!(SCHEMA, "awr_team");
-        assert_eq!(EXPECTED_SCHEMA_VERSION, 9);
+        assert_eq!(EXPECTED_SCHEMA_VERSION, 10);
     }
 }

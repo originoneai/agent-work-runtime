@@ -1,9 +1,14 @@
 use crate::error::{PgError, PgResult};
 use crate::path::validate_package;
-use crate::tx::{bind_scope, new_id};
+use crate::tx::{bind_scope, bind_workstream_scope, new_id};
 use awr_team::{SourceActivationPlan, WorkContract, WorkId};
 use serde_json::{Value, json};
 use sha2::{Digest, Sha256};
+use std::collections::BTreeMap;
+
+#[path = "source_workstreams.rs"]
+mod workstreams;
+use workstreams::SourceProjection;
 
 #[derive(Clone, Debug)]
 pub struct SourceFile {
@@ -39,6 +44,20 @@ pub struct CurrentSource {
     pub contract_hash: String,
 }
 
+/// The aggregate hash identifies the complete source projection. Individual
+/// contract hashes retain the V1 codec and are never replaced by this hash.
+#[derive(Clone, Debug, serde::Serialize)]
+pub struct CurrentWorkstreamSource {
+    pub snapshot_id: String,
+    pub manifest_digest: String,
+    pub parser_version: String,
+    pub authority_epoch: String,
+    pub projection_hash: String,
+    pub contract_hashes: BTreeMap<String, String>,
+}
+
+/// Trusted source coordinator API. This is not an authenticated transport;
+/// callers must authorize source administration before invoking these methods.
 pub struct SourceStore {
     pool: crate::PgPool,
 }
@@ -71,10 +90,8 @@ impl SourceStore {
             .map(|f| (f.path.clone(), f.bytes.clone()))
             .collect();
         validate_package(&files)?;
-        let contract = parse_contract(&files)?;
-        let preview_hash = contract
-            .hash()
-            .map_err(|e| PgError::Protocol(e.to_string()))?;
+        let projection = SourceProjection::parse(&files, &request.project_id)?;
+        let preview_hash = projection.hash.clone();
         let manifest = build_manifest(&request.parser_version, &files)?;
         let manifest_digest = sha256_hex(
             &serde_json::to_vec(&manifest).map_err(|e| PgError::Protocol(e.to_string()))?,
@@ -82,7 +99,7 @@ impl SourceStore {
 
         let mut client = self.connect().await?;
         let tx = client.transaction().await?;
-        bind_scope(&tx, &request.tenant_id, &request.project_id).await?;
+        bind_workstream_scope(&tx, &request.tenant_id, &request.project_id).await?;
         crate::tx::lock_active_project(&tx, &request.tenant_id, &request.project_id).await?;
         let project = tx
             .query_opt(
@@ -183,7 +200,7 @@ impl SourceStore {
     ) -> PgResult<String> {
         let mut client = self.connect().await?;
         let tx = client.transaction().await?;
-        bind_scope(&tx, tenant_id, project_id).await?;
+        bind_workstream_scope(&tx, tenant_id, project_id).await?;
         crate::tx::lock_active_project(&tx, tenant_id, project_id).await?;
         let row = tx
             .query_opt(
@@ -245,8 +262,72 @@ impl SourceStore {
         proposal_id: &str,
         plan: &SourceActivationPlan,
     ) -> PgResult<CurrentSource> {
-        self.activate_inner(tenant_id, project_id, actor_id, proposal_id, plan, false)
+        let result = self
+            .activate_inner(
+                tenant_id,
+                project_id,
+                actor_id,
+                proposal_id,
+                plan,
+                false,
+                false,
+            )
+            .await?;
+        Ok(CurrentSource {
+            snapshot_id: result.snapshot_id,
+            manifest_digest: result.manifest_digest,
+            parser_version: result.parser_version,
+            authority_epoch: result.authority_epoch,
+            contract_hash: result.projection_hash,
+        })
+    }
+
+    /// Explicit opt-in; never reinterpret `activate`'s singular contract hash.
+    pub async fn activate_workstreams(
+        &self,
+        tenant_id: &str,
+        project_id: &str,
+        actor_id: &str,
+        proposal_id: &str,
+        plan: &SourceActivationPlan,
+    ) -> PgResult<CurrentWorkstreamSource> {
+        self.activate_inner(
+            tenant_id,
+            project_id,
+            actor_id,
+            proposal_id,
+            plan,
+            true,
+            false,
+        )
+        .await
+    }
+
+    #[cfg(feature = "pg-tests")]
+    #[doc(hidden)]
+    pub async fn abort_workstreams_after_installing_projection(
+        &self,
+        tenant_id: &str,
+        project_id: &str,
+        actor_id: &str,
+        proposal_id: &str,
+        plan: &SourceActivationPlan,
+    ) -> PgResult<()> {
+        match self
+            .activate_inner(
+                tenant_id,
+                project_id,
+                actor_id,
+                proposal_id,
+                plan,
+                true,
+                true,
+            )
             .await
+        {
+            Err(PgError::Protocol(message)) if message == "injected activate abort" => Ok(()),
+            other => other.map(|_| ()),
+        }
     }
 
     pub async fn abort_after_installing_projection(
@@ -258,7 +339,15 @@ impl SourceStore {
         plan: &SourceActivationPlan,
     ) -> PgResult<()> {
         match self
-            .activate_inner(tenant_id, project_id, actor_id, proposal_id, plan, true)
+            .activate_inner(
+                tenant_id,
+                project_id,
+                actor_id,
+                proposal_id,
+                plan,
+                false,
+                true,
+            )
             .await
         {
             Err(PgError::Protocol(message)) if message == "injected activate abort" => Ok(()),
@@ -273,11 +362,25 @@ impl SourceStore {
         actor_id: &str,
         proposal_id: &str,
         plan: &SourceActivationPlan,
+        scoped: bool,
         abort: bool,
-    ) -> PgResult<CurrentSource> {
+    ) -> PgResult<CurrentWorkstreamSource> {
         let mut client = self.connect().await?;
         let tx = client.transaction().await?;
-        bind_scope(&tx, tenant_id, project_id).await?;
+        if scoped {
+            bind_workstream_scope(&tx, tenant_id, project_id).await?;
+            // Serialize enablement with every legacy entrypoint before taking
+            // the project lock. Ordinary legacy updates share the mode row.
+            tx.query_opt(
+                "SELECT enabled FROM awr_team.workstream_modes
+                WHERE tenant_id=$1 AND project_id=$2 FOR UPDATE",
+                &[&tenant_id, &project_id],
+            )
+            .await?
+            .ok_or(PgError::ProjectNotAvailable)?;
+        } else {
+            bind_scope(&tx, tenant_id, project_id).await?;
+        }
         crate::tx::lock_active_project(&tx, tenant_id, project_id).await?;
         let locked = tx
             .query_opt(
@@ -355,100 +458,33 @@ impl SourceStore {
         validate_reviewer(&tx, tenant_id, project_id, &approval_reviewer).await?;
 
         let files = files_from_ref(&source_ref)?;
-        let contract = parse_contract(&files)?;
-        let contract_hash = contract
-            .hash()
-            .map_err(|e| PgError::Protocol(e.to_string()))?;
-        if let Some(spec) = files.iter().find(|(path, _)| path == "graph.json") {
-            let parsed: serde_json::Value =
-                serde_json::from_slice(&spec.1).map_err(|e| PgError::Protocol(e.to_string()))?;
-            let edges: Vec<crate::graph::DependencyEdge> = serde_json::from_value(
-                parsed
-                    .get("edges")
-                    .cloned()
-                    .unwrap_or(serde_json::json!([])),
-            )
-            .map_err(|e| PgError::Protocol(e.to_string()))?;
-            // V1 installs exactly one contract projection per activation and
-            // does not install dependency edges from graph.json. Accepting a
-            // non-empty graph and then silently dropping it is worse than
-            // refusing it (CR #40 P2-6).
-            if !edges.is_empty() {
-                return Err(PgError::Protocol(
-                    "graph.json with edges is not supported in V1".into(),
-                ));
-            }
+        validate_package(&files)?;
+        let manifest = build_manifest(&parser_version, &files)?;
+        if source_ref.get("manifest") != Some(&manifest)
+            || sha256_hex(
+                &serde_json::to_vec(&manifest).map_err(|e| PgError::Protocol(e.to_string()))?,
+            ) != digest
+        {
+            return Err(PgError::SnapshotDrift("manifest".into()));
         }
-        // A source switch affects EVERY work whose contract is added,
-        // changed or REMOVED — including split children that the new
-        // projection no longer contains. Only claims that are still valid
-        // (state active AND not past expires_at at the database's current
-        // time) block the change (CR #40 P2-7, P2-8).
-        let claimed_works: Vec<String> = tx
-            .query(
-                "SELECT DISTINCT work_id FROM awr_team.claims
-                 WHERE tenant_id=$1 AND project_id=$2 AND state='active'
-                   AND expires_at > clock_timestamp()",
-                &[&tenant_id, &project_id],
-            )
-            .await?
-            .iter()
-            .map(|row| row.get(0))
-            .collect();
-        if !claimed_works.is_empty() {
-            let new_work = contract.work_id.as_str().to_string();
-            for work_id in &claimed_works {
-                let old_hash: Option<String> = match &previous_snapshot {
-                    Some(snapshot) => tx
-                        .query_opt(
-                            "SELECT contract_hash FROM awr_team.work_contracts
-                             WHERE tenant_id=$1 AND project_id=$2 AND snapshot_id=$3
-                               AND work_id=$4 AND scope_id='main'",
-                            &[&tenant_id, &project_id, snapshot, work_id],
-                        )
-                        .await?
-                        .map(|row| row.get(0)),
-                    None => None,
-                };
-                let new_hash: Option<String> = if *work_id == new_work {
-                    Some(contract_hash.clone())
-                } else {
-                    // Not present in the new projection: this activation
-                    // removes the claimed work's contract.
-                    None
-                };
-                if old_hash != new_hash {
-                    return Err(PgError::ClaimBlocksActivation);
-                }
-            }
+        let projection = SourceProjection::parse(&files, project_id)?;
+        if projection.bundle.is_some() != scoped {
+            return Err(PgError::Unsupported(
+                "activation API does not match the source codec".into(),
+            ));
         }
-        let work_id = contract.work_id.as_str().to_string();
-        let title = contract.external_key.clone();
-        let contract_json =
-            serde_json::to_value(&contract).map_err(|e| PgError::Protocol(e.to_string()))?;
-        tx.execute(
-            "INSERT INTO awr_team.work_items(tenant_id, project_id, id, external_key)
-             VALUES ($1,$2,$3,$4)
-             ON CONFLICT (tenant_id, project_id, id) DO NOTHING",
-            &[&tenant_id, &project_id, &work_id, &contract.external_key],
-        )
-        .await?;
-        tx.execute(
-            "INSERT INTO awr_team.work_contracts(
-                tenant_id, project_id, snapshot_id, scope_id, work_id,
-                contract_hash, definition_state, title, contract_json)
-             VALUES ($1,$2,$3,'main',$4,$5,'enabled',$6,$7)",
-            &[
-                &tenant_id,
-                &project_id,
-                &snapshot_id,
-                &work_id,
-                &contract_hash,
-                &title,
-                &contract_json,
-            ],
-        )
-        .await?;
+        workstreams::reject_external_graph(&files)?;
+        projection
+            .validate_transition(&tx, tenant_id, project_id, previous_snapshot.as_deref())
+            .await?;
+        projection
+            .install(&tx, tenant_id, project_id, &snapshot_id)
+            .await?;
+        let work_id = if scoped {
+            None
+        } else {
+            Some(projection.contracts[0].work_id.as_str().to_string())
+        };
         if abort {
             tx.rollback().await?;
             return Err(PgError::Protocol("injected activate abort".into()));
@@ -499,12 +535,13 @@ impl SourceStore {
         )
         .await?;
         tx.commit().await?;
-        Ok(CurrentSource {
+        Ok(CurrentWorkstreamSource {
             snapshot_id,
             manifest_digest: digest,
             parser_version,
             authority_epoch: next_epoch.to_string(),
-            contract_hash,
+            projection_hash: projection.hash,
+            contract_hashes: projection.hashes,
         })
     }
 

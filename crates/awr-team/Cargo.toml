@@ -8,6 +8,7 @@ repository.workspace = true
 description = "Pure Team V1 contracts, hashes and state rules. No database driver."
 
 [dependencies]
+awr-core.workspace = true
 serde.workspace = true
 serde_json.workspace = true
 sha2.workspace = true

@@ -259,6 +259,34 @@ pub(crate) async fn bind_scope(
     tenant: &str,
     project: &str,
 ) -> PgResult<()> {
+    bind_workstream_scope(tx, tenant, project).await?;
+    // Hold admission through the action, including repeatable-read queries.
+    // Source enablement locks this separate row before the project row, so a
+    // legacy caller cannot pass the check and write after scopes become active.
+    let enabled: bool = tx
+        .query_opt(
+            "SELECT enabled FROM awr_team.workstream_modes
+         WHERE tenant_id=$1 AND project_id=$2 FOR SHARE",
+            &[&tenant, &project],
+        )
+        .await?
+        .ok_or(PgError::ProjectNotAvailable)?
+        .get(0);
+    if enabled {
+        return Err(PgError::Unsupported(
+            "enabled workstreams require authenticated scoped operations".into(),
+        ));
+    }
+    Ok(())
+}
+
+/// Internal binding for source coordination and explicitly authenticated APIs.
+/// This sets only the tenant/project RLS boundary; it does NOT authorize a caller.
+pub(crate) async fn bind_workstream_scope(
+    tx: &tokio_postgres::Transaction<'_>,
+    tenant: &str,
+    project: &str,
+) -> PgResult<()> {
     tx.execute("SELECT set_config('awr.tenant_id', $1, true)", &[&tenant])
         .await?;
     tx.execute("SELECT set_config('awr.project_id', $1, true)", &[&project])

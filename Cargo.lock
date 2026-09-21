@@ -242,6 +242,7 @@ dependencies = [
 name = "awr-team"
 version = "0.4.0"
 dependencies = [
+ "awr-core",
  "serde",
  "serde_json",
  "sha2 0.10.9",
@@ -253,6 +254,7 @@ dependencies = [
 name = "awr-team-pg"
 version = "0.4.0"
 dependencies = [
+ "awr-core",
  "awr-team",
  "deadpool-postgres",
  "libc",

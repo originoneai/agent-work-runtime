@@ -10,6 +10,7 @@ mod error;
 mod ids;
 mod snapshot;
 mod version;
+mod workstreams;
 
 pub use access::{
     AuthContext, Envelope, RemoteProfile, SURFACES, authorize, execute, parse_envelope,
@@ -29,6 +30,7 @@ pub use snapshot::{
     SourceActivationPlan,
 };
 pub use version::{decode_u64, encode_u64};
+pub use workstreams::{WorkstreamBundle, WorkstreamContract};
 
 pub const PROTOCOL: &str = "awr-team";
 pub const PROTOCOL_VERSION: u32 = 1;
