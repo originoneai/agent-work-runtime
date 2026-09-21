@@ -14,6 +14,9 @@ mod review;
 mod runner;
 mod source;
 mod tx;
+mod workstream_auth;
+mod workstream_command;
+mod workstream_read;
 
 pub use bootstrap::Bootstrap;
 pub use error::{PgError, PgResult};
@@ -41,6 +44,9 @@ pub use source::{
     CandidateRecord, CurrentSource, CurrentWorkstreamSource, IngestRequest, SourceFile, SourceStore,
 };
 pub use tx::{CommandOutcome, CommandRequest, TeamStore};
+pub use workstream_auth::workstream_credential_hash;
+pub use workstream_command::{WorkstreamCommand, WorkstreamCommandStore};
+pub use workstream_read::{WorkstreamQuery, WorkstreamReadStore};
 
 pub const SCHEMA: &str = "awr_team";
 
