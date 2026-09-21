@@ -1,6 +1,6 @@
 # Event, claim and branch isolation matrix
 
-`contract.json` version 1.1.0 fixes 20 component/process conditions for its isolated fixtures. Run the whole contract from the repository root with a new receipt:
+`contract.json` version 1.2.0 fixes 20 component/process conditions for its isolated fixtures. Run the whole contract from the repository root with a new receipt:
 
 ```sh
 python3 tests/concurrency/verify.py --report .local/isolation-check-001.json
@@ -10,7 +10,7 @@ python3 tests/concurrency/verify.py --report .local/isolation-check-001.json
 | --- | ---: | --- |
 | Events | 4 | Private SQL/API boundaries, immutable rows, reserved receipts, provenance and exact history queries. |
 | Claims | 8 | Revision races, one owner, expired-claim races, effective-claim protection, selected expiry, release ownership, invalid TTL and transaction rollback. |
-| Branches | 8 | Parallel ownership, default selection, session ambiguity, handoff, resume, cleanup, closure and checkpoint/evidence scope. |
+| Branches | 8 | Cross-branch ownership exclusion, default selection, session ambiguity, handoff, resume, cleanup, closure and checkpoint/evidence scope. |
 
 The runner executes three primary stages and the related Store, CLI and MCP
 regressions, then builds the distribution binaries and runs the three required
@@ -47,3 +47,7 @@ or perform real agent collaboration.
 
 The [user reference](../../docs/reference/runtime-isolation.md) describes operational
 behavior. This matrix grants no E4, cross-platform, benchmark or release credit.
+
+Contract 1.2.0 preserves the 20 conditions and changes the parallel-branch
+condition: refreshing a stale revision must still reject a second effective
+claim for the same work across branches. Branch provenance remains unchanged.

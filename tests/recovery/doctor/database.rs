@@ -126,7 +126,7 @@ impl Fixture {
         self.sql("DROP TABLE search_fts; DROP TABLE search_state; DROP TABLE search_documents; DELETE FROM schema_migrations WHERE version=3; PRAGMA user_version=2;");
     }
     fn downgrade_to_v3(&self) {
-        self.sql("PRAGMA foreign_keys=OFF; DROP TABLE workstream_ownership; DROP TABLE workstreams; DROP TABLE workstream_catalogs; DELETE FROM schema_migrations WHERE version=5;");
+        self.sql("PRAGMA foreign_keys=OFF; DROP TABLE conversation_workstreams; DROP TABLE session_workstreams; DROP TRIGGER session_identity_no_update; DROP TRIGGER workstream_claim_exclusive_insert; DROP TRIGGER workstream_claim_exclusive_update; DELETE FROM schema_migrations WHERE version=6; DROP TABLE workstream_ownership; DROP TABLE workstreams; DROP TABLE workstream_catalogs; DELETE FROM schema_migrations WHERE version=5;");
         // Build an authentic old fixture, including its original constraint definition.
         let domain = include_str!("../../../crates/awr-store/migrations/002_domain.sql");
         let begin = domain.find("CREATE TABLE work_items (").unwrap();
@@ -539,10 +539,18 @@ fn case_foreign_key_damage_preserves_diagnostics_and_disables_repairs() {
     let f = Fixture::new();
     let s = f.start(false);
     let sid = s["session"]["id"].as_str().unwrap();
-    f.sql(&format!(
-        "PRAGMA foreign_keys=OFF; UPDATE sessions SET work_item_id='{}' WHERE id='{sid}'",
-        Id::new()
-    ));
+    // Simulate offline damage in this disposable fixture. Restore the exact guard
+    // so Doctor must diagnose damaged rows, not merely a missing schema object.
+    let db = Connection::open(f.db()).unwrap();
+    let guard: String = db
+        .query_row(
+            "SELECT sql FROM sqlite_master WHERE name='session_identity_no_update'",
+            [],
+            |r| r.get(0),
+        )
+        .unwrap();
+    db.execute_batch(&format!("PRAGMA foreign_keys=OFF; DROP TRIGGER session_identity_no_update; UPDATE sessions SET work_item_id='{}' WHERE id='{sid}'; {guard};",Id::new())).unwrap();
+    drop(db);
     let before = f.snapshot();
     let report = f.problems(&["doctor"]);
     assert_eq!(report["database_ok"], false);

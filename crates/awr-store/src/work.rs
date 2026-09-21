@@ -85,43 +85,35 @@ pub(crate) fn active_claims(
     conn: &Connection,
     project: Id,
     work: Id,
-    branch: Option<Id>,
+    _branch: Option<Id>,
     at: i64,
 ) -> Result<Vec<Claim>> {
     conn.prepare(
         "SELECT id,session_id,agent_id,branch_id,status,acquired_at,expires_at,released_at,revision
-        FROM claims WHERE project_id=?1 AND work_item_id=?2 AND branch_id IS ?3 AND status='active'
-          AND released_at IS NULL AND (expires_at IS NULL OR expires_at>?4) ORDER BY id",
+        FROM claims WHERE project_id=?1 AND work_item_id=?2 AND status='active'
+          AND released_at IS NULL AND (expires_at IS NULL OR expires_at>?3) ORDER BY id",
     )
     .map_err(db_error)?
-    .query_map(
-        params![
-            project.to_string(),
-            work.to_string(),
-            branch.map(|b| b.to_string()),
-            at
-        ],
-        |row| {
-            let branch_id = if row.get::<_, Option<String>>(3)?.is_some() {
-                Some(id_at(row, 3)?)
-            } else {
-                None
-            };
-            Ok(Claim {
-                id: id_at(row, 0)?,
-                project_id: project,
-                work_item_id: work,
-                session_id: id_at(row, 1)?,
-                agent_id: row.get(2)?,
-                branch_id,
-                status: row.get(4)?,
-                acquired_at: row.get(5)?,
-                expires_at: row.get(6)?,
-                released_at: row.get(7)?,
-                revision: revision_at(row, 8)?,
-            })
-        },
-    )
+    .query_map(params![project.to_string(), work.to_string(), at], |row| {
+        let branch_id = if row.get::<_, Option<String>>(3)?.is_some() {
+            Some(id_at(row, 3)?)
+        } else {
+            None
+        };
+        Ok(Claim {
+            id: id_at(row, 0)?,
+            project_id: project,
+            work_item_id: work,
+            session_id: id_at(row, 1)?,
+            agent_id: row.get(2)?,
+            branch_id,
+            status: row.get(4)?,
+            acquired_at: row.get(5)?,
+            expires_at: row.get(6)?,
+            released_at: row.get(7)?,
+            revision: revision_at(row, 8)?,
+        })
+    })
     .map_err(db_error)?
     .collect::<rusqlite::Result<Vec<_>>>()
     .map_err(db_error)

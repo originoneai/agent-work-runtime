@@ -32,6 +32,7 @@ fn recovery_checkpoint(
         .transpose()?;
     if let Some(cp) = &inherited {
         let owner = session_at(conn, project, cp.session_id)?;
+        crate::workstream_runtime::require_same(conn, project, from.id, owner.id)?;
         if owner.id == from.id
             || owner.work_item_id != from.work_item_id
             || owner.branch_id != from.branch_id
@@ -51,7 +52,7 @@ fn recovery_checkpoint(
     let Some(work) = from.work_item_id else {
         return Ok(None);
     };
-    let id=conn.query_row("SELECT c.id FROM checkpoints c JOIN sessions s ON s.id=c.session_id WHERE s.project_id=?1 AND s.work_item_id=?2 AND s.branch_id IS ?3 AND s.status!='active' ORDER BY c.project_revision DESC,c.created_at DESC,c.id DESC LIMIT 1",params![project.to_string(),work.to_string(),from.branch_id.map(|id|id.to_string())],|r|id_at(r,0)).optional().map_err(db_error)?;
+    let id=conn.query_row("SELECT c.id FROM checkpoints c JOIN sessions s ON s.id=c.session_id JOIN session_workstreams b ON b.project_id=s.project_id AND b.session_id=s.id JOIN session_workstreams origin ON origin.project_id=s.project_id AND origin.session_id=?4 AND origin.workstream_id=b.workstream_id AND origin.ownership_revision=b.ownership_revision WHERE s.project_id=?1 AND s.work_item_id=?2 AND s.branch_id IS ?3 AND s.status!='active' ORDER BY c.project_revision DESC,c.created_at DESC,c.id DESC LIMIT 1",params![project.to_string(),work.to_string(),from.branch_id.map(|id|id.to_string()),from.id.to_string()],|r|id_at(r,0)).optional().map_err(db_error)?;
     id.map(|id| checkpoint_at(conn, project, id)).transpose()
 }
 
@@ -88,6 +89,8 @@ impl Store {
             .collect::<Vec<_>>()
             .join(",");
         self.conn.prepare(&format!("SELECT {columns} FROM sessions s JOIN work_items w ON s.work_item_id=w.id AND s.project_id=w.project_id
+            JOIN session_workstreams b ON b.project_id=s.project_id AND b.session_id=s.id
+            JOIN workstream_ownership o ON o.project_id=b.project_id AND o.work_item_id=b.work_item_id AND o.workstream_id=b.workstream_id AND o.revision=b.ownership_revision
             JOIN sources src ON w.source_id=src.id AND w.project_id=src.project_id WHERE s.project_id=?1 AND s.branch_id IS ?2
             AND w.active=1 AND src.active=1 AND w.status NOT IN ('completed','cancelled','unknown')
             AND (s.status IN ('active','incomplete','interrupted') OR (?3 IS NOT NULL AND s.status='ended'))
@@ -154,6 +157,7 @@ impl Store {
         expires_at(now_millis()?, draft.claim_ttl_ms)?;
         self.runtime_transaction_with_event(project,expected,EventDraft::new("session.resumed","Resumed work in a new session; compile current execution context"),|tx,next,event| {
             let from=session_at(tx,project,draft.from_session_id)?;
+            let from_scope=crate::workstream_runtime::require_current(tx,&from)?;
             let inherited_binding=crate::mcp::session_binding(tx,project,from.id)?;
             let binding=binding.or(inherited_binding.clone());
             if let Some(binding)=&binding {
@@ -185,6 +189,8 @@ impl Store {
             if from.status=="active" {tx.execute("UPDATE sessions SET status='interrupted',ended_at=?1,end_project_revision=?2,revision=revision+1 WHERE project_id=?3 AND id=?4",params![at,sqlite_revision(next)?,project.to_string(),from.id.to_string()]).map_err(db_error)?;}
             let session=Session {id:Id::new(),project_id:project,work_item_id:Some(work_id),branch_id:branch,agent_id:draft.agent_id,provider:draft.provider,model:draft.model,status:"active".into(),started_at:at,ended_at:None,start_project_revision:expected,end_project_revision:None,last_checkpoint_id:None,revision:1};
             tx.execute("INSERT INTO sessions(id,project_id,work_item_id,branch_id,agent_id,provider,model,status,started_at,start_project_revision,revision) VALUES(?1,?2,?3,?4,?5,?6,?7,'active',?8,?9,1)",params![session.id.to_string(),project.to_string(),work_id.to_string(),branch.map(|id|id.to_string()),session.agent_id,session.provider,session.model,at,sqlite_revision(expected)?]).map_err(db_error)?;
+            let workstream_binding=crate::workstream_runtime::bind(tx,&session,from_scope.workstream_id,None)?;
+            crate::workstream_runtime::require_same(tx,project,from.id,session.id)?;
             let claim=match (draft.claim,live_expiration) {
                 (ResumeClaim::Inherit,Some(expiration))=>{
                     let claim=Claim{id:Id::new(),project_id:project,work_item_id:work_id,session_id:session.id,agent_id:session.agent_id.clone(),branch_id:branch,status:"active".into(),acquired_at:at,expires_at:expiration,released_at:None,revision:1};
@@ -196,7 +202,7 @@ impl Store {
             };
             event.session_id=Some(session.id);event.work_item_id=Some(work_id);event.branch_id=branch;event.importance="high".into();
             let expired_claim_ids=event.payload.get("expired_claim_ids").cloned().unwrap_or_else(||serde_json::json!([]));
-            event.payload=serde_json::json!({"from_session_id":from.id,"to_session_id":session.id,"checkpoint_id":checkpoint.as_ref().map(|c|c.id),"recovery_after_revision":recovery_after_revision,"prepared_context_hash":draft.prepared_context_hash,"prepared_project_revision":expected,"claim_mode":draft.claim,"claim_id":claim.as_ref().map(|c|c.id),"closed_claim_ids":closed_claim_ids,"expired_claim_ids":expired_claim_ids,"context_requires_refresh":true});
+            event.payload=serde_json::json!({"workstream_binding":workstream_binding,"from_session_id":from.id,"to_session_id":session.id,"checkpoint_id":checkpoint.as_ref().map(|c|c.id),"recovery_after_revision":recovery_after_revision,"prepared_context_hash":draft.prepared_context_hash,"prepared_project_revision":expected,"claim_mode":draft.claim,"claim_id":claim.as_ref().map(|c|c.id),"closed_claim_ids":closed_claim_ids,"expired_claim_ids":expired_claim_ids,"context_requires_refresh":true});
             if let Some(binding)=binding { event.payload["mcp_binding"]=serde_json::to_value(binding)?; }
             insert_event(tx,&Event{id:Id::new(),project_id:project,session_id:Some(from.id),work_item_id:Some(work_id),branch_id:branch,event_type:"session.resumed_from".into(),importance:"high".into(),summary:"Work continued in a successor session".into(),payload:event.payload.clone(),project_revision:next,created_at:at})?;
             if checkpoint.is_some() {insert_event(tx,&Event{id:Id::new(),project_id:project,session_id:Some(session.id),work_item_id:Some(work_id),branch_id:branch,event_type:"session.handoff_received".into(),importance:"high".into(),summary:"Inherited checkpoint during session resume".into(),payload:event.payload.clone(),project_revision:next,created_at:at})?;}

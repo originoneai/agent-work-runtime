@@ -251,6 +251,37 @@ pub struct WorkstreamProjection {
     pub ownership: Vec<WorkstreamWorkBinding>,
 }
 
+/// Current ownership token to review before a source-first move.
+#[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
+#[serde(deny_unknown_fields)]
+pub struct WorkstreamOwnership {
+    pub binding: WorkstreamWorkBinding,
+    pub revision: Revision,
+}
+
+/// Immutable attribution captured at session creation. A missing scope is only
+/// retained for an ambiguous, workless historical session during migration.
+#[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
+#[serde(deny_unknown_fields)]
+pub struct SessionWorkstream {
+    pub project_id: String,
+    pub session_id: String,
+    pub work_item_id: Option<String>,
+    pub workstream_id: Option<Id>,
+    pub ownership_revision: Option<Revision>,
+    pub authority_version: Option<Revision>,
+}
+
+/// A reviewed ownership transition accompanying an authoritative source import.
+#[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
+#[serde(deny_unknown_fields)]
+pub struct WorkstreamMove {
+    pub work_item_id: String,
+    pub from: Id,
+    pub to: Id,
+    pub expected_ownership_revision: Revision,
+}
+
 fn validate_work_binding(
     catalog: &WorkstreamCatalog,
     binding: &WorkstreamWorkBinding,

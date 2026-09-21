@@ -34,6 +34,7 @@ pub fn is_domain_event_type(kind: &str) -> bool {
         "execution.",
         "mcp.",
         "management.",
+        "workstream.",
     ]
     .iter()
     .any(|prefix| kind.starts_with(prefix))
@@ -120,7 +121,7 @@ fn domain_fields(kind: &str, payload: &Value) -> Result<()> {
             | "source.freshness_changed"
             | "source.projected"
     ) {
-        "source_id change_schema before after changes freshness fingerprint source_revision warnings"
+        "source_id change_schema before after changes freshness fingerprint source_revision warnings workstream_moves"
     } else if matches!(kind, "proposal.apply_started") {
         "proposal_id source_id write_plan actor reason work_action source_write_confirmed"
     } else if matches!(
@@ -151,6 +152,7 @@ fn domain_fields(kind: &str, payload: &Value) -> Result<()> {
         "action actor expected_revision from intent proposal_id proposal_revision reason source_id target_id target_key target_kind to work_action"
     } else {
         match kind {
+            "workstream.conversation_selected" => "binding workstream_id",
             "client.compaction_observed" => "observation policy",
             "client.compaction_deferred" => "observation_event_id",
             "management.assessed" => "version request_key input observer assessment",
@@ -165,14 +167,14 @@ fn domain_fields(kind: &str, payload: &Value) -> Result<()> {
             | "execution.finished" => "execution",
             "execution.external_reported" => "execution_id report",
             "session.started" => {
-                "agent_id provider model start_project_revision claim_id expired_claim_ids expires_at mcp_binding"
+                "agent_id provider model start_project_revision claim_id expired_claim_ids expires_at mcp_binding workstream_binding"
             }
             "work.claimed" => "claim_id expired_claim_ids agent_id expires_at",
             "session.resumed" | "session.resumed_from" => {
-                "from_session_id to_session_id checkpoint_id recovery_after_revision prepared_context_hash prepared_project_revision claim_mode claim_id closed_claim_ids expired_claim_ids context_requires_refresh mcp_binding"
+                "from_session_id to_session_id checkpoint_id recovery_after_revision prepared_context_hash prepared_project_revision claim_mode claim_id closed_claim_ids expired_claim_ids context_requires_refresh mcp_binding workstream_binding"
             }
             "session.handoff_received" => {
-                "from_session_id to_session_id checkpoint_id recovery_after_revision prepared_context_hash prepared_project_revision claim_mode claim_id closed_claim_ids expired_claim_ids context_requires_refresh transferred_claim_id next_action open_loops mcp_binding"
+                "from_session_id to_session_id checkpoint_id recovery_after_revision prepared_context_hash prepared_project_revision claim_mode claim_id closed_claim_ids expired_claim_ids context_requires_refresh transferred_claim_id next_action open_loops mcp_binding workstream_binding"
             }
             "work.handoff" => {
                 "from_session_id to_session_id checkpoint_id closed_claim_ids transferred_claim_id next_action open_loops context_requires_refresh"
@@ -186,7 +188,7 @@ fn domain_fields(kind: &str, payload: &Value) -> Result<()> {
             }
             "checkpoint.started" => "save_schema base_project_revision draft",
             "checkpoint.created" => {
-                "checkpoint_id context_hash checkpoint_project_revision changed_entities next_action attempt_id session_delta"
+                "checkpoint_id context_hash checkpoint_project_revision changed_entities next_action attempt_id session_delta workstream_binding"
             }
             "checkpoint.abandoned" => "attempt_id reason",
             "artifact.recorded" => "artifact_id source_event_id sha256 size locator",
@@ -207,6 +209,7 @@ fn domain_fields(kind: &str, payload: &Value) -> Result<()> {
     // These non-null receipt fields anchor the event to the operation that produced it.
     // Optional fields and nested snapshots still come from the typed domain constructors.
     let required = match kind {
+        "workstream.conversation_selected" => "binding workstream_id",
         "client.compaction_observed" => "observation policy",
         "client.compaction_deferred" => "observation_event_id",
         "management.assessed" => "version request_key input observer assessment",
@@ -301,6 +304,16 @@ fn domain_fields(kind: &str, payload: &Value) -> Result<()> {
                         value["decision"].clone(),
                     )
                     .is_ok()
+            }
+            "workstream_binding" => {
+                serde_json::from_value::<crate::SessionWorkstream>(value.clone()).is_ok()
+            }
+            "workstream_moves" => {
+                serde_json::from_value::<Vec<crate::WorkstreamMove>>(value.clone()).is_ok()
+            }
+            "binding" if kind == "workstream.conversation_selected" => {
+                serde_json::from_value::<crate::McpSessionBinding>(value.clone())
+                    .is_ok_and(|b| b.validate().is_ok())
             }
             "operation" => serde_json::from_value::<crate::McpOperation>(value.clone()).is_ok(),
             "wait" => serde_json::from_value::<crate::McpWait>(value.clone()).is_ok(),

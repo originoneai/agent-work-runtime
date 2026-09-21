@@ -1,7 +1,7 @@
 {
   "schema_version": 1,
   "contract_id": "awr-runtime-isolation",
-  "version": "1.1.0",
+  "version": "1.2.0",
   "work_item": "AWR-SEC-004",
   "target_cases": 20,
   "evidence_level": "local_component_process_and_transport",
@@ -70,7 +70,7 @@
     {
       "id": "branch_parallel_sessions_claims",
       "area": "branches",
-      "expected": "Live processes on different branches can retain independent claims after explicit revision retry."
+      "expected": "Live processes on different branches cannot acquire the same work concurrently, including after explicit revision retry; the winning branch provenance is retained."
     },
     {
       "id": "branch_switch_retains_ownership",

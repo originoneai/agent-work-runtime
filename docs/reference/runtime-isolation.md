@@ -30,7 +30,7 @@ same revision. Failed operations retain the previous rows and revision.
 ## Claim lifetime
 
 A claim belongs to one project, work item, session, agent label and work branch.
-Only one effective claim can occupy a work item within a branch. Competing
+Only one effective claim can occupy a work item across all branches. Competing
 processes first compare `expected_revision` in the write transaction; a contender
 that refreshes its revision must still respect the existing claim.
 
@@ -62,7 +62,8 @@ claim does not confer inherited ownership.
 
 Switching the default work branch changes selection. It does not move existing
 sessions, claims, checkpoints, evidence or history, and it does not change the Git
-checkout. Distinct branches can retain independent claims for the same work item.
+checkout. Distinct branches retain independent history, but cannot acquire simultaneous
+claims for the same work item. Different work items remain independently claimable.
 Source writes still use the shared-source conflict guards.
 
 Implicit session selection uses the selected branch and reports ambiguity.

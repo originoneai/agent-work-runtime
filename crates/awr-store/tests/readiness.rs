@@ -169,7 +169,7 @@ fn recursive_graph_handles_diamonds_missing_cycles_unknown_and_duplicate_sources
 }
 
 #[test]
-fn active_and_expired_claims_are_evaluated_in_the_requested_branch() {
+fn active_and_expired_claims_block_the_same_work_across_branches() {
     let mut f = Fixture::new();
     let w = work(&f, "A", "ready");
     let wid = w.meta.id;
@@ -192,9 +192,15 @@ fn active_and_expired_claims_are_evaluated_in_the_requested_branch() {
         .unwrap();
     assert!(!active.ready);
     assert_eq!(active.active_claims[0].agent_id, "runner");
+    let other = f
+        .store
+        .work_readiness(f.project.id, "A", Some(bid), 100)
+        .unwrap();
+    assert!(!other.ready);
+    assert_eq!(other.active_claims[0].branch_id, None);
     assert!(
         f.store
-            .work_readiness(f.project.id, "A", Some(bid), 100)
+            .work_readiness(f.project.id, "A", Some(bid), 200)
             .unwrap()
             .ready
     );

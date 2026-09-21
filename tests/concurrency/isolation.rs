@@ -39,7 +39,7 @@ fn fixture() -> Fixture {
         paths: vec![],
     };
     let batch = ProjectionBatch {
-        work_items: vec![work("W"), work("X")],
+        work_items: vec![work("W"), work("X"), work("Y")],
         ..Default::default()
     };
     f.commit(batch);
@@ -68,6 +68,20 @@ fn start(
 ) -> SessionStarted {
     f.store
         .start_session(f.project.id, revision(f), draft(agent, branch, claim, ttl))
+        .unwrap()
+        .0
+}
+fn start_work(
+    f: &mut Fixture,
+    key: &str,
+    agent: &str,
+    branch: Option<Id>,
+    ttl: Option<u64>,
+) -> SessionStarted {
+    let mut request = draft(agent, branch, true, ttl);
+    request.work_item_key = Some(key.into());
+    f.store
+        .start_session(f.project.id, revision(f), request)
         .unwrap()
         .0
 }
@@ -316,7 +330,7 @@ fn case_expired_claim_race_keeps_one_new_owner_and_original_receipts() {
 }
 
 #[test]
-fn case_parallel_branches_retry_without_moving_or_losing_either_claim() {
+fn case_parallel_branches_cannot_bypass_work_ownership() {
     let mut f = fixture();
     let a = branch(&mut f, "review-a");
     let b = branch(&mut f, "review-b");
@@ -336,20 +350,23 @@ fn case_parallel_branches_retry_without_moving_or_losing_either_claim() {
         .unwrap();
     writers[loser].send(revision(&f));
     results[loser] = writers[loser].result();
-    for (result, expected) in results.iter().zip([a, b]) {
-        assert_eq!(result["ok"], true);
-        assert_eq!(result["started"]["session"]["branch_id"], json!(expected));
-        assert_eq!(result["started"]["claim"]["branch_id"], json!(expected));
-        assert_eq!(result["event"]["branch_id"], json!(expected));
-        let id: Id = serde_json::from_value(result["started"]["claim"]["id"].clone()).unwrap();
-        assert!(
-            f.store
-                .claim(f.project.id, id)
-                .unwrap()
-                .active_at(now_millis().unwrap())
-        );
-    }
-    assert_eq!(revision(&f), before + 2);
+    assert_eq!(results[loser]["code"], "ClaimConflict");
+    let winner = 1 - loser;
+    let result = &results[winner];
+    let expected = [a, b][winner];
+    assert_eq!(result["ok"], true);
+    assert_eq!(result["started"]["session"]["branch_id"], json!(expected));
+    assert_eq!(result["started"]["claim"]["branch_id"], json!(expected));
+    assert_eq!(result["event"]["branch_id"], json!(expected));
+    let claim: Id = serde_json::from_value(result["started"]["claim"]["id"].clone()).unwrap();
+    assert!(
+        f.store
+            .claim(f.project.id, claim)
+            .unwrap()
+            .active_at(now_millis().unwrap())
+    );
+    assert_eq!(f.store.sessions(f.project.id, false, 100).unwrap().len(), 1);
+    assert_eq!(revision(&f), before + 1);
     assert_eq!(
         json!(f.store.work_item(f.project.id, "W").unwrap().item),
         source_work
@@ -392,8 +409,8 @@ fn case_selected_expiry_and_wrong_owner_release_preserve_other_claims() {
     let a = branch(&mut f, "review-a");
     let b = branch(&mut f, "review-b");
     let main = start(&mut f, "main-owner", None, true, None);
-    let expired = start(&mut f, "a-owner", Some(a), true, Some(1));
-    let live = start(&mut f, "b-owner", Some(b), true, Some(60_000));
+    let expired = start_work(&mut f, "X", "a-owner", Some(a), Some(1));
+    let live = start_work(&mut f, "Y", "b-owner", Some(b), Some(60_000));
     let before = state(&f);
     assert!(matches!(
         f.store.release_claim(
@@ -581,8 +598,8 @@ fn case_branch_pagination_default_switch_and_session_selection_keep_identity() {
     let a = branch(&mut f, "review-a");
     let b = branch(&mut f, "review-b");
     let main = start(&mut f, "main-owner", None, true, None);
-    let in_a = start(&mut f, "a-owner", Some(a), true, None);
-    let in_b = start(&mut f, "b-owner", Some(b), true, None);
+    let in_a = start_work(&mut f, "X", "a-owner", Some(a), None);
+    let in_b = start_work(&mut f, "Y", "b-owner", Some(b), None);
     let cp = checkpoint(&mut f, in_a.session.id, "Review A checkpoint");
     let sessions = [main, in_a, in_b];
     for owner in &sessions {
@@ -703,7 +720,7 @@ fn case_handoff_and_resume_keep_branch_checkpoint_and_live_claim_bindings() {
     let b = branch(&mut f, "review-b");
     let from = start(&mut f, "sender", Some(a), true, Some(60_000));
     let to = start(&mut f, "receiver", Some(a), false, None);
-    let other = start(&mut f, "other-reviewer", Some(b), true, None);
+    let other = start_work(&mut f, "X", "other-reviewer", Some(b), None);
     let cp = checkpoint(&mut f, from.session.id, "Source review checkpoint");
     let before = state(&f);
     assert!(matches!(
@@ -804,8 +821,8 @@ fn case_end_and_explicit_interruption_release_only_selected_owners() {
     let a = branch(&mut f, "review-a");
     let b = branch(&mut f, "review-b");
     let main = start(&mut f, "main-owner", None, true, None);
-    let first = start(&mut f, "a-owner", Some(a), true, None);
-    let other = start(&mut f, "b-owner", Some(b), true, None);
+    let first = start_work(&mut f, "X", "a-owner", Some(a), None);
+    let other = start_work(&mut f, "Y", "b-owner", Some(b), None);
     end(&mut f, first.session.id);
     let before = json!(
         f.store

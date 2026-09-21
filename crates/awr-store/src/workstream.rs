@@ -52,7 +52,7 @@ pub(crate) fn ensure_legacy(conn: &Connection, project: &str) -> Result<()> {
     Ok(())
 }
 
-fn recorded_catalog(conn: &Connection, project: &str) -> Result<WorkstreamCatalog> {
+pub(crate) fn recorded_catalog(conn: &Connection, project: &str) -> Result<WorkstreamCatalog> {
     let (version, legacy_default): (u32, Option<String>) = conn
         .query_row(
             "SELECT version,legacy_default FROM workstream_catalogs WHERE project_id=?1",
@@ -83,7 +83,7 @@ fn recorded_catalog(conn: &Connection, project: &str) -> Result<WorkstreamCatalo
     Ok(catalog)
 }
 
-fn require_fresh_catalog(conn: &Connection, project: &str) -> Result<()> {
+pub(crate) fn require_fresh_catalog(conn: &Connection, project: &str) -> Result<()> {
     let stale: bool = conn
         .query_row(
             "SELECT EXISTS(SELECT 1 FROM workstream_catalogs c
@@ -126,18 +126,28 @@ impl Store {
     }
 
     pub fn workstream_binding(&self, project: Id, work: Id) -> Result<WorkstreamWorkBinding> {
+        Ok(self.workstream_ownership(project, work)?.binding)
+    }
+
+    /// Capture the work's current ownership token before editing its source.
+    pub fn workstream_ownership(
+        &self,
+        project: Id,
+        work: Id,
+    ) -> Result<awr_core::WorkstreamOwnership> {
         let tx = self.conn.unchecked_transaction().map_err(db_error)?;
         require_fresh_catalog(&tx, &project.to_string())?;
-        let stream: String = tx.query_row("SELECT workstream_id FROM workstream_ownership WHERE project_id=?1 AND work_item_id=?2",
-            params![project.to_string(),work.to_string()], |row| row.get(0)).optional().map_err(db_error)?
+        let (stream, revision): (Id, awr_core::Revision) = tx.query_row("SELECT workstream_id,revision FROM workstream_ownership WHERE project_id=?1 AND work_item_id=?2",
+            params![project.to_string(),work.to_string()], |row| Ok((crate::catalog::id_at(row,0)?,crate::catalog::revision_at(row,1)?))).optional().map_err(db_error)?
             .ok_or_else(|| Error::NotFound("workstream ownership".into()))?;
         tx.commit().map_err(db_error)?;
-        Ok(WorkstreamWorkBinding {
-            project_id: project.to_string(),
-            work_item_id: work.to_string(),
-            workstream_id: stream
-                .parse()
-                .map_err(|_| Error::Storage("invalid workstream identity".into()))?,
+        Ok(awr_core::WorkstreamOwnership {
+            binding: WorkstreamWorkBinding {
+                project_id: project.to_string(),
+                work_item_id: work.to_string(),
+                workstream_id: stream,
+            },
+            revision,
         })
     }
 }
@@ -149,6 +159,7 @@ pub(crate) fn project(
     source: &Source,
     fingerprint: &str,
     projection: Option<&WorkstreamProjection>,
+    moves: &[awr_core::WorkstreamMove],
 ) -> Result<()> {
     let project = source.project_id.to_string();
     ensure_legacy(conn, &project)?;
@@ -160,6 +171,11 @@ pub(crate) fn project(
         )
         .map_err(db_error)?;
     let Some(projection) = projection else {
+        if !moves.is_empty() {
+            return Err(Error::InvalidInput(
+                "workstream moves require a complete workstream projection".into(),
+            ));
+        }
         if owner.as_deref() == Some(&source.id.to_string()) {
             return Err(Error::SourceConflict(
                 "the authoritative ledger cannot drop its workstream declaration".into(),
@@ -247,12 +263,46 @@ pub(crate) fn project(
             stream.validate_successor(&old)?;
         }
     }
+    let mut requested = std::collections::BTreeMap::new();
+    for movement in moves {
+        if movement.from == movement.to
+            || movement.expected_ownership_revision == 0
+            || requested
+                .insert(movement.work_item_id.as_str(), movement)
+                .is_some()
+        {
+            return Err(Error::InvalidInput(
+                "moves require unique work, distinct scopes and an ownership revision".into(),
+            ));
+        }
+    }
     for binding in &projection.ownership {
-        let old: Option<String> = conn.query_row("SELECT workstream_id FROM workstream_ownership WHERE project_id=?1 AND work_item_id=?2",
-            params![project,binding.work_item_id], |row|row.get(0)).optional().map_err(db_error)?;
-        if old
-            .as_deref()
-            .is_some_and(|id| id != binding.workstream_id.to_string())
+        let old: Option<(String,u64)> = conn.query_row("SELECT workstream_id,revision FROM workstream_ownership WHERE project_id=?1 AND work_item_id=?2",
+            params![project,binding.work_item_id], |row|Ok((row.get(0)?,crate::catalog::revision_at(row,1)?))).optional().map_err(db_error)?;
+        let movement = requested.remove(binding.work_item_id.as_str());
+        if let Some(movement) = movement {
+            let (old_scope, revision) = old.as_ref().ok_or_else(|| {
+                Error::SourceConflict("cannot move work without existing ownership".into())
+            })?;
+            if old_scope != &movement.from.to_string()
+                || *revision != movement.expected_ownership_revision
+                || binding.workstream_id != movement.to
+            {
+                return Err(Error::SourceConflict(
+                    "move no longer matches the reviewed source and ownership revision".into(),
+                ));
+            }
+            if projection.catalog.get(movement.to)?.state != awr_core::WorkstreamState::Active {
+                return Err(awr_core::WorkstreamError::Inactive.into());
+            }
+            crate::workstream_runtime::require_movable(
+                conn,
+                source.project_id,
+                &binding.work_item_id,
+            )?;
+        } else if old
+            .as_ref()
+            .is_some_and(|(id, _)| id != &binding.workstream_id.to_string())
         {
             let historical: bool = conn
                 .query_row(
@@ -270,6 +320,11 @@ pub(crate) fn project(
                 ));
             }
         }
+    }
+    if !requested.is_empty() {
+        return Err(Error::SourceConflict(
+            "move set contains work absent from the candidate ownership".into(),
+        ));
     }
     let source_ref = SourceRef {
         source_id: source.id,

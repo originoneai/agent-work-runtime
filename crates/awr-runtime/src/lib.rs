@@ -133,6 +133,30 @@ impl<'a> Runtime<'a> {
     ) -> Result<(SessionStarted, Event)> {
         self.store.start_session(self.project, expected, draft)
     }
+    /// Explicit scope selection, validated against the work when one is supplied.
+    pub fn start_session_in_workstream(
+        &mut self,
+        expected: Revision,
+        draft: SessionDraft,
+        binding: Option<awr_core::McpSessionBinding>,
+        workstream: Id,
+    ) -> Result<(SessionStarted, Event)> {
+        self.store
+            .start_session_in_workstream(self.project, expected, draft, binding, workstream)
+    }
+    pub fn session_workstream(&self, session: Id) -> Result<awr_core::SessionWorkstream> {
+        self.store.session_workstream(self.project, session)
+    }
+    /// Trusted host selection only; authentication and grants belong to the adapter.
+    pub fn select_conversation_workstream(
+        &mut self,
+        expected: Revision,
+        binding: awr_core::McpSessionBinding,
+        workstream: Id,
+    ) -> Result<((), Event)> {
+        self.store
+            .select_conversation_workstream(self.project, expected, binding, workstream)
+    }
     pub fn acquire_claim(
         &mut self,
         expected: Revision,
