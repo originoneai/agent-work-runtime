@@ -771,3 +771,333 @@ async fn revocation_while_recovery_waits_prevents_receipts_and_resource_release(
         assert_eq!(snapshot(&admin).await, before);
     }
 }
+
+// A synthetic restored projection, not a claim that the production import API
+// can yet restore enabled workstreams. Preserve the original execution epoch.
+async fn restored_boundary(admin: &Client) {
+    admin.batch_execute("UPDATE awr_team.projects SET coordinator_epoch='restored-generation',project_revision=project_revision+1
+        WHERE tenant_id='reader-tenant' AND id='reader-project';
+        UPDATE awr_team.sessions SET state='interrupted',session_version=session_version+1 WHERE state='active';
+        UPDATE awr_team.claims SET state='revoked',lease_version=lease_version+1 WHERE state='active';
+        UPDATE awr_team.executions SET state='unknown',cancel_requested=true,execution_version=execution_version+1;
+        UPDATE awr_team.work_runtime SET recovery_blocked=true,last_fence=last_fence+1,work_version=work_version+1;
+        UPDATE awr_team.resource_reservations SET state='unknown' WHERE state='reserved'").await.unwrap();
+}
+fn previous_epoch_review(stopped: bool) -> Value {
+    json!({"execution_epoch":"epoch-a","executor_stopped":stopped,"review_reference":"fixture:reviewed-executor-and-resource-barrier"})
+}
+
+#[tokio::test]
+async fn previous_epoch_settlement_requires_explicit_review_and_preserves_original_attribution() {
+    let (_g, admin, _, store) = setup().await;
+    enable_writes(&admin).await;
+    trusted_runner(&admin).await;
+    let c = take(&store).await;
+    let e = start(&store, &c, "old").await;
+    let e = report(&store, &e, "original-observation").await;
+    let old_receipt = admin
+        .query_one("SELECT to_jsonb(r) FROM awr_team.execution_receipts r", &[])
+        .await
+        .unwrap()
+        .get::<_, Value>(0);
+    restored_boundary(&admin).await;
+    let os = operator(&admin, &store).await;
+    let info = inspect(&store, OP, &e).await;
+    assert_eq!(info["execution_coordinator_epoch"], "epoch-a");
+    assert_eq!(info["previous_epoch_review_required"], true);
+    assert_eq!(info["previous_epoch_recovery_available"], true);
+    assert_eq!(inspect(&store, A, &e).await["attestation_authority"], false);
+    let mut cmd = reconcile(&store, &os, &e, "review-old", "succeeded").await;
+    let before = snapshot(&admin).await;
+    assert!(matches!(
+        store
+            .commands()
+            .execute(TENANT, PROJECT, OP, cmd.clone())
+            .await,
+        Err(PgError::EpochChanged)
+    ));
+    assert_eq!(snapshot(&admin).await, before);
+    cmd.args["previous_epoch_recovery"] = previous_epoch_review(true);
+    let r = store
+        .commands()
+        .execute(TENANT, PROJECT, OP, cmd.clone())
+        .await
+        .unwrap();
+    let data = &r["receipt"]["data"];
+    assert_eq!(data["state"], "succeeded");
+    assert_eq!(data["previous_epoch_reconciled"], true);
+    assert_eq!(data["execution_coordinator_epoch"], "epoch-a");
+    assert_eq!(data["reporting_coordinator_epoch"], "restored-generation");
+    assert_eq!(data["recovery_blocked"], false);
+    assert_eq!(data["work_completed"], false);
+    let row=admin.query_one("SELECT coordinator_epoch,executor_actor_id,executor_client_id,ownership_version FROM awr_team.executions",&[]).await.unwrap();
+    assert_eq!(row.get::<_, String>(0), "epoch-a");
+    assert_eq!(row.get::<_, String>(1), "agent");
+    assert_eq!(row.get::<_, String>(2), "cli-a");
+    assert_eq!(row.get::<_, i64>(3), 1);
+    let original = admin
+        .query_one(
+            "SELECT to_jsonb(r) FROM awr_team.execution_receipts r WHERE id=$1",
+            &[&old_receipt["id"].as_str().unwrap()],
+        )
+        .await
+        .unwrap()
+        .get::<_, Value>(0);
+    assert_eq!(original, old_receipt);
+    let latest = inspect(&store, OP, &e).await;
+    assert_eq!(latest["latest_receipt"]["receipt_kind"], "reconcile");
+    assert_eq!(
+        latest["latest_receipt"]["payload"]["recovery_review_basis"],
+        "authorized_operator_assertion"
+    );
+    let after = snapshot(&admin).await;
+    let replay = store
+        .commands()
+        .execute(TENANT, PROJECT, OP, cmd)
+        .await
+        .unwrap();
+    assert_eq!(replay["receipt"], r["receipt"]);
+    assert_eq!(replay["execution_authorized"], false);
+    assert_eq!(snapshot(&admin).await, after);
+}
+
+#[tokio::test]
+async fn previous_epoch_review_requires_stop_confirmation_and_exact_epoch_and_ownership() {
+    let (_g, admin, _, store) = setup().await;
+    enable_writes(&admin).await;
+    let c = take(&store).await;
+    let e = start(&store, &c, "old").await;
+    restored_boundary(&admin).await;
+    let os = operator(&admin, &store).await;
+    let mut cmd = reconcile(&store, &os, &e, "review-old", "succeeded").await;
+    for review in [
+        previous_epoch_review(false),
+        json!({"execution_epoch":"other","executor_stopped":true,"review_reference":"fixture:barrier"}),
+        json!({"execution_epoch":"epoch-a","executor_stopped":true,"review_reference":""}),
+        json!({"execution_epoch":"epoch-a","executor_stopped":true,"review_reference":"x".repeat(2049)}),
+        json!({"execution_epoch":"epoch-a","executor_stopped":true,"review_reference":"fixture:\nbarrier"}),
+        json!({"execution_epoch":"epoch-a","executor_stopped":true,"review_reference":"fixture:barrier","force":true}),
+    ] {
+        cmd.args["previous_epoch_recovery"] = review;
+        let before = snapshot(&admin).await;
+        assert!(
+            store
+                .commands()
+                .execute(TENANT, PROJECT, OP, cmd.clone())
+                .await
+                .is_err()
+        );
+        assert_eq!(snapshot(&admin).await, before);
+    }
+    cmd.args["previous_epoch_recovery"] = previous_epoch_review(true);
+    for mutation in [
+        "UPDATE awr_team.executions SET ownership_version=2",
+        // A legacy row has no scoped attribution. Preserve the schema's all-or-none binding.
+        "UPDATE awr_team.executions SET workstream_id=NULL,ownership_version=NULL,executor_client_id=NULL,coordinator_epoch=NULL",
+    ] {
+        admin.batch_execute(mutation).await.unwrap();
+        let before = snapshot(&admin).await;
+        assert!(matches!(
+            store
+                .commands()
+                .execute(TENANT, PROJECT, OP, cmd.clone())
+                .await,
+            Err(PgError::Forbidden)
+        ));
+        assert_eq!(snapshot(&admin).await, before);
+    }
+}
+
+#[tokio::test]
+async fn epoch_review_cannot_extend_executor_reports_or_override_current_epoch_preconditions() {
+    let (_g, admin, _, store) = setup().await;
+    enable_writes(&admin).await;
+    trusted_runner(&admin).await;
+    let c = take(&store).await;
+    let e = start(&store, &c, "current").await;
+    let os = operator(&admin, &store).await;
+    let mut review = reconcile(&store, &os, &e, "unnecessary-review", "succeeded").await;
+    review.args["previous_epoch_recovery"] = previous_epoch_review(true);
+    let before = snapshot(&admin).await;
+    assert!(matches!(
+        store.commands().execute(TENANT, PROJECT, OP, review).await,
+        Err(PgError::PreconditionsChanged)
+    ));
+    let mut attestation = attest(&store, &e, "forged-review", "succeeded").await;
+    attestation.args["previous_epoch_recovery"] = previous_epoch_review(true);
+    let report = command(
+        &prepare(&store, A, "a").await,
+        "forged-report-review",
+        "execution.report",
+        json!({"session_id":"session-a","expected_session_version":"1",
+            "execution_id":e["execution_id"],"expected_execution_version":e["execution_version"],
+            "outcome":"succeeded","output_digest":"b".repeat(64),
+            "observed_paths":["src/api/result.json"],"note":"Caller cannot grant recovery authority.",
+            "previous_epoch_recovery":previous_epoch_review(true)}),
+    );
+    for cmd in [attestation, report] {
+        assert!(matches!(
+            store.commands().execute(TENANT, PROJECT, A, cmd).await,
+            Err(PgError::Protocol(_))
+        ));
+    }
+    assert_eq!(snapshot(&admin).await, before);
+}
+
+#[tokio::test]
+async fn previous_epoch_unknown_observation_keeps_barriers_and_stale_reviews_are_rejected() {
+    let (_g, admin, _, store) = setup().await;
+    enable_writes(&admin).await;
+    let c = take(&store).await;
+    let e = start(&store, &c, "old").await;
+    restored_boundary(&admin).await;
+    let os = operator(&admin, &store).await;
+    let mut stale = reconcile(&store, &os, &e, "stale-review", "failed").await;
+    stale.args["previous_epoch_recovery"] = previous_epoch_review(true);
+    let mut unknown = reconcile(&store, &os, &e, "unknown-review", "unknown").await;
+    unknown.args["clear_recovery_block"] = json!(false);
+    unknown.args["previous_epoch_recovery"] = previous_epoch_review(false);
+    let observed = store
+        .commands()
+        .execute(TENANT, PROJECT, OP, unknown)
+        .await
+        .unwrap();
+    assert_eq!(observed["receipt"]["data"]["resources_released"], 0);
+    assert_eq!(observed["receipt"]["data"]["recovery_blocked"], true);
+    let before = snapshot(&admin).await;
+    assert!(matches!(
+        store.commands().execute(TENANT, PROJECT, OP, stale).await,
+        Err(PgError::PreconditionsChanged)
+    ));
+    assert_eq!(snapshot(&admin).await, before);
+    let mut finish = reconcile(&store, &os, &e, "finish-reviewed", "failed").await;
+    finish.args["previous_epoch_recovery"] = previous_epoch_review(true);
+    // Legacy resource ownership is not inferred even when this execution settles.
+    admin.batch_execute("INSERT INTO awr_team.resource_reservations(tenant_id,project_id,id,work_id,resource_kind,canonical_key,state)
+        VALUES('reader-tenant','reader-project','legacy-hold','a','prefix','legacy','unknown')").await.unwrap();
+    let r = store
+        .commands()
+        .execute(TENANT, PROJECT, OP, finish)
+        .await
+        .unwrap();
+    assert_eq!(r["receipt"]["data"]["resources_released"], 1);
+    assert_eq!(r["receipt"]["data"]["recovery_blocked"], true);
+    assert_eq!(
+        admin
+            .query_one(
+                "SELECT state FROM awr_team.resource_reservations WHERE id='legacy-hold'",
+                &[]
+            )
+            .await
+            .unwrap()
+            .get::<_, String>(0),
+        "unknown"
+    );
+}
+
+#[tokio::test]
+async fn previous_epoch_recovery_checks_current_privileges_and_rolls_back_with_its_audit() {
+    let (_g, admin, _, store) = setup().await;
+    enable_writes(&admin).await;
+    let c = take(&store).await;
+    let e = start(&store, &c, "old").await;
+    restored_boundary(&admin).await;
+    let os = operator(&admin, &store).await;
+    let mut cmd = reconcile(&store, &os, &e, "review-old", "failed").await;
+    cmd.args["previous_epoch_recovery"] = previous_epoch_review(true);
+    admin.batch_execute("UPDATE awr_team.workstream_grants SET can_reconcile_execution=false WHERE client_id='operator-cli'").await.unwrap();
+    let before = snapshot(&admin).await;
+    assert!(matches!(
+        store
+            .commands()
+            .execute(TENANT, PROJECT, OP, cmd.clone())
+            .await,
+        Err(PgError::Forbidden)
+    ));
+    assert_eq!(snapshot(&admin).await, before);
+    admin.batch_execute("UPDATE awr_team.workstream_grants SET can_reconcile_execution=true WHERE client_id='operator-cli';
+        CREATE FUNCTION awr_team.reject_epoch_receipt() RETURNS trigger LANGUAGE plpgsql AS $$ BEGIN RAISE EXCEPTION 'synthetic failure'; END $$;
+        CREATE TRIGGER reject_epoch_receipt BEFORE INSERT ON awr_team.execution_receipts FOR EACH ROW EXECUTE FUNCTION awr_team.reject_epoch_receipt()").await.unwrap();
+    let before = snapshot(&admin).await;
+    assert!(
+        store
+            .commands()
+            .execute(TENANT, PROJECT, OP, cmd.clone())
+            .await
+            .is_err()
+    );
+    assert_eq!(snapshot(&admin).await, before);
+    admin.batch_execute("DROP TRIGGER reject_epoch_receipt ON awr_team.execution_receipts; DROP FUNCTION awr_team.reject_epoch_receipt()").await.unwrap();
+    let s = store.commands();
+    let (a, b) = tokio::join!(
+        s.execute(TENANT, PROJECT, OP, cmd.clone()),
+        s.execute(TENANT, PROJECT, OP, cmd)
+    );
+    let (a, b) = (a.unwrap(), b.unwrap());
+    assert_ne!(a["replayed"], b["replayed"]);
+    assert_eq!(a["receipt"], b["receipt"]);
+}
+
+#[tokio::test]
+async fn reviewed_local_barrier_prevents_old_generation_writes_before_operator_settlement() {
+    use awr_team_pg::{CrashPoint, FencingBarrier, OutboxDelivery, ReferenceRunner};
+    let (_g, admin, _, store) = setup().await;
+    enable_writes(&admin).await;
+    let c = take(&store).await;
+    let e = start(&store, &c, "old").await;
+    let root = std::env::temp_dir().join(format!("awr-epoch-review-{}", common::nonce(0)));
+    let runner = ReferenceRunner::new(&root);
+    let fence = e["fence"].as_str().unwrap().parse().unwrap();
+    let mut delivery = OutboxDelivery {
+        outbox_id: String::new(),
+        execution_id: e["execution_id"].as_str().unwrap().into(),
+        effect_key: e["effect_key"].as_str().unwrap().into(),
+        tenant_id: TENANT.into(),
+        project_id: PROJECT.into(),
+        scope_id: "main".into(),
+        work_id: "a".into(),
+        coordinator_epoch: "epoch-a".into(),
+        fence,
+        fencing_class: "uncontrolled".into(),
+        declared_scope: json!(["src/api"]),
+        payload: json!({"writes":[{"path":"src/api/result.json","content":"original artifact"}]}),
+        delivery_attempts: 0,
+    };
+    let actual = runner.handle_delivery(&delivery, CrashPoint::None);
+    assert_eq!(actual.state, "succeeded");
+    restored_boundary(&admin).await;
+    runner
+        .install_recovery_barrier(&FencingBarrier {
+            coordinator_epoch: "restored-generation".into(),
+            tenant_id: TENANT.into(),
+            project_id: PROJECT.into(),
+            scope_id: "main".into(),
+            work_id: "a".into(),
+            fence: fence + 1,
+        })
+        .unwrap();
+    delivery.execution_id = "delayed-old-execution".into();
+    delivery.effect_key = "delayed-old-effect".into();
+    delivery.payload =
+        json!({"writes":[{"path":"src/api/result.json","content":"must not overwrite"}]});
+    let rejected = runner.handle_delivery(&delivery, CrashPoint::None);
+    assert!(!rejected.started);
+    assert_ne!(rejected.state, "succeeded");
+    assert_eq!(
+        std::fs::read_to_string(root.join("worktree/src/api/result.json")).unwrap(),
+        "original artifact"
+    );
+    let os = operator(&admin, &store).await;
+    let mut cmd = reconcile(&store, &os, &e, "review-local-barrier", "succeeded").await;
+    cmd.args["facts"]["output_digest"] = json!(actual.output_digest);
+    cmd.args["facts"]["environment_digest"] = json!(actual.environment_digest);
+    cmd.args["previous_epoch_recovery"] = previous_epoch_review(true);
+    let result = store
+        .commands()
+        .execute(TENANT, PROJECT, OP, cmd)
+        .await
+        .unwrap();
+    assert_eq!(result["receipt"]["data"]["effects_settled"], true);
+    assert_eq!(result["receipt"]["data"]["work_completed"], false);
+    let _ = std::fs::remove_dir_all(root);
+}

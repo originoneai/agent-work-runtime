@@ -368,12 +368,17 @@ async fn execution_intents_share_http_mcp_identity_without_dispatching_effects()
 #[tokio::test]
 async fn admission_observation_and_authorized_recovery_share_transport_identity() {
     for trusted in [false, true] {
-        recovery_over_transports(trusted, "caller_managed").await;
+        recovery_over_transports(trusted, "caller_managed", false).await;
     }
-    recovery_over_transports(true, "reference_write_v1").await;
+    recovery_over_transports(true, "reference_write_v1", false).await;
 }
 
-async fn recovery_over_transports(trusted: bool, mode: &str) {
+#[tokio::test]
+async fn previous_epoch_recovery_requires_explicit_review_over_http_and_replays_over_mcp() {
+    recovery_over_transports(true, "reference_write_v1", true).await;
+}
+
+async fn recovery_over_transports(trusted: bool, mode: &str, previous_epoch: bool) {
     let (_guard, admin, _, store) = setup().await;
     enable_writes(&admin).await;
     if trusted {
@@ -503,6 +508,16 @@ async fn recovery_over_transports(trusted: bool, mode: &str) {
         "expected_execution_version":inspected["data"]["execution_version"],"expected_work_version":p["data"]["runtime"]["work_version"],
         "reviewed_receipt_id":inspected["data"]["latest_receipt"]["receipt_id"],"clear_recovery_block":true,"facts":facts}))).unwrap();
     call(&a, "awr_team_command", denied, true).await;
+    if previous_epoch {
+        // Synthetic recovery boundary; this does not exercise physical database restore.
+        admin.batch_execute("UPDATE awr_team.projects SET coordinator_epoch='restored-generation',project_revision=project_revision+1
+            WHERE tenant_id='reader-tenant' AND id='reader-project';
+            UPDATE awr_team.sessions SET state='interrupted',session_version=session_version+1 WHERE state='active';
+            UPDATE awr_team.claims SET state='revoked',lease_version=lease_version+1 WHERE state='active';
+            UPDATE awr_team.executions SET state='unknown',cancel_requested=true,execution_version=execution_version+1;
+            UPDATE awr_team.work_runtime SET recovery_blocked=true,last_fence=last_fence+1,work_version=work_version+1;
+            UPDATE awr_team.resource_reservations SET state='unknown' WHERE state='reserved'").await.unwrap();
+    }
     const OP: &str =
         "awr1.operator.dddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd";
     admin
@@ -551,11 +566,37 @@ async fn recovery_over_transports(trusted: bool, mode: &str) {
     )
     .await;
     assert_eq!(viewed["data"]["reconciliation_authority"], true);
+    assert_eq!(
+        viewed["data"]["previous_epoch_review_required"],
+        previous_epoch
+    );
+    assert_eq!(
+        viewed["data"]["previous_epoch_recovery_available"],
+        previous_epoch
+    );
+    assert_eq!(viewed["data"]["execution_coordinator_epoch"], "epoch-a");
     let p = prepared(&op).await;
-    let request = serde_json::to_value(command(&p,"operator-recovery","execution.reconcile",
+    let mut request = serde_json::to_value(command(&p,"operator-recovery","execution.reconcile",
         json!({"session_id":session["receipt"]["data"]["session_id"],"expected_session_version":"1","execution_id":e["execution_id"],
         "expected_execution_version":viewed["data"]["execution_version"],"expected_work_version":p["data"]["runtime"]["work_version"],
         "reviewed_receipt_id":viewed["data"]["latest_receipt"]["receipt_id"],"clear_recovery_block":true,"facts":facts}))).unwrap();
+    if previous_epoch {
+        let denied = http()
+            .post(format!("{}/one/command", server.url))
+            .bearer_auth(OP)
+            .json(&request)
+            .send()
+            .await
+            .unwrap();
+        assert_eq!(denied.status(), 409);
+        assert_eq!(
+            denied.json::<Value>().await.unwrap()["code"],
+            "EpochChanged"
+        );
+        request["args"]["previous_epoch_recovery"] = json!({
+            "execution_epoch":viewed["data"]["execution_coordinator_epoch"],
+            "executor_stopped":true,"review_reference":"fixture:reviewed-restore-barrier"});
+    }
     let settled: Value = http()
         .post(format!("{}/one/command", server.url))
         .bearer_auth(OP)
@@ -571,6 +612,22 @@ async fn recovery_over_transports(trusted: bool, mode: &str) {
     assert_eq!(settled["receipt"]["data"]["receipt_kind"], "reconcile");
     assert_eq!(settled["receipt"]["data"]["recovery_blocked"], false);
     assert_eq!(settled["receipt"]["data"]["work_completed"], false);
+    assert_eq!(
+        settled["receipt"]["data"]["previous_epoch_reconciled"],
+        previous_epoch
+    );
+    assert_eq!(
+        settled["receipt"]["data"]["execution_coordinator_epoch"],
+        "epoch-a"
+    );
+    assert_eq!(
+        settled["receipt"]["data"]["reporting_coordinator_epoch"],
+        if previous_epoch {
+            "restored-generation"
+        } else {
+            "epoch-a"
+        }
+    );
     let replay = call(&op, "awr_team_command", request, false).await;
     assert_eq!(replay["receipt"], settled["receipt"]);
     assert_eq!(replay["execution_authorized"], false);

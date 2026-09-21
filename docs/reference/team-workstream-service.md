@@ -404,7 +404,7 @@ again. Use `execution.inspect` first, then fresh `work.prepare` preconditions.
 | Operation | Strict `args` object |
 | --- | --- |
 | `execution.attest` | `session_id`, `expected_session_version`, `execution_id`, `expected_execution_version`, `facts` |
-| `execution.reconcile` | The same fields plus `expected_work_version`, `reviewed_receipt_id` (the latest inspected receipt ID, or null when absent), `clear_recovery_block` |
+| `execution.reconcile` | The same fields plus `expected_work_version`, `reviewed_receipt_id` (the latest inspected receipt ID, or null when absent), `clear_recovery_block`, optional `previous_epoch_recovery` |
 
 `facts` contains `outcome` (`succeeded`, `failed`, `cancelled`, `unknown`), the
 original `input_digest`, optional `output_digest` (required for success),
@@ -429,8 +429,37 @@ An `agent` actor or admin membership alone is insufficient. The operator uses it
 own current work-bound session and confirms the exact execution/work versions and
 latest reviewed receipt. The new receipt is `reconcile`, never `trusted_executor`;
 the original observation and executor attribution remain in history. Claim expiry
-does not prevent settlement. Current ownership and coordinator epoch still apply;
-adopting old ownership/epoch history requires a separate recovery protocol.
+does not prevent settlement. Current workstream and ownership binding still apply.
+
+After a coordinator epoch change, ordinary attestation and reconciliation without
+an explicit review reject the old execution. A current recovery operator may add:
+
+```json
+{
+  "previous_epoch_recovery": {
+    "execution_epoch": "the-original-execution-epoch",
+    "executor_stopped": true,
+    "review_reference": "operator-owned evidence reference"
+  }
+}
+```
+
+Use the exact `execution_coordinator_epoch` returned by `execution.inspect`.
+The review reference must be nonempty, at most 2048 bytes and contain no control
+characters. Settling a result requires `executor_stopped: true`; an unknown result
+may record `false` but keeps its resources and recovery block. This is an
+**authorized operator assertion**, recorded as
+`recovery_review_basis: "authorized_operator_assertion"`. The service does not
+independently verify process termination or a physical fence. Verify those facts
+before asserting them. A review for a current-epoch execution is rejected as
+stale preconditions, and `execution.attest`/`execution.report` reject this field.
+
+The original execution epoch, actor/client, session and existing receipts remain
+unchanged. The new reconciliation receipt records both execution and reporting
+epochs, the review and the latest reviewed receipt. Missing historical attribution
+or changed ownership cannot be inferred from current source data. Enabled-project
+backup/restore and migration of unattributed history still require separate
+protocols; this command does not implement either.
 
 Terminal facts release only reservations bound to that execution. Unknown facts
 retain reservations and block recovery. An executor that reports paths outside
@@ -446,8 +475,10 @@ rejected. Partial settlement keeps the remaining barrier and does not release
 another attempt's resources. An executor cannot clear a work recovery block.
 
 `execution.inspect` exposes current `attestation_authority` and
-`reconciliation_authority`. Full `latest_receipt` facts are visible only to the
-original actor/client or a currently authorized reconciliation operator; other
+`reconciliation_authority`, plus `execution_coordinator_epoch`,
+`previous_epoch_review_required` and `previous_epoch_recovery_available`.
+These describe the review path, not permission to execute. Full `latest_receipt`
+facts are visible only to the original actor/client or a currently authorized reconciliation operator; other
 readers get metadata and `receipt_details_available: false`. Recheck after grant,
 ownership, epoch, receipt or work-version changes. Exact retries return historical
 command receipts and never repeat effects or issue execution permission.
@@ -457,8 +488,10 @@ without attestation delegation, and retains legacy resource reservations as
 unbound. It does not infer a resource's execution from today's work owner. Such
 reservations cannot be released by these commands. Schema 14 adds the operator
 provisioning CLI and its immutable receipts without granting existing clients
-new rights. Bundled executor integration and enabled-project history migration
-are still required for the complete Team execution workflow.
+new rights. The [scoped reference runner](team-reference-runner.md) integrates
+bounded local file writes and saved-fact reporting. Generic agent dispatch,
+enabled-project backup/restore and history migration remain outside the available
+workflow.
 
 ## Limits and errors
 
@@ -507,6 +540,10 @@ client ownership, scope/version guards, preparation/cancellation rollback, live
 revocation, unknown-effect preservation, legacy migration and shared HTTP/MCP
 receipts without dispatch. Admission tests additionally cover live lease/contract/
 wait/resource checks, required receipt coverage, one-time start responses, atomic
-rollback and preservation of unverified reports. Dispatch, trusted reporting,
-reconciliation, history migration and enabled-project backup/restore remain
-unavailable through this surface.
+rollback and preservation of unverified reports. Recovery checks cover explicit
+executor authority, operator settlement, receipt preservation, rollback and
+explicit old-epoch review over PostgreSQL, HTTP and MCP. A local runner test also
+installs a new generation barrier and rejects a delayed old-generation write;
+the database boundary in that test is synthetic, not a physical backup/restore.
+Generic agent dispatch, history migration and enabled-project backup/restore
+remain unavailable through this surface.

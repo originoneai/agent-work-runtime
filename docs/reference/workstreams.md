@@ -13,10 +13,11 @@ read APIs are available to trusted Rust integrations. Local L0/L1 context,
 required-fact completeness and context delta use scoped facts when sources
 explicitly enable workstreams. The shared personal MCP service has an explicit
 authenticated read boundary; unsupported shared operations are rejected for
-enabled workstreams. Team PostgreSQL now has authenticated scoped HTTP queries
-and session journaling; execution writes and resource/dependency enforcement remain
-separate integration work. These paths do not establish
-complete isolation for every CLI, MCP or Team operation.
+enabled workstreams. Team PostgreSQL has authenticated HTTP/MCP queries,
+session journaling, claims, execution admission and authorized recovery, with a
+bounded local reference runner. Versioned cross-stream adoption and full
+workspace/external-resource enforcement remain separate integration work.
+These paths do not establish complete isolation for every CLI, MCP or Team operation.
 
 The Team source coordinator also accepts an explicit multi-work source bundle
 and commits its catalog, ownership, contracts and required graph together. This
@@ -173,10 +174,15 @@ progress. Historical data is never reassigned just to unblock enablement.
 boundary. Source bundles cannot carry grants and activation grants no reader or
 writer permissions. The [Team HTTP service](team-workstream-service.md)
 checks live credentials, actor/membership and grants transactionally. Session
-creation, checkpoints, closure and outcome lookup are supported; execution writes,
-Team MCP, enabled-project backup/restore, and real-client acceptance remain outstanding;
-the current legacy import/restore APIs refuse enabled projects. The shared
-personal MCP read boundary described elsewhere does not provide Team access.
+creation, checkpoints, closure, claims, execution intents/admission, result
+reporting and authorized reconciliation are supported through HTTP and MCP.
+The [reference runner](team-reference-runner.md) performs bounded local file
+writes with explicit executor authority. Old-epoch reconciliation requires an
+explicit operator review and preserves original attribution. Enabled-project
+backup/restore, migration of unattributed history and real-client acceptance
+remain outstanding; the current legacy import/restore APIs refuse enabled
+projects. The shared personal MCP read boundary described elsewhere does not
+provide Team access.
 
 ### Source projection in the development branch
 

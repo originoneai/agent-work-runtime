@@ -268,6 +268,7 @@ pub(crate) async fn read(
         "reference_runner":{"transport":"operator_local_cli_or_library","effects":"bounded_file_writes",
             "requires":"system_actor_with_explicit_attestation_grant","fencing_class":"uncontrolled","max_plan_bytes":1048576},
         "execution_reconciliation":true,"trusted_execution_results":true,
+        "previous_epoch_reconciliation":true,"unattributed_history_adoption":false,
         "execution_trust_authority":"explicit_operator_grant_and_actor_kind",
         "dependency_exports":false,"execution_admission":true,
         "execution_admission_scope":"same_client_current_lease_lexical_project_resources",

@@ -51,7 +51,15 @@ pub(crate) struct Reconcile {
     expected_work_version: String,
     reviewed_receipt_id: Option<String>,
     clear_recovery_block: bool,
+    previous_epoch_recovery: Option<PreviousEpochRecovery>,
     facts: Facts,
+}
+#[derive(Deserialize, Serialize)]
+#[serde(deny_unknown_fields)]
+struct PreviousEpochRecovery {
+    execution_epoch: String,
+    executor_stopped: bool,
+    review_reference: String,
 }
 pub(crate) enum Action {
     Attest(Attest),
@@ -79,6 +87,16 @@ impl Action {
                 || (r.clear_recovery_block && r.facts.outcome == "unknown")
             {
                 return Err(invalid());
+            }
+            if let Some(review) = &r.previous_epoch_recovery {
+                if !identity(&review.execution_epoch)
+                    || review.review_reference.trim().is_empty()
+                    || review.review_reference.len() > 2048
+                    || review.review_reference.chars().any(char::is_control)
+                    || (r.facts.outcome != "unknown" && !review.executor_stopped)
+                {
+                    return Err(invalid());
+                }
             }
         }
         Ok(a)
@@ -152,8 +170,24 @@ pub(super) async fn apply(
     {
         return Err(PgError::Forbidden);
     }
-    if r.get::<_, Option<String>>("coordinator_epoch").as_deref() != Some(&auth.epoch) {
-        return Err(PgError::EpochChanged);
+    let execution_epoch: Option<String> = r.get("coordinator_epoch");
+    let epoch_review = match &action {
+        Action::Reconcile(a) => a.previous_epoch_recovery.as_ref(),
+        _ => None,
+    };
+    if execution_epoch.as_deref() != Some(&auth.epoch) {
+        // Only a currently authorized recovery operator can explicitly review an
+        // attributed old epoch. Missing legacy attribution is never inferred.
+        if !reconcile
+            || execution_epoch
+                .as_deref()
+                .is_none_or(|old| epoch_review.is_none_or(|review| review.execution_epoch != old))
+        {
+            return Err(PgError::EpochChanged);
+        }
+    } else if epoch_review.is_some() {
+        // A stale recovery plan cannot silently become an ordinary settlement.
+        return Err(PgError::PreconditionsChanged);
     }
     let ev: i64 = r.get("execution_version");
     if ev != version(expected_version)?
@@ -225,6 +259,8 @@ pub(super) async fn apply(
         "session_id":action.session().0,"execution_session_id":r.get::<_,Option<String>>("session_id"),
         "execution_version":expected_version,"workstream_id":command.workstream_id,"ownership_version":ownership.to_string(),
         "contract_hash":r.get::<_,String>("contract_hash"),"coordinator_epoch":auth.epoch,
+        "execution_coordinator_epoch":execution_epoch,"previous_epoch_recovery":epoch_review,
+        "recovery_review_basis":if epoch_review.is_some() {Some("authorized_operator_assertion")} else {None},
         "grant_version":auth.grant_versions[&command.workstream_id].to_string(),
         "admission_attestation_grant_version":r.get::<_,Option<i64>>("attestation_grant_version").map(|v|v.to_string()),
         "reviewed_receipt_id":match &action { Action::Reconcile(a)=>a.reviewed_receipt_id.as_deref(), _=>None }});
@@ -281,6 +317,8 @@ pub(super) async fn apply(
         "receipt_id":receipt_id,"receipt_kind":kind,"state":next,"effects_settled":settled,"scope_violation":exceeded,
         "resources_released":if settled {affected} else {0},"recovery_blocked":blocked,
         "recovery_clear_requested":clear,"unresolved_work_effects":remaining,"work_completed":false,
+        "execution_coordinator_epoch":execution_epoch,"reporting_coordinator_epoch":auth.epoch,
+        "previous_epoch_reconciled":epoch_review.is_some(),
         "next_action":if blocked {"Inspect remaining effects and recovery responsibility; do not restart or complete work."}
             else {"Refresh work context and the live lease before another operation; settlement is not work acceptance."}}),
     )
