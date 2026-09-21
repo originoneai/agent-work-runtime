@@ -868,6 +868,7 @@ fn delivery_on_work(
     scope: &[&str],
 ) -> awr_team_pg::OutboxDelivery {
     awr_team_pg::OutboxDelivery {
+        coordinator_epoch: "epoch-1".into(),
         outbox_id: format!("ob-{id}"),
         execution_id: id.into(),
         effect_key: id.into(),

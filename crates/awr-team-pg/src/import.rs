@@ -29,6 +29,7 @@ pub struct BackupRecord {
 
 #[derive(Clone, Debug, Serialize)]
 pub struct FencingBarrier {
+    pub coordinator_epoch: String,
     pub tenant_id: String,
     pub project_id: String,
     pub scope_id: String,
@@ -154,9 +155,10 @@ impl ImportStore {
                 e
             })
             .collect::<Vec<_>>();
+        let edges = tx.query("SELECT from_work_id,to_work_id,relation,required FROM awr_team.dependency_edges WHERE tenant_id=$1 AND project_id=$2 AND snapshot_id=$3 AND scope_id='main' ORDER BY from_work_id,to_work_id,relation", &[&tenant_id,&project_id,&snapshot]).await?.iter().map(|r| json!({"from":r.get::<_,String>(0),"to":r.get::<_,String>(1),"relation":r.get::<_,String>(2),"required":r.get::<_,bool>(3)})).collect::<Vec<_>>();
         let manifest = json!({"format":"awr-team-import-v1","scopes":["main"],
             "origin":{"tenant_id":tenant_id,"project_id":project_id,"snapshot_id":snapshot,"project_revision":project.get::<_,i64>(1).to_string(),"coordinator_epoch":project.get::<_,String>(2)},
-            "works":works.iter().map(|r|json!({"id":r.get::<_,String>(0),"external_key":r.get::<_,String>(1),"contract":r.get::<_,Option<Value>>(2),"contract_hash":r.get::<_,Option<String>>(3)})).collect::<Vec<_>>(), "evidence":evidence});
+            "dependency_edges":edges,"works":works.iter().map(|r|json!({"id":r.get::<_,String>(0),"external_key":r.get::<_,String>(1),"contract":r.get::<_,Option<Value>>(2),"contract_hash":r.get::<_,Option<String>>(3)})).collect::<Vec<_>>(), "evidence":evidence});
         self.dry_run(&manifest)?;
         tx.commit().await?;
         Ok(manifest)
@@ -187,7 +189,6 @@ impl ImportStore {
         let mut ids = BTreeSet::new();
         let mut keys = BTreeSet::new();
         let mut missing_contracts = vec![];
-        let mut contracts = vec![];
         for w in works {
             let id = required(w, "id")?;
             let key = required(w, "external_key")?;
@@ -209,21 +210,8 @@ impl ImportStore {
                     return Err(invalid("contract hash mismatch"));
                 }
             }
-            contracts.push(c);
         }
-        let edges = contracts
-            .iter()
-            .flat_map(|c| {
-                c.required_dependencies
-                    .iter()
-                    .map(|d| crate::DependencyEdge {
-                        from: c.work_id.as_str().into(),
-                        to: d.clone(),
-                        relation: "requires".into(),
-                        required: true,
-                    })
-            })
-            .collect::<Vec<_>>();
+        let edges = manifest_edges(manifest)?;
         crate::validate_required_graph(
             &ids.iter().map(|s| s.to_string()).collect::<Vec<_>>(),
             &edges,
@@ -320,12 +308,8 @@ impl ImportStore {
             }
             tx.execute("INSERT INTO awr_team.work_runtime(tenant_id,project_id,scope_id,work_id,state) VALUES($1,$2,'main',$3,'pending') ON CONFLICT DO NOTHING", &[&tenant_id,&project_id,&work_id]).await?;
         }
-        for w in works {
-            if let Some(deps) = w["contract"]["required_dependencies"].as_array() {
-                for dep in deps {
-                    tx.execute("INSERT INTO awr_team.dependency_edges(tenant_id,project_id,snapshot_id,scope_id,from_work_id,to_work_id,relation,required) VALUES($1,$2,$3,'main',$4,$5,'requires',TRUE)", &[&tenant_id,&project_id,&snapshot_id,&required(w,"id")?,&dep.as_str().unwrap()]).await?;
-                }
-            }
+        for edge in manifest_edges(manifest)? {
+            tx.execute("INSERT INTO awr_team.dependency_edges(tenant_id,project_id,snapshot_id,scope_id,from_work_id,to_work_id,relation,required) VALUES($1,$2,$3,'main',$4,$5,$6,$7)", &[&tenant_id,&project_id,&snapshot_id,&edge.from,&edge.to,&edge.relation,&edge.required]).await?;
         }
         for e in manifest["evidence"].as_array().unwrap() {
             let bytes = artifact_bytes(e)?;
@@ -417,6 +401,60 @@ impl ImportStore {
         .await?;
         tx.commit().await?;
         Ok(epoch)
+    }
+
+    /// Explicit, transactional repair of pre-schema-9 source-manifest artifacts.
+    /// Only material fully reconstructed and verified against its original digest
+    /// is repaired; unrelated/missing artifacts and corrupt sources still fail closed.
+    pub async fn repair_source_artifacts(
+        &self,
+        tenant_id: &str,
+        project_id: &str,
+    ) -> PgResult<usize> {
+        let mut client = self.connect().await?;
+        let tx = client.transaction().await?;
+        bind_scope(&tx, tenant_id, project_id).await?;
+        lock_project(&tx, tenant_id, project_id).await?;
+        let rows=tx.query("SELECT a.id,a.sha256,a.byte_length,a.object_key,a.media_type,a.state,s.id,s.manifest_digest,s.source_ref_json,s.parser_version FROM awr_team.artifacts a JOIN awr_team.source_snapshots s ON s.tenant_id=a.tenant_id AND s.project_id=a.project_id AND s.artifact_id=a.id WHERE a.tenant_id=$1 AND a.project_id=$2 AND a.content IS NULL ORDER BY a.id,s.id FOR UPDATE OF a", &[&tenant_id,&project_id]).await?;
+        let mut repaired = BTreeSet::new();
+        for row in rows {
+            let id: String = row.get(0);
+            let snapshot: String = row.get(6);
+            let digest: String = row.get(7);
+            let source: Value = row.get(8);
+            let parser: String = row.get(9);
+            let files =
+                crate::source::files_from_ref(&source).map_err(|_| PgError::RestoreIncomplete)?;
+            let manifest = crate::source::build_manifest(&parser, &files)
+                .map_err(|_| PgError::RestoreIncomplete)?;
+            let bytes = manifest.to_string().into_bytes();
+            if !repaired.insert(id.clone())
+                || source["manifest"] != manifest
+                || sha256_hex(&bytes) != digest
+                || row.get::<_, String>(1) != digest
+                || row.get::<_, i64>(2) != files.iter().map(|(_, b)| b.len() as i64).sum::<i64>()
+                || row.get::<_, String>(3) != format!("snapshots/{snapshot}")
+                || row.get::<_, String>(4) != "application/json"
+                || !matches!(row.get::<_, String>(5).as_str(), "finalized" | "retained")
+            {
+                return Err(PgError::RestoreIncomplete);
+            }
+            tx.execute("UPDATE awr_team.artifacts SET content=$4,byte_length=$5 WHERE tenant_id=$1 AND project_id=$2 AND id=$3 AND content IS NULL", &[&tenant_id,&project_id,&id,&bytes,&(bytes.len() as i64)]).await?;
+        }
+        // Also verify non-repaired objects before committing any changes.
+        inventory(&tx, tenant_id, project_id).await?;
+        if !repaired.is_empty() {
+            lifecycle(
+                &tx,
+                tenant_id,
+                project_id,
+                "source.artifacts_repaired",
+                json!({"artifact_ids":repaired}),
+            )
+            .await?;
+        }
+        tx.commit().await?;
+        Ok(repaired.len())
     }
 
     /// Registers a verifiable logical inventory. Physical backup remains external.
@@ -530,8 +568,19 @@ impl ImportStore {
         // Credentials are tenant-scoped in V1; revocation is deliberately conservative.
         tx.execute("UPDATE awr_team.credentials SET revoked_at=clock_timestamp() WHERE tenant_id=$1 AND revoked_at IS NULL", &[&tenant_id]).await?;
         let id = new_id();
-        let fencing_barriers:Vec<FencingBarrier>=tx.query("SELECT scope_id,work_id,last_fence FROM awr_team.work_runtime WHERE tenant_id=$1 AND project_id=$2 ORDER BY scope_id,work_id", &[&tenant_id,&project_id]).await?.iter().map(|r|FencingBarrier{tenant_id:tenant_id.into(),project_id:project_id.into(),scope_id:r.get(0),work_id:r.get(1),fence:r.get(2)}).collect();
+        let mut fencing_barriers:Vec<FencingBarrier>=tx.query("SELECT scope_id,work_id,last_fence FROM awr_team.work_runtime WHERE tenant_id=$1 AND project_id=$2 ORDER BY scope_id,work_id", &[&tenant_id,&project_id]).await?.iter().map(|r|FencingBarrier{coordinator_epoch:new_epoch.clone(),tenant_id:tenant_id.into(),project_id:project_id.into(),scope_id:r.get(0),work_id:r.get(1),fence:r.get(2)}).collect();
         let run_state = if verified { "completed" } else { "blocked" };
+        // Even an empty historical project can have post-backup deliveries.
+        if fencing_barriers.is_empty() {
+            fencing_barriers.push(FencingBarrier {
+                coordinator_epoch: new_epoch.clone(),
+                tenant_id: tenant_id.into(),
+                project_id: project_id.into(),
+                scope_id: String::new(),
+                work_id: String::new(),
+                fence: 0,
+            });
+        }
         let report = json!({"old_epoch":old_epoch,"inventory_verified":verified,"execution_recovery_required":true,"fencing_barriers":fencing_barriers});
         tx.execute("INSERT INTO awr_team.restore_runs(tenant_id,project_id,id,backup_id,new_epoch,outbox_replayed,state,report_json) VALUES($1,$2,$3,$4,$5,FALSE,$6,$7)", &[&tenant_id,&project_id,&id,&backup_id,&new_epoch,&run_state,&report]).await?;
         lifecycle(&tx,tenant_id,project_id,if verified {"restore.completed"} else {"restore.blocked"},json!({"restore_id":id,"backup_id":backup_id,"old_epoch":old_epoch,"new_epoch":new_epoch,"recovery_blocked":true,"inventory_verified":verified})).await?;
@@ -665,6 +714,53 @@ async fn require_status(
     }
     Ok(())
 }
+// Legacy hand-authored manifests declare only contract dependencies. Explicit
+// graphs are complete: never silently supplement a missing or altered edge.
+fn manifest_edges(manifest: &Value) -> PgResult<Vec<crate::DependencyEdge>> {
+    let works = manifest["works"]
+        .as_array()
+        .ok_or_else(|| invalid("works required"))?;
+    let mut contract_edges = vec![];
+    let mut ids = BTreeSet::new();
+    for w in works {
+        let id = required(w, "id")?;
+        ids.insert(id);
+        if let Some(deps) = w["contract"]["required_dependencies"].as_array() {
+            for dep in deps {
+                contract_edges.push(crate::DependencyEdge {
+                    from: id.into(),
+                    to: dep
+                        .as_str()
+                        .ok_or_else(|| invalid("dependency id required"))?
+                        .into(),
+                    relation: "requires".into(),
+                    required: true,
+                });
+            }
+        }
+    }
+    let edges: Vec<crate::DependencyEdge> = match manifest.get("dependency_edges") {
+        Some(value) => serde_json::from_value(value.clone())
+            .map_err(|_| invalid("invalid dependency_edges"))?,
+        None => contract_edges.clone(),
+    };
+    let mut keys = BTreeSet::new();
+    for edge in &edges {
+        if !ids.contains(edge.from.as_str()) || !ids.contains(edge.to.as_str()) {
+            return Err(PgError::MissingDependency);
+        }
+        if edge.relation.trim().is_empty() || !keys.insert((&edge.from, &edge.to, &edge.relation)) {
+            return Err(invalid("empty or duplicate dependency relation"));
+        }
+    }
+    if !contract_edges.iter().all(|e| edges.contains(e)) {
+        return Err(invalid(
+            "explicit graph omits a required contract dependency",
+        ));
+    }
+    Ok(edges)
+}
+
 async fn verify_projection(
     tx: &tokio_postgres::Transaction<'_>,
     tenant: &str,
@@ -698,23 +794,15 @@ async fn verify_projection(
             return Err(PgError::InactiveCandidate);
         }
     }
-    let expected: BTreeSet<(String, String)> = works
-        .iter()
-        .flat_map(|w| {
-            w["contract"]["required_dependencies"]
-                .as_array()
-                .unwrap()
-                .iter()
-                .map(move |d| {
-                    (
-                        w["id"].as_str().unwrap().to_owned(),
-                        d.as_str().unwrap().to_owned(),
-                    )
-                })
-        })
+    let expected: BTreeSet<_> = manifest_edges(manifest)?
+        .into_iter()
+        .map(|e| (e.from, e.to, e.relation, e.required))
         .collect();
-    let edges=tx.query("SELECT from_work_id,to_work_id FROM awr_team.dependency_edges WHERE tenant_id=$1 AND project_id=$2 AND snapshot_id=$3 AND scope_id='main' AND required AND relation='requires'", &[&tenant,&project,&snapshot]).await?;
-    let actual: BTreeSet<(String, String)> = edges.iter().map(|r| (r.get(0), r.get(1))).collect();
+    let edges=tx.query("SELECT from_work_id,to_work_id,relation,required FROM awr_team.dependency_edges WHERE tenant_id=$1 AND project_id=$2 AND snapshot_id=$3 AND scope_id='main'", &[&tenant,&project,&snapshot]).await?;
+    let actual: BTreeSet<(String, String, String, bool)> = edges
+        .iter()
+        .map(|r| (r.get(0), r.get(1), r.get(2), r.get(3)))
+        .collect();
     if actual != expected {
         return Err(PgError::InactiveCandidate);
     }

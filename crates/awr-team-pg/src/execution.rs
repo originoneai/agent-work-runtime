@@ -23,6 +23,9 @@ pub struct ExecutionRecord {
 
 #[derive(Clone, Debug, Serialize, Deserialize)]
 pub struct OutboxDelivery {
+    /// Issuer generation; legacy deliveries without one fail closed at the resource.
+    #[serde(default)]
+    pub coordinator_epoch: String,
     pub outbox_id: String,
     pub execution_id: String,
     pub effect_key: String,
@@ -294,7 +297,7 @@ impl ExecutionStore {
         let project: String = row.get(5);
         let identity = tx
             .query_opt(
-                "SELECT scope_id, work_id FROM awr_team.executions
+                "SELECT scope_id, work_id, coordinator_epoch FROM awr_team.executions
                  WHERE tenant_id=$1 AND project_id=$2 AND id=$3",
                 &[&tenant, &project, &execution_id],
             )
@@ -302,6 +305,10 @@ impl ExecutionStore {
             .ok_or_else(|| PgError::Protocol("dispatch without an execution row".into()))?;
         let scope_id: String = identity.get(0);
         let work_id: String = identity.get(1);
+        let coordinator_epoch: String = identity
+            .get::<_, Option<String>>(2)
+            .filter(|e| !e.is_empty())
+            .ok_or(PgError::EpochChanged)?;
         tx.execute(
             "UPDATE awr_team.executions SET state='queued'
              WHERE tenant_id=$1 AND project_id=$2 AND id=$3 AND state='prepared'",
@@ -310,6 +317,7 @@ impl ExecutionStore {
         .await?;
         tx.commit().await?;
         Ok(Some(OutboxDelivery {
+            coordinator_epoch,
             outbox_id,
             execution_id: execution_id.clone(),
             effect_key: payload

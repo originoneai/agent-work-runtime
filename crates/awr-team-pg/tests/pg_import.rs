@@ -684,6 +684,7 @@ fn resource_barrier_rejects_already_delivered_old_command() {
     let root = std::env::temp_dir().join(format!("awr-restore-barrier-{}", common::nonce(0)));
     let runner = awr_team_pg::ReferenceRunner::new(&root);
     let barrier = awr_team_pg::FencingBarrier {
+        coordinator_epoch: "epoch-1".into(),
         tenant_id: TENANT.into(),
         project_id: PROJECT.into(),
         scope_id: "main".into(),
@@ -692,6 +693,7 @@ fn resource_barrier_rejects_already_delivered_old_command() {
     };
     runner.install_recovery_barrier(&barrier).unwrap();
     let delivery = awr_team_pg::OutboxDelivery {
+        coordinator_epoch: "epoch-1".into(),
         tenant_id: TENANT.into(),
         project_id: PROJECT.into(),
         scope_id: "main".into(),
@@ -980,4 +982,346 @@ async fn evidence_binding_drift_and_cross_project_backup_fail_closed() {
             .get::<_, String>(0),
         "epoch-b"
     );
+}
+
+#[tokio::test]
+async fn split_graph_roundtrip_and_complete_projection_validation() {
+    let (_lock, admin, store) = setup().await;
+    activate_manifest(&store, PROJECT, &manifest()).await;
+    let cfg = config(&admin).await;
+    let graph = awr_team_pg::GraphStore::from_config(cfg.clone());
+    graph
+        .propose_split(TENANT, PROJECT, "work-a", &["child".into()], &json!({}))
+        .await
+        .unwrap();
+    let read = awr_team_pg::ReadStore::from_config(cfg);
+    let first = read.graph(TENANT, PROJECT).await.unwrap();
+    let mut edges: Vec<awr_team_pg::DependencyEdge> = first
+        .edges
+        .into_iter()
+        .map(|e| serde_json::from_value(e).unwrap())
+        .collect();
+    edges.push(awr_team_pg::DependencyEdge {
+        from: "work-a".into(),
+        to: "child".into(),
+        relation: "reference".into(),
+        required: false,
+    });
+    graph
+        .replace_edges(
+            TENANT,
+            PROJECT,
+            &first.snapshot_id,
+            "main",
+            &["work-a".into(), "child".into()],
+            &edges,
+        )
+        .await
+        .unwrap();
+    let before = read.graph(TENANT, PROJECT).await.unwrap().edges;
+    assert!(
+        before
+            .iter()
+            .any(|e| e["relation"] == "split-child" && e["required"] == true)
+    );
+    store.freeze(TENANT, PROJECT).await.unwrap();
+    let exported = store.export(TENANT, PROJECT).await.unwrap();
+    assert_eq!(exported["dependency_edges"], json!(before));
+    project_b(&admin).await;
+    store.freeze(TENANT, "project-b").await.unwrap();
+    let job = store
+        .load(TENANT, "project-b", ACTOR, "graph", &exported)
+        .await
+        .unwrap();
+    admin.batch_execute("DELETE FROM awr_team.dependency_edges WHERE project_id='project-b' AND relation='split-child'").await.unwrap();
+    assert!(matches!(
+        store.activate(TENANT, "project-b", &job.id, false).await,
+        Err(PgError::InactiveCandidate)
+    ));
+    admin.batch_execute("INSERT INTO awr_team.dependency_edges(tenant_id,project_id,snapshot_id,scope_id,from_work_id,to_work_id,relation,required) SELECT tenant_id,project_id,snapshot_id,'main','work-a','child','split-child',TRUE FROM awr_team.import_jobs WHERE project_id='project-b'").await.unwrap();
+    store
+        .activate(TENANT, "project-b", &job.id, false)
+        .await
+        .unwrap();
+    assert_eq!(read.graph(TENANT, "project-b").await.unwrap().edges, before);
+    let mut bad = exported.clone();
+    bad["dependency_edges"][0]["to"] = json!("missing");
+    assert!(store.dry_run(&bad).is_err());
+    let mut bad = exported.clone();
+    bad["dependency_edges"]
+        .as_array_mut()
+        .unwrap()
+        .push(exported["dependency_edges"][0].clone());
+    assert!(store.dry_run(&bad).is_err());
+}
+
+#[tokio::test]
+async fn legacy_source_manifest_repair_is_verified_atomic_and_idempotent() {
+    let (_lock, admin, store) = setup().await;
+    let source = awr_team_pg::SourceStore::from_config(config(&admin).await);
+    for i in 0..2 {
+        source
+            .ingest(awr_team_pg::IngestRequest {
+                tenant_id: TENANT.into(),
+                project_id: PROJECT.into(),
+                actor_id: ACTOR.into(),
+                parser_version: "p1".into(),
+                files: vec![awr_team_pg::SourceFile {
+                    path: "contract.json".into(),
+                    bytes: contract(&format!("work-{i}"), "W").to_string().into_bytes(),
+                }],
+            })
+            .await
+            .unwrap();
+    }
+    // Exact persisted artifact shape of baseline SourceStore::ingest (schema 8).
+    admin.batch_execute("UPDATE awr_team.artifacts a SET content=NULL,byte_length=(SELECT sum((f->>'bytes')::bigint) FROM awr_team.source_snapshots s,LATERAL jsonb_array_elements(s.source_ref_json->'files') f WHERE s.artifact_id=a.id)").await.unwrap();
+    assert!(store.backup(TENANT, PROJECT, &[], &[]).await.is_err());
+    let row=admin.query_one("SELECT id,source_ref_json FROM awr_team.source_snapshots ORDER BY artifact_id DESC LIMIT 1",&[]).await.unwrap();
+    let id: String = row.get(0);
+    let original: serde_json::Value = row.get(1);
+    let mut bad = original.clone();
+    bad["files"][0]["text"] = json!("tampered");
+    admin
+        .execute(
+            "UPDATE awr_team.source_snapshots SET source_ref_json=$1 WHERE id=$2",
+            &[&bad, &id],
+        )
+        .await
+        .unwrap();
+    assert!(
+        store
+            .repair_source_artifacts(TENANT, PROJECT)
+            .await
+            .is_err()
+    );
+    assert_eq!(
+        admin
+            .query_one(
+                "SELECT count(*) FROM awr_team.artifacts WHERE content IS NOT NULL",
+                &[]
+            )
+            .await
+            .unwrap()
+            .get::<_, i64>(0),
+        0
+    );
+    admin
+        .execute(
+            "UPDATE awr_team.source_snapshots SET source_ref_json=$1 WHERE id=$2",
+            &[&original, &id],
+        )
+        .await
+        .unwrap();
+    assert_eq!(
+        store
+            .repair_source_artifacts(TENANT, PROJECT)
+            .await
+            .unwrap(),
+        2
+    );
+    assert_eq!(
+        store
+            .repair_source_artifacts(TENANT, PROJECT)
+            .await
+            .unwrap(),
+        0
+    );
+    store.backup(TENANT, PROJECT, &[], &[]).await.unwrap();
+    assert_eq!(
+        admin
+            .query_one(
+                "SELECT count(*) FROM awr_team.artifacts WHERE byte_length=octet_length(content)",
+                &[]
+            )
+            .await
+            .unwrap()
+            .get::<_, i64>(0),
+        2
+    );
+    admin
+        .batch_execute("UPDATE awr_team.artifacts SET content=NULL,sha256='corrupt'")
+        .await
+        .unwrap();
+    assert!(
+        store
+            .repair_source_artifacts(TENANT, PROJECT)
+            .await
+            .is_err()
+    );
+}
+
+#[tokio::test]
+#[ignore = "requires AWR_TEAM_BASELINE_INGEST_BIN built at 41cde746; see team-postgres.md"]
+async fn baseline_real_ingest_upgrade_and_repair() {
+    let binary = std::env::var("AWR_TEAM_BASELINE_INGEST_BIN").expect("baseline binary required");
+    let (_lock, admin, store) = setup().await;
+    let db: String = admin
+        .query_one("SELECT current_database()", &[])
+        .await
+        .unwrap()
+        .get(0);
+    assert!(db.starts_with("awr_team_gate_"));
+    // Drop only this process's owned schema; baseline binary creates schema 8.
+    admin
+        .batch_execute("DROP SCHEMA awr_team CASCADE")
+        .await
+        .unwrap();
+    let out = std::process::Command::new(binary)
+        .env(
+            "AWR_TEAM_TEST_DATABASE_URL",
+            common::test_database_url_raw(),
+        )
+        .env("AWR_LEGACY_TEST_DB", db)
+        .output()
+        .unwrap();
+    assert!(
+        out.status.success(),
+        "{}",
+        String::from_utf8_lossy(&out.stderr)
+    );
+    assert_eq!(
+        admin
+            .query_one("SELECT max(version) FROM awr_team.schema_state", &[])
+            .await
+            .unwrap()
+            .get::<_, i32>(0),
+        8
+    );
+    assert_eq!(
+        admin
+            .query_one(
+                "SELECT count(*) FROM awr_team.artifacts WHERE content IS NULL",
+                &[]
+            )
+            .await
+            .unwrap()
+            .get::<_, i64>(0),
+        1
+    );
+    migrate_and_check_repair(&admin, &store).await;
+}
+async fn migrate_and_check_repair(admin: &Client, store: &ImportStore) {
+    awr_team_pg::migrate(admin).await.unwrap();
+    awr_team_pg::Bootstrap::grant_app(admin, "awr_app")
+        .await
+        .unwrap();
+    assert!(store.backup(TENANT, PROJECT, &[], &[]).await.is_err());
+    // Keep authentic old bytes and length for the negative control.
+    let row = admin
+        .query_one("SELECT source_ref_json FROM awr_team.source_snapshots", &[])
+        .await
+        .unwrap();
+    let original: serde_json::Value = row.get(0);
+    let mut tampered = original.clone();
+    tampered["files"][0]["text"] = json!("tampered");
+    admin
+        .execute(
+            "UPDATE awr_team.source_snapshots SET source_ref_json=$1",
+            &[&tampered],
+        )
+        .await
+        .unwrap();
+    assert!(
+        store
+            .repair_source_artifacts(TENANT, PROJECT)
+            .await
+            .is_err()
+    );
+    assert_eq!(
+        admin
+            .query_one(
+                "SELECT count(*) FROM awr_team.artifacts WHERE content IS NULL",
+                &[]
+            )
+            .await
+            .unwrap()
+            .get::<_, i64>(0),
+        1
+    );
+    admin
+        .execute(
+            "UPDATE awr_team.source_snapshots SET source_ref_json=$1",
+            &[&original],
+        )
+        .await
+        .unwrap();
+    assert_eq!(
+        store
+            .repair_source_artifacts(TENANT, PROJECT)
+            .await
+            .unwrap(),
+        1
+    );
+    store.backup(TENANT, PROJECT, &[], &[]).await.unwrap();
+    assert_eq!(
+        admin
+            .query_one(
+                "SELECT byte_length=octet_length(content) FROM awr_team.artifacts",
+                &[]
+            )
+            .await
+            .unwrap()
+            .get::<_, bool>(0),
+        true
+    );
+}
+
+#[test]
+fn resource_generation_retirement_survives_restart_and_rejects_missing_epoch() {
+    let root = std::env::temp_dir().join(format!("awr-generation-{}", common::nonce(0)));
+    let runner = awr_team_pg::ReferenceRunner::new(&root);
+    let barrier = awr_team_pg::FencingBarrier {
+        coordinator_epoch: "old".into(),
+        tenant_id: TENANT.into(),
+        project_id: PROJECT.into(),
+        scope_id: "main".into(),
+        work_id: "w".into(),
+        fence: 99,
+    };
+    runner.install_recovery_barrier(&barrier).unwrap();
+    let mut new_barrier = barrier.clone();
+    new_barrier.coordinator_epoch = "new".into();
+    new_barrier.fence = 6;
+    runner.install_recovery_barrier(&new_barrier).unwrap();
+    let runner = awr_team_pg::ReferenceRunner::new(&root);
+    runner.install_recovery_barrier(&new_barrier).unwrap();
+    assert!(
+        runner
+            .install_recovery_barrier(&barrier)
+            .unwrap_err()
+            .contains("retired")
+    );
+    let d = awr_team_pg::OutboxDelivery {
+        coordinator_epoch: String::new(),
+        outbox_id: "o".into(),
+        execution_id: "e".into(),
+        effect_key: "e".into(),
+        fence: 100,
+        tenant_id: TENANT.into(),
+        project_id: PROJECT.into(),
+        scope_id: "main".into(),
+        work_id: "w".into(),
+        fencing_class: "hard_fence".into(),
+        declared_scope: json!(["src"]),
+        payload: json!({"writes":[{"path":"src/out","content":"no"}]}),
+        delivery_attempts: 1,
+    };
+    let out = runner.handle_delivery(&d, awr_team_pg::CrashPoint::None);
+    assert!(out.error.unwrap().contains("missing coordinator"));
+    assert!(!root.join("worktree/src/out").exists());
+    std::fs::remove_dir_all(root).unwrap();
+}
+
+#[tokio::test]
+async fn empty_restore_still_returns_project_generation_barrier() {
+    let (_lock, _admin, store) = setup().await;
+    let backup = store.backup(TENANT, PROJECT, &[], &[]).await.unwrap();
+    let run = store
+        .restore(TENANT, PROJECT, &backup.id, true, false)
+        .await
+        .unwrap();
+    assert_eq!(run.fencing_barriers.len(), 1);
+    assert!(run.fencing_barriers[0].work_id.is_empty());
+    assert_eq!(run.fencing_barriers[0].coordinator_epoch, run.new_epoch);
 }

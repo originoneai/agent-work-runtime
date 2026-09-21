@@ -1129,6 +1129,7 @@ async fn reference_runner_chain_binds_result_digest_without_equating_artifact_di
     let _ = std::fs::remove_dir_all(&base);
     let runner = ReferenceRunner::new(&base);
     let delivery = OutboxDelivery {
+        coordinator_epoch: "epoch-1".into(),
         outbox_id: format!("ob-{}", prepared.id),
         execution_id: prepared.id.clone(),
         effect_key: prepared.id.clone(),
