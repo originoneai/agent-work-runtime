@@ -94,7 +94,7 @@ pub fn related_work(
     let mut selection = RelatedSelection::dependencies(store, project, work_key, branch)?;
     selection.decisions(store, paths)?;
     selection.evidence(store, source_sha)?;
-    crate::public_context(selection.finish(store))
+    crate::public_source_context(store, selection.finish(store))
 }
 
 /// Internal staged selection lets L1 place rule and delta resolution between these read phases.
@@ -383,5 +383,8 @@ pub fn related_work_in_workstream(
         source_sha,
         true,
     )?;
-    crate::public_context(selection.finish_snapshot())
+    let report = selection.finish_snapshot()?;
+    read.ensure_source_output(&report)
+        .map_err(crate::context_output_error)?;
+    Ok(report)
 }

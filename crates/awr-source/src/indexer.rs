@@ -411,7 +411,7 @@ fn index_one(
                 "proposed source exceeds its adapter read cap".into(),
             ));
         }
-        awr_core::ensure_public_bytes(&snapshot.bytes)?;
+        snapshot.validate_content()?;
         crate::SourceObservation {
             source: store.mark_source_freshness(&source, Freshness::Stale)?,
             changed: true,
@@ -428,7 +428,11 @@ fn index_one(
         .snapshot
         .ok_or_else(|| Error::SourceUnavailable("source returned no snapshot".into()))?;
     let mut source = observed.source;
-    if mode != Some(true) && !observed.changed && source.freshness == Freshness::Fresh {
+    if mode != Some(true)
+        && !observed.changed
+        && source.freshness == Freshness::Fresh
+        && store.source_review_matches(&source, snapshot.content_review.as_ref())?
+    {
         let warnings = store.source_warnings(&source)?;
         return Ok((source, Some(false), warnings));
     }

@@ -193,6 +193,7 @@ fn plan(store: &Store, root: &Path, request: OrganizationChange) -> Result<Plan>
         edit_organization_fields(before.text()?, &request.mapping, &request.values)?;
     validate_values(store, project.id, &after_fields)?;
     let after_snapshot = SourceSnapshot {
+        content_review: None,
         locator: before.locator.clone(),
         fingerprint: fingerprint(after.as_bytes()),
         bytes: after.as_bytes().to_vec(),

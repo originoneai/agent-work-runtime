@@ -43,3 +43,16 @@ fn public_context<T: serde::Serialize>(result: Result<T>) -> Result<T> {
     ))?;
     Ok(report)
 }
+
+fn public_source_context<T: serde::Serialize>(
+    store: &awr_store::Store,
+    result: Result<T>,
+) -> Result<T> {
+    let report = result?;
+    store.ensure_source_output(&report).map_err(|_| Error::ContextIncomplete("selected context is not covered by its current source review; refresh or review the source".into()))?;
+    Ok(report)
+}
+
+fn context_output_error(_: Error) -> Error {
+    Error::ContextIncomplete("selected context contains unreviewed, stale or nonreviewable content; refresh and review the source before consuming it".into())
+}

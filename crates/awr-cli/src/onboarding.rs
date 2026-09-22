@@ -41,6 +41,19 @@ pub struct InitArgs {
 
 #[derive(Debug, Subcommand)]
 pub enum IntakeCommand {
+    /// Scan a file for Agent review, or archive an explicit byte-bound decision.
+    Review {
+        #[arg(
+            long,
+            required_unless_present = "from_review",
+            conflicts_with = "from_review"
+        )]
+        source: Option<PathBuf>,
+        #[arg(long, conflicts_with = "from_review")]
+        write_draft: Option<PathBuf>,
+        #[arg(long, conflicts_with = "source")]
+        from_review: Option<PathBuf>,
+    },
     /// Refresh projections and return ordered organization actions; never edits source files.
     Inspect {
         #[arg(long)]
@@ -52,6 +65,55 @@ pub enum IntakeCommand {
 
 pub fn inspect(root: &Path, command: &IntakeCommand, json_output: bool) -> Result<()> {
     match command {
+        IntakeCommand::Review {
+            source,
+            write_draft,
+            from_review,
+        } => {
+            if let Some(path) = from_review {
+                let bytes = awr_source::read_capped(path, 1024 * 1024)?;
+                let review: awr_source::ProjectContentReview = serde_json::from_slice(&bytes)
+                    .map_err(|_| Error::InvalidInput("invalid content review JSON".into()))?;
+                let archived = awr_source::archive_content_review(root, &review)?;
+                println!(
+                    "{}",
+                    serde_json::to_string_pretty(
+                        &json!({"status":"review_archived","receipt":archived,"source_sha256":review.review.assessment.source_sha256,"next_action":"Retry init or source reindex. Editing the source or changing detector policy requires a new review."})
+                    )?
+                );
+            } else {
+                let review = awr_source::scan_content_review(root, source.as_deref().unwrap())?;
+                let status = if review.review.assessment.findings.is_empty() {
+                    "clear"
+                } else if review
+                    .review
+                    .assessment
+                    .findings
+                    .iter()
+                    .any(|f| !f.reviewable)
+                {
+                    "blocked"
+                } else {
+                    "review_required"
+                };
+                let bytes = serde_json::to_vec_pretty(&review)?;
+                if let Some(path) = write_draft {
+                    let mut file = fs::OpenOptions::new()
+                        .write(true)
+                        .create_new(true)
+                        .open(path)?;
+                    file.write_all(&bytes)?;
+                    file.sync_all()?;
+                }
+                println!(
+                    "{}",
+                    serde_json::to_string_pretty(
+                        &json!({"status":status,"review":review,"next_action":"Read the exact source locally. Remove or redact real sensitive data and rescan. For unchanged public findings, fill reviewer, reviewed_at (Unix milliseconds) and one decision {finding_id,reason} per finding; submit with intake review --from-review. Nonreviewable findings cannot be approved."})
+                    )?
+                );
+            }
+            Ok(())
+        }
         IntakeCommand::Inspect { branch, source_sha } => crate::query::status(
             root,
             branch.as_deref(),
@@ -144,7 +206,11 @@ fn inventory(root: &Path) -> Result<Vec<FileFact>> {
                 let hash = if document(&path) && bytes <= awr_source::YAML_READ_CAP {
                     Some(format!(
                         "{:x}",
-                        Sha256::digest(awr_source::read_capped(&path, awr_source::YAML_READ_CAP)?)
+                        Sha256::digest(awr_source::read_project_document(
+                            root,
+                            &path,
+                            awr_source::YAML_READ_CAP
+                        )?)
                     ))
                 } else {
                     None
@@ -396,7 +462,28 @@ pub fn run(root: &Path, args: &InitArgs, json_output: bool) -> Result<()> {
         }
         value
     } else {
-        draft(&root, args.goal.as_deref())?
+        match draft(&root, args.goal.as_deref()) {
+            Ok(draft) => draft,
+            Err(error) => {
+                if let Some(path) = &args.write_draft {
+                    if error
+                        .report()
+                        .details
+                        .as_ref()
+                        .is_some_and(|v| v["rule"] == "source.public_content")
+                    {
+                        let diagnostic = json!({"schema_version":1,"status":"content_review_required","project_root":root,"diagnostic":error.report(),"next_action":"Use intake review --source <diagnostic locator> --write-draft <review.json>. This diagnostic contains no source body and cannot be accepted as an intake draft."});
+                        let mut file = fs::OpenOptions::new()
+                            .write(true)
+                            .create_new(true)
+                            .open(path)?;
+                        file.write_all(&serde_json::to_vec_pretty(&diagnostic)?)?;
+                        file.sync_all()?;
+                    }
+                }
+                return Err(error);
+            }
+        }
     };
     if !args.field_map.is_empty() || !args.status_map.is_empty() {
         let ledgers: Vec<_> = candidate

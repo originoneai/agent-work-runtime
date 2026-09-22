@@ -25,6 +25,8 @@ pub struct SourceSnapshot {
     pub locator: String,
     pub fingerprint: String,
     pub bytes: Vec<u8>,
+    /// Byte-bound source proof; every use rechecks the retained snapshot.
+    pub content_review: Option<awr_core::VerifiedSourceContentReview>,
 }
 impl SourceSnapshot {
     /// Validate retained source bytes without reading the original file or Git repository.
@@ -54,9 +56,30 @@ impl SourceSnapshot {
     }
 
     pub fn text(&self) -> Result<&str> {
-        awr_core::ensure_public_source(&self.bytes, &self.locator)?;
+        self.validate_content()?;
         std::str::from_utf8(&self.bytes)
             .map_err(|e| Error::InvalidInput(format!("source must be UTF-8: {e}")))
+    }
+
+    pub fn validate_content(&self) -> Result<()> {
+        match &self.content_review {
+            Some(review) => {
+                if !self.verify_fingerprint() {
+                    return Err(Error::SourceConflict(
+                        "reviewed snapshot fingerprint is inconsistent".into(),
+                    ));
+                }
+                review.verify_bytes(&self.bytes, &self.locator)
+            }
+            None => awr_core::ensure_public_source(&self.bytes, &self.locator),
+        }
+    }
+    pub fn ensure_value(&self, value: &serde_json::Value) -> Result<()> {
+        self.validate_content()?;
+        match &self.content_review {
+            Some(review) => review.ensure_value(value),
+            None => awr_core::ensure_public_value(value),
+        }
     }
 
     /// One-based inclusive line range; preserve the original newline bytes.
@@ -81,16 +104,25 @@ impl SourceSnapshot {
 pub fn read_capped(path: &Path, cap: u64) -> Result<Vec<u8>> {
     let file = File::open(path)
         .map_err(|e| Error::SourceUnavailable(format!("{}: {e}", path.display())))?;
-    read_file_capped(file, path, cap)
+    let bytes = read_file_capped(file, path, cap)?;
+    awr_core::ensure_public_source(&bytes, &path.to_string_lossy())?;
+    Ok(bytes)
 }
 
 /// Read a canonical source path whose authority was checked by Locator/Manifest.
 /// Unlike caller-supplied input files, it must not be redirected by a replacement link.
 pub fn read_source_capped(path: &Path, cap: u64) -> Result<Vec<u8>> {
+    let bytes = read_source_for_review(path, cap)?;
+    awr_core::ensure_public_source(&bytes, &path.to_string_lossy())?;
+    Ok(bytes)
+}
+
+/// Bounded diagnostic read. Callers must not archive its bytes before review.
+pub fn read_source_for_review(path: &Path, cap: u64) -> Result<Vec<u8>> {
     read_file_capped(crate::open_file_exact(path)?, path, cap)
 }
 
-fn read_file_capped(file: File, path: &Path, cap: u64) -> Result<Vec<u8>> {
+fn read_file_capped(file: File, _path: &Path, cap: u64) -> Result<Vec<u8>> {
     if cap == 0 {
         return Err(Error::InvalidInput("read cap must be positive".into()));
     }
@@ -115,7 +147,6 @@ fn read_file_capped(file: File, path: &Path, cap: u64) -> Result<Vec<u8>> {
             "source exceeds {cap} byte read cap"
         )));
     }
-    awr_core::ensure_public_source(&bytes, &path.to_string_lossy())?;
     Ok(bytes)
 }
 pub fn fingerprint(bytes: &[u8]) -> String {
@@ -228,15 +259,19 @@ impl Locator {
     pub fn read(&self, root: &Path, cap: u64) -> Result<SourceSnapshot> {
         match self {
             Self::File(path) => {
-                let bytes = read_source_capped(path, cap)?;
+                let bytes = read_source_for_review(path, cap)?;
                 let locator = Url::from_file_path(path)
                     .map_err(|_| Error::InvalidInput("invalid file locator".into()))?
                     .to_string();
-                Ok(SourceSnapshot {
+                let content_review = crate::content_review::load_review(root, &locator, &bytes)?;
+                let snapshot = SourceSnapshot {
                     locator,
                     fingerprint: fingerprint(&bytes),
                     bytes,
-                })
+                    content_review,
+                };
+                snapshot.validate_content()?;
+                Ok(snapshot)
             }
             Self::Git { revision, path } => {
                 let resolved = git(
@@ -301,6 +336,7 @@ impl Locator {
                 Ok(SourceSnapshot {
                     locator,
                     fingerprint: format!("sha256:{:x}", digest.finalize()),
+                    content_review: None,
                     bytes,
                 })
             }

@@ -26,7 +26,7 @@ class SecretTransports(unittest.TestCase):
             "event_type": "work.observed", "summary": "password: " + SENTINEL})
         self.assertEqual(result["code"], "RuleViolation")
         self.assertEqual(result["details"]["category"], "labelled_value")
-        self.assertEqual(result["details"]["policy_version"], 5)
+        self.assertEqual(result["details"]["policy_version"], 6)
         self.assertIn("outside registered sources", result["details"]["next_action"])
         public_schema = "# Deliver useful analysis\n\ninterface Login { password: string; }\n"
         (self.root / "goal.md").write_text(public_schema)
@@ -50,6 +50,53 @@ class SecretTransports(unittest.TestCase):
         self.no_leak(json.dumps(response))
         self.assertTrue(response["result"]["isError"])
         self.assertEqual(response["result"]["structuredContent"]["issues"][0], diagnostic)
+
+    def test_reviewed_public_source_survives_stdio_context_and_prepare(self):
+        public = "password: public-protocol-marker"
+        (self.root / "goal.md").write_text("# Deliver useful analysis\n\n" + public + "\n")
+        scan = self.cli_ok("intake", "review", "--source", "goal.md")["review"]
+        self.assertNotIn("public-protocol-marker", json.dumps(scan))
+        scan["reviewer"] = "fixture-agent"
+        scan["reviewed_at"] = 1000
+        scan["decisions"] = [{"finding_id": f["id"], "reason": "Verified public protocol marker in the synthetic fixture."}
+                             for f in scan["assessment"]["findings"]]
+        receipt = self.root / ".review.json"
+        receipt.write_text(json.dumps(scan))
+        self.cli_ok("intake", "review", "--from-review", str(receipt))
+        self.cli_ok("source", "reindex")
+        for name, arguments in [("awr_context_compile", {"work": "W", "detached": True, "budget": 10000}),
+                                ("awr_work_prepare", {"work": "W", "budget": 10000})]:
+            response = self.client.rpc("tools/call", {"name": name, "arguments": arguments})
+            self.assertFalse(response["result"].get("isError", False), response)
+            self.assertIn(public, json.dumps(response))
+        # The source proof does not authorize direct runtime writes of the same text.
+        response = self.client.rpc("tools/call", {"name": "awr_event_append", "arguments": {
+            "expected_revision": self.revision(), "event_type": "work.observed", "summary": public}})
+        self.assertTrue(response["result"].get("isError", False), response)
+        self.assertNotIn("public-protocol-marker", json.dumps(response))
+
+    def test_reviewed_task_fields_survive_all_read_routes(self):
+        public = "password: public-task-marker"
+        (self.root / "work.yaml").write_text(WORK.replace("next_action: Draft the analysis", 'next_action: "' + public + '"').replace("acceptance: [Deliver the reviewed analysis]", 'acceptance: ["' + public + '"]'))
+        scan = self.cli_ok("intake", "review", "--source", "work.yaml")["review"]
+        scan["reviewer"] = "fixture-agent"
+        scan["reviewed_at"] = 1000
+        scan["decisions"] = [{"finding_id": f["id"], "reason": "Verified public task protocol marker."}
+                             for f in scan["assessment"]["findings"]]
+        receipt = self.root / ".task-review.json"
+        receipt.write_text(json.dumps(scan))
+        self.cli_ok("intake", "review", "--from-review", str(receipt))
+        self.cli_ok("source", "reindex")
+        for name, arguments in [("awr_work_get", {"work": "W"}),
+                                ("awr_work_ready", {}),
+                                ("awr_context_compile", {"work": "W", "detached": True, "budget": 10000}),
+                                ("awr_work_prepare", {"work": "W", "budget": 10000}),
+                                ("awr_search", {"text": "public-task-marker"})]:
+            with self.subTest(tool=name):
+                response = self.client.rpc("tools/call", {"name": name, "arguments": arguments})
+                self.assertFalse(response["result"].get("isError", False), response)
+                if name != "awr_search":
+                    self.assertIn(public, json.dumps(response))
 
     def setUp(self):
         self.temp = tempfile.TemporaryDirectory(prefix="awr-secret-transport-")

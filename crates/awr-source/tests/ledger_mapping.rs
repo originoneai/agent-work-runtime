@@ -23,6 +23,7 @@ fn parse(text: &str, adapter: &str, options: &str) -> awr_core::Result<awr_core:
         config: serde_json::json!({}),
     };
     let snapshot = SourceSnapshot {
+        content_review: None,
         locator: source.locator.clone(),
         bytes: text.as_bytes().into(),
         fingerprint: fingerprint(text.as_bytes()),

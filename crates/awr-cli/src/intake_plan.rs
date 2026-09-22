@@ -153,6 +153,7 @@ pub fn preview(
             captured_files.push((
                 locator.clone(),
                 awr_source::SourceSnapshot {
+                    content_review: None,
                     locator: locator.identity()?,
                     fingerprint: fingerprint(body.as_bytes()),
                     bytes: body.as_bytes().to_vec(),

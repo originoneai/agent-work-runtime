@@ -126,7 +126,7 @@ impl Fixture {
         self.sql("DROP TABLE search_fts; DROP TABLE search_state; DROP TABLE search_documents; DELETE FROM schema_migrations WHERE version=3; PRAGMA user_version=2;");
     }
     fn downgrade_to_v3(&self) {
-        self.sql("PRAGMA foreign_keys=OFF; DROP TABLE conversation_workstreams; DROP TABLE session_workstreams; DROP TRIGGER session_identity_no_update; DROP TRIGGER workstream_claim_exclusive_insert; DROP TRIGGER workstream_claim_exclusive_update; DELETE FROM schema_migrations WHERE version=6; DROP TABLE workstream_ownership; DROP TABLE workstreams; DROP TABLE workstream_catalogs; DELETE FROM schema_migrations WHERE version=5;");
+        self.sql("PRAGMA foreign_keys=OFF; DROP TABLE source_content_reviews; DROP TABLE conversation_workstreams; DROP TABLE session_workstreams; DROP TRIGGER session_identity_no_update; DROP TRIGGER workstream_claim_exclusive_insert; DROP TRIGGER workstream_claim_exclusive_update; DELETE FROM schema_migrations WHERE version>=6; DROP TABLE workstream_ownership; DROP TABLE workstreams; DROP TABLE workstream_catalogs; DELETE FROM schema_migrations WHERE version=5;");
         // Build an authentic old fixture, including its original constraint definition.
         let domain = include_str!("../../../crates/awr-store/migrations/002_domain.sql");
         let begin = domain.find("CREATE TABLE work_items (").unwrap();

@@ -224,7 +224,7 @@ impl SourceAdapter for YamlLedgerAdapter {
         context: &ParseContext<'_>,
         spec: &SourceSpec,
     ) -> Result<ProjectionBatch> {
-        crate::limits::check_source_size(&snapshot.bytes, crate::YAML_READ_CAP)?;
+        crate::limits::check_source_size_only(&snapshot.bytes, crate::YAML_READ_CAP)?;
         if spec.domain != "ledger" {
             return Err(Error::InvalidInput(
                 "yaml-ledger-v1 requires the ledger domain".into(),
@@ -282,7 +282,19 @@ impl YamlLedgerAdapter {
             repair: "Check indentation, matching brackets and quotes at this location; quote text containing ': ' or use a block scalar (|).".into(),
         })))?;
         let document = serde_json::to_value(yaml)?;
-        awr_core::ensure_public_value(&document)?;
+        Self::parse_decoded(snapshot, context, mapping, scoped, document)
+    }
+
+    /// Decode adapter-produced fields using the original byte-verified source.
+    /// Never manufacture a snapshot that claims transformed bytes are original.
+    pub(crate) fn parse_decoded(
+        snapshot: &SourceSnapshot,
+        context: &ParseContext<'_>,
+        mapping: &crate::LedgerMapping,
+        scoped: bool,
+        document: Value,
+    ) -> Result<ProjectionBatch> {
+        snapshot.ensure_value(&document)?;
         let document = mapping.document(document)?;
         if !scoped && document.get("workstreams").is_some() {
             return Err(Error::Unsupported(

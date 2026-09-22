@@ -105,7 +105,7 @@ impl LegacyFixture {
             work,
         };
         // Reconstruct the exact shipped v4 schema; all pre-existing rows remain.
-        fixture.sql("PRAGMA foreign_keys=OFF; BEGIN IMMEDIATE; DROP TABLE conversation_workstreams; DROP TABLE session_workstreams; DROP TRIGGER session_identity_no_update; DROP TRIGGER workstream_claim_exclusive_insert; DROP TRIGGER workstream_claim_exclusive_update; DELETE FROM schema_migrations WHERE version=6; DROP TABLE workstream_ownership; DROP TABLE workstreams; DROP TABLE workstream_catalogs; DELETE FROM schema_migrations WHERE version=5; PRAGMA user_version=4; COMMIT;");
+        fixture.sql("PRAGMA foreign_keys=OFF; BEGIN IMMEDIATE; DROP TABLE source_content_reviews; DROP TABLE conversation_workstreams; DROP TABLE session_workstreams; DROP TRIGGER session_identity_no_update; DROP TRIGGER workstream_claim_exclusive_insert; DROP TRIGGER workstream_claim_exclusive_update; DELETE FROM schema_migrations WHERE version>=6; DROP TABLE workstream_ownership; DROP TABLE workstreams; DROP TABLE workstream_catalogs; DELETE FROM schema_migrations WHERE version=5; PRAGMA user_version=4; COMMIT;");
         fixture
     }
     fn path(&self) -> PathBuf {
@@ -211,7 +211,7 @@ fn migration_preview_and_apply_preserve_work_and_all_runtime_history() {
     );
     assert_eq!(f.rows(), before);
     assert!(Store::inspect(&f.path()).unwrap().ok);
-    assert_eq!(f.schema()["version"], 6);
+    assert_eq!(f.schema()["version"], awr_store::SCHEMA_VERSION);
     drop(migrated);
     let reopened = Store::open(&f.path()).unwrap();
     assert_eq!(

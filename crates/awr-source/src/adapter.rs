@@ -65,7 +65,17 @@ pub trait SourceAdapter {
         snapshot: &SourceSnapshot,
         batch: ProjectionBatch,
     ) -> Result<()> {
-        store.commit_source_projection(source, &snapshot.fingerprint, batch)?;
+        snapshot.validate_content()?;
+        if let Some(review) = &snapshot.content_review {
+            store.commit_reviewed_source_projection(
+                source,
+                &snapshot.fingerprint,
+                batch,
+                review,
+            )?;
+        } else {
+            store.commit_source_projection(source, &snapshot.fingerprint, batch)?;
+        }
         Ok(())
     }
     fn plan_mutation(

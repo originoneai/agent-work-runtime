@@ -330,7 +330,7 @@ pub fn compile_context(
     request: &ContextRequest,
 ) -> Result<WorkContextReport> {
     awr_core::ensure_public_data(request)?;
-    crate::public_context(compile_context_selected(store, root, request, None, None))
+    compile_context_selected(store, root, request, None, None)
 }
 
 /// Read a named branch overlay without changing project defaults or any runtime ownership.
@@ -347,13 +347,7 @@ pub fn compile_branch_context(
     crate::branch::require_fork_request(&request.delta_baseline)?;
     let mut request = request.clone();
     request.delta_baseline = DeltaBaseline::BranchFork;
-    crate::public_context(compile_context_selected(
-        store,
-        root,
-        &request,
-        Some(reference),
-        None,
-    ))
+    compile_context_selected(store, root, &request, Some(reference), None)
 }
 
 /// Access is loaded by a trusted host, never deserialized from request data.
@@ -381,13 +375,7 @@ pub fn compile_workstream_context(
     request.work_item_key = request.work_item_key.or(selection.work_item_key.clone());
     request.session_id = request.session_id.or(selection.session_id);
     awr_core::ensure_public_data(&request)?;
-    crate::public_context(compile_context_selected(
-        store,
-        root,
-        &request,
-        None,
-        Some((access, selection)),
-    ))
+    compile_context_selected(store, root, &request, None, Some((access, selection)))
 }
 
 fn compile_context_selected(
@@ -496,7 +484,7 @@ fn compile_context_selected(
                 actual,
             });
         }
-        return Ok(WorkContextReport {
+        return crate::public_context(Ok(WorkContextReport {
             level: "L1",
             selection_basis: selection.basis,
             goal_selection_basis: goal_basis,
@@ -507,7 +495,7 @@ fn compile_context_selected(
             completeness,
             omitted_refs: vec![],
             diagnostic_text: Some(text),
-        });
+        }));
     };
     let scope = scope(request, selection.session.as_ref());
     let hard = hard_context(store, project.id, key, branch, &scope)?;
@@ -1121,6 +1109,8 @@ fn compile_context_selected(
             request.token_budget,
         )?
     };
+    crate::budget::validate_reviewed_budget(store, &budget, &required, &optional_chunks)
+        .map_err(crate::context_output_error)?;
     let actual = store.project(project.id)?.project_revision;
     if actual != project.project_revision {
         return Err(Error::RevisionConflict {
@@ -1128,7 +1118,7 @@ fn compile_context_selected(
             actual,
         });
     }
-    Ok(WorkContextReport {
+    let report = WorkContextReport {
         level: "L1",
         selection_basis: selection.basis,
         goal_selection_basis: goal_basis,
@@ -1139,7 +1129,17 @@ fn compile_context_selected(
         completeness,
         omitted_refs,
         diagnostic_text: None,
-    })
+    };
+    let mut checked = serde_json::to_value(&report)?;
+    // The exact rendered bytes were checked above with their per-chunk provenance.
+    checked["work_context"]
+        .as_object_mut()
+        .unwrap()
+        .remove("rendered_context");
+    store
+        .ensure_source_output(&checked)
+        .map_err(crate::context_output_error)?;
+    Ok(report)
 }
 
 pub(crate) fn scoped_read(

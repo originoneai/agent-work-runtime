@@ -311,7 +311,17 @@ pub(crate) fn call(
     let value = json!({"ok":!incomplete,"read_only":true,"protocol_version":1,
         "workstream":read.workstream(),"scope_binding":read.scope_binding(),
         "project_revision":read.project_revision(),"result":result});
-    ensure_public_value(&value)?;
+    let mut checked = value.clone();
+    if request.action == "context" {
+        if let Some(context) = checked["result"]
+            .get_mut("work_context")
+            .and_then(Value::as_object_mut)
+        {
+            context.remove("rendered_context");
+        }
+    }
+    read.ensure_source_output(&checked)?;
+    ensure_no_credentials_value(&value)?;
     Ok(if incomplete {
         CallToolResult::structured_error(value)
     } else {

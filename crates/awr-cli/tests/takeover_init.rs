@@ -163,3 +163,109 @@ fn inventory_does_not_follow_symlinks() {
     let preview = p.ok(&["init"]);
     assert!(preview["draft"]["inventory"].as_array().unwrap().is_empty());
 }
+
+const MEASUREMENT: &str = "## Payload measurement\n\nThe measurement serializes tool objects as compact, sorted JSON.\n\nEnvironment:\n\n- Server commit: `0123456789abcdef0123456789abcdef01234567`\n- Python: `3.12.11`\n- Node: `22.14.0`\n- Operating system: Ubuntu 24.04\n- catalog: 8 domains and 55 children\n- measurement unit: UTF-8 serialized bytes, not model tokens\n";
+
+#[test]
+fn public_measurement_notes_support_preview_draft_accept_and_retry() {
+    let p = Project::new();
+    p.write("docs/measurement.md", MEASUREMENT);
+    p.write(
+        "package-lock.json",
+        r#"{"packages":{"node_modules/std-env":{"version":"3.10.0","dev":true}}}"#,
+    );
+    let preview = p.ok(&["init", "--goal", "Reproduce public measurements"]);
+    assert_eq!(preview["status"], "preview");
+    assert!(!p.0.join(".awr").exists());
+    // Keep the draft outside the scanned inventory.
+    let draft = p.0.join(".local/draft.json");
+    fs::create_dir(p.0.join(".local")).unwrap();
+    p.ok(&[
+        "init",
+        "--write-draft",
+        draft.to_str().unwrap(),
+        "--goal",
+        "Reproduce public measurements",
+    ]);
+    assert!(draft.is_file());
+    assert!(!p.0.join(".awr").exists());
+    p.ok(&["init", "--from-draft", draft.to_str().unwrap(), "--accept"]);
+    assert!(p.0.join(".awr/state.db").is_file());
+    p.ok(&["doctor"]);
+    p.ok(&["init", "--accept"]);
+    assert_eq!(
+        fs::read_to_string(p.0.join("docs/measurement.md")).unwrap(),
+        MEASUREMENT
+    );
+}
+
+#[test]
+fn rejected_measurement_sources_have_consistent_locations_and_leave_no_partial_init() {
+    for (tail, category) in [
+        ("password: synthetic-private-value\n", "labelled_value"),
+        (
+            "HOME=/synthetic-private-value\nPATH=/synthetic-bin\n",
+            "environment_dump",
+        ),
+        (
+            "environment:\n  HOME: /synthetic-private-value\n",
+            "environment_dump",
+        ),
+    ] {
+        let p = Project::new();
+        let body = format!("{MEASUREMENT}\n{tail}");
+        p.write("docs/measurement.md", &body);
+        let draft = p.0.join(".local/draft.json");
+        fs::create_dir(p.0.join(".local")).unwrap();
+        let mut reports = Vec::new();
+        for args in [
+            vec!["init"],
+            vec!["init", "--write-draft", draft.to_str().unwrap()],
+            vec!["init", "--accept"],
+        ] {
+            let out = p.run(&args);
+            assert!(!out.status.success());
+            let report: Value = serde_json::from_slice(&out.stderr).unwrap();
+            assert_eq!(report["code"], "RuleViolation");
+            assert_eq!(report["details"]["category"], category);
+            let entry_line = body
+                .lines()
+                .position(|line| line.contains("synthetic-private-value"))
+                .unwrap()
+                + 1;
+            assert_eq!(report["details"]["location"]["line"], entry_line);
+            assert!(
+                report["details"]["location"]["locator"]
+                    .as_str()
+                    .unwrap()
+                    .ends_with("docs/measurement.md")
+            );
+            assert!(!String::from_utf8_lossy(&out.stderr).contains("synthetic-private-value"));
+            assert!(!String::from_utf8_lossy(&out.stdout).contains("synthetic-private-value"));
+            assert!(!p.0.join(".awr").exists());
+            if draft.exists() {
+                let diagnostic = fs::read_to_string(&draft).unwrap();
+                assert!(!diagnostic.contains("synthetic-private-value"));
+                assert_eq!(
+                    serde_json::from_str::<Value>(&diagnostic).unwrap()["status"],
+                    "content_review_required"
+                );
+            }
+            assert_eq!(
+                fs::read_to_string(p.0.join("docs/measurement.md")).unwrap(),
+                body
+            );
+            reports.push(report);
+        }
+        assert_eq!(reports[0], reports[1]);
+        assert_eq!(reports[0], reports[2]);
+        p.write("docs/measurement.md", MEASUREMENT);
+        p.ok(&[
+            "init",
+            "--accept",
+            "--goal",
+            "Reproduce public measurements",
+        ]);
+        p.ok(&["doctor"]);
+    }
+}

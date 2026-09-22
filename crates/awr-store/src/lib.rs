@@ -59,7 +59,8 @@ pub use work::{ScopedDependencyGraph, UnavailableDependency};
 
 const APPLICATION_ID: i64 = 0x41575231;
 /// Schema written by this build. Exposed for offline host compatibility negotiation.
-pub const SCHEMA_VERSION: i64 = 6;
+pub const SCHEMA_VERSION: i64 = 7;
+const CONTENT_REVIEWS_SQL: &str = include_str!("../migrations/007_content_reviews.sql");
 const CATALOG_SQL: &str = include_str!("../migrations/001_catalog.sql");
 const DOMAIN_SQL: &str = include_str!("../migrations/002_domain.sql");
 const SEARCH_SQL: &str = include_str!("../migrations/003_search.sql");
@@ -422,6 +423,10 @@ impl Store {
                 workstream_runtime::migrate(&tx)?;
                 tx.execute("INSERT INTO schema_migrations(version,name,applied_at) VALUES(6,'workstream_sessions',?1)",[now_millis()?]).map_err(db_error)?;
             }
+            if version < 7 {
+                tx.execute_batch(CONTENT_REVIEWS_SQL).map_err(db_error)?;
+                tx.execute("INSERT INTO schema_migrations(version,name,applied_at) VALUES(7,'content_reviews',?1)",[now_millis()?]).map_err(db_error)?;
+            }
             tx.pragma_update(None, "user_version", SCHEMA_VERSION)
                 .map_err(db_error)?;
             schema::verify(&tx, SCHEMA_VERSION)?;
@@ -595,3 +600,5 @@ impl Store {
         Ok(())
     }
 }
+
+mod content_review;

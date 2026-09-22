@@ -333,6 +333,7 @@ pub fn prepare_markdown_mutation(
     )?;
     crate::limits::check_source_size(output.as_bytes(), MARKDOWN_READ_CAP)?;
     let after = SourceSnapshot {
+        content_review: None,
         locator: before.locator.clone(),
         fingerprint: fingerprint(output.as_bytes()),
         bytes: output.into_bytes(),

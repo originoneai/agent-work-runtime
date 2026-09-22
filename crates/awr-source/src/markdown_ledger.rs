@@ -57,7 +57,7 @@ impl SourceAdapter for MarkdownLedgerAdapter {
                 "Markdown ledger requires domain ledger".into(),
             ));
         }
-        ensure_public_text(snapshot.text()?)?;
+        snapshot.validate_content()?;
         let mapping = crate::LedgerMapping::from_spec(spec)?;
         let rows = crate::markdown_records::rows(snapshot.text()?, spec)?;
         let mut records = vec![];
@@ -154,12 +154,6 @@ impl SourceAdapter for MarkdownLedgerAdapter {
             records.push(value);
         }
         // Reuse the domain decoder in memory, then restore actual Markdown provenance.
-        let bytes = serde_json::to_vec(&json!({"work_items":records}))?;
-        let synthetic = SourceSnapshot {
-            locator: snapshot.locator.clone(),
-            fingerprint: snapshot.fingerprint.clone(),
-            bytes,
-        };
         let mut canonical = spec.clone();
         canonical.adapter = "yaml-ledger-v1".into();
         canonical.options.clear();
@@ -167,13 +161,15 @@ impl SourceAdapter for MarkdownLedgerAdapter {
         for (key, meta) in &refs {
             ids.insert((EntityKind::WorkItem, key.clone()), meta.id);
         }
-        let mut batch = crate::YamlLedgerAdapter.parse(
-            &synthetic,
+        let mut batch = crate::YamlLedgerAdapter::parse_decoded(
+            snapshot,
             &ParseContext {
                 source: context.source,
                 existing_ids: ids,
             },
-            &canonical,
+            &crate::LedgerMapping::from_spec(&canonical)?,
+            false,
+            json!({"work_items":records}),
         )?;
         for work in &mut batch.work_items {
             work.meta = refs[&work.meta.external_key].clone();

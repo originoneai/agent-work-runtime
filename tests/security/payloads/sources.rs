@@ -116,6 +116,7 @@ fn direct_adapter_parsing_cannot_bypass_the_byte_limit() {
             .unwrap();
         let bytes = f.bytes(cap + 1);
         let snapshot = SourceSnapshot {
+            content_review: None,
             locator: source.locator.clone(),
             fingerprint: fingerprint(&bytes),
             bytes,

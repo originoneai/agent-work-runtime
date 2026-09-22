@@ -42,6 +42,7 @@ fn snapshot(path: &Path, text: String) -> Result<SourceSnapshot> {
         std::str::from_utf8(&bytes).map_err(|e| Error::InvalidInput(e.to_string()))?,
     )?;
     Ok(SourceSnapshot {
+        content_review: None,
         locator: Locator::File(path.into()).identity()?,
         fingerprint: fingerprint(&bytes),
         bytes,

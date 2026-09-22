@@ -7,11 +7,11 @@ use base64::{
     engine::general_purpose::{STANDARD, STANDARD_NO_PAD},
 };
 use regex::Regex;
-use serde::Serialize;
+use serde::{Deserialize, Serialize};
 use serde_json::Value;
 use std::{borrow::Cow, sync::LazyLock};
 
-pub const SECRET_POLICY_VERSION: u32 = 5;
+pub const SECRET_POLICY_VERSION: u32 = 6;
 pub const SENSITIVE_CONTENT_WITHHELD: &str = "[sensitive content withheld]";
 const REJECTION: &str =
     "sensitive content is not accepted; remove secret values or use explicit redacted placeholders";
@@ -65,7 +65,7 @@ static TYPE_DECLARATION: LazyLock<Regex> = LazyLock::new(|| {
 });
 
 /// A diagnostic category is safe to disclose; matched text and key names are not.
-#[derive(Clone, Copy, Debug, Serialize, PartialEq, Eq)]
+#[derive(Clone, Copy, Debug, Serialize, Deserialize, PartialEq, Eq)]
 #[serde(rename_all = "snake_case")]
 pub enum SensitiveCategory {
     Credential,
@@ -93,13 +93,13 @@ impl SensitiveCategory {
                 "Real credentials must not be stored or managed by AWR. Keep this file outside registered sources (remove it from the source manifest) and keep real values in env/secret management; inside AWR use only explicit placeholders such as ${VAR} or [redacted]."
             }
             Self::LabelledValue => {
-                "If this is a real secret, it must not be stored or managed by AWR: keep the file outside registered sources and reference ${VAR} or [redacted] inside AWR. If this is a public schema, use a complete value-free interface/type declaration or a structured JSON/YAML schema; do not disable scanning."
+                "If this is a real secret, it must not be stored or managed by AWR: keep the file outside registered sources and reference ${VAR} or [redacted] inside AWR. If this is a public schema, use a complete value-free interface/type declaration or a structured JSON/YAML schema; do not disable scanning. For unchanged suspected public file content, use awr intake review; content or policy changes require a new review."
             }
             Self::EnvironmentDump => {
-                "Real environment dumps must not be stored or managed by AWR. Keep environment files outside registered sources; inside AWR reference variables as ${VAR} and describe command requirements in prose."
+                "Real environment dumps must not be stored or managed by AWR. Keep environment files outside registered sources; inside AWR reference variables as ${VAR} and describe command requirements in prose. For unchanged suspected public file content, use awr intake review; content or policy changes require a new review."
             }
             Self::PrivatePrompt => {
-                "Private prompts must not be stored or managed by AWR. Keep them outside registered sources and reference their external storage location instead."
+                "Private prompts must not be stored or managed by AWR. Keep them outside registered sources and reference their external storage location instead. For public examples misclassified as private, use awr intake review with explicit source-bound decisions."
             }
         }
     }
@@ -198,9 +198,75 @@ static PRIVATE_BLOCK: LazyLock<Regex> = LazyLock::new(|| {
 
 static ENV_BLOCK: LazyLock<Regex> = LazyLock::new(|| {
     Regex::new(
-    r#"(?i)(?:^|[^\p{L}\p{N}_])(?:env|environment|environment[ _-]*(?:variables|vars|dump)|环境变量|環境變數)[\s\"']*[:=]"#
+    r#"(?i)(?:^|[^\p{L}\p{N}_./-])(?:env|environment|environment[ _-]*(?:variables|vars|dump)|环境变量|環境變數)[\s\"']*[:=]"#
 ).expect("fixed environment object pattern")
 });
+
+// A heading is context, not evidence of a dump. Keep flow containers and
+// indented YAML mappings / assignment lists protected, but do not classify
+// Markdown prose or version lists merely because they follow "Environment:".
+fn environment_block_entry(text: &str, end: usize) -> Option<usize> {
+    let rest = &text[end..];
+    let value = rest.trim_start();
+    if !has_value(value) || definition_after_assignment(rest) {
+        return None;
+    }
+    if value.starts_with(['{', '[']) {
+        return Some(end + rest.len() - value.len());
+    }
+    if !rest[..rest.len() - value.len()].contains('\n') {
+        return None;
+    }
+    let heading = text[..end].rsplit('\n').next().unwrap_or("");
+    let heading_indent = heading.len() - heading.trim_start().len();
+    let mut offset = end;
+    for line in rest.split_inclusive('\n') {
+        let trimmed = line.trim_start();
+        let indent = line.len() - trimmed.len();
+        let start = offset + indent;
+        offset += line.len();
+        if trimmed.is_empty() || trimmed.starts_with('#') {
+            continue;
+        }
+        let entry = trimmed.strip_prefix("- ").unwrap_or(trimmed);
+        let is_list = entry.len() != trimmed.len();
+        let (key, value) = entry.split_once(['=', ':'])?;
+        let separator = entry.as_bytes()[key.len()];
+        // A version/prose list is not a dump merely because of its heading.
+        // Uppercase variable-shaped colon entries remain review candidates,
+        // including YAML sequences and mixed Markdown/YAML sections.
+        let name = key.trim().trim_matches(['\'', '"', '`']);
+        if !is_list && indent <= heading_indent {
+            return None;
+        }
+        if !env_name(name) || (is_list && separator == b':' && name != name.to_ascii_uppercase()) {
+            if is_list {
+                continue;
+            }
+            return None;
+        }
+        if has_value(value) && !definition_after_assignment(value) {
+            return Some(start + trimmed.len() - entry.len());
+        }
+        // A YAML value can start on a more deeply indented following line.
+        // Do not mistake the next sibling field for this field's empty value.
+        if value.trim().is_empty() {
+            let mut next_offset = offset;
+            for next in text[offset..].split_inclusive('\n') {
+                let content = next.trim_start();
+                let next_indent = next.len() - content.len();
+                if !content.is_empty() && !content.starts_with('#') {
+                    if next_indent > indent && has_value(content) {
+                        return Some(next_offset + next_indent);
+                    }
+                    break;
+                }
+                next_offset += next.len();
+            }
+        }
+    }
+    None
+}
 
 fn folded_char(c: char) -> Option<char> {
     match c {
@@ -300,45 +366,55 @@ pub fn sensitive_text_category(text: &str) -> Option<SensitiveCategory> {
 
 /// Offset is in normalized text; callers must map it back before displaying it.
 fn sensitive_match(text: &str) -> Option<(SensitiveCategory, usize)> {
-    let credential = KNOWN
-        .find(text)
-        .map(|m| m.start())
-        .or_else(|| {
-            BEARER_AUTH
-                .captures_iter(text)
-                .find(|capture| {
-                    let value = &capture[1];
-                    // An unlabelled ordinary word is prose, not proof of an opaque token.
-                    // Actual Authorization assignments/headers below reject values of ANY shape/length.
-                    value.len() >= 32
-                        || (value.len() >= 8
-                            && (value
-                                .bytes()
-                                .any(|b| b.is_ascii_digit() || b"+/_=-".contains(&b))
-                                || (value.bytes().skip(1).any(|b| b.is_ascii_uppercase())
-                                    && value.bytes().any(|b| b.is_ascii_lowercase()))))
-                })
-                .map(|c| c.get(0).unwrap().start())
-        })
-        .or_else(|| {
-            BASIC_AUTH
-                .captures_iter(text)
-                .find(|capture| {
-                    // RFC 7617 section 2 encodes user-id:password, not ordinary words
-                    // following "basic". Accept omitted padding for detection as well.
-                    // https://www.rfc-editor.org/rfc/rfc7617#section-2
-                    STANDARD
-                        .decode(&capture[1])
-                        .or_else(|_| STANDARD_NO_PAD.decode(&capture[1]))
-                        .is_ok_and(|bytes| bytes.contains(&b':'))
-                })
-                .map(|c| c.get(0).unwrap().start())
-        });
-    if let Some(offset) = credential {
-        return Some((SensitiveCategory::Credential, offset));
+    sensitive_matches(text, 1).into_iter().next()
+}
+
+// Keep category precedence stable for legacy rejection diagnostics. Review
+// callers consume every finding, so accepting one cannot conceal a later one.
+fn sensitive_matches(text: &str, limit: usize) -> Vec<(SensitiveCategory, usize)> {
+    let mut found = Vec::new();
+    macro_rules! record {
+        ($category:expr, $offset:expr) => {
+            found.push(($category, $offset));
+            if found.len() >= limit {
+                return found;
+            }
+        };
+    }
+    for m in KNOWN.find_iter(text) {
+        record!(SensitiveCategory::Credential, m.start());
+    }
+    for capture in BEARER_AUTH.captures_iter(text) {
+        let value = &capture[1];
+        if value.len() >= 32
+            || (value.len() >= 8
+                && (value
+                    .bytes()
+                    .any(|b| b.is_ascii_digit() || b"+/_=-".contains(&b))
+                    || (value.bytes().skip(1).any(|b| b.is_ascii_uppercase())
+                        && value.bytes().any(|b| b.is_ascii_lowercase()))))
+        {
+            record!(
+                SensitiveCategory::Credential,
+                capture.get(0).unwrap().start()
+            );
+        }
+    }
+    for capture in BASIC_AUTH.captures_iter(text) {
+        // RFC 7617 user-id:password, including omitted base64 padding.
+        if STANDARD
+            .decode(&capture[1])
+            .or_else(|_| STANDARD_NO_PAD.decode(&capture[1]))
+            .is_ok_and(|bytes| bytes.contains(&b':'))
+        {
+            record!(
+                SensitiveCategory::Credential,
+                capture.get(0).unwrap().start()
+            );
+        }
     }
     let declarations: Vec<_> = TYPE_DECLARATION.find_iter(text).collect();
-    if let Some(m) = ASSIGNMENT.find_iter(text).find(|m| {
+    for m in ASSIGNMENT.find_iter(text).filter(|m| {
         has_value(&text[m.end()..])
             && !definition_after_assignment(&text[m.end()..])
             && !narrative_authorization(text, m.as_str(), m.start(), m.end())
@@ -346,33 +422,134 @@ fn sensitive_match(text: &str) -> Option<(SensitiveCategory, usize)> {
                 .iter()
                 .any(|d| d.start() <= m.start() && m.end() < d.end())
     }) {
-        return Some((SensitiveCategory::LabelledValue, m.start()));
+        record!(SensitiveCategory::LabelledValue, m.start());
     }
-    if let Some(m) = ENV_ASSIGNMENT.find_iter(text).find(|m| {
+    for m in ENV_ASSIGNMENT.find_iter(text).filter(|m| {
         environment_assignment(text, m.as_str(), m.start())
             && has_value(&text[m.end()..])
             && !definition_after_assignment(&text[m.end()..])
     }) {
-        return Some((SensitiveCategory::EnvironmentDump, m.start()));
+        record!(SensitiveCategory::EnvironmentDump, m.start());
     }
-    if let Some(m) = PRIVATE_BLOCK
+    for m in PRIVATE_BLOCK
         .find_iter(text)
-        .find(|m| has_value(&text[m.end()..]))
+        .filter(|m| has_value(&text[m.end()..]))
     {
-        return Some((SensitiveCategory::PrivatePrompt, m.start()));
+        record!(SensitiveCategory::PrivatePrompt, m.start());
     }
-    if let Some(m) = ENV_BLOCK.find_iter(text).find(|m| {
-        let rest = &text[m.end()..];
-        let value = rest.trim_start();
-        let whitespace = &rest[..rest.len() - value.len()];
-        (value.starts_with(['{', '[']) || whitespace.contains('\n'))
-            && has_value(value)
-            && !definition_after_assignment(rest)
-    }) {
-        return Some((SensitiveCategory::EnvironmentDump, m.start()));
+    for offset in ENV_BLOCK
+        .find_iter(text)
+        .filter_map(|m| environment_block_entry(text, m.end()))
+    {
+        record!(SensitiveCategory::EnvironmentDump, offset);
     }
-    None
+    found
 }
+/// Findings use complete clause ranges so output composition cannot authorize
+/// a match which merely starts inside an approved fragment.
+pub fn content_text_ranges(text: &str) -> Vec<(SensitiveCategory, usize, usize, String)> {
+    use sha2::{Digest, Sha256};
+    let normalized = normalized(text);
+    let mut offsets = Vec::new();
+    for (original, c) in normalized_chars(text) {
+        offsets.extend(std::iter::repeat_n(original, c.len_utf8()));
+    }
+    sensitive_matches(&normalized, 513)
+        .into_iter()
+        .map(|(category, start)| {
+            let start = start + normalized[start..].len() - normalized[start..].trim_start().len();
+            let tail = &normalized[start..];
+            let first_line = tail.split('\n').next().unwrap_or("");
+            let mut span_end = first_line.len();
+            if category == SensitiveCategory::PrivatePrompt || tail.starts_with(['{', '[']) {
+                span_end = tail.len();
+            } else {
+                if let Some(separator) = first_line.find([':', '=']) {
+                    let rest = &tail[separator + 1..];
+                    let value_start = separator + 1 + rest.len() - rest.trim_start().len();
+                    span_end =
+                        value_start + tail[value_start..].split('\n').next().unwrap_or("").len();
+                }
+                // Block scalars and continued mappings/quoted values belong to the
+                // same finding; do not bind only the label or the scalar indicator.
+                let line_start = normalized[..start].rfind('\n').map_or(0, |p| p + 1);
+                let line = &normalized[line_start..];
+                let indent = line.len() - line.trim_start_matches([' ', '\t']).len();
+                let mut offset = span_end;
+                for line in tail[span_end..].split_inclusive('\n') {
+                    let trimmed = line.trim_start_matches([' ', '\t']);
+                    if !trimmed.trim().is_empty() && line.len() - trimmed.len() <= indent {
+                        break;
+                    }
+                    offset += line.len();
+                    span_end = offset;
+                }
+            }
+            let clause = &tail[..span_end];
+            let end = start + clause.trim_end().len();
+            let original_start = offsets.get(start).copied().unwrap_or(text.len());
+            let original_end = offsets.get(end).copied().unwrap_or(text.len());
+            (
+                category,
+                original_start,
+                original_end,
+                format!(
+                    "{:x}",
+                    Sha256::digest(format!("{category:?}:{}", clause.trim_end()).as_bytes())
+                ),
+            )
+        })
+        .collect()
+}
+/// Review scan locations are safe metadata, never matched keys or values.
+pub(crate) fn review_text_findings(text: &str) -> Vec<(SensitiveCategory, usize, usize, String)> {
+    content_text_ranges(text)
+        .into_iter()
+        .map(|(category, start, _, signature)| {
+            let prefix = &text[..start];
+            (
+                category,
+                prefix.bytes().filter(|b| *b == b'\n').count() + 1,
+                prefix.rsplit('\n').next().unwrap_or("").chars().count() + 1,
+                signature,
+            )
+        })
+        .collect()
+}
+
+/// The hard credential boundary is independent of Agent review decisions.
+pub fn ensure_no_credentials_text(text: &str) -> Result<()> {
+    if sensitive_matches(&normalized(text), 1)
+        .iter()
+        .any(|(category, _)| *category == SensitiveCategory::Credential)
+    {
+        return Err(Error::RuleViolation(
+            SensitiveCategory::Credential.rejection(),
+        ));
+    }
+    Ok(())
+}
+
+pub fn sensitive_field_category(key: &str, value: &Value) -> Option<SensitiveCategory> {
+    sensitive_field(key, value).then_some(if env_key(key) {
+        SensitiveCategory::EnvironmentDump
+    } else {
+        SensitiveCategory::LabelledValue
+    })
+}
+
+pub fn ensure_no_credentials_value(value: &Value) -> Result<()> {
+    match value {
+        Value::String(text) => ensure_no_credentials_text(text),
+        Value::Array(values) => values.iter().try_for_each(ensure_no_credentials_value),
+        Value::Object(values) => values.iter().try_for_each(|(key, value)| {
+            ensure_no_credentials_text(key)?;
+            ensure_no_credentials_value(value)
+        }),
+        _ => Ok(()),
+    }
+}
+
 pub fn contains_sensitive_text(text: &str) -> bool {
     sensitive_text_category(text).is_some()
 }
@@ -875,6 +1052,129 @@ mod tests {
         ensure_public_value(&json!({"pending_secret_conditions":16,"token_budget":5000,"environment":"candidate","api_key":"${EXAMPLE_API_KEY}"})).unwrap();
         assert!(ensure_public_text("password: [redacted]fixture").is_err());
     }
+    #[test]
+    fn measurement_environment_headings_are_not_environment_dumps() {
+        let body = "\n\n- Server commit: `0123456789abcdef0123456789abcdef01234567`\n- Python: `3.12.11`\n- Node: `22.14.0`\n- Operating system: Ubuntu 24.04\n- catalog: 8 domains and 55 children\n- measurement unit: UTF-8 serialized bytes, not model tokens\n";
+        for heading in [
+            "Environment:",
+            "Benchmark environment:",
+            "Runtime:",
+            "Configuration:",
+        ] {
+            for text in [
+                heading.to_owned(),
+                format!("{heading}{body}"),
+                format!("{heading}{}", body.replace("\n- ", "\n  - ")),
+                format!("{heading}\n\n  - Python: 3.12.11\n  - Operating system: Ubuntu 24.04\n"),
+                format!("```text\n{heading}{body}```\n"),
+            ] {
+                ensure_public_text(&text).unwrap_or_else(|e| panic!("{text}: {e}"));
+                ensure_public_source(text.as_bytes(), "measurement.md").unwrap();
+                ensure_public_value(&json!({"body":text})).unwrap();
+            }
+        }
+        for text in [
+            r#"{"node_modules/std-env": {"version": "3.10.0", "dev": true}}"#,
+            r#"{"node_modules/env": {"version": "1.0.0"}}"#,
+            r#"{"some.environment": {"version": "1.0.0"}}"#,
+            "Environment:\nPublic measurement conditions follow.\n",
+            "Environment:\n\n## Results\nThe sample contains 55 tools.\n",
+            "Environment:\n\n- Python: 3.12.11\n\nAPI_KEY=${EXAMPLE_API_KEY}\n",
+            "environment:\n  HOME: ${HOME}\n  PATH: '[redacted]'\n",
+            "environment:\n  HOME:\n  PATH: ${PATH}\n",
+            "environment:\n  HOME:\n    ${HOME}\n",
+        ] {
+            ensure_public_text(text).unwrap_or_else(|e| panic!("{text}: {e}"));
+        }
+    }
+
+    #[test]
+    fn variable_shaped_colon_lists_remain_review_candidates() {
+        for text in [
+            "environment:\n- HOME: /synthetic-private-value",
+            "Environment:\n- Python: 3.12\n  HOME: /synthetic-private-value",
+            "Environment:\n- OS: Ubuntu 24.04",
+        ] {
+            assert_eq!(
+                sensitive_text_category(text),
+                Some(SensitiveCategory::EnvironmentDump)
+            );
+        }
+    }
+
+    #[test]
+    fn environment_diagnostics_point_to_dump_entries_or_mixed_credentials() {
+        for (text, category, line) in [
+            (
+                "Environment:\n\n- Python: 3.12.11\npassword: synthetic-private-value",
+                "labelled_value",
+                4,
+            ),
+            (
+                "Environment:\n\n- Python: 3.12.11\nexport HOME=/synthetic-private-value",
+                "environment_dump",
+                4,
+            ),
+            (
+                "Environment:\n\nHOME=/synthetic-private-value\nPATH=/synthetic-bin",
+                "environment_dump",
+                3,
+            ),
+            (
+                "Environment:\n  - Python: 3.12.11\n  - API key: sk-synthetic-private-value",
+                "credential",
+                3,
+            ),
+            (
+                "environment:\n  HOME:\n    /synthetic-private-value",
+                "environment_dump",
+                3,
+            ),
+            (
+                "environment:\n  HOME: /synthetic-private-value",
+                "environment_dump",
+                2,
+            ),
+            (
+                "environment:\n  HOME: ${HOME}\n  PATH: /synthetic-private-value",
+                "environment_dump",
+                3,
+            ),
+            (
+                "service:\n  environment:\n    - HOME=/synthetic-private-value",
+                "environment_dump",
+                3,
+            ),
+            (
+                "environment:\n- HOME=/synthetic-private-value",
+                "environment_dump",
+                2,
+            ),
+            (
+                "```yaml\nenvironment:\n  HOME: /synthetic-private-value\n```",
+                "environment_dump",
+                3,
+            ),
+            (
+                "environment:\n  {HOME: /synthetic-private-value}",
+                "environment_dump",
+                2,
+            ),
+        ] {
+            let report = ensure_public_source(text.as_bytes(), "measurement.md")
+                .unwrap_err()
+                .report();
+            let details = report.details.as_ref().unwrap();
+            assert_eq!(details["category"], category, "{text}");
+            assert_eq!(details["location"]["line"], line, "{text}");
+            assert!(
+                !serde_json::to_string(&report)
+                    .unwrap()
+                    .contains("synthetic-private-value")
+            );
+        }
+    }
+
     #[test]
     fn basic_prose_remains_usable() {
         for text in [

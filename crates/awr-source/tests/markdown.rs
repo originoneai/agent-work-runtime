@@ -7,6 +7,7 @@ use std::collections::BTreeMap;
 
 fn snapshot(text: &str) -> SourceSnapshot {
     SourceSnapshot {
+        content_review: None,
         locator: "file:///fixture/document.md".into(),
         fingerprint: fingerprint(text.as_bytes()),
         bytes: text.as_bytes().to_vec(),

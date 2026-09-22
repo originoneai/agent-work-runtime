@@ -379,6 +379,7 @@ fn finish(
         // Recovery also reparses its immutable after snapshot through the registered adapter.
         awr_source::source_adapter(&plan.source.adapter)?.parse(
             &SourceSnapshot {
+                content_review: None,
                 locator: current.locator.clone(),
                 bytes: after.clone(),
                 fingerprint: plan.after_fingerprint.clone(),

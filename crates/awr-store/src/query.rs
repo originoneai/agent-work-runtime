@@ -46,25 +46,24 @@ fn matching_projections<T: DeserializeOwned>(
         ORDER BY e.external_key",
         table(kind)
     );
-    conn.prepare(&sql)
+    let rows = conn
+        .prepare(&sql)
         .map_err(db_error)?
         .query_map(params![project.to_string(), key, match_id], |row| {
-            let item = serde_json::from_str(&row.get::<_, String>(11)?).map_err(|error| {
-                rusqlite::Error::FromSqlConversionFailure(
-                    11,
-                    rusqlite::types::Type::Text,
-                    Box::new(error),
-                )
-            })?;
-            Ok(Projected {
-                item,
-                source: source_row(row)?,
-                project_revision: revision_at(row, 12)?,
-            })
+            Ok((
+                source_row(row)?,
+                row.get::<_, String>(11)?,
+                revision_at(row, 12)?,
+            ))
         })
         .map_err(db_error)?
         .collect::<rusqlite::Result<Vec<_>>>()
-        .map_err(db_error)
+        .map_err(db_error)?;
+    rows.into_iter().map(|(source,raw,project_revision)| {
+        let payload: serde_json::Value=serde_json::from_str(&raw)?;
+        crate::content_review::ensure_source_value(conn,&source,&payload).map_err(|_| awr_core::Error::ContextIncomplete("source projection contains unreviewed or stale sensitive content; refresh and review the source before reading it".into()))?;
+        Ok(Projected {item:serde_json::from_value(payload)?,source,project_revision})
+    }).collect()
 }
 
 pub(crate) fn scoped_projections<T: DeserializeOwned>(

@@ -142,6 +142,7 @@ impl Fixture {
             .unwrap();
         let bytes = fs::read(self.root.join("work.yaml")).unwrap();
         let snapshot = awr_source::SourceSnapshot {
+            content_review: None,
             locator: source.locator.clone(),
             fingerprint: awr_source::fingerprint(&bytes),
             bytes,

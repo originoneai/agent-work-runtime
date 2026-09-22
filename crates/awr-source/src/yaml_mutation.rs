@@ -215,6 +215,7 @@ pub fn prepare_yaml_mutation(
     let output = crate::yaml_edit::edit_fields(before.text()?, pointer, &changed_fields)?;
     crate::limits::check_source_size(output.as_bytes(), crate::YAML_READ_CAP)?;
     let after = SourceSnapshot {
+        content_review: None,
         locator: before.locator.clone(),
         fingerprint: fingerprint(output.as_bytes()),
         bytes: output.into_bytes(),

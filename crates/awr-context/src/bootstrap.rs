@@ -99,7 +99,11 @@ fn reference(meta: &ProjectionMeta) -> String {
     )
 }
 
-fn render(context: &BootstrapContext, scope: Option<&crate::WorkstreamContextIdentity>) -> String {
+fn render_segments(
+    context: &BootstrapContext,
+    scope: Option<&crate::WorkstreamContextIdentity>,
+) -> (String, Vec<(usize, usize, String, Id, Revision)>) {
+    let mut segments = vec![];
     let mut text = if let Some(scope) = scope {
         format!(
             "AWR L0 Bootstrap\nProject: {} [{}] {}\nWorkstream: {} | authority {} | ownership {} | Branch: {}\n",
@@ -128,6 +132,7 @@ fn render(context: &BootstrapContext, scope: Option<&crate::WorkstreamContextIde
         )
     };
     if let Some(work) = &context.work {
+        let start = text.len();
         text.push_str(&format!(
             "Work: {} [{}] r{} — {}\nPhase: {} | Status: {} ({:?})\nNext: {}\nBlocker: {}\n",
             work.external_key,
@@ -139,6 +144,13 @@ fn render(context: &BootstrapContext, scope: Option<&crate::WorkstreamContextIde
             work.status,
             work.next_action,
             work.blocker.as_deref().unwrap_or("none")
+        ));
+        segments.push((
+            start,
+            text.len(),
+            "work_item".into(),
+            work.id,
+            work.revision,
         ));
         if scope.is_some() {
             text.push_str(&format!("Work source: {}\n", work.source_ref.source_id));
@@ -190,6 +202,7 @@ fn render(context: &BootstrapContext, scope: Option<&crate::WorkstreamContextIde
             text.push_str(&format!("Hard rules [{source_id}@r{revision}]:\n"));
         }
         for rule in rules {
+            let start = text.len();
             if scope.is_some() {
                 text.push_str(&format!(
                     "[{}@r{}]\n{}\n",
@@ -202,6 +215,13 @@ fn render(context: &BootstrapContext, scope: Option<&crate::WorkstreamContextIde
                     rule.text
                 ));
             }
+            segments.push((
+                start,
+                text.len(),
+                "rule".into(),
+                rule.meta.id,
+                rule.meta.revision,
+            ));
         }
     }
     if let Some(cp) = &context.checkpoint {
@@ -251,7 +271,7 @@ fn render(context: &BootstrapContext, scope: Option<&crate::WorkstreamContextIde
         ));
     }
     text.push_str("Compile L1 before execution.\n");
-    text
+    (text, segments)
 }
 
 /// Refresh source fingerprints, resolve one work/session, and preserve all selected hard facts.
@@ -262,7 +282,7 @@ pub fn bootstrap(
     request: &BootstrapRequest,
 ) -> Result<BootstrapPack> {
     awr_core::ensure_public_data(request)?;
-    crate::public_context(bootstrap_selected(store, root, request))
+    bootstrap_selected(store, root, request)
 }
 
 fn bootstrap_selected(
@@ -640,7 +660,41 @@ fn bootstrap_selected(
         gaps,
         execution_context_complete: false,
     };
-    let rendered_context = render(&context, workstream_identity.as_ref());
+    store
+        .ensure_source_output(&context)
+        .map_err(crate::context_output_error)?;
+    let (rendered_context, segments) = render_segments(&context, workstream_identity.as_ref());
+    let mut coverage = vec![];
+    for (start, end, kind, id, revision) in &segments {
+        store
+            .ensure_entity_text(
+                context.project_id,
+                &[(kind.clone(), *id, *revision)],
+                &rendered_context[*start..*end],
+            )
+            .map_err(crate::context_output_error)?;
+        coverage.push((
+            *start,
+            *end,
+            awr_core::content_text_ranges(&rendered_context[*start..*end])
+                .into_iter()
+                .map(|f| f.3)
+                .collect::<BTreeSet<_>>(),
+        ));
+    }
+    let findings = awr_core::content_text_ranges(&rendered_context);
+    if findings.len() > 512
+        || findings.iter().any(|(category, start, end, signature)| {
+            *category == SensitiveCategory::Credential
+                || !coverage
+                    .iter()
+                    .any(|(a, b, allowed)| a <= start && end <= b && allowed.contains(signature))
+        })
+    {
+        return Err(Error::ContextIncomplete(
+            "bootstrap contains a credential or a finding outside a reviewed source segment".into(),
+        ));
+    }
     let token_estimate = crate::token_count(&rendered_context);
     if token_estimate > request.token_budget {
         return Err(Error::BudgetExceeded {

@@ -8,7 +8,7 @@ use rusqlite::{Connection, OptionalExtension, TransactionBehavior, params};
 use serde::{Deserialize, Serialize};
 
 // Rebuild derived summaries when content classification changes.
-const POLICY_VERSION: i64 = 7;
+const POLICY_VERSION: i64 = 8;
 const KINDS: &[&str] = &[
     "goal",
     "plan",
@@ -85,6 +85,46 @@ fn safe_text(text: &str, max: usize) -> String {
         .take(max)
         .collect()
 }
+fn safe_source_text(
+    conn: &Connection,
+    project: Id,
+    kind: &str,
+    row: &Document,
+    text: &str,
+    max: usize,
+) -> String {
+    let Ok(id) = row.id.parse::<Id>() else {
+        return safe_text(text, max);
+    };
+    let entities = vec![(kind.into(), id, row.revision as u64)];
+    if row.source_id.is_none()
+        || crate::content_review::ensure_entity_text(conn, project, &entities, text).is_err()
+    {
+        return safe_text(text, max);
+    }
+    let Some(line) = text.lines().map(str::trim).find(|s| !s.is_empty()) else {
+        return String::new();
+    };
+    if line.starts_with("```")
+        || line.starts_with("~~~")
+        || line.chars().any(|c| c.is_control() && c != '\t')
+    {
+        return "[omitted]".into();
+    }
+    let candidate = line
+        .split_whitespace()
+        .collect::<Vec<_>>()
+        .join(" ")
+        .chars()
+        .take(max)
+        .collect::<String>();
+    if crate::content_review::ensure_entity_text(conn, project, &entities, &candidate).is_ok() {
+        candidate
+    } else {
+        "[redacted]".into()
+    }
+}
+
 fn cjk(c: char) -> bool {
     matches!(c as u32,0x3400..=0x4dbf|0x4e00..=0x9fff|0xf900..=0xfaff|0x20000..=0x3134f)
 }
@@ -283,8 +323,12 @@ fn rebuild(conn: &Connection, project: Id, revision: i64, scoped: bool) -> Resul
             if awr_core::ensure_public_data(&metadata).is_err() {
                 continue;
             }
-            let title = safe_text(&row.title, 160);
-            let summary = safe_text(
+            let title = safe_source_text(conn, project, kind, &row, &row.title, 160);
+            let summary = safe_source_text(
+                conn,
+                project,
+                kind,
+                &row,
                 if row.summary.is_empty() {
                     &row.title
                 } else {
@@ -423,7 +467,7 @@ impl Store {
             .map_err(db_error)?;
         let truncated = hits.len() > query.limit;
         hits.truncate(query.limit);
-        awr_core::ensure_public_data(&hits)?;
+        crate::content_review::ensure_output(&tx, &serde_json::to_value(&hits)?)?;
         tx.commit().map_err(db_error)?;
         Ok(SearchReport {
             hits,

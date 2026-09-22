@@ -468,9 +468,21 @@ fn labelled_unicode_environment_private_prompt_and_recognizable_tokens_reach_rea
 }
 
 #[test]
-fn prior_authentication_caches_are_rebuilt_without_rewriting_authority() {
+fn prior_content_caches_are_rebuilt_without_rewriting_authority() {
     for (policy, authority, cached, expected) in [
         (3, "Basic YTpi", "Basic YTpi", "[redacted]"),
+        (
+            7,
+            "Environment:\n\n- Python: 3.12.11",
+            "[redacted]",
+            "Environment:",
+        ),
+        (
+            7,
+            "Environment:\n  HOME: /synthetic-private-value",
+            "[redacted]",
+            "[redacted]",
+        ),
         (
             3,
             "Review basic source-intake requirements",
@@ -574,7 +586,7 @@ fn legacy_search_redacts_summaries_omits_sensitive_identity_and_rebuilds_the_old
             },
         )
         .unwrap();
-    assert_eq!(report.index_policy_version, 7);
+    assert_eq!(report.index_policy_version, 8);
     let hit = report.hits.iter().find(|h| h.external_key == "W").unwrap();
     assert_eq!(hit.summary, "[redacted]");
     assert!(!serde_json::to_string(&report).unwrap().contains(SENTINEL));

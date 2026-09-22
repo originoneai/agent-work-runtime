@@ -38,7 +38,7 @@ fn short(text: &str) -> String {
         .unwrap_or_else(|_| awr_core::SENSITIVE_CONTENT_WITHHELD.into())
 }
 fn brief(work: &Projected<WorkItem>) -> Value {
-    json!({"id":work.item.meta.id,"external_key":work.item.meta.external_key,"title":work.item.title,
+    json!({"id":work.item.meta.id,"external_key":work.item.meta.external_key,"title":work.item.title,"source_ref":work.item.meta.source_ref,
         "archived":work.item.archived,"ordinary_completion":work.item.ordinary_completion,"ordinary_work_policy":work.source.config["adapter_options"]["ordinary_work_policy"],
         "status":work.item.status,"raw_status":work.item.raw_status,"summary":short(if work.item.summary.is_empty(){&work.item.title}else{&work.item.summary}),
         "priority":work.item.priority,"milestone":work.item.milestone,"owner":work.item.owner,"next_action":work.item.next_action,
@@ -280,7 +280,24 @@ pub(crate) fn call(root: &Path, name: &str, mut args: JsonObject) -> Result<Call
         }
         value[key] = item.clone();
     }
-    ensure_public_value(&value)?;
+    // Context renderings already passed per-chunk source proof checks inside the
+    // refreshed context builder. Validate added fields separately; a second
+    // context-free suspect scan would discard that proof.
+    let mut checked = value.clone();
+    if name == "awr_context_compile" {
+        if let Some(context) = checked
+            .get_mut("work_context")
+            .and_then(Value::as_object_mut)
+        {
+            context.remove("rendered_context");
+        }
+    } else if name == "awr_work_prepare" {
+        // This exact subtree comes from compile_context (or its branch variant),
+        // before presentation-only guidance is added.
+        checked.as_object_mut().unwrap().remove("context");
+    }
+    view.store.ensure_source_output(&checked)?;
+    ensure_no_credentials_value(&value)?;
     if incomplete {
         value["ok"] = json!(false);
         value["error"] = json!(

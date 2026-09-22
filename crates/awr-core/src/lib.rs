@@ -8,10 +8,12 @@ mod execution;
 mod management;
 mod model;
 pub use management::*;
+mod content_review;
 mod mutation;
 mod query;
 mod runtime;
 mod secrets;
+pub use content_review::*;
 mod work_action;
 mod workstream;
 
@@ -47,3 +49,7 @@ mod guidance;
 pub use guidance::*;
 mod ordinary;
 pub use ordinary::*;
+
+pub use secrets::sensitive_field_category;
+
+pub use secrets::content_text_ranges;

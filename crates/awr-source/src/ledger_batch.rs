@@ -277,6 +277,7 @@ pub fn prepare_ledger_batch(
                         crate::yaml_edit::append_work(after.text()?, external_key, &base)?
                     };
                     let snapshot = SourceSnapshot {
+                        content_review: None,
                         locator: after.locator.clone(),
                         fingerprint: fingerprint(output.as_bytes()),
                         bytes: output.into_bytes(),
@@ -296,6 +297,7 @@ pub fn prepare_ledger_batch(
         crate::limits::check_source_size(output.as_bytes(), source_read_cap(&source.adapter)?)?;
         let changed = output.as_bytes() != after.bytes;
         after = SourceSnapshot {
+            content_review: None,
             locator: before.locator.clone(),
             fingerprint: fingerprint(output.as_bytes()),
             bytes: output.into_bytes(),

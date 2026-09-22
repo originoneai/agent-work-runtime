@@ -585,6 +585,7 @@ fn checked(backup: &Path) -> Result<(PathBuf, Snapshot, Store)> {
     }
     for copy in &snapshot.sources {
         let observed = awr_source::SourceSnapshot {
+            content_review: None,
             locator: copy.observed_locator.clone(),
             fingerprint: copy.source.fingerprint.clone(),
             bytes: blob_bytes(&root, &copy.content)?,

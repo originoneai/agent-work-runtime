@@ -241,6 +241,15 @@ fn render(
     omitted: usize,
     scope: Option<&WorkstreamContextIdentity>,
 ) -> String {
+    render_segments(identity, chunks, omitted, scope).0
+}
+
+fn render_segments<'a>(
+    identity: &ContextIdentity,
+    chunks: &[(&'a ContextChunk, bool)],
+    omitted: usize,
+    scope: Option<&WorkstreamContextIdentity>,
+) -> (String, Vec<(usize, usize, &'a ContextChunk)>) {
     let mut text = if let Some(scope) = scope {
         format!(
             "Project: {} [{}]\nWorkstream: {} | authority {} | ownership {}\nWork: {} [{}] r{}\nBranch: {}\nSources:\n",
@@ -290,6 +299,7 @@ fn render(
     let mut ordered = chunks.to_vec();
     ordered.sort_by(|(a, _), (b, _)| (a.section, &a.key).cmp(&(b.section, &b.key)));
     let mut section = None;
+    let mut segments = vec![];
     for (chunk, _) in ordered {
         if section != Some(chunk.section) {
             let _ = write!(text, "\n## {}\n", chunk.section.title());
@@ -299,14 +309,16 @@ fn render(
         for entity in &chunk.entities {
             let _ = writeln!(text, "{}:{}@r{}", entity.kind, entity.id, entity.revision);
         }
+        let start = text.len();
         text.push_str(&chunk.text);
+        segments.push((start, text.len(), chunk));
         text.push('\n');
     }
     let _ = write!(
         text,
         "\nOptional chunks omitted: {omitted}. Full details remain available through explicit queries.\n"
     );
-    text
+    (text, segments)
 }
 
 fn canonical(value: &Value) -> Value {
@@ -528,4 +540,117 @@ fn budget_context_selected(
         selected_entities,
         omitted_chunks,
     })
+}
+
+/// Validate every selected chunk against only its selected current entity fields,
+/// then scan the full rendering to detect matches spanning chunk boundaries.
+pub(crate) fn validate_reviewed_budget(
+    store: &awr_store::Store,
+    budget: &BudgetedContext,
+    required: &[ContextChunk],
+    optional: &[RankedChunk],
+) -> Result<()> {
+    let chunks = required
+        .iter()
+        .chain(optional.iter().map(|c| &c.chunk))
+        .filter_map(|chunk| {
+            budget
+                .selected_chunks
+                .iter()
+                .find(|s| s.key == chunk.key && s.section == chunk.section)
+                .map(|s| (chunk, s.required))
+        })
+        .collect::<Vec<_>>();
+    let (rendered, segments) = render_segments(
+        &budget.identity,
+        &chunks,
+        budget.omitted_chunks.len(),
+        budget.workstream_identity.as_ref(),
+    );
+    if rendered != budget.rendered_context {
+        return Err(Error::SourceConflict(
+            "context rendering differs from its reviewed chunks".into(),
+        ));
+    }
+    let mut coverage = vec![];
+    for (start, end, chunk) in &segments {
+        store.ensure_entity_text(
+            budget.identity.project_id,
+            &chunk
+                .entities
+                .iter()
+                .map(|e| (e.kind.clone(), e.id, e.revision))
+                .collect::<Vec<_>>(),
+            &chunk.text,
+        )?;
+        coverage.push((
+            *start,
+            *end,
+            awr_core::content_text_ranges(&chunk.text)
+                .into_iter()
+                .map(|f| f.3)
+                .collect::<BTreeSet<_>>(),
+        ));
+    }
+    let findings = awr_core::content_text_ranges(&rendered);
+    if findings.len() > 512
+        || findings.iter().any(|(category, start, end, signature)| {
+            *category == awr_core::SensitiveCategory::Credential
+                || !coverage
+                    .iter()
+                    .any(|(a, b, allowed)| a <= start && end <= b && allowed.contains(signature))
+        })
+    {
+        return Err(Error::RuleViolation(
+            "context contains a credential or a finding across reviewed chunk boundaries".into(),
+        ));
+    }
+    Ok(())
+}
+
+#[cfg(test)]
+mod review_boundary_tests {
+    use super::*;
+    #[test]
+    fn composition_must_not_create_a_new_finding_from_individually_safe_chunks() {
+        let store = awr_store::Store::memory().unwrap();
+        let identity = ContextIdentity {
+            project_id: Id::new(),
+            project_key: "fixture".into(),
+            project_revision: 1,
+            work_item_id: Id::new(),
+            work_item_key: "W".into(),
+            work_item_revision: 1,
+            branch_id: None,
+            source_versions: vec![],
+        };
+        let mut chunks = vec![
+            ContextChunk {
+                key: "a".into(),
+                section: ContextSection::Work,
+                text: "Public heading".into(),
+                entities: vec![],
+            },
+            ContextChunk {
+                key: "b".into(),
+                section: ContextSection::Work,
+                text: "Public body".into(),
+                entities: vec![],
+            },
+        ];
+        let safe = budget_context(&identity, &serde_json::json!({}), &chunks, &[], 5000).unwrap();
+        validate_reviewed_budget(&store, &safe, &chunks, &[]).unwrap();
+        chunks[0].text = "password:".into();
+        for chunk in &chunks {
+            awr_core::ensure_public_text(&chunk.text).unwrap();
+        }
+        let composed =
+            budget_context(&identity, &serde_json::json!({}), &chunks, &[], 5000).unwrap();
+        assert!(validate_reviewed_budget(&store, &composed, &chunks, &[]).is_err());
+        let mut forged = safe;
+        forged
+            .rendered_context
+            .push_str("password: synthetic-unreviewed");
+        assert!(validate_reviewed_budget(&store, &forged, &chunks, &[]).is_err());
+    }
 }

@@ -342,7 +342,19 @@ impl Store {
         fingerprint: &str,
         batch: ProjectionBatch,
     ) -> Result<Source> {
-        self.commit_source_projection_inner(expected, fingerprint, batch, None, &[])
+        self.commit_source_projection_inner(expected, fingerprint, batch, None, &[], None)
+    }
+
+    /// Source adapters pass an opaque, freshly byte-verified permit. Runtime writes
+    /// and ordinary source projection retain their existing strict entry points.
+    pub fn commit_reviewed_source_projection(
+        &mut self,
+        expected: &Source,
+        fingerprint: &str,
+        batch: ProjectionBatch,
+        review: &awr_core::VerifiedSourceContentReview,
+    ) -> Result<Source> {
+        self.commit_source_projection_inner(expected, fingerprint, batch, None, &[], Some(review))
     }
 
     /// Reviewed source-first ownership change. The source must already be marked
@@ -369,6 +381,7 @@ impl Store {
             batch,
             Some(expected_revision),
             moves,
+            None,
         )
     }
 
@@ -379,12 +392,26 @@ impl Store {
         batch: ProjectionBatch,
         expected_revision: Option<awr_core::Revision>,
         moves: &[awr_core::WorkstreamMove],
+        review: Option<&awr_core::VerifiedSourceContentReview>,
     ) -> Result<Source> {
         awr_core::ensure_public_text(fingerprint)?;
         awr_core::ensure_public_data(&moves)?;
         let workstreams = batch.workstream_projection.clone();
         let payload = serde_json::to_value(batch)?;
-        awr_core::ensure_public_value(&payload)?;
+        if let Some(review) = review {
+            if review.receipt().project_root
+                != self.project(expected.project_id)?.root.to_string_lossy()
+                || fingerprint != format!("sha256:{}", review.receipt().assessment.source_sha256)
+                || expected.locator != review.receipt().assessment.locator
+            {
+                return Err(Error::SourceConflict(
+                    "content review does not match this source".into(),
+                ));
+            }
+            review.ensure_value(&payload)?;
+        } else {
+            awr_core::ensure_public_value(&payload)?;
+        }
         if fingerprint.is_empty() || expected.revision >= i64::MAX as u64 {
             return Err(Error::InvalidInput(
                 "invalid source fingerprint or revision overflow".into(),
@@ -394,6 +421,7 @@ impl Store {
         if moves.is_empty()
             && current.freshness == Freshness::Fresh
             && current.fingerprint == fingerprint
+            && self.source_review_matches(&current, review)?
         {
             return Ok(current);
         }
@@ -411,6 +439,7 @@ impl Store {
         }
         let (source,_)=self.runtime_transaction_with_event(expected.project_id,revision,event,|tx,_,event| {
             let mut source=checked_source(tx,expected)?;
+            crate::content_review::bind_projection(tx, &source, fingerprint, &payload, review)?;
             let before = SourceState::from_source(&source, true);
             let previous = projection_versions(tx, &source)?;
             for kind in KINDS {

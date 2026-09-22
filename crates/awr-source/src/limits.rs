@@ -16,10 +16,15 @@ pub fn source_read_cap(adapter: &str) -> Result<u64> {
 }
 
 pub(crate) fn check_source_size(bytes: &[u8], cap: u64) -> Result<()> {
+    check_source_size_only(bytes, cap)?;
+    awr_core::ensure_public_bytes(bytes)
+}
+
+pub(crate) fn check_source_size_only(bytes: &[u8], cap: u64) -> Result<()> {
     if bytes.len() as u64 > cap {
         return Err(Error::InvalidInput(format!(
             "source exceeds {cap} byte read cap"
         )));
     }
-    awr_core::ensure_public_bytes(bytes)
+    Ok(())
 }
