@@ -545,6 +545,50 @@ test('search preserves shell metacharacters as one literal argument', async () =
   }
 });
 
+test('session list and event history are forwarded with a bounded limit', async () => {
+  const dir = fs.mkdtempSync(path.join(os.tmpdir(), 'awr-argv-'));
+  const argvLog = path.join(dir, 'argv.jsonl');
+  let b;
+  try {
+    b = await startBridge({ env: { STUB_ARGV_OUT: argvLog } });
+    const sessions = await (await fetch(`${b.base}/api/sessions?limit=7`, { headers: GUARD })).json();
+    assert.equal(sessions.ok, true, JSON.stringify(sessions));
+    assert.equal(sessions.data.sessions[0].agent_id, 'stub-agent');
+    assert.match(sessions.command, /session list --active --limit 7/);
+
+    const events = await (await fetch(`${b.base}/api/events?limit=9`, { headers: GUARD })).json();
+    assert.equal(events.ok, true, JSON.stringify(events));
+    assert.equal(events.data.events[0].type, 'session_started');
+    assert.match(events.command, /event history --limit 9/);
+
+    const calls = fs.readFileSync(argvLog, 'utf8').trim().split('\n').map(JSON.parse);
+    const sessionArgs = calls.find((args) => args.includes('session') && args.includes('list'));
+    const eventArgs = calls.find((args) => args.includes('event') && args.includes('history'));
+    assert.ok(sessionArgs.includes('--active'));
+    assert.deepEqual(sessionArgs.slice(sessionArgs.indexOf('--limit'), sessionArgs.indexOf('--limit') + 2), ['--limit', '7']);
+    assert.deepEqual(eventArgs.slice(eventArgs.indexOf('--limit'), eventArgs.indexOf('--limit') + 2), ['--limit', '9']);
+
+    for (const pathName of ['/api/sessions?limit=0', '/api/sessions?limit=101', '/api/events?limit=1.5']) {
+      const invalid = await (await fetch(`${b.base}${pathName}`, { headers: GUARD })).json();
+      assert.equal(invalid.ok, false);
+      assert.equal(invalid.error.code, 'BadRequest');
+      assert.ok(!invalid.command, 'Do not spawn a child process');
+    }
+  } finally {
+    if (b) await b.stop();
+    fs.rmSync(dir, { recursive: true, force: true });
+  }
+});
+
+test('session and event routes default to limit 20', async () => {
+  const sessions = await (await fetch(`${bridge.base}/api/sessions`, { headers: GUARD })).json();
+  assert.equal(sessions.ok, true, JSON.stringify(sessions));
+  assert.match(sessions.command, /session list --active --limit 20/);
+  const events = await (await fetch(`${bridge.base}/api/events`, { headers: GUARD })).json();
+  assert.equal(events.ok, true, JSON.stringify(events));
+  assert.match(events.command, /event history --limit 20/);
+});
+
 test('forward pagination to status and reject invalid sizes or offsets before execution', async () => {
   const result = await (await fetch(`${bridge.base}/api/work-page?queue=ready&offset=10&limit=20`, {headers:GUARD})).json();
   assert.match(result.command, /--queue ready --offset 10 --page-size 20/);

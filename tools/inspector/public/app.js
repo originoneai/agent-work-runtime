@@ -108,6 +108,27 @@
       issues:     ['source_issues'],
       gapTotal:   ['organization.gap_total'],
     },
+    // awr session list --json returns Session structs from awr-core.
+    session: {
+      id:         ['id'],
+      agent:      ['agent_id', 'agent'],
+      status:     ['status'],
+      work:       ['work_item_id'],
+      provider:   ['provider'],
+      model:      ['model'],
+      checkpoint: ['last_checkpoint_id'],
+      startedAt:  ['started_at'],
+    },
+    // event history uses event_brief: type, not event_type.
+    event: {
+      id:         ['id'],
+      type:       ['type', 'event_type'],
+      summary:    ['summary'],
+      importance: ['importance'],
+      session:    ['session_id'],
+      work:       ['work_item_id'],
+      createdAt:  ['created_at'],
+    },
   };
 
   /** Read a dotted path, including array indices such as a.b.0.c. */
@@ -188,6 +209,9 @@
     works: [],             // Normalized work-item list.
     workDetail: {},        // Key to details.
     sources: null,
+    sessions: { items: [], loaded: false, error: null, command: null, mayHaveMore: false },
+    events: { items: [], loaded: false, error: null, command: null, mayHaveMore: false },
+    unsupported: new Set(),
     compile: null,
     raw: {},               // Most recent raw JSON for each view.
     queueTab: 'blocked',   // Selected queue in the overview.
@@ -836,6 +860,126 @@
       li.appendChild(el('span', 'age', ''));
       list.appendChild(li);
     }
+  }
+
+  function isUnsupported(response) {
+    return Boolean(response && !response.ok && response.error && response.error.code === 'Unsupported');
+  }
+
+  function applyListResponse(field, response, listKey, unsupportedKey) {
+    if (isUnsupported(response)) {
+      state.unsupported.add(unsupportedKey);
+      state[field] = { items: [], loaded: true, error: null, command: response.command, mayHaveMore: false };
+      return;
+    }
+    state.unsupported.delete(unsupportedKey);
+    if (response && response.ok) {
+      const data = response.data || {};
+      state[field] = {
+        items: Array.isArray(data[listKey]) ? data[listKey] : [],
+        loaded: true,
+        error: null,
+        command: response.command,
+        mayHaveMore: Boolean(data.may_have_more || data.next_cursor),
+      };
+      return;
+    }
+    state[field] = {
+      items: [],
+      loaded: true,
+      error: (response && response.error) || { code: 'Error', message: '' },
+      command: response && response.command,
+      mayHaveMore: false,
+    };
+  }
+
+  function renderListPanel(panelId, listId, subId, bag, unsupportedKey, emptyTitle, emptyDetail, renderRow) {
+    const panel = $(panelId);
+    if (!panel) return;
+    const list = $(listId);
+    if (!bag.loaded || state.unsupported.has(unsupportedKey)) {
+      panel.hidden = true;
+      return;
+    }
+    panel.hidden = false;
+    setText(subId, bag.mayHaveMore
+      ? i18n.t('ui.showing_first_p0', { p0: bag.items.length })
+      : i18n.t('ui.total_p0', { p0: bag.items.length }));
+    clear(list);
+    if (bag.error) {
+      const li = el('li');
+      li.style.gridTemplateColumns = '1fr';
+      li.appendChild(errorBlock(bag.error, bag.command));
+      list.appendChild(li);
+      return;
+    }
+    if (!bag.items.length) {
+      const li = el('li');
+      li.style.gridTemplateColumns = '1fr';
+      li.appendChild(stateBlock('empty', emptyTitle, emptyDetail));
+      list.appendChild(li);
+      return;
+    }
+    for (const raw of bag.items.slice(0, 20)) {
+      list.appendChild(renderRow(raw));
+    }
+  }
+
+  function renderSessions() {
+    const M = FIELD_MAP.session;
+    renderListPanel(
+      'sessionPanel',
+      'sessionList',
+      'sessionSub',
+      state.sessions,
+      'session.list',
+      i18n.t('ui.no_active_sessions'),
+      i18n.t('ui.no_active_sessions_detail'),
+      (raw) => {
+        const li = el('li');
+        const status = pick(raw, M.status, '');
+        li.appendChild(el('span', 'dot' + (status === 'active' ? ' ok' : '')));
+        const agent = pick(raw, M.agent, i18n.t('ui.no_title_in_the_source'));
+        li.appendChild(el('span', 'what', status ? agent + ' · ' + status : agent));
+        const bits = [
+          pick(raw, M.work, null) != null ? 'work=' + pick(raw, M.work) : '',
+          pick(raw, M.checkpoint, null) != null ? 'checkpoint=' + pick(raw, M.checkpoint) : '',
+          [pick(raw, M.provider, ''), pick(raw, M.model, '')].filter(Boolean).join('/'),
+        ].filter(Boolean);
+        li.appendChild(el('span', 'meta', bits.join(' · ')));
+        li.appendChild(el('span', 'age', since(pick(raw, M.startedAt, null))));
+        return li;
+      }
+    );
+  }
+
+  function renderEvents() {
+    const M = FIELD_MAP.event;
+    renderListPanel(
+      'eventPanel',
+      'eventList',
+      'eventSub',
+      state.events,
+      'event.history',
+      i18n.t('ui.no_recent_events'),
+      i18n.t('ui.no_recent_events_detail'),
+      (raw) => {
+        const li = el('li');
+        const importance = pick(raw, M.importance, '');
+        li.appendChild(el('span', 'dot' + (importance === 'high' ? ' warn' : '')));
+        li.appendChild(el('span', 'what', pick(raw, M.summary, i18n.t('ui.no_description'))));
+        const bits = [
+          pick(raw, M.type, ''),
+          pick(raw, M.session, null) != null ? 'session=' + pick(raw, M.session) : '',
+          pick(raw, M.work, null) != null ? 'work=' + pick(raw, M.work) : '',
+        ].filter(Boolean);
+        li.appendChild(el('span', 'meta', bits.join(' · ')));
+        const age = el('span', 'age' + (importance === 'high' ? ' hot' : ''));
+        age.textContent = since(pick(raw, M.createdAt, null));
+        li.appendChild(age);
+        return li;
+      }
+    );
   }
 
   // Work items
@@ -1593,13 +1737,18 @@
     state.workDetail = {};
     state.status = null;
     state.sources = null;
+    state.sessions = { items: [], loaded: false, error: null, command: null, mayHaveMore: false };
+    state.events = { items: [], loaded: false, error: null, command: null, mayHaveMore: false };
+    state.unsupported = new Set();
     state.compile = null;
     state.raw = {};
     for (const id of ['fWork', 'workRows', 'workFilters', 'workPagination', 'workEmpty', 'workDetail',
-      'statusStrip', 'queueList', 'queueTabs', 'cpList', 'pendingList',
+      'statusStrip', 'queueList', 'queueTabs', 'cpList', 'pendingList', 'sessionList', 'eventList',
       'rawWorkBody', 'rawContextBody', 'rawOverviewBody', 'rawSourcesBody']) clear($(id));
     for (const id of ['navWorkCount', 'navSourceCount', 'workSub', 'queueSub', 'gapSub', 'pendingSub',
-      'srcTitle', 'srcSub', 'srcCmd', 'compileHint']) setText(id, '');
+      'sessionSub', 'eventSub', 'srcTitle', 'srcSub', 'srcCmd', 'compileHint']) setText(id, '');
+    if ($('sessionPanel')) $('sessionPanel').hidden = true;
+    if ($('eventPanel')) $('eventPanel').hidden = true;
     $('fGoal').value = '';
     $('fIntent').value = '';
     $('compileBtn').disabled = false;
@@ -1642,15 +1791,42 @@
     if (state.mode === 'demo') {
       state.status = normStatus(window.AWR_DEMO.status, null);
       state.sources = normSources(window.AWR_DEMO.sources);
-      state.raw.overview = { ok: true, data: window.AWR_DEMO.status, note: i18n.t('ui.demo_data') };
+      state.sessions = {
+        items: window.AWR_DEMO.sessions || [],
+        loaded: true,
+        error: null,
+        command: null,
+        mayHaveMore: false,
+      };
+      state.events = {
+        items: window.AWR_DEMO.events || [],
+        loaded: true,
+        error: null,
+        command: null,
+        mayHaveMore: false,
+      };
+      state.raw.overview = {
+        ok: true,
+        data: {
+          status: window.AWR_DEMO.status,
+          sessions: window.AWR_DEMO.sessions,
+          events: window.AWR_DEMO.events,
+        },
+        note: i18n.t('ui.demo_data'),
+      };
       state.raw.sources = { ok: true, data: window.AWR_DEMO.sources, note: i18n.t('ui.demo_data') };
     } else {
       // Use summaries for Overview and fetch work pages on demand.
-      const [st, src] = await Promise.all([
-        callApi('/api/status'), callApi('/api/sources'),
+      const [st, src, sess, ev] = await Promise.all([
+        callApi('/api/status'),
+        callApi('/api/sources'),
+        callApi('/api/sessions?limit=20'),
+        callApi('/api/events?limit=20'),
       ]);
       if (generation !== loadGeneration) return;
-      state.raw.overview = { status: st };
+      applyListResponse('sessions', sess, 'sessions', 'session.list');
+      applyListResponse('events', ev, 'events', 'event.history');
+      state.raw.overview = { status: st, sessions: sess, events: ev };
       state.raw.sources = src;
 
       if (st.ok) {
@@ -1678,6 +1854,8 @@
       fillWorkSelect();
     }
     if (state.sources) renderSources();
+    renderSessions();
+    renderEvents();
     renderCompile();
 
     // The freshness badge depends on status; render it again after status arrives.
@@ -1902,6 +2080,7 @@
     module.exports = {
       createGenerationGuard, state, detailGuard, renderWorkDetail, normStatus, renderWork, loadWorkPage,
       renderPacketSize, doCompile, renderQueueList, fillWorkSelect, loadAll,
+      renderSessions, renderEvents, applyListResponse,
     };
   }
 })();

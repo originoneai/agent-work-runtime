@@ -112,7 +112,7 @@ function install() {
 
   // Explanatory paragraphs selected by app.js with [data-note="..."].
   const bySelector = new Map();
-  for (const note of ['contextChart', 'queues', 'checkpoints', 'mcp', 'criteria', 'completeness', 'pending']) {
+  for (const note of ['contextChart', 'queues', 'checkpoints', 'mcp', 'criteria', 'completeness', 'pending', 'sessions', 'events']) {
     bySelector.set(`[data-note="${note}"]`, new StubElement('p'));
   }
 

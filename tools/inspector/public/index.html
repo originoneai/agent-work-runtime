@@ -141,6 +141,30 @@
           <ul class="loops" id="pendingList"></ul>
         </div>
 
+        <div class="panel" id="sessionPanel" hidden>
+          <header>
+            <h2><span data-i18n="ui.active_sessions">Active sessions</span></h2>
+            <button class="why" data-why="sessions" aria-label="What is this?" data-i18n-aria-label="ui.what_is_this">?</button>
+            <span class="sub" id="sessionSub"></span>
+          </header>
+          <p class="why-note" data-note="sessions" hidden>
+            <span data-i18n="ui.active_sessions_note">These are conversations the runtime currently has open. Each row is one AWR session, not a host chat id. Packaged 0.4.0 hides this panel when the command is unsupported.</span>
+          </p>
+          <ul class="loops" id="sessionList"></ul>
+        </div>
+
+        <div class="panel" id="eventPanel" hidden>
+          <header>
+            <h2><span data-i18n="ui.recent_events">Recent events</span></h2>
+            <button class="why" data-why="events" aria-label="What is this?" data-i18n-aria-label="ui.what_is_this">?</button>
+            <span class="sub" id="eventSub"></span>
+          </header>
+          <p class="why-note" data-note="events" hidden>
+            <span data-i18n="ui.recent_events_note">Append-only history from</span> <code>awr event history</code><span data-i18n="ui.recent_events_note_tail">. Summaries only; full payloads stay behind event show. The panel is hidden when the command is unsupported.</span>
+          </p>
+          <ul class="loops" id="eventList"></ul>
+        </div>
+
         <div class="panel">
           <header>
             <h2><span data-i18n="ui.connection">Connection</span></h2>

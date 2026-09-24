@@ -224,6 +224,16 @@
   "ui.runtime_operations_to_inspect": "Runtime operations to inspect",
   "ui.these_operations_were_interrupted_and_their_outcomes": "These operations were interrupted and their outcomes are unknown. AWR neither guesses nor retries automatically. Use",
   "ui.to_inspect_the_outcome_before_proceeding": "to inspect the outcome before proceeding.",
+  "ui.active_sessions": "Active sessions",
+  "ui.active_sessions_note": "These are conversations the runtime currently has open. Each row is one AWR session, not a host chat id. Packaged 0.4.0 hides this panel when the command is unsupported.",
+  "ui.no_active_sessions": "No active sessions",
+  "ui.no_active_sessions_detail": "awr session list --active returned no rows. Start or resume a session from CLI or MCP to see it here.",
+  "ui.recent_events": "Recent events",
+  "ui.recent_events_note": "Append-only history from",
+  "ui.recent_events_note_tail": ". Summaries only; full payloads stay behind event show. The panel is hidden when the command is unsupported.",
+  "ui.no_recent_events": "No recent events",
+  "ui.no_recent_events_detail": "awr event history returned no rows in this window.",
+  "ui.showing_first_p0": "Showing first {p0}",
   "ui.connection": "Connection",
   "ui.this_viewer_runs_an": "This viewer runs an",
   "ui.command_for_each_action_rather_than_reading": "command for each action rather than reading the database directly. Copy any displayed command into a terminal to inspect the same result. Agents access the same state through MCP.",
@@ -365,7 +375,9 @@
   "demo.history_replay": "A compacted history replays to the same projection",
   "demo.decision_indexed": "A decision record exists and is indexed",
   "demo.migration_note": "Migration note covers projects relying on the fallback",
-  "demo.continue_work": "Current work can be continued"
+  "demo.continue_work": "Current work can be continued",
+  "demo.session_started": "Session started on EXAMPLE-001",
+  "demo.checkpoint_saved": "Checkpoint saved after the second renderer pass"
 };
   if (typeof module !== 'undefined' && module.exports) module.exports = messages;
   else {

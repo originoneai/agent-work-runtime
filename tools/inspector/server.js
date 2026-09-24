@@ -231,6 +231,8 @@ const COMMANDS = {
   intakeInspect: { argv: ['intake', 'inspect'], write: false },
   contextCompile: { argv: ['context', 'compile'], write: false },
   sourceReindex: { argv: ['source', 'reindex'], write: true },
+  sessionList: { argv: ['session', 'list', '--active'], write: false },
+  eventHistory: { argv: ['event', 'history'], write: false },
 };
 
 // Validate each field according to its semantics instead of one broad ASCII expression.
@@ -250,6 +252,14 @@ function asKey(value) {
 function asBranch(value) {
   const s = String(value == null ? '' : value);
   return BRANCH_RE.test(s) ? s : null;
+}
+
+/** Bounded page size shared with ready / work-page. Missing values use the default. */
+function asLimit(value, fallback) {
+  if (value == null || value === '') return fallback;
+  const n = Number(value);
+  if (!Number.isInteger(n) || n < 1 || n > 100) return null;
+  return n;
 }
 
 /**
@@ -593,6 +603,22 @@ const routes = {
   },
 
   'GET /api/sources': async () => runCommand('intakeInspect', []),
+
+  'GET /api/sessions': async (url) => {
+    const limit = asLimit(url.searchParams.get('limit'), 20);
+    if (limit == null) {
+      return { ok: false, error: { code: 'BadRequest', message: 'limit must be an integer from 1 to 100' } };
+    }
+    return runCommand('sessionList', ['--limit', String(limit)]);
+  },
+
+  'GET /api/events': async (url) => {
+    const limit = asLimit(url.searchParams.get('limit'), 20);
+    if (limit == null) {
+      return { ok: false, error: { code: 'BadRequest', message: 'limit must be an integer from 1 to 100' } };
+    }
+    return runCommand('eventHistory', ['--limit', String(limit)]);
+  },
 
   'POST /api/context/compile': async (_url, body) => {
     const extra = [];

@@ -224,6 +224,16 @@
   "ui.runtime_operations_to_inspect": "待查的运行时操作",
   "ui.these_operations_were_interrupted_and_their_outcomes": "这些操作被中断过，结果未知——可能已经生效，也可能没有。 AWR 不替你猜，也不自动重试。先用",
   "ui.to_inspect_the_outcome_before_proceeding": "查清楚再决定下一步。",
+  "ui.active_sessions": "活跃 session",
+  "ui.active_sessions_note": "运行时当前仍打开的对话。每一行是一个 AWR session，不是宿主聊天 id。发布版 0.4.0 若命令返回 Unsupported，这块面板会隐藏。",
+  "ui.no_active_sessions": "没有活跃 session",
+  "ui.no_active_sessions_detail": "awr session list --active 没有返回行。用 CLI 或 MCP 启动或恢复 session 后会出现在这里。",
+  "ui.recent_events": "最近事件",
+  "ui.recent_events_note": "来自",
+  "ui.recent_events_note_tail": " 的只追加历史。这里只显示摘要；完整 payload 仍走 event show。命令 Unsupported 时这块面板会隐藏。",
+  "ui.no_recent_events": "没有最近事件",
+  "ui.no_recent_events_detail": "awr event history 在这个窗口里没有返回行。",
+  "ui.showing_first_p0": "显示前 {p0} 条",
   "ui.connection": "连接方式",
   "ui.this_viewer_runs_an": "它不直连数据库，每做一件事都在后台跑一条",
   "ui.command_for_each_action_rather_than_reading": "命令。 所以你在界面上看到的每条命令，复制到终端里跑，结果是一样的。 你的 agent 则通过 MCP 拿同样的数据。",
@@ -365,7 +375,9 @@
   "demo.history_replay": "压缩后的历史可重放得到相同投影",
   "demo.decision_indexed": "决策记录已存在并完成索引",
   "demo.migration_note": "迁移说明覆盖依赖回退行为的项目",
-  "demo.continue_work": "当前工作可以继续"
+  "demo.continue_work": "当前工作可以继续",
+  "demo.session_started": "已在 EXAMPLE-001 上启动 session",
+  "demo.checkpoint_saved": "第二次渲染完成后已保存 checkpoint"
 };
   if (typeof module !== 'undefined' && module.exports) module.exports = messages;
   else {

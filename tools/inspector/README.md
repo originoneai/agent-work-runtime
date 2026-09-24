@@ -59,7 +59,7 @@ node server.js --project /你的/项目路径
 
 | 页面 | 回答什么 | 背后的命令 |
 | --- | --- | --- |
-| 概览 | 现在该干什么 | `awr status`（+ `awr ready`）|
+| 概览 | 现在该干什么 | `awr status`（+ `awr ready` / `awr session list --active` / `awr event history`）|
 | 工作项 | 这件活要做成什么样、卡在哪 | `awr work show` |
 | 上下文 | 给 agent 的那包东西里装了什么 | `awr context compile` |
 | 索引源 | 看到的东西还算数吗 | `awr intake inspect`（读 `organization.sources`）|
@@ -74,20 +74,16 @@ node server.js --project /你的/项目路径
 | 上下文 · 这个包有多大 | 必需内容 / 这次装进去的 / 预算上限，都是这次编译实际返回的数。就画在编译按钮下面 |
 | 概览 · 结构缺口 | `organization.gaps` 的 code / target / 说明 |
 | 概览 · 待查的运行时操作 | `pending_operations`——被中断、结果未知的操作（字段缺失时整块隐藏）|
+| 概览 · 活跃 session | `awr session list --active`：agent / status / work / last checkpoint（`Unsupported` 时整块隐藏）|
+| 概览 · 最近事件 | `awr event history`：type / summary / importance / 时间（`Unsupported` 时整块隐藏）|
 | 工作项 · 表格 | 队列、源状态、负责人、认领状态、诊断码、source revision |
 | 工作项 · 详情 | 目标、验收标准、阻塞/等待、依赖与未决依赖、依赖成环、**谁占着这件活**（agent / session / 到期）、**证据与决策**、诊断码 |
 | 上下文 · 完整性 | `completeness.status`、**六个维度**（规则 / 目标上下文 / 工作状态 / 验收标准 / 依赖 / 源新鲜度）、**证据缺口**、未决依赖、issues、被省略的块及原因 |
 | 索引源 | 每个源的 domain / role / 新鲜度 / revision，与 project revision 并列 |
 
-### 拿不到的两项
+### Session 与事件
 
-`awr session list` 和 `awr event history` 到 **0.5.0 为止仍返回 `Unsupported`**
-（`operation is not implemented`），所以：
-
-- 最近 checkpoint / open loop 列表
-- 事件时间线
-
-这两样做不了。等 CLI 实现了这两条命令，加上去很容易——概览页已经有对应的列表组件。
+当前源码里 `awr session list --active` 和 `awr event history` 已经实现。概览页会调用它们，显示活跃 session 和最近事件摘要。发布版 0.4.0 若仍返回 `Unsupported`，这两块面板会隐藏，不会用空列表冒充「没有会话」。这里不展开 checkpoint 正文或 open loop；那些仍走 `session show`。
 
 ---
 
