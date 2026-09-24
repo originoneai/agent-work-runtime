@@ -491,6 +491,8 @@
   "ui.team_column_blocker": "Blocker",
   "ui.team_column_next": "Next step",
   "ui.team_signed_in": "Signed in",
+  "ui.team_service_entry": "Team service entry",
+  "ui.team_live_data": "Authorized Team project data",
   "ui.raw_json": "Raw JSON"
 };
   if (typeof module !== 'undefined' && module.exports) module.exports = messages;

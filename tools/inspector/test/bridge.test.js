@@ -46,6 +46,7 @@ async function startBridge(opts = {}) {
   args.push('--project', project);
   if (opts.allowReindex) args.push('--allow-reindex');
   if (opts.demo) args.push('--demo');
+  if (opts.teamOnly) args.push('--team-only', '--team-url', 'http://127.0.0.1:1');
 
   const sep = process.platform === 'win32' ? ';' : ':';
   const child = spawn(process.execPath, args, {
@@ -118,6 +119,23 @@ test('accepts localhost Host headers', async () => {
     headers: { Host: `localhost:${bridge.port}` },
   });
   assert.equal(res.status, 200);
+});
+
+test('Team-only deployment advertises its scope and rejects local project routes', async () => {
+  const team = await startBridge({ teamOnly: true });
+  try {
+    const health = await (await fetch(team.base + '/api/health')).json();
+    assert.equal(health.data.teamOnly, true);
+    assert.equal(health.data.mode, 'team');
+    assert.equal(health.data.project, null);
+    for (const route of ['/api/status', '/api/sources', '/api/work?key=example']) {
+      const result = await fetch(team.base + route);
+      assert.equal(result.status, 403);
+      assert.equal((await result.json()).error.code, 'TeamOnlyDeployment');
+    }
+  } finally {
+    await team.stop();
+  }
 });
 
 test('rejects hostile origins', async () => {

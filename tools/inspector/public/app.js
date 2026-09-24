@@ -1772,6 +1772,7 @@
     if (generation !== loadGeneration) return;
     if (health.ok) {
       state.mode = health.data.mode;
+      state.teamOnly = health.data.teamOnly === true;
       // In demo mode, show the sample project name rather than this tool's directory;
       // the latter would misleadingly suggest the displayed data came from that path.
       state.project = state.mode === 'demo' ? '.local/demo' : (health.data.project || '.');
@@ -1786,7 +1787,14 @@
     if (state.mode !== previousMode || state.project !== previousProject) resetProjectData();
     state.workPagination = state.mode !== 'demo';
     setText('projPath', state.project);
+    configureNavigation();
     renderModeUi();
+
+    if (state.teamOnly) {
+      go('team', false);
+      if (teamWeb) await teamWeb.refresh();
+      return;
+    }
 
     if (state.mode === 'demo') {
       state.status = normStatus(window.AWR_DEMO.status, null);
@@ -1860,13 +1868,24 @@
 
     // The freshness badge depends on status; render it again after status arrives.
     renderModeUi();
+    if (state.view === 'team' && teamWeb) await teamWeb.refresh();
+  }
+
+  function configureNavigation() {
+    for (const link of document.querySelectorAll('.rail a')) {
+      link.hidden = Boolean(state.teamOnly && link.dataset.view !== 'team');
+    }
+    $('projectPicker').hidden = Boolean(state.teamOnly);
+    $('btnGuide').hidden = Boolean(state.teamOnly);
+    setText('navHeading', i18n.t(state.teamOnly ? 'ui.team_web' : 'ui.runtime'));
+    setText('footBrand', state.teamOnly ? 'AWR Team' : i18n.t('ui.awr_inspector_local_project_viewer'));
   }
 
   function renderModeUi() {
     const demo = state.mode === 'demo';
     $('tagDemo').hidden = !demo;
     $('tagBackend').hidden = demo;
-    if (!demo) $('tagBackend').textContent = i18n.t('ui.cli_connected');
+    if (!demo) $('tagBackend').textContent = i18n.t(state.teamOnly ? 'ui.team_service_entry' : 'ui.cli_connected');
 
     const fresh = $('tagFresh');
     if (state.status && state.status.lastIndexed) {
@@ -1879,6 +1898,7 @@
     }
 
     setText('footMode', demo ? i18n.t('ui.demo_mode_synthetic_data') : i18n.t('ui.live_data_p0', { p0: state.project }));
+    if (state.teamOnly) setText('footMode', i18n.t('ui.team_live_data'));
 
     const banner = $('modeBanner');
     if (demo && !sessionStorage.getItem('awr.banner.hidden')) {
@@ -2021,7 +2041,8 @@
 
   const VIEWS = ['overview', 'work', 'context', 'mainline', 'sources', 'team'];
 
-  function go(view) {
+  function go(view, refresh = true) {
+    if (state.teamOnly) view = 'team';
     if (VIEWS.indexOf(view) < 0) view = 'overview';
     state.view = view;
     for (const v of VIEWS) $('view-' + v).hidden = v !== view;
@@ -2030,10 +2051,10 @@
     }
     history.replaceState(null, '', '#' + view);
     window.scrollTo({ top: 0 });
-    if (view === 'mainline' && !state.raw.mainline) {
+    if (refresh && view === 'mainline' && !state.raw.mainline) {
       loadMainline().catch((e) => errorBlock(e, 'awr nav'));
     }
-    if (view === 'team' && window.AWR_TEAM_WEB && teamWeb) {
+    if (refresh && view === 'team' && window.AWR_TEAM_WEB && teamWeb) {
       teamWeb.refresh().catch((e) => errorBlock(e, 'team web'));
     }
   }
@@ -2141,8 +2162,10 @@
     $('btnRefresh').addEventListener('click', async () => {
       const b = $('btnRefresh');
       b.classList.add('spin');
-      await loadAll();
-      b.classList.remove('spin');
+      try {
+        if (state.view === 'team' && teamWeb) await teamWeb.refresh();
+        else await loadAll();
+      } finally { b.classList.remove('spin'); }
     });
 
     $('btnGuide').addEventListener('click', () => openTour(0));
@@ -2202,12 +2225,13 @@
         callApi: callApi,
       });
     }
-    go((location.hash || '#overview').slice(1));
+    go((location.hash || '#overview').slice(1), false);
     await loadAll();
+    if (state.view === 'mainline') await loadMainline();
 
     let seen = null;
     try { seen = localStorage.getItem('awr.tour.seen'); } catch (_) {}
-    if (!seen) openTour(0);
+    if (!seen && !state.teamOnly) openTour(0);
   }
 
   if (typeof document !== 'undefined') {

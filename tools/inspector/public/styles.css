@@ -705,6 +705,8 @@ footer.page {
 }
 .team-grid .btn:hover { background: var(--surface-2); border-color: var(--accent-soft); filter: none; }
 .team-grid .btn.primary { color: var(--btn-ink); background: var(--accent); border-color: var(--accent); }
+.team-grid .btn:disabled { cursor: not-allowed; opacity: .5; }
+.team-grid .team-error { color: var(--crit); background: var(--crit-wash); padding: 12px; border-radius: 6px; }
 .team-grid .btn:focus-visible, .team-card:focus-visible {
   outline: 2px solid var(--accent); outline-offset: 3px;
 }

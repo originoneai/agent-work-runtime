@@ -65,6 +65,7 @@ for (const label of ['Log out', 'Revoke sessions']) {
     assert.deepEqual(ui.state.works, []);
     assert.equal(ui.state.selected, null);
     assert.equal(ui.state.raw, null);
+    assert.equal(node('rawTeamBody').textContent, '');
     assert.equal(Object.keys(ui.state.lastReceipts).length, 0);
     assert.ok(!node('teamDetail').textContent.includes('Example work'));
   });
@@ -79,6 +80,17 @@ test('a denied refresh clears stale data and renders the error', async () => {
   assert.deepEqual(ui.state.works, []);
   assert.deepEqual(ui.state.projects, []);
   assert.match(node('teamAuth').textContent, /SessionExpired/);
+});
+
+test('the first anonymous visit is a sign-in state and raw JSON omits cookie identifiers', async () => {
+  mock(() => ({ ok: false, error: { code: 'Unauthenticated', message: 'cookie required' } }));
+  await ui.refresh();
+  assert.equal(ui.state.error, null);
+  mock((url) => url.includes('/projects?') ? projects
+    : { ...overview, session: { session_id: 'secret-cookie-identifier' } });
+  await ui.refresh();
+  assert.match(node('rawTeamBody').textContent, /Example work/);
+  assert.ok(!node('rawTeamBody').textContent.includes('secret-cookie-identifier'));
 });
 
 test('an overview failure is visible and never leaves old work on screen', async () => {

@@ -491,6 +491,8 @@
   "ui.team_column_blocker": "阻塞",
   "ui.team_column_next": "下一步",
   "ui.team_signed_in": "已登录",
+  "ui.team_service_entry": "Team 服务入口",
+  "ui.team_live_data": "已授权的团队项目数据",
   "ui.raw_json": "原始 JSON"
 };
   if (typeof module !== 'undefined' && module.exports) module.exports = messages;
