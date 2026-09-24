@@ -265,6 +265,40 @@
       ],
     },
 
+    sessions: [
+      {
+        id: 101,
+        agent_id: 'lin',
+        provider: 'cursor',
+        model: 'composer',
+        status: 'active',
+        work_item_id: 1,
+        last_checkpoint_id: 7,
+        started_at: Date.now() - 12 * 60000,
+      },
+    ],
+
+    events: [
+      {
+        id: 501,
+        type: 'checkpoint_saved',
+        summary: i18n.t('demo.checkpoint_saved'),
+        importance: 'normal',
+        session_id: 101,
+        work_item_id: 1,
+        created_at: Date.now() - 4 * 60000,
+      },
+      {
+        id: 500,
+        type: 'session_started',
+        summary: i18n.t('demo.session_started'),
+        importance: 'normal',
+        session_id: 101,
+        work_item_id: 1,
+        created_at: Date.now() - 12 * 60000,
+      },
+    ],
+
     /** The context compile response; budgets below 5,000 omit optional chunks. */
     compile(key, budget) {
       const brief = ALL.find((w) => w.key === key) || ALL[0];

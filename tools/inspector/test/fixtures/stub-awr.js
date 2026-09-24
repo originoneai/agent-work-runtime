@@ -171,6 +171,39 @@ if (mode === 'slow') {
   });
 } else if (joined.includes('source reindex')) {
   emit({ ok: true, project_revision: 8 });
+} else if (joined.includes('session list')) {
+  emit({
+    ok: true,
+    project_revision: 7,
+    sessions: [{
+      id: 11,
+      agent_id: 'stub-agent',
+      provider: 'stub',
+      model: 'stub-model',
+      status: 'active',
+      work_item_id: 1,
+      last_checkpoint_id: 3,
+      started_at: 1700000000000,
+    }],
+    limit: 20,
+    may_have_more: false,
+  });
+} else if (joined.includes('event history')) {
+  emit({
+    ok: true,
+    project_revision: 7,
+    events: [{
+      id: 21,
+      type: 'session_started',
+      summary: 'session started',
+      importance: 'normal',
+      session_id: 11,
+      work_item_id: 1,
+      created_at: 1700000000000,
+    }],
+    next_cursor: null,
+    payloads_included: false,
+  });
 } else {
   process.stderr.write('unknown stub command\n');
   process.exit(2);
