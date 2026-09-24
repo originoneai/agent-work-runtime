@@ -54,6 +54,7 @@ fn line(text: &str, offset: usize) -> usize {
 }
 
 /// Disjoint source sections. Code blocks and quoted/list-contained headings do not split authority.
+/// Leading YAML front matter belongs to no section.
 pub fn markdown_sections(snapshot: &SourceSnapshot) -> Result<Vec<MarkdownSection>> {
     crate::limits::check_source_size_only(&snapshot.bytes, crate::MARKDOWN_READ_CAP)?;
     let text = snapshot.text()?;
@@ -63,6 +64,9 @@ pub fn markdown_sections(snapshot: &SourceSnapshot) -> Result<Vec<MarkdownSectio
     let mut headings = Vec::<Heading>::new();
     let mut pending = None;
     let mut depth = 0usize;
+    let mut first_event = true;
+    // Leading YAML front matter is document metadata, not preamble content.
+    let mut content_start = 0usize;
     for (event, range) in Parser::new_ext(
         text,
         Options::ENABLE_HEADING_ATTRIBUTES
@@ -71,6 +75,12 @@ pub fn markdown_sections(snapshot: &SourceSnapshot) -> Result<Vec<MarkdownSectio
     )
     .into_offset_iter()
     {
+        if std::mem::take(&mut first_event) && matches!(event, Event::Start(Tag::MetadataBlock(_)))
+        {
+            content_start = text[range.end..]
+                .find('\n')
+                .map_or(text.len(), |n| range.end + n + 1);
+        }
         match event {
             Event::Start(Tag::Heading {
                 level, id, attrs, ..
@@ -122,18 +132,16 @@ pub fn markdown_sections(snapshot: &SourceSnapshot) -> Result<Vec<MarkdownSectio
             _ => {}
         }
     }
-    if headings
-        .first()
-        .is_none_or(|h| !text[..h.start].trim().is_empty())
-    {
+    let first_heading = headings.first().map_or(text.len(), |h| h.start);
+    if !text[content_start..first_heading].trim().is_empty() {
         headings.insert(
             0,
             Heading {
                 id: Some("preamble".into()),
                 title: "Introduction".into(),
                 level: 0,
-                start: 0,
-                body_start: 0,
+                start: content_start,
+                body_start: content_start,
                 attributes: BTreeMap::new(),
             },
         );

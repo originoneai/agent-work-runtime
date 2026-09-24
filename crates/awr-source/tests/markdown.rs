@@ -65,6 +65,35 @@ fn snapshot_text(text: &str) -> Vec<awr_source::MarkdownSection> {
 }
 
 #[test]
+fn leading_front_matter_is_not_a_preamble_section() {
+    let sections =
+        snapshot_text("---\ntitle: Goals\nowner: team\n---\n\n# Product {#product}\n\nBody.\n");
+    assert_eq!(
+        sections
+            .iter()
+            .map(|s| s.anchor.as_str())
+            .collect::<Vec<_>>(),
+        ["product"]
+    );
+    assert!(snapshot_text("---\r\ntitle: Only metadata\r\n---\r\n").is_empty());
+
+    let text = "---\ntitle: Goals\n---\nIntro text.\n\n# Product\n";
+    let sections = snapshot_text(text);
+    assert_eq!(sections[0].anchor, "preamble");
+    assert_eq!(sections[0].body, "Intro text.");
+    assert_eq!((sections[0].start_line, sections[0].end_line), (4, 5));
+    assert_eq!(
+        sections[0].fingerprint,
+        fingerprint("Intro text.\n\n".as_bytes())
+    );
+
+    // A metadata-like block after the first heading stays in that section's body.
+    let sections = snapshot_text("# Product\n\n---\nk: v\n---\n");
+    assert_eq!(sections.len(), 1);
+    assert!(sections[0].body.contains("k: v"));
+}
+
+#[test]
 fn rule_metadata_is_explicit_and_adapters_are_read_only() {
     let manifest = Manifest::parse(include_str!(
         "../../../tests/fixtures/markdown/project.toml"
