@@ -51,6 +51,30 @@ test('failed login displays an error instead of silently returning to the form',
   assert.equal(ui.state.session, null);
 });
 
+test('an anonymous refresh preserves a credential draft until the user submits it', async () => {
+  let release;
+  const pending = new Promise((resolve) => { release = resolve; });
+  mock((url) => url.includes('/projects?') ? pending : { ok: false });
+  const refreshing = ui.refresh();
+  const input = node('teamAuth').find((el) => el.tagName === 'INPUT');
+  input.value = 'synthetic-login-draft';
+  let focusRestored = 0;
+  document.activeElement = input;
+  input.focus = () => { focusRestored++; };
+  release({ ok: false, error: { code: 'Unauthenticated', message: 'cookie required' } });
+  await refreshing;
+  assert.equal(node('teamAuth').find((el) => el.tagName === 'INPUT'), input);
+  assert.equal(input.value, 'synthetic-login-draft');
+  assert.equal(focusRestored, 1);
+  const calls = mock((url) => url.endsWith('/login') ? { ok: true, session_id: 'test-session' }
+    : url.includes('/projects?') ? projects : overview);
+  await button('teamAuth', 'Sign in').click();
+  assert.equal(JSON.parse(calls[0].options.body).bearer, 'synthetic-login-draft');
+  assert.equal(input.value, '');
+  assert.ok(!JSON.stringify(ui.state).includes('synthetic-login-draft'));
+  assert.deepEqual(ui.state.works, [work]);
+});
+
 for (const label of ['Log out', 'Revoke sessions']) {
   test(`${label} removes project data, selected detail and receipts`, async () => {
     mock((url) => url.includes('/projects?') ? projects : url.includes('/overview?') ? overview : { ok: true });
