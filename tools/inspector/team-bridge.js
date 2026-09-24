@@ -163,6 +163,8 @@ function createTeamBridge(opts) {
         depends_on: (item && item.depends_on) || [],
         hidden_deps: (item && item.hidden_deps) || [],
         capabilities: (item && item.capabilities) || {},
+        contract_hash: item && item.contract_hash,
+        detail_loaded: false,
       };
     });
   }
@@ -258,6 +260,8 @@ function createTeamBridge(opts) {
           handoffs: [],
           reviews: [],
           schema: 'awr-team-web-loop-live/v1',
+          interaction_mode: 'mcp',
+          view_modes: ['team'],
           session: {
             session_id: session.json && session.json.session_id,
             expires_at_ms: session.json && session.json.expires_at_ms,
@@ -278,6 +282,41 @@ function createTeamBridge(opts) {
         reviews: data.reviews || [],
         schema: data.schema,
       };
+    },
+
+    'GET /api/team/work': async (url, _body, req, res) => {
+      if (!TEAM.live) return { ok: false, error: { code: 'Unsupported', message: 'Live Team detail required' } };
+      const project = url.searchParams.get('project');
+      const work = url.searchParams.get('work');
+      const stream = url.searchParams.get('workstream');
+      if (!project || !work || !stream) return { ok: false, error: { code: 'InvalidInput', message: 'project, work and workstream required' } };
+      const upstream = await proxyTeam(`/v1/web/projects/${encodeURIComponent(project)}/query`, req, {
+        protocol_version: 1, op: 'work.prepare', work_id: work, workstream_id: stream,
+      }, 'POST');
+      if (!upstream || upstream.status >= 400) return liveError(upstream);
+      applyProxiedCookies(res, upstream.setCookie);
+      const data = upstream.json && upstream.json.data;
+      if (!data || data.work_id !== work || !data.visible_contract || upstream.json.workstream_id !== stream) {
+        return { ok: false, error: { code: 'BadGateway', message: 'Invalid scoped Team work detail' } };
+      }
+      const expected = url.searchParams.get('contract');
+      if (expected && expected !== data.contract_hash) {
+        return { ok: false, error: { code: 'SourceChanged', message: 'Work contract changed; refresh the overview' } };
+      }
+      return { ok: true, work: {
+        key: work, workstream_id: stream, contract_hash: data.contract_hash,
+        detail_loaded: true, status: data.runtime ? data.runtime.state : null,
+        runtime_available: Boolean(data.runtime),
+        recovery_blocked: Boolean(data.runtime && data.runtime.recovery_blocked),
+        acceptance: data.visible_contract.acceptance || [],
+        goals: data.visible_contract.goals || [],
+        depends_on: (data.visible_contract.required_dependencies || []).map((key) => ({ key, visible: true })),
+        dependency_export_unavailable: data.dependency_export_unavailable === true,
+        context_complete: data.context_complete === true,
+        completeness_reasons: data.completeness_reasons || [],
+        next_step: data.next_step || null,
+        execution_admission: data.execution_admission || 'not_evaluated',
+      } };
     },
 
     'POST /api/team/login': async (_url, body, req, res) => {
