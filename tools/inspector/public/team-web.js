@@ -50,7 +50,30 @@
       lastReceipts: Object.create(null),
       members: [],
       raw: null,
+      error: null,
+      loading: false,
     };
+    let generation = 0;
+
+    function clearProjectData() {
+      state.projects = [];
+      state.projectKey = null;
+      state.works = [];
+      state.members = [];
+      state.selected = null;
+      state.raw = null;
+      state.lastReceipts = Object.create(null);
+    }
+
+    function failed(body) {
+      state.error = (body && body.error) || { code: 'InvalidResponse', message: 'Invalid Team response' };
+      state.disconnect = state.error.code === 'BridgeUnreachable';
+      if (['Unauthenticated', 'SessionExpired'].includes(state.error.code)) {
+        state.session = null;
+        clearProjectData();
+      }
+      return body;
+    }
 
     async function api(path, options) {
       const opts2 = Object.assign({ credentials: 'same-origin' }, options || {});
@@ -61,13 +84,10 @@
       try {
         const res = await fetch(path, opts2);
         const body = await res.json();
-        if (body && body.error && body.error.code === 'SessionExpired') {
-          state.session = null;
-          state.disconnect = true;
-        }
-        return body;
+        return res.ok === false && !body.error
+          ? { ok: false, error: { code: body.code || 'RequestFailed', message: body.message || `HTTP ${res.status}` } }
+          : body;
       } catch (err) {
-        state.disconnect = true;
         return {
           ok: false,
           error: { code: 'BridgeUnreachable', message: String(err && err.message) },
@@ -75,37 +95,11 @@
       }
     }
 
-    async function loadProjects() {
-      const body = await api('/api/team/projects?view=' + encodeURIComponent(state.viewMode));
-      if (!body || !body.ok) return body;
-      state.projects = body.projects || [];
-      state.session = body.session || state.session;
-      state.disconnect = false;
-      if (!state.projectKey && state.projects[0]) state.projectKey = state.projects[0].key;
-      return body;
-    }
-
-    async function loadOverview() {
-      if (!state.projectKey) return { ok: false };
-      const q =
-        '/api/team/overview?project=' +
-        encodeURIComponent(state.projectKey) +
-        '&view=' +
-        encodeURIComponent(state.viewMode);
-      const body = await api(q);
-      if (!body || !body.ok) return body;
-      state.works = body.works || [];
-      state.members = body.members || [];
-      state.raw = body;
-      state.disconnect = false;
-      return body;
-    }
-
     function renderProjects(host) {
       clear(host);
       host.appendChild(el('h3', null, t(i18n, 'ui.my_projects')));
       if (!state.projects.length) {
-        host.appendChild(el('p', { class: 'sub' }, t(i18n, 'ui.no_projects_yet')));
+        host.appendChild(el('p', { class: 'sub' }, t(i18n, state.loading ? 'ui.team_loading' : 'ui.no_projects_yet')));
         return;
       }
       const ul = el('ul', { class: 'team-project-list' });
@@ -114,7 +108,7 @@
         const btn = el('button', {
           class: 'btn' + (p.key === state.projectKey ? ' primary' : ''),
           type: 'button',
-        }, `${p.title || p.key} · ${p.role || ''}`);
+        }, [p.title || p.key, p.role].filter(Boolean).join(' · '));
         btn.addEventListener('click', () => {
           state.projectKey = p.key;
           refresh();
@@ -345,6 +339,7 @@
     async function runAction(action, extra) {
       const w = selectedWork();
       if (!w) return;
+      const current = generation;
       const requestId = `${action}:${w.key}:${Date.now()}`;
       const body = await api('/api/team/action', {
         method: 'POST',
@@ -357,10 +352,8 @@
           ...extra,
         }),
       });
-      if (body && body.error && body.error.code === 'ExpiredOperation') {
-        alert(t(i18n, 'ui.operation_expired'));
-        return body;
-      }
+      if (current !== generation) return body;
+      if (!body || !body.ok) return failed(body);
       if (body && body.ok && body.receipt) {
         state.lastReceipts[action + ':' + w.key] = body.receipt.id || body.receipt.request_id;
         // Exact replay returns the same receipt id.
@@ -368,7 +361,7 @@
           /* idempotent */
         }
       }
-      await loadOverview();
+      await refresh();
       return body;
     }
 
@@ -446,22 +439,12 @@
         );
         const logout = el('button', { class: 'btn', type: 'button' }, t(i18n, 'ui.logout'));
         logout.addEventListener(
-          'click',
-          guardDouble('logout', async () => {
-            await api('/api/team/logout', { method: 'POST', body: '{}' });
-            state.session = null;
-          })
+          'click', guardDouble('logout', () => signOut('/api/team/logout', {}))
         );
         const revoke = el('button', { class: 'btn', type: 'button' }, t(i18n, 'ui.revoke_session'));
         revoke.addEventListener(
           'click',
-          guardDouble('revoke', async () => {
-            await api('/api/team/session/revoke', {
-              method: 'POST',
-              body: JSON.stringify({ all_mine: true }),
-            });
-            state.session = null;
-          })
+          guardDouble('revoke', () => signOut('/api/team/session/revoke', { all_mine: true }))
         );
         host.appendChild(logout);
         host.appendChild(revoke);
@@ -472,31 +455,59 @@
           type: 'password',
           id: 'teamBearerInput',
           autocomplete: 'off',
+          'aria-label': t(i18n, 'ui.team_access_token'),
           placeholder: 'awr1.…',
         });
         const btn = el('button', { class: 'btn primary', type: 'button' }, t(i18n, 'ui.web_login'));
         btn.addEventListener(
           'click',
           guardDouble('login', async () => {
+            const current = ++generation;
+            clearProjectData();
+            state.error = null;
             const bearer = input.value;
             input.value = ''; // never retain bearer in the DOM after submit
             const body = await api('/api/team/login', {
               method: 'POST',
               body: JSON.stringify({ bearer }),
             });
+            if (current !== generation) return;
             if (body && body.ok) {
               state.session = {
                 session_id: body.session_id,
                 expires_at_ms: body.expires_at_ms,
               };
-            }
+              await refresh();
+            } else failed(body);
           })
         );
         form.appendChild(input);
         form.appendChild(btn);
+        input.addEventListener('keydown', (event) => {
+          if (event.key === 'Enter') { event.preventDefault(); btn.click(); }
+        });
         host.appendChild(form);
       }
       host.appendChild(el('p', { class: 'sub' }, t(i18n, 'ui.members_roles_via_access')));
+      if (state.error) {
+        const message = el('p', { class: 'team-error', role: 'alert' });
+        message.appendChild(el('strong', null, state.error.code));
+        message.appendChild(document.createTextNode(' · ' + state.error.message));
+        host.appendChild(message);
+        if (state.disconnect) host.appendChild(el('p', { class: 'sub' }, t(i18n, 'ui.team_unknown_outcome')));
+      }
+    }
+
+    async function signOut(path, payload) {
+      const current = ++generation;
+      clearProjectData();
+      state.error = null;
+      state.loading = false;
+      render();
+      const body = await api(path, { method: 'POST', body: JSON.stringify(payload) });
+      if (current !== generation) return;
+      if (body && body.ok) state.session = null;
+      else failed(body);
     }
 
     function clear(node) {
@@ -515,8 +526,41 @@
     }
 
     async function refresh() {
-      await loadProjects();
-      await loadOverview();
+      const current = ++generation;
+      state.error = null;
+      state.loading = true;
+      state.works = [];
+      state.members = [];
+      state.raw = null;
+      render();
+      const projects = await api('/api/team/projects?view=' + encodeURIComponent(state.viewMode));
+      if (current !== generation) return;
+      if (!projects || !projects.ok || !Array.isArray(projects.projects)) {
+        clearProjectData();
+        failed(projects);
+      } else {
+        state.projects = projects.projects;
+        state.session = projects.session || state.session;
+        if (!state.projects.some((p) => p.key === state.projectKey)) {
+          state.projectKey = state.projects[0] ? state.projects[0].key : null;
+          state.selected = null;
+          state.lastReceipts = Object.create(null);
+        }
+        if (state.projectKey) {
+          const overview = await api('/api/team/overview?project=' + encodeURIComponent(state.projectKey) + '&view=' + encodeURIComponent(state.viewMode));
+          if (current !== generation) return;
+          if (!overview || !overview.ok || !Array.isArray(overview.works)) failed(overview);
+          else {
+            state.works = overview.works;
+            state.members = overview.members || [];
+            state.session = overview.session || state.session;
+            state.raw = overview;
+            state.disconnect = false;
+          }
+        }
+      }
+      if (!selectedWork()) state.selected = null;
+      state.loading = false;
       render();
     }
 
