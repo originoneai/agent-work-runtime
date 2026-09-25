@@ -25,6 +25,10 @@ async fn work_observation_is_scoped_current_and_does_not_change_context_or_autho
     assert!(!observed.to_string().contains("PRIVATE"));
     assert_eq!(prepared["data"], prepare(&store, A, "a").await["data"]);
     assert_eq!(prepared["project_revision"], observed["project_revision"]);
+    admin.batch_execute("INSERT INTO awr_team.sessions(tenant_id,project_id,id,scope_id,work_id,actor_id,client_id,conversation_id,state,workstream_id,ownership_version)
+        SELECT tenant_id,project_id,'zz-newer-closed-supervisor',scope_id,work_id,actor_id,client_id,'closed-review','ended',workstream_id,ownership_version
+        FROM awr_team.sessions WHERE id='session-a'").await.unwrap();
+    assert_eq!(store.query(TENANT, PROJECT, A, q.clone()).await.unwrap()["data"]["session"]["id"], "session-a");
     for work in ["b-private", "missing"] {
         q.work_id = Some(work.into());
         assert!(matches!(
@@ -34,7 +38,7 @@ async fn work_observation_is_scoped_current_and_does_not_change_context_or_autho
     }
     q.work_id = Some("a".into());
     admin
-        .batch_execute("UPDATE awr_team.sessions SET ownership_version=2 WHERE id='session-a'")
+        .batch_execute("UPDATE awr_team.sessions SET ownership_version=2 WHERE work_id='a'")
         .await
         .unwrap();
     let moved = store.query(TENANT, PROJECT, A, q).await.unwrap();

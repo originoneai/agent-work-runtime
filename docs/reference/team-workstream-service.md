@@ -162,7 +162,8 @@ a matching hash never authorize execution.
 `work.observe` is a separate, read-only projection and does not change the
 prepared context or its hash. Within a repeatable-read snapshot, it selects a
 session from the current workstream and ownership generation, preferring a live
-claim, then the newest session. It reports the checkpoint's contract currency,
+claim, then active sessions and the most recent checkpoint. A newer, closed
+supervisor session cannot hide an ongoing worker's progress. It reports the checkpoint's contract currency,
 claim expiry, latest execution, up to five registered PR deliveries and the time
 of observation. Execution receipt payloads keep `execution.inspect`'s existing
 same-client or reconciliation-authority restrictions. A recorded execution state

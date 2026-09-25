@@ -48,7 +48,8 @@ pub(super) async fn read(
         ORDER BY EXISTS(SELECT 1 FROM awr_team.claims cl WHERE cl.tenant_id=s.tenant_id AND cl.project_id=s.project_id
           AND cl.session_id=s.id AND cl.work_id=s.work_id AND cl.scope_id=s.scope_id AND cl.workstream_id=s.workstream_id
           AND cl.ownership_version=s.ownership_version AND cl.coordinator_epoch=$7 AND cl.state='active'
-          AND cl.expires_at>clock_timestamp()) DESC, s.id DESC LIMIT 1",
+          AND cl.expires_at>clock_timestamp()) DESC, (s.state='active') DESC,
+          c.created_at DESC NULLS LAST, s.id DESC LIMIT 1",
         &[&tenant,&project,&work,&stream,&ownership,&requested_session,&auth.epoch]).await?;
     let mut data = json!({"work_id":work,"contract_hash":contract,"observed_at_unix_ms":observed,
         "runtime":runtime,"responsibility":responsibility,"session":null,"checkpoint":null,"claim":null,
