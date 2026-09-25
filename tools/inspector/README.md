@@ -240,3 +240,24 @@ test/
   `blocked_count`（真实阻塞）定义不同。状态条只用后者。
 - **错误原样显示。** AWR 的 `code` 和 message 不重写，只在下面另起一行给建议动作。
 - **被规则挡下的敏感内容不回显。** AWR 故意不返回匹配到的原值，本工具也不去读源文件补出来。
+
+
+### Agent-first Team onboarding
+
+Members connect their Agent directly to the project's remote MCP endpoint using
+an administrator-provisioned personal credential. The Agent refreshes tasks,
+recovers its own sessions, claims eligible work, obtains execution admission,
+saves checkpoints and submits evidence for review. No browser sign-in or task
+selection is required. See the [Team Agent workflow](../../docs/integrations/team-agent-workflow.md).
+
+Inspector displays authorized project state. **Connect Agent** provides
+client-neutral MCP connection details and a project instruction; task details offer an
+optional copyable brief. These controls make no work-session or claim writes.
+Signing in only opens the workspace; it grants no additional permissions.
+Signing out does not end Agent work sessions or release claims. Public Git
+repository access is separate from Team permissions.
+
+When a reverse proxy exposes Team MCP at a different address from `--team-url`,
+set `--team-public-url https://your-team.example` so copied connection details
+use the member-facing service. It defaults to the configured Team service URL,
+not the Inspector page URL.

@@ -56,6 +56,8 @@
       loading: false,
       detailLoading: false,
       detailResponse: null,
+      connectOpen: false,
+      handoffOpen: Object.create(null),
     };
     let generation = 0;
     let detailGeneration = 0;
@@ -77,6 +79,8 @@
       state.detailLoading = false;
       state.detailResponse = null;
       state.lastReceipts = Object.create(null);
+      state.connectOpen = false;
+      state.handoffOpen = Object.create(null);
     }
 
     function failed(body) {
@@ -472,13 +476,50 @@
       return body;
     }
 
+    function mcpUrl() {
+      return state.raw && state.raw.mcp_url || '/v1/projects/' + encodeURIComponent(state.projectKey) + '/mcp';
+    }
+    function continuation(w) {
+      return t(i18n, 'ui.team_task_prompt', { url: mcpUrl(), work: w.key, stream: w.workstream_id });
+    }
+    function copyBlock(host, text, label) {
+      host.appendChild(el('pre', { class: 'team-connect-code' }, text));
+      const button = el('button', { class: 'btn', type: 'button' }, t(i18n, label));
+      const status = el('span', { class: 'sub', role: 'status' });
+      button.addEventListener('click', async () => {
+        try { await root.navigator.clipboard.writeText(text); status.textContent = t(i18n, 'ui.team_copied'); }
+        catch (_) { status.textContent = t(i18n, 'ui.team_copy_manual'); }
+      });
+      host.appendChild(button); host.appendChild(status);
+    }
+    function renderConnect(host) {
+      const details = el('details', { class: 'team-connect' });
+      details.open = state.connectOpen;
+      details.addEventListener('toggle', () => { state.connectOpen = details.open; });
+      details.appendChild(el('summary', null, t(i18n, 'ui.team_connect_agent')));
+      details.appendChild(el('p', { class: 'sub' }, t(i18n, 'ui.team_connect_help')));
+      copyBlock(details, 'Transport: Streamable HTTP\nURL: ' + mcpUrl() +
+        '\nAuthentication: Bearer\nAuthorization: Bearer <PERSONAL_ACCESS_CREDENTIAL>', 'ui.team_copy_connection');
+      details.appendChild(el('p', { class: 'sub' }, t(i18n, 'ui.team_connect_other')));
+      details.appendChild(el('code', null, mcpUrl()));
+      copyBlock(details, t(i18n, 'ui.team_project_prompt', { url: mcpUrl() }), 'ui.team_copy_project_prompt');
+      host.appendChild(details);
+    }
+
     function renderActions(host, w) {
-      host.appendChild(el('h3', null, t(i18n, 'ui.collaboration_actions')));
       if (isLive()) {
-        host.appendChild(el('p', { class: 'sub' }, t(i18n, 'ui.team_mcp_actions')));
-        host.appendChild(el('code', null, '/v1/projects/' + encodeURIComponent(state.projectKey) + '/mcp'));
+        host.appendChild(el('h3', null, t(i18n, 'ui.team_agent_workflow')));
+        host.appendChild(el('p', { class: 'sub' }, t(i18n, 'ui.team_agent_workflow_help')));
+        const handoff = el('details', { class: 'team-connect' });
+        const handoffKey = JSON.stringify([state.projectKey, w.key]);
+        handoff.open = Boolean(state.handoffOpen[handoffKey]);
+        handoff.addEventListener('toggle', () => { state.handoffOpen[handoffKey] = handoff.open; });
+        handoff.appendChild(el('summary', null, t(i18n, 'ui.team_agent_handoff')));
+        copyBlock(handoff, continuation(w), 'ui.team_copy_handoff');
+        host.appendChild(handoff);
         return;
       }
+      host.appendChild(el('h3', null, t(i18n, 'ui.collaboration_actions')));
       const caps = w.capabilities || {};
       host.appendChild(
         el(
@@ -534,6 +575,7 @@
       header.appendChild(el('em', { class: 'detail-state', dataset: { status: network.visualStatus(w) } }, workStatus(w)));
       if (w.description) header.appendChild(el('p', null, w.description));
       host.appendChild(header);
+      renderActions(host, w);
       const unknown = t(i18n, 'ui.network_not_reported');
       const section = (title, rows) => {
         const group = el('section', { class: 'detail-section' });
@@ -579,7 +621,6 @@
         if (w.recovery_blocked) host.appendChild(el('p', { class: 'team-error' }, 'RecoveryBlocked'));
         host.appendChild(el('p', { class: 'sub' }, t(i18n, 'ui.team_admission_not_evaluated')));
         if (!w.context_complete) host.appendChild(el('p', { class: 'sub' }, (w.completeness_reasons || []).join(' · ')));
-        renderActions(host, w);
         return;
       }
       renderBlockerDetail(host, w);
@@ -592,7 +633,6 @@
         );
       }
       host.appendChild(graph);
-      renderActions(host, w);
     }
 
     function renderAuth(host) {
@@ -616,6 +656,7 @@
         );
         host.appendChild(logout);
         host.appendChild(revoke);
+        if (isLive() && state.projectKey) renderConnect(host);
       } else {
         host.appendChild(el('label', { class: 'team-login-label', for: 'teamBearerInput' }, t(i18n, 'ui.team_access_token')));
         // A pending anonymous refresh must not discard a credential being typed.

@@ -229,6 +229,42 @@ test('live work uses authorized details and directs unsupported writes to MCP', 
   assert.match(calls[2].url, /workstream=stream/);
 });
 
+test('live browsing and copied Agent instructions do not create sessions or claims', async () => {
+  const endpoint = 'https://team.example/v1/projects/example/mcp';
+  const liveWork = { ...work, workstream_id: 'stream', detail_loaded: true,
+    context_complete: true, acceptance: ['Deliver the feature'], depends_on: [] };
+  const calls = mock((url) => url.includes('/projects?') ? projects
+    : { ...overview, works: [liveWork], interaction_mode: 'mcp', mcp_url: endpoint });
+  const original = Object.getOwnPropertyDescriptor(global, 'navigator');
+  const copied = [];
+  Object.defineProperty(global, 'navigator', { configurable: true,
+    value: { clipboard: { writeText: async (text) => copied.push(text) } } });
+  try {
+    await ui.refresh();
+    await ui._selectWork(work.key);
+    assert.equal(button('teamDetail', 'Claim task'), null);
+    assert.equal(button('teamDetail', 'Refresh my claim'), null);
+    assert.match(node('teamDetail').textContent, /Agent refreshes tasks, claims work/);
+    await button('teamAuth', 'Copy MCP connection details').click();
+    await button('teamAuth', 'Copy project instruction').click();
+    await button('teamDetail', 'Copy task brief').click();
+    assert.match(copied[0], /Transport: Streamable HTTP/);
+    assert.match(copied[0], /Authorization: Bearer <PERSONAL_ACCESS_CREDENTIAL>/);
+    assert.doesNotMatch(copied[0], /codex|AWR_TEAM_BEARER/);
+    assert.doesNotMatch(node('teamAuth').textContent, /Codex|Other MCP clients/);
+    assert.match(copied[1], /Web sign-in is not required/);
+    assert.match(copied[2], /WORK-1 in workstream stream/);
+    assert.match(copied[2], /session owned by this identity and client/);
+    assert.match(copied[2], /does not claim the task or authorize execution/);
+    assert.ok(copied.every((text) => text.includes(endpoint) && !text.includes('test-session')));
+    await ui.refresh();
+    assert.ok(calls.every(({ options }) => !options.method || options.method === 'GET'));
+  } finally {
+    if (original) Object.defineProperty(global, 'navigator', original);
+    else delete global.navigator;
+  }
+});
+
 test('late details for a previously selected work never replace the latest selection', async () => {
   const a = { ...work, workstream_id: 'stream' };
   const b = { key: 'WORK-2', title: 'Second work', workstream_id: 'stream' };

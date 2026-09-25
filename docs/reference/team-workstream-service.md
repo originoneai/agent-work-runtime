@@ -165,6 +165,11 @@ Checkpoints from different ownership generations are not recovery candidates.
 
 ## MCP clients
 
+For the member setup and development loop, see the
+[Agent-first Team workflow](../integrations/team-agent-workflow.md). Members can
+refresh, claim and update work directly through their Agent; browser sign-in and
+browser task selection are optional.
+
 The same listener serves Streamable HTTP MCP at
 `/v1/projects/<alias>/mcp`. Configure the client's remote MCP connection with
 that URL and its bearer credential in the Authorization header. Do not put
