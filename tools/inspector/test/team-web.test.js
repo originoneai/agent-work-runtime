@@ -290,7 +290,10 @@ test('live mode never invents demo receipts; proxies command store', async () =>
       }
       if (req.url === '/v1/web/projects/demo/query' && req.method === 'POST') {
         res.writeHead(200, { 'content-type': 'application/json' });
-        res.end(JSON.stringify({ data: { items: [{ external_key: 'TW-LIVE', status: 'open' }] } }));
+        const query = JSON.parse(raw);
+        res.end(JSON.stringify(query.op === 'workstreams.list'
+          ? { items: [{ id: 'stream-live' }], next_cursor: null }
+          : { data: { items: [{ external_key: 'TW-LIVE', status: 'open' }], next_cursor: null } }));
         return;
       }
       if (req.url === '/v1/web/projects/demo/command' && req.method === 'POST') {
@@ -402,6 +405,100 @@ test('live mode never invents demo receipts; proxies command store', async () =>
     await upstream.close();
   }
 });
+
+test('live overview discovers authorized streams and follows scoped pagination', async () => {
+  const queries = [];
+  const upstream = await startMockUpstream((request, response) => {
+    const chunks = [];
+    request.on('data', (chunk) => chunks.push(chunk));
+    request.on('end', () => {
+      response.setHeader('content-type', 'application/json');
+      if (request.url === '/v1/web/session') {
+        response.end(JSON.stringify({ session_id: 'ws_multi' }));
+        return;
+      }
+      const query = JSON.parse(Buffer.concat(chunks).toString());
+      queries.push(query);
+      assert.equal(request.headers.cookie, 'awr_web_session=ws_multi');
+      if (query.op === 'workstreams.list') {
+        response.end(JSON.stringify(query.cursor
+          ? { items: [{ id: 'frontend' }], next_cursor: null }
+          : { items: [{ id: 'backend' }], next_cursor: 'streams-2' }));
+      } else if (query.workstream_id === 'backend') {
+        response.end(JSON.stringify({ data: query.cursor
+          ? { items: [{ work_id: 'api-2' }], next_cursor: null }
+          : { items: [{ work_id: 'api-1' }], next_cursor: 'backend-2' } }));
+      } else if (query.workstream_id === 'frontend') {
+        response.end(JSON.stringify({ data: { items: [{ work_id: 'ui-1' }], next_cursor: null } }));
+      } else {
+        response.writeHead(403);
+        response.end(JSON.stringify({ code: 'Forbidden' }));
+      }
+    });
+  });
+  const bridge = await startLiveBridge(upstream.base);
+  try {
+    const overview = await req(bridge.base, 'GET', '/api/team/overview?project=demo', {
+      cookie: 'awr_web_session=ws_multi',
+    });
+    assert.equal(overview.json.ok, true);
+    assert.deepEqual(overview.json.works.map((work) => [work.key, work.workstream_id]), [
+      ['api-1', 'backend'], ['api-2', 'backend'], ['ui-1', 'frontend'],
+    ]);
+    assert.deepEqual(queries.map(({ op, workstream_id, cursor }) => [op, workstream_id, cursor]), [
+      ['workstreams.list', undefined, undefined],
+      ['workstreams.list', undefined, 'streams-2'],
+      ['work.list', 'backend', undefined],
+      ['work.list', 'backend', 'backend-2'],
+      ['work.list', 'frontend', undefined],
+    ]);
+  } finally {
+    await bridge.close();
+    await upstream.close();
+  }
+});
+
+for (const scenario of ['empty', 'revoked', 'invalid_page', 'repeated_cursor']) {
+  test(`live overview handles ${scenario} without claiming a partial result`, async () => {
+    const upstream = await startMockUpstream((request, response) => {
+      const chunks = [];
+      request.on('data', (chunk) => chunks.push(chunk));
+      request.on('end', () => {
+        response.setHeader('content-type', 'application/json');
+        if (request.url === '/v1/web/session') {
+          response.end(JSON.stringify({ session_id: 'ws_test' }));
+          return;
+        }
+        const query = JSON.parse(Buffer.concat(chunks).toString());
+        if (query.op === 'workstreams.list') {
+          response.end(JSON.stringify({ items: scenario === 'empty' ? [] : [{ id: 'backend' }], next_cursor: null }));
+        } else if (scenario === 'revoked') {
+          response.writeHead(403);
+          response.end(JSON.stringify({ code: 'Forbidden', message: 'grant revoked' }));
+        } else if (scenario === 'invalid_page') {
+          response.end(JSON.stringify({ data: { items: null } }));
+        } else {
+          response.end(JSON.stringify({ data: { items: [{ work_id: 'api' }], next_cursor: 'same' } }));
+        }
+      });
+    });
+    const bridge = await startLiveBridge(upstream.base);
+    try {
+      const overview = await req(bridge.base, 'GET', '/api/team/overview?project=demo');
+      if (scenario === 'empty') {
+        assert.equal(overview.json.ok, true);
+        assert.deepEqual(overview.json.works, []);
+      } else {
+        assert.equal(overview.json.ok, false);
+        assert.equal(overview.json.error.code, scenario === 'revoked' ? 'Forbidden' : 'BadGateway');
+        assert.equal(overview.json.works, undefined);
+      }
+    } finally {
+      await bridge.close();
+      await upstream.close();
+    }
+  });
+}
 
 test('live mode expired session denies overview and action', async () => {
   const upstream = await startMockUpstream((req, res) => {

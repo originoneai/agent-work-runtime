@@ -167,6 +167,35 @@ function createTeamBridge(opts) {
     });
   }
 
+  async function queryAllPages(project, query, req, res) {
+    const items = [];
+    const seen = new Set();
+    let cursor;
+    for (let page = 0; page < 100; page += 1) {
+      const upstream = await proxyTeam(
+        `/v1/web/projects/${encodeURIComponent(project)}/query`, req,
+        { protocol_version: 1, ...query, limit: 100, ...(cursor ? { cursor } : {}) },
+        'POST'
+      );
+      if (!upstream) return { error: { code: 'BadGateway', message: 'live proxy unavailable' } };
+      applyProxiedCookies(res, upstream.setCookie);
+      if (upstream.status >= 400) return liveError(upstream);
+      const data = upstream.json && (upstream.json.data || upstream.json);
+      if (!data || !Array.isArray(data.items)) {
+        return { error: { code: 'BadGateway', message: 'invalid Team query page' } };
+      }
+      items.push(...data.items);
+      const next = data.next_cursor;
+      if (next == null) return { items };
+      if (typeof next !== 'string' || !next || seen.has(next)) {
+        return { error: { code: 'BadGateway', message: 'invalid Team query cursor' } };
+      }
+      seen.add(next);
+      cursor = next;
+    }
+    return { error: { code: 'OverviewLimitExceeded', message: 'Team overview exceeded the page limit' } };
+  }
+
   const routes = {
     'GET /api/team/projects': async (url, _body, req, res) => {
       if (TEAM.live) {
@@ -201,23 +230,27 @@ function createTeamBridge(opts) {
         applyProxiedCookies(res, session.setCookie);
         if (session.status >= 400) return liveError(session);
 
-        const worksQ = await proxyTeam(
-          `/v1/web/projects/${encodeURIComponent(project)}/query`,
-          req,
-          { protocol_version: 1, op: 'work.list' },
-          'POST'
-        );
-        if (!worksQ) {
-          return { ok: false, error: { code: 'BadGateway', message: 'live proxy unavailable' } };
+        // A member with multiple grants must select a workstream for work.list.
+        // Discover only authorized streams and retain that scope on every page.
+        const streams = await queryAllPages(project, { op: 'workstreams.list' }, req, res);
+        if (streams.error) return { ok: false, error: streams.error };
+        const works = [];
+        for (const stream of streams.items) {
+          if (!stream || typeof stream.id !== 'string' || !stream.id) {
+            return { ok: false, error: { code: 'BadGateway', message: 'invalid Team workstream' } };
+          }
+          const page = await queryAllPages(
+            project, { op: 'work.list', workstream_id: stream.id }, req, res
+          );
+          if (page.error) return { ok: false, error: page.error };
+          works.push(...mapWorksFromQuery(page).map((work) => ({
+            ...work, workstream_id: stream.id,
+          })));
         }
-        applyProxiedCookies(res, worksQ.setCookie);
-        if (worksQ.status >= 400) return liveError(worksQ);
-
-        const payload = worksQ.json && worksQ.json.data ? worksQ.json.data : worksQ.json;
         return {
           ok: true,
           project,
-          works: mapWorksFromQuery(payload),
+          works,
           members: [],
           handoffs: [],
           reviews: [],
