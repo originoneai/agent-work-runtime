@@ -43,6 +43,8 @@ test('ordinary members have only project and personal activity tabs', async () =
 });
 test('one-time generic instructions contain only the new personal bearer and never send it to the bridge', async () => {
   await click('teamConsoleTabs', 'Members'); await click('teamConsolePanel', 'Issue credential');
+  const plan = calls.find(c => c.body && c.body.operation === 'preview').body.payload.plan;
+  assert.ok(plan.grants.every(g => g.attest_execution === false && g.reconcile_execution === false), 'explicit server grant fields must be present without special executor authority');
   assert.equal(find('teamConsolePanel', 'TEXTAREA'), null);
   await click('teamConsolePanel', 'Confirm changes');
   const area = find('teamConsolePanel', 'TEXTAREA'); assert.ok(area);
@@ -74,6 +76,17 @@ test('logout or project switch clears one-time credentials and ignores late issu
   const applying = click('teamConsolePanel', 'Confirm changes');
   ui.reset(); resolve({ ok: true, data: { replayed: false } }); await applying;
   assert.equal(find('teamConsolePanel', 'TEXTAREA'), null); assert.equal(node('teamConsoleTabs').hidden, true);
+});
+test('committed access removal refreshes the directory without stale member controls', async () => {
+  await click('teamConsoleTabs', 'Members');
+  await click('teamConsolePanel', 'Remove project access');
+  handler = async op => op === 'inspect'
+    ? { ok: true, data: { ...directory.data, items: [] } }
+    : { ok: true, data: { replayed: false } };
+  await click('teamConsolePanel', 'Confirm changes');
+  assert.equal(find('teamConsolePanel', 'BUTTON', 'Remove project access'), null);
+  assert.equal(find('teamConsolePanel', 'BUTTON', 'Add member').disabled, false);
+  assert.equal(calls.at(-1).body.operation, 'inspect');
 });
 test('untrusted names stay text and locale switch uses translated labels', async () => {
   directory.data.items[0].display_name = '<img src=x onerror=alert(1)>';

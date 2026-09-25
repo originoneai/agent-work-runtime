@@ -79,6 +79,7 @@
         grants: (binding.grants || []).filter(g => g.active).map(g => ({
           workstream_id: g.workstream_id, authority_version: g.authority_version,
           read: g.read, write: g.write, manage: g.manage,
+          attest_execution: false, reconcile_execution: false,
         })), remove_membership: false, revoke_tenant_credentials: [] };
     }
     async function preview(plan, issue) {
@@ -109,13 +110,17 @@
         expected_state: p.preview.state_digest, expected_plan: p.preview.plan_digest });
       if (g !== generation) return;
       busy = false;
-      if (body.ok) finish(p);
+      if (body.ok) await finish(p);
       else { p.status = ['Forbidden', 'InvalidInput', 'PreconditionsChanged', 'IdempotencyConflict'].includes(body.error && body.error.code) ? 'rejected' : 'unknown'; fail(body); }
       render();
     }
-    function finish(p) {
+    async function finish(p) {
       p.status = 'committed'; notice = t('committed'); loaded = false;
-      if (!p.bearer) pending = null;
+      if (!p.bearer) {
+        pending = null;
+        members = [];
+        await loadMembers();
+      }
     }
     async function inspectOutcome() {
       if (busy || !pending) return;
@@ -124,7 +129,7 @@
       if (g !== generation) return;
       busy = false;
       if (!body.ok) fail(body);
-      else if (body.data.outcome === 'committed') finish(p);
+      else if (body.data.outcome === 'committed') await finish(p);
       else p.status = 'retry';
       render();
     }
@@ -157,6 +162,7 @@
           independent_review: editor.review, grants: streams.filter(s => editor.scopes.includes(s.id)).map(s => ({
             workstream_id: s.id, authority_version: s.authority_version, read: true,
             write: editor.role !== 'reader' && s.write, manage: editor.role === 'project_admin',
+            attest_execution: false, reconcile_execution: false,
           })), remove_membership: false, revoke_tenant_credentials: [] };
         await preview(plan, !editor.member);
       }, busy));
