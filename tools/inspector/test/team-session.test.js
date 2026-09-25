@@ -245,10 +245,13 @@ test('live browsing and copied Agent instructions do not create sessions or clai
     assert.equal(button('teamDetail', 'Claim task'), null);
     assert.equal(button('teamDetail', 'Refresh my claim'), null);
     assert.match(node('teamDetail').textContent, /Agent refreshes tasks, claims work/);
-    await button('teamAuth', 'Copy command').click();
+    await button('teamAuth', 'Copy MCP connection details').click();
     await button('teamAuth', 'Copy project instruction').click();
     await button('teamDetail', 'Copy task brief').click();
-    assert.match(copied[0], /--bearer-token-env-var AWR_TEAM_BEARER/);
+    assert.match(copied[0], /Transport: Streamable HTTP/);
+    assert.match(copied[0], /Authorization: Bearer <PERSONAL_ACCESS_CREDENTIAL>/);
+    assert.doesNotMatch(copied[0], /codex|AWR_TEAM_BEARER/);
+    assert.doesNotMatch(node('teamAuth').textContent, /Codex|Other MCP clients/);
     assert.match(copied[1], /Web sign-in is not required/);
     assert.match(copied[2], /WORK-1 in workstream stream/);
     assert.match(copied[2], /session owned by this identity and client/);

@@ -498,7 +498,8 @@
       details.addEventListener('toggle', () => { state.connectOpen = details.open; });
       details.appendChild(el('summary', null, t(i18n, 'ui.team_connect_agent')));
       details.appendChild(el('p', { class: 'sub' }, t(i18n, 'ui.team_connect_help')));
-      copyBlock(details, 'codex mcp add awr_team --url ' + mcpUrl() + ' --bearer-token-env-var AWR_TEAM_BEARER', 'ui.team_copy_command');
+      copyBlock(details, 'Transport: Streamable HTTP\nURL: ' + mcpUrl() +
+        '\nAuthentication: Bearer\nAuthorization: Bearer <PERSONAL_ACCESS_CREDENTIAL>', 'ui.team_copy_connection');
       details.appendChild(el('p', { class: 'sub' }, t(i18n, 'ui.team_connect_other')));
       details.appendChild(el('code', null, mcpUrl()));
       copyBlock(details, t(i18n, 'ui.team_project_prompt', { url: mcpUrl() }), 'ui.team_copy_project_prompt');

@@ -15,20 +15,25 @@ Get a project MCP URL and an individual credential from the project administrato
 then clone the code repository. Each participant uses their own credential.
 Repository permissions remain separate from AWR permissions.
 
-For Codex CLI, load the credential from its private file in the terminal that
-will launch Codex, then register the endpoint provided by the administrator:
+Use any Agent client that supports remote MCP over **Streamable HTTP** with
+**Bearer authentication**. AWR does not select a default Agent or model.
+Add a remote MCP server using your client's settings:
 
-```sh
-export AWR_TEAM_BEARER="$(cat /absolute/path/to/access.token)"
-codex mcp add awr_team --url https://team.example/v1/projects/example/mcp --bearer-token-env-var AWR_TEAM_BEARER
-cd /absolute/path/to/your/checkout
-codex
-```
+| Setting | Value |
+| --- | --- |
+| Transport | Streamable HTTP |
+| Server URL | The project endpoint, such as `https://team.example/v1/projects/example/mcp` |
+| Authentication | Bearer token in the HTTP `Authorization` header |
+| Credential | Your administrator-provided personal credential |
 
-Other MCP clients use Streamable HTTP with the same URL and bearer authentication.
-Configure credentials through the client's supported secret or environment
-settings. Desktop apps do not automatically inherit a different terminal's
-environment. Restart or reconnect the client after configuration changes.
+These are connection settings, not a universal configuration-file format or
+shell command. Each client has its own settings and version requirements.
+Read the credential from its private file or use the client's supported secret
+settings; do not put it in a URL, conversation or repository. Reconnect after
+configuration changes and open your local code checkout in the Agent.
+
+If a client supports only local stdio MCP, this URL cannot be used directly;
+use a version or integration that supports the remote transport and authentication.
 
 Use the remote project as the shared work authority. A local checkout is for code
 and tests; do not initialize a second local task ledger to replace the remote
@@ -77,7 +82,7 @@ implementation, verification, GitHub merge and AWR acceptance as separate facts.
 ## Optional workspace view
 
 Open Inspector to inspect task relationships, ownership, progress and recorded
-results. **Connect Agent** provides a connection command and project instruction;
+results. **Connect Agent** provides client-neutral MCP settings and a project instruction;
 each task also has an optional copyable brief. Copying either text creates no
 session or claim. Administrator and review permissions are still enforced by the
 central service, regardless of which client is used.
