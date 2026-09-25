@@ -758,7 +758,8 @@ pub(crate) async fn read(
                     "recovery_blocked":r.get::<_,bool>(3),"selected_completion_id":r.get::<_,Option<String>>(4)}));
             let (_, ownership) = work_binding(tx, tenant, project, auth, work).await?;
             let (required_specs, readable_refs, spec_reasons) =
-                controlled_prepare_context(tx, tenant, project, auth, &contract).await?;
+                controlled_prepare_context(tx, tenant, project, auth, resolved.workstream_id)
+                    .await?;
             reasons.extend(spec_reasons);
             let mut data = json!({
                 "work_id":work,
@@ -951,8 +952,8 @@ async fn controlled_prepare_context(
     tx: &Transaction<'_>,
     tenant: &str,
     project: &str,
-    _auth: &ReaderAuthority,
-    contract: &WorkContract,
+    auth: &ReaderAuthority,
+    stream_id: awr_core::Id,
 ) -> PgResult<(Vec<Value>, Vec<Value>, Vec<&'static str>)> {
     let files = active_source_files(tx, tenant, project).await?;
     let mut by_path = std::collections::BTreeMap::new();
@@ -964,13 +965,23 @@ async fn controlled_prepare_context(
     let mut required_specs = Vec::new();
     let mut readable_refs = Vec::new();
     let mut reasons: Vec<&'static str> = Vec::new();
-    for path in &contract.scope_paths {
+    // Code scope includes directories and files that a contributor has yet to
+    // create. Required input documents belong to the selected workstream.
+    let stream = auth.catalog.get(stream_id)?;
+    for path in &stream.acceptance_contracts {
         if safe_relative_source_path(path).is_err() {
             reasons.push("spec_path_rejected");
             continue;
         }
         match by_path.get(path) {
             Some(file) => {
+                let text = file.get("text").and_then(|v| v.as_str()).unwrap_or("");
+                // Inline context must obey the same shared-document boundary as
+                // source.content; a selected stream cannot expose a private peer.
+                if authorize_source_file_streams(auth, path, text).is_err() {
+                    reasons.push("required_spec_forbidden");
+                    continue;
+                }
                 let sha = file.get("sha256").and_then(|v| v.as_str()).unwrap_or("");
                 let bytes = file.get("bytes").and_then(|v| v.as_u64()).unwrap_or(0);
                 let text = file.get("text").and_then(|v| v.as_str()).unwrap_or("");

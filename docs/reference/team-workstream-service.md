@@ -229,8 +229,12 @@ these surfaces for daily planning — not hand-edited JSON or SQL.
 ### Controlled context and content reads
 
 `work.prepare` returns the published contract, `required_specs` (authorized
-active-snapshot paths under the contract scope with size/digest checks) and
-`authorized_readable_refs`. Dedicated queries:
+active-snapshot documents listed in the selected workstream’s `acceptance_contracts`,
+with size, digest and read-authorization checks) and
+`authorized_readable_refs`. Code `scope_paths` remain write boundaries and may
+include directories or files that have not been created yet. They are not required
+input documents. Missing declared acceptance documents still block complete context.
+Dedicated queries:
 
 - `source.content` — active snapshot path only; rejects `..`, absolute paths,
   URLs, and historical snapshot selectors.
