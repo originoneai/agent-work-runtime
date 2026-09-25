@@ -28,7 +28,10 @@ async fn work_observation_is_scoped_current_and_does_not_change_context_or_autho
     admin.batch_execute("INSERT INTO awr_team.sessions(tenant_id,project_id,id,scope_id,work_id,actor_id,client_id,conversation_id,state,workstream_id,ownership_version)
         SELECT tenant_id,project_id,'zz-newer-closed-supervisor',scope_id,work_id,actor_id,client_id,'closed-review','ended',workstream_id,ownership_version
         FROM awr_team.sessions WHERE id='session-a'").await.unwrap();
-    assert_eq!(store.query(TENANT, PROJECT, A, q.clone()).await.unwrap()["data"]["session"]["id"], "session-a");
+    assert_eq!(
+        store.query(TENANT, PROJECT, A, q.clone()).await.unwrap()["data"]["session"]["id"],
+        "session-a"
+    );
     for work in ["b-private", "missing"] {
         q.work_id = Some(work.into());
         assert!(matches!(
