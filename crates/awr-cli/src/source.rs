@@ -1,17 +1,29 @@
 use awr_core::{AuthorityMode, Error, Freshness, Result};
-use awr_source::{IndexReport, Manifest, ProjectConfig, SourceSpec, index_project, scan_project};
+use awr_source::{
+    FileInventory, IndexReport, Manifest, ProjectConfig, SourceSpec, compare_file_inventories,
+    index_project, inventory_files, scan_project,
+};
 use awr_store::Store;
 use clap::Subcommand;
 use serde_json::{Value, json};
 use std::{
     collections::BTreeMap,
     fs::{self, OpenOptions},
-    io::Write,
-    path::{Path, PathBuf},
+    io::{Read, Write},
+    path::{Component, Path, PathBuf},
 };
 
 #[derive(Debug, Subcommand)]
 pub enum SourceCommand {
+    /// Read-only project file inventory for host freshness guards; no AWR database is opened.
+    Inventory {
+        #[arg(long = "include", required = true)]
+        includes: Vec<PathBuf>,
+        #[arg(long = "exclude-glob")]
+        exclude_globs: Vec<String>,
+        #[arg(long)]
+        baseline: Option<PathBuf>,
+    },
     /// Preview or accept a single file-source binding relocation; content must be unchanged.
     Relocate(crate::source_relocation::RelocateArgs),
     /// Inspect a relocation receipt and current source/configuration bindings without refreshing.
@@ -537,6 +549,57 @@ pub(crate) fn discover(root: &Path) -> Result<(Option<Manifest>, Vec<Value>, Vec
 
 pub fn run(root: &Path, command: &SourceCommand, json_output: bool) -> Result<()> {
     match command {
+        SourceCommand::Inventory {
+            includes,
+            exclude_globs,
+            baseline,
+        } => {
+            let root = root.canonicalize()?;
+            let current = inventory_files(&root, includes, exclude_globs)?;
+            if let Some(baseline) = baseline {
+                if baseline
+                    .components()
+                    .any(|part| !matches!(part, Component::Normal(_)))
+                {
+                    return Err(Error::RuleViolation(
+                        "inventory baseline must be a project-relative file".into(),
+                    ));
+                }
+                let mut file = awr_source::open_file_exact(&root.join(baseline))?;
+                let mut bytes = Vec::new();
+                Read::by_ref(&mut file)
+                    .take(16 * 1024 * 1024 + 1)
+                    .read_to_end(&mut bytes)?;
+                if bytes.len() > 16 * 1024 * 1024 {
+                    return Err(Error::BudgetExceeded {
+                        required: bytes.len(),
+                        budget: 16 * 1024 * 1024,
+                    });
+                }
+                let before: FileInventory = serde_json::from_slice(&bytes)?;
+                let diff = compare_file_inventories(&before, &current)?;
+                if json_output {
+                    println!("{}", serde_json::to_string_pretty(&diff)?);
+                } else {
+                    println!(
+                        "File inventory fresh: {}; changed paths: {} ({} omitted)",
+                        diff.fresh, diff.total_changes, diff.omitted_changes
+                    );
+                    for change in diff.changes {
+                        println!("{:?}: {}", change.kind, change.path);
+                    }
+                }
+            } else if json_output {
+                println!("{}", serde_json::to_string_pretty(&current)?);
+            } else {
+                println!(
+                    "File inventory: {} files; digest {}",
+                    current.files.len(),
+                    current.digest
+                );
+            }
+            return Ok(());
+        }
         SourceCommand::Relocate(args) => return crate::source_relocation::run(root, args),
         SourceCommand::RelocateStatus { fingerprint } => {
             return crate::source_relocation::status(root, fingerprint);
@@ -575,7 +638,8 @@ pub fn run(root: &Path, command: &SourceCommand, json_output: bool) -> Result<()
     let manifest = Manifest::load(&root)?;
     let runtime = runtime_dir(&root, false)?;
     match command {
-        SourceCommand::Relocate(_)
+        SourceCommand::Inventory { .. }
+        | SourceCommand::Relocate(_)
         | SourceCommand::RelocateStatus { .. }
         | SourceCommand::RelocateRecover { .. }
         | SourceCommand::Configure { .. }

@@ -1,5 +1,8 @@
 # Source changes and task graphs
 
+Hosts that need to monitor files beyond registered source mappings can use the
+read-only [file inventory](file-inventory.md) interface.
+
 AWR owns task identity, source authority, required dependencies, execution claims,
 readiness, checkpoints and completion evidence. A planner supplies explicit work
 and dependency proposals. A host chooses Agents, allocates resources, dispatches

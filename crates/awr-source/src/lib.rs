@@ -2,6 +2,7 @@
 mod adapter;
 mod directory;
 mod document;
+mod file_inventory;
 mod freshness;
 mod indexer;
 mod ledger_mapping;
@@ -29,6 +30,9 @@ pub use directory::{DirectoryDelta, DirectoryInventory, MarkdownDirectoryAdapter
 pub use document::{
     DocumentAction, DocumentEdit, PreparedDocument, document_path_registration,
     prepare_document_draft, prepare_document_edit,
+};
+pub use file_inventory::{
+    FileInventory, InventoryChange, InventoryDiff, compare_file_inventories, inventory_files,
 };
 pub use freshness::{SourceObservation, observe_source};
 pub use indexer::{
