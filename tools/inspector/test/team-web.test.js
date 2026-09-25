@@ -445,6 +445,7 @@ test('live overview discovers authorized streams and follows scoped pagination',
     assert.deepEqual(overview.json.works.map((work) => [work.key, work.workstream_id]), [
       ['api-1', 'backend'], ['api-2', 'backend'], ['ui-1', 'frontend'],
     ]);
+    assert.deepEqual(overview.json.workstreams, [{ id: 'backend' }, { id: 'frontend' }]);
     assert.deepEqual(queries.map(({ op, workstream_id, cursor }) => [op, workstream_id, cursor]), [
       ['workstreams.list', undefined, undefined],
       ['workstreams.list', undefined, 'streams-2'],
