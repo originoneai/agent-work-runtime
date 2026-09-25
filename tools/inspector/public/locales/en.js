@@ -456,6 +456,9 @@
   "ui.reconnect_needed": "Connection lost or session expired.",
   "ui.reconnect": "Reconnect",
   "ui.operation_expired": "That operation expired. Refresh and retry with a new request.",
+  "ui.team_loading": "Loading projects…",
+  "ui.team_access_token": "Access token",
+  "ui.team_unknown_outcome": "The response was not received. Inspect the original operation before retrying a write.",
   "ui.raw_json": "Raw JSON"
 };
   if (typeof module !== 'undefined' && module.exports) module.exports = messages;

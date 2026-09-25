@@ -456,6 +456,9 @@
   "ui.reconnect_needed": "连接中断或会话过期。",
   "ui.reconnect": "重新连接",
   "ui.operation_expired": "操作已过期。请刷新后用新请求重试。",
+  "ui.team_loading": "正在加载项目…",
+  "ui.team_access_token": "访问凭证",
+  "ui.team_unknown_outcome": "未收到操作结果。重试写入前，请先查询原操作的实际状态。",
   "ui.raw_json": "原始 JSON"
 };
   if (typeof module !== 'undefined' && module.exports) module.exports = messages;

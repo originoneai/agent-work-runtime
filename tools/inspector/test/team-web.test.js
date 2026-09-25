@@ -531,3 +531,21 @@ test('live mode expired session denies overview and action', async () => {
     await upstream.close();
   }
 });
+
+test('live project discovery restores the existing cookie session even with no projects', async () => {
+  const upstream = await startMockUpstream((request, response) => {
+    response.setHeader('content-type', 'application/json');
+    response.end(JSON.stringify(request.url === '/v1/web/session'
+      ? { ok: true, session_id: 'ws_existing', expires_at_ms: 1000 }
+      : { ok: true, projects: [] }));
+  });
+  const bridge = await startLiveBridge(upstream.base);
+  try {
+    const result = await req(bridge.base, 'GET', '/api/team/projects');
+    assert.equal(result.json.session.session_id, 'ws_existing');
+    assert.deepEqual(result.json.projects, []);
+  } finally {
+    await bridge.close();
+    await upstream.close();
+  }
+});

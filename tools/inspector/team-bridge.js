@@ -199,13 +199,16 @@ function createTeamBridge(opts) {
   const routes = {
     'GET /api/team/projects': async (url, _body, req, res) => {
       if (TEAM.live) {
+        const session = await proxyTeam('/v1/web/session', req, null, 'GET');
+        if (!session || session.status >= 400) return liveError(session);
+        applyProxiedCookies(res, session.setCookie);
         const proxied = await proxyTeam('/v1/web/projects', req, null, 'GET');
         if (!proxied) {
           return { ok: false, error: { code: 'BadGateway', message: 'live proxy unavailable' } };
         }
         applyProxiedCookies(res, proxied.setCookie);
         if (proxied.status >= 400) return liveError(proxied);
-        return proxied.json;
+        return { ...proxied.json, session: session.json };
       }
       if (!TEAM.demoMode) {
         return { ok: false, error: { code: 'DemoDisabled', message: 'fixtures require demo mode' } };
