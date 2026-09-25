@@ -58,6 +58,8 @@
       detailResponse: null,
       connectOpen: false,
       handoffOpen: Object.create(null),
+      lastRefreshedAt: null,
+      refreshing: false,
     };
     let generation = 0;
     let detailGeneration = 0;
@@ -65,6 +67,7 @@
     let loginInput = null;
     let net = null;
     let pendingDetails = new Map();
+    let refreshTimer = null;
     const adminModule = root.AWR_TEAM_ADMIN || (typeof require === 'function' ? require('./team-admin') : null);
     const admin = adminModule && adminModule.createTeamAdmin({ $, i18n, api, onAuthError: failed });
 
@@ -84,6 +87,7 @@
       state.lastReceipts = Object.create(null);
       state.connectOpen = false;
       state.handoffOpen = Object.create(null);
+      state.lastRefreshedAt = null;
     }
 
     function failed(body) {
@@ -93,6 +97,10 @@
         ++generation;
         ++detailGeneration;
         state.session = null;
+        clearProjectData();
+        render();
+      } else if (state.error.code === 'Forbidden') {
+        ++generation;
         clearProjectData();
         render();
       }
@@ -135,6 +143,7 @@
       picker.value = state.projectKey;
       picker.addEventListener('change', () => {
         state.projectKey = picker.value;
+        try { root.sessionStorage.setItem('awr-team-project', state.projectKey); } catch (_) { /* Storage is optional. */ }
         state.selected = null;
         refresh();
       });
@@ -259,6 +268,9 @@
       }
       header.appendChild(toolbar);
       host.appendChild(header);
+      if (state.lastRefreshedAt && isLive()) host.appendChild(el('p', { class: 'sub', role: 'status' },
+        t(i18n, state.error ? 'ui.team_progress_refresh_failed' : 'ui.team_progress_refreshed',
+          { time: new Date(state.lastRefreshedAt).toLocaleTimeString() })));
 
       if (state.disconnect) {
         const banner = el('div', { class: 'banner' });
@@ -325,6 +337,7 @@
     function isLive() { return state.raw && state.raw.interaction_mode === 'mcp'; }
 
     function workStatus(w) {
+      if (w.attention) return t(i18n, 'ui.team_progress_' + w.attention);
       const known = ['planned', 'unclaimed', 'claimed', 'in_progress', 'running', 'blocked', 'waiting', 'in_review', 'review', 'completed', 'accepted', 'cancelled'];
       if (w.status && w.status !== 'unknown') return known.includes(w.status) ? t(i18n, 'ui.network_status_' + w.status) : w.status;
       return t(i18n, w.detail_loaded ? 'ui.team_no_runtime' : 'ui.network_unread');
@@ -593,9 +606,41 @@
         group.appendChild(list); host.appendChild(group);
       };
       const agent = w.agent && typeof w.agent === 'object' ? w.agent.id : w.agent;
-      section('people', [['developer', w.owner_person], ['agent', agent], ['model', w.model], ['session', w.session_id], ['tokens', null]]);
+      section('people', [['developer', w.owner_person || t(i18n, 'ui.team_progress_unassigned')],
+        ['claimant', w.claimant], ['agent', agent], ['client', w.client_id],
+        ['model', w.model || t(i18n, 'ui.team_progress_model_missing')], ['session', w.session_id],
+        ['tokens', w.usage?.total_tokens ?? t(i18n, 'ui.team_progress_usage_missing')]]);
       section('progress', [['status', workStatus(w)], ['next', w.next_step]]);
-      section('related', [['pr', null], ['ci', null]]);
+      section('related', [['pr', w.pr_reference?.url],
+        ['ci', w.github ? t(i18n, 'ui.team_progress_ci_' + (w.github.ci || 'unavailable')) : null]]);
+      if (w.pr_reference) {
+        host.appendChild(el('a', { href: w.pr_reference.url, target: '_blank', rel: 'noopener noreferrer', class: 'linkish' }, t(i18n, 'ui.team_progress_open_pr')));
+        host.appendChild(el('p', { class: 'sub' }, t(i18n, 'ui.team_progress_pr_' + w.pr_reference.registration)));
+      }
+      if (w.github && !w.github.unavailable) {
+        host.appendChild(el('p', { class: 'sub' }, t(i18n, 'ui.team_progress_github_basis', {
+          head: w.github.head_sha.slice(0, 8), time: new Date(w.github.observed_at_ms).toLocaleString(),
+        })));
+        if (w.pr_reference?.expected_head && w.pr_reference.expected_head !== w.github.head_sha)
+          host.appendChild(el('p', { class: 'team-error' }, t(i18n, 'ui.team_progress_head_changed')));
+      }
+      if (w.execution) section('execution', [['execution_state', t(i18n, 'ui.team_progress_execution_' + w.execution.state)]]);
+      if (w.checkpoint) {
+        host.appendChild(el('h3', null, t(i18n, 'ui.team_progress_checkpoint')));
+        host.appendChild(el('p', { class: 'sub' }, new Date(w.checkpoint.created_at_unix_ms).toLocaleString()));
+        if (!w.checkpoint.contract_matches_current)
+          host.appendChild(el('p', { class: 'team-error' }, t(i18n, 'ui.team_progress_checkpoint_stale')));
+        host.appendChild(el('p', null, w.checkpoint.next_action));
+        const loops = el('ul');
+        for (const text of w.checkpoint.open_loops || []) loops.appendChild(el('li', null, text));
+        host.appendChild(loops);
+      } else if (w.observation_available) host.appendChild(el('p', { class: 'sub' }, t(i18n, 'ui.team_progress_no_checkpoint')));
+      if (w.execution?.report) {
+        host.appendChild(el('h3', null, t(i18n, 'ui.team_progress_report')));
+        host.appendChild(el('p', { class: 'sub' }, t(i18n, 'ui.team_progress_report_' + w.execution.report.kind)));
+        host.appendChild(el('p', null, w.execution.report.note));
+      }
+      if (w.observation_available === false) host.appendChild(el('p', { class: 'team-error' }, t(i18n, 'ui.team_progress_unavailable')));
       if (isLive()) {
         if (state.detailLoading) {
           host.appendChild(el('p', { role: 'status' }, t(i18n, 'ui.team_detail_loading')));
@@ -623,7 +668,7 @@
         }
         host.appendChild(dependencies);
         if (w.dependency_export_unavailable) host.appendChild(el('p', { class: 'team-error' }, t(i18n, 'ui.team_dependency_unavailable')));
-        if (w.recovery_blocked) host.appendChild(el('p', { class: 'team-error' }, 'RecoveryBlocked'));
+        if (w.recovery_blocked) host.appendChild(el('p', { class: 'team-error' }, t(i18n, 'ui.team_progress_recovery_required')));
         host.appendChild(el('p', { class: 'sub' }, t(i18n, 'ui.team_admission_not_evaluated')));
         if (!w.context_complete) host.appendChild(el('p', { class: 'sub' }, (w.completeness_reasons || []).join(' · ')));
         return;
@@ -804,7 +849,9 @@
         state.projects = projects.projects;
         state.session = projects.session || state.session;
         if (!state.projects.some((p) => p.key === state.projectKey)) {
-          state.projectKey = state.projects[0] ? state.projects[0].key : null;
+          let saved = null;
+          try { saved = root.sessionStorage.getItem('awr-team-project'); } catch (_) { /* Storage is optional. */ }
+          state.projectKey = state.projects.some(p => p.key === saved) ? saved : state.projects[0]?.key || null;
           state.selected = null;
           state.lastReceipts = Object.create(null);
         }
@@ -833,6 +880,70 @@
         }
         if (state.selected) await selectWork(state.selected);
       }
+      if (!state.error && current === generation && state.session) {
+        state.lastRefreshedAt = Date.now();
+        render();
+      }
+      scheduleRefresh();
+    }
+
+    function editing() {
+      const active = typeof document !== 'undefined' ? document.activeElement : null;
+      return ['INPUT', 'TEXTAREA', 'SELECT'].includes(active?.tagName) || active?.isContentEditable;
+    }
+
+    function canRefreshProgress() {
+      return state.session && isLive() && !state.loading && !state.graphLoading && !state.detailLoading && !state.refreshing
+        && !root.document?.hidden && !$('teamWorkspaceGrid')?.hidden
+        && (!root.location?.hash || root.location.hash === '#team')
+        && !editing();
+    }
+
+    function scheduleRefresh() {
+      if (typeof root.addEventListener !== 'function') return;
+      clearTimeout(refreshTimer);
+      if (state.session) refreshTimer = setTimeout(async () => {
+        try { await refreshProgress(); } finally { scheduleRefresh(); }
+      }, 15000);
+    }
+
+    async function refreshProgress() {
+      if (!canRefreshProgress()) return;
+      const current = ++generation, project = state.projectKey;
+      state.refreshing = true;
+      state.error = null;
+      pendingDetails = new Map();
+      try {
+        const overview = await api('/api/team/overview?project=' + encodeURIComponent(project) + '&view=team');
+        if (current !== generation) return;
+        if (!overview?.ok || !Array.isArray(overview.works)) { failed(overview); return; }
+        const works = overview.works.map(work => ({ ...work }));
+        const queue = works.slice(0, 60);
+        const selected = works.find(w => w.key === state.selected);
+        if (selected && !queue.includes(selected)) queue.push(selected);
+        let index = 0;
+        await Promise.all(Array.from({ length: Math.min(4, queue.length) }, async () => {
+          while (current === generation && index < queue.length) await readWork(queue[index++]);
+        }));
+        if (current !== generation || state.error || $('teamWorkspaceGrid')?.hidden || editing()) return;
+        state.works = works;
+        state.streams = overview.workstreams || [];
+        state.raw = overview;
+        state.session = overview.session || state.session;
+        state.disconnect = false;
+        if (!selectedWork()) state.selected = works[0]?.key || null;
+        state.detailResponse = selectedWork() ? { ok: true, work: selectedWork() } : null;
+        state.lastRefreshedAt = Date.now();
+      } finally {
+        state.refreshing = false;
+        // An in-flight observation must never redraw a newly opened member form.
+        if (current === generation && !$('teamWorkspaceGrid')?.hidden && !editing()) render();
+      }
+    }
+
+    if (typeof root.addEventListener === 'function') {
+      root.addEventListener('focus', () => { void refreshProgress(); });
+      root.document?.addEventListener('visibilitychange', () => { if (!root.document.hidden) void refreshProgress(); });
     }
 
     const overviewHost = $('teamOverview');
@@ -851,6 +962,7 @@
       _selectedWork: selectedWork,
       _selectWork: selectWork,
       _loadGraphDetails: loadGraphDetails,
+      _refreshProgress: refreshProgress,
     };
   }
 

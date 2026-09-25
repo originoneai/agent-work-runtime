@@ -51,6 +51,74 @@ function live(handler, count = 4) {
 const detail = work => ({ ok: true, work: { ...work, detail_loaded: true, status: null,
   acceptance: ['Verify the contract'], depends_on: [], context_complete: true } });
 
+test('background refresh displays changed facts while retaining selection and layout', async () => {
+  let revision = 1;
+  live(async (url, works) => {
+    const work = works.find(w => w.key === new URL(url, 'http://test').searchParams.get('work'));
+    return { ok: true, work: { ...detail(work).work, next_step: 'Step ' + revision,
+      observation_available: true, claimant: 'Member', session_id: 'session', attention: revision === 2 ? 'lease_expired' : null } };
+  });
+  await ui.refresh();
+  await ui._selectWork('W-2');
+  ui.state.layout = 'list';
+  revision = 2;
+  await ui._refreshProgress();
+  assert.equal(ui.state.selected, 'W-2');
+  assert.equal(ui.state.layout, 'list');
+  assert.equal(ui._selectedWork().next_step, 'Step 2');
+  assert.match(node('teamDetail').textContent, /Claim expired/);
+  assert.match(node('teamDetail').textContent, /Member/);
+  assert.match(node('teamDetail').textContent, /No recorded usage/);
+  assert.equal(visualStatus(ui._selectedWork()), 'blocked');
+});
+
+test('background refresh does not disturb member forms, overlap, or restore revoked data', async () => {
+  let reads = 0, release;
+  live(async (url, works) => { reads++; return detail(works[0]); }, 1);
+  await ui.refresh();
+  node('teamWorkspaceGrid').hidden = true;
+  await ui._refreshProgress();
+  assert.equal(reads, 1);
+  node('teamWorkspaceGrid').hidden = false;
+  const gate = new Promise(resolve => { release = resolve; });
+  let calls = 0;
+  global.fetch = async () => { calls++; await gate; return { ok: true, json: async () => ({ ok: false, error: { code: 'Forbidden' } }) }; };
+  const first = ui._refreshProgress();
+  await ui._refreshProgress();
+  assert.equal(calls, 1);
+  release(); await first;
+  assert.equal(ui.state.works.length, 0);
+  assert.equal(ui.state.selected, null);
+});
+
+test('failed background refresh keeps the last snapshot visibly stale', async () => {
+  live(async (_url, works) => detail(works[0]), 1);
+  await ui.refresh();
+  const fetched = ui.state.lastRefreshedAt;
+  global.fetch = async () => { throw new Error('disconnected'); };
+  await ui._refreshProgress();
+  assert.equal(ui.state.lastRefreshedAt, fetched);
+  assert.equal(ui.state.works.length, 1);
+  assert.match(node('teamOverview').textContent, /Refresh failed/);
+});
+
+test('editing that starts during a poll prevents replacement of the visible snapshot', async () => {
+  live(async (_url, works) => detail(works[0]), 1);
+  await ui.refresh();
+  const before = ui.state.works, timestamp = ui.state.lastRefreshedAt;
+  let release;
+  const gate = new Promise(resolve => { release = resolve; });
+  live(async (_url, works) => { await gate; return detail(works[0]); }, 1);
+  const refreshing = ui._refreshProgress();
+  await new Promise(resolve => setImmediate(resolve));
+  document.activeElement = { tagName: 'INPUT', value: 'Unsaved member' };
+  release(); await refreshing;
+  assert.equal(ui.state.works, before);
+  assert.equal(ui.state.lastRefreshedAt, timestamp);
+  assert.equal(document.activeElement.value, 'Unsaved member');
+  document.activeElement = null;
+});
+
 test('graph hydration bounds concurrency and batches without inventing runtime or progress', async () => {
   let active = 0, maximum = 0, reads = 0;
   live(async (url, works) => {

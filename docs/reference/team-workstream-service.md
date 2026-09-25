@@ -120,6 +120,7 @@ Unsupported operations or protocol versions fail explicitly.
 | `work.list` | Selected workstream's work summaries and count; `limit`, `cursor` |
 | `work.search` | Same visibility boundary; required literal substring `search` |
 | `work.prepare` | Required `work_id` or `session_id`; optional `max_context_bytes`; returns published contract, required_specs and authorized_readable_refs (TMCP-023) |
+| `work.observe` | Required `work_id` or `session_id`; returns bounded session/checkpoint, claim lease, execution and PR delivery observations under current WorkRead authority |
 | `events.list` | Selected workstream, optionally narrowed by work/session; metadata only |
 | `session.inspect` | Required `session_id`; its current-ownership checkpoint |
 | `work.recovery` | Required work/session; up to two current-ownership recovery candidates |
@@ -157,6 +158,24 @@ revisions or source snapshot IDs remain in the envelope, outside that hash.
 Absent runtime state is `null`, not an invented completion status. Preparation
 always reports `execution_admission: "not_evaluated"`; context completeness and
 a matching hash never authorize execution.
+
+`work.observe` is a separate, read-only projection and does not change the
+prepared context or its hash. Within a repeatable-read snapshot, it selects a
+session from the current workstream and ownership generation, preferring a live
+claim, then the newest session. It reports the checkpoint's contract currency,
+claim expiry, latest execution, up to five registered PR deliveries and the time
+of observation. Execution receipt payloads keep `execution.inspect`'s existing
+same-client or reconciliation-authority restrictions. A recorded execution state
+is not a live process heartbeat. Responsibility and claimant identity remain
+separate; native conversation IDs are withheld, and unreported model and usage
+are explicit nulls. Observation never authorizes execution, resumes a session,
+or accepts a delivery.
+
+Inspector refreshes these observations while the task view is visible. Its
+optional public GitHub lookup follows only an exact PR reference in the
+authorized response, checks the current head, and caches results for 60 seconds.
+A checkpoint mention is labeled separately from a registered delivery, and
+GitHub checks do not constitute AWR acceptance.
 
 Recovery reports each checkpoint's `contract_matches_current` as true, false,
 or null when there is no checkpoint. Matching the contract alone does not prove

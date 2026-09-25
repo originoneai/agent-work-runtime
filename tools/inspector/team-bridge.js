@@ -5,6 +5,8 @@
  */
 'use strict';
 
+const { mapObservation, createGithubObserver } = require('./team-progress');
+
 const fs = require('fs');
 const path = require('path');
 
@@ -43,6 +45,7 @@ function applyProxiedCookies(res, setCookie) {
 
 function createTeamBridge(opts) {
   const live = Boolean(opts.teamUrl);
+  const observeGithub = createGithubObserver(opts.githubFetch);
   let publicUrl = null;
   if (live) {
     const url = new URL(opts.teamPublicUrl || opts.teamUrl);
@@ -139,7 +142,7 @@ function createTeamBridge(opts) {
     return {
       ok: false,
       error: {
-        code: proxied && proxied.status === 401 ? 'Unauthenticated' : 'UpstreamError',
+        code: proxied && proxied.status === 401 ? 'Unauthenticated' : proxied && proxied.status === 403 ? 'Forbidden' : 'UpstreamError',
         message: (body && body.message) || 'upstream request failed',
       },
     };
@@ -321,6 +324,23 @@ function createTeamBridge(opts) {
       if (expected && expected !== data.contract_hash) {
         return { ok: false, error: { code: 'SourceChanged', message: 'Work contract changed; refresh the overview' } };
       }
+      const observed = await proxyTeam(`/v1/web/projects/${encodeURIComponent(project)}/query`, req, {
+        protocol_version: 1, op: 'work.observe', work_id: work, workstream_id: stream,
+      }, 'POST');
+      if (!observed) return liveError(observed);
+      applyProxiedCookies(res, observed.setCookie);
+      let progress = { observation_available: false, observation_error: 'unsupported' };
+      if (observed.status >= 400) {
+        if (observed.json?.code !== 'Unsupported') return liveError(observed);
+      } else {
+        const observation = observed.json?.data;
+        if (!observation || observation.work_id !== work || observed.json.workstream_id !== stream
+          || observation.contract_hash !== data.contract_hash || !Number.isFinite(observation.observed_at_unix_ms)) {
+          return { ok: false, error: { code: 'SourceChanged', message: 'Observation changed; refresh the project' } };
+        }
+        progress = mapObservation(observation);
+        progress.github = await observeGithub(progress.pr_reference);
+      }
       return { ok: true, work: {
         key: work, workstream_id: stream, contract_hash: data.contract_hash,
         detail_loaded: true, status: data.runtime ? data.runtime.state : null,
@@ -334,6 +354,7 @@ function createTeamBridge(opts) {
         completeness_reasons: data.completeness_reasons || [],
         next_step: data.next_step || null,
         execution_admission: data.execution_admission || 'not_evaluated',
+        ...progress,
       } };
     },
 
