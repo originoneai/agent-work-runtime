@@ -253,4 +253,3 @@ body:has(#view-team[data-team-state="signed-out"]:not([hidden])) #footMode { dis
 .team-connect-code { white-space: pre-wrap; overflow-wrap: anywhere; font: 12px/1.65 var(--font-mono, monospace); padding: 12px; background: var(--bg, #f3f7ff); border: 1px solid var(--border, #dbe4f1); border-radius: 8px; max-height: 230px; overflow: auto; }
 .team-connect > code { display: block; overflow-wrap: anywhere; font-size: 12px; }
 .team-connect .btn { margin-right: 8px; }
-.team-claim-status { font-weight: 600; color: var(--accent, #2463eb); }

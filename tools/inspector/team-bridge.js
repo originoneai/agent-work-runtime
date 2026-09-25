@@ -332,20 +332,6 @@ function createTeamBridge(opts) {
       } };
     },
 
-    'POST /api/team/query': async (_url, body, req, res) => {
-      const parsed = asObject(body);
-      const allowed = new Set(['work.prepare', 'work.recovery', 'command.inspect', 'session.inspect', 'claim.inspect']);
-      if (!TEAM.live || !parsed || typeof parsed.project !== 'string' || !parsed.project ||
-          !parsed.query || !allowed.has(parsed.query.op)) {
-        return { ok: false, error: { code: 'InvalidInput', message: 'scoped live Team query required' } };
-      }
-      const upstream = await proxyTeam(`/v1/web/projects/${encodeURIComponent(parsed.project)}/query`,
-        req, parsed.query, 'POST');
-      if (!upstream || upstream.status >= 400) return liveError(upstream);
-      applyProxiedCookies(res, upstream.setCookie);
-      return { ok: true, ...upstream.json };
-    },
-
     'POST /api/team/login': async (_url, body, req, res) => {
       if (TEAM.live) {
         const proxied = await proxyTeam('/v1/web/login', req, body, 'POST');

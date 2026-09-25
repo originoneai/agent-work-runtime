@@ -242,24 +242,22 @@ test/
 - **被规则挡下的敏感内容不回显。** AWR 故意不返回匹配到的原值，本工具也不去读源文件补出来。
 
 
-### Member onboarding and Agent handoff
+### Agent-first Team onboarding
 
-Live Team mode supports personal-credential sign-in (**Join project**), an explicit
-**Connect Agent** panel, and **Claim task**. A browser claim creates a durable Team
-session and a one-hour coordination lease. It does not dispatch an Agent or grant
-execution authority. Copy the task handoff into an Agent connected with the same
-personal credential; inspect the session/claim and follow current execution
-admission before editing. Lease expiry and independent review remain enforced by
-the central service.
+Members connect their Agent directly to the project's remote MCP endpoint using
+an administrator-provisioned personal credential. The Agent refreshes tasks,
+recovers its own sessions, claims eligible work, obtains execution admission,
+saves checkpoints and submits evidence for review. No browser sign-in or task
+selection is required. See the [Team Agent workflow](../../docs/integrations/team-agent-workflow.md).
 
-The browser stores only non-secret claim command metadata in tab session storage
-so a refresh or lost response can inspect/retry the same request. Credentials stay
-out of that storage and copied commands. If storage is unavailable, claiming fails
-before a write. Sign-out clears tab handoff metadata; it does not end durable Team
-sessions or release claims. Use MCP recovery to continue after sign-out.
+Inspector displays authorized project state. **Connect Agent** provides a
+credential-free client command and project instruction; task details offer an
+optional copyable brief. These controls make no work-session or claim writes.
+Signing in only opens the workspace; it grants no additional permissions.
+Signing out does not end Agent work sessions or release claims. Public Git
+repository access is separate from Team permissions.
 
 When a reverse proxy exposes Team MCP at a different address from `--team-url`,
 set `--team-public-url https://your-team.example` so copied connection commands
 use the member-facing service. It defaults to the configured Team service URL,
-not the Inspector page URL. Join grants no new permissions; a project admin must
-provision each member beforehand. Public Git repository access is separate.
+not the Inspector page URL.

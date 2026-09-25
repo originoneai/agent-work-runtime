@@ -595,33 +595,6 @@ for (const scenario of ['detail', 'changed', 'denied']) {
 }
 
 
-test('claim recovery queries retain project scope and authentication and cannot invoke commands', async () => {
-  const calls = [];
-  const upstream = await startMockUpstream(async (req, res) => {
-    let body = ''; for await (const chunk of req) body += chunk;
-    calls.push({ path: req.url, cookie: req.headers.cookie, body: JSON.parse(body) });
-    res.setHeader('content-type', 'application/json');
-    if (!req.headers.cookie) { res.writeHead(401); res.end(JSON.stringify({ code: 'Unauthenticated' })); }
-    else res.end(JSON.stringify({ data: { state: 'unknown' } }));
-  });
-  const bridge = await startLiveBridge(upstream.base);
-  try {
-    const body = { project: 'test project', query: { protocol_version: 1, op: 'command.inspect', work_id: 'W', workstream_id: 'S', request_id: 'R' } };
-    const read = await req(bridge.base, 'POST', '/api/team/query', { body, cookie: 'awr_web_session=synthetic' });
-    assert.equal(read.json.ok, true);
-    assert.equal(calls[0].path, '/v1/web/projects/test%20project/query');
-    assert.deepEqual(calls[0].body, body.query);
-    assert.equal(calls[0].cookie, 'awr_web_session=synthetic');
-    const denied = await req(bridge.base, 'POST', '/api/team/query', { body });
-    assert.equal(denied.json.error.code, 'Unauthenticated');
-    body.query.op = 'claim.acquire';
-    const write = await req(bridge.base, 'POST', '/api/team/query', { body });
-    assert.equal(write.json.error.code, 'InvalidInput');
-    assert.equal(calls.length, 2);
-  } finally { await bridge.close(); await upstream.close(); }
-});
-
-
 test('member connection URL is configured independently of the private bridge URL', async () => {
   const upstream = await startMockUpstream(async (req, res) => {
     res.setHeader('content-type', 'application/json');
