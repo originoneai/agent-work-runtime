@@ -195,6 +195,8 @@
 
     function renderOverview(host) {
       clear(host);
+      const header = el('header', { class: 'network-header' });
+      header.appendChild(el('h2', null, t(i18n, 'ui.network_title')));
       const toolbar = el('div', { class: 'team-toolbar' });
       const personalBtn = el(
         'button',
@@ -228,6 +230,8 @@
         { class: 'btn' + (state.layout === 'list' ? ' primary' : ''), type: 'button' },
         t(i18n, 'ui.list_layout')
       );
+      cardsBtn.setAttribute('aria-pressed', String(state.layout === 'cards'));
+      listBtn.setAttribute('aria-pressed', String(state.layout === 'list'));
       cardsBtn.addEventListener('click', () => {
         state.layout = 'cards';
         render();
@@ -236,11 +240,18 @@
         state.layout = 'list';
         render();
       });
-      toolbar.appendChild(personalBtn);
-      toolbar.appendChild(teamBtn);
-      toolbar.appendChild(cardsBtn);
-      toolbar.appendChild(listBtn);
-      host.appendChild(toolbar);
+      if (state.raw && !isLive()) {
+        const modes = el('div', { class: 'team-segment' });
+        modes.appendChild(personalBtn); modes.appendChild(teamBtn);
+        toolbar.appendChild(modes);
+      }
+      if (state.works.length || state.streams.length) {
+        const layouts = el('div', { class: 'team-segment' });
+        layouts.appendChild(cardsBtn); layouts.appendChild(listBtn);
+        toolbar.appendChild(layouts);
+      }
+      header.appendChild(toolbar);
+      host.appendChild(header);
 
       if (state.disconnect) {
         const banner = el('div', { class: 'banner' });
@@ -251,16 +262,10 @@
         host.appendChild(banner);
       }
 
-      const heading = el('div', { class: 'demo-heading net-heading' });
-      heading.appendChild(el('p', { class: 'scene-kicker' }, t(i18n, 'ui.network_kicker')));
-      heading.appendChild(el('h2', null, t(i18n, 'ui.network_title')));
-      heading.appendChild(el('p', { class: 'net-subtitle' }, t(i18n, 'ui.network_subtitle')));
-      if (state.raw) heading.appendChild(el('p', { class: 'net-note' + (isLive() ? ' live-note' : '') },
-        t(i18n, isLive() ? 'ui.team_live_data' : 'ui.network_demo')));
-      host.appendChild(heading);
+      if (state.raw && !isLive()) host.appendChild(el('p', { class: 'network-demo-note' }, t(i18n, 'ui.network_demo')));
       if (!state.works.length && !state.streams.length) {
         host.appendChild(el('p', { class: 'network-empty', role: 'status' },
-          t(i18n, state.loading ? 'ui.team_loading' : state.projectKey ? 'ui.network_empty' : 'ui.network_sign_in')));
+          t(i18n, state.loading ? 'ui.team_loading' : state.projectKey ? 'ui.network_empty' : 'ui.network_no_projects')));
         return;
       }
       net = network.model(state.works, state.streams, t(i18n, 'ui.network_unassigned'));
@@ -274,7 +279,7 @@
           load.addEventListener('click', () => loadGraphDetails());
           coverage.appendChild(load);
         }
-        host.appendChild(coverage);
+        if (state.graphLoading || loaded < state.works.length) host.appendChild(coverage);
       }
       if (state.layout === 'cards') {
         network.render(host, net, { el, card: workCard, count: state.works.length,
@@ -593,7 +598,6 @@
     function renderAuth(host) {
       const refocusInput = loginInput && document.activeElement === loginInput;
       clear(host);
-      if (!state.session) host.appendChild(el('h3', null, t(i18n, 'ui.web_session')));
       if (state.session && state.session.session_id) {
         if (loginInput) loginInput.value = '';
         loginForm = null;
@@ -613,7 +617,7 @@
         host.appendChild(logout);
         host.appendChild(revoke);
       } else {
-        host.appendChild(el('p', { class: 'sub' }, t(i18n, 'ui.web_login_help')));
+        host.appendChild(el('label', { class: 'team-login-label', for: 'teamBearerInput' }, t(i18n, 'ui.team_access_token')));
         // A pending anonymous refresh must not discard a credential being typed.
         // Keep the form nodes, never copy the credential into application state.
         if (!loginForm) {
@@ -657,9 +661,9 @@
           loginInput = input;
         }
         host.appendChild(loginForm);
+        host.appendChild(el('p', { class: 'team-login-help' }, t(i18n, 'ui.web_login_help')));
         if (refocusInput) loginInput.focus();
       }
-      if (!state.session) host.appendChild(el('p', { class: 'sub' }, t(i18n, 'ui.members_roles_via_access')));
       if (state.error) {
         const message = el('p', { class: 'team-error', role: 'alert' });
         message.appendChild(el('strong', null, state.error.code));
@@ -690,11 +694,22 @@
       const overview = $('teamOverview');
       const detail = $('teamDetail');
       const auth = $('teamAuth');
+      const signedIn = Boolean(state.session && state.session.session_id);
+      const view = $('view-team');
+      if (view) view.dataset.teamState = signedIn ? 'signed-in' : 'signed-out';
+      const grid = $('teamWorkspaceGrid');
+      if (grid) grid.hidden = !signedIn;
+      const intro = $('teamWorkspaceIntro');
+      if (intro) intro.hidden = signedIn;
+      const rawSection = $('teamRaw');
+      if (rawSection) rawSection.hidden = !signedIn || !state.raw;
+      if (projects) projects.hidden = !signedIn || !state.projects.length;
+      if (detail) detail.hidden = !signedIn || !state.works.length;
       const active = typeof document !== 'undefined' ? document.activeElement : null;
       const activeKey = active && active.dataset && active.dataset.key;
       const frame = overview && overview.querySelector('.scene-frame');
       const scroll = frame ? [frame.scrollLeft, frame.scrollTop] : [0, 0];
-      if (auth) { auth.classList.toggle('signed-in', Boolean(state.session)); renderAuth(auth); }
+      if (auth) { auth.classList.toggle('signed-in', signedIn); renderAuth(auth); }
       if (projects) renderProjects(projects);
       if (overview) renderOverview(overview);
       if (detail) renderDetail(detail);

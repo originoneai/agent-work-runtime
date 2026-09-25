@@ -39,6 +39,12 @@ test('successful login loads projects and work immediately and clears the creden
   assert.equal(input.value, '');
   assert.deepEqual(ui.state.works, [work]);
   assert.match(node('teamProjects').textContent, /Example project/);
+  assert.equal(node('view-team').dataset.teamState, 'signed-in');
+  assert.equal(node('teamWorkspaceGrid').hidden, false);
+  assert.equal(node('teamProjects').hidden, false);
+  assert.equal(node('teamDetail').hidden, false);
+  assert.equal(node('teamRaw').hidden, false);
+  assert.equal(node('teamWorkspaceIntro').hidden, true);
   assert.equal(calls.length, 3);
   assert.ok(!JSON.stringify(ui.state).includes('synthetic-login-value'));
 });
@@ -92,6 +98,10 @@ for (const label of ['Log out', 'Revoke sessions']) {
     assert.equal(node('rawTeamBody').textContent, '');
     assert.equal(Object.keys(ui.state.lastReceipts).length, 0);
     assert.ok(!node('teamDetail').textContent.includes('Example work'));
+    assert.equal(node('view-team').dataset.teamState, 'signed-out');
+    for (const id of ['teamWorkspaceGrid', 'teamProjects', 'teamDetail', 'teamRaw']) {
+      assert.equal(node(id).hidden, true, `${id} must be hidden after signing out`);
+    }
   });
 }
 
@@ -110,11 +120,30 @@ test('the first anonymous visit is a sign-in state and raw JSON omits cookie ide
   mock(() => ({ ok: false, error: { code: 'Unauthenticated', message: 'cookie required' } }));
   await ui.refresh();
   assert.equal(ui.state.error, null);
+  assert.equal(node('view-team').dataset.teamState, 'signed-out');
+  for (const id of ['teamWorkspaceGrid', 'teamProjects', 'teamDetail', 'teamRaw']) {
+    assert.equal(node(id).hidden, true, `${id} must be hidden for an anonymous visitor`);
+  }
+  assert.equal(node('teamWorkspaceIntro').hidden, false);
   mock((url) => url.includes('/projects?') ? projects
     : { ...overview, session: { session_id: 'secret-cookie-identifier' } });
   await ui.refresh();
   assert.match(node('rawTeamBody').textContent, /Example work/);
   assert.ok(!node('rawTeamBody').textContent.includes('secret-cookie-identifier'));
+});
+
+test('an authenticated account without projects shows access guidance with no empty controls', async () => {
+  mock(() => ({ ...projects, projects: [] }));
+  await ui.refresh();
+  assert.equal(node('view-team').dataset.teamState, 'signed-in');
+  assert.equal(node('teamWorkspaceGrid').hidden, false);
+  assert.equal(node('teamProjects').hidden, true);
+  assert.equal(node('teamDetail').hidden, true);
+  assert.equal(node('teamRaw').hidden, true);
+  assert.match(node('teamOverview').textContent, /Ask your team administrator for access/);
+  assert.equal(button('teamAuth', 'Sign in'), null);
+  assert.equal(button('teamOverview', 'List'), null);
+  assert.ok(button('teamAuth', 'Log out'));
 });
 
 test('an overview failure is visible and never leaves old work on screen', async () => {
@@ -196,7 +225,7 @@ test('live work uses authorized details and directs unsupported writes to MCP', 
   assert.match(node('teamDetail').textContent, /Readiness cannot be confirmed/);
   assert.match(node('teamDetail').textContent, /MCP/);
   assert.ok(!button('teamDetail', 'Accept responsibility'));
-  assert.equal(button('teamOverview', 'Personal').disabled, true);
+  assert.equal(button('teamOverview', 'Personal'), null);
   assert.match(calls[2].url, /workstream=stream/);
 });
 
