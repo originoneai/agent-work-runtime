@@ -35,7 +35,7 @@ node server.js --project /你的/项目路径
 | `--no-open` | 不自动打开浏览器 |
 | `--team-url <URL> --team-only` | 仅提供真实 Team 入口，隐藏本地项目页面并拒绝本地文件系统 API |
 
-Team-only 部署需在反向代理配置 HTTPS 和受控 Origin。当前网页支持登录、项目列表、任务总览与有权限的合同/运行详情；分工、交接、评审及权限管理使用 MCP。尚未提供个人筛选和完整 Web 写入表单。未返回的依赖/运行信息保持未知，不能据此认定任务可执行或已完成。
+Team-only 部署需在反向代理配置 HTTPS 和受控 Origin。当前网页支持登录、项目列表、任务总览与有权限的合同/运行详情；分工、交接和评审通过 MCP 完成。项目管理员还可使用成员管理与活动记录页面；普通成员仅能查看自己的活动记录。未返回的依赖/运行信息保持未知，不能据此认定任务可执行或已完成。
 
 Team 工作区复用 AWR 官网的蓝白协作关系图：项目 → 工作线 → 任务，选择卡片查看右侧详情，也可切换为列表。图中只画当前权限内已读取的依赖；跨工作线依赖用虚线区分，缺失的依赖导出会提示不完整。任务详情每批最多读取 60 项、并发最多 4 个请求；可继续读取剩余项或刷新。人员、模型、Token、PR 和 CI 没有返回时显示“未报告”，不会套用官网演示值或推算完成率。窄屏关系图支持内部滚动，详情移到下方。
 
@@ -261,3 +261,24 @@ When a reverse proxy exposes Team MCP at a different address from `--team-url`,
 set `--team-public-url https://your-team.example` so copied connection details
 use the member-facing service. It defaults to the configured Team service URL,
 not the Inspector page URL.
+
+
+### Member management and activity
+
+With a compatible Team server, Inspector shows a Members tab only when the
+current credential has project administration authority and explicit workstream
+manage grants. Administrators can add members, change project roles/scopes,
+issue or rotate project credentials, and remove project access. Every change
+passes server preview/apply gates; browser visibility is not authorization.
+
+The browser creates a random credential with Web Crypto and registers only its
+hash. After a confirmed commit, copy the complete personal Agent instruction
+once and send it privately. Clearing the panel, switching projects or logging
+out removes the plaintext. Unknown outcomes keep the original request ID and
+require inspection before an exact retry. There is no plaintext retrieval.
+
+Activity separates authenticated access metadata from recorded development
+actions. Project auditors can filter by member or task; ordinary members have a
+personal view. Queries and grant checks run on the server, including pagination.
+The connected Agent uses `work.next` to continue or discover work; the browser
+does not claim tasks or choose an Agent product on the member's behalf.
