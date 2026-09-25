@@ -264,7 +264,9 @@
         const tbody = el('tbody');
         for (const w of state.works) tbody.appendChild(workRow(w));
         table.appendChild(tbody);
-        host.appendChild(table);
+        const wrapper = el('div', { class: 'team-table-wrap' });
+        wrapper.appendChild(table);
+        host.appendChild(wrapper);
       }
     }
 
