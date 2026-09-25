@@ -187,7 +187,7 @@ async fn project_admin_mcp_path_preview_apply_outcome_and_denies_non_admin() {
     );
     assert_eq!(
         preview["credential_revocation_scope"],
-        "refused_for_project_admin_use_project_grant_revoke"
+        "explicit_project_credentials_only"
     );
     assert_eq!(preview["project_revoke_preserves_other_projects"], true);
     let applied = access
