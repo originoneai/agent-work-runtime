@@ -593,3 +593,47 @@ for (const scenario of ['detail', 'changed', 'denied']) {
     }
   });
 }
+
+
+test('claim recovery queries retain project scope and authentication and cannot invoke commands', async () => {
+  const calls = [];
+  const upstream = await startMockUpstream(async (req, res) => {
+    let body = ''; for await (const chunk of req) body += chunk;
+    calls.push({ path: req.url, cookie: req.headers.cookie, body: JSON.parse(body) });
+    res.setHeader('content-type', 'application/json');
+    if (!req.headers.cookie) { res.writeHead(401); res.end(JSON.stringify({ code: 'Unauthenticated' })); }
+    else res.end(JSON.stringify({ data: { state: 'unknown' } }));
+  });
+  const bridge = await startLiveBridge(upstream.base);
+  try {
+    const body = { project: 'test project', query: { protocol_version: 1, op: 'command.inspect', work_id: 'W', workstream_id: 'S', request_id: 'R' } };
+    const read = await req(bridge.base, 'POST', '/api/team/query', { body, cookie: 'awr_web_session=synthetic' });
+    assert.equal(read.json.ok, true);
+    assert.equal(calls[0].path, '/v1/web/projects/test%20project/query');
+    assert.deepEqual(calls[0].body, body.query);
+    assert.equal(calls[0].cookie, 'awr_web_session=synthetic');
+    const denied = await req(bridge.base, 'POST', '/api/team/query', { body });
+    assert.equal(denied.json.error.code, 'Unauthenticated');
+    body.query.op = 'claim.acquire';
+    const write = await req(bridge.base, 'POST', '/api/team/query', { body });
+    assert.equal(write.json.error.code, 'InvalidInput');
+    assert.equal(calls.length, 2);
+  } finally { await bridge.close(); await upstream.close(); }
+});
+
+
+test('member connection URL is configured independently of the private bridge URL', async () => {
+  const upstream = await startMockUpstream(async (req, res) => {
+    res.setHeader('content-type', 'application/json');
+    if (req.url === '/v1/web/session') res.end(JSON.stringify({ session_id: 'synthetic' }));
+    else res.end(JSON.stringify({ items: [], next_cursor: null }));
+  });
+  try {
+    const bridge = createTeamBridge({ teamUrl: upstream.base, teamPublicUrl: 'https://team.example/awr', port: 7382 });
+    const result = await bridge.routes['GET /api/team/overview'](new URL('http://localhost/api/team/overview?project=p'), null,
+      { headers: { cookie: 'synthetic' } }, { setHeader() {} });
+    assert.equal(result.mcp_url, 'https://team.example/awr/v1/projects/p/mcp');
+    for (const url of ['https://user:secret@team.example', 'https://team.example/?token=hidden', 'https://team.example/;command'])
+      assert.throws(() => createTeamBridge({ teamUrl: upstream.base, teamPublicUrl: url }));
+  } finally { await upstream.close(); }
+});

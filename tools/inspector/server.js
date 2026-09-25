@@ -46,6 +46,7 @@ function parseArgs(argv) {
     open: true,
     allowReindex: false,
     teamUrl: null,
+    teamPublicUrl: null,
     teamOnly: false,
     teamFixtureDir: null,
   };
@@ -57,6 +58,7 @@ function parseArgs(argv) {
     else if (a === '--no-open') out.open = false;
     else if (a === '--allow-reindex') out.allowReindex = true;
     else if (a === '--team-url') out.teamUrl = argv[++i] || null;
+    else if (a === '--team-public-url') out.teamPublicUrl = argv[++i] || null;
     else if (a === '--team-only') out.teamOnly = true;
     else if (a === '--team-fixture-dir') out.teamFixtureDir = path.resolve(argv[++i] || '.');
     else if (a === '--help' || a === '-h') {
@@ -68,6 +70,7 @@ function parseArgs(argv) {
         '  --demo             Use demo mode without running real commands',
         '  --allow-reindex    Enable source reindex from the UI (disabled by default)',
         '  --team-url <url>   Proxy Team Web to awr-server /v1/web entry (WS-044)',
+        '  --team-public-url <url> Public Team service base URL for member MCP setup',
         '  --team-only        Serve only Team APIs and hide local Inspector navigation',
         '  --team-fixture-dir Use on-disk team-web-loop fixtures (demo/tests)',
         '  --no-open          Do not open the browser automatically',
@@ -85,7 +88,7 @@ if (ARGS.teamOnly && (!ARGS.teamUrl || ARGS.demo)) {
 }
 const PUBLIC_DIR = path.join(__dirname, 'public');
 const { createTeamBridge } = require('./team-bridge');
-const teamBridge = createTeamBridge({ teamUrl: ARGS.teamUrl, teamFixtureDir: ARGS.teamFixtureDir, port: ARGS.port });
+const teamBridge = createTeamBridge({ teamUrl: ARGS.teamUrl, teamPublicUrl: ARGS.teamPublicUrl, teamFixtureDir: ARGS.teamFixtureDir, port: ARGS.port });
 
 // awr executable resolution
 

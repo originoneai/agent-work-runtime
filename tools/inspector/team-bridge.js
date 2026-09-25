@@ -43,6 +43,16 @@ function applyProxiedCookies(res, setCookie) {
 
 function createTeamBridge(opts) {
   const live = Boolean(opts.teamUrl);
+  let publicUrl = null;
+  if (live) {
+    const url = new URL(opts.teamPublicUrl || opts.teamUrl);
+    if (!['http:', 'https:'].includes(url.protocol) || url.username || url.password ||
+        url.search || url.hash || !/^[/a-zA-Z0-9._-]*$/.test(url.pathname)) {
+      throw new Error('Team public URL must be an HTTP(S) base URL without credentials, query or fragment');
+    }
+    publicUrl = url.href.replace(/\/$/, '');
+  }
+
   // Fixtures are demo-only: never when --team-url is set.
   const demoMode = !live && opts.demo !== false;
   const TEAM = {
@@ -262,6 +272,7 @@ function createTeamBridge(opts) {
           reviews: [],
           schema: 'awr-team-web-loop-live/v1',
           interaction_mode: 'mcp',
+          mcp_url: publicUrl + '/v1/projects/' + encodeURIComponent(project) + '/mcp',
           view_modes: ['team'],
           session: {
             session_id: session.json && session.json.session_id,
@@ -319,6 +330,20 @@ function createTeamBridge(opts) {
         next_step: data.next_step || null,
         execution_admission: data.execution_admission || 'not_evaluated',
       } };
+    },
+
+    'POST /api/team/query': async (_url, body, req, res) => {
+      const parsed = asObject(body);
+      const allowed = new Set(['work.prepare', 'work.recovery', 'command.inspect', 'session.inspect', 'claim.inspect']);
+      if (!TEAM.live || !parsed || typeof parsed.project !== 'string' || !parsed.project ||
+          !parsed.query || !allowed.has(parsed.query.op)) {
+        return { ok: false, error: { code: 'InvalidInput', message: 'scoped live Team query required' } };
+      }
+      const upstream = await proxyTeam(`/v1/web/projects/${encodeURIComponent(parsed.project)}/query`,
+        req, parsed.query, 'POST');
+      if (!upstream || upstream.status >= 400) return liveError(upstream);
+      applyProxiedCookies(res, upstream.setCookie);
+      return { ok: true, ...upstream.json };
     },
 
     'POST /api/team/login': async (_url, body, req, res) => {

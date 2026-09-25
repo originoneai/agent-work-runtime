@@ -240,3 +240,26 @@ test/
   `blocked_count`（真实阻塞）定义不同。状态条只用后者。
 - **错误原样显示。** AWR 的 `code` 和 message 不重写，只在下面另起一行给建议动作。
 - **被规则挡下的敏感内容不回显。** AWR 故意不返回匹配到的原值，本工具也不去读源文件补出来。
+
+
+### Member onboarding and Agent handoff
+
+Live Team mode supports personal-credential sign-in (**Join project**), an explicit
+**Connect Agent** panel, and **Claim task**. A browser claim creates a durable Team
+session and a one-hour coordination lease. It does not dispatch an Agent or grant
+execution authority. Copy the task handoff into an Agent connected with the same
+personal credential; inspect the session/claim and follow current execution
+admission before editing. Lease expiry and independent review remain enforced by
+the central service.
+
+The browser stores only non-secret claim command metadata in tab session storage
+so a refresh or lost response can inspect/retry the same request. Credentials stay
+out of that storage and copied commands. If storage is unavailable, claiming fails
+before a write. Sign-out clears tab handoff metadata; it does not end durable Team
+sessions or release claims. Use MCP recovery to continue after sign-out.
+
+When a reverse proxy exposes Team MCP at a different address from `--team-url`,
+set `--team-public-url https://your-team.example` so copied connection commands
+use the member-facing service. It defaults to the configured Team service URL,
+not the Inspector page URL. Join grants no new permissions; a project admin must
+provision each member beforehand. Public Git repository access is separate.

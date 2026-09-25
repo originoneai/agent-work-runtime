@@ -56,6 +56,9 @@
       loading: false,
       detailLoading: false,
       detailResponse: null,
+      connectOpen: false,
+      handoffOpen: Object.create(null),
+      claimResult: null,
     };
     let generation = 0;
     let detailGeneration = 0;
@@ -63,6 +66,7 @@
     let loginInput = null;
     let net = null;
     let pendingDetails = new Map();
+    const claimFlow = root.AWR_TEAM_CLAIM || (typeof require === 'function' ? require('./team-claim') : null);
 
     function clearProjectData() {
       state.projects = [];
@@ -77,6 +81,9 @@
       state.detailLoading = false;
       state.detailResponse = null;
       state.lastReceipts = Object.create(null);
+      state.claimResult = null;
+      state.connectOpen = false;
+      state.handoffOpen = Object.create(null);
     }
 
     function failed(body) {
@@ -86,6 +93,7 @@
         ++generation;
         ++detailGeneration;
         state.session = null;
+        forgetAttempts();
         clearProjectData();
         render();
       }
@@ -361,6 +369,7 @@
     async function selectWork(key) {
       const request = ++detailGeneration;
       state.selected = key;
+      state.claimResult = null;
       state.detailResponse = null;
       const work = selectedWork();
       if (!work || !isLive()) { render(); return; }
@@ -372,6 +381,8 @@
       if (current !== generation || request !== detailGeneration || state.selected !== key) return;
       state.detailLoading = false;
       if (body) state.detailResponse = body;
+      await claimWork(true);
+      if (current !== generation || request !== detailGeneration) return;
       render();
     }
 
@@ -472,11 +483,113 @@
       return body;
     }
 
+    const ATTEMPT_PREFIX = 'awr.team.claim.v1:';
+    function attemptKey(project, work) { return ATTEMPT_PREFIX + JSON.stringify([project, work]); }
+    function forgetAttempts() {
+      try {
+        for (const key of Object.keys(root.sessionStorage)) {
+          if (key.startsWith(ATTEMPT_PREFIX)) root.sessionStorage.removeItem(key);
+        }
+      } catch (_) { /* No credential is stored here. */ }
+    }
+    async function claimRequest(project, kind, payload) {
+      const body = await api('/api/team/' + kind, { method: 'POST',
+        body: JSON.stringify({ project, [kind === 'query' ? 'query' : 'command']: payload }) });
+      if (!body || !body.ok) throw Object.assign(new Error(body && body.error && body.error.message || 'Unknown response'),
+        { code: body && body.error && body.error.code || 'InvalidResponse' });
+      return body;
+    }
+    async function claimWork(inspectOnly = false) {
+      const w = selectedWork();
+      if (!w || !isLive() || !w.detail_loaded) return;
+      const project = state.projectKey, key = attemptKey(project, w.key), current = generation;
+      const selection = detailGeneration;
+      const valid = () => current === generation && selection === detailGeneration &&
+        state.projectKey === project && state.selected === w.key;
+      try {
+        const storage = root.sessionStorage;
+        if (!storage && inspectOnly) return;
+        if (!storage) throw Object.assign(new Error('Session storage is required for recoverable claims'), { code: 'StorageUnavailable' });
+        const attempt = JSON.parse(storage.getItem(key) || '{}');
+        const flow = claimFlow.createClaimFlow({
+          query: q => claimRequest(project, 'query', q),
+          command: c => claimRequest(project, 'action', c),
+          save: value => storage.setItem(key, JSON.stringify(value)),
+          uuid: () => root.crypto.randomUUID(), current: valid,
+        });
+        const scope = { project, work: w.key, stream: w.workstream_id, contract: w.contract_hash };
+        const lease = await (inspectOnly ? flow.inspect(scope, attempt) : flow.run(scope, attempt));
+        if (!valid()) return;
+        state.claimResult = lease ? { project, work: w.key, session: attempt.session, lease } : null;
+        if (!inspectOnly) await refresh();
+      } catch (e) {
+        if (valid() && e.code !== 'SelectionChanged') {
+          state.claimResult = null;
+          failed({ error: { code: e.code || 'StorageUnavailable', message: e.message } });
+        }
+      }
+      if (valid()) render();
+    }
+    function mcpUrl() {
+      return state.raw && state.raw.mcp_url || '/v1/projects/' + encodeURIComponent(state.projectKey) + '/mcp';
+    }
+    function continuation(w) {
+      const c = state.claimResult;
+      const own = c && c.project === state.projectKey && c.work === w.key;
+      return 'Use AWR Team MCP at ' + mcpUrl() + ' with my own credential. ' +
+        'Prepare work ' + w.key + ' in workstream ' + w.workstream_id +
+        '; read its goals, required specs, acceptance criteria and dependencies before editing. ' +
+        (own ? 'Continue durable session ' + c.session.session_id + ' and inspect claim ' + c.lease.claim_id +
+          '. Reuse this session; inspect current versions and lease before any write. Renew or recover through the supported protocol if needed. ' :
+          'Inspect existing work/session ownership before starting or acquiring a claim. ') +
+        'A claim coordinates work; it does not launch an Agent or authorize execution. Follow fresh execution admission, ' +
+        'save checkpoints, submit version-bound evidence and request independent review. On unknown outcomes inspect the original request; never repeat effects blindly.';
+    }
+    function copyBlock(host, text, label) {
+      host.appendChild(el('pre', { class: 'team-connect-code' }, text));
+      const button = el('button', { class: 'btn', type: 'button' }, t(i18n, label));
+      const status = el('span', { class: 'sub', role: 'status' });
+      button.addEventListener('click', async () => {
+        try { await root.navigator.clipboard.writeText(text); status.textContent = t(i18n, 'ui.team_copied'); }
+        catch (_) { status.textContent = t(i18n, 'ui.team_copy_manual'); }
+      });
+      host.appendChild(button); host.appendChild(status);
+    }
+    function renderConnect(host) {
+      const details = el('details', { class: 'team-connect' });
+      details.open = state.connectOpen;
+      details.addEventListener('toggle', () => { state.connectOpen = details.open; });
+      details.appendChild(el('summary', null, t(i18n, 'ui.team_connect_agent')));
+      details.appendChild(el('p', { class: 'sub' }, t(i18n, 'ui.team_connect_help')));
+      copyBlock(details, 'codex mcp add awr_team --url ' + mcpUrl() + ' --bearer-token-env-var AWR_TEAM_BEARER', 'ui.team_copy_command');
+      details.appendChild(el('p', { class: 'sub' }, t(i18n, 'ui.team_connect_other')));
+      details.appendChild(el('code', null, mcpUrl()));
+      host.appendChild(details);
+    }
+
     function renderActions(host, w) {
       host.appendChild(el('h3', null, t(i18n, 'ui.collaboration_actions')));
       if (isLive()) {
-        host.appendChild(el('p', { class: 'sub' }, t(i18n, 'ui.team_mcp_actions')));
-        host.appendChild(el('code', null, '/v1/projects/' + encodeURIComponent(state.projectKey) + '/mcp'));
+        host.appendChild(el('p', { class: 'sub' }, t(i18n, 'ui.team_claim_help')));
+        const c = state.claimResult;
+        const own = c && c.project === state.projectKey && c.work === w.key;
+        const claim = el('button', { class: 'btn primary', type: 'button' }, t(i18n, own ? 'ui.team_check_claim' : 'ui.team_claim_work'));
+        claim.disabled = state.loading || !w.detail_loaded || w.context_complete !== true ||
+          Boolean(w.recovery_blocked) || ['completed', 'cancelled'].includes(w.status) || Boolean(state.inflight.claim);
+        claim.addEventListener('click', guardDouble('claim', () => claimWork(Boolean(own))));
+        host.appendChild(claim);
+        if (own) {
+          host.appendChild(el('p', { class: 'team-claim-status', role: 'status' }, t(i18n,
+            c.lease.lease_live ? 'ui.team_claim_active' : 'ui.team_claim_expired')));
+          host.appendChild(el('p', { class: 'sub' }, t(i18n, 'ui.team_claim_until', { time: c.lease.expires_at })));
+        }
+        const handoff = el('details', { class: 'team-connect' });
+        const handoffKey = JSON.stringify([state.projectKey, w.key]);
+        handoff.open = Boolean(state.handoffOpen[handoffKey]);
+        handoff.addEventListener('toggle', () => { state.handoffOpen[handoffKey] = handoff.open; });
+        handoff.appendChild(el('summary', null, t(i18n, 'ui.team_agent_handoff')));
+        copyBlock(handoff, continuation(w), 'ui.team_copy_handoff');
+        host.appendChild(handoff);
         return;
       }
       const caps = w.capabilities || {};
@@ -534,6 +647,7 @@
       header.appendChild(el('em', { class: 'detail-state', dataset: { status: network.visualStatus(w) } }, workStatus(w)));
       if (w.description) header.appendChild(el('p', null, w.description));
       host.appendChild(header);
+      renderActions(host, w);
       const unknown = t(i18n, 'ui.network_not_reported');
       const section = (title, rows) => {
         const group = el('section', { class: 'detail-section' });
@@ -579,7 +693,6 @@
         if (w.recovery_blocked) host.appendChild(el('p', { class: 'team-error' }, 'RecoveryBlocked'));
         host.appendChild(el('p', { class: 'sub' }, t(i18n, 'ui.team_admission_not_evaluated')));
         if (!w.context_complete) host.appendChild(el('p', { class: 'sub' }, (w.completeness_reasons || []).join(' · ')));
-        renderActions(host, w);
         return;
       }
       renderBlockerDetail(host, w);
@@ -592,7 +705,6 @@
         );
       }
       host.appendChild(graph);
-      renderActions(host, w);
     }
 
     function renderAuth(host) {
@@ -616,6 +728,7 @@
         );
         host.appendChild(logout);
         host.appendChild(revoke);
+        if (isLive() && state.projectKey) renderConnect(host);
       } else {
         host.appendChild(el('label', { class: 'team-login-label', for: 'teamBearerInput' }, t(i18n, 'ui.team_access_token')));
         // A pending anonymous refresh must not discard a credential being typed.
@@ -635,6 +748,7 @@
             guardDouble('login', async () => {
               const current = ++generation;
               clearProjectData();
+              forgetAttempts();
               state.error = null;
               const bearer = input.value;
               input.value = ''; // never retain bearer in the DOM after submit
@@ -676,6 +790,7 @@
     async function signOut(path, payload) {
       const current = ++generation;
       clearProjectData();
+      forgetAttempts();
       state.error = null;
       state.loading = false;
       render();

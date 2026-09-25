@@ -35,7 +35,7 @@ test('successful login loads projects and work immediately and clears the creden
   ui.render();
   const input = node('teamAuth').find((el) => el.tagName === 'INPUT');
   input.value = 'synthetic-login-value';
-  await button('teamAuth', 'Sign in').click();
+  await button('teamAuth', 'Join project').click();
   assert.equal(input.value, '');
   assert.deepEqual(ui.state.works, [work]);
   assert.match(node('teamProjects').textContent, /Example project/);
@@ -52,7 +52,7 @@ test('successful login loads projects and work immediately and clears the creden
 test('failed login displays an error instead of silently returning to the form', async () => {
   mock(() => ({ ok: false, error: { code: 'Forbidden', message: 'access denied' } }));
   ui.render();
-  await button('teamAuth', 'Sign in').click();
+  await button('teamAuth', 'Join project').click();
   assert.match(node('teamAuth').textContent, /Forbidden.*access denied/);
   assert.equal(ui.state.session, null);
 });
@@ -74,7 +74,7 @@ test('an anonymous refresh preserves a credential draft until the user submits i
   assert.equal(focusRestored, 1);
   const calls = mock((url) => url.endsWith('/login') ? { ok: true, session_id: 'test-session' }
     : url.includes('/projects?') ? projects : overview);
-  await button('teamAuth', 'Sign in').click();
+  await button('teamAuth', 'Join project').click();
   assert.equal(JSON.parse(calls[0].options.body).bearer, 'synthetic-login-draft');
   assert.equal(input.value, '');
   assert.ok(!JSON.stringify(ui.state).includes('synthetic-login-draft'));
@@ -141,7 +141,7 @@ test('an authenticated account without projects shows access guidance with no em
   assert.equal(node('teamDetail').hidden, true);
   assert.equal(node('teamRaw').hidden, true);
   assert.match(node('teamOverview').textContent, /Ask your team administrator for access/);
-  assert.equal(button('teamAuth', 'Sign in'), null);
+  assert.equal(button('teamAuth', 'Join project'), null);
   assert.equal(button('teamOverview', 'List'), null);
   assert.ok(button('teamAuth', 'Log out'));
 });
