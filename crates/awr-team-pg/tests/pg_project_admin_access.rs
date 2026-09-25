@@ -11,6 +11,129 @@ use serde_json::json;
 const NEW_TOKEN: &str =
     "awr1.new-member.eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee";
 
+#[tokio::test]
+async fn project_credentials_rotate_without_returning_secrets_or_changing_other_scopes() {
+    let (_g, owner, db, store) = setup().await;
+    enable_admin_manage(&owner).await;
+    let access =
+        ProjectAccessStore::from_config(common::with_app_role(&common::test_config(), &db));
+    let mut plan = admin_plan_member();
+    plan.credential_project_scoped = true;
+    let p = access.preview(TENANT, PROJECT, A, &plan).await.unwrap();
+    access
+        .apply(
+            TENANT,
+            PROJECT,
+            A,
+            &plan,
+            "scoped-issue",
+            p["state_digest"].as_str().unwrap(),
+            p["plan_digest"].as_str().unwrap(),
+        )
+        .await
+        .unwrap();
+    assert_eq!(
+        prepare(&store, NEW_TOKEN, "a").await["data"]["work_id"],
+        "a"
+    );
+    let members = access.members(TENANT, PROJECT, A, None, 100).await.unwrap();
+    let member = members["items"]
+        .as_array()
+        .unwrap()
+        .iter()
+        .find(|m| m["actor_id"] == "new-human")
+        .unwrap();
+    assert_eq!(
+        member["clients"][0]["credentials"][0]["project_scoped"],
+        true
+    );
+    assert!(!members.to_string().contains(NEW_TOKEN));
+    assert!(!members.to_string().contains("secret_hash"));
+    assert!(matches!(
+        access.members(TENANT, PROJECT, NEW_TOKEN, None, 100).await,
+        Err(PgError::Forbidden)
+    ));
+    // Keep all current grants and membership valid; changing only the bound
+    // project must make authentication fail independently of those grants.
+    owner.batch_execute("INSERT INTO awr_team.projects(tenant_id,id,key,mode,coordinator_epoch,status) VALUES('reader-tenant','credential-other','credential-other','team','epoch-other','active'); UPDATE awr_team.credentials SET project_id='credential-other' WHERE id='new-member'").await.unwrap();
+    assert!(matches!(
+        store
+            .query(TENANT, PROJECT, NEW_TOKEN, query("capabilities"))
+            .await,
+        Err(PgError::Forbidden)
+    ));
+    owner
+        .batch_execute(
+            "UPDATE awr_team.credentials SET project_id='reader-project' WHERE id='new-member'",
+        )
+        .await
+        .unwrap();
+    let second =
+        "awr1.rotated-member.dddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd";
+    plan.credential.as_mut().unwrap().id = "rotated-member".into();
+    plan.credential.as_mut().unwrap().secret_hash = workstream_credential_hash(second).unwrap();
+    plan.revoke_project_credentials = vec!["new-member".into()];
+    let p = access.preview(TENANT, PROJECT, A, &plan).await.unwrap();
+    let applied = access
+        .apply(
+            TENANT,
+            PROJECT,
+            A,
+            &plan,
+            "scoped-rotate",
+            p["state_digest"].as_str().unwrap(),
+            p["plan_digest"].as_str().unwrap(),
+        )
+        .await
+        .unwrap();
+    assert_eq!(applied["replayed"], false);
+    let replay = access
+        .apply(
+            TENANT,
+            PROJECT,
+            A,
+            &plan,
+            "scoped-rotate",
+            p["state_digest"].as_str().unwrap(),
+            p["plan_digest"].as_str().unwrap(),
+        )
+        .await
+        .unwrap();
+    assert_eq!(replay["replayed"], true);
+    assert!(!replay.to_string().contains(second));
+    assert!(!replay.to_string().contains("secret_hash"));
+    assert!(matches!(
+        store
+            .query(TENANT, PROJECT, NEW_TOKEN, query("capabilities"))
+            .await,
+        Err(PgError::Forbidden)
+    ));
+    assert_eq!(prepare(&store, second, "a").await["data"]["work_id"], "a");
+    let page = access.members(TENANT, PROJECT, A, None, 1).await.unwrap();
+    if let Some(cursor) = page["next_cursor"].as_str() {
+        let next = access
+            .members(TENANT, PROJECT, A, Some(cursor), 1)
+            .await
+            .unwrap();
+        assert!(
+            next["items"]
+                .as_array()
+                .unwrap()
+                .iter()
+                .all(|m| m["actor_id"].as_str().unwrap() > cursor)
+        );
+    }
+    // Legacy tenant credentials cannot be revoked through the new project path.
+    owner.execute("INSERT INTO awr_team.credentials(tenant_id,id,actor_id,client_id,secret_hash) VALUES($1,'legacy-member','new-human','new-cli',$2)", &[&TENANT,&workstream_credential_hash("awr1.legacy-member.ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff").unwrap()]).await.unwrap();
+    plan.credential = None;
+    plan.credential_project_scoped = false;
+    plan.revoke_project_credentials = vec!["legacy-member".into()];
+    assert!(matches!(
+        access.preview(TENANT, PROJECT, A, &plan).await,
+        Err(PgError::Forbidden)
+    ));
+}
+
 async fn enable_admin_manage(owner: &tokio_postgres::Client) {
     owner
         .batch_execute(

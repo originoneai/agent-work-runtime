@@ -150,6 +150,7 @@ async fn authenticate_inner(
         JOIN awr_team.actors a ON a.tenant_id=c.tenant_id AND a.id=c.actor_id
         JOIN awr_team.project_memberships m ON m.tenant_id=c.tenant_id AND m.actor_id=c.actor_id AND m.project_id=$2
         WHERE c.tenant_id=$1 AND c.id=$3 AND c.secret_hash=$4
+          AND (c.project_id IS NULL OR c.project_id=$2)
           AND c.revoked_at IS NULL AND (c.expires_at IS NULL OR c.expires_at>clock_timestamp())
           AND t.status='active' AND a.status='active'
         FOR SHARE OF t,a,c,m", &[&tenant,&project,&credential_id,&hash]).await?.ok_or(PgError::Forbidden)?;
