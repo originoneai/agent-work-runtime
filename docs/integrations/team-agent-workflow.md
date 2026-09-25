@@ -15,6 +15,13 @@ Get a project MCP URL and an individual credential from the project administrato
 then clone the code repository. Each participant uses their own credential.
 Repository permissions remain separate from AWR permissions.
 
+In Inspector, an authorized administrator can open **Members**, add a member,
+choose their project role and workstreams, then copy the one-time personal Agent
+connection instruction. The instruction includes the endpoint and that member's
+credential. Give it only to the intended member through a private channel. The
+administrator cannot retrieve its plaintext after clearing the issuance panel;
+a lost credential can be explicitly replaced.
+
 Use any Agent client that supports remote MCP over **Streamable HTTP** with
 **Bearer authentication**. AWR does not select a default Agent or model.
 Add a remote MCP server using your client's settings:
@@ -28,8 +35,8 @@ Add a remote MCP server using your client's settings:
 
 These are connection settings, not a universal configuration-file format or
 shell command. Each client has its own settings and version requirements.
-Read the credential from its private file or use the client's supported secret
-settings; do not put it in a URL, conversation or repository. Reconnect after
+Use the client's supported secret settings or a trusted private Agent input;
+do not put the credential in a URL, shared conversation or repository. Reconnect after
 configuration changes and open your local code checkout in the Agent.
 
 If a client supports only local stdio MCP, this URL cannot be used directly;
@@ -62,7 +69,7 @@ arguments. Each query/command rechecks the caller's current permissions.
 
 | When | Agent action | Recheck when |
 | --- | --- | --- |
-| Starting or reconnecting | Query `capabilities`, `workstreams.list` and scoped `work.list` / `work.search`. Match the user's request to authorized work and inspect `work.recovery`. | Identity, project, scope or ownership changes. |
+| Starting or reconnecting | Query `capabilities` to confirm identity and permissions, then `work.next` to resume your own sessions or discover visible unfinished work. Follow the returned `next_query`. On older servers without `work.next`, use `workstreams.list` and scoped `work.list` / `work.search`. | Progress, resolved waits, claim conflicts, identity, project, scope or ownership changes. |
 | Preparing a selected task | Consume `work.prepare`: current contract, required specifications, dependencies, recovery state and context hash. Resume only an active session owned by the current actor and client; otherwise use `session.start` when appropriate. | Contract, dependency or source changes; incomplete context. |
 | Taking responsibility | Inspect existing claims with `claim.inspect`. Acquire or renew a live claim under the session using fresh preconditions. Another person's live claim must not be replaced. | Conflict, stale version, lease expiry or revocation. |
 | Beginning effects | Use `execution.prepare` and a fresh `execution.start` response with `execution_authorized=true` for one execution within the declared scope. The Agent's host runs code and tools locally. A claim alone is not execution admission. | Permission, lease, scope or execution state changes. |
@@ -86,3 +93,11 @@ results. **Connect Agent** provides client-neutral MCP settings and a project in
 each task also has an optional copyable brief. Copying either text creates no
 session or claim. Administrator and review permissions are still enforced by the
 central service, regardless of which client is used.
+
+Administrators can manage members and project-scoped credentials in **Members**.
+**Activity** separates authenticated access records from committed development
+history. Ordinary members see their own authorized activity; project auditors can
+filter by member or task. Audit records exclude credential values, conversations
+and arbitrary tool input/output. Request metadata has bounded retention and is
+not a permanent compliance archive. The connected Agent still performs task
+coordination; AWR does not launch or wake arbitrary Agent applications.
