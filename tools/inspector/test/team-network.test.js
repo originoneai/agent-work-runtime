@@ -119,6 +119,28 @@ test('editing that starts during a poll prevents replacement of the visible snap
   document.activeElement = null;
 });
 
+test('selecting outside the polling batch retains foreground detail when the poll finishes', async () => {
+  live(async (url, works) => detail(works.find(w => w.key === new URL(url, 'http://test').searchParams.get('work'))), 65);
+  await ui.refresh();
+  let release;
+  const gate = new Promise(resolve => { release = resolve; });
+  live(async (url, works) => {
+    const key = new URL(url, 'http://test').searchParams.get('work');
+    if (key !== 'W-64') await gate;
+    return { ok: true, work: { ...detail(works.find(w => w.key === key)).work, next_step: 'Current ' + key } };
+  }, 65);
+  const polling = ui._refreshProgress();
+  await new Promise(resolve => setImmediate(resolve));
+  await ui._selectWork('W-64');
+  release(); await polling;
+  assert.equal(ui.state.selected, 'W-64');
+  assert.equal(ui._selectedWork().detail_loaded, true);
+  assert.equal(ui._selectedWork().next_step, 'Current W-64');
+  assert.equal(ui.state.detailLoading, false);
+  await ui._refreshProgress();
+  assert.equal(ui._selectedWork().next_step, 'Current W-64');
+});
+
 test('graph hydration bounds concurrency and batches without inventing runtime or progress', async () => {
   let active = 0, maximum = 0, reads = 0;
   live(async (url, works) => {

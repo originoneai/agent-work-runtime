@@ -117,7 +117,9 @@ async fn sdk_clients_negotiate_tools_and_isolate_workstreams_on_one_service() {
     assert_eq!(info.server_info.as_ref().unwrap().name, "awr-team-mcp");
     assert!(info.capabilities.tools.is_some());
     let tools = a.list_all_tools().await.unwrap();
-    assert_eq!(tools.len(), 2);
+    // Query/command, member access and planning are discoverable; calls still
+    // recheck the actor's effective authority.
+    assert_eq!(tools.len(), 12);
     let caps = call(
         &a,
         "awr_team_query",
@@ -134,6 +136,15 @@ async fn sdk_clients_negotiate_tools_and_isolate_workstreams_on_one_service() {
         assert_eq!(t.input_schema["properties"]["op"]["enum"], caps[ops]);
     }
     assert_eq!(caps["execution_admission"], true);
+    let observation = call(
+        &a,
+        "awr_team_query",
+        json!({"protocol_version":1,"op":"work.observe","work_id":"a"}),
+        false,
+    )
+    .await;
+    assert_eq!(observation["data"]["session"]["id"], "session-a");
+    assert_eq!(observation["data"]["execution_authorized"], false);
     let args = json!({"protocol_version":1,"op":"work.list"});
     let (ar, br) = tokio::join!(
         call(&a, "awr_team_query", args.clone(), false),
@@ -798,9 +809,16 @@ async fn mcp_rejects_forged_identity_unsupported_operations_and_context_truncati
     ] {
         let mut query = json!({"protocol_version":1,"op":"capabilities"});
         query[field] = json!("forged");
+        // Authority forgeries are denied by the perimeter before strict decoding;
+        // an unrelated unknown field still fails the input schema.
+        let expected = if field == "project" {
+            "InvalidInput"
+        } else {
+            "Forbidden"
+        };
         assert_eq!(
             call(&a, "awr_team_query", query, true).await["code"],
-            "InvalidInput"
+            expected
         );
         let mut c = serde_json::to_value(command(
             &prepared(&a).await,
@@ -812,10 +830,10 @@ async fn mcp_rejects_forged_identity_unsupported_operations_and_context_truncati
         c[field] = json!("forged");
         assert_eq!(
             call(&a, "awr_team_command", c, true).await["code"],
-            "InvalidInput"
+            expected
         );
     }
-    for op in ["execution.dispatch", "work.complete", "claim.transfer"] {
+    for op in ["execution.dispatch", "work.unimplemented", "claim.transfer"] {
         let c = serde_json::to_value(command(&prepared(&a).await, "unimplemented", op, json!({})))
             .unwrap();
         assert_eq!(

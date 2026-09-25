@@ -50,21 +50,35 @@ function mapObservation(data) {
 
 function createGithubObserver(fetchImpl = fetch, now = Date.now) {
   const cache = new Map();
+  let blockedUntil = 0;
   async function read(path) {
+    if (now() < blockedUntil) throw new Error('GitHub observation rate limited');
     const response = await fetchImpl('https://api.github.com' + path, {
       headers: { accept: 'application/vnd.github+json', 'user-agent': 'AWR-Inspector' },
       redirect: 'error', signal: AbortSignal.timeout(5000),
     });
+    const header = name => response.headers?.get(name);
+    if (response.status === 403 || response.status === 429 || header('x-ratelimit-remaining') === '0') {
+      const reset = Number(header('x-ratelimit-reset')) * 1000;
+      const retry = header('retry-after');
+      const retryAt = /^\d+$/.test(retry || '') ? now() + Number(retry) * 1000 : Date.parse(retry || '');
+      const until = Math.max(reset || 0, retryAt || 0);
+      blockedUntil = Math.max(blockedUntil, until > now() ? until + 1000 : now() + 900000);
+    }
     if (!response.ok) throw new Error('GitHub observation unavailable');
     return response.json();
   }
   return async function observe(reference) {
     if (!reference) return null;
     const key = reference.url, hit = cache.get(key);
-    if (hit && now() - hit.at < 60000) return hit.promise;
+    // Three anonymous requests per PR. Scale retention with the observed set
+    // to stay below 60 requests/hour (45/hour with four-minute PR headroom).
+    const successTtl = Math.max(300000, cache.size * 240000);
+    if (hit && now() < (hit.failed ? hit.expiresAt : hit.at + successTtl)) return hit.promise;
     // The cache contains public response metadata only, and stays bounded.
     if (cache.size >= 200) cache.delete(cache.keys().next().value);
-    const promise = (async () => {
+    const entry = { at: now(), failed: false, expiresAt: now() + 300000 };
+    entry.promise = (async () => {
       try {
         const base = `/repos/${encodeURIComponent(reference.owner)}/${encodeURIComponent(reference.repo)}`;
         const pr = await read(`${base}/pulls/${reference.number}`);
@@ -86,10 +100,14 @@ function createGithubObserver(fetchImpl = fetch, now = Date.now) {
         } catch (_) { /* Keep PR facts when the independent checks request fails. */ }
         return { source: 'github_public_api', observed_at_ms: now(), url: reference.url,
           head_sha: pr.head.sha, state: pr.merged_at ? 'merged' : pr.state, ci };
-      } catch (_) { return { source: 'github_public_api', observed_at_ms: now(), unavailable: true }; }
+      } catch (_) {
+        entry.failed = true;
+        entry.expiresAt = Math.max(now() + 60000, blockedUntil);
+        return { source: 'github_public_api', observed_at_ms: now(), unavailable: true };
+      }
     })();
-    cache.set(key, { at: now(), promise });
-    return promise;
+    cache.set(key, entry);
+    return entry.promise;
   };
 }
 

@@ -173,7 +173,11 @@ or accepts a delivery.
 
 Inspector refreshes these observations while the task view is visible. Its
 optional public GitHub lookup follows only an exact PR reference in the
-authorized response, checks the current head, and caches results for 60 seconds.
+authorized response, checks the current head, and caches results for at least five
+minutes. The interval grows with the observed PR count to fit the shared anonymous
+request budget; the displayed observation timestamp makes its age explicit.
+Anonymous API rate limits apply across lookups; reset and retry headers defer
+further requests rather than retrying an exhausted quota every refresh.
 A checkpoint mention is labeled separately from a registered delivery, and
 GitHub checks do not constitute AWR acceptance.
 

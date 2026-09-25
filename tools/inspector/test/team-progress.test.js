@@ -69,3 +69,48 @@ test('missing, truncated, pending and unavailable GitHub checks never become pas
   }
   assert.equal((await createGithubObserver(async () => { throw new Error('unavailable'); })(ref)).unavailable, true);
 });
+
+test('GitHub cache avoids minute polling and shares rate-limit backoff across PRs', async () => {
+  const ref = number => ({ url: `https://github.com/example/repo/pull/${number}`, owner: 'example', repo: 'repo', number });
+  let clock = 1000, calls = 0, limited = false;
+  const observe = createGithubObserver(async url => {
+    calls++;
+    if (limited) return { ok: false, status: 403, headers: new Map([
+      ['x-ratelimit-remaining', '0'], ['x-ratelimit-reset', '3600'],
+    ]) };
+    return { ok: true, json: async () => url.includes('/pulls/')
+      ? { html_url: ref(Number(url.split('/').pop())).url, head: { sha: 'a'.repeat(40) }, state: 'open' }
+      : url.includes('/check-runs?') ? { total_count: 0, check_runs: [] } : { total_count: 0, statuses: [] } };
+  }, () => clock);
+  await observe(ref(1));
+  clock += 60000; await observe(ref(1));
+  assert.equal(calls, 3);
+  clock += 300000; limited = true;
+  assert.equal((await observe(ref(1))).unavailable, true);
+  assert.equal(calls, 4);
+  clock += 60000;
+  assert.equal((await observe(ref(2))).unavailable, true);
+  assert.equal(calls, 4);
+  clock = 3602000; limited = false;
+  assert.equal((await observe(ref(2))).ci, 'not_reported');
+  assert.equal(calls, 7);
+});
+
+test('multiple public PRs retain observations within a sustainable shared request budget', async () => {
+  let clock = 1000, calls = 0;
+  const refs = Array.from({ length: 10 }, (_, i) => ({ number: i + 1, owner: 'example', repo: 'repo', url: `https://github.com/example/repo/pull/${i + 1}` }));
+  const observe = createGithubObserver(async url => {
+    calls++;
+    return { ok: true, json: async () => url.includes('/pulls/')
+      ? { html_url: refs[Number(url.split('/').pop()) - 1].url, head: { sha: 'c'.repeat(40) }, state: 'open' }
+      : url.includes('/check-runs?') ? { total_count: 0, check_runs: [] } : { total_count: 0, statuses: [] } };
+  }, () => clock);
+  const first = await Promise.all(refs.map(observe));
+  for (let minute = 1; minute < 40; minute++) {
+    clock = 1000 + minute * 60000;
+    assert.deepEqual(await Promise.all(refs.map(observe)), first);
+  }
+  assert.equal(calls, 30);
+  clock += 60000; await Promise.all(refs.map(observe));
+  assert.equal(calls, 60);
+});

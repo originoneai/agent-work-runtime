@@ -909,7 +909,7 @@
 
     async function refreshProgress() {
       if (!canRefreshProgress()) return;
-      const current = ++generation, project = state.projectKey;
+      const current = ++generation, project = state.projectKey, selection = detailGeneration;
       state.refreshing = true;
       state.error = null;
       pendingDetails = new Map();
@@ -925,7 +925,9 @@
         await Promise.all(Array.from({ length: Math.min(4, queue.length) }, async () => {
           while (current === generation && index < queue.length) await readWork(queue[index++]);
         }));
-        if (current !== generation || state.error || $('teamWorkspaceGrid')?.hidden || editing()) return;
+        // A new selection may be outside this bounded batch. Keep its foreground
+        // detail rather than replacing it with an unread object from the poll.
+        if (current !== generation || selection !== detailGeneration || state.error || $('teamWorkspaceGrid')?.hidden || editing()) return;
         state.works = works;
         state.streams = overview.workstreams || [];
         state.raw = overview;
@@ -937,7 +939,7 @@
       } finally {
         state.refreshing = false;
         // An in-flight observation must never redraw a newly opened member form.
-        if (current === generation && !$('teamWorkspaceGrid')?.hidden && !editing()) render();
+        if (current === generation && !state.detailLoading && !$('teamWorkspaceGrid')?.hidden && !editing()) render();
       }
     }
 
