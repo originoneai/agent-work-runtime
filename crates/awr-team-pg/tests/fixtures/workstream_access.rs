@@ -46,7 +46,7 @@ pub async fn enable_writes(admin: &Client) {
 }
 
 pub async fn setup() -> (MutexGuard<'static, ()>, Client, String, WorkstreamReadStore) {
-    let (guard, admin, db, store, _) = setup_inner(false).await;
+    let (guard, admin, db, store, _) = setup_inner(false, None).await;
     (guard, admin, db, store)
 }
 
@@ -57,12 +57,20 @@ pub async fn setup_with_legacy_resource() -> (
     WorkstreamReadStore,
     String,
 ) {
-    let (guard, admin, db, store, legacy) = setup_inner(true).await;
+    let (guard, admin, db, store, legacy) = setup_inner(true, None).await;
     (guard, admin, db, store, legacy.expect("legacy resource"))
+}
+
+pub async fn setup_with_specs(
+    files: Vec<SourceFile>,
+) -> (MutexGuard<'static, ()>, Client, String, WorkstreamReadStore) {
+    let (guard, admin, db, store, _) = setup_inner(false, Some(files)).await;
+    (guard, admin, db, store)
 }
 
 async fn setup_inner(
     legacy_resource: bool,
+    spec_files: Option<Vec<SourceFile>>,
 ) -> (
     MutexGuard<'static, ()>,
     Client,
@@ -122,7 +130,11 @@ async fn setup_inner(
             state: WorkstreamState::Active,
             authority_version: 1,
             goal_keys: vec![key.into()],
-            acceptance_contracts: vec![],
+            acceptance_contracts: if spec_files.is_some() {
+                vec![format!("docs/{key}.md")]
+            } else {
+                vec![]
+            },
         })
         .collect();
     let contracts = vec![
@@ -164,10 +176,14 @@ async fn setup_inner(
             project_id: PROJECT.into(),
             actor_id: "agent".into(),
             parser_version: "workstreams/1".into(),
-            files: vec![SourceFile {
-                path: "workstreams.json".into(),
-                bytes: serde_json::to_vec(&bundle).unwrap(),
-            }],
+            files: {
+                let mut files = spec_files.unwrap_or_default();
+                files.push(SourceFile {
+                    path: "workstreams.json".into(),
+                    bytes: serde_json::to_vec(&bundle).unwrap(),
+                });
+                files
+            },
         })
         .await
         .unwrap();

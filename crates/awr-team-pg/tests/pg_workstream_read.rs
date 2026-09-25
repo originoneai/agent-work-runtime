@@ -419,3 +419,60 @@ async fn multi_scope_choice_is_explicit_and_protocol_rejects_forged_authority_fi
         Err(PgError::Unsupported(_))
     ));
 }
+
+#[tokio::test]
+async fn future_code_paths_do_not_require_existing_source_documents() {
+    let (_guard, _, _, store) = setup().await;
+    let prepared = prepare(&store, A, "a").await;
+    assert_eq!(
+        prepared["data"]["visible_contract"]["scope_paths"],
+        serde_json::json!(["src"])
+    );
+    assert_eq!(prepared["data"]["context_complete"], true);
+    assert_eq!(prepared["data"]["required_specs"], serde_json::json!([]));
+}
+
+#[tokio::test]
+async fn prepare_includes_only_the_selected_workstreams_required_specs() {
+    let (_guard, _, _, store) = setup_with_specs(vec![
+        awr_team_pg::SourceFile {
+            path: "docs/alpha.md".into(),
+            bytes: b"Public API contract".to_vec(),
+        },
+        awr_team_pg::SourceFile {
+            path: "docs/private-beta.md".into(),
+            bytes: b"PRIVATE peer contract".to_vec(),
+        },
+    ])
+    .await;
+    let prepared = prepare(&store, A, "a").await;
+    assert_eq!(prepared["data"]["context_complete"], true);
+    assert_eq!(
+        prepared["data"]["required_specs"][0]["path"],
+        "docs/alpha.md"
+    );
+    assert_eq!(
+        prepared["data"]["required_specs"][0]["text"],
+        "Public API contract"
+    );
+    assert!(!prepared.to_string().contains("PRIVATE"));
+    assert_eq!(
+        prepared["data"]["visible_contract"]["scope_paths"],
+        serde_json::json!(["src"])
+    );
+}
+
+#[tokio::test]
+async fn missing_declared_spec_still_blocks_context_even_when_code_is_not_created() {
+    let (_guard, _, _, store) = setup_with_specs(vec![]).await;
+    let prepared = prepare(&store, A, "a").await;
+    assert_eq!(prepared["data"]["context_complete"], false);
+    assert_eq!(
+        prepared["data"]["completeness_reasons"],
+        serde_json::json!(["required_spec_missing"])
+    );
+    assert_eq!(
+        prepared["data"]["authorized_readable_refs"][0]["path"],
+        "docs/alpha.md"
+    );
+}
