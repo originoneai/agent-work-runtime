@@ -141,3 +141,44 @@ test('transport failure explains unknown outcome without replaying the operation
   assert.match(node('teamAuth').textContent, /BridgeUnreachable/);
   assert.match(node('teamAuth').textContent, /Inspect the original operation/);
 });
+
+test('live work uses authorized details and directs unsupported writes to MCP', async () => {
+  const liveWork = { ...work, workstream_id: 'stream', detail_loaded: false };
+  const detail = { ...liveWork, detail_loaded: true, runtime_available: false,
+    status: null, acceptance: ['A real contract criterion'], depends_on: [],
+    dependency_export_unavailable: true, context_complete: false,
+    completeness_reasons: ['dependency_export_unavailable'] };
+  const calls = mock((url) => url.includes('/projects?') ? projects
+    : url.includes('/overview?') ? { ...overview, works: [liveWork], interaction_mode: 'mcp' }
+    : { ok: true, work: detail });
+  await ui.refresh();
+  const card = node('teamOverview').find((el) => el.tagName === 'ARTICLE');
+  assert.equal(card.getAttribute('tabindex'), '0');
+  await card.click();
+  assert.match(node('teamDetail').textContent, /A real contract criterion/);
+  assert.match(node('teamDetail').textContent, /No execution recorded/);
+  assert.match(node('teamDetail').textContent, /Readiness cannot be confirmed/);
+  assert.match(node('teamDetail').textContent, /MCP/);
+  assert.ok(!button('teamDetail', 'Accept responsibility'));
+  assert.equal(button('teamOverview', 'Personal').disabled, true);
+  assert.match(calls[2].url, /workstream=stream/);
+});
+
+test('late details for a previously selected work never replace the latest selection', async () => {
+  const a = { ...work, workstream_id: 'stream' };
+  const b = { key: 'WORK-2', title: 'Second work', workstream_id: 'stream' };
+  let release;
+  const gate = new Promise((resolve) => { release = resolve; });
+  const detail = (item) => ({ ok: true, work: { ...item, detail_loaded: true,
+    acceptance: [item.title], depends_on: [], context_complete: true } });
+  mock((url) => url.includes('/projects?') ? projects
+    : url.includes('/overview?') ? { ok: true, works: [a, b], interaction_mode: 'mcp' }
+    : url.includes('work=WORK-1') ? gate : detail(b));
+  await ui.refresh();
+  const pending = node('teamOverview').find((el) => el.tagName === 'ARTICLE' && el.dataset.key === 'WORK-1').click();
+  await node('teamOverview').find((el) => el.tagName === 'ARTICLE' && el.dataset.key === 'WORK-2').click();
+  release(detail(a));
+  await pending;
+  assert.equal(ui.state.selected, 'WORK-2');
+  assert.ok(!node('teamDetail').textContent.includes('Example work'));
+});

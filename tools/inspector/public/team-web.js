@@ -52,8 +52,10 @@
       raw: null,
       error: null,
       loading: false,
+      detailLoading: false,
     };
     let generation = 0;
+    let detailGeneration = 0;
 
     function clearProjectData() {
       state.projects = [];
@@ -62,6 +64,7 @@
       state.members = [];
       state.selected = null;
       state.raw = null;
+      state.detailLoading = false;
       state.lastReceipts = Object.create(null);
     }
 
@@ -123,9 +126,10 @@
       const card = el('article', {
         class: 'team-card' + (state.selected === w.key ? ' selected' : ''),
         dataset: { key: w.key },
+        tabindex: '0', role: 'button', 'aria-label': w.title || w.key,
       });
       card.appendChild(el('h3', null, w.title || w.key));
-      card.appendChild(el('div', { class: 'sub' }, w.key + ' · ' + (w.status || '')));
+      card.appendChild(el('div', { class: 'sub' }, w.key + ' · ' + workStatus(w)));
       card.appendChild(
         el('div', null, t(i18n, 'ui.owner_p0', { p0: w.owner_person || '—' }))
       );
@@ -145,9 +149,9 @@
       card.appendChild(
         el('div', null, t(i18n, 'ui.next_step_p0', { p0: w.next_step || '—' }))
       );
-      card.addEventListener('click', () => {
-        state.selected = w.key;
-        render();
+      card.addEventListener('click', () => selectWork(w.key));
+      card.addEventListener('keydown', (event) => {
+        if (event.key === 'Enter' || event.key === ' ') { event.preventDefault(); selectWork(w.key); }
       });
       return card;
     }
@@ -170,12 +174,15 @@
         blocker || '',
         w.next_step || '',
       ]) {
-        tr.appendChild(el('td', null, text || '—'));
+        const td = el('td');
+        if (tr.children.length === 0) {
+          const select = el('button', { class: 'linkish', type: 'button' }, text);
+          select.addEventListener('click', (event) => { event.stopPropagation(); return selectWork(w.key); });
+          td.appendChild(select);
+        } else td.textContent = text || '—';
+        tr.appendChild(td);
       }
-      tr.addEventListener('click', () => {
-        state.selected = w.key;
-        render();
-      });
+      tr.addEventListener('click', () => selectWork(w.key));
       return tr;
     }
 
@@ -192,6 +199,10 @@
         { class: 'btn' + (state.viewMode === 'team' ? ' primary' : ''), type: 'button' },
         t(i18n, 'ui.team_view')
       );
+      if (isLive()) {
+        personalBtn.disabled = true;
+        personalBtn.title = t(i18n, 'ui.team_personal_unavailable');
+      }
       personalBtn.addEventListener('click', () => {
         state.viewMode = 'personal';
         refresh();
@@ -251,7 +262,7 @@
           'blocker',
           'next',
         ]) {
-          hr.appendChild(el('th', null, h));
+          hr.appendChild(el('th', null, t(i18n, 'ui.team_column_' + h)));
         }
         thead.appendChild(hr);
         table.appendChild(thead);
@@ -266,6 +277,32 @@
 
     function selectedWork() {
       return state.works.find((w) => w.key === state.selected) || null;
+    }
+
+    function isLive() { return state.raw && state.raw.interaction_mode === 'mcp'; }
+
+    function workStatus(w) {
+      if (w.status && w.status !== 'unknown') return w.status;
+      return t(i18n, w.detail_loaded ? 'ui.team_no_runtime' : 'ui.team_select_for_status');
+    }
+
+    async function selectWork(key) {
+      const request = ++detailGeneration;
+      state.selected = key;
+      const work = selectedWork();
+      if (!work || !isLive()) { render(); return; }
+      const current = generation;
+      state.detailLoading = true;
+      state.error = null;
+      render();
+      const params = new URLSearchParams({ project: state.projectKey, work: key, workstream: work.workstream_id });
+      if (work.contract_hash) params.set('contract', work.contract_hash);
+      const body = await api('/api/team/work?' + params);
+      if (current !== generation || request !== detailGeneration || state.selected !== key) return;
+      state.detailLoading = false;
+      if (!body || !body.ok || !body.work || body.work.key !== key) failed(body);
+      else Object.assign(work, body.work);
+      render();
     }
 
     function renderBlockerDetail(host, w) {
@@ -367,6 +404,11 @@
 
     function renderActions(host, w) {
       host.appendChild(el('h3', null, t(i18n, 'ui.collaboration_actions')));
+      if (isLive()) {
+        host.appendChild(el('p', { class: 'sub' }, t(i18n, 'ui.team_mcp_actions')));
+        host.appendChild(el('code', null, '/v1/projects/' + encodeURIComponent(state.projectKey) + '/mcp'));
+        return;
+      }
       const caps = w.capabilities || {};
       host.appendChild(
         el(
@@ -417,6 +459,38 @@
       }
       host.appendChild(el('h2', null, w.title || w.key));
       host.appendChild(el('p', { class: 'sub' }, w.key));
+      if (isLive()) {
+        if (state.detailLoading) {
+          host.appendChild(el('p', { role: 'status' }, t(i18n, 'ui.team_detail_loading')));
+          return;
+        }
+        if (!w.detail_loaded) {
+          host.appendChild(el('p', { class: 'sub' }, t(i18n, 'ui.team_detail_unavailable')));
+          return;
+        }
+        host.appendChild(el('p', null, workStatus(w)));
+        host.appendChild(el('h3', null, t(i18n, 'ui.acceptance_criteria')));
+        const acceptance = el('ul', { class: 'loops' });
+        for (const criterion of w.acceptance) acceptance.appendChild(el('li', null, criterion));
+        host.appendChild(acceptance);
+        host.appendChild(el('h3', null, t(i18n, 'ui.visible_dependencies')));
+        const dependencies = el('ul', { class: 'loops' });
+        for (const dependency of w.depends_on) {
+          const item = el('li');
+          const target = state.works.find((other) => other.key === dependency.key);
+          const link = el(target ? 'button' : 'span', target ? { class: 'linkish', type: 'button' } : null, dependency.key);
+          if (target) link.addEventListener('click', () => selectWork(dependency.key));
+          item.appendChild(link);
+          dependencies.appendChild(item);
+        }
+        host.appendChild(dependencies);
+        if (w.dependency_export_unavailable) host.appendChild(el('p', { class: 'team-error' }, t(i18n, 'ui.team_dependency_unavailable')));
+        if (w.recovery_blocked) host.appendChild(el('p', { class: 'team-error' }, 'RecoveryBlocked'));
+        host.appendChild(el('p', { class: 'sub' }, t(i18n, 'ui.team_admission_not_evaluated')));
+        if (!w.context_complete) host.appendChild(el('p', { class: 'sub' }, w.completeness_reasons.join(' · ')));
+        renderActions(host, w);
+        return;
+      }
       renderBlockerDetail(host, w);
       host.appendChild(el('h3', null, t(i18n, 'ui.dependency_graph')));
       const graph = el('ul', { class: 'loops' });
@@ -435,7 +509,7 @@
       host.appendChild(el('h3', null, t(i18n, 'ui.web_session')));
       if (state.session && state.session.session_id) {
         host.appendChild(
-          el('p', null, t(i18n, 'ui.signed_in_session_p0', { p0: state.session.session_id }))
+          el('p', null, t(i18n, 'ui.team_signed_in'))
         );
         const logout = el('button', { class: 'btn', type: 'button' }, t(i18n, 'ui.logout'));
         logout.addEventListener(
@@ -532,6 +606,7 @@
       state.works = [];
       state.members = [];
       state.raw = null;
+      state.detailLoading = false;
       render();
       const projects = await api('/api/team/projects?view=' + encodeURIComponent(state.viewMode));
       if (current !== generation) return;
@@ -562,6 +637,7 @@
       if (!selectedWork()) state.selected = null;
       state.loading = false;
       render();
+      if (state.selected && isLive()) await selectWork(state.selected);
     }
 
     return {

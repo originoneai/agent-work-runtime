@@ -549,3 +549,46 @@ test('live project discovery restores the existing cookie session even with no p
     await upstream.close();
   }
 });
+
+for (const scenario of ['detail', 'changed', 'denied']) {
+  test(`live work detail preserves scope and handles ${scenario}`, async () => {
+    const queries = [];
+    const upstream = await startMockUpstream((request, response) => {
+      const chunks = [];
+      request.on('data', (chunk) => chunks.push(chunk));
+      request.on('end', () => {
+        queries.push(JSON.parse(Buffer.concat(chunks).toString()));
+        response.setHeader('content-type', 'application/json');
+        if (scenario === 'denied') {
+          response.writeHead(403);
+          response.end(JSON.stringify({ code: 'Forbidden', message: 'not authorized' }));
+          return;
+        }
+        response.end(JSON.stringify({ workstream_id: 'stream', data: {
+          work_id: 'WORK', contract_hash: 'current', runtime: null,
+          visible_contract: { acceptance: ['Contract criterion'], required_dependencies: ['VISIBLE'] },
+          dependency_export_unavailable: true, context_complete: false,
+          completeness_reasons: ['dependency_export_unavailable'], execution_admission: 'not_evaluated',
+        } }));
+      });
+    });
+    const bridge = await startLiveBridge(upstream.base);
+    try {
+      const result = await req(bridge.base, 'GET', '/api/team/work?project=demo&work=WORK&workstream=stream&contract=' + (scenario === 'changed' ? 'old' : 'current'));
+      assert.deepEqual(queries, [{ protocol_version: 1, op: 'work.prepare', work_id: 'WORK', workstream_id: 'stream' }]);
+      if (scenario !== 'detail') {
+        assert.equal(result.json.ok, false);
+        assert.equal(result.json.error.code, scenario === 'changed' ? 'SourceChanged' : 'Forbidden');
+        assert.equal(result.json.work, undefined);
+      } else {
+        assert.equal(result.json.work.status, null);
+        assert.equal(result.json.work.dependency_export_unavailable, true);
+        assert.deepEqual(result.json.work.acceptance, ['Contract criterion']);
+        assert.deepEqual(result.json.work.depends_on, [{ key: 'VISIBLE', visible: true }]);
+      }
+    } finally {
+      await bridge.close();
+      await upstream.close();
+    }
+  });
+}
