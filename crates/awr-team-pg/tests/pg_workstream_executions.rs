@@ -1191,17 +1191,31 @@ async fn barriers_and_active_contract_checks_preserve_recovery_only_cancellation
 
 #[tokio::test]
 async fn schema_twelve_preserves_legacy_executions_and_failed_migration_is_atomic() {
-    let (_g, admin, _, _store) = setup().await;
-    admin.batch_execute("DROP TABLE IF EXISTS awr_team.planning_activation_receipts; DROP TABLE IF EXISTS awr_team.planning_writeback_journals; DROP TABLE IF EXISTS awr_team.planning_publish_receipts; DROP TABLE IF EXISTS awr_team.planning_approvals; DROP TABLE IF EXISTS awr_team.planning_candidate_history; DROP TABLE IF EXISTS awr_team.planning_candidates; DROP TABLE IF EXISTS awr_team.planning_suggestions; DROP TABLE IF EXISTS awr_team.project_access_changes; DROP TABLE IF EXISTS awr_team.execution_attributions; DROP TABLE IF EXISTS awr_team.operator_quarantines; DROP TABLE IF EXISTS awr_team.backup_operations; DROP TABLE IF EXISTS awr_team.history_migrations; DROP TABLE IF EXISTS awr_team.access_changes;
-        UPDATE awr_team.resource_reservations SET resource_kind='prefix' WHERE resource_kind IN ('dir','workspace','external','integration');
-        ALTER TABLE awr_team.resource_reservations DROP COLUMN IF EXISTS fence; ALTER TABLE awr_team.resource_reservations DROP COLUMN IF EXISTS lease_generation; ALTER TABLE awr_team.resource_reservations DROP COLUMN IF EXISTS worktree_id; ALTER TABLE awr_team.resource_reservations DROP CONSTRAINT IF EXISTS resource_reservations_domain_consistency; ALTER TABLE awr_team.resource_reservations DROP CONSTRAINT IF EXISTS resource_reservations_resource_kind_check; ALTER TABLE awr_team.resource_reservations ADD CONSTRAINT resource_reservations_resource_kind_check CHECK (resource_kind IN ('file','prefix','named'));
-        ALTER TABLE awr_team.resource_reservations DROP COLUMN IF EXISTS execution_id;
-        ALTER TABLE awr_team.executions DROP CONSTRAINT executions_resource_identity;
-        ALTER TABLE awr_team.executions DROP COLUMN attestation_grant_version;
-        ALTER TABLE awr_team.workstream_grants DROP COLUMN can_attest_execution,DROP COLUMN can_reconcile_execution;
-        ALTER TABLE awr_team.executions DROP CONSTRAINT executions_workstream_binding;
-        ALTER TABLE awr_team.executions DROP COLUMN workstream_id,DROP COLUMN ownership_version,DROP COLUMN executor_client_id,DROP COLUMN execution_version;
-        UPDATE awr_team.schema_state SET version=11;
+    let (_g, admin, _) = common::fresh_team_schema().await;
+    // Reconstruct the historical schema from its migrations, not a partial
+    // downgrade of the current schema that leaves later tables and constraints.
+    admin
+        .batch_execute("DROP SCHEMA awr_team CASCADE")
+        .await
+        .unwrap();
+    for ddl in [
+        include_str!("../migrations/20260917000001_init.sql"),
+        include_str!("../migrations/20260918000002_session_wait.sql"),
+        include_str!("../migrations/20260918000003_graph_resources.sql"),
+        include_str!("../migrations/20260918000004_execution_protocol.sql"),
+        include_str!("../migrations/20260918000005_review_completion.sql"),
+        include_str!("../migrations/20260918000006_import_restore.sql"),
+        include_str!("../migrations/20260919000007_completion_integrity.sql"),
+        include_str!("../migrations/20260920000008_execution_result_binding.sql"),
+        include_str!("../migrations/20260920000009_import_integrity.sql"),
+        include_str!("../migrations/20260921000010_workstreams.sql"),
+        include_str!("../migrations/20260921000011_workstream_claims.sql"),
+    ] {
+        admin.batch_execute(ddl).await.unwrap();
+    }
+    admin.batch_execute("INSERT INTO awr_team.tenants(id,name,status) VALUES('reader-tenant','Readers','active');
+        INSERT INTO awr_team.projects(tenant_id,id,key,mode,coordinator_epoch,status) VALUES('reader-tenant','reader-project','p','team','epoch-a','active');
+        INSERT INTO awr_team.work_items(tenant_id,project_id,id,external_key) VALUES('reader-tenant','reader-project','a','a');
         INSERT INTO awr_team.executions(tenant_id,project_id,id,work_id,fence,contract_hash,executor_actor_id,state)
         VALUES('reader-tenant','reader-project','legacy','a',4,'old-contract','old-runner','unknown')").await.unwrap();
     let ddl = include_str!("../migrations/20260921000012_workstream_executions.sql");

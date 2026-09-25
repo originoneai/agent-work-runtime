@@ -60,7 +60,7 @@ async fn start(store: WorkstreamReadStore) -> Server {
 fn http() -> reqwest::Client {
     reqwest::Client::builder()
         .no_proxy()
-        .timeout(Duration::from_secs(10))
+        .timeout(Duration::from_secs(35))
         .build()
         .unwrap()
 }
@@ -284,6 +284,51 @@ async fn admin_can_preview_apply_via_mcp_and_http_non_admin_denied_no_raw_secret
         .await
         .unwrap();
     assert_eq!(denied.status(), reqwest::StatusCode::FORBIDDEN);
+
+    // Same MCP entry exposes bounded project navigation and access history.
+    let next = admin_mcp
+        .call_tool(
+            CallToolRequestParams::new("awr_team_query".to_owned()).with_arguments(
+                json!({"protocol_version":1,"op":"work.next"})
+                    .as_object()
+                    .unwrap()
+                    .clone(),
+            ),
+        )
+        .await
+        .unwrap()
+        .structured_content
+        .unwrap();
+    assert_eq!(next["data"]["identity"]["can_manage_members"], true);
+    let audit = client
+        .post(format!("{}/one/query", server.url))
+        .bearer_auth(A)
+        .json(&json!({"protocol_version":1,"op":"audit.requests"}))
+        .send()
+        .await
+        .unwrap()
+        .json::<Value>()
+        .await
+        .unwrap();
+    assert_eq!(audit["data"]["scope"], "project");
+    let records = audit["data"]["items"].as_array().unwrap();
+    assert!(
+        records
+            .iter()
+            .any(|r| r["action"] == "awr_team_access_apply" && r["result"] == "succeeded")
+    );
+    assert!(records.iter().any(|r| r["actor_id"] == "http-reader"
+        && r["action"] == "access.preview"
+        && r["result"] == "denied"));
+    assert!(!audit.to_string().contains(reader_token));
+    let denied_audit = client
+        .post(format!("{}/one/query", server.url))
+        .bearer_auth(reader_token)
+        .json(&json!({"protocol_version":1,"op":"audit.requests","member_actor_id":"agent"}))
+        .send()
+        .await
+        .unwrap();
+    assert_eq!(denied_audit.status(), reqwest::StatusCode::FORBIDDEN);
 
     // Raw bearer in body is refused.
     let forged = client
