@@ -794,3 +794,34 @@ button.linkish {
 .admin-field input:focus-visible, .admin-field select:focus-visible, .admin-toolbar input:focus-visible, .admin-toolbar select:focus-visible, .admin-change textarea:focus-visible { outline: 2px solid var(--blue, #0a5cff); outline-offset: 2px; }
 
 .admin-change textarea { font-family: var(--f-mono); font-size: 12px; line-height: 1.7; }
+
+/* Keep the member's next action distinct from administrative details. */
+.team-console-panel { scroll-margin-top: 72px; }
+.admin-full { grid-column: 1 / -1; }
+.admin-editor { max-width: 920px; gap: 16px 24px; }
+.admin-editor h3, .admin-editor p { margin: 0; }
+.admin-actions { display: flex; align-items: center; justify-content: flex-end; flex-wrap: wrap; gap: 10px; margin-top: 16px; padding-top: 18px; border-top: 1px solid var(--line); }
+.team-console-panel .admin-actions .btn { margin: 0; min-height: 42px; padding: 10px 18px; }
+#view-team .team-console-panel .btn.primary { background: var(--blue, #145dff); border-color: var(--blue, #145dff); color: #fff; font-weight: 650; }
+#view-team .team-console-panel .btn.primary:hover:not(:disabled) { filter: brightness(.92); }
+#view-team .team-console-panel .btn:disabled { opacity: .55; cursor: not-allowed; }
+.admin-role { display: inline-block; margin: 0 0 14px; padding: 4px 10px; border-radius: 6px; background: var(--accent-wash); color: var(--blue, #145dff); font-size: 12px; }
+.admin-access-status { color: var(--ink-2); font-size: 13px; margin: 12px 0; }
+.admin-help { margin: 16px 0; }
+.admin-help summary, .admin-change summary { cursor: pointer; font-size: 13px; color: var(--ink-2); }
+.admin-help .sub { font-size: 12px; }
+.admin-technical { color: var(--ink-2); font-size: 12px; margin: 12px 0 0; overflow-wrap: anywhere; }
+.admin-technical summary { cursor: pointer; }
+.admin-binding h4 { margin: 0 0 10px; font-size: 13px; }
+.team-console-panel .btn.admin-danger { border: 0; color: var(--warn); padding-left: 0; }
+.admin-handoff-steps { display: grid; gap: 12px; padding-left: 24px; margin: 22px 0; line-height: 1.6; }
+.admin-change { max-width: 920px; }
+.admin-change > details { margin-top: 18px; }
+.admin-change .admin-actions { justify-content: flex-start; }
+.admin-credential > span:first-child { font-family: inherit; flex-basis: auto; }
+@media (max-width: 680px) {
+  .admin-actions { align-items: stretch; flex-direction: column-reverse; }
+  .admin-actions .btn { width: 100%; }
+  .admin-editor .admin-check { margin-right: 6px; }
+  .admin-change { padding: 18px; }
+}

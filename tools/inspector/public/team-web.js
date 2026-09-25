@@ -501,11 +501,13 @@
       details.addEventListener('toggle', () => { state.connectOpen = details.open; });
       details.appendChild(el('summary', null, t(i18n, 'ui.team_connect_agent')));
       details.appendChild(el('p', { class: 'sub' }, t(i18n, 'ui.team_connect_help')));
-      copyBlock(details, 'Transport: Streamable HTTP\nURL: ' + mcpUrl() +
+      const manual = el('details');
+      manual.appendChild(el('summary', null, t(i18n, 'ui.team_manual_setup')));
+      manual.appendChild(el('p', { class: 'sub' }, t(i18n, 'ui.team_connect_other')));
+      copyBlock(manual, 'Transport: Streamable HTTP\nURL: ' + mcpUrl() +
         '\nAuthentication: Bearer\nAuthorization: Bearer <PERSONAL_ACCESS_CREDENTIAL>', 'ui.team_copy_connection');
-      details.appendChild(el('p', { class: 'sub' }, t(i18n, 'ui.team_connect_other')));
-      details.appendChild(el('code', null, mcpUrl()));
-      copyBlock(details, t(i18n, 'ui.team_project_prompt', { url: mcpUrl() }), 'ui.team_copy_project_prompt');
+      copyBlock(manual, t(i18n, 'ui.team_project_prompt', { url: mcpUrl() }), 'ui.team_copy_project_prompt');
+      details.appendChild(manual);
       host.appendChild(details);
     }
 
