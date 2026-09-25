@@ -494,9 +494,9 @@ fn lifecycle_tools() -> Vec<Tool> {
         ),
         tool(
             "awr_session_checkpoint",
-            "Save the caller's actual digest, next action, open loops and last consumed context hash through the existing checkpoint domain. Never invent a context hash.",
+            "Save actual progress, including failures and context gaps, without changing source work. Never invent a context hash. expected_revision is the project revision, not session.revision. Supply agent to record an unverified caller declaration; changing agents requires awr_session_resume. Omission retains compatibility and records an undeclared caller, not the session agent.",
             selector(
-                json!({"expected_revision":revision(),"context_hash":text(),"digest":text(),"next_action":text(),"open_loops":strings(),"changed_entities":strings()}),
+                json!({"expected_revision":revision(),"agent":text(),"context_hash":text(),"digest":text(),"next_action":text(),"open_loops":strings(),"changed_entities":strings()}),
                 &["expected_revision", "context_hash", "digest", "next_action"],
             ),
             false,

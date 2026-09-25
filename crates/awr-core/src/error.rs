@@ -23,6 +23,10 @@ pub enum Error {
     SourceConflict(String),
     #[error("revision conflict: expected {expected}, actual {actual}")]
     RevisionConflict { expected: u64, actual: u64 },
+    #[error(
+        "project revision conflict: expected {expected}, actual {actual}; checkpoint requires project_revision, not session.revision. Read session show or awr_session_get, review intervening changes and retry with the project revision (CLI: --expected-project-revision; MCP: expected_revision)"
+    )]
+    CheckpointRevisionConflict { expected: u64, actual: u64 },
     #[error("dependency blocked: {0}")]
     DependencyBlocked(String),
     #[error("claim conflict: {0}")]
@@ -70,7 +74,7 @@ pub enum Error {
         attempt_id: crate::Id,
         reason: String,
     },
-    #[error("context incomplete: {0}")]
+    #[error("context incomplete: {0}. {guidance}", guidance = crate::INCOMPLETE_CONTEXT_GUIDANCE)]
     ContextIncomplete(String),
     #[error("context budget exceeded: required {required}, budget {budget}")]
     BudgetExceeded { required: usize, budget: usize },
@@ -160,7 +164,9 @@ impl Error {
             Self::SourceStale(_) => "SourceStale",
             Self::IntakePreflightRejected { .. } => "SourceStale",
             Self::SourceConflict(_) => "SourceConflict",
-            Self::RevisionConflict { .. } => "RevisionConflict",
+            Self::RevisionConflict { .. } | Self::CheckpointRevisionConflict { .. } => {
+                "RevisionConflict"
+            }
             Self::DependencyBlocked(_) => "DependencyBlocked",
             Self::ClaimConflict(_) => "ClaimConflict",
             Self::RuleViolation(_) | Self::SensitiveSource { .. } => "RuleViolation",
@@ -213,6 +219,14 @@ impl Error {
                 Self::RevisionConflict { expected, actual } => {
                     Some(serde_json::json!({"expected": expected, "actual": actual}))
                 }
+                Self::CheckpointRevisionConflict { expected, actual } => Some(serde_json::json!({
+                    "expected": expected, "actual": actual, "revision_scope": "project",
+                    "next_action": "Read project_revision from session show or awr_session_get, review intervening changes and retry with the project revision (CLI: --expected-project-revision; MCP: expected_revision); session.revision is not the write precondition."
+                })),
+                Self::ContextIncomplete(_) => Some(serde_json::json!({
+                    "next_action": crate::INCOMPLETE_CONTEXT_GUIDANCE,
+                    "incomplete_checkpoint_allowed": true, "checkpoint_updates_source_work": false
+                })),
                 Self::BudgetExceeded { required, budget } => {
                     Some(serde_json::json!({"required": required, "budget": budget}))
                 }
@@ -249,6 +263,16 @@ impl Error {
                 ),
                 _ => None,
             }).map(crate::redact_sensitive_value),
+        }
+    }
+
+    /// Add checkpoint-specific guidance without changing the public conflict code.
+    pub fn for_checkpoint(self) -> Self {
+        match self {
+            Self::RevisionConflict { expected, actual } => {
+                Self::CheckpointRevisionConflict { expected, actual }
+            }
+            other => other,
         }
     }
 }

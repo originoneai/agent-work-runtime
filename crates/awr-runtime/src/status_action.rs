@@ -1,7 +1,7 @@
 //! Daily work navigation, separate from the unchanged claim-admission query.
 use crate::{
     OrganizationReport, StatusScope,
-    status_summary::{brief, select_work, short},
+    status_summary::{progress_brief, select_work, short},
 };
 use awr_core::*;
 use awr_store::Store;
@@ -82,7 +82,7 @@ pub fn action_status_page(
             pending_executions
                 .push(json!({"id":e.id,"recorded_state":e.state,"reported_phase":phase}));
         }
-        let mut item = brief(w);
+        let mut item = progress_brief(store, project.id, w, readiness.branch_id)?;
         let codes: BTreeSet<_> = r
             .diagnostics
             .iter()
@@ -164,9 +164,19 @@ pub fn action_status_page(
         json!({"when":"No actionable work in this selection","basis":"Current diagnostics and source status; history is not newly verified","next_action":"Inspect the cited current gap or selected completed work and its original evidence","recheck":"Source correction or explicit verification result"})
     };
     let pending = store.inspect_runtime(project.id, now_millis()?)?;
+    let progress = if selected.len() == 1 {
+        Some(crate::work_progress(
+            store,
+            project.id,
+            selected[0],
+            readiness.branch_id,
+        )?)
+    } else {
+        None
+    };
     let mut response = json!({"view":"action","schema_version":1,"project":project.name,"project_id":project.id,
         "branch_id":readiness.branch_id,"scope":scope,"scope_combination":"intersection",
-        "total":selected.len(),"project_work_total":works.len(),"counts":counts,
+        "total":selected.len(),"project_work_total":works.len(),"counts":counts,"progress":progress,
         "count_basis":"source status; queue buckets are navigation, not execution authorization or completion proof",
         "current_total":current.len(),"ready_count":ready.len(),"waiting_count":waiting.len(),"blocked_count":blocked.len(),
         "current":current.iter().take(5).collect::<Vec<_>>(),"ready":ready.iter().take(5).collect::<Vec<_>>(),

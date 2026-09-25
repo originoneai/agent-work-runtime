@@ -297,6 +297,9 @@ pub fn status_with_scope(
                         item["key"].as_str().unwrap_or(""),
                         item["next_action"].as_str().unwrap_or("Inspect work show")
                     );
+                    if value["progress"].is_null() {
+                        print_progress(&item["progress"], None);
+                    }
                 }
             }
             for gap in value["organization"]["gaps"]
@@ -328,6 +331,22 @@ pub fn status_with_scope(
                 value["blocked_count"],
                 value["next_action"]
             );
+            if value["progress"].is_null() {
+                for item in value["current"].as_array().into_iter().flatten() {
+                    println!("  Work: {}", item["key"].as_str().unwrap_or(""));
+                    print_progress(&item["progress"], None);
+                }
+                if value["current_total"] == 0 && !value["suggested_work"].is_null() {
+                    println!(
+                        "  Suggested work: {}",
+                        value["suggested_work"]["key"].as_str().unwrap_or("")
+                    );
+                    print_progress(&value["suggested_work"]["progress"], None);
+                }
+            }
+        }
+        if !json_output && !value["progress"].is_null() {
+            print_progress(&value["progress"], None);
         }
         return query.finish();
     }
@@ -417,6 +436,46 @@ pub fn status_with_scope(
         println!("{}", organization.rendered());
     }
     query.finish()
+}
+
+fn print_progress(progress: &Value, full_source_action: Option<&str>) {
+    if progress.is_null() {
+        return;
+    }
+    let source = &progress["source_next_action"];
+    println!(
+        "  Source next: {}\n    Source: {} r{}; projected_at (Unix ms): {}",
+        full_source_action.unwrap_or_else(|| source["text"].as_str().unwrap_or("")),
+        source["locator"].as_str().unwrap_or("unknown"),
+        source["source_revision"],
+        source["projected_at"]
+    );
+    let checkpoint = &progress["latest_checkpoint_next_action"];
+    if checkpoint.is_null() {
+        println!("  Latest checkpoint: none in this work/branch scope");
+    } else {
+        println!(
+            "  Checkpoint next: {}\n    Checkpoint: {}; session: {}; recorded_at (Unix ms): {}\n    Caller: {} (unverified); session label: {} (not caller proof)\n    Context hash: unverified. {}",
+            checkpoint["text"].as_str().unwrap_or(""),
+            checkpoint["checkpoint_id"].as_str().unwrap_or(""),
+            checkpoint["session_id"].as_str().unwrap_or(""),
+            checkpoint["recorded_at"],
+            checkpoint["actor"]["agent_id"]
+                .as_str()
+                .unwrap_or("not declared"),
+            checkpoint["session_label"]["agent_id"]
+                .as_str()
+                .unwrap_or(""),
+            progress["boundary"].as_str().unwrap_or("")
+        );
+    }
+    if (full_source_action.is_none() && source["truncated"] == true)
+        || checkpoint["truncated"] == true
+    {
+        println!(
+            "    Text shortened to 240 characters; use work show KEY for the full source action or session show SESSION for the checkpoint."
+        );
+    }
 }
 
 pub fn ready(
@@ -594,6 +653,8 @@ pub fn work(root: &Path, command: &WorkCommand, json_output: bool) -> Result<()>
             value["work"] = ready_brief(&work);
             value["acceptance"] = json!(work.work.item.acceptance);
             value["source_ref"] = json!(work.work.item.meta.source_ref);
+            value["progress"] =
+                awr_runtime::work_progress(&query.store, query.project.id, &work.work, branch_id)?;
             value["required_dependencies"]=json!(work.dependencies.dependencies.iter().map(|d|json!({"external_key":d.item.meta.external_key,"status":d.item.status,"revision":d.item.meta.revision,"source_revision":d.item.meta.source_ref.source_revision,"freshness":d.source.freshness})).collect::<Vec<_>>());
             value["missing_dependencies"] = json!(work.dependencies.missing_keys);
             value["dependency_cycles"] = json!(work.dependencies.cycle_keys);
@@ -607,7 +668,7 @@ pub fn work(root: &Path, command: &WorkCommand, json_output: bool) -> Result<()>
                 println!("{}", serde_json::to_string_pretty(&value)?);
             } else {
                 println!(
-                    "{} — {}\nStatus: {}; ready: {}; revision: {} (project {})\nSummary: {}\nBlocker: {}\nNext: {}",
+                    "{} — {}\nStatus: {}; ready: {}; revision: {} (project {})\nSummary: {}\nBlocker: {}",
                     id,
                     work.work.item.title,
                     work.work.item.raw_status,
@@ -620,8 +681,8 @@ pub fn work(root: &Path, command: &WorkCommand, json_output: bool) -> Result<()>
                         &work.work.item.summary
                     }),
                     work.work.item.blocker.as_deref().unwrap_or("none"),
-                    work.work.item.next_action
                 );
+                print_progress(&value["progress"], Some(&work.work.item.next_action));
                 for diagnostic in &work.diagnostics {
                     println!(
                         "{} [{}]: {}",

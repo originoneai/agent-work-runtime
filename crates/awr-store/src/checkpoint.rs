@@ -8,6 +8,10 @@ use crate::{
 use awr_core::*;
 use rusqlite::{OptionalExtension, params};
 
+pub(crate) fn checkpoint_actor(agent: Option<&str>) -> serde_json::Value {
+    serde_json::json!({"agent_id":agent,"origin":if agent.is_some(){"caller_supplied_agent"}else{"undeclared"},"identity_verified":false})
+}
+
 pub(crate) fn checkpoint_at(
     conn: &rusqlite::Connection,
     project: Id,
@@ -66,11 +70,29 @@ pub(crate) fn write_checkpoint(
     event.session_id = Some(session.id);
     event.work_item_id = session.work_item_id;
     event.branch_id = session.branch_id;
-    event.payload = serde_json::json!({"workstream_binding":workstream_binding,"checkpoint_id":checkpoint.id,"context_hash":checkpoint.context_hash,"checkpoint_project_revision":base_revision,"changed_entities":checkpoint.changed_entities,"next_action":checkpoint.next_action});
+    event.payload = serde_json::json!({"workstream_binding":workstream_binding,"checkpoint_id":checkpoint.id,"context_hash":checkpoint.context_hash,"checkpoint_project_revision":base_revision,"changed_entities":checkpoint.changed_entities,"next_action":checkpoint.next_action,"actor":checkpoint_actor(None)});
     Ok(checkpoint)
 }
 
 impl Store {
+    /// Latest recorded progress, including active sessions, in the exact branch
+    /// and current ownership scope. This is not the closed-session resume selector.
+    pub fn latest_work_progress_checkpoint(
+        &self,
+        project: Id,
+        work: Id,
+        branch: Option<Id>,
+    ) -> Result<Option<Checkpoint>> {
+        let id = self.conn.query_row("SELECT c.id FROM checkpoints c JOIN sessions s ON s.id=c.session_id
+            JOIN session_workstreams b ON b.project_id=s.project_id AND b.session_id=s.id
+            JOIN workstream_ownership o ON o.project_id=b.project_id AND o.work_item_id=b.work_item_id
+                AND o.workstream_id=b.workstream_id AND o.revision=b.ownership_revision
+            WHERE s.project_id=?1 AND s.work_item_id=?2 AND s.branch_id IS ?3
+            ORDER BY c.project_revision DESC,c.created_at DESC,c.id DESC LIMIT 1",
+            params![project.to_string(),work.to_string(),branch.map(|id|id.to_string())],|r|id_at(r,0))
+            .optional().map_err(db_error)?;
+        id.map(|id| self.checkpoint(project, id)).transpose()
+    }
     /// Latest checkpoint from a closed session for this work and exact branch.
     pub fn latest_work_checkpoint(
         &self,

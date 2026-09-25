@@ -346,6 +346,121 @@ fn start_args(
 }
 
 #[tokio::test]
+async fn checkpoint_progress_keeps_source_authority_and_caller_declarations_over_http() {
+    let a = ProjectFixture::new("Progress fixture");
+    let b = ProjectFixture::new("Separate project");
+    let original = fs::read(a.root.join("work.yaml")).unwrap();
+    let mut server = Server::start(&registry(&a, &b)).await;
+    let started = ok(server
+        .call(
+            WRITER,
+            "awr_session_start",
+            start_args("alpha", "W", "progress", a.revision(), true),
+        )
+        .await);
+    let sid = started["session"]["id"].clone();
+    let mut args = json!({"project":"alpha","session":sid,"expected_revision":started["session"]["revision"],
+        "context_hash":"a".repeat(64),"digest":"Test failed; work remains incomplete","next_action":"Investigate failure","open_loops":["Retest"],"agent":"guide-editor"});
+    let stale = server
+        .call(WRITER, "awr_session_checkpoint", args.clone())
+        .await;
+    error(stale.clone(), "RevisionConflict");
+    assert_eq!(
+        stale["structuredContent"]["details"]["revision_scope"],
+        "project"
+    );
+    args["expected_revision"] = json!(a.revision());
+    args["agent"] = json!("other-agent");
+    let mismatch = server
+        .call(WRITER, "awr_session_checkpoint", args.clone())
+        .await;
+    error(mismatch.clone(), "RuleViolation");
+    assert!(
+        mismatch["structuredContent"]["message"]
+            .as_str()
+            .unwrap()
+            .contains("session resume")
+    );
+    assert!(
+        ok(server
+            .call(
+                WRITER,
+                "awr_session_get",
+                json!({"project":"alpha","session":sid})
+            )
+            .await)["checkpoint"]
+            .is_null()
+    );
+    args["agent"] = json!("guide-editor");
+    args["expected_revision"] = json!(a.revision());
+    args["request_id"] = json!("declared-checkpoint");
+    error(
+        server
+            .call(COLLEAGUE, "awr_session_checkpoint", args.clone())
+            .await,
+        "RuleViolation",
+    );
+    let saved = ok(server
+        .call(WRITER, "awr_session_checkpoint", args.clone())
+        .await);
+    assert_eq!(
+        saved["checkpoint_save"]["actor"]["agent_id"],
+        "guide-editor"
+    );
+    assert_eq!(
+        saved["checkpoint_save"]["actor"]["identity_verified"],
+        false
+    );
+    assert_eq!(saved["context_hash_verified"], false);
+    let replay = ok(server.call(WRITER, "awr_session_checkpoint", args).await);
+    assert_eq!(replay["checkpoint_save"], saved["checkpoint_save"]);
+    assert_eq!(replay["operation"]["replayed"], true);
+    let detail = ok(server
+        .call(
+            WRITER,
+            "awr_work_get",
+            json!({"project":"alpha","work":"W"}),
+        )
+        .await);
+    assert_eq!(
+        detail["progress"]["source_next_action"]["text"],
+        "Draft the guide"
+    );
+    assert_eq!(
+        detail["progress"]["latest_checkpoint_next_action"]["text"],
+        "Investigate failure"
+    );
+    for view in ["summary", "action"] {
+        let status = ok(server
+            .call(
+                WRITER,
+                "awr_project_status",
+                json!({"project":"alpha","work":["W"],"view":view}),
+            )
+            .await);
+        assert_eq!(status["progress"], detail["progress"]);
+    }
+    let shown = ok(server
+        .call(
+            WRITER,
+            "awr_session_get",
+            json!({"project":"alpha","session":sid}),
+        )
+        .await);
+    assert_eq!(
+        shown["checkpoint_save"]["actor"],
+        saved["checkpoint_save"]["actor"]
+    );
+    assert_eq!(shown["checkpoint_write_revision"]["scope"], "project");
+    let other = ok(server
+        .call(WRITER, "awr_work_get", json!({"project":"beta","work":"W"}))
+        .await);
+    assert!(other["progress"]["latest_checkpoint_next_action"].is_null());
+    assert_eq!(fs::read(a.root.join("work.yaml")).unwrap(), original);
+    server.stop().await;
+}
+
+#[tokio::test]
 async fn source_changes_preserve_client_scope_reviewed_versions_and_explicit_draft_activation() {
     let a = ProjectFixture::new("Write the team guide");
     let b = ProjectFixture::new("Write the other guide");

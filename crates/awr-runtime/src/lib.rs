@@ -193,9 +193,19 @@ impl<'a> Runtime<'a> {
         session: Id,
         draft: awr_core::CheckpointDraft,
     ) -> Result<(awr_core::Checkpoint, Event)> {
-        let started = self
-            .store
-            .begin_checkpoint_save(self.project, expected, session, draft)?;
+        self.checkpoint_as(expected, session, draft, None)
+    }
+    /// Record an optional caller declaration independently from the session label.
+    pub fn checkpoint_as(
+        &mut self,
+        expected: Revision,
+        session: Id,
+        draft: awr_core::CheckpointDraft,
+        agent: Option<&str>,
+    ) -> Result<(awr_core::Checkpoint, Event)> {
+        let started =
+            self.store
+                .begin_checkpoint_save_as(self.project, expected, session, draft, agent)?;
         self.store
             .finish_checkpoint_save(self.project, started.project_revision, started.id)
             .map_err(|error| Error::CheckpointIncomplete {
@@ -295,6 +305,8 @@ mod status_summary;
 pub use status_summary::{StatusScope, summarize_status};
 mod status_action;
 pub use status_action::{action_status, action_status_page};
+mod work_progress;
+pub use work_progress::work_progress;
 
 mod organization_change;
 pub use organization_change::{

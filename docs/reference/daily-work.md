@@ -36,6 +36,35 @@ has its own `view` and `schema_version`; its `blocked_count` counts actual curre
 blockers, and its `ready_count` additionally requires the declared work structure.
 Do not compare differently defined counts as progress changes.
 
+## Source plans and recorded progress
+
+`status --view action`, `status --view summary`, and `work show KEY` expose a
+`progress` object. MCP `awr_project_status` and `awr_work_get` return the same
+fields. A single-work status selection also exposes `progress` at the top level,
+including blocked or completed work that is absent from the current queue.
+
+- `source_next_action` contains the authoritative text, source locator, pointer,
+  source revision and freshness. `projected_at` is the time AWR imported that
+  source revision, **not** the time someone edited the file. Missing historical
+  projection receipts leave that timestamp null.
+- `latest_checkpoint_next_action` contains the most recent checkpoint for this
+  exact work, branch and current workstream ownership, including active sessions.
+  It identifies the checkpoint, session, recording time, declared caller, session
+  labels and the unverified context-hash boundary. No checkpoint means null.
+- `differs_from_source` compares the full next-action strings. A difference is an
+  observation: saving progress does not modify the original contract or establish
+  completion. Legacy `next_action` fields keep their existing meanings.
+
+Progress text is capped at 240 characters and includes a `truncated` flag. Use
+`work show KEY` for the full source action and `session show SESSION` for the full
+checkpoint. A long historical preamble in a source next action should be corrected
+in that authoritative source; AWR does not guess a replacement from code edits.
+
+For example, if the source says “Draft the guide” and a checkpoint says “Investigate
+the failed example”, both are visible. Reindexing unchanged source files still
+reports zero indexed sources. Tests that have failed may be recorded in a checkpoint
+without marking the source work complete.
+
 ## Read history without a repair flood
 
 The action view focuses diagnostic samples on selected open work, associated goals
