@@ -57,6 +57,8 @@
     };
     let generation = 0;
     let detailGeneration = 0;
+    let loginForm = null;
+    let loginInput = null;
 
     function clearProjectData() {
       state.projects = [];
@@ -511,9 +513,13 @@
     }
 
     function renderAuth(host) {
+      const refocusInput = loginInput && document.activeElement === loginInput;
       clear(host);
       host.appendChild(el('h3', null, t(i18n, 'ui.web_session')));
       if (state.session && state.session.session_id) {
+        if (loginInput) loginInput.value = '';
+        loginForm = null;
+        loginInput = null;
         host.appendChild(
           el('p', null, t(i18n, 'ui.team_signed_in'))
         );
@@ -530,43 +536,50 @@
         host.appendChild(revoke);
       } else {
         host.appendChild(el('p', { class: 'sub' }, t(i18n, 'ui.web_login_help')));
-        const form = el('div', { class: 'team-login' });
-        const input = el('input', {
-          type: 'password',
-          id: 'teamBearerInput',
-          autocomplete: 'off',
-          'aria-label': t(i18n, 'ui.team_access_token'),
-          placeholder: 'awr1.…',
-        });
-        const btn = el('button', { class: 'btn primary', type: 'button' }, t(i18n, 'ui.web_login'));
-        btn.addEventListener(
-          'click',
-          guardDouble('login', async () => {
-            const current = ++generation;
-            clearProjectData();
-            state.error = null;
-            const bearer = input.value;
-            input.value = ''; // never retain bearer in the DOM after submit
-            const body = await api('/api/team/login', {
-              method: 'POST',
-              body: JSON.stringify({ bearer }),
-            });
-            if (current !== generation) return;
-            if (body && body.ok) {
-              state.session = {
-                session_id: body.session_id,
-                expires_at_ms: body.expires_at_ms,
-              };
-              await refresh();
-            } else failed(body);
-          })
-        );
-        form.appendChild(input);
-        form.appendChild(btn);
-        input.addEventListener('keydown', (event) => {
-          if (event.key === 'Enter') { event.preventDefault(); btn.click(); }
-        });
-        host.appendChild(form);
+        // A pending anonymous refresh must not discard a credential being typed.
+        // Keep the form nodes, never copy the credential into application state.
+        if (!loginForm) {
+          const form = el('div', { class: 'team-login' });
+          const input = el('input', {
+            type: 'password',
+            id: 'teamBearerInput',
+            autocomplete: 'off',
+            'aria-label': t(i18n, 'ui.team_access_token'),
+            placeholder: 'awr1.…',
+          });
+          const btn = el('button', { class: 'btn primary', type: 'button' }, t(i18n, 'ui.web_login'));
+          btn.addEventListener(
+            'click',
+            guardDouble('login', async () => {
+              const current = ++generation;
+              clearProjectData();
+              state.error = null;
+              const bearer = input.value;
+              input.value = ''; // never retain bearer in the DOM after submit
+              const body = await api('/api/team/login', {
+                method: 'POST',
+                body: JSON.stringify({ bearer }),
+              });
+              if (current !== generation) return;
+              if (body && body.ok) {
+                state.session = {
+                  session_id: body.session_id,
+                  expires_at_ms: body.expires_at_ms,
+                };
+                await refresh();
+              } else failed(body);
+            })
+          );
+          form.appendChild(input);
+          form.appendChild(btn);
+          input.addEventListener('keydown', (event) => {
+            if (event.key === 'Enter') { event.preventDefault(); btn.click(); }
+          });
+          loginForm = form;
+          loginInput = input;
+        }
+        host.appendChild(loginForm);
+        if (refocusInput) loginInput.focus();
       }
       host.appendChild(el('p', { class: 'sub' }, t(i18n, 'ui.members_roles_via_access')));
       if (state.error) {
