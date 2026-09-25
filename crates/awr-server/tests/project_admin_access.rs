@@ -178,6 +178,28 @@ async fn admin_can_preview_apply_via_mcp_and_http_non_admin_denied_no_raw_secret
     assert_eq!(applied_val["replayed"], false);
     assert!(!applied_val.to_string().contains("awr1.mcp-member."));
 
+    let directory = admin_mcp
+        .call_tool(
+            CallToolRequestParams::new("awr_team_access_inspect".to_owned()).with_arguments(
+                json!({"protocol_version":1,"limit":50})
+                    .as_object()
+                    .unwrap()
+                    .clone(),
+            ),
+        )
+        .await
+        .unwrap()
+        .structured_content
+        .unwrap();
+    assert!(
+        directory["items"]
+            .as_array()
+            .unwrap()
+            .iter()
+            .any(|m| m["actor_id"] == "mcp-human")
+    );
+    assert!(!directory.to_string().contains("secret_hash"));
+
     let outcome = admin_mcp
         .call_tool(
             CallToolRequestParams::new("awr_team_access_outcome".to_owned()).with_arguments(

@@ -393,9 +393,9 @@ async fn snapshot(
         &[&tenant,&project,&actor,&caller]).await?.iter().map(|r|json!({"workstream_id":r.get::<_,String>(0),"authority_version":r.get::<_,i64>(1).to_string(),
         "read":r.get::<_,bool>(2),"write":r.get::<_,bool>(3),"manage":r.get::<_,bool>(4),"attest_execution":r.get::<_,bool>(5),"reconcile_execution":r.get::<_,bool>(6),
         "active":r.get::<_,bool>(7),"version":r.get::<_,i64>(8).to_string()})).collect::<Vec<_>>();
-    let credentials=tx.query("SELECT id,(extract(epoch FROM expires_at)*1000)::bigint,(extract(epoch FROM revoked_at)*1000)::bigint
-        FROM awr_team.credentials WHERE tenant_id=$1 AND actor_id=$2 AND client_id=$3 ORDER BY id FOR SHARE",&[&tenant,&actor,&caller]).await?.iter()
-        .map(|r|json!({"id":r.get::<_,String>(0),"expires_at_unix_ms":r.get::<_,Option<i64>>(1),"revoked_at_unix_ms":r.get::<_,Option<i64>>(2)})).collect::<Vec<_>>();
+    let credentials=tx.query("SELECT id,(extract(epoch FROM expires_at)*1000)::bigint,(extract(epoch FROM revoked_at)*1000)::bigint,project_id
+        FROM awr_team.credentials WHERE tenant_id=$1 AND actor_id=$2 AND client_id=$3 AND (project_id IS NULL OR project_id=$4) ORDER BY id FOR SHARE",&[&tenant,&actor,&caller,&project]).await?.iter()
+        .map(|r|json!({"id":r.get::<_,String>(0),"expires_at_unix_ms":r.get::<_,Option<i64>>(1),"revoked_at_unix_ms":r.get::<_,Option<i64>>(2),"project_scoped":r.get::<_,Option<String>>(3).is_some()})).collect::<Vec<_>>();
     Ok(
         json!({"tenant_id":tenant,"project_id":project,"actor_id":actor,"client_id":caller,"tenant_status":tenant_status,
         "source_snapshot_id":p.get::<_,Option<String>>(0),"coordinator_epoch":p.get::<_,String>(1),"catalog":catalog,
@@ -546,6 +546,17 @@ pub struct AdminAccessPlan {
     /// project grants instead; non-empty values are rejected with Forbidden.
     #[serde(default)]
     pub revoke_tenant_credentials: Vec<String>,
+    /// Restrict a newly registered credential to this project. Raw values remain
+    /// in the caller's one-time delivery channel, never in this plan or receipt.
+    #[serde(default, skip_serializing_if = "is_false")]
+    pub credential_project_scoped: bool,
+    /// Revoke only credentials explicitly scoped to this actor/client/project.
+    #[serde(default, skip_serializing_if = "Vec::is_empty")]
+    pub revoke_project_credentials: Vec<String>,
+}
+
+fn is_false(value: &bool) -> bool {
+    !value
 }
 
 impl AdminAccessPlan {
@@ -569,6 +580,16 @@ impl AdminAccessPlan {
             )
             || self.grants.len() > 256
             || self.revoke_tenant_credentials.len() > 256
+            || self.revoke_project_credentials.len() > 256
+            || self
+                .revoke_project_credentials
+                .iter()
+                .any(|id| !credential_id(id))
+            || self.credential_project_scoped && self.credential.is_none()
+            || self
+                .credential
+                .as_ref()
+                .is_some_and(|c| self.revoke_project_credentials.contains(&c.id))
             || serde_json::to_vec(self).map_err(|_| invalid())?.len() > 65536
         {
             return Err(invalid());
@@ -755,6 +776,8 @@ fn enforce_inspect_grant_ceiling(
 }
 
 /// App-role store for project-admin MCP preview/apply/outcome (not schema-owner).
+mod members;
+
 pub struct ProjectAccessStore {
     pool: Arc<PgPool>,
 }
@@ -835,13 +858,17 @@ impl ProjectAccessStore {
             &plan.subject_client_id,
         )
         .await?;
-        let current_streams = if plan.remove_membership {
+        let current_streams = if plan.remove_membership
+            || state["membership"]["role"] != plan.role
+            || state["membership"]["independent_review"] != plan.independent_review
+        {
             actor_active_grant_streams(&tx, tenant, project, &plan.subject.id).await?
         } else {
             active_grant_streams(&state)
         };
         enforce_client_grant_ceiling(&auth, plan, &current_streams)?;
         validate_current(&tx, &owner, &state).await?;
+        members::validate_credentials(&tx, tenant, project, plan, &state).await?;
         ensure_last_admin_safe(&tx, tenant, project, plan, &state).await?;
         let impact = impact_report(
             &tx,
@@ -861,7 +888,7 @@ impl ProjectAccessStore {
             "impact": impact,
             "grant_semantics": "replace_selected_actor_client_project_grants",
             "membership_scope": "all_clients_of_actor_in_project",
-            "credential_revocation_scope": "refused_for_project_admin_use_project_grant_revoke",
+            "credential_revocation_scope": "explicit_project_credentials_only",
             "project_revoke_preserves_other_projects": true,
             "permission_ceiling": "project_admin_template_without_special_authorities",
             "raw_secrets_in_response": false
@@ -986,7 +1013,10 @@ impl ProjectAccessStore {
             &plan.subject_client_id,
         )
         .await?;
-        let current_streams = if plan.remove_membership {
+        let current_streams = if plan.remove_membership
+            || before["membership"]["role"] != plan.role
+            || before["membership"]["independent_review"] != plan.independent_review
+        {
             actor_active_grant_streams(&tx, tenant, project, &plan.subject.id).await?
         } else {
             active_grant_streams(&before)
@@ -1002,11 +1032,13 @@ impl ProjectAccessStore {
         }
         let owner = plan.as_owner_plan(tenant, project);
         validate_current(&tx, &owner, &before).await?;
+        members::validate_credentials(&tx, tenant, project, plan, &before).await?;
         ensure_last_admin_safe(&tx, tenant, project, plan, &before).await?;
         if plan.remove_membership {
             apply_remove_membership(&tx, tenant, project, plan).await?;
         } else {
             apply_policy(&tx, &owner).await?;
+            members::apply_credentials(&tx, tenant, project, plan).await?;
         }
         let after = snapshot(
             &tx,
@@ -1104,6 +1136,8 @@ impl ProjectAccessStore {
                 "subject_actor_id": plan.subject.id,
                 "subject_client_id": plan.subject_client_id,
                 "role": plan.role,
+                "issued_credential_id": plan.credential.as_ref().map(|c| &c.id),
+                "revoked_project_credentials": plan.revoke_project_credentials,
             });
             let digest = crate::ops_audit::digest_of(&summary);
             let mut audit = crate::ops_audit::write_from_auth(
@@ -1241,9 +1275,9 @@ async fn impact_report(
             "SELECT id, client_id,
                     (extract(epoch FROM revoked_at)*1000)::bigint AS revoked_at_unix_ms
              FROM awr_team.credentials
-             WHERE tenant_id=$1 AND actor_id=$2
+             WHERE tenant_id=$1 AND actor_id=$2 AND (project_id IS NULL OR project_id=$3)
              ORDER BY id",
-            &[&tenant, &actor],
+            &[&tenant, &actor, &project],
         )
         .await?
         .iter()

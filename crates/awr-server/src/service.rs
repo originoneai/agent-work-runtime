@@ -319,8 +319,51 @@ pub(crate) async fn dispatch_authorized(
 #[serde(deny_unknown_fields)]
 struct AccessInspectBody {
     protocol_version: u32,
-    subject_actor_id: String,
-    subject_client_id: String,
+    subject_actor_id: Option<String>,
+    subject_client_id: Option<String>,
+    cursor: Option<String>,
+    limit: Option<u32>,
+}
+
+impl AccessInspectBody {
+    async fn inspect(
+        self,
+        state: &StateData,
+        project: &ProjectBinding,
+        token: &str,
+    ) -> Result<Value, PgError> {
+        if self.protocol_version != 1 {
+            return Err(PgError::Protocol("invalid access inspect".into()));
+        }
+        let access = state.store.project_access();
+        match (self.subject_actor_id, self.subject_client_id) {
+            (Some(actor), Some(client)) if self.cursor.is_none() && self.limit.is_none() => {
+                access
+                    .inspect(
+                        &project.tenant_id,
+                        &project.project_id,
+                        token,
+                        &actor,
+                        &client,
+                    )
+                    .await
+            }
+            (None, None) => {
+                access
+                    .members(
+                        &project.tenant_id,
+                        &project.project_id,
+                        token,
+                        self.cursor.as_deref(),
+                        self.limit.unwrap_or(50),
+                    )
+                    .await
+            }
+            _ => Err(PgError::Protocol(
+                "supply both subject selectors or neither".into(),
+            )),
+        }
+    }
 }
 
 #[derive(Deserialize)]
@@ -426,20 +469,7 @@ pub(crate) async fn access_dispatch_authorized(
             AccessOp::Inspect => {
                 let req: AccessInspectBody = serde_json::from_slice(&body)
                     .map_err(|_| PgError::Protocol("invalid access inspect".into()))?;
-                if req.protocol_version != 1 {
-                    return Err(PgError::Protocol("invalid access inspect".into()));
-                }
-                state
-                    .store
-                    .project_access()
-                    .inspect(
-                        &project.tenant_id,
-                        &project.project_id,
-                        token,
-                        &req.subject_actor_id,
-                        &req.subject_client_id,
-                    )
-                    .await
+                req.inspect(&state, project, token).await
             }
             AccessOp::Preview => {
                 let req: AccessPreviewBody = serde_json::from_slice(&body)

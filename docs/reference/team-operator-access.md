@@ -1,5 +1,28 @@
 # Team operator access management
 
+## Member directory and project credentials
+
+Call `awr_team_access_inspect` with only `protocol_version: 1` to list members.
+The optional `limit` (1–100) and `cursor` provide keyset pagination. Supplying
+both subject selectors retains single-client inspection. The directory includes
+client grants and credential expiry/revocation metadata, never bearer values or
+registration hashes. A delegated administrator sees only members whose full
+active project grant scope they can manage.
+
+An access plan may set `credential_project_scoped: true` when registering a new
+credential hash. Schema 32 binds that credential to the URL's project as well as
+its existing actor/client grants. Existing tenant credentials retain their scope.
+`revoke_project_credentials` atomically revokes specified credentials belonging
+to that exact actor/client/project; it refuses legacy tenant credentials and
+credentials of another project. Rotation can register the new hash and revoke
+the previous project credential in the same preview/apply transaction.
+
+Generate the random bearer in the caller's explicit one-time delivery channel
+and send only its hash to preview/apply. Keep the same plan and request ID until
+the result is known. After a disconnect, query the existing request's outcome;
+never silently issue a replacement. If the raw bearer was lost, an administrator
+must deliberately rotate it. The server cannot recover its plaintext.
+
 ## Project-admin MCP/HTTP management (AWR-TMCP-012)
 
 After local owner bootstrap (database migrate + first project admin via

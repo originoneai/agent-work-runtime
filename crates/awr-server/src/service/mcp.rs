@@ -164,6 +164,9 @@ fn catalog() -> Vec<Tool> {
                     "secret_hash":{"type":"string","pattern":"^sha256:[0-9a-f]{64}$"},
                     "expires_at_unix_ms":{"type":["integer","null"]}
                 }},
+            "independent_review":{"type":"boolean","default":false},
+            "credential_project_scoped":{"type":"boolean","default":false},
+            "revoke_project_credentials":{"type":"array","maxItems":256,"items":{"type":"string","maxLength":128}},
             "remove_membership":{"type":"boolean","default":false},
             "revoke_tenant_credentials":{"type":"array","maxItems":256,"items":{"type":"string"},
                 "description":"Must be empty for project-admin MCP; tenant credential revoke is owner-only."}
@@ -188,11 +191,13 @@ fn catalog() -> Vec<Tool> {
         "request_id":{"type":"string","maxLength":128}
     }});
     let access_inspect = json!({"type":"object","additionalProperties":false,
-    "required":["protocol_version","subject_actor_id","subject_client_id"],
+    "required":["protocol_version"],
     "properties":{
         "protocol_version":{"type":"integer","const":1},
         "subject_actor_id":{"type":"string","maxLength":128},
-        "subject_client_id":{"type":"string","maxLength":128}
+        "subject_client_id":{"type":"string","maxLength":128},
+        "cursor":{"type":"string","maxLength":128},
+        "limit":{"type":"integer","minimum":1,"maximum":100}
     }});
     let planning_suggest = json!({
         "type":"object","additionalProperties":false,
@@ -272,11 +277,11 @@ fn catalog() -> Vec<Tool> {
             command.as_object().unwrap().clone())
             .with_annotations(ToolAnnotations::new().read_only(false).destructive(false).idempotent(true).open_world(false)),
         Tool::new("awr_team_access_inspect",
-            "Project-admin only. Inspect one subject actor/client membership, grants and redacted credential metadata for this project. Shows impact on other clients and other projects. Never returns raw secrets. Requires access.manage_project.",
+            "Project-admin only. Omit both subject selectors to list a bounded member directory (cursor/limit); supply both to inspect one actor/client. Returns permitted memberships, grants and credential metadata, never raw secrets. Requires access.manage_project and explicit manage grants.",
             access_inspect.as_object().unwrap().clone())
             .with_annotations(ToolAnnotations::new().read_only(true).destructive(false).idempotent(true).open_world(false)),
         Tool::new("awr_team_access_preview",
-            "Project-admin only. Preview a project-bounded member/role/grant/credential-hash plan without mutation. Impact labels membership sharing and refuses tenant-wide credential revoke. Raw bearers must be generated via awr-server access token (protected install channel) and only secret_hash may appear here. Requires access.manage_project.",
+            "Project-admin only. Preview a project-bounded member/role/grant/credential-hash plan without mutation. Impact labels membership sharing and refuses tenant-wide credential revoke. Generate credentials in a protected operator or browser channel; only secret_hash may appear here. Set credential_project_scoped for member credentials; revoke_project_credentials cannot revoke legacy tenant credentials. Requires access.manage_project.",
             access_preview.as_object().unwrap().clone())
             .with_annotations(ToolAnnotations::new().read_only(true).destructive(false).idempotent(true).open_world(false)),
         Tool::new("awr_team_access_apply",
@@ -400,25 +405,9 @@ impl ServerHandler for Endpoint {
                         .await
                 }
                 "awr_team_access_inspect" => {
-                    let subject_actor = args
-                        .get("subject_actor_id")
-                        .and_then(|v| v.as_str())
-                        .ok_or_else(|| PgError::Protocol("invalid access inspect".into()))?;
-                    let subject_client = args
-                        .get("subject_client_id")
-                        .and_then(|v| v.as_str())
-                        .ok_or_else(|| PgError::Protocol("invalid access inspect".into()))?;
-                    self.state
-                        .store
-                        .project_access()
-                        .inspect(
-                            &self.project.tenant_id,
-                            &self.project.project_id,
-                            &access.bearer,
-                            subject_actor,
-                            subject_client,
-                        )
-                        .await
+                    let req: super::AccessInspectBody = serde_json::from_value(args)
+                        .map_err(|_| PgError::Protocol("invalid access inspect".into()))?;
+                    req.inspect(&self.state, &self.project, &access.bearer).await
                 }
                 "awr_team_access_preview" => {
                     let plan: awr_team_pg::AdminAccessPlan =
