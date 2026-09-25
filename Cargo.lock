@@ -230,6 +230,7 @@ dependencies = [
  "awr-team",
  "cap-fs-ext",
  "cap-std",
+ "globset",
  "pulldown-cmark",
  "serde",
  "serde_json",
