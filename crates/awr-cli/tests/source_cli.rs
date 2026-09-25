@@ -56,6 +56,47 @@ impl Drop for Fixture {
 }
 
 #[test]
+fn stateless_inventory_ignores_finder_metadata_but_reports_real_source_drift() {
+    let fixture = Fixture::new();
+    fs::create_dir_all(fixture.0.join("docs/visuals")).unwrap();
+    fs::create_dir_all(fixture.0.join("docs/generated")).unwrap();
+    fs::write(fixture.0.join("docs/generated/projection.md"), "derived").unwrap();
+    let args = [
+        "source",
+        "inventory",
+        "--include",
+        "docs",
+        "--exclude-glob",
+        "docs/generated/**",
+    ];
+    let baseline = fixture.ok(&args);
+    assert_eq!(baseline["files"], serde_json::json!({}));
+    assert!(!fixture.0.join(".awr").exists());
+    fs::write(
+        fixture.0.join("docs/visuals/.DS_Store"),
+        "synthetic Finder metadata",
+    )
+    .unwrap();
+    fs::write(
+        fixture.0.join("baseline.json"),
+        serde_json::to_vec(&baseline).unwrap(),
+    )
+    .unwrap();
+    let mut compare = args.to_vec();
+    compare.extend(["--baseline", "baseline.json"]);
+    let unchanged = fixture.ok(&compare);
+    assert_eq!(unchanged["fresh"], true);
+    assert_eq!(unchanged["total_changes"], 0);
+    fs::write(fixture.0.join("docs/visuals/real.md"), "real source").unwrap();
+    let stale = fixture.ok(&compare);
+    assert_eq!(stale["fresh"], false);
+    assert_eq!(stale["changes"][0]["path"], "docs/visuals/real.md");
+    assert_eq!(stale["changes"][0]["kind"], "added");
+    assert!(!stale.to_string().contains("synthetic Finder metadata"));
+    assert!(!fixture.0.join(".awr").exists());
+}
+
+#[test]
 fn explicit_mapping_init_list_scan_and_reindex() {
     let fixture = Fixture::new();
     let source = fixture.0.join("work-ledger.yaml");

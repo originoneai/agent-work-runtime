@@ -206,6 +206,7 @@ dependencies = [
  "awr-store",
  "cap-fs-ext",
  "cap-std",
+ "globset",
  "pulldown-cmark",
  "serde",
  "serde_json",
