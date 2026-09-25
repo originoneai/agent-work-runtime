@@ -291,28 +291,84 @@ pub(crate) async fn dispatch_authorized(
     let Ok(_permit) = state.permits.try_acquire() else {
         return response(StatusCode::SERVICE_UNAVAILABLE, json!({"code":"Busy"}));
     };
-    let result = tokio::time::timeout(Duration::from_secs(30), async {
-        match request {
-            Request::Query(q) => {
-                state
-                    .store
-                    .query(&project.tenant_id, &project.project_id, token, q)
-                    .await
+    let (action, work) = match &request {
+        Request::Query(q) => (
+            if WorkstreamQuery::OPERATIONS.contains(&q.op.as_str()) {
+                q.op.clone()
+            } else {
+                "invalid.query".into()
+            },
+            q.work_id.clone(),
+        ),
+        Request::Command(c) => (
+            if command_action_name(&c.op).is_some() {
+                c.op.clone()
+            } else {
+                "invalid.command".into()
+            },
+            Some(c.work_id.clone()),
+        ),
+    };
+    let result = tokio::time::timeout(
+        Duration::from_secs(30),
+        audited(&state, project, token, &action, work.as_deref(), async {
+            match request {
+                Request::Query(q) => {
+                    state
+                        .store
+                        .query(&project.tenant_id, &project.project_id, token, q)
+                        .await
+                }
+                Request::Command(c) => {
+                    state
+                        .commands
+                        .execute(&project.tenant_id, &project.project_id, token, c)
+                        .await
+                }
             }
-            Request::Command(c) => {
-                state
-                    .commands
-                    .execute(&project.tenant_id, &project.project_id, token, c)
-                    .await
-            }
-        }
-    })
+        }),
+    )
     .await;
     match result {
         Ok(Ok(value)) => response(StatusCode::OK, value),
         Ok(Err(error)) => error_response(error),
         Err(_) => unavailable(),
     }
+}
+
+/// Metadata is recorded before dispatch; interrupted requests remain unknown.
+/// Business receipts remain authoritative when final audit recording fails.
+pub(crate) async fn audited(
+    state: &StateData,
+    project: &ProjectBinding,
+    token: &str,
+    action: &str,
+    work: Option<&str>,
+    future: impl std::future::Future<Output = Result<Value, PgError>>,
+) -> Result<Value, PgError> {
+    let id = state
+        .store
+        .request_audit_begin(&project.tenant_id, &project.project_id, token, action, work)
+        .await?;
+    let result = future.await;
+    let status = match &result {
+        Ok(_) => "succeeded",
+        Err(PgError::Forbidden) => "denied",
+        Err(
+            PgError::Protocol(_)
+            | PgError::Unsupported(_)
+            | PgError::PreconditionsChanged
+            | PgError::IdempotencyConflict,
+        ) => "failed",
+        Err(_) => "unknown",
+    };
+    // Do not turn a committed command into a retryable failure. Its access record
+    // stays unknown if the final metadata write fails; command.inspect resolves it.
+    let _ = state
+        .store
+        .request_audit_finish(&project.tenant_id, &project.project_id, &id, status)
+        .await;
+    result
 }
 
 #[derive(Deserialize)]
@@ -464,64 +520,73 @@ pub(crate) async fn access_dispatch_authorized(
     let Ok(_permit) = state.permits.try_acquire() else {
         return response(StatusCode::SERVICE_UNAVAILABLE, json!({"code":"Busy"}));
     };
-    let result = tokio::time::timeout(Duration::from_secs(30), async {
-        match op {
-            AccessOp::Inspect => {
-                let req: AccessInspectBody = serde_json::from_slice(&body)
-                    .map_err(|_| PgError::Protocol("invalid access inspect".into()))?;
-                req.inspect(&state, project, token).await
-            }
-            AccessOp::Preview => {
-                let req: AccessPreviewBody = serde_json::from_slice(&body)
-                    .map_err(|_| PgError::Protocol("invalid access preview".into()))?;
-                if req.protocol_version != 1 {
-                    return Err(PgError::Protocol("invalid access preview".into()));
+    let action = match op {
+        AccessOp::Inspect => "access.inspect",
+        AccessOp::Preview => "access.preview",
+        AccessOp::Apply => "access.apply",
+        AccessOp::Outcome => "access.outcome",
+    };
+    let result = tokio::time::timeout(
+        Duration::from_secs(30),
+        audited(&state, project, token, action, None, async {
+            match op {
+                AccessOp::Inspect => {
+                    let req: AccessInspectBody = serde_json::from_slice(&body)
+                        .map_err(|_| PgError::Protocol("invalid access inspect".into()))?;
+                    req.inspect(&state, project, token).await
                 }
-                state
-                    .store
-                    .project_access()
-                    .preview(&project.tenant_id, &project.project_id, token, &req.plan)
-                    .await
-            }
-            AccessOp::Apply => {
-                let req: AccessApplyBody = serde_json::from_slice(&body)
-                    .map_err(|_| PgError::Protocol("invalid access apply".into()))?;
-                if req.protocol_version != 1 {
-                    return Err(PgError::Protocol("invalid access apply".into()));
+                AccessOp::Preview => {
+                    let req: AccessPreviewBody = serde_json::from_slice(&body)
+                        .map_err(|_| PgError::Protocol("invalid access preview".into()))?;
+                    if req.protocol_version != 1 {
+                        return Err(PgError::Protocol("invalid access preview".into()));
+                    }
+                    state
+                        .store
+                        .project_access()
+                        .preview(&project.tenant_id, &project.project_id, token, &req.plan)
+                        .await
                 }
-                state
-                    .store
-                    .project_access()
-                    .apply(
-                        &project.tenant_id,
-                        &project.project_id,
-                        token,
-                        &req.plan,
-                        &req.request_id,
-                        &req.expected_state,
-                        &req.expected_plan,
-                    )
-                    .await
-            }
-            AccessOp::Outcome => {
-                let req: AccessOutcomeBody = serde_json::from_slice(&body)
-                    .map_err(|_| PgError::Protocol("invalid access outcome".into()))?;
-                if req.protocol_version != 1 {
-                    return Err(PgError::Protocol("invalid access outcome".into()));
+                AccessOp::Apply => {
+                    let req: AccessApplyBody = serde_json::from_slice(&body)
+                        .map_err(|_| PgError::Protocol("invalid access apply".into()))?;
+                    if req.protocol_version != 1 {
+                        return Err(PgError::Protocol("invalid access apply".into()));
+                    }
+                    state
+                        .store
+                        .project_access()
+                        .apply(
+                            &project.tenant_id,
+                            &project.project_id,
+                            token,
+                            &req.plan,
+                            &req.request_id,
+                            &req.expected_state,
+                            &req.expected_plan,
+                        )
+                        .await
                 }
-                state
-                    .store
-                    .project_access()
-                    .outcome(
-                        &project.tenant_id,
-                        &project.project_id,
-                        token,
-                        &req.request_id,
-                    )
-                    .await
+                AccessOp::Outcome => {
+                    let req: AccessOutcomeBody = serde_json::from_slice(&body)
+                        .map_err(|_| PgError::Protocol("invalid access outcome".into()))?;
+                    if req.protocol_version != 1 {
+                        return Err(PgError::Protocol("invalid access outcome".into()));
+                    }
+                    state
+                        .store
+                        .project_access()
+                        .outcome(
+                            &project.tenant_id,
+                            &project.project_id,
+                            token,
+                            &req.request_id,
+                        )
+                        .await
+                }
             }
-        }
-    })
+        }),
+    )
     .await;
     match result {
         Ok(Ok(value)) => response(StatusCode::OK, value),
@@ -654,7 +719,15 @@ async fn planning_dispatch(
     let Ok(_permit) = state.permits.try_acquire() else {
         return response(StatusCode::SERVICE_UNAVAILABLE, json!({"code":"Busy"}));
     };
-    let result = tokio::time::timeout(Duration::from_secs(30), async {
+    let action = match op {
+        PlanningOp::Suggest => "planning.suggest",
+        PlanningOp::Draft => "planning.draft",
+        PlanningOp::Preview => "planning.preview",
+        PlanningOp::Approve => "planning.approve",
+        PlanningOp::Publish => "planning.publish",
+        PlanningOp::Outcome => "planning.outcome",
+    };
+    let result = tokio::time::timeout(Duration::from_secs(30), audited(&state, project, token, action, None, async {
         let source = state.store.source();
         match op {
             PlanningOp::Suggest => {
@@ -727,7 +800,7 @@ async fn planning_dispatch(
                 }
             }
         }
-    })
+    }))
     .await;
     match result {
         Ok(Ok(value)) => response(StatusCode::OK, value),

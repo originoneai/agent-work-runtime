@@ -11,11 +11,15 @@ use serde::{Deserialize, Serialize};
 use serde_json::{Value, json};
 use tokio_postgres::{IsolationLevel, Transaction};
 
+mod activity;
+mod navigation;
+
 const QUERIES: &[&str] = &[
     "capabilities",
     "workstreams.list",
     "work.list",
     "work.search",
+    "work.next",
     "work.prepare",
     "events.list",
     "session.inspect",
@@ -34,6 +38,8 @@ const QUERIES: &[&str] = &[
     "audit.history",
     "audit.export",
     "audit.count",
+    "audit.requests",
+    "audit.development",
 ];
 
 #[derive(Clone, Debug, Deserialize, Serialize)]
@@ -114,11 +120,15 @@ impl WorkstreamQuery {
         }
         let paged = matches!(
             self.op.as_str(),
-            "workstreams.list" | "work.list" | "work.search" | "events.list"
+            "workstreams.list" | "work.list" | "work.search" | "events.list" | "work.next"
         );
         let audit = matches!(
             self.op.as_str(),
-            "audit.history" | "audit.export" | "audit.count"
+            "audit.history"
+                | "audit.export"
+                | "audit.count"
+                | "audit.requests"
+                | "audit.development"
         );
         if !paged && !audit && (self.cursor.is_some() || self.limit.is_some())
             || self.search.is_some() != (self.op == "work.search")
@@ -162,12 +172,21 @@ impl WorkstreamQuery {
                     || path.contains("://")
                     || path.chars().any(char::is_control)
             })
-            || matches!(self.op.as_str(), "capabilities" | "workstreams.list")
-                && (self.work_id.is_some()
-                    || self.session_id.is_some()
-                    || self.workstream_id.is_some())
+            || matches!(
+                self.op.as_str(),
+                "capabilities" | "workstreams.list" | "work.next"
+            ) && (self.work_id.is_some()
+                || self.session_id.is_some()
+                || self.workstream_id.is_some())
             || matches!(self.op.as_str(), "work.list" | "work.search")
                 && (self.work_id.is_some() || self.session_id.is_some())
+            || matches!(self.op.as_str(), "audit.requests" | "audit.development")
+                && (self.session_id.is_some()
+                    || self.workstream_id.is_some()
+                    || self.change_id.is_some()
+                    || self.category.is_some()
+                    || self.request_id.is_some()
+                    || self.include_denies.is_some())
             || self.op == "session.inspect" && self.session_id.is_none()
             || self.op == "planning.outcome"
                 && (self.work_id.is_some() || self.session_id.is_some())
@@ -396,6 +415,12 @@ pub(crate) async fn read(
     q.validate()?;
     // TMCP-011: every query shares the work.read decision; invisible streams stay filtered above.
     authorize_query(auth, None, q.work_id.as_deref(), &q.op)?;
+    if q.op == "work.next" {
+        return navigation::next(tx, tenant, project, auth, q).await;
+    }
+    if matches!(q.op.as_str(), "audit.requests" | "audit.development") {
+        return activity::read(tx, tenant, project, auth, q).await;
+    }
     if q.op == "capabilities" {
         let mut caps = json!({
             "protocol":"awr-team-workstream","protocol_version":1,"queries":QUERIES,
@@ -443,6 +468,8 @@ pub(crate) async fn read(
                 "non_repudiation": "not_claimed_against_db_owner"
             }
         });
+        caps["identity"] = navigation::identity(auth);
+        caps["project_entry"] = json!("work.next");
         // WS-014: explicit scope=main / old-client / local-file boundaries.
         if let Some(obj) = caps.as_object_mut() {
             obj.extend(
