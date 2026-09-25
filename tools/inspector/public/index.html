@@ -6,6 +6,7 @@
 <title>AWR Inspector</title>
 <meta http-equiv="content-security-policy" content="default-src 'self'; script-src 'self'; style-src 'self'; connect-src 'self'; font-src 'self'; img-src 'self' data:; object-src 'none'; base-uri 'none'; form-action 'self'">
 <link rel="stylesheet" href="styles.css">
+<link rel="stylesheet" href="team-network.css">
 <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'><text y='20' font-size='20'>🧭</text></svg>">
 </head>
 <body>
@@ -410,11 +411,15 @@
           </p>
         </div>
       </div>
-      <div class="team-grid">
-        <aside class="panel" id="teamAuth"></aside>
-        <aside class="panel" id="teamProjects"></aside>
-        <section class="panel" id="teamOverview"></section>
-        <section class="panel" id="teamDetail"></section>
+      <div class="team-connection">
+        <section id="teamProjects"></section>
+        <aside id="teamAuth"></aside>
+      </div>
+      <div class="collaboration-board">
+        <div class="team-grid collab-layout">
+          <section class="graph-area" id="teamOverview"></section>
+          <aside class="task-detail" id="teamDetail" aria-label="Task details" data-i18n-aria-label="ui.network_detail"></aside>
+        </div>
       </div>
       <details class="raw-fold">
         <summary data-i18n="ui.raw_json">Raw JSON</summary>
@@ -615,6 +620,7 @@
 <script src="locales/zh-CN.js"></script>
 <script src="i18n.js"></script>
 <script src="demo-data.js"></script>
+<script src="team-network.js"></script>
 <script src="team-web.js"></script>
 <script src="app.js"></script>
 </body>

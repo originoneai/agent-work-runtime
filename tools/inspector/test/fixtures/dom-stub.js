@@ -128,6 +128,7 @@ function install() {
       return byId.get(id);
     },
     createElement: (tag) => new StubElement(tag),
+    createElementNS: (_namespace, tag) => new StubElement(tag),
     createTextNode: (text) => {
       const node = new StubElement('#text');
       node.textContent = text;

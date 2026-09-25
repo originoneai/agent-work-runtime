@@ -1,0 +1,120 @@
+'use strict';
+const { test, beforeEach } = require('node:test');
+const assert = require('node:assert/strict');
+const { install } = require('./fixtures/dom-stub');
+const { model, visualStatus } = require('../public/team-network');
+const { createTeamWeb } = require('../public/team-web');
+const i18n = require('../public/i18n');
+const node = id => document.getElementById(id);
+let ui;
+beforeEach(() => {
+  install(); i18n.setLocale('en'); ui = createTeamWeb({ i18n, $: node });
+});
+
+test('network renders only explicit visible edges and keeps empty authorized streams', () => {
+  const works = [
+    { key: 'A', workstream_id: 'one' },
+    { key: 'B', workstream_id: 'one', depends_on: [{ key: 'A', visible: true }, { key: 'A', visible: true }] },
+    { key: 'C', workstream_id: 'two', depends_on: [{ key: 'B', visible: true }, { key: 'HIDDEN', visible: false }, { key: 'MISSING', visible: true }] },
+    { key: 'D', workstream_id: 'two', depends_on: [{ key: 'A' }] },
+  ];
+  const graph = model(works, [{ id: 'one', title: 'Backend' }, { id: 'two' }, { id: 'empty' }], 'Unspecified');
+  assert.deepEqual(graph.edges, [['A', 'B', 'local'], ['B', 'C', 'cross']]);
+  assert.equal(graph.lanes.length, 3);
+  assert.equal(graph.lanes[2].works.length, 0);
+  assert.equal(visualStatus({}), 'unknown');
+  assert.equal(visualStatus({ status: 'unclaimed' }), 'unknown');
+});
+
+test('visible prerequisites precede consumers; cycles remain finite and data is unchanged', () => {
+  const works = [
+    { key: 'consumer', depends_on: [{ key: 'upstream', visible: true }] },
+    { key: 'upstream' },
+    { key: 'cycle-a', depends_on: [{ key: 'cycle-b', visible: true }] },
+    { key: 'cycle-b', depends_on: [{ key: 'cycle-a', visible: true }] },
+  ];
+  const original = JSON.stringify(works);
+  const graph = model(works, [], 'Unspecified');
+  assert.deepEqual(graph.lanes[0].works.map(w => w.key), ['upstream', 'consumer', 'cycle-a', 'cycle-b']);
+  assert.equal(JSON.stringify(works), original);
+  assert.equal(graph.edges.length, 3);
+});
+
+function live(handler, count = 4) {
+  const works = Array.from({ length: count }, (_, i) => ({ key: 'W-' + i, workstream_id: 'stream', contract_hash: 'current' }));
+  global.fetch = async (url) => ({ ok: true, json: async () => {
+    if (url.includes('/projects?')) return { ok: true, projects: [{ key: 'project' }], session: { session_id: 'test' } };
+    if (url.includes('/overview?')) return { ok: true, works, workstreams: [{ id: 'stream', title: 'Stream' }], interaction_mode: 'mcp' };
+    return handler(url, works);
+  } });
+}
+const detail = work => ({ ok: true, work: { ...work, detail_loaded: true, status: null,
+  acceptance: ['Verify the contract'], depends_on: [], context_complete: true } });
+
+test('graph hydration bounds concurrency and batches without inventing runtime or progress', async () => {
+  let active = 0, maximum = 0, reads = 0;
+  live(async (url, works) => {
+    reads++; active++; maximum = Math.max(maximum, active);
+    await new Promise(resolve => setImmediate(resolve)); active--;
+    return detail(works.find(w => w.key === new URL(url, 'http://test').searchParams.get('work')));
+  }, 65);
+  await ui.refresh();
+  assert.equal(reads, 60); assert.equal(maximum, 4);
+  assert.equal(ui.state.works.filter(w => w.detail_loaded).length, 60);
+  assert.match(node('teamOverview').textContent, /Details read: 60 \/ 65/);
+  assert.doesNotMatch(node('teamOverview').textContent, /100%|0%/);
+  assert.match(node('teamDetail').textContent, /No execution recorded/);
+  assert.match(node('teamDetail').textContent, /Not reported/);
+  await ui._loadGraphDetails();
+  assert.equal(reads, 65);
+});
+
+test('logout invalidates pending hydration and never restores protected data', async () => {
+  let release, started;
+  const ready = new Promise(resolve => { started = resolve; });
+  const gate = new Promise(resolve => { release = resolve; });
+  live(async (url, works) => {
+    if (url.endsWith('/logout')) return { ok: true };
+    started(); await gate; return detail(works[0]);
+  });
+  const refreshing = ui.refresh(); await ready;
+  await node('teamAuth').find(el => el.tagName === 'BUTTON' && el.textContent === 'Log out').click();
+  release(); await refreshing;
+  assert.equal(ui.state.session, null);
+  assert.deepEqual(ui.state.works, []);
+  assert.deepEqual(ui.state.streams, []);
+  assert.equal(node('rawTeamBody').textContent, '');
+});
+
+test('an expired hydration response invalidates other concurrent responses', async () => {
+  live(async (url, works) => {
+    if (url.includes('work=W-0')) return { ok: false, error: { code: 'SessionExpired', message: 'expired' } };
+    await new Promise(resolve => setImmediate(resolve)); return detail(works[1]);
+  });
+  await ui.refresh();
+  assert.equal(ui.state.session, null); assert.deepEqual(ui.state.works, []);
+  assert.match(node('teamAuth').textContent, /SessionExpired/);
+});
+
+test('denied and mismatched details remain unread with visible errors', async () => {
+  live(() => ({ ok: false, error: { code: 'SourceChanged', message: 'refresh' } }), 1);
+  await ui.refresh();
+  assert.ok(!ui.state.works[0].detail_loaded);
+  assert.match(node('teamAuth').textContent, /SourceChanged/);
+  live((_url, works) => detail({ ...works[0], workstream_id: 'wrong' }), 1);
+  await ui.refresh();
+  assert.ok(!ui.state.works[0].detail_loaded);
+  assert.match(node('teamAuth').textContent, /InvalidResponse/);
+});
+
+test('project content is text and unknown fields never become synthetic claims', async () => {
+  const title = '<img src=x onerror=alert(1)>';
+  ui.state.projects = [{ key: 'project', title }]; ui.state.projectKey = 'project';
+  ui.state.works = [{ key: 'W', title }]; ui.state.selected = 'W'; ui.render();
+  const card = node('teamOverview').find(el => el.getAttribute('role') === 'button');
+  assert.equal(card.getAttribute('aria-pressed'), 'true');
+  assert.match(card.textContent, /<img src=x/);
+  assert.equal(card.find(el => el.tagName === 'IMG'), null);
+  assert.doesNotMatch(node('teamOverview').textContent, /Synthetic demo data/);
+  assert.doesNotMatch(node('teamDetail').textContent, /Passed|Merged|GPT-/);
+});

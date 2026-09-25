@@ -36,13 +36,15 @@
   function createTeamWeb(opts) {
     const i18n = opts.i18n;
     const $ = opts.$;
-    const callApi = opts.callApi;
+    const network = root.AWR_TEAM_NETWORK || (typeof require === 'function' ? require('./team-network') : null);
     const state = {
       viewMode: 'team', // personal | team
-      layout: 'cards', // cards | list
+      layout: 'cards', // collaboration graph | list
       projectKey: null,
       projects: [],
       works: [],
+      streams: [],
+      graphLoading: false,
       selected: null,
       session: null,
       disconnect: false,
@@ -59,11 +61,16 @@
     let detailGeneration = 0;
     let loginForm = null;
     let loginInput = null;
+    let net = null;
+    let pendingDetails = new Map();
 
     function clearProjectData() {
       state.projects = [];
       state.projectKey = null;
       state.works = [];
+      state.streams = [];
+      state.graphLoading = false;
+      pendingDetails = new Map();
       state.members = [];
       state.selected = null;
       state.raw = null;
@@ -76,8 +83,11 @@
       state.error = (body && body.error) || { code: 'InvalidResponse', message: 'Invalid Team response' };
       state.disconnect = state.error.code === 'BridgeUnreachable';
       if (['Unauthenticated', 'SessionExpired'].includes(state.error.code)) {
+        ++generation;
+        ++detailGeneration;
         state.session = null;
         clearProjectData();
+        render();
       }
       return body;
     }
@@ -109,50 +119,43 @@
         host.appendChild(el('p', { class: 'sub' }, t(i18n, state.loading ? 'ui.team_loading' : 'ui.no_projects_yet')));
         return;
       }
-      const ul = el('ul', { class: 'team-project-list' });
+      const picker = el('select', { id: 'teamProjectSelect', 'aria-label': t(i18n, 'ui.my_projects') });
       for (const p of state.projects) {
-        const li = el('li');
-        const btn = el('button', {
-          class: 'btn' + (p.key === state.projectKey ? ' primary' : ''),
-          type: 'button',
-        }, [p.title || p.key, p.role].filter(Boolean).join(' · '));
-        btn.addEventListener('click', () => {
-          state.projectKey = p.key;
-          refresh();
-        });
-        li.appendChild(btn);
-        ul.appendChild(li);
+        const option = el('option', { value: p.key }, p.title || p.key);
+        option.value = p.key;
+        picker.appendChild(option);
       }
-      host.appendChild(ul);
+      picker.value = state.projectKey;
+      picker.addEventListener('change', () => {
+        state.projectKey = picker.value;
+        state.selected = null;
+        refresh();
+      });
+      host.appendChild(picker);
     }
 
-    function workCard(w) {
+    // The website task-node structure; project data remains text, never HTML.
+    function workCard(w, lane) {
       const card = el('article', {
-        class: 'team-card' + (state.selected === w.key ? ' selected' : ''),
-        dataset: { key: w.key },
+        class: 'task-node', dataset: { key: w.key, status: network.visualStatus(w) },
         tabindex: '0', role: 'button', 'aria-label': w.title || w.key,
+        'aria-pressed': String(state.selected === w.key), 'aria-controls': 'teamDetail',
       });
-      card.appendChild(el('h3', null, w.title || w.key));
-      card.appendChild(el('div', { class: 'sub' }, w.key + ' · ' + workStatus(w)));
-      card.appendChild(
-        el('div', null, t(i18n, 'ui.owner_p0', { p0: w.owner_person || '—' }))
-      );
-      const agent =
-        w.agent && typeof w.agent === 'object'
-          ? `${w.agent.id || ''} (${w.agent.state || ''})`
-          : w.agent || '—';
-      card.appendChild(el('div', null, t(i18n, 'ui.agent_running_p0', { p0: agent })));
-      card.appendChild(
-        el('div', null, t(i18n, 'ui.outcome_p0', { p0: w.outcome || '—' }))
-      );
-      const blocker =
-        w.blocker && typeof w.blocker === 'object' ? w.blocker.summary : w.blocker;
-      card.appendChild(
-        el('div', null, t(i18n, 'ui.blocker_reason_p0', { p0: blocker || '—' }))
-      );
-      card.appendChild(
-        el('div', null, t(i18n, 'ui.next_step_p0', { p0: w.next_step || '—' }))
-      );
+      card.appendChild(el('span', { class: 'node-status', 'aria-hidden': 'true' }));
+      const body = el('span', { class: 'node-body' });
+      const top = el('span', { class: 'node-top' });
+      top.appendChild(el('b', { class: 'node-id' }, w.key));
+      top.appendChild(el('span', { class: 'task-state' }, workStatus(w)));
+      body.appendChild(top);
+      body.appendChild(el('strong', null, w.title || w.key));
+      const people = el('span', { class: 'node-people' });
+      people.appendChild(el('span', { class: 'node-owner' }, w.owner_person || t(i18n, 'ui.network_owner_unknown')));
+      const agent = w.agent && typeof w.agent === 'object' ? w.agent.id : w.agent;
+      if (agent) people.appendChild(el('span', { class: 'node-agent' }, [agent, w.model].filter(Boolean).join(' · ')));
+      if (lane) people.appendChild(el('span', { class: 'node-lane' }, lane.name));
+      body.appendChild(people);
+      if (w.dependency_export_unavailable) body.appendChild(el('span', { class: 'node-note' }, t(i18n, 'ui.network_dependency_gap')));
+      card.appendChild(body);
       card.addEventListener('click', () => selectWork(w.key));
       card.addEventListener('keydown', (event) => {
         if (event.key === 'Enter' || event.key === ' ') { event.preventDefault(); selectWork(w.key); }
@@ -218,7 +221,7 @@
       const cardsBtn = el(
         'button',
         { class: 'btn' + (state.layout === 'cards' ? ' primary' : ''), type: 'button' },
-        t(i18n, 'ui.card_layout')
+        t(i18n, 'ui.network_graph_view')
       );
       const listBtn = el(
         'button',
@@ -248,11 +251,35 @@
         host.appendChild(banner);
       }
 
-      host.appendChild(el('h3', null, t(i18n, 'ui.parallel_overview')));
+      const heading = el('div', { class: 'demo-heading net-heading' });
+      heading.appendChild(el('p', { class: 'scene-kicker' }, t(i18n, 'ui.network_kicker')));
+      heading.appendChild(el('h2', null, t(i18n, 'ui.network_title')));
+      heading.appendChild(el('p', { class: 'net-subtitle' }, t(i18n, 'ui.network_subtitle')));
+      if (state.raw) heading.appendChild(el('p', { class: 'net-note' + (isLive() ? ' live-note' : '') },
+        t(i18n, isLive() ? 'ui.team_live_data' : 'ui.network_demo')));
+      host.appendChild(heading);
+      if (!state.works.length && !state.streams.length) {
+        host.appendChild(el('p', { class: 'network-empty', role: 'status' },
+          t(i18n, state.loading ? 'ui.team_loading' : state.projectKey ? 'ui.network_empty' : 'ui.network_sign_in')));
+        return;
+      }
+      net = network.model(state.works, state.streams, t(i18n, 'ui.network_unassigned'));
+      if (isLive()) {
+        const loaded = state.works.filter(w => w.detail_loaded).length;
+        const coverage = el('div', { class: 'network-coverage', role: 'status' });
+        coverage.appendChild(el('span', null, t(i18n, 'ui.network_coverage', { loaded, total: state.works.length })));
+        if (state.graphLoading) coverage.appendChild(el('span', null, t(i18n, 'ui.team_detail_loading')));
+        else if (loaded < state.works.length) {
+          const load = el('button', { class: 'linkish', type: 'button' }, t(i18n, 'ui.network_load_details'));
+          load.addEventListener('click', () => loadGraphDetails());
+          coverage.appendChild(load);
+        }
+        host.appendChild(coverage);
+      }
       if (state.layout === 'cards') {
-        const grid = el('div', { class: 'team-card-grid' });
-        for (const w of state.works) grid.appendChild(workCard(w));
-        host.appendChild(grid);
+        network.render(host, net, { el, card: workCard, count: state.works.length,
+          project: state.projects.find(p => p.key === state.projectKey) || { key: state.projectKey },
+          text: (key, vars) => t(i18n, 'ui.network_' + key, vars) });
       } else {
         const table = el('table', { class: 'team-table' });
         const thead = el('thead');
@@ -286,8 +313,44 @@
     function isLive() { return state.raw && state.raw.interaction_mode === 'mcp'; }
 
     function workStatus(w) {
-      if (w.status && w.status !== 'unknown') return w.status;
-      return t(i18n, w.detail_loaded ? 'ui.team_no_runtime' : 'ui.team_select_for_status');
+      const known = ['planned', 'unclaimed', 'claimed', 'in_progress', 'running', 'blocked', 'waiting', 'in_review', 'review', 'completed', 'accepted', 'cancelled'];
+      if (w.status && w.status !== 'unknown') return known.includes(w.status) ? t(i18n, 'ui.network_status_' + w.status) : w.status;
+      return t(i18n, w.detail_loaded ? 'ui.team_no_runtime' : 'ui.network_unread');
+    }
+
+    async function readWork(work) {
+      if (work.detail_loaded) return { ok: true, work };
+      if (pendingDetails.has(work.key)) return pendingDetails.get(work.key);
+      const current = generation;
+      const params = new URLSearchParams({ project: state.projectKey, work: work.key, workstream: work.workstream_id });
+      if (work.contract_hash) params.set('contract', work.contract_hash);
+      const pending = api('/api/team/work?' + params).then(body => {
+        if (current !== generation) return null;
+        if (!body || !body.ok || !body.work || body.work.key !== work.key || body.work.workstream_id !== work.workstream_id) {
+          failed(body && body.error ? body : null);
+          return null;
+        }
+        Object.assign(work, body.work);
+        return body;
+      }).finally(() => { if (current === generation) pendingDetails.delete(work.key); });
+      pendingDetails.set(work.key, pending);
+      return pending;
+    }
+
+    async function loadGraphDetails() {
+      if (!isLive() || state.graphLoading) return;
+      const current = generation;
+      const queue = state.works.filter(w => !w.detail_loaded).slice(0, 60);
+      state.graphLoading = true;
+      render();
+      // Bound concurrent reads and total work per batch; large projects stay navigable.
+      let index = 0;
+      await Promise.all(Array.from({ length: Math.min(4, queue.length) }, async () => {
+        while (current === generation && index < queue.length) await readWork(queue[index++]);
+      }));
+      if (current !== generation) return;
+      state.graphLoading = false;
+      render();
     }
 
     async function selectWork(key) {
@@ -297,19 +360,13 @@
       const work = selectedWork();
       if (!work || !isLive()) { render(); return; }
       const current = generation;
-      state.detailLoading = true;
+      state.detailLoading = !work.detail_loaded;
       state.error = null;
       render();
-      const params = new URLSearchParams({ project: state.projectKey, work: key, workstream: work.workstream_id });
-      if (work.contract_hash) params.set('contract', work.contract_hash);
-      const body = await api('/api/team/work?' + params);
+      const body = await readWork(work);
       if (current !== generation || request !== detailGeneration || state.selected !== key) return;
       state.detailLoading = false;
-      if (!body || !body.ok || !body.work || body.work.key !== key) failed(body);
-      else {
-        Object.assign(work, body.work);
-        state.detailResponse = body;
-      }
+      if (body) state.detailResponse = body;
       render();
     }
 
@@ -465,8 +522,28 @@
         host.appendChild(el('p', { class: 'sub' }, t(i18n, 'ui.select_a_card_or_row')));
         return;
       }
-      host.appendChild(el('h2', null, w.title || w.key));
-      host.appendChild(el('p', { class: 'sub' }, w.key));
+      const header = el('div', { class: 'task-detail-heading' });
+      const lane = state.streams.find(s => s.id === w.workstream_id);
+      header.appendChild(el('span', null, [w.key, lane && (lane.title || lane.external_key)].filter(Boolean).join(' · ')));
+      header.appendChild(el('h4', null, w.title || w.key));
+      header.appendChild(el('em', { class: 'detail-state', dataset: { status: network.visualStatus(w) } }, workStatus(w)));
+      if (w.description) header.appendChild(el('p', null, w.description));
+      host.appendChild(header);
+      const unknown = t(i18n, 'ui.network_not_reported');
+      const section = (title, rows) => {
+        const group = el('section', { class: 'detail-section' });
+        group.appendChild(el('h5', null, t(i18n, 'ui.network_' + title)));
+        const list = el('dl');
+        for (const [key, value] of rows) {
+          const row = el('div'); row.appendChild(el('dt', null, t(i18n, 'ui.network_' + key)));
+          row.appendChild(el('dd', null, value == null || value === '' ? unknown : value)); list.appendChild(row);
+        }
+        group.appendChild(list); host.appendChild(group);
+      };
+      const agent = w.agent && typeof w.agent === 'object' ? w.agent.id : w.agent;
+      section('people', [['developer', w.owner_person], ['agent', agent], ['model', w.model], ['session', w.session_id], ['tokens', null]]);
+      section('progress', [['status', workStatus(w)], ['next', w.next_step]]);
+      section('related', [['pr', null], ['ci', null]]);
       if (isLive()) {
         if (state.detailLoading) {
           host.appendChild(el('p', { role: 'status' }, t(i18n, 'ui.team_detail_loading')));
@@ -476,14 +553,15 @@
           host.appendChild(el('p', { class: 'sub' }, t(i18n, 'ui.team_detail_unavailable')));
           return;
         }
-        host.appendChild(el('p', null, workStatus(w)));
+
         host.appendChild(el('h3', null, t(i18n, 'ui.acceptance_criteria')));
         const acceptance = el('ul', { class: 'loops' });
-        for (const criterion of w.acceptance) acceptance.appendChild(el('li', null, criterion));
+        for (const criterion of w.acceptance || []) acceptance.appendChild(el('li', null, criterion));
         host.appendChild(acceptance);
         host.appendChild(el('h3', null, t(i18n, 'ui.visible_dependencies')));
         const dependencies = el('ul', { class: 'loops' });
-        for (const dependency of w.depends_on) {
+        for (const dependency of w.depends_on || []) {
+          if (dependency.visible !== true) continue;
           const item = el('li');
           const target = state.works.find((other) => other.key === dependency.key);
           const link = el(target ? 'button' : 'span', target ? { class: 'linkish', type: 'button' } : null, dependency.key);
@@ -495,7 +573,7 @@
         if (w.dependency_export_unavailable) host.appendChild(el('p', { class: 'team-error' }, t(i18n, 'ui.team_dependency_unavailable')));
         if (w.recovery_blocked) host.appendChild(el('p', { class: 'team-error' }, 'RecoveryBlocked'));
         host.appendChild(el('p', { class: 'sub' }, t(i18n, 'ui.team_admission_not_evaluated')));
-        if (!w.context_complete) host.appendChild(el('p', { class: 'sub' }, w.completeness_reasons.join(' · ')));
+        if (!w.context_complete) host.appendChild(el('p', { class: 'sub' }, (w.completeness_reasons || []).join(' · ')));
         renderActions(host, w);
         return;
       }
@@ -515,7 +593,7 @@
     function renderAuth(host) {
       const refocusInput = loginInput && document.activeElement === loginInput;
       clear(host);
-      host.appendChild(el('h3', null, t(i18n, 'ui.web_session')));
+      if (!state.session) host.appendChild(el('h3', null, t(i18n, 'ui.web_session')));
       if (state.session && state.session.session_id) {
         if (loginInput) loginInput.value = '';
         loginForm = null;
@@ -581,7 +659,7 @@
         host.appendChild(loginForm);
         if (refocusInput) loginInput.focus();
       }
-      host.appendChild(el('p', { class: 'sub' }, t(i18n, 'ui.members_roles_via_access')));
+      if (!state.session) host.appendChild(el('p', { class: 'sub' }, t(i18n, 'ui.members_roles_via_access')));
       if (state.error) {
         const message = el('p', { class: 'team-error', role: 'alert' });
         message.appendChild(el('strong', null, state.error.code));
@@ -612,10 +690,23 @@
       const overview = $('teamOverview');
       const detail = $('teamDetail');
       const auth = $('teamAuth');
-      if (auth) renderAuth(auth);
+      const active = typeof document !== 'undefined' ? document.activeElement : null;
+      const activeKey = active && active.dataset && active.dataset.key;
+      const frame = overview && overview.querySelector('.scene-frame');
+      const scroll = frame ? [frame.scrollLeft, frame.scrollTop] : [0, 0];
+      if (auth) { auth.classList.toggle('signed-in', Boolean(state.session)); renderAuth(auth); }
       if (projects) renderProjects(projects);
       if (overview) renderOverview(overview);
       if (detail) renderDetail(detail);
+      if (overview && net) {
+        network.layout(overview, net);
+        const nextFrame = overview.querySelector('.scene-frame');
+        if (nextFrame) { nextFrame.scrollLeft = scroll[0]; nextFrame.scrollTop = scroll[1]; }
+        if (activeKey) {
+          const card = [...overview.querySelectorAll('.task-node')].find(n => n.dataset.key === activeKey);
+          if (card) card.focus({ preventScroll: true });
+        }
+      }
       const raw = $('rawTeamBody');
       if (raw) {
         // The upstream session identifier is a cookie credential, not debug data.
@@ -629,6 +720,9 @@
       state.error = null;
       state.loading = true;
       state.works = [];
+      state.streams = [];
+      state.graphLoading = false;
+      pendingDetails = new Map();
       state.members = [];
       state.raw = null;
       state.detailLoading = false;
@@ -656,6 +750,7 @@
           else {
             state.works = overview.works.map((work) => ({ ...work }));
             state.members = overview.members || [];
+            state.streams = overview.workstreams || [];
             state.session = overview.session || state.session;
             state.raw = overview;
             state.disconnect = false;
@@ -665,7 +760,19 @@
       if (!selectedWork()) state.selected = null;
       state.loading = false;
       render();
-      if (state.selected && isLive()) await selectWork(state.selected);
+      if (isLive()) {
+        if (state.streams.length) {
+          await loadGraphDetails();
+          if (current !== generation) return;
+          if (!state.selected && state.works.length) state.selected = state.works[0].key;
+        }
+        if (state.selected) await selectWork(state.selected);
+      }
+    }
+
+    const overviewHost = $('teamOverview');
+    if (overviewHost && typeof ResizeObserver !== 'undefined') {
+      new ResizeObserver(() => { if (net) network.layout(overviewHost, net); }).observe(overviewHost);
     }
 
     return {
@@ -677,6 +784,8 @@
       _guardDouble: guardDouble,
       _runAction: runAction,
       _selectedWork: selectedWork,
+      _selectWork: selectWork,
+      _loadGraphDetails: loadGraphDetails,
     };
   }
 
