@@ -21,7 +21,7 @@
     AWR<span class="sep">/</span>INSPECTOR
   </span>
   <span class="ver" id="verTag">v0.4.0</span>
-  <span class="projpick" title="Current project directory" data-i18n-title="ui.current_project_directory">
+  <span class="projpick" id="projectPicker" title="Current project directory" data-i18n-title="ui.current_project_directory">
     <svg viewBox="0 0 24 24" fill="none" stroke-width="1.7" aria-hidden="true"><path d="M3 7a2 2 0 0 1 2-2h4l2 2h8a2 2 0 0 1 2 2v9a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/></svg>
     <span data-i18n="ui.project">Project</span> <em id="projPath">…</em>
   </span>
@@ -61,7 +61,7 @@
 
   <!-- Navigation -->
   <nav class="rail" aria-label="Views" data-i18n-aria-label="ui.views">
-    <span class="rail-head"><span data-i18n="ui.runtime">Runtime</span></span>
+    <span class="rail-head" id="navHeading"><span data-i18n="ui.runtime">Runtime</span></span>
     <a href="#overview" data-view="overview" aria-current="true">
       <svg viewBox="0 0 24 24"><rect x="3" y="3" width="8" height="8" rx="1.5"/><rect x="13" y="3" width="8" height="8" rx="1.5"/><rect x="3" y="13" width="8" height="8" rx="1.5"/><rect x="13" y="13" width="8" height="8" rx="1.5"/></svg>
       <span data-i18n="ui.overview">Overview</span>
@@ -541,7 +541,7 @@
     </section>
 
     <footer class="page">
-      <span><span data-i18n="ui.awr_inspector_local_project_viewer">AWR Inspector · Local project viewer</span></span>
+      <span id="footBrand"><span data-i18n="ui.awr_inspector_local_project_viewer">AWR Inspector · Local project viewer</span></span>
       <span><a href="https://github.com/originoneai/agent-work-runtime" target="_blank" rel="noopener">github.com/originoneai/agent-work-runtime</a></span>
       <span id="footMode"></span>
     </footer>

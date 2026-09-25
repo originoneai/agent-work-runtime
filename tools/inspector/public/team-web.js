@@ -53,6 +53,7 @@
       error: null,
       loading: false,
       detailLoading: false,
+      detailResponse: null,
     };
     let generation = 0;
     let detailGeneration = 0;
@@ -65,6 +66,7 @@
       state.selected = null;
       state.raw = null;
       state.detailLoading = false;
+      state.detailResponse = null;
       state.lastReceipts = Object.create(null);
     }
 
@@ -289,6 +291,7 @@
     async function selectWork(key) {
       const request = ++detailGeneration;
       state.selected = key;
+      state.detailResponse = null;
       const work = selectedWork();
       if (!work || !isLive()) { render(); return; }
       const current = generation;
@@ -301,7 +304,10 @@
       if (current !== generation || request !== detailGeneration || state.selected !== key) return;
       state.detailLoading = false;
       if (!body || !body.ok || !body.work || body.work.key !== key) failed(body);
-      else Object.assign(work, body.work);
+      else {
+        Object.assign(work, body.work);
+        state.detailResponse = body;
+      }
       render();
     }
 
@@ -597,6 +603,12 @@
       if (projects) renderProjects(projects);
       if (overview) renderOverview(overview);
       if (detail) renderDetail(detail);
+      const raw = $('rawTeamBody');
+      if (raw) {
+        // The upstream session identifier is a cookie credential, not debug data.
+        const { session, ...overviewData } = state.raw || {};
+        raw.textContent = state.raw ? JSON.stringify({ overview: overviewData, detail: state.detailResponse }, null, 2) : '';
+      }
     }
 
     async function refresh() {
@@ -607,12 +619,15 @@
       state.members = [];
       state.raw = null;
       state.detailLoading = false;
+      state.detailResponse = null;
       render();
       const projects = await api('/api/team/projects?view=' + encodeURIComponent(state.viewMode));
       if (current !== generation) return;
       if (!projects || !projects.ok || !Array.isArray(projects.projects)) {
         clearProjectData();
-        failed(projects);
+        if (projects && projects.error && projects.error.code === 'Unauthenticated' && !state.session) {
+          state.error = null; // The first visit is a normal sign-in state.
+        } else failed(projects);
       } else {
         state.projects = projects.projects;
         state.session = projects.session || state.session;
@@ -626,7 +641,7 @@
           if (current !== generation) return;
           if (!overview || !overview.ok || !Array.isArray(overview.works)) failed(overview);
           else {
-            state.works = overview.works;
+            state.works = overview.works.map((work) => ({ ...work }));
             state.members = overview.members || [];
             state.session = overview.session || state.session;
             state.raw = overview;
