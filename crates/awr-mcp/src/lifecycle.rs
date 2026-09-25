@@ -50,6 +50,7 @@ struct List {
 #[serde(deny_unknown_fields)]
 struct Checkpoint {
     session: Id,
+    agent: Option<String>,
     expected_revision: Revision,
     context_hash: String,
     digest: String,
@@ -165,12 +166,16 @@ fn snapshot(root: &Path) -> Result<(Store, Project)> {
 }
 fn session_value(store: &Store, project: &Project, session: Id) -> Result<Value> {
     let waits = store.mcp_waits(project.id, session)?;
+    let checkpoint = store.latest_checkpoint(project.id, session)?;
+    let inherited = store.recovery_checkpoint(project.id, session)?;
     Ok(
         json!({"ok":true,"read_only":true,"freshness_basis":"runtime_database","source_refresh_performed":false,
         "project_revision":project.project_revision,"session":store.session(project.id,session)?,
-        "binding":store.mcp_session_binding(project.id,session)?,"checkpoint":store.latest_checkpoint(project.id,session)?,
+        "binding":store.mcp_session_binding(project.id,session)?,"checkpoint":checkpoint,
+        "checkpoint_save":checkpoint.as_ref().map(|c|store.checkpoint_save_metadata(project.id,c.id)).transpose()?,
+        "checkpoint_write_revision":{"scope":"project","value":project.project_revision,"cli_option":"--expected-project-revision"},
         "continuity_state":if waits.iter().any(|w|w.status=="waiting_user"){"waiting_user"}else{"available"},"waits":waits,
-        "inherited_checkpoint":store.recovery_checkpoint(project.id,session)?,"claims":store.session_claims(project.id,session)?,
+        "inherited_checkpoint":inherited,"inherited_checkpoint_save":inherited.as_ref().map(|c|store.checkpoint_save_metadata(project.id,c.id)).transpose()?,"claims":store.session_claims(project.id,session)?,
         "resumed_successor":store.resumed_successor(project.id,session)?,"checkpoint_saves":store.checkpoint_attempts(project.id,session,20)?}),
     )
 }
@@ -245,19 +250,23 @@ pub(crate) fn call(root: &Path, name: &str, args: Value, client: &str) -> Result
         }
         "awr_session_checkpoint" => {
             let args: Checkpoint = parse(args)?;
-            let (mut store, project) = write_project(root, args.expected_revision)?;
-            let (checkpoint, event) = Runtime::attach(&mut store, project.id)?.checkpoint(
-                args.expected_revision,
-                args.session,
-                CheckpointDraft {
-                    context_hash: args.context_hash,
-                    digest: args.digest,
-                    next_action: args.next_action,
-                    open_loops: args.open_loops,
-                    changed_entities: args.changed_entities,
-                },
-            )?;
-            json!({"ok":true,"project_revision":event.project_revision,"checkpoint":checkpoint,"checkpoint_save":store.checkpoint_save_metadata(project.id,checkpoint.id)?,"event_id":event.id})
+            let (mut store, project) =
+                write_project(root, args.expected_revision).map_err(Error::for_checkpoint)?;
+            let (checkpoint, event) = Runtime::attach(&mut store, project.id)?
+                .checkpoint_as(
+                    args.expected_revision,
+                    args.session,
+                    CheckpointDraft {
+                        context_hash: args.context_hash,
+                        digest: args.digest,
+                        next_action: args.next_action,
+                        open_loops: args.open_loops,
+                        changed_entities: args.changed_entities,
+                    },
+                    args.agent.as_deref(),
+                )
+                .map_err(Error::for_checkpoint)?;
+            json!({"ok":true,"project_revision":event.project_revision,"checkpoint":checkpoint,"checkpoint_save":store.checkpoint_save_metadata(project.id,checkpoint.id)?,"context_hash_verified":false,"warning":CHECKPOINT_LIMITATION,"event_id":event.id})
         }
         "awr_session_end" => {
             let args: End = parse(args)?;

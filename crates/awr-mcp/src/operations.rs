@@ -458,6 +458,7 @@ fn work(view: &ReadProject, args: WorkArgs) -> Result<Value> {
     )?;
     Ok(
         json!({"work":ready_brief(&work),"acceptance":work.work.item.acceptance,"source_ref":work.work.item.meta.source_ref,
+        "progress":awr_runtime::work_progress(&view.store,view.project.id,&work.work,branch)?,
         "required_dependencies":work.dependencies.dependencies.iter().map(|d| json!({"external_key":d.item.meta.external_key,"status":d.item.status,"revision":d.item.meta.revision,"source_revision":d.item.meta.source_ref.source_revision,"freshness":d.source.freshness})).collect::<Vec<_>>(),
         "missing_dependencies":work.dependencies.missing_keys,"dependency_cycles":work.dependencies.cycle_keys,
         "decisions":decisions.iter().map(|d| json!({"external_key":d.decision.item.meta.external_key,"summary":short(&d.decision.item.decision),"relevance":d.relevance,"reasons":d.reasons,"source_ref":d.decision.item.meta.source_ref})).collect::<Vec<_>>(),

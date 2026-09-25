@@ -27,8 +27,41 @@ awrj ready
 ```
 
 `--provider` and `--model` are recorded labels. They do not invoke a host.
-If a session already exists for the work, use `session show` and that AWR
-session ID. Native chat IDs are not AWR session IDs.
+If a session already exists for the work, inspect `session show` and confirm
+ownership before using that AWR session ID. A different agent/provider/model
+continues through `session resume` into its own session. Native chat IDs are not
+AWR session IDs.
+
+### Recording incomplete progress and caller identity
+
+The current source adds checkpoint caller declarations and
+[dual-source progress queries](../reference/daily-work.md#source-plans-and-recorded-progress).
+This describes source capabilities, not a claim that older packages include them.
+
+Use `session checkpoint --session SESSION --agent YOUR_AGENT ...` to record a
+caller declaration independently from the session label. MCP
+`awr_session_checkpoint` accepts the optional `agent` field. A declaration that
+does not match the selected session is rejected with resume guidance. A matching
+declaration remains **unverified**: local CLI and MCP cannot authenticate the real
+model behind an agent label. MCP's existing client access checks still apply.
+
+For compatibility, omitting the agent records `actor.origin="undeclared"` and
+`actor.agent_id=null`. Historical receipts without attribution are read as
+`origin="not_recorded"`. Neither case inherits authorship from the session's
+agent/provider/model labels; historical events are not rewritten.
+
+`ContextIncomplete` does not prohibit recording unfinished facts. Preserve actual
+failures, missing context and open loops in a checkpoint, using the real last-used
+context hash. Do not invent a hash or treat a saved checkpoint as verified context,
+passing tests or completed work. The CLI and MCP surface that limitation when a
+checkpoint is saved and when its metadata is read.
+
+Checkpoint writes accept `--expected-project-revision`; `--expected-revision` is
+a compatible alias. Use the top-level `project_revision` from `session show`
+(MCP `awr_session_get`), **not** `session.revision`. On a conflict, inspect
+intervening changes before retrying with the current project revision. Recording
+a checkpoint never rewrites source-backed `next_action`; an intended contract
+change belongs in the authoritative source or its authorized writeback path.
 
 ## Generic MCP
 
@@ -120,16 +153,17 @@ read-only against the persistent index; CLI context reads may refresh it.
 ```sh
 AWR_CONTEXT_HASH=$(jq -er '.work_context.context_hash' "$AWR_NOTES/context.json")
 AWR_REV=$(awrj status | jq -er '.project_revision')
-awrj session checkpoint --session "$AWR_SESSION" \
+awrj session checkpoint --session "$AWR_SESSION" --agent "$AWR_AGENT" \
   --context-hash "$AWR_CONTEXT_HASH" \
   --digest "Record the work actually done; do not invent a passing review." \
   --next-action "State the exact next operator or agent action." \
   --open-loop "List every unresolved loop." \
-  --expected-revision "$AWR_REV" > "$AWR_NOTES/checkpoint.json"
+  --expected-project-revision "$AWR_REV" > "$AWR_NOTES/checkpoint.json"
 ```
 
 Digest and hash are caller assertions. Use returned/current revisions after a
-save. Incomplete saves are not recovery checkpoints.
+save. A completed checkpoint save may record unfinished work. An interrupted save
+without a completion receipt is not a recovery checkpoint.
 
 When the same AWR session is still active after host compaction, compile again.
 Use `session resume` only for a real session handoff.

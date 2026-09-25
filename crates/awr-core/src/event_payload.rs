@@ -186,9 +186,9 @@ fn domain_fields(kind: &str, payload: &Value) -> Result<()> {
             "claim.released" | "claim.expired" => {
                 "claim_id agent_id session_id expired_at reconciled_at reason"
             }
-            "checkpoint.started" => "save_schema base_project_revision draft",
+            "checkpoint.started" => "save_schema base_project_revision draft actor",
             "checkpoint.created" => {
-                "checkpoint_id context_hash checkpoint_project_revision changed_entities next_action attempt_id session_delta workstream_binding"
+                "checkpoint_id context_hash checkpoint_project_revision changed_entities next_action attempt_id session_delta workstream_binding actor"
             }
             "checkpoint.abandoned" => "attempt_id reason",
             "artifact.recorded" => "artifact_id source_event_id sha256 size locator",
@@ -283,6 +283,23 @@ fn domain_fields(kind: &str, payload: &Value) -> Result<()> {
             continue;
         }
         let valid = match key.as_str() {
+            "actor" if kind.starts_with("checkpoint.") => {
+                value
+                    .as_object()
+                    .is_some_and(|v| v.len() == 3 && v.contains_key("agent_id"))
+                    && value["identity_verified"] == false
+                    && match value["origin"].as_str() {
+                        Some("caller_supplied_agent") => {
+                            value["agent_id"].as_str().is_some_and(|s| {
+                                !s.trim().is_empty()
+                                    && s.len() <= 256
+                                    && !s.chars().any(char::is_control)
+                            })
+                        }
+                        Some("undeclared" | "not_recorded") => value["agent_id"].is_null(),
+                        _ => false,
+                    }
+            }
             "observation" if kind == "client.compaction_observed" => {
                 serde_json::from_value::<crate::CompactionObservation>(value.clone()).is_ok()
             }
