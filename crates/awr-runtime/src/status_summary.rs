@@ -27,6 +27,16 @@ pub(crate) fn brief(w: &Projected<WorkItem>) -> Value {
         "blocker":w.item.blocker.as_deref().map(short),"source_revision":w.item.meta.source_ref.source_revision,
         "details":{"cli":["work","show",&w.item.meta.external_key],"mcp":"awr_work_get"}})
 }
+pub(crate) fn progress_brief(
+    store: &Store,
+    project: Id,
+    w: &Projected<WorkItem>,
+    branch: Option<Id>,
+) -> Result<Value> {
+    let mut value = brief(w);
+    value["progress"] = crate::work_progress(store, project, w, branch)?;
+    Ok(value)
+}
 /// Scope uses explicit source associations. Omitted verification never becomes a completion claim.
 pub fn summarize_status(
     store: &Store,
@@ -179,12 +189,30 @@ fn summarize_selection(
             *diagnostic_counts.entry(d.code.clone()).or_default() += 1;
         }
     }
+    let current_briefs = current
+        .iter()
+        .take(5)
+        .map(|w| progress_brief(store, project.id, w, readiness.branch_id))
+        .collect::<Result<Vec<_>>>()?;
+    let suggested = focus
+        .map(|w| progress_brief(store, project.id, w, readiness.branch_id))
+        .transpose()?;
+    let progress = if selected.len() == 1 {
+        Some(crate::work_progress(
+            store,
+            project.id,
+            selected[0],
+            readiness.branch_id,
+        )?)
+    } else {
+        None
+    };
     Ok(
         json!({"view":"summary","schema_version":1,"project":project.name,"project_id":project.id,
         "branch_id":readiness.branch_id,"scope":scope,"scope_combination":"intersection","total":selected.len(),"counts":counts,
         "count_basis":"source status; acceptance and delivery are not inferred","project_work_total":works.len(),
-        "current":current.iter().take(5).map(|w|brief(w)).collect::<Vec<_>>(),"current_total":current.len(),
-        "ready_count":ready.len(),"blocked_count":blocked.len(),"suggested_work":focus.map(brief),
+        "current":current_briefs,"current_total":current.len(),"progress":progress,
+        "ready_count":ready.len(),"blocked_count":blocked.len(),"suggested_work":suggested,
         "next_action":focus.map(|w|short(&w.item.next_action)).unwrap_or_else(|| if selected.is_empty(){"No work in this selection; review its source scope.".into()}else{short(&organization.next_action)}),
         "blockers":blocked.iter().take(5).map(|r|json!({"work":r.work.item.meta.external_key,"codes":r.diagnostics.iter().map(|d|&d.code).collect::<BTreeSet<_>>(),"blocker":r.work.item.blocker.as_deref().map(short)})).collect::<Vec<_>>(),"diagnostic_counts":diagnostic_counts,
         "source_freshness":{"basis":"all registered sources in this snapshot","total":sources.len(),"fresh":sources.iter().filter(|s|s.freshness==Freshness::Fresh).count(),"not_fresh":sources.iter().filter(|s|s.freshness!=Freshness::Fresh).map(|s|json!({"id":s.id,"freshness":s.freshness})).take(5).collect::<Vec<_>>()},

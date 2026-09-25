@@ -96,14 +96,22 @@ pub(crate) fn execute(
         .and_then(Value::as_u64)
         .ok_or_else(|| Error::InvalidInput("identified writes require expected_revision".into()))?;
     let (mut store, project) = open(root)?;
-    let operation = store.begin_mcp_operation(
-        project.id,
-        expected,
-        client,
-        request,
-        name,
-        &fingerprint(name, original)?,
-    )?;
+    let operation = store
+        .begin_mcp_operation(
+            project.id,
+            expected,
+            client,
+            request,
+            name,
+            &fingerprint(name, original)?,
+        )
+        .map_err(|error| {
+            if name == "awr_session_checkpoint" {
+                error.for_checkpoint()
+            } else {
+                error
+            }
+        })?;
     args.insert(
         "expected_revision".into(),
         json!(operation.started_revision),

@@ -244,6 +244,21 @@ impl Store {
             .unwrap_or(Ok(vec![]))
     }
 
+    /// Time of the exact source revision's projection receipt, not a file edit time.
+    /// Retained/legacy databases may have no receipt; keep that time unknown.
+    pub fn source_projected_at(
+        &self,
+        project: Id,
+        source: Id,
+        revision: awr_core::Revision,
+    ) -> Result<Option<i64>> {
+        self.conn.query_row("SELECT created_at FROM events WHERE project_id=?1 AND event_type='source.projected'
+            AND json_extract(payload_json,'$.source_id')=?2 AND json_extract(payload_json,'$.source_revision')=?3
+            ORDER BY project_revision DESC LIMIT 1",
+            params![project.to_string(),source.to_string(),crate::transaction::sqlite_revision(revision)?],|r|r.get(0))
+            .optional().map_err(db_error)
+    }
+
     /// Stale/unavailable observations never replace the last successfully projected fingerprint.
     pub fn mark_source_freshness(
         &mut self,

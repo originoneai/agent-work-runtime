@@ -1,7 +1,7 @@
 use crate::{
     EventReference, ImportantEvent, ProjectionChange, SourceState, Store,
     catalog::{id_at, revision_at},
-    checkpoint::{checkpoint_at, validate_draft, write_checkpoint},
+    checkpoint::{checkpoint_actor, checkpoint_at, validate_draft, write_checkpoint},
     db_error,
     events::event_row,
     session::{require_branch, session_at},
@@ -189,12 +189,14 @@ impl Store {
             json_extract(payload_json,'$.session_delta.through_revision'),json_array_length(payload_json,'$.session_delta.session_events'),
             json_array_length(payload_json,'$.session_delta.source_observations'),json_array_length(payload_json,'$.session_delta.observed_changed_entities'),
             json_array_length(payload_json,'$.session_delta.reported_changed_entities'),
-            length(CAST(json_extract(payload_json,'$.session_delta') AS BLOB)) FROM events
+            length(CAST(json_extract(payload_json,'$.session_delta') AS BLOB)),json_extract(payload_json,'$.actor') FROM events
             WHERE project_id=?1 AND event_type='checkpoint.created' AND json_extract(payload_json,'$.checkpoint_id')=?2",
             params![project.to_string(),checkpoint.to_string()],|r|Ok(serde_json::json!({"event_id":id_at(r,0)?,"attempt_id":optional_id(r,1)?,
                 "delta_recorded":r.get::<_,Option<i64>>(2)?==Some(1),"after_revision":r.get::<_,Option<i64>>(3)?,"through_revision":r.get::<_,Option<i64>>(4)?,
                 "session_event_count":r.get::<_,Option<i64>>(5)?,"source_observation_count":r.get::<_,Option<i64>>(6)?,
-                "observed_changed_entity_count":r.get::<_,Option<i64>>(7)?,"reported_changed_entity_count":r.get::<_,Option<i64>>(8)?,"delta_bytes":r.get::<_,Option<i64>>(9)?})))
+                "observed_changed_entity_count":r.get::<_,Option<i64>>(7)?,"reported_changed_entity_count":r.get::<_,Option<i64>>(8)?,"delta_bytes":r.get::<_,Option<i64>>(9)?,
+                "actor":r.get::<_,Option<String>>(10)?.map(|s|serde_json::from_str::<serde_json::Value>(&s)).transpose().map_err(|e|rusqlite::Error::FromSqlConversionFailure(10,rusqlite::types::Type::Text,Box::new(e)))?.unwrap_or_else(||serde_json::json!({"agent_id":null,"origin":"not_recorded","identity_verified":false})),
+                "context_hash_verified":false,"source_work_updated":false,"warning":CHECKPOINT_LIMITATION})))
             .optional().map_err(db_error)?.ok_or_else(||Error::Storage("checkpoint has no creation receipt".into()))
     }
 
@@ -206,13 +208,35 @@ impl Store {
         session: Id,
         draft: CheckpointDraft,
     ) -> Result<Event> {
+        self.begin_checkpoint_save_as(project, expected, session, draft, None)
+    }
+
+    /// Caller identity is a declaration, never inferred from the session label.
+    /// An explicitly different agent must resume into its own session.
+    pub fn begin_checkpoint_save_as(
+        &mut self,
+        project: Id,
+        expected: Revision,
+        session: Id,
+        draft: CheckpointDraft,
+        agent: Option<&str>,
+    ) -> Result<Event> {
         validate_draft(&draft)?;
+        ensure_public_data(&agent)?;
+        if agent.is_some_and(|s| {
+            s.trim().is_empty() || s.len() > 256 || s.chars().any(char::is_control)
+        }) {
+            return Err(Error::InvalidInput("checkpoint agent must be nonblank and at most 256 bytes without control characters".into()));
+        }
         self.runtime_transaction_with_event(project,expected,EventDraft::new("checkpoint.started","Started checkpoint save; completion receipt required"),|tx,_,event| {
             let current=session_at(tx,project,session)?;
             if current.status!="active" {return Err(Error::InvalidTransition(format!("session {session} is {}",current.status)));}
+            if agent.is_some_and(|agent|agent!=current.agent_id) {
+                return Err(Error::RuleViolation("checkpoint caller differs from the session agent; use session resume to continue in a new session with your own agent/provider/model, then save there".into()));
+            }
             require_branch(tx,project,current.branch_id)?;
             event.session_id=Some(session);event.work_item_id=current.work_item_id;event.branch_id=current.branch_id;
-            event.payload=serde_json::json!({"save_schema":1,"base_project_revision":expected,"draft":draft});
+            event.payload=serde_json::json!({"save_schema":1,"base_project_revision":expected,"draft":draft,"actor":checkpoint_actor(agent)});
             Ok(())
         }).map(|(_,event)|event)
     }
@@ -245,6 +269,7 @@ impl Store {
             let delta=snapshot(tx,project,&current,base,draft.changed_entities.clone())?;
             draft.changed_entities=delta.observed_changed_entities.clone();
             let checkpoint=write_checkpoint(tx,project,&current,base,draft,event)?;
+            event.payload["actor"]=started.payload.get("actor").cloned().unwrap_or_else(||serde_json::json!({"agent_id":null,"origin":"not_recorded","identity_verified":false}));
             event.payload["attempt_id"]=serde_json::json!(attempt);
             event.payload["session_delta"]=serde_json::to_value(delta)?;
             Ok(checkpoint)

@@ -12,6 +12,7 @@ pub struct Selection {
     #[arg(long)]
     session: Option<Id>,
     #[arg(long)]
+    /// Caller-declared agent; checkpoint records this separately from the session label.
     agent: Option<String>,
 }
 
@@ -89,7 +90,11 @@ pub enum SessionCommand {
         #[arg(long)]
         /// Additional caller-reported references; kept separate from observed changes.
         changed_entity: Vec<String>,
-        #[arg(long)]
+        /// Expected project revision from session show, not session.revision.
+        #[arg(
+            long = "expected-project-revision",
+            visible_alias = "expected-revision"
+        )]
         expected_revision: Revision,
     },
     /// Close the session and release all of its active claims, even if sources are unavailable.
@@ -380,6 +385,7 @@ pub fn run(root: &Path, command: &SessionCommand, json_output: bool) -> Result<(
             value["checkpoint_save"] = json!(checkpoint_save);
             value["inherited_checkpoint_save"] = json!(inherited_save);
             value["context_requires_refresh"] = json!(true);
+            value["checkpoint_write_revision"] = json!({"scope":"project","value":db.project.project_revision,"cli_option":"--expected-project-revision"});
             let next = checkpoint
                 .as_ref()
                 .or(inherited.as_ref())
@@ -393,7 +399,7 @@ pub fn run(root: &Path, command: &SessionCommand, json_output: bool) -> Result<(
             print(
                 &value,
                 &format!(
-                    "Session: {} ({})\nAgent: {}\nRevision: {}\nNext: {}\nOpen loops: {}\nInherited checkpoint: {}\nIncomplete checkpoint attempts: {}\nRefresh context before continuing work.",
+                    "Session: {} ({})\nSession agent label: {} (not caller proof)\nProject revision (checkpoint --expected-project-revision): {}\nNext: {}\nOpen loops: {}\nInherited checkpoint: {}\nIncomplete checkpoint attempts: {}\nSession revision: {}\nCheckpoint caller: {} (unverified)\n{}\nRefresh context before continuing work.",
                     session.id,
                     session.status,
                     session.agent_id,
@@ -405,6 +411,13 @@ pub fn run(root: &Path, command: &SessionCommand, json_output: bool) -> Result<(
                         .map(|c| c.id.to_string())
                         .unwrap_or_else(|| "none".into()),
                     saves.incomplete_count,
+                    session.revision,
+                    checkpoint_save
+                        .as_ref()
+                        .or(inherited_save.as_ref())
+                        .and_then(|v| v["actor"]["agent_id"].as_str())
+                        .unwrap_or("not declared"),
+                    CHECKPOINT_LIMITATION,
                 ),
                 json_output,
             )
@@ -419,7 +432,19 @@ pub fn run(root: &Path, command: &SessionCommand, json_output: bool) -> Result<(
             changed_entity,
             expected_revision,
         } => {
-            let session = db.selected(selection, work.as_deref())?;
+            // With an explicit session, validate the declaration in the write transaction
+            // so a mismatch returns handoff guidance instead of an empty selector result.
+            let session = if selection.session.is_some() {
+                db.selected(
+                    &Selection {
+                        session: selection.session,
+                        agent: None,
+                    },
+                    work.as_deref(),
+                )?
+            } else {
+                db.selected(selection, work.as_deref())?
+            };
             let draft = CheckpointDraft {
                 context_hash: context_hash.clone(),
                 digest: digest.clone(),
@@ -427,27 +452,36 @@ pub fn run(root: &Path, command: &SessionCommand, json_output: bool) -> Result<(
                 open_loops: open_loop.clone(),
                 changed_entities: changed_entity.clone(),
             };
-            let (checkpoint, event) = Runtime::attach(&mut db.store, project)?.checkpoint(
-                *expected_revision,
-                session.id,
-                draft,
-            )?;
+            let (checkpoint, event) = Runtime::attach(&mut db.store, project)?
+                .checkpoint_as(
+                    *expected_revision,
+                    session.id,
+                    draft,
+                    selection.agent.as_deref(),
+                )
+                .map_err(Error::for_checkpoint)?;
             let mut value = db.metadata(event.project_revision);
             value["checkpoint"] = json!(checkpoint);
             value["event"] = event_brief(&event);
             value["checkpoint_save"] = db.store.checkpoint_save_metadata(project, checkpoint.id)?;
+            value["actor"] = value["checkpoint_save"]["actor"].clone();
+            value["warning"] = json!(CHECKPOINT_LIMITATION);
             value["context_hash_verified"] = json!(false);
             value["context_hash_basis"] = json!("caller_supplied_last_used_context");
             value["save_status"] = json!("completed");
             print(
                 &value,
                 &format!(
-                    "Checkpoint: {}\nSession: {}\nNext: {}\nOpen loops: {}\nRevision: {}",
+                    "Checkpoint: {}\nSession: {}\nNext: {}\nOpen loops: {}\nProject revision: {}\nCaller: {} (unverified)\n{}",
                     checkpoint.id,
                     session.id,
                     checkpoint.next_action,
                     checkpoint.open_loops.join("; "),
-                    event.project_revision
+                    event.project_revision,
+                    selection.agent.as_deref().unwrap_or(
+                        "not declared; use --agent, or session resume when changing agents"
+                    ),
+                    CHECKPOINT_LIMITATION
                 ),
                 json_output,
             )

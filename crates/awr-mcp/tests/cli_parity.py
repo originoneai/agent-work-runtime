@@ -7,6 +7,7 @@ No third-party Python dependencies, model calls, or user project writes.
 """
 import argparse
 from contextlib import closing
+from copy import deepcopy
 import hashlib
 import json
 import queue
@@ -185,7 +186,18 @@ class Parity(unittest.TestCase):
                          "--provider", "fixture", "--model", "no-model-call", "--claim",
                          "--ttl-ms", "600000", "--expected-revision", self.revision()])["session"]["id"]
 
-    def equal_read(self, cli, mcp):
+    def assert_projection_receipt(self, work):
+        source = work["progress"]["source_next_action"]
+        self.assertIsInstance(source["projected_at"], int)
+        with closing(sqlite3.connect(f"file:{self.root / '.awr/state.db'}?mode=ro", uri=True)) as db:
+            receipts = [(json.loads(payload), created_at) for payload, created_at in db.execute(
+                "SELECT payload_json, created_at FROM events WHERE event_type='source.projected'")]
+        matching = [created_at for payload, created_at in receipts
+                    if payload["source_id"] == source["source_id"]
+                    and payload["source_revision"] == source["source_revision"]]
+        self.assertEqual(matching, [source["projected_at"]], "timestamp must identify the source's own projection receipt")
+
+    def equal_read(self, cli, mcp, *, replayed_projection=False):
         self.assertEqual(cli["freshness_basis"], "source_refresh")
         self.assertTrue(cli["source_refresh_performed"])
         self.assertFalse(cli["read_only"])
@@ -203,6 +215,13 @@ class Parity(unittest.TestCase):
             self.assertIn("work_context", cli)
             self.assertEqual(cli["project_revision"], mcp["snapshot"]["project_revision"])
         self.assertIsNone(mcp["snapshot"]["source_refresh_revision"])
+        if replayed_projection:
+            # Restoring a snapshot and replaying a write creates a new receipt time.
+            # Each caller has checked its own receipt before this comparison; all
+            # other fields, and timestamps for same-state reads, remain exact.
+            cli, mcp = deepcopy(cli), deepcopy(mcp)
+            for value in (cli, mcp):
+                value["progress"]["source_next_action"].pop("projected_at")
         self.assertEqual({k: v for k, v in cli.items() if k not in TRANSPORT_FIELDS},
                          {k: v for k, v in mcp.items() if k not in TRANSPORT_FIELDS})
 
@@ -299,6 +318,7 @@ class Parity(unittest.TestCase):
                             "--" + field.replace("_", "-"), message, "--expected-revision", expected])
             source = (self.root / "work.yaml").read_bytes()
             work = self.cli(["work", "show", "W"])
+            self.assert_projection_receipt(work)
             self.restore(snapshot)
             mcp = self.tool("awr_work_transition", {"work": "W", "action": action, "session": sid, "reason": message,
                                                     field: message, "expected_revision": expected})
@@ -310,7 +330,8 @@ class Parity(unittest.TestCase):
             self.assertEqual(cli["event"]["event_type"], mcp["event"]["event_type"])
             self.assertEqual((self.root / "work.yaml").read_bytes(), source)
             current = self.tool("awr_work_get", {"work": "W"}, readonly=True)
-            self.equal_read(work, current)
+            self.assert_projection_receipt(current)
+            self.equal_read(work, current, replayed_projection=True)
             self.assertEqual(current["work"]["status"], status)
         expected = self.revision() - 1
         before = self.state()
@@ -390,6 +411,7 @@ class Parity(unittest.TestCase):
         cli = self.cli(command)
         source = (self.root / "work.yaml").read_bytes()
         work = self.cli(["work", "show", "W", "--source-sha", sha])
+        self.assert_projection_receipt(work)
         self.restore(snapshot)
         mcp = self.tool("awr_work_transition", args)
         for key in ["ok", "code", "project_revision", "source_write_performed", "write_outcome", "error"]:
@@ -401,7 +423,9 @@ class Parity(unittest.TestCase):
         self.assertEqual(source, (self.root / "work.yaml").read_bytes())
         self.assertEqual(work["work"]["status"], "completed")
         self.assertEqual(work["work"]["active_claims"], [])
-        self.equal_read(work, self.tool("awr_work_get", {"work": "W", "source_sha": sha}, readonly=True))
+        current = self.tool("awr_work_get", {"work": "W", "source_sha": sha}, readonly=True)
+        self.assert_projection_receipt(current)
+        self.equal_read(work, current, replayed_projection=True)
 
     def test_bad_input_and_unknown_tool_contracts(self):
         sid = self.session()

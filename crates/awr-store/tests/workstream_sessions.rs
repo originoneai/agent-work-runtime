@@ -181,6 +181,93 @@ impl Drop for Fixture {
         let _ = fs::remove_dir_all(&self.root);
     }
 }
+
+#[test]
+fn progress_checkpoint_requires_current_workstream_ownership() {
+    let mut f = Fixture::new();
+    let session = f.start("W0", false);
+    let checkpoint = f.checkpoint(session.session.id);
+    assert_eq!(
+        f.store
+            .latest_work_progress_checkpoint(f.project, f.works[0], None)
+            .unwrap()
+            .unwrap()
+            .id,
+        checkpoint.id
+    );
+    assert!(
+        f.store
+            .latest_work_progress_checkpoint(f.project, f.works[1], None)
+            .unwrap()
+            .is_none()
+    );
+    assert!(
+        f.store
+            .latest_work_progress_checkpoint(Id::new(), f.works[0], None)
+            .unwrap()
+            .is_none()
+    );
+    // Move through the reviewed source operation; the old immutable session
+    // binding remains history, not progress for the new ownership epoch.
+    f.end(session.session.id);
+    let mut movement = f.movement();
+    movement.expected_ownership_revision = f
+        .store
+        .workstream_ownership(f.project, f.works[0])
+        .unwrap()
+        .revision;
+    let candidate = f.move_candidate();
+    f.source = f
+        .store
+        .commit_source_projection_with_moves(f.rev(), &f.source, "moved", candidate, &[movement])
+        .unwrap();
+    assert!(
+        f.store
+            .latest_work_progress_checkpoint(f.project, f.works[0], None)
+            .unwrap()
+            .is_none()
+    );
+    assert_eq!(
+        f.store.checkpoint(f.project, checkpoint.id).unwrap().id,
+        checkpoint.id
+    );
+    // Returning to the same workstream must not revive an older ownership epoch.
+    let movement = WorkstreamMove {
+        work_item_id: f.works[0].to_string(),
+        from: f.scopes[1],
+        to: f.scopes[0],
+        expected_ownership_revision: f
+            .store
+            .workstream_ownership(f.project, f.works[0])
+            .unwrap()
+            .revision,
+    };
+    f.source = f
+        .store
+        .mark_source_freshness(&f.source, Freshness::Stale)
+        .unwrap();
+    let candidate = f.candidate("returned");
+    f.source = f
+        .store
+        .commit_source_projection_with_moves(f.rev(), &f.source, "returned", candidate, &[movement])
+        .unwrap();
+    assert!(
+        f.store
+            .latest_work_progress_checkpoint(f.project, f.works[0], None)
+            .unwrap()
+            .is_none()
+    );
+    let successor = f.start("W0", false);
+    let current = f.checkpoint(successor.session.id);
+    assert_eq!(
+        f.store
+            .latest_work_progress_checkpoint(f.project, f.works[0], None)
+            .unwrap()
+            .unwrap()
+            .id,
+        current.id
+    );
+}
 fn binding(client: &str, conversation: &str) -> McpSessionBinding {
     McpSessionBinding {
         client: client.into(),
