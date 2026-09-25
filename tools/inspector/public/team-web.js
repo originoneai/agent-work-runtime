@@ -65,8 +65,11 @@
     let loginInput = null;
     let net = null;
     let pendingDetails = new Map();
+    const adminModule = root.AWR_TEAM_ADMIN || (typeof require === 'function' ? require('./team-admin') : null);
+    const admin = adminModule && adminModule.createTeamAdmin({ $, i18n, api, onAuthError: failed });
 
     function clearProjectData() {
+      if (admin) admin.reset();
       state.projects = [];
       state.projectKey = null;
       state.works = [];
@@ -763,6 +766,10 @@
           if (card) card.focus({ preventScroll: true });
         }
       }
+      if (admin) admin.setContext(signedIn && state.raw && state.raw.identity ? {
+        project: state.projectKey, session: state.session.session_id, identity: state.raw.identity,
+        mcpUrl: state.raw.mcp_url,
+      } : null);
       const raw = $('rawTeamBody');
       if (raw) {
         // The upstream session identifier is a cookie credential, not debug data.

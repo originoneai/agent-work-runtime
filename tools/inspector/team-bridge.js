@@ -262,8 +262,13 @@ function createTeamBridge(opts) {
             ...work, workstream_id: stream.id,
           })));
         }
+        const capabilities = await proxyTeam(`/v1/web/projects/${encodeURIComponent(project)}/query`, req,
+          { protocol_version: 1, op: 'capabilities' }, 'POST');
+        if (!capabilities || capabilities.status >= 400) return liveError(capabilities);
+        const identity = capabilities.json && (capabilities.json.data || capabilities.json).identity;
         return {
           ok: true,
+          identity: identity || null,
           project,
           works,
           workstreams: streams.items.map(({ id, external_key, title }) => ({ id, external_key, title })),
@@ -330,6 +335,39 @@ function createTeamBridge(opts) {
         next_step: data.next_step || null,
         execution_admission: data.execution_admission || 'not_evaluated',
       } };
+    },
+
+    'POST /api/team/access': async (_url, body, req, res) => {
+      if (!TEAM.live) return { ok: false, error: { code: 'Unsupported', message: 'Live Team access required' } };
+      const input = asObject(body);
+      if (!input || typeof input.project !== 'string' || !input.project ||
+          !['inspect', 'preview', 'apply', 'outcome'].includes(input.operation) ||
+          !input.payload || typeof input.payload !== 'object' || Array.isArray(input.payload)) {
+        return { ok: false, error: { code: 'InvalidInput', message: 'Invalid access operation' } };
+      }
+      const upstream = await proxyTeam(`/v1/web/projects/${encodeURIComponent(input.project)}/access/${input.operation}`,
+        req, input.payload, 'POST');
+      if (!upstream || upstream.status >= 400) return liveError(upstream);
+      applyProxiedCookies(res, upstream.setCookie);
+      return { ok: true, data: upstream.json };
+    },
+
+    'GET /api/team/activity': async (url, _body, req, res) => {
+      if (!TEAM.live) return { ok: false, error: { code: 'Unsupported', message: 'Live Team audit required' } };
+      const project = url.searchParams.get('project');
+      const kind = url.searchParams.get('kind');
+      if (!project || !['requests', 'development'].includes(kind)) {
+        return { ok: false, error: { code: 'InvalidInput', message: 'Project and activity kind required' } };
+      }
+      const query = { protocol_version: 1, op: 'audit.' + kind, limit: 50 };
+      for (const key of ['cursor', 'member_actor_id', 'work_id']) {
+        const value = url.searchParams.get(key);
+        if (value) query[key] = value;
+      }
+      const upstream = await proxyTeam(`/v1/web/projects/${encodeURIComponent(project)}/query`, req, query, 'POST');
+      if (!upstream || upstream.status >= 400) return liveError(upstream);
+      applyProxiedCookies(res, upstream.setCookie);
+      return { ok: true, data: upstream.json.data || upstream.json };
     },
 
     'POST /api/team/login': async (_url, body, req, res) => {

@@ -755,3 +755,36 @@ button.linkish {
   .team-toolbar { gap: 6px; }
   .team-toolbar .btn { flex: 1; padding: 8px; }
 }
+
+/* Team member and audit console. */
+.team-console-tabs { display: flex; gap: 8px; margin: 12px 0 20px; border-bottom: 1px solid var(--line, #dfe7f2); padding-bottom: 12px; }
+.team-console-tabs[hidden], .team-console-panel[hidden] { display: none; }
+.team-console-tabs .active { color: #1e56cf; background: #edf3ff; border-color: #abc4f7; }
+.team-console-panel { background: #fff; border: 1px solid #e1e8f3; border-radius: 14px; padding: 28px; margin-bottom: 24px; }
+.team-console-panel h2 { font-size: 22px; margin: 0 0 8px; }
+.team-console-panel h3 { font-size: 16px; margin: 0 0 8px; }
+.team-console-panel .sub { line-height: 1.7; }
+.admin-toolbar { display: flex; align-items: center; flex-wrap: wrap; gap: 10px; margin: 20px 0; }
+.admin-toolbar input { min-width: 160px; }
+.admin-members { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 360px), 1fr)); gap: 16px; margin-top: 20px; }
+.admin-member { border: 1px solid #e0e7f1; border-radius: 12px; padding: 20px; min-width: 0; }
+.admin-binding { padding: 12px 0; border-top: 1px solid #edf0f6; }
+.admin-binding > code { display: block; margin: 0 0 12px; color: #65738c; overflow-wrap: anywhere; }
+.admin-member .btn, .admin-change .btn, .admin-editor .btn { margin: 4px 8px 4px 0; }
+.admin-credential { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; padding: 12px 0 0; font-size: 12px; overflow-wrap: anywhere; }
+.admin-credential > span:first-child { flex-basis: 100%; font-family: monospace; }
+.admin-credential .badge { background: #eef4ff; color: #2659b8; padding: 3px 8px; border-radius: 5px; }
+.admin-editor { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; background: #f6f9ff; border: 1px solid #dce6f8; border-radius: 12px; padding: 24px; }
+.admin-field { display: flex; flex-direction: column; align-items: flex-start; gap: 8px; font-size: 13px; }
+.admin-field input:not([type=checkbox]), .admin-field select { width: 100%; }
+.admin-editor fieldset { grid-column: 1 / -1; border: 1px solid #dce6f8; border-radius: 8px; padding: 12px; }
+.admin-check { display: inline-flex; align-items: center; gap: 6px; margin: 6px 18px 6px 0; }
+.admin-change { margin: 18px 0; background: #f4f8ff; border: 1px solid #a9c4f5; border-radius: 12px; padding: 24px; }
+.admin-change textarea { display: block; width: 100%; resize: vertical; margin: 14px 0; font-family: monospace; font-size: 12px; line-height: 1.7; }
+.admin-change pre { overflow: auto; max-height: 220px; padding: 12px; }
+.admin-warning { color: #884b12; background: #fff7e9; padding: 12px; border-radius: 8px; overflow-wrap: anywhere; }
+.admin-table-scroll { overflow-x: auto; border: 1px solid #e0e7f1; border-radius: 10px; }
+.admin-table { border-collapse: collapse; width: 100%; font-size: 13px; }
+.admin-table th { background: #f6f9ff; color: #627088; font-weight: 500; text-align: left; }
+.admin-table th, .admin-table td { padding: 14px; border-bottom: 1px solid #e8edf5; white-space: nowrap; }
+@media (max-width: 680px) { .team-console-panel { padding: 18px; } .admin-editor { grid-template-columns: 1fr; padding: 16px; } .admin-toolbar input { width: 100%; } }

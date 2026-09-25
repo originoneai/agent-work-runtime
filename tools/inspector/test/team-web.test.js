@@ -420,7 +420,9 @@ test('live overview discovers authorized streams and follows scoped pagination',
       const query = JSON.parse(Buffer.concat(chunks).toString());
       queries.push(query);
       assert.equal(request.headers.cookie, 'awr_web_session=ws_multi');
-      if (query.op === 'workstreams.list') {
+      if (query.op === 'capabilities') {
+        response.end(JSON.stringify({ identity: { actor_id: 'member', can_manage_members: false } }));
+      } else if (query.op === 'workstreams.list') {
         response.end(JSON.stringify(query.cursor
           ? { items: [{ id: 'frontend' }], next_cursor: null }
           : { items: [{ id: 'backend' }], next_cursor: 'streams-2' }));
@@ -442,6 +444,7 @@ test('live overview discovers authorized streams and follows scoped pagination',
       cookie: 'awr_web_session=ws_multi',
     });
     assert.equal(overview.json.ok, true);
+    assert.equal(overview.json.identity.actor_id, 'member');
     assert.deepEqual(overview.json.works.map((work) => [work.key, work.workstream_id]), [
       ['api-1', 'backend'], ['api-2', 'backend'], ['ui-1', 'frontend'],
     ]);
@@ -452,6 +455,7 @@ test('live overview discovers authorized streams and follows scoped pagination',
       ['work.list', 'backend', undefined],
       ['work.list', 'backend', 'backend-2'],
       ['work.list', 'frontend', undefined],
+      ['capabilities', undefined, undefined],
     ]);
   } finally {
     await bridge.close();
@@ -609,4 +613,31 @@ test('member connection URL is configured independently of the private bridge UR
     for (const url of ['https://user:secret@team.example', 'https://team.example/?token=hidden', 'https://team.example/;command'])
       assert.throws(() => createTeamBridge({ teamUrl: upstream.base, teamPublicUrl: url }));
   } finally { await upstream.close(); }
+});
+
+
+test('member administration and activity proxies allow only designed operations and preserve server denials', async () => {
+  const calls = [];
+  const upstream = await startMockUpstream((request, response) => {
+    const chunks=[]; request.on('data', c=>chunks.push(c)); request.on('end',()=>{
+      calls.push({ path: request.url, body: JSON.parse(Buffer.concat(chunks).toString()), cookie: request.headers.cookie });
+      response.setHeader('content-type','application/json');
+      if (request.headers.cookie !== 'awr_web_session=manager') {
+        response.writeHead(403); response.end(JSON.stringify({ code: 'Forbidden' }));
+      } else response.end(JSON.stringify(request.url.endsWith('/query') ? { data: { scope:'project',items:[],next_cursor:null } } : { items:[],next_cursor:null }));
+    });
+  });
+  const bridge=await startLiveBridge(upstream.base);
+  try {
+    const directory=await req(bridge.base,'POST','/api/team/access',{ cookie:'awr_web_session=manager',body:{ project:'demo',operation:'inspect',payload:{protocol_version:1,limit:25} } });
+    assert.equal(directory.json.ok,true); assert.deepEqual(directory.json.data.items,[]);
+    const denied=await req(bridge.base,'POST','/api/team/access',{ cookie:'awr_web_session=member',body:{ project:'demo',operation:'inspect',payload:{protocol_version:1} } });
+    assert.equal(denied.json.error.code,'Forbidden');
+    const invalid=await req(bridge.base,'POST','/api/team/access',{ cookie:'awr_web_session=manager',body:{ project:'demo',operation:'../command',payload:{} } });
+    assert.equal(invalid.json.error.code,'InvalidInput');
+    const activity=await req(bridge.base,'GET','/api/team/activity?project=demo&kind=requests&member_actor_id=alex&cursor=page',{cookie:'awr_web_session=manager'});
+    assert.equal(activity.json.ok,true);
+    assert.deepEqual(calls.at(-1).body,{protocol_version:1,op:'audit.requests',limit:50,cursor:'page',member_actor_id:'alex'});
+    assert.equal(calls.length,3);
+  } finally {await bridge.close();await upstream.close();}
 });
