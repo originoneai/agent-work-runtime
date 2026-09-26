@@ -314,6 +314,7 @@ pub fn query_business_action(op: &str) -> Option<awr_team::Action> {
         "work.list",
         "work.search",
         "work.prepare",
+        "work.observe",
         "work.next",
         "audit.requests",
         "audit.development",

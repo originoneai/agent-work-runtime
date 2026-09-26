@@ -7,6 +7,49 @@ use awr_team_pg::PgError;
 use fixture::*;
 
 #[tokio::test]
+async fn work_observation_is_scoped_current_and_does_not_change_context_or_authority() {
+    let (_guard, admin, _, store) = setup().await;
+    let prepared = prepare(&store, A, "a").await;
+    let mut q = query("work.observe");
+    q.work_id = Some("a".into());
+    let observed = store.query(TENANT, PROJECT, A, q.clone()).await.unwrap();
+    let data = &observed["data"];
+    assert_eq!(data["session"]["id"], "session-a");
+    assert_eq!(data["session"]["client_id"], "cli-a");
+    assert!(data["session"].get("conversation_id").is_none());
+    assert_eq!(data["checkpoint"]["next_action"], "continue alpha");
+    assert_eq!(data["checkpoint"]["contract_matches_current"], false);
+    assert!(data["model"].is_null());
+    assert!(data["usage"].is_null());
+    assert_eq!(data["execution_authorized"], false);
+    assert!(!observed.to_string().contains("PRIVATE"));
+    assert_eq!(prepared["data"], prepare(&store, A, "a").await["data"]);
+    assert_eq!(prepared["project_revision"], observed["project_revision"]);
+    admin.batch_execute("INSERT INTO awr_team.sessions(tenant_id,project_id,id,scope_id,work_id,actor_id,client_id,conversation_id,state,workstream_id,ownership_version)
+        SELECT tenant_id,project_id,'zz-newer-closed-supervisor',scope_id,work_id,actor_id,client_id,'closed-review','ended',workstream_id,ownership_version
+        FROM awr_team.sessions WHERE id='session-a'").await.unwrap();
+    assert_eq!(
+        store.query(TENANT, PROJECT, A, q.clone()).await.unwrap()["data"]["session"]["id"],
+        "session-a"
+    );
+    for work in ["b-private", "missing"] {
+        q.work_id = Some(work.into());
+        assert!(matches!(
+            store.query(TENANT, PROJECT, A, q.clone()).await,
+            Err(PgError::Forbidden)
+        ));
+    }
+    q.work_id = Some("a".into());
+    admin
+        .batch_execute("UPDATE awr_team.sessions SET ownership_version=2 WHERE work_id='a'")
+        .await
+        .unwrap();
+    let moved = store.query(TENANT, PROJECT, A, q).await.unwrap();
+    assert!(moved["data"]["session"].is_null());
+    assert!(moved["data"]["checkpoint"].is_null());
+}
+
+#[tokio::test]
 async fn credentials_and_project_membership_do_not_grant_other_clients_scopes() {
     let (_guard, _, _, store) = setup().await;
     let a = store

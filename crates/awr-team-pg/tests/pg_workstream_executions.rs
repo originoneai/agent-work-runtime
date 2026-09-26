@@ -11,6 +11,60 @@ use fixture::*;
 use serde_json::{Value, json};
 use tokio_postgres::Client;
 
+#[tokio::test]
+async fn observation_preserves_receipt_privacy_and_exposes_expired_claims_without_mutation() {
+    let (_g, admin, _, store) = setup().await;
+    enable_writes(&admin).await;
+    let (c, e) = ready_intent(&store).await;
+    store
+        .commands()
+        .execute(
+            TENANT,
+            PROJECT,
+            A,
+            admission(&store, &c, &e, "observe-start").await,
+        )
+        .await
+        .unwrap();
+    let running = inspect(&store, &e).await;
+    store
+        .commands()
+        .execute(
+            TENANT,
+            PROJECT,
+            A,
+            report(&store, &running, "observe-report", "succeeded").await,
+        )
+        .await
+        .unwrap();
+    admin.execute("INSERT INTO awr_team.workstream_grants(tenant_id,project_id,actor_id,client_id,workstream_id,authority_version,can_read)
+        VALUES($1,$2,'agent','cli-b',$3,1,true)", &[&TENANT,&PROJECT,&awr_core::Id::from(1).to_string()]).await.unwrap();
+    admin.batch_execute("UPDATE awr_team.claims SET expires_at=clock_timestamp()-interval '1 second' WHERE work_id='a'").await.unwrap();
+    let before = snapshot(&admin).await;
+    let mut q = query("work.observe");
+    q.work_id = Some("a".into());
+    let own = store.query(TENANT, PROJECT, A, q.clone()).await.unwrap();
+    assert_eq!(own["data"]["claim"]["lease_live"], false);
+    assert_eq!(own["data"]["execution"]["state"], "unknown");
+    assert_eq!(
+        own["data"]["execution"]["latest_receipt"]["receipt_kind"],
+        "caller_asserted"
+    );
+    assert_eq!(own["data"]["execution_authorized"], false);
+    let peer = store.query(TENANT, PROJECT, B, q).await.unwrap();
+    assert_eq!(
+        peer["data"]["execution"]["receipt_details_available"],
+        false
+    );
+    assert!(peer["data"]["execution"]["latest_receipt"].is_null());
+    assert!(
+        !peer
+            .to_string()
+            .contains("Client observed the process exit.")
+    );
+    assert_eq!(before, snapshot(&admin).await);
+}
+
 async fn claim(store: &WorkstreamReadStore) -> Value {
     store.commands().execute(TENANT,PROJECT,A,command(&prepare(store,A,"a").await,"take","claim.acquire",
         json!({"session_id":"session-a","expected_session_version":"1","expected_work_version":"0","ttl_seconds":60})))

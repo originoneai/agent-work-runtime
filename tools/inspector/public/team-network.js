@@ -44,6 +44,7 @@
   }
 
   function visualStatus(work) {
+    if (work.attention) return 'blocked';
     return ({ completed: 'done', accepted: 'done', in_progress: 'developing',
       running: 'developing', claimed: 'claimed', review: 'review', in_review: 'review',
       blocked: 'blocked', waiting: 'waiting' })[work.status] || 'unknown';

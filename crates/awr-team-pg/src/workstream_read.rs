@@ -13,6 +13,7 @@ use tokio_postgres::{IsolationLevel, Transaction};
 
 mod activity;
 mod navigation;
+mod observation;
 
 const QUERIES: &[&str] = &[
     "capabilities",
@@ -21,6 +22,7 @@ const QUERIES: &[&str] = &[
     "work.search",
     "work.next",
     "work.prepare",
+    "work.observe",
     "events.list",
     "session.inspect",
     "work.recovery",
@@ -193,6 +195,7 @@ impl WorkstreamQuery {
             || matches!(
                 self.op.as_str(),
                 "work.prepare"
+                    | "work.observe"
                     | "work.recovery"
                     | "command.inspect"
                     | "claim.inspect"
@@ -616,6 +619,21 @@ pub(crate) async fn read(
     let c = cursor(q, &binding)?;
     let limit = i64::from(q.limit.unwrap_or(50));
     let data = match q.op.as_str() {
+        "work.observe" => {
+            let work = resolved.work_item_id.as_deref().ok_or(PgError::Forbidden)?;
+            let (_, ownership) = work_binding(tx, tenant, project, auth, work).await?;
+            observation::read(
+                tx,
+                tenant,
+                project,
+                auth,
+                work,
+                &stream,
+                ownership,
+                q.session_id.as_deref(),
+            )
+            .await?
+        }
         "execution.inspect" => {
             let work = resolved.work_item_id.as_deref().ok_or(PgError::Forbidden)?;
             let (_, ownership) = work_binding(tx, tenant, project, auth, work).await?;

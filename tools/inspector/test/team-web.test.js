@@ -555,18 +555,28 @@ test('live project discovery restores the existing cookie session even with no p
   }
 });
 
-for (const scenario of ['detail', 'changed', 'denied']) {
+for (const scenario of ['detail', 'changed', 'denied', 'observe-denied', 'observe-changed']) {
   test(`live work detail preserves scope and handles ${scenario}`, async () => {
     const queries = [];
     const upstream = await startMockUpstream((request, response) => {
       const chunks = [];
       request.on('data', (chunk) => chunks.push(chunk));
       request.on('end', () => {
-        queries.push(JSON.parse(Buffer.concat(chunks).toString()));
+        const query = JSON.parse(Buffer.concat(chunks).toString());
+        queries.push(query);
         response.setHeader('content-type', 'application/json');
-        if (scenario === 'denied') {
+        if (scenario === 'denied' || (scenario === 'observe-denied' && query.op === 'work.observe')) {
           response.writeHead(403);
           response.end(JSON.stringify({ code: 'Forbidden', message: 'not authorized' }));
+          return;
+        }
+        if (query.op === 'work.observe') {
+          response.end(JSON.stringify({ workstream_id: 'stream', data: {
+            work_id: 'WORK', contract_hash: scenario === 'observe-changed' ? 'new' : 'current', observed_at_unix_ms: 1234,
+            session: { id: 'session', actor_name: 'Developer', client_id: 'agent-client' },
+            checkpoint: { id: 'checkpoint', contract_matches_current: true, next_action: 'Review the change', open_loops: [] },
+            runtime: null, pr_deliveries: [],
+          } }));
           return;
         }
         response.end(JSON.stringify({ workstream_id: 'stream', data: {
@@ -580,13 +590,16 @@ for (const scenario of ['detail', 'changed', 'denied']) {
     const bridge = await startLiveBridge(upstream.base);
     try {
       const result = await req(bridge.base, 'GET', '/api/team/work?project=demo&work=WORK&workstream=stream&contract=' + (scenario === 'changed' ? 'old' : 'current'));
-      assert.deepEqual(queries, [{ protocol_version: 1, op: 'work.prepare', work_id: 'WORK', workstream_id: 'stream' }]);
+      assert.deepEqual(queries, (['detail', 'observe-denied', 'observe-changed'].includes(scenario) ? ['work.prepare', 'work.observe'] : ['work.prepare'])
+        .map(op => ({ protocol_version: 1, op, work_id: 'WORK', workstream_id: 'stream' })));
       if (scenario !== 'detail') {
         assert.equal(result.json.ok, false);
-        assert.equal(result.json.error.code, scenario === 'changed' ? 'SourceChanged' : 'Forbidden');
+        assert.equal(result.json.error.code, scenario.endsWith('changed') ? 'SourceChanged' : 'Forbidden');
         assert.equal(result.json.work, undefined);
       } else {
         assert.equal(result.json.work.status, null);
+        assert.equal(result.json.work.session_id, 'session');
+        assert.equal(result.json.work.next_step, 'Review the change');
         assert.equal(result.json.work.dependency_export_unavailable, true);
         assert.deepEqual(result.json.work.acceptance, ['Contract criterion']);
         assert.deepEqual(result.json.work.depends_on, [{ key: 'VISIBLE', visible: true }]);
