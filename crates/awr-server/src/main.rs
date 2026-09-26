@@ -77,16 +77,15 @@ enum Command {
 }
 
 fn main() -> ExitCode {
-    let args = Args::parse();
     #[cfg(windows)]
     {
-        // Construct and poll command futures on an explicit stack. Boxing a
-        // future can still construct large temporary values on Windows' small
-        // default main stack before moving them to the heap in debug builds.
+        // Parse arguments and construct/poll command futures on an explicit
+        // stack. Both clap's generated parser and boxed futures can construct
+        // large temporary values on Windows' small main stack in debug builds.
         match std::thread::Builder::new()
             .name("awr-server-command".into())
             .stack_size(8 * 1024 * 1024)
-            .spawn(move || run(args))
+            .spawn(|| run(Args::parse()))
         {
             Ok(thread) => match thread.join() {
                 Ok(code) => code,
@@ -99,7 +98,7 @@ fn main() -> ExitCode {
         }
     }
     #[cfg(not(windows))]
-    run(args)
+    run(Args::parse())
 }
 
 #[tokio::main]
