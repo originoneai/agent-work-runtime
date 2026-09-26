@@ -282,3 +282,39 @@ async fn migration_33_preserves_legacy_checkpoints_and_can_be_reapplied() {
     awr_team_pg::migrate(&admin).await.unwrap();
     assert_eq!(observe(&store, A).await["checkpoint"], before);
 }
+
+#[tokio::test]
+async fn missing_counter_dimensions_cannot_bridge_a_decrease() {
+    let (_g, admin, _, store) = setup().await;
+    enable_writes(&admin).await;
+    let mut first = cp(&store, "first", "1").await;
+    first.args["usage"] = usage();
+    store
+        .commands()
+        .execute(TENANT, PROJECT, A, first)
+        .await
+        .unwrap();
+    let mut partial = cp(&store, "partial", "2").await;
+    partial.args["usage"] = usage();
+    partial.args["usage"]["input_tokens"] = Value::Null;
+    partial.args["usage"]["cached_input_tokens"] = Value::Null;
+    partial.args["usage"]["observed_at_unix_ms"] = json!(1_700_000_000_001_i64);
+    store
+        .commands()
+        .execute(TENANT, PROJECT, A, partial)
+        .await
+        .unwrap();
+    for (field, value) in [("input_tokens", 3000), ("cached_input_tokens", 900)] {
+        let mut decreased = cp(&store, "decreased", "3").await;
+        decreased.args["usage"] = usage();
+        decreased.args["usage"]["observed_at_unix_ms"] = json!(1_700_000_000_002_i64);
+        decreased.args["usage"][field] = json!(value);
+        assert!(matches!(
+            store
+                .commands()
+                .execute(TENANT, PROJECT, A, decreased)
+                .await,
+            Err(PgError::Protocol(_))
+        ));
+    }
+}

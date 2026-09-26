@@ -242,31 +242,26 @@ impl Usage {
                 ));
             }
         }
-        let previous = tx
-            .query_opt(
-                "SELECT usage_json FROM awr_team.checkpoints
-            WHERE tenant_id=$1 AND project_id=$2 AND session_id=$3 AND usage_json IS NOT NULL
-              AND usage_json->>'source'=$4 AND usage_json->>'counter_id'=$5
-            ORDER BY created_at DESC,id DESC LIMIT 1",
-                &[&tenant, &project, &session, &self.source, &self.counter_id],
-            )
-            .await?;
-        if let Some(row) = previous {
-            let old: Value = row.get(0);
-            let old_time = old["observed_at_unix_ms"].as_i64().unwrap_or(i64::MAX);
-            let current = json!(self);
-            if self.observed_at_unix_ms < old_time
-                || (self.observed_at_unix_ms == old_time && current != old)
-                || ["input_tokens", "output_tokens", "cached_input_tokens"]
-                    .iter()
-                    .any(|k| {
-                        current[k]
-                            .as_u64()
-                            .zip(old[k].as_u64())
-                            .is_some_and(|(new, old)| new < old)
-                    })
+        // Null dimensions are missing observations, not counter resets. Compare
+        // against every prior reported value so omission cannot bridge a decrease.
+        let previous = tx.query_one("SELECT max((usage_json->>'input_tokens')::bigint),
+            max((usage_json->>'output_tokens')::bigint),max((usage_json->>'cached_input_tokens')::bigint)
+            FROM awr_team.checkpoints WHERE tenant_id=$1 AND project_id=$2 AND session_id=$3
+              AND usage_json IS NOT NULL AND usage_json->>'source'=$4 AND usage_json->>'counter_id'=$5",
+            &[&tenant,&project,&session,&self.source,&self.counter_id]).await?;
+        for (index, current) in [
+            self.input_tokens,
+            self.output_tokens,
+            self.cached_input_tokens,
+        ]
+        .iter()
+        .enumerate()
+        {
+            if current
+                .zip(previous.get::<_, Option<i64>>(index))
+                .is_some_and(|(new, old)| new < old as u64)
             {
-                return Err(PgError::Protocol("out-of-order or decreasing host counter; refresh the observation or identify the reset with a new counter_id".into()));
+                return Err(PgError::Protocol("decreasing host counter; refresh the observation or identify the reset with a new counter_id".into()));
             }
         }
         Ok(())
