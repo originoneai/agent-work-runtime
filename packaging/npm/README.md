@@ -38,4 +38,4 @@ awr-mcp --registry /etc/awr/service.toml --listen 127.0.0.1:8080
 ```
 
 Configure project registrations and client credentials using the
-[shared MCP service guide](https://github.com/originoneai/agent-work-runtime/blob/main/docs/reference/mcp-service.md).
+[shared MCP service guide](https://github.com/originoneai/agent-work-runtime/blob/main/docs/dev/reference/mcp-service.md).

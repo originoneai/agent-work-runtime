@@ -252,7 +252,7 @@ Members connect their Agent directly to the project's remote MCP endpoint using
 an administrator-provisioned personal credential. The Agent refreshes tasks,
 recovers its own sessions, claims eligible work, obtains execution admission,
 saves checkpoints and submits evidence for review. No browser sign-in or task
-selection is required. See the [Team Agent workflow](../../docs/integrations/team-agent-workflow.md).
+selection is required. See the [Team Agent workflow](../../docs/dev/integrations/team-agent-workflow.md).
 
 Inspector displays authorized project state. **Connect Agent** provides
 client-neutral MCP connection details and a project instruction; task details offer an

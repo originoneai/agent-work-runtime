@@ -6,14 +6,14 @@ Build with `cargo build --locked -p awr-mcp`; Cargo.lock pins the official `rmcp
 SDK. Diagnostics use stderr; stdio stdout contains protocol messages only.
 
 The shared service and lifecycle extensions below are included in **AWR 0.3.3**.
-See the [shared service guide](../../docs/reference/mcp-service.md)
+See the [shared service guide](../../docs/dev/reference/mcp-service.md)
 for the project registry, client access, persistent conversations, wait/reply flow
 and request outcome recovery. Clients share one URL and select an authorized
 project on each call; projects retain separate sources and runtime databases.
 
 Host integration uses three layers: the generic L0 contract, short L1 host
 notes, and optional L2 native adapters. See
-[host integration layers](../../docs/integrations/README.md).
+[host integration layers](../../docs/dev/integrations/README.md).
 
 A generic configuration for local stdio is:
 
@@ -29,9 +29,9 @@ A generic configuration for local stdio is:
 ```
 
 Merge paths for named hosts are L1/L2 notes, not a second MCP protocol. Start
-from the [L0 session workflow](../../docs/integrations/session-workflow.md).
-Codex hook installation is an [optional L2 adapter](../../docs/integrations/codex.md).
-Cursor stdio and HTTP merge paths are an [L1 host note](../../docs/integrations/cursor.md).
+from the [L0 session workflow](../../docs/dev/integrations/session-workflow.md).
+Codex hook installation is an [optional L2 adapter](../../docs/dev/integrations/codex.md).
+Cursor stdio and HTTP merge paths are an [L1 host note](../../docs/dev/integrations/cursor.md).
 
 Initialize and index projects through `awr init` and `awr source reindex` first.
 Starting the server does not create or migrate a database. Stdio stays bound to its
@@ -124,7 +124,7 @@ Domain errors are tool results with `isError: true` and the core AWR `code` and 
 An interrupted or cancelled request may have committed. Shared HTTP writes require
 stable `request_id` values; stdio accepts them optionally. Inspect the identified
 operation before retrying. The request journal consumes revisions too: use returned
-revisions, not a calculated increment. See the [recovery contract](../../docs/reference/mcp-service.md#write-identity-and-unknown-outcomes).
+revisions, not a calculated increment. See the [recovery contract](../../docs/dev/reference/mcp-service.md#write-identity-and-unknown-outcomes).
 
 ## Session and continuity tools
 
@@ -133,7 +133,7 @@ The current source adds `awr_compaction_observe`, `awr_compaction_get` and
 recovery rules. Native host measurements are explicit and missing data remains
 unknown. Prefer `awr_work_prepare` with `response_view: "action"` for one bounded
 instruction; required context and existing completion gates remain. See the
-[compaction and guidance contract](../../docs/integrations/context-continuity.md).
+[compaction and guidance contract](../../docs/dev/integrations/context-continuity.md).
 
 | Tool | Purpose |
 | --- | --- |
@@ -150,7 +150,7 @@ instruction; required context and existing completion gates remain. See the
 | `awr_operation_recover` | Recover a proven committed outcome without replaying its action. |
 | `awr_source_reindex` | Refresh configured source projections explicitly. |
 
-The [service guide](../../docs/reference/mcp-service.md) defines arguments, scope,
+The [service guide](../../docs/dev/reference/mcp-service.md) defines arguments, scope,
 limits and continuation. Branch creation/selection and other detailed administration
 remain CLI operations; adding MCP continuity does not change those domain rules.
 

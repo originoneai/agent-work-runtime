@@ -14,7 +14,7 @@
 
 [![访问官网](https://img.shields.io/badge/%E8%AE%BF%E9%97%AE%E5%AE%98%E7%BD%91_%E2%86%92-145dff?style=for-the-badge)](https://awr.originoneai.com/) [![快速开始](https://img.shields.io/badge/%E5%BF%AB%E9%80%9F%E5%BC%80%E5%A7%8B_%E2%86%92-e8f0ff?style=for-the-badge&logoColor=145dff)](#quickstart)
 
-[使用文档](docs/TAKEOVER.md) · [版本发布](https://github.com/originoneai/awr/releases) · [问题反馈](https://github.com/originoneai/awr/issues) · [参与贡献](CONTRIBUTING.md)
+[使用文档](docs/dev/TAKEOVER.md) · [版本发布](https://github.com/originoneai/awr/releases) · [问题反馈](https://github.com/originoneai/awr/issues) · [参与贡献](CONTRIBUTING.md)
 
 </div>
 
@@ -34,11 +34,11 @@ AWR 围绕同一个项目目标，把**任务与工作线、交叉依赖、上�
 
 | 核心亮点 | 对项目的实际作用 | 当前状态 |
 | --- | --- | --- |
-| **换会话、换 Agent，项目目标持续有效** | 目标、共享规则、决策和未完成事项保持关联。接手者获得当前任务必需的上下文与检查点，沿着同一个项目继续推进。 | **0.5.1 已发布** · [工作接续](docs/integrations/context-continuity.md) |
-| **多条工作线独立推进，共同交付** | 前端、后端、测试分别维护任务、上下文与归属，同时遵守共享约束；支持任务归属、会话归属和按工作线组织上下文；带身份鉴权的通道隔离与资源调度仍在开发中。 | **0.5.1 提供基础能力** · [工作线机制](docs/reference/workstreams.md) |
-| **依赖的是已验证交付物与具体版本** | 下游采用的是经过验收的产物和合同版本。依赖发生变化时，按照采用策略重新检查受影响的下游。 | **开发中** · [交叉依赖](docs/reference/workstreams.md#cross-workstream-dependencies) |
-| **“完成”有可核对的交付依据** | 完成声明关联版本与证据，分清已实现、已验证、已合并、已发布；Team 复核进一步记录实际复核者与批准结果。 | **0.5.1 已有证据基础**；[Team 交付复核](https://github.com/originoneai/awr/blob/main/docs/integrations/pr-delivery-review.md)**开发中** |
-| **每一份投入，都能对应到工作与结果** | 将已采集的用量和时间归属到任务与工作线；区分实际费用、API 等价估算、未知项和采集覆盖率，共享投入只核算一次。 | **开发中** · [用量与时间](https://github.com/originoneai/awr/blob/main/docs/reference/usage-time-observation.md) |
+| **换会话、换 Agent，项目目标持续有效** | 目标、共享规则、决策和未完成事项保持关联。接手者获得当前任务必需的上下文与检查点，沿着同一个项目继续推进。 | **0.5.1 已发布** · [工作接续](docs/dev/integrations/context-continuity.md) |
+| **多条工作线独立推进，共同交付** | 前端、后端、测试分别维护任务、上下文与归属，同时遵守共享约束；支持任务归属、会话归属和按工作线组织上下文；带身份鉴权的通道隔离与资源调度仍在开发中。 | **0.5.1 提供基础能力** · [工作线机制](docs/dev/reference/workstreams.md) |
+| **依赖的是已验证交付物与具体版本** | 下游采用的是经过验收的产物和合同版本。依赖发生变化时，按照采用策略重新检查受影响的下游。 | **开发中** · [交叉依赖](docs/dev/reference/workstreams.md#cross-workstream-dependencies) |
+| **“完成”有可核对的交付依据** | 完成声明关联版本与证据，分清已实现、已验证、已合并、已发布；Team 复核进一步记录实际复核者与批准结果。 | **0.5.1 已有证据基础**；[Team 交付复核](https://github.com/originoneai/awr/blob/main/docs/dev/integrations/pr-delivery-review.md)**开发中** |
+| **每一份投入，都能对应到工作与结果** | 将已采集的用量和时间归属到任务与工作线；区分实际费用、API 等价估算、未知项和采集覆盖率，共享投入只核算一次。 | **开发中** · [用量与时间](https://github.com/originoneai/awr/blob/main/docs/dev/reference/usage-time-observation.md) |
 
 这些能力围绕同一个项目模型组织。一个人协调多个 Agent，同样需要清晰的依赖、复核和核算。
 工作线隔离覆盖项目状态与已支持的操作；进程层面的物理隔离由执行宿主提供。
@@ -65,11 +65,11 @@ AWR 围绕同一个项目目标，把**任务与工作线、交叉依赖、上�
 
 已发布的 **0.5.1** CLI/MCP 安装包提供有来源的目标与任务、依赖导航、聚焦上下文、
 会话认领与检查点、绑定版本的证据，以及支持多个客户端和项目的
-[共享 HTTP MCP 服务](docs/reference/mcp-service.md)与 Personal Workspace 文件交换。
+[共享 HTTP MCP 服务](docs/dev/reference/mcp-service.md)与 Personal Workspace 文件交换。
 
 这一版新增**统一来源文件清单、内容评审记录与可信的检查点进度展示**，并修复解析和客户端接入问题。
 **个人多主线基础**支持在本地 SQLite 项目中显式声明任务归属、记录会话归属，并按工作线组织上下文。
-它尚不提供带身份鉴权的 Team 服务或完整的多客户端隔离。详见 [0.5.1 变更说明](docs/release/0.5.1.md)。
+它尚不提供带身份鉴权的 Team 服务或完整的多客户端隔离。详见 [0.5.1 变更说明](docs/dev/release/0.5.1.md)。
 
 可选的 [Inspector 查看界面](https://github.com/originoneai/awr/tree/v0.5.1/tools/inspector)需从这一版本的源码启动，npm/PyPI 安装包不包含它。
 界面包含中英文切换、完整队列分页、按来源刷新，以及会话与事件面板。
@@ -127,7 +127,7 @@ awr intake inspect
 
 初始化会保留已有项目来源，并为缺失的组织信息提出草稿。
 如果接入检查返回 `NeedsOrganization`，让 Agent 先补齐目标、任务和验收条件，再开始实施。
-已有台账、自定义字段等接入方式见[项目接管指南](docs/TAKEOVER.md)。
+已有台账、自定义字段等接入方式见[项目接管指南](docs/dev/TAKEOVER.md)。
 
 ### 3. 告诉 Agent 如何开始工作
 
@@ -140,7 +140,7 @@ Agent 可以在已初始化的项目中调用 CLI 后，把这段指令发给它
 > 核对当前来源后继续。使用已安装版本支持的能力，明确说明尚缺的接入。
 
 你可以随时用 `awr status` 查看进度。明确的“认领 → 获取上下文 → 保存检查点”步骤，
-见[会话工作流程](docs/integrations/session-workflow.md)。
+见[会话工作流程](docs/dev/integrations/session-workflow.md)。
 
 <details>
 <summary><strong>通过 MCP 接入</strong></summary>
@@ -160,7 +160,7 @@ Agent 可以在已初始化的项目中调用 CLI 后，把这段指令发给它
 ```
 
 重新连接客户端，并在修改项目前确认项目身份。
-多个客户端、多个项目共用服务时，使用[共享 HTTP MCP 服务](docs/reference/mcp-service.md)。
+多个客户端、多个项目共用服务时，使用[共享 HTTP MCP 服务](docs/dev/reference/mcp-service.md)。
 配置和工具发现方式见 [MCP 参考](crates/awr-mcp/README.md)。
 
 </details>
@@ -180,7 +180,7 @@ Agent 可以在已初始化的项目中调用 CLI 后，把这段指令发给它
 
 AWR 支持的是**在有限上下文窗口之间持续接续项目**。
 原生压缩和 Agent 的私有会话仍由宿主管理；检查点无法重建从未记录的历史。
-详见[上下文接续](docs/integrations/context-continuity.md)。
+详见[上下文接续](docs/dev/integrations/context-continuity.md)。
 
 ## Agent 生态
 
@@ -189,22 +189,22 @@ AWR 支持的是**在有限上下文窗口之间持续接续项目**。
 
 | 接入方式 | 文档入口 |
 | --- | --- |
-| 任意支持 CLI/MCP 的 Agent，包括 Claude Code | [通用会话流程](docs/integrations/session-workflow.md) |
-| Codex | [可选生命周期适配器](docs/integrations/codex.md) |
-| Cursor | [客户端配置](docs/integrations/cursor.md) |
-| Kimi Code | [宿主接入说明](docs/integrations/kimi.md) |
-| Grok Build | [宿主接入说明](docs/integrations/grok.md) |
-| 应用或自定义 Harness | [宿主接入合同](docs/reference/host-contract.md) |
+| 任意支持 CLI/MCP 的 Agent，包括 Claude Code | [通用会话流程](docs/dev/integrations/session-workflow.md) |
+| Codex | [可选生命周期适配器](docs/dev/integrations/codex.md) |
+| Cursor | [客户端配置](docs/dev/integrations/cursor.md) |
+| Kimi Code | [宿主接入说明](docs/dev/integrations/kimi.md) |
+| Grok Build | [宿主接入说明](docs/dev/integrations/grok.md) |
+| 应用或自定义 Harness | [宿主接入合同](docs/dev/reference/host-contract.md) |
 
 Hook 能力与是否激活取决于宿主。配置文件存在，不代表自动检查点或交接已经发生。
-详见[接入层级与边界](docs/integrations/README.md)。
+详见[接入层级与边界](docs/dev/integrations/README.md)。
 
 ## 把上下文预算用在当前任务上
 
 AWR 在本地编译聚焦项目上下文，无需为这一步额外调用模型。
 在预算内提供相关目标、规则、依赖和证据，减少交接时逐份重读全部项目资料的需要。
 
-[公开、可复跑的上下文基准](docs/benchmarks/README.md)：
+[公开、可复跑的上下文基准](docs/dev/benchmarks/README.md)：
 
 | 输入资料 | Token 数 | 相比全文读取减少 |
 | --- | ---: | ---: |
@@ -218,7 +218,7 @@ AWR 在本地编译聚焦项目上下文，无需为这一步额外调用模型�
 这些数据衡量输入资料量，**不等于模型总账单降幅，也不证明回答质量**，
 未计入聊天历史、模型输出与 MCP 封装。
 
-独立的 [30 次完整流程对照](docs/benchmarks/workflow.md)在保持同等完成合同的条件下，
+独立的 [30 次完整流程对照](docs/dev/benchmarks/workflow.md)在保持同等完成合同的条件下，
 工具调用减少 **18–27%**，返回文本减少 **3.4–4.7%**，未测量真实模型 Token 或费用节省。
 上下文编译在一台 Apple M3 Max/macOS 上测得 **p95 为 108 毫秒**
 （预热后连续调用 30 次），不代表并发容量承诺。

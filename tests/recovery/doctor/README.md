@@ -36,5 +36,5 @@ artifact file. A separate fresh-source rebuild must have no invented runtime
 history. These are local recovery checks, not power-loss, relocation, distributed
 backup, cross-platform, E4 or release acceptance.
 
-See [the recovery reference](../../../docs/reference/database-recovery.md) for the
+See [the recovery reference](../../../docs/dev/reference/database-recovery.md) for the
 operator-facing boundaries.
