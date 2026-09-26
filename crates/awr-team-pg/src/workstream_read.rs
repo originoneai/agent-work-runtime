@@ -309,6 +309,7 @@ impl WorkstreamReadStore {
             now_ms,
         )
         .await?;
+        crate::delegation_auth::restrict_read_scope(&tx, &mut auth, project, &request).await?;
         let result = read(&tx, tenant, project, &auth, &request).await?;
         if serde_json::to_vec(&result)
             .map_err(|_| PgError::SourceDivergence)?

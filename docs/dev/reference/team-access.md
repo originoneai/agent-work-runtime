@@ -137,3 +137,20 @@ evidence stay `unknown` and grant nothing.
 
 Fixtures: `tests/fixtures/team-mcp/migration_preview.json` and
 `tests/fixtures/team-mcp/allow_deny_pairs.json`.
+
+## Delegated Agent read scope
+
+Native Agent reads intersect access grants with the selected WS-016 delegation.
+A workstream delegation can discover and list only that workstream, even if its
+credential has additional access grants. Scoped Agents cannot inspect
+project-wide planning outcome receipts. Cursors bind the authorization body as
+well as identity and source, so authorization changes expire an earlier page.
+
+Task and task-pool delegations require an explicit covered `work_id` on every
+read, including session inspection. Selector-free capabilities, task discovery
+and next-task navigation are unavailable with those scopes; use a workstream
+delegation when the Agent must discover work. Project-scoped delegation retains
+project discovery. Humans and system actors retain their existing access rules.
+Agents start with an empty product-action set until a live delegation is
+resolved. Separate audit/access surfaces do not inherit an Agent's broad role
+without such authorization.

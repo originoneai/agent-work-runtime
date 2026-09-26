@@ -231,6 +231,7 @@ async fn authenticate_inner(
     };
     access.validate()?;
     let role_template = map_membership_role(&role).ok_or(PgError::Forbidden)?;
+    let delegation_required = crate::actor_requires_explicit_delegation(&actor_kind);
     Ok(ReaderAuthority {
         tenant_id: tenant.into(),
         actor_id: actor,
@@ -250,7 +251,7 @@ async fn authenticate_inner(
         project_status: p.get(3),
         binding,
         grant_versions,
-        delegated_actions: None,
+        delegated_actions: delegation_required.then(std::collections::BTreeSet::new),
         delegation_id: None,
     })
 }
