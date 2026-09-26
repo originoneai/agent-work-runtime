@@ -99,3 +99,31 @@ downstream work by default, even within the same workstream. Existing same-strea
 ordinary and human completion policies retain their behavior; cross-workstream
 delivery adoption still requires human-independent acceptance. Existing contracts
 are never converted automatically.
+
+### Explicit same-workstream dependency acceptance
+
+A consumer may explicitly accept one predecessor's Agent-reviewed, reconciled
+caller result in its source ledger:
+
+```yaml
+depends_on: [API-1]
+dependency_acceptance:
+  API-1: agent_reviewed_caller_asserted_reconciled
+```
+
+Publishing this field produces `awr-team-contract-v2` for that consumer and an
+`awr-team-workstreams-v2` bundle. Unchanged contracts retain V1 bytes and hashes.
+The publish preview shows the policy before and after; it needs the same source
+review and activation as other contract changes. Planning V1 preserves the map
+on unrelated edits and refuses dependency edits that would orphan it.
+
+Each mapped predecessor must belong to the same workstream. The selected receipt
+must match its current contract and the exact Agent-review/caller-reconciliation
+basis, with both human and team-independent acceptance false. Missing entries
+retain the existing dependency rule. This does not extend WS-030 cross-workstream
+adoption or authorize execution by itself.
+
+Completion binds the exact predecessor receipt IDs. Source activation reopens
+completed work whose contract changed and downstream completions that consumed
+an invalidated receipt. Historical receipts remain inspectable. Clients must
+prepare fresh context and repeat applicable work and review after such changes.

@@ -2,6 +2,8 @@
 //! Source coordination on a real isolated database. This is not authenticated
 //! transport or business acceptance; the fixtures use trusted operator APIs.
 mod common;
+#[path = "cases/source_completion_invalidation.rs"]
+mod source_completion_invalidation;
 use awr_core::{Id, Workstream, WorkstreamCatalog, WorkstreamState};
 use awr_team::{SourceActivationPlan, WorkContract, WorkId, WorkstreamBundle, WorkstreamContract};
 use awr_team_pg::{
@@ -53,6 +55,7 @@ fn bundle() -> WorkstreamBundle {
     .map(|(key, owner, dependencies)| WorkstreamContract {
         workstream_id: Id::from(owner),
         contract: WorkContract {
+            dependency_acceptance: Default::default(),
             codec: WorkContract::CODEC.into(),
             work_id: WorkId::new(key).unwrap(),
             external_key: key.into(),

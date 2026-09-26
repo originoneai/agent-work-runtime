@@ -10,7 +10,7 @@ use awr_core::{Error, Result};
 use awr_team::{DraftChange, DraftOpKind, TaskDraft};
 use serde::{Deserialize, Serialize};
 use serde_json::{Value, json};
-use std::collections::BTreeSet;
+use std::collections::{BTreeMap, BTreeSet};
 
 /// Fields that may be written through the source/planning authority.
 pub const SOURCE_WRITABLE_FIELDS: &[&str] = &[
@@ -211,6 +211,18 @@ pub fn apply_planning_changes_to_ledger(
                 };
                 // Preserve identity and any runtime-looking keys that already
                 // exist only if they are true source vocabulary (e.g. status).
+                if let Some(modes) = row.get("dependency_acceptance") {
+                    let map: BTreeMap<String, awr_team::DependencyAcceptanceMode> =
+                        serde_json::from_value(modes.clone()).map_err(|_| {
+                            Error::InvalidInput("invalid source dependency_acceptance".into())
+                        })?;
+                    if map
+                        .keys()
+                        .any(|id| !change.after.required_dependencies.contains(id))
+                    {
+                        return Err(Error::InvalidInput("planning V1 cannot orphan or change dependency_acceptance; use a reviewed source policy edit".into()));
+                    }
+                }
                 apply_draft_fields(row, &change.after);
                 // Never copy runtime-only keys into the row.
                 for field in RUNTIME_ONLY_FIELDS {
@@ -446,5 +458,43 @@ work_items:
     fn external_fingerprint_mismatch_refuses_overwrite() {
         assert!(refuse_external_overwrite("sha256:a", "sha256:b").is_err());
         assert!(refuse_external_overwrite("sha256:a", "sha256:a").is_ok());
+    }
+
+    #[test]
+    fn v1_planning_preserves_existing_dependency_policy_and_refuses_orphaning() {
+        let ledger = br#"work_items:
+  - id: CLIENT-1
+    title: SDK
+    depends_on: [API-1]
+    dependency_acceptance:
+      API-1: agent_reviewed_caller_asserted_reconciled
+"#;
+        let before = draft("CLIENT-1", &["API-1"]);
+        let mut after = before.clone();
+        after.title = "Updated SDK".into();
+        let change = DraftChange {
+            op: DraftOpKind::EditFields,
+            before: Some(before),
+            after,
+        };
+        let patch = apply_planning_changes_to_ledger(ledger, &[change.clone()]).unwrap();
+        let parsed: Value = serde_yaml_ng::from_slice(&patch.after_bytes).unwrap();
+        assert_eq!(
+            parsed["work_items"][0]["dependency_acceptance"]["API-1"],
+            "agent_reviewed_caller_asserted_reconciled"
+        );
+        assert_eq!(parsed["work_items"][0]["title"], "Updated SDK");
+        let mut orphan = change;
+        orphan.after.required_dependencies.clear();
+        assert!(
+            apply_planning_changes_to_ledger(ledger, &[orphan])
+                .unwrap_err()
+                .to_string()
+                .contains("cannot orphan")
+        );
+        let mut unsupported = json!(draft("CLIENT-1", &["API-1"]));
+        unsupported["dependency_acceptance"] =
+            json!({"API-1":"agent_reviewed_caller_asserted_reconciled"});
+        assert!(serde_json::from_value::<TaskDraft>(unsupported).is_err());
     }
 }

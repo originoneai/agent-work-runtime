@@ -1541,8 +1541,8 @@ async fn current_contract(
 /// contract must have a completion receipt for ITS current contract; the
 /// actual (upstream_work, receipt) pairs are returned for the completion
 /// mapping. An empty required set passes; "no invalid binding rows" is NOT
-/// proof of coverage (CR #42 P2-6). Agent review is a separate completion
-/// policy and cannot silently satisfy an existing consumer's dependencies.
+/// proof of coverage (CR #42 P2-6). Agent review requires the consumer's V2
+/// contract to explicitly select that assurance basis for this predecessor.
 pub(crate) async fn required_dependencies_covered(
     tx: &tokio_postgres::Transaction<'_>,
     tenant_id: &str,
@@ -1562,21 +1562,22 @@ pub(crate) async fn required_dependencies_covered(
     if invalid > 0 {
         return Ok((false, vec![]));
     }
-    // current_contract() returns the contract fields at the TOP level.
-    let required: Vec<String> = contract
-        .get("required_dependencies")
-        .and_then(Value::as_array)
-        .map(|rows| {
-            rows.iter()
-                .filter_map(|v| v.as_str().map(str::to_owned))
-                .collect()
-        })
-        .unwrap_or_default();
+    // The legacy loader adds a hash to its otherwise exact contract document.
+    let mut definition = contract.clone();
+    definition
+        .as_object_mut()
+        .ok_or(PgError::SourceDivergence)?
+        .remove("contract_hash");
+    let consumer: awr_team::WorkContract =
+        serde_json::from_value(definition).map_err(|_| PgError::SourceDivergence)?;
+    let required = &consumer.required_dependencies;
+    let modes = &consumer.dependency_acceptance;
     let mut links = Vec::new();
-    for upstream in &required {
-        let receipt: Option<String> = tx
+    for upstream in required {
+        let receipt = tx
             .query_opt(
-                "SELECT r.id FROM awr_team.completion_receipts r
+                "SELECT r.id,r.independence_kind,r.policy,r.approved_by_json
+                 FROM awr_team.completion_receipts r
                  JOIN awr_team.work_runtime w
                    ON w.tenant_id=r.tenant_id AND w.project_id=r.project_id
                   AND w.scope_id=r.scope_id AND w.work_id=r.work_id
@@ -1589,17 +1590,115 @@ pub(crate) async fn required_dependencies_covered(
                    ON p.tenant_id=c.tenant_id AND p.id=c.project_id
                   AND p.active_snapshot_id=c.snapshot_id
                  WHERE r.tenant_id=$1 AND r.project_id=$2 AND r.work_id=$3
-                   AND r.scope_id=$4 AND r.independence_kind IS DISTINCT FROM 'agent_review'",
+                   AND r.scope_id=$4",
                 &[&tenant_id, &project_id, upstream, &scope_id],
             )
-            .await?
-            .map(|row| row.get(0));
+            .await?;
         match receipt {
-            Some(id) => links.push((upstream.clone(), id)),
+            Some(row) => {
+                let kind: Option<String> = row.get(1);
+                let accepted = dependency_receipt_accepted(
+                    modes.get(upstream).copied(),
+                    kind.as_deref(),
+                    &row.get::<_, String>(2),
+                    &row.get::<_, Value>(3),
+                );
+                if !accepted {
+                    return Ok((false, vec![]));
+                }
+                links.push((upstream.clone(), row.get(0)));
+            }
             None => return Ok((false, vec![])),
         }
     }
     Ok((true, links))
+}
+
+fn dependency_receipt_accepted(
+    mode: Option<awr_team::DependencyAcceptanceMode>,
+    kind: Option<&str>,
+    policy: &str,
+    basis: &Value,
+) -> bool {
+    match mode {
+        None => kind != Some("agent_review"),
+        Some(awr_team::DependencyAcceptanceMode::AgentReviewedCallerAssertedReconciled) => {
+            kind == Some("agent_review")
+                && policy == AGENT_REVIEW_POLICY
+                && basis["approval_basis"] == "agent_review"
+                && basis["execution_basis"] == "caller_asserted_reconciled"
+                && basis["human_approval"] == false
+                && basis["team_independent_acceptance"] == false
+        }
+    }
+}
+
+#[cfg(test)]
+mod dependency_policy_tests {
+    use super::*;
+    #[test]
+    fn mapped_receipt_requires_the_entire_basis_tuple_and_unmapped_keeps_legacy_rule() {
+        let mode = Some(awr_team::DependencyAcceptanceMode::AgentReviewedCallerAssertedReconciled);
+        let basis = json!({"approval_basis":"agent_review","execution_basis":"caller_asserted_reconciled",
+            "human_approval":false,"team_independent_acceptance":false});
+        assert!(dependency_receipt_accepted(
+            mode,
+            Some("agent_review"),
+            AGENT_REVIEW_POLICY,
+            &basis
+        ));
+        assert!(!dependency_receipt_accepted(
+            None,
+            Some("agent_review"),
+            AGENT_REVIEW_POLICY,
+            &basis
+        ));
+        for kind in [None, Some("ordinary"), Some("team_independent")] {
+            assert!(dependency_receipt_accepted(
+                None,
+                kind,
+                "review",
+                &json!({})
+            ));
+            assert!(!dependency_receipt_accepted(
+                mode,
+                kind,
+                AGENT_REVIEW_POLICY,
+                &basis
+            ));
+        }
+        assert!(!dependency_receipt_accepted(
+            mode,
+            Some("agent_review"),
+            "independent_review",
+            &basis
+        ));
+        for key in [
+            "approval_basis",
+            "execution_basis",
+            "human_approval",
+            "team_independent_acceptance",
+        ] {
+            for value in [
+                Value::Null,
+                json!(true),
+                json!("false"),
+                json!("trusted_execution"),
+            ] {
+                let mut changed = basis.clone();
+                changed[key] = value;
+                assert!(
+                    !dependency_receipt_accepted(
+                        mode,
+                        Some("agent_review"),
+                        AGENT_REVIEW_POLICY,
+                        &changed
+                    ),
+                    "{key}"
+                );
+            }
+        }
+    }
 }
 
 async fn load_operation(

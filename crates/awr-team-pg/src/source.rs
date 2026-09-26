@@ -665,6 +665,13 @@ impl SourceStore {
         }
         let next_epoch = epoch + 1;
         let next_revision = revision + 1;
+        let completion_invalidations = if scoped {
+            projection
+                .invalidate_stale_completions(&tx, tenant_id, project_id, &snapshot_id)
+                .await?
+        } else {
+            Vec::new()
+        };
         tx.execute(
             "UPDATE awr_team.projects
              SET active_snapshot_id=$1, authority_epoch=$2, project_revision=$3
@@ -691,6 +698,7 @@ impl SourceStore {
             "previous_snapshot_id": previous_snapshot,
             "parser_version": parser_version,
             "manifest_digest": digest,
+            "completion_invalidations": completion_invalidations,
         });
         tx.execute(
             "INSERT INTO awr_team.events(

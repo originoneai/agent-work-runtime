@@ -3,6 +3,7 @@ use serde_json::{Map, json};
 
 fn sample() -> WorkContract {
     WorkContract {
+        dependency_acceptance: Default::default(),
         codec: WorkContract::CODEC.into(),
         work_id: WorkId::new("work-orders").unwrap(),
         external_key: "ORDERS-1".into(),

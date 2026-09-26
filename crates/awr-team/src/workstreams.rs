@@ -23,9 +23,12 @@ pub struct WorkstreamBundle {
 
 impl WorkstreamBundle {
     pub const CODEC: &'static str = "awr-team-workstreams-v1";
+    pub const CODEC_V2: &'static str = "awr-team-workstreams-v2";
 
     pub fn validate(&self, project_id: &str) -> TeamResult<()> {
-        if self.codec != Self::CODEC || self.catalog.project_id != project_id {
+        if !matches!(self.codec.as_str(), Self::CODEC | Self::CODEC_V2)
+            || self.catalog.project_id != project_id
+        {
             return Err(TeamError::InvalidContract(
                 "workstream codec or project mismatch".into(),
             ));
@@ -38,6 +41,21 @@ impl WorkstreamBundle {
         let mut keys = BTreeSet::new();
         for entry in &self.contracts {
             entry.contract.validate()?;
+            if self.codec == Self::CODEC && entry.contract.codec != WorkContract::CODEC {
+                return Err(TeamError::InvalidContract(
+                    "V2 contracts require workstreams V2".into(),
+                ));
+            }
+            for upstream in entry.contract.dependency_acceptance.keys() {
+                if self
+                    .contracts
+                    .iter()
+                    .find(|provider| provider.contract.work_id.as_str() == upstream)
+                    .is_none_or(|provider| provider.workstream_id != entry.workstream_id)
+                {
+                    return Err(TeamError::InvalidContract("Agent dependency acceptance requires an existing predecessor in the same workstream; cross-stream adoption is unsupported".into()));
+                }
+            }
             if !keys.insert(&entry.contract.external_key) {
                 return Err(TeamError::InvalidContract("duplicate work key".into()));
             }
@@ -82,6 +100,6 @@ impl WorkstreamBundle {
             })
             .collect::<TeamResult<Vec<_>>>()?;
         contracts.sort();
-        contract_hash(&json!({"codec":Self::CODEC,"catalog":catalog,"contracts":contracts}))
+        contract_hash(&json!({"codec":self.codec,"catalog":catalog,"contracts":contracts}))
     }
 }

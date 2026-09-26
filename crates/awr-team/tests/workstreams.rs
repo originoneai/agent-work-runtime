@@ -13,6 +13,7 @@ fn bundle() -> WorkstreamBundle {
         acceptance_contracts: vec![],
     };
     let contract = WorkContract {
+        dependency_acceptance: Default::default(),
         codec: WorkContract::CODEC.into(),
         work_id: WorkId::new("interface").unwrap(),
         external_key: "API".into(),

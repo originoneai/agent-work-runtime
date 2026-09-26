@@ -485,7 +485,9 @@ pub(crate) async fn read(
             "requires":["agent_actor","agent_review_membership_grant","live_review_delegation","distinct_author_actor_and_client"],
             "approval_basis":"agent_review", "human_approval":false,
             "team_independent_acceptance":false, "completion_supported":true,
-            "execution_basis":"caller_asserted_reconciled", "dependency_adoption":"agent_review_not_accepted",
+            "execution_basis":"caller_asserted_reconciled", "dependency_adoption":"explicit_v2_same_stream_per_predecessor",
+            "dependency_acceptance_mode":"agent_reviewed_caller_asserted_reconciled",
+            "unmapped_agent_dependencies":"blocked",
             "cross_workstream_adoption":"human_independent_only", "existing_same_stream_policies":"unchanged",
             "legacy_human_review_aliases":["review.accept","review.return"]
         });
@@ -804,6 +806,9 @@ pub(crate) async fn read(
                 .iter()
                 .any(|d| !ids.contains(d));
             contract.required_dependencies.retain(|d| ids.contains(d));
+            contract
+                .dependency_acceptance
+                .retain(|d, _| ids.contains(d));
             let mut reasons = Vec::new();
             if missing {
                 reasons.push("dependency_export_unavailable");

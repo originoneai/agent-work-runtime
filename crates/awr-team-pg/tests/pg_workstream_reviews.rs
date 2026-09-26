@@ -772,6 +772,7 @@ mod agent_review_tests {
     use std::collections::BTreeSet;
 
     const POLICY: &str = "caller_managed_execution_and_agent_review";
+    include!("cases/agent_dependencies.rs");
 
     async fn seed_agent_reviewer(admin: &Client, db: &str) {
         seed_review_actors(admin).await;

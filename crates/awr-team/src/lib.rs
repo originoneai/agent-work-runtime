@@ -24,7 +24,7 @@ pub use canonical::{
 pub use completion::{
     CompletionView, EvidenceBundle, EvidenceGrade, ReviewPolicy, current_completion,
 };
-pub use contract::{WorkContract, WorkDefinitionState};
+pub use contract::{DependencyAcceptanceMode, WorkContract, WorkDefinitionState};
 pub use error::{TeamError, TeamResult};
 pub use ids::{ActorId, ProjectId, RequestId, ScopeId, SessionId, TenantId, WorkId};
 pub use permission::{

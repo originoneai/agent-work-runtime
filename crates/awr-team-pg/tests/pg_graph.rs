@@ -25,6 +25,7 @@ const REVIEWER: &str = "actor-b";
 
 fn parent_contract() -> WorkContract {
     WorkContract {
+        dependency_acceptance: Default::default(),
         codec: WorkContract::CODEC.into(),
         work_id: WorkId::new("work-a").unwrap(),
         external_key: "W".into(),
