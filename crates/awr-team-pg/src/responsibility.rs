@@ -100,6 +100,7 @@ impl ResponsibilityStore {
         let mut client = self.connect().await?;
         let tx = client.transaction().await?;
         bind_workstream_scope(&tx, tenant, project).await?;
+        crate::agent_authorization::lock_project(&tx, tenant, project).await?;
         let status = match binding.status {
             BindingStatus::Active => "active",
             BindingStatus::Disabled => "disabled",
