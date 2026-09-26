@@ -60,7 +60,7 @@
   "ui.network_input_tokens": "Input tokens",
   "ui.network_output_tokens": "Output tokens",
   "ui.network_cached_input_tokens": "Cached input",
-  "ui.network_coverage": "Coverage",
+  "ui.network_usage_coverage": "Coverage",
   "ui.network_execution_report": "Execution report",
   "ui.network_provenance": "Sources",
   "ui.network_delegated_agent": "Assigned executor",

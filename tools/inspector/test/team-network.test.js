@@ -233,7 +233,8 @@ for (const locale of ['en', 'zh-CN']) {
     assert.match(text, /Historical report|历史报告/);
     assert.match(text, /not include this report|当前权限无法查看/);
     assert.match(text, /Not a task total or a bill|不是本任务总消耗或账单/);
-    assert.doesNotMatch(text, /Wrong stale action|\[object Object\]|feedback\.|ui\.network_/);
+    assert.doesNotMatch(text, /Wrong stale action|\[object Object\]|feedback\.|ui\.network_|\{loaded\}|\{total\}/);
+    assert.match(text, /CoveragePartial|采集覆盖部分采集/);
     const history = view.find(el => el.tagName === 'DETAILS' && el.textContent.includes('Old handoff'));
     assert.ok(history); assert.equal(history.getAttribute('open'), null);
     assert.equal(view.find(el => el.tagName === 'IMG'), null);

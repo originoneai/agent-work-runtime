@@ -60,7 +60,7 @@
   "ui.network_input_tokens": "输入 Token",
   "ui.network_output_tokens": "输出 Token",
   "ui.network_cached_input_tokens": "其中缓存输入",
-  "ui.network_coverage": "采集覆盖",
+  "ui.network_usage_coverage": "采集覆盖",
   "ui.network_execution_report": "执行报告",
   "ui.network_provenance": "信息来源",
   "ui.network_delegated_agent": "指定执行者",

@@ -653,7 +653,7 @@
       if (w.usage) {
         const usage = w.usage;
         const group = section('usage', [['input_tokens', usage.input_tokens], ['output_tokens', usage.output_tokens],
-          ['cached_input_tokens', usage.cached_input_tokens], ['coverage', t(i18n, 'feedback.coverage_' + usage.coverage)],
+          ['cached_input_tokens', usage.cached_input_tokens], ['usage_coverage', t(i18n, 'feedback.coverage_' + usage.coverage)],
           ['measured_at', time(usage.observed_at_unix_ms)], ['reported_at', time(usage.reported_at_unix_ms)]]);
         group.appendChild(el('p', { class: 'sub' }, t(i18n, 'feedback.usage_scope')));
         if (usage.stale) group.appendChild(el('p', { class: 'team-error' }, t(i18n, 'feedback.stale')));
