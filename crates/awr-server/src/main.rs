@@ -76,12 +76,36 @@ enum Command {
     },
 }
 
+fn main() -> ExitCode {
+    #[cfg(windows)]
+    {
+        // Parse arguments and construct/poll command futures on an explicit
+        // stack. Both clap's generated parser and boxed futures can construct
+        // large temporary values on Windows' small main stack in debug builds.
+        match std::thread::Builder::new()
+            .name("awr-server-command".into())
+            .stack_size(8 * 1024 * 1024)
+            .spawn(|| run(Args::parse()))
+        {
+            Ok(thread) => match thread.join() {
+                Ok(code) => code,
+                Err(_) => fail("CommandFailed", "server command thread panicked"),
+            },
+            Err(error) => fail(
+                "CommandFailed",
+                format!("cannot start command thread: {error}"),
+            ),
+        }
+    }
+    #[cfg(not(windows))]
+    run(Args::parse())
+}
+
 #[tokio::main]
-async fn main() -> ExitCode {
-    let args = Args::parse();
+async fn run(args: Args) -> ExitCode {
     match args.command {
         // These futures embed the whole operator command match. Keeping them
-        // inside `main`'s future overflows the Windows main thread in debug
+        // inside the outer command future overflows a small stack in debug
         // builds; the heap allocation is the same control flow.
         Command::Runner { command } => match Box::pin(runner::run(command)).await {
             Ok(value) => {
