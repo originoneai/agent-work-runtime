@@ -555,7 +555,7 @@ test('live project discovery restores the existing cookie session even with no p
   }
 });
 
-for (const scenario of ['detail', 'changed', 'denied', 'observe-denied', 'observe-changed']) {
+for (const scenario of ['detail', 'detail-no-guidance', 'changed', 'denied', 'observe-denied', 'observe-changed']) {
   test(`live work detail preserves scope and handles ${scenario}`, async () => {
     const queries = [];
     const upstream = await startMockUpstream((request, response) => {
@@ -575,6 +575,7 @@ for (const scenario of ['detail', 'changed', 'denied', 'observe-denied', 'observ
             work_id: 'WORK', contract_hash: scenario === 'observe-changed' ? 'new' : 'current', observed_at_unix_ms: 1234,
             session: { id: 'session', actor_name: 'Developer', client_id: 'agent-client' },
             checkpoint: { id: 'checkpoint', contract_matches_current: true, next_action: 'Review the change', open_loops: [] },
+            guidance: { code: 'inspect_delivery', action: { note: 'Inspect delivery' } },
             runtime: null, pr_deliveries: [],
           } }));
           return;
@@ -583,6 +584,8 @@ for (const scenario of ['detail', 'changed', 'denied', 'observe-denied', 'observ
           work_id: 'WORK', contract_hash: 'current', runtime: null,
           visible_contract: { acceptance: ['Contract criterion'], required_dependencies: ['VISIBLE'] },
           dependency_export_unavailable: true, context_complete: false,
+          guidance: scenario === 'detail-no-guidance' ? undefined : { code: 'restore_context', action: { note: 'Restore missing context' } },
+          next_step: 'Restore missing context',
           completeness_reasons: ['dependency_export_unavailable'], execution_admission: 'not_evaluated',
         } }));
       });
@@ -590,16 +593,19 @@ for (const scenario of ['detail', 'changed', 'denied', 'observe-denied', 'observ
     const bridge = await startLiveBridge(upstream.base);
     try {
       const result = await req(bridge.base, 'GET', '/api/team/work?project=demo&work=WORK&workstream=stream&contract=' + (scenario === 'changed' ? 'old' : 'current'));
-      assert.deepEqual(queries, (['detail', 'observe-denied', 'observe-changed'].includes(scenario) ? ['work.prepare', 'work.observe'] : ['work.prepare'])
+      assert.deepEqual(queries, (['detail', 'detail-no-guidance', 'observe-denied', 'observe-changed'].includes(scenario) ? ['work.prepare', 'work.observe'] : ['work.prepare'])
         .map(op => ({ protocol_version: 1, op, work_id: 'WORK', workstream_id: 'stream' })));
-      if (scenario !== 'detail') {
+      if (!scenario.startsWith('detail')) {
         assert.equal(result.json.ok, false);
         assert.equal(result.json.error.code, scenario.endsWith('changed') ? 'SourceChanged' : 'Forbidden');
         assert.equal(result.json.work, undefined);
       } else {
         assert.equal(result.json.work.status, null);
         assert.equal(result.json.work.session_id, 'session');
-        assert.equal(result.json.work.next_step, 'Review the change');
+        assert.equal(result.json.work.next_step, 'Restore missing context');
+        assert.equal(result.json.work.guidance.code, 'restore_context');
+        assert.equal(result.json.work.claimant, null);
+        assert.equal(result.json.work.last_participant, 'Developer');
         assert.equal(result.json.work.dependency_export_unavailable, true);
         assert.deepEqual(result.json.work.acceptance, ['Contract criterion']);
         assert.deepEqual(result.json.work.depends_on, [{ key: 'VISIBLE', visible: true }]);

@@ -29,13 +29,18 @@ function mapObservation(data) {
     observation_available: true, observed_at_ms: data.observed_at_unix_ms,
     last_activity_at_ms: data.last_activity_at_unix_ms,
     owner_person: owner.owner_name || owner.owner_person_id || null,
-    claimant: session.actor_name || session.actor_id || null,
-    agent: owner.executor_agent_id || null, client_id: session.client_id || null,
-    model: data.model, usage: data.usage, session_id: session.id || null,
+    claimant: claim?.state === 'active' && claim.lease_live ? session.actor_name || session.actor_id || null : null,
+    last_participant: session.actor_name || session.actor_id || null,
+    agent: data.client?.product || null, delegated_agent: owner.executor_agent_id || null,
+    client_info: data.client || null, client_id: session.client_id || null,
+    model: typeof data.model === 'string' ? data.model : data.model?.id || null,
+    model_info: data.model || null, usage: data.usage || null, session_id: session.id || null,
+    progress_report: data.progress || null, reporting: data.reporting || null,
     checkpoint, claim, execution: execution ? {
       state: execution.state, id: execution.execution_id,
       contract_matches_current: execution.contract_matches_current,
       lease_live: execution.lease_live, receipt_details_available: execution.receipt_details_available,
+      receipt_missing: data.missing?.execution_receipt || null,
       report: execution.latest_receipt ? {
         kind: execution.latest_receipt.receipt_kind,
         outcome: execution.latest_receipt.payload?.outcome,
@@ -43,7 +48,9 @@ function mapObservation(data) {
       } : null,
     } : null,
     attention, status: runtime.state ?? null,
-    next_step: checkpoint?.contract_matches_current ? checkpoint.next_action : null,
+    guidance: data.guidance || null,
+    // Checkpoint prose is historical handoff context, not current advice.
+    next_step: data.guidance?.action?.note || null,
     pr_reference: pullRequestReference(data), missing: data.missing || {},
   };
 }

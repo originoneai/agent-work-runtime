@@ -341,6 +341,13 @@ function createTeamBridge(opts) {
         progress = mapObservation(observation);
         progress.github = await observeGithub(progress.pr_reference);
       }
+      // prepare may omit its optional hint to respect the caller's byte budget.
+      // Its required completeness fact still takes priority over observe advice.
+      if (data.context_complete === false) {
+        progress.guidance = data.guidance?.code === 'restore_context' ? data.guidance
+          : { code: 'restore_context', action: { op: 'work.prepare', note: data.next_step || null } };
+        progress.next_step = progress.guidance.action?.note || null;
+      }
       return { ok: true, work: {
         key: work, workstream_id: stream, contract_hash: data.contract_hash,
         detail_loaded: true, status: data.runtime ? data.runtime.state : null,

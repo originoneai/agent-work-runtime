@@ -150,6 +150,26 @@
       host.appendChild(picker);
     }
 
+    function participant(w) {
+      return w.owner_person || (w.claimant ? t(i18n, 'feedback.claimed_by', { name: w.claimant })
+        : w.last_participant ? t(i18n, 'feedback.last_participant', { name: w.last_participant })
+          : t(i18n, 'ui.network_owner_unknown'));
+    }
+
+    function nextStep(w) {
+      const key = 'feedback.guidance_' + w.guidance?.code;
+      const translated = t(i18n, key);
+      return w.guidance ? (translated === key ? t(i18n, 'feedback.guidance_unknown') : translated) : w.next_step;
+    }
+
+    function missing(w, field, fallback) {
+      const reason = w.missing?.[field], key = 'feedback.missing_' + reason;
+      const translated = t(i18n, key);
+      return reason && translated !== key ? translated : t(i18n, fallback || 'ui.network_not_reported');
+    }
+
+    const time = value => Number.isFinite(value) ? new Date(value).toLocaleString() : '—';
+
     // The website task-node structure; project data remains text, never HTML.
     function workCard(w, lane) {
       const card = el('article', {
@@ -165,7 +185,7 @@
       body.appendChild(top);
       body.appendChild(el('strong', null, w.title || w.key));
       const people = el('span', { class: 'node-people' });
-      people.appendChild(el('span', { class: 'node-owner' }, w.owner_person || t(i18n, 'ui.network_owner_unknown')));
+      people.appendChild(el('span', { class: 'node-owner' }, participant(w)));
       const agent = w.agent && typeof w.agent === 'object' ? w.agent.id : w.agent;
       if (agent) people.appendChild(el('span', { class: 'node-agent' }, [agent, w.model].filter(Boolean).join(' · ')));
       if (lane) people.appendChild(el('span', { class: 'node-lane' }, lane.name));
@@ -191,11 +211,11 @@
       for (const text of [
         w.key,
         w.title,
-        w.owner_person || '',
+        participant(w),
         agent,
         w.outcome || '',
         blocker || '',
-        w.next_step || '',
+        nextStep(w) || '',
       ]) {
         const td = el('td');
         if (tr.children.length === 0) {
@@ -595,7 +615,7 @@
       host.appendChild(header);
       renderActions(host, w);
       const unknown = t(i18n, 'ui.network_not_reported');
-      const section = (title, rows) => {
+      const section = (title, rows, target = host) => {
         const group = el('section', { class: 'detail-section' });
         group.appendChild(el('h5', null, t(i18n, 'ui.network_' + title)));
         const list = el('dl');
@@ -603,14 +623,41 @@
           const row = el('div'); row.appendChild(el('dt', null, t(i18n, 'ui.network_' + key)));
           row.appendChild(el('dd', null, value == null || value === '' ? unknown : value)); list.appendChild(row);
         }
-        group.appendChild(list); host.appendChild(group);
+        group.appendChild(list); target.appendChild(group);
+        return group;
       };
       const agent = w.agent && typeof w.agent === 'object' ? w.agent.id : w.agent;
       section('people', [['developer', w.owner_person || t(i18n, 'ui.team_progress_unassigned')],
-        ['claimant', w.claimant], ['agent', agent], ['client', w.client_id],
-        ['model', w.model || t(i18n, 'ui.team_progress_model_missing')], ['session', w.session_id],
-        ['tokens', w.usage?.total_tokens ?? t(i18n, 'ui.team_progress_usage_missing')]]);
-      section('progress', [['status', workStatus(w)], ['next', w.next_step]]);
+        ['claimant', w.claimant || t(i18n, 'feedback.no_current_claim')], ['last_participant', w.last_participant],
+        ['agent', agent || missing(w, 'model')],
+        ['model', w.model || missing(w, 'model', 'ui.team_progress_model_missing')]]);
+      section('progress', [['status', workStatus(w)], ['next', nextStep(w)]]);
+      const report = w.progress_report;
+      if (report) {
+        const group = section('agent_report', [['phase', t(i18n, 'feedback.phase_' + report.phase)],
+          ['summary', report.summary], ['reported_at', time(report.reported_at_unix_ms)]]);
+        group.appendChild(el('p', { class: 'sub' }, t(i18n, 'feedback.caller_report')));
+        if (report.stale) group.appendChild(el('p', { class: 'team-error' }, t(i18n, 'feedback.stale')));
+        for (const [label, values] of [
+          ['completed', report.completed], ['blockers', report.blockers],
+          ['tests', (report.tests || []).map(r => [r.name, t(i18n, 'feedback.test_' + r.outcome), r.reference].filter(Boolean).join(' · '))],
+          ['artifacts', (report.artifacts || []).map(r => r.label + ' · ' + r.reference)],
+        ]) {
+          if (!values?.length) continue;
+          group.appendChild(el('h6', null, t(i18n, 'feedback.' + label)));
+          const items = el('ul');
+          for (const value of values) items.appendChild(el('li', null, value));
+          group.appendChild(items);
+        }
+      } else section('agent_report', [['summary', missing(w, 'progress')]]);
+      if (w.usage) {
+        const usage = w.usage;
+        const group = section('usage', [['input_tokens', usage.input_tokens], ['output_tokens', usage.output_tokens],
+          ['cached_input_tokens', usage.cached_input_tokens], ['usage_coverage', t(i18n, 'feedback.coverage_' + usage.coverage)],
+          ['measured_at', time(usage.observed_at_unix_ms)], ['reported_at', time(usage.reported_at_unix_ms)]]);
+        group.appendChild(el('p', { class: 'sub' }, t(i18n, 'feedback.usage_scope')));
+        if (usage.stale) group.appendChild(el('p', { class: 'team-error' }, t(i18n, 'feedback.stale')));
+      } else section('usage', [['tokens', missing(w, 'usage', 'ui.team_progress_usage_missing')]]);
       section('related', [['pr', w.pr_reference?.url],
         ['ci', w.github ? t(i18n, 'ui.team_progress_ci_' + (w.github.ci || 'unavailable')) : null]]);
       if (w.pr_reference) {
@@ -626,20 +673,30 @@
       }
       if (w.execution) section('execution', [['execution_state', t(i18n, 'ui.team_progress_execution_' + w.execution.state)]]);
       if (w.checkpoint) {
-        host.appendChild(el('h3', null, t(i18n, 'ui.team_progress_checkpoint')));
-        host.appendChild(el('p', { class: 'sub' }, new Date(w.checkpoint.created_at_unix_ms).toLocaleString()));
+        const history = el('details', { class: 'feedback-history' });
+        history.appendChild(el('summary', null, t(i18n, 'feedback.handoff_history')));
+        history.appendChild(el('p', { class: 'sub' }, time(w.checkpoint.created_at_unix_ms)));
         if (!w.checkpoint.contract_matches_current)
-          host.appendChild(el('p', { class: 'team-error' }, t(i18n, 'ui.team_progress_checkpoint_stale')));
-        host.appendChild(el('p', null, w.checkpoint.next_action));
+          history.appendChild(el('p', { class: 'team-error' }, t(i18n, 'ui.team_progress_checkpoint_stale')));
+        history.appendChild(el('p', null, w.checkpoint.next_action));
         const loops = el('ul');
         for (const text of w.checkpoint.open_loops || []) loops.appendChild(el('li', null, text));
-        host.appendChild(loops);
+        history.appendChild(loops); host.appendChild(history);
       } else if (w.observation_available) host.appendChild(el('p', { class: 'sub' }, t(i18n, 'ui.team_progress_no_checkpoint')));
       if (w.execution?.report) {
         host.appendChild(el('h3', null, t(i18n, 'ui.team_progress_report')));
         host.appendChild(el('p', { class: 'sub' }, t(i18n, 'ui.team_progress_report_' + w.execution.report.kind)));
         host.appendChild(el('p', null, w.execution.report.note));
-      }
+      } else if (w.execution?.receipt_missing) section('execution_report', [['summary', missing(w, 'execution_receipt')]]);
+      const provenance = el('details', { class: 'feedback-history' });
+      provenance.appendChild(el('summary', null, t(i18n, 'feedback.provenance')));
+      section('provenance', [['client', w.client_id], ['session', w.session_id],
+        ['delegated_agent', w.delegated_agent], ['client_version', w.client_info?.version],
+        ['model_source', w.model_info?.source ? t(i18n, 'feedback.' + w.model_info.source) : null],
+        ['reported_at', time(w.reporting?.client_reported_at_unix_ms)],
+        ['usage_source', w.usage ? [w.usage.source, w.usage.source_ref, w.usage.counter_id].join(' · ') : null]], provenance);
+      if (w.reporting?.client_stale) provenance.appendChild(el('p', { class: 'sub' }, t(i18n, 'feedback.stale')));
+      host.appendChild(provenance);
       if (w.observation_available === false) host.appendChild(el('p', { class: 'team-error' }, t(i18n, 'ui.team_progress_unavailable')));
       if (isLive()) {
         if (state.detailLoading) {
