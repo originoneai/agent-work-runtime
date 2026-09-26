@@ -71,10 +71,27 @@ arguments. Each query/command rechecks the caller's current permissions.
 | --- | --- | --- |
 | Starting or reconnecting | Query `capabilities` to confirm identity and permissions, then `work.next` to resume your own sessions or discover visible unfinished work. Follow the returned `next_query`. On older servers without `work.next`, use `workstreams.list` and scoped `work.list` / `work.search`. | Progress, resolved waits, claim conflicts, identity, project, scope or ownership changes. |
 | Preparing a selected task | Consume `work.prepare`: current contract, required specifications, dependencies, recovery state and context hash. Resume only an active session owned by the current actor and client; otherwise use `session.start` when appropriate. | Contract, dependency or source changes; incomplete context. |
-| Taking responsibility | Inspect existing claims with `claim.inspect`. Acquire or renew a live claim under the session using fresh preconditions. Another person's live claim must not be replaced. | Conflict, stale version, lease expiry or revocation. |
+| Claiming execution work | Inspect existing claims with `claim.inspect`. Acquire or renew a live claim under the session using fresh preconditions. Another person's live claim must not be replaced. | Conflict, stale version, lease expiry or revocation. |
 | Beginning effects | Use `execution.prepare` and a fresh `execution.start` response with `execution_authorized=true` for one execution within the declared scope. The Agent's host runs code and tools locally. A claim alone is not execution admission. | Permission, lease, scope or execution state changes. |
-| Making progress or stopping | Save `session.checkpoint` using the consumed context hash, next action and open loops. Inspect and report execution results with `execution.report`; attach version-bound evidence. Release claims and end sessions only after active work and unknown outcomes are settled. | Interruption, handoff, unknown effects or changed context. |
+| Reporting progress | Use `session.checkpoint` with consumed context hash, next action, open loops and a short `progress` summary. Batch updates when a phase/test completes, a blocker changes, user input is needed, or delivery is ready. Declare known `client_info` at session start or the next checkpoint. | Material work changes; client/model/capability changes. |
+| Finishing execution or stopping | Use `execution.report` only for a terminal outcome, then follow inspection/reconciliation. Attach version-bound evidence. Release claims and end sessions after active work and unknown outcomes are settled. | Interruption, handoff, unknown effects or changed context. |
 | Delivering | Submit evidence and request review through `delivery.submit_and_request_review` or `review.open`. An authorized independent person reviews; authorized finalization follows acceptance policy. | PR head, contract or artifact changes; returned review. |
+
+`work.prepare` and `work.observe` return one short `guidance` item with its
+condition (`when`), factual basis (`because`), next action and reevaluation
+trigger (`recheck_on`). It does not grant execution rights. Recovery and registered
+deliveries take precedence over old checkpoint instructions. Small context budgets
+may omit this optional advice while preserving the required context; query
+`work.observe` for it when needed.
+
+Use the [feedback contract](../reference/team-session-feedback.md) when advertised
+in capabilities. Batch reports with checkpoints, not every tool call or page
+refresh. Lease renewal is separate: use host scheduling if available and renew
+before expiry without creating extra reasoning turns. AWR cannot wake an idle
+Agent. A blocked/waiting phase describes a report; it does not create a wait item
+or renew a claim. Submit usage only from host data with known scope/source; an
+unsupported host leaves it absent. Checkpoint summaries are shared with authorized
+work readers; keep raw sensitive logs out of them.
 
 Persist a stable request ID and exact command envelope before a write. After a
 timeout, inspect the original `command.inspect` result before an exact retry.

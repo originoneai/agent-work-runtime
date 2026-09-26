@@ -12,6 +12,7 @@ use serde_json::{Value, json};
 use tokio_postgres::{IsolationLevel, Transaction};
 
 mod activity;
+mod guidance;
 mod navigation;
 mod observation;
 
@@ -841,6 +842,33 @@ pub(crate) async fn read(
                 "grant_version":auth.grant_versions[&resolved.workstream_id],"data":data}))?;
             data["context_hash"] = json!(context_hash);
             data["context_hash_protocol"] = json!("awr-team-workstream-context-v1");
+            // Advice is not consumed context or execution admission. Preserve the
+            // original context hash and fit optional advice inside the read budget.
+            let observed = observation::read(
+                tx,
+                tenant,
+                project,
+                auth,
+                work,
+                &stream,
+                ownership,
+                q.session_id.as_deref(),
+            )
+            .await?;
+            let mut hint = observed["guidance"].clone();
+            if !reasons.is_empty() {
+                hint = guidance::select(&observed, false, false);
+            }
+            let mut with_hint = data.clone();
+            with_hint["guidance"] = hint;
+            if serde_json::to_vec(&with_hint)
+                .map_err(|_| PgError::SourceDivergence)?
+                .len()
+                <= q.max_context_bytes.unwrap_or(65536)
+            {
+                data = with_hint;
+            }
+
             if serde_json::to_vec(&data)
                 .map_err(|_| PgError::SourceDivergence)?
                 .len()
