@@ -40,5 +40,5 @@ followed. The command limits the selection to 64 includes, 64 exclusions,
 20,000 files, and 1 GiB of file content. A host must still guard its runtime
 binding, generated projections, and code inventory according to its own contract.
 
-This command is available in development on `main`; the published 0.5.0 binary
-does not include it.
+This command is included in AWR 0.5.1 and newer. The 0.5.0 binary does not
+include it. See the [0.5.1 release notes](../release/0.5.1.md) before upgrading.
