@@ -339,11 +339,14 @@ function createTeamBridge(opts) {
           return { ok: false, error: { code: 'SourceChanged', message: 'Observation changed; refresh the project' } };
         }
         progress = mapObservation(observation);
-        if (data.guidance?.code === 'restore_context') {
-          progress.guidance = data.guidance;
-          progress.next_step = data.guidance.action?.note || null;
-        }
         progress.github = await observeGithub(progress.pr_reference);
+      }
+      // prepare may omit its optional hint to respect the caller's byte budget.
+      // Its required completeness fact still takes priority over observe advice.
+      if (data.context_complete === false) {
+        progress.guidance = data.guidance?.code === 'restore_context' ? data.guidance
+          : { code: 'restore_context', action: { op: 'work.prepare', note: data.next_step || null } };
+        progress.next_step = progress.guidance.action?.note || null;
       }
       return { ok: true, work: {
         key: work, workstream_id: stream, contract_hash: data.contract_hash,
