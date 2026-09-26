@@ -14,7 +14,7 @@ The open-source project delivery platform for people and AI.
 
 [![Official website](https://img.shields.io/badge/Visit_the_website_%E2%86%92-145dff?style=for-the-badge)](https://awr.originoneai.com/) [![Quickstart](https://img.shields.io/badge/Get_started_%E2%86%92-e8f0ff?style=for-the-badge&logoColor=145dff)](#quickstart)
 
-[Documentation](docs/TAKEOVER.md) · [Releases](https://github.com/originoneai/awr/releases) · [Report an issue](https://github.com/originoneai/awr/issues) · [Contribute](CONTRIBUTING.md)
+[Documentation](docs/) · [Releases](https://github.com/originoneai/awr/releases) · [Report an issue](https://github.com/originoneai/awr/issues) · [Contribute](CONTRIBUTING.md)
 
 </div>
 
@@ -39,11 +39,11 @@ release from development on `main`.
 
 | Core value | What changes for your project | Availability |
 | --- | --- | --- |
-| **Keep the goal through every handoff** | Goals, shared rules, decisions and unfinished work stay connected. A successor receives the current task's required context and checkpoint, so the project can continue across sessions and agents. | **0.5.1** · [Continuity](docs/integrations/context-continuity.md) |
-| **Run independent workstreams in one project** | Frontend, backend and testing keep their own tasks, context and ownership while sharing project constraints. Work ownership, session attribution and scoped context are supported; authenticated transport isolation and resource scheduling are still in development. | **0.5.1 foundation** · [Workstreams](docs/reference/workstreams.md) |
-| **Depend on a verified delivery** | Bind downstream work to an accepted artifact and contract version. When that dependency changes, recheck affected consumers according to their adoption policy. | **In development** · [Delivery dependencies](docs/reference/workstreams.md#cross-workstream-dependencies) |
-| **Know what “done” actually means** | Connect completion claims to version-bound evidence. Track implementation, verification, merge and release as separate facts; Team review adds explicit reviewer and approval records. | **0.5.1 evidence foundation**; [Team delivery review](https://github.com/originoneai/awr/blob/main/docs/integrations/pr-delivery-review.md) **in development** |
-| **See what each outcome costs** | Attribute recorded usage and time to work and its owning workstream. Keep actual costs, API-equivalent estimates, unknowns and observation coverage distinct; count shared effort once. | **In development** · [Usage and time](https://github.com/originoneai/awr/blob/main/docs/reference/usage-time-observation.md) |
+| **Keep the goal through every handoff** | Goals, shared rules, decisions and unfinished work stay connected. A successor receives the current task's required context and checkpoint, so the project can continue across sessions and agents. | **0.5.1** · [Continuity](docs/dev/integrations/context-continuity.md) |
+| **Run independent workstreams in one project** | Frontend, backend and testing keep their own tasks, context and ownership while sharing project constraints. Work ownership, session attribution and scoped context are supported; authenticated transport isolation and resource scheduling are still in development. | **0.5.1 foundation** · [Workstreams](docs/dev/reference/workstreams.md) |
+| **Depend on a verified delivery** | Bind downstream work to an accepted artifact and contract version. When that dependency changes, recheck affected consumers according to their adoption policy. | **In development** · [Delivery dependencies](docs/dev/reference/workstreams.md#cross-workstream-dependencies) |
+| **Know what “done” actually means** | Connect completion claims to version-bound evidence. Track implementation, verification, merge and release as separate facts; Team review adds explicit reviewer and approval records. | **0.5.1 evidence foundation**; [Team delivery review](https://github.com/originoneai/awr/blob/main/docs/dev/integrations/pr-delivery-review.md) **in development** |
+| **See what each outcome costs** | Attribute recorded usage and time to work and its owning workstream. Keep actual costs, API-equivalent estimates, unknowns and observation coverage distinct; count shared effort once. | **In development** · [Usage and time](https://github.com/originoneai/awr/blob/main/docs/dev/reference/usage-time-observation.md) |
 
 These capabilities belong to the same project model. A person coordinating
 several agents can need the same dependency, review and accounting discipline as
@@ -80,7 +80,7 @@ This example explains the collaboration model; it is not an executed benchmark.
 
 The published **0.5.1** CLI/MCP packages provide source-backed goals and tasks,
 dependency navigation, focused context, session claims and checkpoints,
-version-bound evidence, a [shared HTTP MCP service](docs/reference/mcp-service.md)
+version-bound evidence, a [shared HTTP MCP service](docs/dev/reference/mcp-service.md)
 for multiple clients/projects, and Personal Workspace file exchange.
 
 This release adds **source freshness inventories, content review records and
@@ -88,7 +88,7 @@ truthful checkpoint progress**, alongside parsing and client-integration fixes.
 Its **personal workstream foundation** supports explicit source ownership,
 session attribution and scoped context in a local SQLite project. It does not
 provide an authenticated Team service or complete multi-client isolation.
-See [what changed in 0.5.1](docs/release/0.5.1.md).
+See [what changed in 0.5.1](docs/dev/release/0.5.1.md).
 
 The optional [Inspector](https://github.com/originoneai/awr/tree/v0.5.1/tools/inspector) runs from this source checkout;
 it is not bundled in npm/PyPI. It includes Chinese/English views, complete queue
@@ -150,7 +150,7 @@ awr intake inspect
 Initialization preserves existing project sources and proposes missing structure.
 If intake reports `NeedsOrganization`, let your agent complete the goals, tasks
 and acceptance criteria before starting implementation. See the
-[project intake guide](docs/TAKEOVER.md) for custom fields and existing ledgers.
+[project intake guide](docs/dev/TAKEOVER.md) for custom fields and existing ledgers.
 
 ### 3. Give your agent the working agreement
 
@@ -167,7 +167,7 @@ With CLI access to the initialized project, give your agent this instruction:
 
 You can inspect progress at any time with `awr status`. For the explicit
 claim → context → checkpoint workflow, see the
-[session guide](docs/integrations/session-workflow.md).
+[session guide](docs/dev/integrations/session-workflow.md).
 
 <details>
 <summary><strong>Connect through MCP instead</strong></summary>
@@ -188,7 +188,7 @@ Use the client's documented configuration format and your project's absolute pat
 
 Reconnect the client and confirm the project identity before making changes.
 For multiple clients and projects, use the
-[shared HTTP MCP service](docs/reference/mcp-service.md). See the
+[shared HTTP MCP service](docs/dev/reference/mcp-service.md). See the
 [MCP reference](crates/awr-mcp/README.md) for configuration and tool discovery.
 
 </details>
@@ -211,7 +211,7 @@ For multiple clients and projects, use the
 AWR preserves **project continuity across finite context windows**. Native
 compaction and the agent's private conversation remain host responsibilities;
 recorded checkpoints do not reconstruct unrecorded history. See
-[context continuity](docs/integrations/context-continuity.md).
+[context continuity](docs/dev/integrations/context-continuity.md).
 
 ## Agent ecosystem
 
@@ -220,16 +220,16 @@ optional lifecycle adapters provide deeper integration where supported.
 
 | Entry point | Documentation |
 | --- | --- |
-| Any CLI/MCP-capable agent, including Claude Code | [Generic session workflow](docs/integrations/session-workflow.md) |
-| Codex | [Optional lifecycle adapter](docs/integrations/codex.md) |
-| Cursor | [Client configuration](docs/integrations/cursor.md) |
-| Kimi Code | [Host integration note](docs/integrations/kimi.md) |
-| Grok Build | [Host integration note](docs/integrations/grok.md) |
-| Application or custom harness | [Host contract](docs/reference/host-contract.md) |
+| Any CLI/MCP-capable agent, including Claude Code | [Generic session workflow](docs/dev/integrations/session-workflow.md) |
+| Codex | [Optional lifecycle adapter](docs/dev/integrations/codex.md) |
+| Cursor | [Client configuration](docs/dev/integrations/cursor.md) |
+| Kimi Code | [Host integration note](docs/dev/integrations/kimi.md) |
+| Grok Build | [Host integration note](docs/dev/integrations/grok.md) |
+| Application or custom harness | [Host contract](docs/dev/reference/host-contract.md) |
 
 Hook availability and activation depend on the host. A configuration file alone
 does not prove an automatic checkpoint or handoff occurred.
-[Integration layers and boundaries](docs/integrations/README.md).
+[Integration layers and boundaries](docs/dev/integrations/README.md).
 
 ## Put the context budget into the current task
 
@@ -237,7 +237,7 @@ AWR compiles focused project context locally, without an additional model call.
 This gives the agent the relevant goals, rules, dependencies and evidence within
 a budget, reducing the need to read every project source on each handoff.
 
-On the [public, reproducible context benchmark](docs/benchmarks/README.md):
+On the [public, reproducible context benchmark](docs/dev/benchmarks/README.md):
 
 | Input material | Tokens | Reduction vs. reading all sources |
 | --- | ---: | ---: |
@@ -252,7 +252,7 @@ JSON metadata adds overhead. These figures measure input material, **not total
 model bills or answer quality**; chat history, model output and MCP framing are
 excluded.
 
-A separate [30-run workflow comparison](docs/benchmarks/workflow.md) reduced tool
+A separate [30-run workflow comparison](docs/dev/benchmarks/workflow.md) reduced tool
 calls by **18–27%** and returned text by **3.4–4.7%** while retaining the same
 completion contracts. It does not measure real model-token or billing savings.
 Context compilation measured **108 ms at p95** on one Apple M3 Max/macOS host

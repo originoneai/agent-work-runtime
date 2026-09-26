@@ -45,7 +45,7 @@ specification. `AWR_ISOLATION_SPEC` is consumed only by that test executable;
 shipped AWR binaries have no such hook. These child processes do not invoke models
 or perform real agent collaboration.
 
-The [user reference](../../docs/reference/runtime-isolation.md) describes operational
+The [user reference](../../docs/dev/reference/runtime-isolation.md) describes operational
 behavior. This matrix grants no E4, cross-platform, benchmark or release credit.
 
 Contract 1.2.0 preserves the 20 conditions and changes the parallel-branch

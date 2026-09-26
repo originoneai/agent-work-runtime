@@ -27,6 +27,6 @@ Failed refresh retains the old projection with an explicit freshness failure.
 Required facts containing forbidden values cannot be dropped to make a context
 look complete. Ordinary authentication discussion and empty schema definitions
 must remain usable; credential values hidden in examples or nested fields must
-still be rejected. See the [event contract](../../../docs/reference/event-payloads.md),
-[artifact limits](../../../docs/reference/artifact-boundaries.md) and
-[secret policy](../../../docs/reference/secret-boundaries.md).
+still be rejected. See the [event contract](../../../docs/dev/reference/event-payloads.md),
+[artifact limits](../../../docs/dev/reference/artifact-boundaries.md) and
+[secret policy](../../../docs/dev/reference/secret-boundaries.md).

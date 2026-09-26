@@ -37,6 +37,6 @@ latter with `AWR_RECOVERY_CLI`. Neither environment variable is consumed by ship
 AWR executables. No production fault flag or alternate mutation implementation is
 introduced.
 
-The [user reference](../../../docs/reference/mutation-recovery.md) describes recovery
+The [user reference](../../../docs/dev/reference/mutation-recovery.md) describes recovery
 outcomes and limits. Test success establishes local component/process/CLI behavior;
 it provides no E4, benchmark, cross-platform or release credit.
