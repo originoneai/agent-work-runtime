@@ -19,7 +19,7 @@ pub(super) fn select(data: &Value, context_complete: bool, owns_session: bool) -
             "Restore missing context before effects; use source.content or a larger context budget as needed.",
             "specification or dependency changes",
         )
-    } else if execution["recovery_blocked"] == true || execution["state"] == "unknown" {
+    } else if execution["state"] == "unknown" {
         (
             "reconcile_execution",
             "execution effects remain unresolved",
@@ -238,7 +238,12 @@ mod tests {
     fn restored_work_without_an_execution_uses_work_recovery() {
         let mut data = active();
         data["runtime"]["recovery_blocked"] = json!(true);
-        for execution in [Value::Null, json!({"state":"succeeded"})] {
+        for execution in [
+            Value::Null,
+            json!({"state":"succeeded","recovery_blocked":true}),
+            json!({"state":"failed","recovery_blocked":true}),
+            json!({"state":"cancelled","recovery_blocked":true}),
+        ] {
             data["execution"] = execution;
             let hint = select(&data, true, true);
             assert_eq!(hint["code"], "inspect_recovery");
