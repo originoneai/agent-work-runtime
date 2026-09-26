@@ -484,7 +484,9 @@ pub(crate) async fn read(
             "command":"review.decide", "policy":crate::review::AGENT_REVIEW_POLICY,
             "requires":["agent_actor","agent_review_membership_grant","live_review_delegation","distinct_author_actor_and_client"],
             "approval_basis":"agent_review", "human_approval":false,
-            "team_independent_acceptance":false, "completion_supported":false,
+            "team_independent_acceptance":false, "completion_supported":true,
+            "execution_basis":"caller_asserted_reconciled", "dependency_adoption":"agent_review_not_accepted",
+            "cross_workstream_adoption":"human_independent_only", "existing_same_stream_policies":"unchanged",
             "legacy_human_review_aliases":["review.accept","review.return"]
         });
         caps["identity"] = navigation::identity(auth);

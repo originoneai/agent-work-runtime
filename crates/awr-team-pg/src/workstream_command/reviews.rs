@@ -1,4 +1,6 @@
 //! Mainline evidence / review / rework / complete commands (WS-018).
+mod agent_completion;
+
 use super::*;
 use crate::review::{
     evidence_digest, required_dependencies_covered, resolve_person_id, self_review_permitted,
@@ -831,12 +833,7 @@ async fn complete(
     )
     .await?;
     let policy = contract.completion_policy.as_str();
-    if policy == crate::review::AGENT_REVIEW_POLICY {
-        return Err(PgError::Unsupported(
-            "Agent review is recorded separately; caller-managed completion is not yet supported"
-                .into(),
-        ));
-    }
+    let agent_policy = policy == crate::review::AGENT_REVIEW_POLICY;
     if let Some(requested) = a.requested_policy.as_deref() {
         if requested != policy {
             return Err(PgError::PolicyDowngrade);
@@ -906,6 +903,7 @@ async fn complete(
         "human_review" => EvidenceGrade::AuthorizedReview,
         _ => EvidenceGrade::AgentSelfReport,
     };
+    let mut caller_execution_binding = Value::Null;
     let mut execution_success = false;
     let mut verified_executor_actor: Option<String> = None;
     if policy == "ordinary_confirm" {
@@ -919,7 +917,11 @@ async fn complete(
         if kind != "human" {
             return Err(PgError::Forbidden);
         }
-    } else if grade != EvidenceGrade::TrustedExecutionReceipt {
+    } else if if agent_policy {
+        trust_basis != "caller_asserted" || artifact_id.is_none() || input_digest.is_none()
+    } else {
+        grade != EvidenceGrade::TrustedExecutionReceipt
+    } {
         return Err(PgError::EvidenceInvalid);
     } else {
         if payload.get("passed").and_then(Value::as_bool) == Some(false) {
@@ -928,7 +930,9 @@ async fn complete(
         let execution_id = execution_id.as_deref().ok_or(PgError::EvidenceInvalid)?;
         let exec = tx
             .query_opt(
-                "SELECT state, contract_hash, input_digest, executor_actor_id, scope_id, result_digest
+                "SELECT state, contract_hash, input_digest, executor_actor_id, scope_id, result_digest,
+                        id, work_id, executor_client_id, session_id, workstream_id, ownership_version,
+                        environment_digest, observed_paths_json, coordinator_epoch, execution_version
                  FROM awr_team.executions
                  WHERE tenant_id=$1 AND project_id=$2 AND id=$3",
                 &[&tenant, &project, &execution_id],
@@ -957,6 +961,11 @@ async fn complete(
         if declared != recorded {
             return Err(PgError::EvidenceInvalid);
         }
+        if agent_policy {
+            caller_execution_binding =
+                agent_completion::verify_execution(tx, tenant, project, auth, command, &exec)
+                    .await?;
+        }
         execution_success = true;
         verified_executor_actor = Some(exec_executor);
     }
@@ -984,6 +993,7 @@ async fn complete(
     };
     let mut approver_actor: Option<String> = None;
     let mut approver_person: Option<String> = None;
+    let mut approver_client: Option<String> = None;
     if policy != "ordinary_confirm" {
         // Only a still-valid (non-invalidated) approved round may satisfy
         // completion. review.open invalidates prior approved rounds when a
@@ -991,7 +1001,9 @@ async fn complete(
         // history but refuse to complete on them.
         let pinned = tx
             .query_opt(
-                "SELECT id, contract_hash, state FROM awr_team.review_rounds
+                "SELECT id, contract_hash, state, evidence_id, execution_id, artifact_digest,
+                        execution_result_digest, author_actor_id, author_client_id
+                 FROM awr_team.review_rounds
                  WHERE tenant_id=$1 AND project_id=$2 AND work_id=$3 AND bundle_hash=$4
                  ORDER BY round_index DESC LIMIT 1",
                 &[&tenant, &project, &command.work_id, &ev_digest],
@@ -1006,7 +1018,7 @@ async fn complete(
         }
         let d = tx
             .query_opt(
-                "SELECT decision, reviewer_actor_id, reviewer_person_id, independence_kind
+                "SELECT decision, reviewer_actor_id, reviewer_person_id, independence_kind, reviewer_client_id, approval_basis
                  FROM awr_team.review_decisions
                  WHERE tenant_id=$1 AND project_id=$2 AND review_round_id=$3
                  ORDER BY created_at DESC LIMIT 1",
@@ -1018,6 +1030,27 @@ async fn complete(
         approver_actor = Some(d.get(1));
         approver_person = d.get(2);
         independence_kind = d.get(3);
+        approver_client = d.get(4);
+        if agent_policy {
+            let author: String = pinned.get(7);
+            let author_client: Option<String> = pinned.get(8);
+            if independence_kind != "agent_review"
+                || d.get::<_, String>(5) != "agent_review"
+                || pinned.get::<_, Option<String>>(3).as_deref() != Some(a.evidence_id.as_str())
+                || pinned.get::<_, Option<String>>(4) != execution_id
+                || pinned.get::<_, Option<String>>(5) != output_digest
+                || pinned.get::<_, Option<String>>(6) != execution_result_digest
+                || approver_actor.as_deref() == Some(created_by.as_str())
+                || approver_actor.as_deref() == Some(author.as_str())
+                || approver_client.as_deref().is_none_or(|c| {
+                    Some(c) == author_client.as_deref()
+                        || Some(c) == caller_execution_binding["executor_client_id"].as_str()
+                })
+                || author_client.is_none()
+            {
+                return Err(PgError::ReviewRequired);
+            }
+        }
         review.approved = dec == "approve";
         if let Some(ap) = tx
             .query_opt(
@@ -1042,19 +1075,39 @@ async fn complete(
         artifact_digest: output_digest.clone(),
         accessible: true,
     };
-    let view = current_completion(
-        false,
-        true,
-        Some(ev_contract.as_str()),
-        &ev_contract,
-        binding_valid,
-        Some(&bundle),
-        &review,
-    );
+    // This explicit policy accepts a reconciled caller report plus the exact
+    // Agent review checked above. Do not relabel its evidence grade to pass
+    // the legacy trusted/human completion classifier.
+    let view = if agent_policy {
+        if binding_valid && review.approved && execution_success {
+            CompletionView::CurrentlyVerified
+        } else {
+            CompletionView::NeedsRevalidation
+        }
+    } else {
+        current_completion(
+            false,
+            true,
+            Some(ev_contract.as_str()),
+            &ev_contract,
+            binding_valid,
+            Some(&bundle),
+            &review,
+        )
+    };
     if view != CompletionView::CurrentlyVerified {
         return Err(PgError::CompletionRejected);
     }
     let team_independent_acceptance = independence_kind == "team_independent";
+    let approval_basis = crate::review::approval_basis(&independence_kind);
+    let execution_basis = if agent_policy {
+        "caller_asserted_reconciled"
+    } else if execution_success {
+        "trusted_execution_receipt"
+    } else {
+        "not_required"
+    };
+    let human_approval = !agent_policy && review.approved;
     let submitter_person = resolve_person_id(tx, tenant, project, &auth.actor_id)
         .await
         .ok();
@@ -1105,7 +1158,11 @@ async fn complete(
         "team_independent_acceptance": team_independent_acceptance,
         "execution_success": execution_success,
         "author_self_report": trust_basis == "caller_asserted",
-        "human_approval": review.approved,
+        "human_approval": human_approval,
+        "approval_basis": approval_basis,
+        "execution_basis": execution_basis,
+        "reviewer_client_id": approver_client,
+        "caller_execution_binding": caller_execution_binding,
     });
     let dependency_binding_hash = sha256_hex(json!(&dependency_links).to_string().as_bytes());
     let receipt_id = crate::tx::new_id();
@@ -1209,7 +1266,11 @@ async fn complete(
             "final_submitter_actor_id": auth.actor_id,
             "execution_success": execution_success,
             "author_self_report": trust_basis == "caller_asserted",
-            "human_approval": review.approved,
+            "human_approval": human_approval,
+        "approval_basis": approval_basis,
+        "execution_basis": execution_basis,
+        "reviewer_client_id": approver_client,
+        "caller_execution_binding": caller_execution_binding,
             "task_complete": true,
             "provider_private_session": Value::Null,
         }),
@@ -1220,6 +1281,9 @@ async fn complete(
                 "evidence_id": a.evidence_id,
                 "execution_id": execution_id,
                 "independence_kind": independence_for_receipt,
+                "approval_basis": approval_basis,
+                "execution_basis": execution_basis,
+                "human_approval": human_approval,
                 "team_independent_acceptance": team_independent_acceptance,
                 "approved_by_person_id": approver_person,
             }),

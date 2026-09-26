@@ -1541,7 +1541,8 @@ async fn current_contract(
 /// contract must have a completion receipt for ITS current contract; the
 /// actual (upstream_work, receipt) pairs are returned for the completion
 /// mapping. An empty required set passes; "no invalid binding rows" is NOT
-/// proof of coverage (CR #42 P2-6).
+/// proof of coverage (CR #42 P2-6). Agent review is a separate completion
+/// policy and cannot silently satisfy an existing consumer's dependencies.
 pub(crate) async fn required_dependencies_covered(
     tx: &tokio_postgres::Transaction<'_>,
     tenant_id: &str,
@@ -1588,7 +1589,7 @@ pub(crate) async fn required_dependencies_covered(
                    ON p.tenant_id=c.tenant_id AND p.id=c.project_id
                   AND p.active_snapshot_id=c.snapshot_id
                  WHERE r.tenant_id=$1 AND r.project_id=$2 AND r.work_id=$3
-                   AND r.scope_id=$4",
+                   AND r.scope_id=$4 AND r.independence_kind IS DISTINCT FROM 'agent_review'",
                 &[&tenant_id, &project_id, upstream, &scope_id],
             )
             .await?

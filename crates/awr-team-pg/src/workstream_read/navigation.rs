@@ -64,11 +64,21 @@ pub(super) async fn next(
             LEFT JOIN awr_team.work_runtime r ON r.tenant_id=$1 AND r.project_id=$2 AND r.scope_id='main' AND r.work_id=d.work_id
             LEFT JOIN awr_team.workstream_snapshot_ownership o ON o.tenant_id=$1 AND o.project_id=$2 AND o.snapshot_id=$3 AND o.work_id=d.work_id",
             &[&tenant,&project,&auth.snapshot,&contract.required_dependencies]).await?;
-        let blocked_deps = deps.iter().any(|d| {
-            d.get::<_, Option<String>>(1).as_deref() != Some("completed")
-                || d.get::<_, Option<String>>(2).is_none()
-                || d.get::<_, Option<String>>(3).as_deref() != Some(&stream)
-        });
+        let (covered, _) = crate::review::required_dependencies_covered(
+            tx,
+            tenant,
+            project,
+            &work,
+            "main",
+            &row.get::<_, Value>(2),
+        )
+        .await?;
+        let blocked_deps = !covered
+            || deps.iter().any(|d| {
+                d.get::<_, Option<String>>(1).as_deref() != Some("completed")
+                    || d.get::<_, Option<String>>(2).is_none()
+                    || d.get::<_, Option<String>>(3).as_deref() != Some(&stream)
+            });
         let claims=tx.query("SELECT c.expires_at>clock_timestamp(),c.actor_id,s.client_id FROM awr_team.claims c JOIN awr_team.sessions s ON s.tenant_id=c.tenant_id AND s.project_id=c.project_id AND s.id=c.session_id
             WHERE c.tenant_id=$1 AND c.project_id=$2 AND c.work_id=$3 AND c.state='active'", &[&tenant,&project,&work]).await?;
         let held = claims.iter().any(|c| {

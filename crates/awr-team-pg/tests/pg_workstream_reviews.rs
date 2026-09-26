@@ -913,9 +913,11 @@ mod agent_review_tests {
                 })
             )
             .await,
-            PgError::Unsupported(_)
+            PgError::EvidenceInvalid
         ));
     }
+
+    include!("cases/agent_completion.rs");
 
     #[tokio::test]
     async fn independent_delegations_cover_each_action_without_restoring_narrowed_parent() {
