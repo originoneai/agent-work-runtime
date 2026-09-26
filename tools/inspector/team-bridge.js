@@ -339,6 +339,10 @@ function createTeamBridge(opts) {
           return { ok: false, error: { code: 'SourceChanged', message: 'Observation changed; refresh the project' } };
         }
         progress = mapObservation(observation);
+        if (data.guidance?.code === 'restore_context') {
+          progress.guidance = data.guidance;
+          progress.next_step = data.guidance.action?.note || null;
+        }
         progress.github = await observeGithub(progress.pr_reference);
       }
       return { ok: true, work: {

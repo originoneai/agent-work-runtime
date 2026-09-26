@@ -10,7 +10,8 @@ test('observation separates a claimant, responsible person, expired claim and un
     checkpoint: { contract_matches_current: false, next_action: 'An old instruction' },
     execution: { state: 'running', receipt_details_available: false },
   });
-  assert.equal(mapped.claimant, 'Member');
+  assert.equal(mapped.claimant, null);
+  assert.equal(mapped.last_participant, 'Member');
   assert.equal(mapped.owner_person, null);
   assert.equal(mapped.agent, null);
   assert.equal(mapped.client_id, 'client');
@@ -20,6 +21,30 @@ test('observation separates a claimant, responsible person, expired claim and un
   assert.equal(mapped.model, null);
   assert.equal(mapped.usage, null);
   assert.equal(mapObservation({ runtime: { state: 'completed' }, claim: { state: 'active', lease_live: false } }).attention, null);
+});
+
+test('client reports remain separate from assignment, live claim and current guidance', () => {
+  const mapped = mapObservation({
+    responsibility: { owner_name: 'Owner', executor_agent_id: 'assigned-executor' },
+    session: { actor_name: 'Contributor' }, claim: { state: 'active', lease_live: true },
+    client: { product: 'Example Agent', version: '1.0' }, model: { id: 'example-model', source: 'host_metadata' },
+    progress: { summary: 'Tests running', stale: true },
+    usage: { input_tokens: 0, output_tokens: null, scope: 'host_session' },
+    checkpoint: { contract_matches_current: true, next_action: 'Register the same PR again' },
+    guidance: { code: 'inspect_delivery', action: { note: 'Inspect the current delivery' } },
+    execution: { receipt_details_available: false }, missing: { execution_receipt: 'permission_restricted' },
+  });
+  assert.equal(mapped.claimant, 'Contributor');
+  assert.equal(mapped.owner_person, 'Owner');
+  assert.equal(mapped.agent, 'Example Agent');
+  assert.equal(mapped.delegated_agent, 'assigned-executor');
+  assert.equal(mapped.model, 'example-model');
+  assert.equal(mapped.progress_report.stale, true);
+  assert.equal(mapped.usage.input_tokens, 0);
+  assert.equal(mapped.usage.output_tokens, null);
+  assert.equal(mapped.next_step, 'Inspect the current delivery');
+  assert.equal(mapped.execution.receipt_missing, 'permission_restricted');
+  assert.equal(mapObservation({ checkpoint: { contract_matches_current: true, next_action: 'Old step' } }).next_step, null);
 });
 
 test('only exact GitHub references in authorized current checkpoints or registered deliveries are used', () => {

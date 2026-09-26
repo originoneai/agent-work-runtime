@@ -178,6 +178,10 @@ body:has(#view-team:not([hidden])) main { padding: 26px 28px 24px; }
 #view-team .task-detail > h3 { color: var(--blue); font-size: 11px; margin: 24px 0 12px; }
 #view-team .task-detail ul { padding-left: 18px; font-size: 12px; line-height: 1.8; }
 #view-team .task-detail code { display: block; font-size: 10px; overflow-wrap: anywhere; }
+#view-team .feedback-history { border-top: 1px solid var(--line); margin-top: 16px; padding-top: 12px; font-size: 12px; line-height: 1.7; }
+#view-team .feedback-history summary { cursor: pointer; color: var(--muted); }
+#view-team .detail-section h6 { margin: 14px 0 5px; color: var(--muted); font-size: 11px; }
+#view-team .detail-section ul { margin: 0; }
 #view-team .network-coverage { display: flex; flex-wrap: wrap; gap: 6px 14px; color: var(--faint); font-size: 11px; margin: -4px 0 12px; }
 #view-team .network-empty { padding: 90px 24px; text-align: center; color: var(--muted); border-radius: 14px; background: var(--accent-wash); }
 #view-team .lg-rail { border-top-style: dotted; opacity: .65; }

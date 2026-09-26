@@ -208,3 +208,49 @@ test('project content is text and unknown fields never become synthetic claims',
   assert.doesNotMatch(node('teamOverview').textContent, /Synthetic demo data/);
   assert.doesNotMatch(node('teamDetail').textContent, /Passed|Merged|GPT-/);
 });
+
+for (const locale of ['en', 'zh-CN']) {
+  test(`structured reports retain provenance, missing reasons and historical status in ${locale}`, async () => {
+    i18n.setLocale(locale);
+    const escaped = '<img src=x onerror=alert(1)>';
+    live((_url, works) => ({ ok: true, work: { ...detail(works[0]).work,
+      last_participant: 'Contributor', claimant: null, agent: 'Example Agent', model: 'example-model',
+      progress_report: { phase: 'testing', summary: escaped, completed: ['Atomic writes'], blockers: [],
+        tests: [{ name: 'Durability', outcome: 'passed', reference: 'reports/check.txt' }],
+        artifacts: [{ label: 'Source', reference: 'javascript:alert(1)' }], stale: true, reported_at_unix_ms: 1000 },
+      usage: { input_tokens: 0, output_tokens: null, cached_input_tokens: 0, coverage: 'partial',
+        observed_at_unix_ms: 900, reported_at_unix_ms: 1000, source: 'native_host_event', source_ref: 'logs/session#3', counter_id: 'one' },
+      guidance: { code: 'inspect_delivery' }, next_step: 'Wrong stale action',
+      checkpoint: { next_action: 'Old handoff', created_at_unix_ms: 1000, contract_matches_current: true },
+      execution: { state: 'unknown', receipt_missing: 'permission_restricted' },
+      missing: { execution_receipt: 'permission_restricted' },
+    } }), 1);
+    await ui.refresh();
+    const view = node('teamDetail'), text = view.textContent;
+    assert.match(text, /Example Agent|example-model/);
+    assert.match(text, /Atomic writes/); assert.match(text, /reports\/check.txt/);
+    assert.match(text, /logs\/session#3/); assert.match(text, /Input tokens0|输入 Token0/);
+    assert.match(text, /Historical report|历史报告/);
+    assert.match(text, /not include this report|当前权限无法查看/);
+    assert.match(text, /Not a task total or a bill|不是本任务总消耗或账单/);
+    assert.doesNotMatch(text, /Wrong stale action|\[object Object\]|feedback\.|ui\.network_/);
+    const history = view.find(el => el.tagName === 'DETAILS' && el.textContent.includes('Old handoff'));
+    assert.ok(history); assert.equal(history.getAttribute('open'), null);
+    assert.equal(view.find(el => el.tagName === 'IMG'), null);
+    assert.equal(view.find(el => el.getAttribute('href') === 'javascript:alert(1)'), null);
+    assert.match(node('teamOverview').textContent, /Last participant: Contributor|最近参与：Contributor/);
+    assert.match(node('teamOverview').textContent, /Page refreshed|页面刷新于/);
+  });
+}
+
+test('unsupported collection and missing reports stay distinct', async () => {
+  live((_url, works) => ({ ok: true, work: { ...detail(works[0]).work,
+    missing: { model: 'client_collection_unsupported', progress: 'not_reported_by_client', usage: 'client_capability_unknown' },
+  } }), 1);
+  await ui.refresh();
+  const text = node('teamDetail').textContent;
+  assert.match(text, /does not support collecting/);
+  assert.match(text, /Supported by the client, but not reported/);
+  assert.match(text, /has not declared whether it can report/);
+  assert.doesNotMatch(text, /0 tokens|\$0/);
+});

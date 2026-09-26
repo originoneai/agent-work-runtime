@@ -575,6 +575,7 @@ for (const scenario of ['detail', 'changed', 'denied', 'observe-denied', 'observ
             work_id: 'WORK', contract_hash: scenario === 'observe-changed' ? 'new' : 'current', observed_at_unix_ms: 1234,
             session: { id: 'session', actor_name: 'Developer', client_id: 'agent-client' },
             checkpoint: { id: 'checkpoint', contract_matches_current: true, next_action: 'Review the change', open_loops: [] },
+            guidance: { code: 'inspect_delivery', action: { note: 'Inspect delivery' } },
             runtime: null, pr_deliveries: [],
           } }));
           return;
@@ -583,6 +584,7 @@ for (const scenario of ['detail', 'changed', 'denied', 'observe-denied', 'observ
           work_id: 'WORK', contract_hash: 'current', runtime: null,
           visible_contract: { acceptance: ['Contract criterion'], required_dependencies: ['VISIBLE'] },
           dependency_export_unavailable: true, context_complete: false,
+          guidance: { code: 'restore_context', action: { note: 'Restore missing context' } },
           completeness_reasons: ['dependency_export_unavailable'], execution_admission: 'not_evaluated',
         } }));
       });
@@ -599,7 +601,10 @@ for (const scenario of ['detail', 'changed', 'denied', 'observe-denied', 'observ
       } else {
         assert.equal(result.json.work.status, null);
         assert.equal(result.json.work.session_id, 'session');
-        assert.equal(result.json.work.next_step, 'Review the change');
+        assert.equal(result.json.work.next_step, 'Restore missing context');
+        assert.equal(result.json.work.guidance.code, 'restore_context');
+        assert.equal(result.json.work.claimant, null);
+        assert.equal(result.json.work.last_participant, 'Developer');
         assert.equal(result.json.work.dependency_export_unavailable, true);
         assert.deepEqual(result.json.work.acceptance, ['Contract criterion']);
         assert.deepEqual(result.json.work.depends_on, [{ key: 'VISIBLE', visible: true }]);
