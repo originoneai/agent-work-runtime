@@ -76,7 +76,7 @@ pub(crate) async fn resolve_agent_delegation(
     project_id: &str,
     work_id: Option<&str>,
     session_id: Option<&str>,
-    model_id: Option<&str>,
+    requested_action: Option<Action>,
     now_ms: i64,
 ) -> PgResult<()> {
     if !actor_requires_explicit_delegation(&auth.actor_kind) {
@@ -89,14 +89,13 @@ pub(crate) async fn resolve_agent_delegation(
         .query(
             "SELECT body_json FROM awr_team.agent_authorizations
              WHERE tenant_id=$1 AND project_id=$2 AND subject_id=$3 AND status='active'
-             ORDER BY created_at_ms ASC
+             ORDER BY created_at_ms ASC, id ASC
              FOR SHARE",
             &[&auth.tenant_id, &project_id, &auth.actor_id],
         )
         .await?;
 
-    let mut chosen: Option<AgentAuthorization> = None;
-    let mut chosen_actions = BTreeSet::new();
+    let mut candidates = Vec::new();
     let task_stream = if let Some(work) = work_id.filter(|w| !w.is_empty()) {
         crate::tx::bind_workstream_scope(tx, &auth.tenant_id, project_id).await?;
         tx.query_opt(
@@ -126,7 +125,7 @@ pub(crate) async fn resolve_agent_delegation(
         if !grant.is_effective_at(now_ms) {
             continue;
         }
-        if bind_runtime_identity(&grant, &auth.client_id, session_id, model_id, now_ms).is_err() {
+        if bind_runtime_identity(&grant, &auth.client_id, session_id, None, now_ms).is_err() {
             continue;
         }
         // Live WS-015 relationship check: a valid-looking binding_id in JSON is
@@ -145,28 +144,38 @@ pub(crate) async fn resolve_agent_delegation(
         }
 
         let mapped = tmcp_actions_for_authorized_set(&grant.actions);
-        let intersected = intersect_delegation_with_template(auth.role_template, &mapped);
-        let replace = match &chosen {
-            None => true,
-            Some(prev) => {
-                intersected.is_subset(&chosen_actions)
-                    && intersected.len() < chosen_actions.len()
-                    && grant.parent_authorization_id.as_deref() == Some(prev.id.as_str())
-            }
-        };
-        if chosen.is_none() || replace {
-            chosen_actions = intersected;
-            chosen = Some(grant);
-        } else if chosen_actions.is_empty() && !intersected.is_empty() {
-            chosen_actions = intersected;
-            chosen = Some(grant);
+        let mut intersected = intersect_delegation_with_template(auth.role_template, &mapped);
+        // Review is not a role-template permission. It needs both the live
+        // membership grant and this covering delegation, never either alone.
+        if auth.agent_review && mapped.contains(&Action::ReviewDecide) {
+            intersected.insert(Action::ReviewDecide);
         }
+        candidates.push((grant, intersected));
     }
 
+    // Resolve narrowing before choosing an action. Otherwise an action removed
+    // by a child could fall back to the broader parent. Independent grants may
+    // cover different actions, but are never unioned into synthetic authority.
+    let narrowed: BTreeSet<&str> = candidates
+        .iter()
+        .filter_map(|(child, child_actions)| {
+            let parent_id = child.parent_authorization_id.as_deref()?;
+            candidates.iter().find_map(|(parent, parent_actions)| {
+                (parent.id == parent_id
+                    && child_actions.is_subset(parent_actions)
+                    && child_actions.len() < parent_actions.len())
+                .then_some(parent_id)
+            })
+        })
+        .collect();
+    let chosen = candidates.iter().find(|(grant, actions)| {
+        !narrowed.contains(grant.id.as_str())
+            && requested_action.map_or(!actions.is_empty(), |action| actions.contains(&action))
+    });
     match chosen {
-        Some(grant) => {
-            auth.delegation_id = Some(grant.id);
-            auth.delegated_actions = Some(chosen_actions);
+        Some((grant, actions)) => {
+            auth.delegation_id = Some(grant.id.clone());
+            auth.delegated_actions = Some(actions.clone());
         }
         None => {
             auth.delegation_id = None;

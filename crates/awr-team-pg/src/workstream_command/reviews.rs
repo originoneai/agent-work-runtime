@@ -499,8 +499,8 @@ async fn open(
         "INSERT INTO awr_team.review_rounds(
             tenant_id, project_id, id, work_id, round_index, bundle_hash,
             contract_hash, author_actor_id, state, author_person_id, evidence_id,
-            execution_id, artifact_digest, execution_result_digest)
-         VALUES ($1,$2,$3,$4,$5,$6,$7,$8,'open',$9,$10,$11,$12,$13)",
+            execution_id, artifact_digest, execution_result_digest, author_client_id)
+         VALUES ($1,$2,$3,$4,$5,$6,$7,$8,'open',$9,$10,$11,$12,$13,$14)",
         &[
             &tenant,
             &project,
@@ -515,6 +515,7 @@ async fn open(
             &execution_id,
             &artifact_digest,
             &execution_result_digest,
+            &auth.client_id,
         ],
     )
     .await?;
@@ -559,7 +560,7 @@ async fn decide(
     let row = tx
         .query_opt(
             "SELECT work_id, author_actor_id, bundle_hash, state, round_index, contract_hash,
-                    author_person_id, evidence_id
+                    author_person_id, evidence_id, author_client_id
              FROM awr_team.review_rounds
              WHERE tenant_id=$1 AND project_id=$2 AND id=$3 FOR UPDATE",
             &[&tenant, &project, &a.round_id],
@@ -574,6 +575,7 @@ async fn decide(
     let round_contract: String = row.get(5);
     let author_person: Option<String> = row.get(6);
     let evidence_id: Option<String> = row.get(7);
+    let author_client: Option<String> = row.get(8);
     if work_id != command.work_id {
         return Err(PgError::Forbidden);
     }
@@ -591,13 +593,6 @@ async fn decide(
         .await?
         .map(|r| r.get(0))
         .ok_or(PgError::Forbidden)?;
-    if reviewer_kind == "agent" {
-        return Err(PgError::AuthorCannotReview);
-    }
-    crate::tx::validate_reviewer(tx, tenant, project, &auth.actor_id).await?;
-    // Command path also enforces ReviewDecide via authorize_command; keep domain
-    // check so ReviewStore and command stay aligned (TMCP-031).
-    crate::tx::require_independent_review_grant(tx, tenant, project, &auth.actor_id).await?;
     let author_person = match author_person {
         Some(p) => p,
         None => resolve_person_id(tx, tenant, project, &author)
@@ -617,14 +612,50 @@ async fn decide(
         .await?
         .and_then(|r| r.get::<_, Option<String>>(0))
         .unwrap_or_else(|| "trusted_execution_and_review".into());
-    let independence_kind = if same_person {
-        if decision == "approve" && !self_review_permitted(&live_policy) {
+    let agent_policy = live_policy == crate::review::AGENT_REVIEW_POLICY;
+    let independence_kind = if agent_policy {
+        if reviewer_kind != "agent" || command.op != "review.decide" {
+            return Err(PgError::Forbidden);
+        }
+        crate::tx::require_agent_review_grant(tx, tenant, project, &auth.actor_id).await?;
+        // Person equality is allowed only because this is explicitly Agent
+        // review. Both authenticated execution identities must still differ.
+        if auth.actor_id == author || author_client.as_deref().is_none_or(|c| c == auth.client_id) {
             return Err(PgError::AuthorCannotReview);
         }
-        "personal_self_review"
+        // Opening somebody else's bundle cannot hide its actual author or
+        // executor from the Agent self-review check.
+        let self_authored: bool = tx
+            .query_opt(
+                "SELECT e.created_by=$4 OR COALESCE(x.executor_actor_id=$4, false)
+             FROM awr_team.evidence e LEFT JOIN awr_team.executions x
+               ON x.tenant_id=e.tenant_id AND x.project_id=e.project_id AND x.id=e.execution_id
+             WHERE e.tenant_id=$1 AND e.project_id=$2 AND e.id=$3",
+                &[&tenant, &project, &evidence_id, &auth.actor_id],
+            )
+            .await?
+            .ok_or(PgError::EvidenceInvalid)?
+            .get(0);
+        if self_authored {
+            return Err(PgError::AuthorCannotReview);
+        }
+        "agent_review"
     } else {
-        "team_independent"
+        if reviewer_kind == "agent" {
+            return Err(PgError::AuthorCannotReview);
+        }
+        crate::tx::validate_reviewer(tx, tenant, project, &auth.actor_id).await?;
+        crate::tx::require_independent_review_grant(tx, tenant, project, &auth.actor_id).await?;
+        if same_person {
+            if decision == "approve" && !self_review_permitted(&live_policy) {
+                return Err(PgError::AuthorCannotReview);
+            }
+            "personal_self_review"
+        } else {
+            "team_independent"
+        }
     };
+    let approval_basis = crate::review::approval_basis(independence_kind);
     let next = if decision == "approve" {
         "approved"
     } else {
@@ -633,8 +664,9 @@ async fn decide(
     tx.execute(
         "INSERT INTO awr_team.review_decisions(
             tenant_id, project_id, id, review_round_id, work_id, bundle_hash,
-            reviewer_actor_id, decision, reason, reviewer_person_id, independence_kind)
-         VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11)",
+            reviewer_actor_id, decision, reason, reviewer_person_id, independence_kind,
+            reviewer_client_id, approval_basis)
+         VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12,$13)",
         &[
             &tenant,
             &project,
@@ -647,6 +679,8 @@ async fn decide(
             &a.reason,
             &reviewer_person,
             &independence_kind,
+            &auth.client_id,
+            &approval_basis,
         ],
     )
     .await?;
@@ -665,11 +699,16 @@ async fn decide(
             "state": next,
             "decision": decision,
             "independence_kind": independence_kind,
+            "approval_basis": approval_basis,
+            "author_actor_id": author,
+            "author_client_id": author_client,
+            "reviewer_actor_id": auth.actor_id,
+            "reviewer_client_id": auth.client_id,
             "team_independent_acceptance": team_independent_acceptance,
             "author_person_id": author_person,
             "reviewer_person_id": reviewer_person,
             "evidence_id": evidence_id,
-            "human_approval": decision == "approve",
+            "human_approval": !agent_policy && decision == "approve",
             "task_complete": false,
         }),
         preceding_events: vec![(
@@ -678,6 +717,12 @@ async fn decide(
                 "round_id": a.round_id,
                 "decision": decision,
                 "independence_kind": independence_kind,
+                "approval_basis": approval_basis,
+                "author_actor_id": author,
+                "author_client_id": author_client,
+                "reviewer_actor_id": auth.actor_id,
+                "reviewer_client_id": auth.client_id,
+                "human_approval": !agent_policy && decision == "approve",
                 "team_independent_acceptance": team_independent_acceptance,
             }),
         )],
@@ -786,6 +831,12 @@ async fn complete(
     )
     .await?;
     let policy = contract.completion_policy.as_str();
+    if policy == crate::review::AGENT_REVIEW_POLICY {
+        return Err(PgError::Unsupported(
+            "Agent review is recorded separately; caller-managed completion is not yet supported"
+                .into(),
+        ));
+    }
     if let Some(requested) = a.requested_policy.as_deref() {
         if requested != policy {
             return Err(PgError::PolicyDowngrade);
@@ -1547,7 +1598,7 @@ pub(crate) async fn inspect_review(
         .query_opt(
             "SELECT id, work_id, round_index, bundle_hash, contract_hash, state,
                     author_actor_id, author_person_id, evidence_id, execution_id,
-                    artifact_digest, execution_result_digest
+                    artifact_digest, execution_result_digest, author_client_id
              FROM awr_team.review_rounds
              WHERE tenant_id=$1 AND project_id=$2 AND id=$3",
             &[&tenant, &project, &round_id],
@@ -1556,7 +1607,8 @@ pub(crate) async fn inspect_review(
         .ok_or_else(|| PgError::Protocol("review round not found".into()))?;
     let decisions = tx
         .query(
-            "SELECT decision, reviewer_actor_id, reviewer_person_id, independence_kind, reason
+            "SELECT decision, reviewer_actor_id, reviewer_person_id, independence_kind, reason,
+                    approval_basis, reviewer_client_id
              FROM awr_team.review_decisions
              WHERE tenant_id=$1 AND project_id=$2 AND review_round_id=$3
              ORDER BY created_at ASC",
@@ -1576,12 +1628,16 @@ pub(crate) async fn inspect_review(
         "execution_id": row.get::<_,Option<String>>(9),
         "artifact_digest": row.get::<_,Option<String>>(10),
         "execution_result_digest": row.get::<_,Option<String>>(11),
+        "author_client_id": row.get::<_,Option<String>>(12),
         "decisions": decisions.iter().map(|d| json!({
             "decision": d.get::<_,String>(0),
             "reviewer_actor_id": d.get::<_,String>(1),
             "reviewer_person_id": d.get::<_,Option<String>>(2),
             "independence_kind": d.get::<_,String>(3),
             "reason": d.get::<_,String>(4),
+            "approval_basis": d.get::<_,String>(5),
+            "reviewer_client_id": d.get::<_,Option<String>>(6),
+            "human_approval": matches!(d.get::<_,String>(5).as_str(), "human_independent_review" | "human_author_self_review") && d.get::<_,String>(0)=="approve",
             "team_independent_acceptance": d.get::<_,String>(3)=="team_independent" && d.get::<_,String>(0)=="approve",
         })).collect::<Vec<_>>(),
     }}))

@@ -410,6 +410,30 @@ pub(crate) async fn validate_reviewer(
     }
 }
 
+/// Explicit Agent review membership authority, rechecked in the decision transaction.
+pub(crate) async fn require_agent_review_grant(
+    tx: &tokio_postgres::Transaction<'_>,
+    tenant_id: &str,
+    project_id: &str,
+    reviewer_actor_id: &str,
+) -> PgResult<()> {
+    let allowed = tx
+        .query_opt(
+            "SELECT a.kind='agent' AND a.status='active' AND m.agent_review
+         FROM awr_team.actors a JOIN awr_team.project_memberships m
+           ON m.tenant_id=a.tenant_id AND m.actor_id=a.id
+         WHERE m.tenant_id=$1 AND m.project_id=$2 AND m.actor_id=$3",
+            &[&tenant_id, &project_id, &reviewer_actor_id],
+        )
+        .await?
+        .is_some_and(|r| r.get::<_, bool>(0));
+    if allowed {
+        Ok(())
+    } else {
+        Err(PgError::Forbidden)
+    }
+}
+
 /// TMCP-031: explicit independent review.decide grant on an eligible template.
 pub(crate) async fn require_independent_review_grant(
     tx: &tokio_postgres::Transaction<'_>,

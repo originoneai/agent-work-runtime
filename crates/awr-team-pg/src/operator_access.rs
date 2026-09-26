@@ -56,6 +56,8 @@ pub struct AccessPlan {
     pub revoke_credentials: Vec<String>,
     #[serde(default)]
     pub independent_review: bool,
+    #[serde(default, skip_serializing_if = "is_false")]
+    pub agent_review: bool,
 }
 
 fn invalid() -> PgError {
@@ -95,6 +97,7 @@ impl AccessPlan {
             .iter()
             .all(|s| identity(s))
             || !matches!(self.actor.kind.as_str(), "human" | "agent" | "system")
+            || (self.agent_review && self.actor.kind != "agent")
             || self.actor.display_name.trim().is_empty()
             || self.actor.display_name.len() > 512
             || self.actor.display_name.chars().any(char::is_control)
@@ -386,8 +389,8 @@ async fn snapshot(
         .get(0);
     let a=tx.query_opt("SELECT kind,display_name,status FROM awr_team.actors WHERE tenant_id=$1 AND id=$2 FOR SHARE",&[&tenant,&actor]).await?
         .map(|r|json!({"kind":r.get::<_,String>(0),"display_name":r.get::<_,String>(1),"status":r.get::<_,String>(2)}));
-    let member=tx.query_opt("SELECT role,membership_version,independent_review FROM awr_team.project_memberships WHERE tenant_id=$1 AND project_id=$2 AND actor_id=$3 FOR SHARE",
-        &[&tenant,&project,&actor]).await?.map(|r|json!({"role":r.get::<_,String>(0),"version":r.get::<_,i64>(1).to_string(),"independent_review":r.get::<_,bool>(2)}));
+    let member=tx.query_opt("SELECT role,membership_version,independent_review,agent_review FROM awr_team.project_memberships WHERE tenant_id=$1 AND project_id=$2 AND actor_id=$3 FOR SHARE",
+        &[&tenant,&project,&actor]).await?.map(|r|json!({"role":r.get::<_,String>(0),"version":r.get::<_,i64>(1).to_string(),"independent_review":r.get::<_,bool>(2),"agent_review":r.get::<_,bool>(3)}));
     let grants=tx.query("SELECT workstream_id,authority_version,can_read,can_write,can_manage,can_attest_execution,can_reconcile_execution,active,grant_version
         FROM awr_team.workstream_grants WHERE tenant_id=$1 AND project_id=$2 AND actor_id=$3 AND client_id=$4 ORDER BY workstream_id FOR SHARE",
         &[&tenant,&project,&actor,&caller]).await?.iter().map(|r|json!({"workstream_id":r.get::<_,String>(0),"authority_version":r.get::<_,i64>(1).to_string(),
@@ -481,14 +484,16 @@ fn policy(state: &Value) -> Value {
 async fn apply_policy(tx: &Transaction<'_>, p: &AccessPlan) -> PgResult<()> {
     tx.execute("INSERT INTO awr_team.actors(tenant_id,id,kind,display_name,status) VALUES($1,$2,$3,$4,'active') ON CONFLICT DO NOTHING",
         &[&p.tenant_id,&p.actor.id,&p.actor.kind,&p.actor.display_name]).await?;
-    tx.execute("INSERT INTO awr_team.project_memberships(tenant_id,project_id,actor_id,role,independent_review) VALUES($1,$2,$3,$4,$5)
+    tx.execute("INSERT INTO awr_team.project_memberships(tenant_id,project_id,actor_id,role,independent_review,agent_review) VALUES($1,$2,$3,$4,$5,$6)
         ON CONFLICT(tenant_id,project_id,actor_id) DO UPDATE SET
             role=EXCLUDED.role,
             independent_review=EXCLUDED.independent_review,
+            agent_review=EXCLUDED.agent_review,
             membership_version=awr_team.project_memberships.membership_version+1
         WHERE awr_team.project_memberships.role IS DISTINCT FROM EXCLUDED.role
-           OR awr_team.project_memberships.independent_review IS DISTINCT FROM EXCLUDED.independent_review",
-        &[&p.tenant_id,&p.project_id,&p.actor.id,&p.role,&p.independent_review]).await?;
+           OR awr_team.project_memberships.independent_review IS DISTINCT FROM EXCLUDED.independent_review
+           OR awr_team.project_memberships.agent_review IS DISTINCT FROM EXCLUDED.agent_review",
+        &[&p.tenant_id,&p.project_id,&p.actor.id,&p.role,&p.independent_review,&p.agent_review]).await?;
     let ids = p
         .grants
         .iter()
@@ -540,6 +545,8 @@ pub struct AdminAccessPlan {
     /// Explicit review.decide grant (TMCP-031). Never implied by role template.
     #[serde(default)]
     pub independent_review: bool,
+    #[serde(default, skip_serializing_if = "is_false")]
+    pub agent_review: bool,
     #[serde(default)]
     pub remove_membership: bool,
     /// Tenant-wide credential revoke is owner-only. Project admins must clear
@@ -565,6 +572,7 @@ impl AdminAccessPlan {
             || !identity(&self.subject.id)
             || !identity(&self.subject_client_id)
             || !matches!(self.subject.kind.as_str(), "human" | "agent" | "system")
+            || (self.agent_review && self.subject.kind != "agent")
             || self.subject.display_name.trim().is_empty()
             || self.subject.display_name.len() > 512
             || self.subject.display_name.chars().any(char::is_control)
@@ -648,6 +656,7 @@ impl AdminAccessPlan {
             credential: self.credential.clone(),
             revoke_credentials: vec![],
             independent_review: self.independent_review,
+            agent_review: self.agent_review,
         }
     }
 }
@@ -861,6 +870,7 @@ impl ProjectAccessStore {
         let current_streams = if plan.remove_membership
             || state["membership"]["role"] != plan.role
             || state["membership"]["independent_review"] != plan.independent_review
+            || state["membership"]["agent_review"] != plan.agent_review
         {
             actor_active_grant_streams(&tx, tenant, project, &plan.subject.id).await?
         } else {
@@ -1016,6 +1026,7 @@ impl ProjectAccessStore {
         let current_streams = if plan.remove_membership
             || before["membership"]["role"] != plan.role
             || before["membership"]["independent_review"] != plan.independent_review
+            || before["membership"]["agent_review"] != plan.agent_review
         {
             actor_active_grant_streams(&tx, tenant, project, &plan.subject.id).await?
         } else {

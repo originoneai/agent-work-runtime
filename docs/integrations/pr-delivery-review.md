@@ -49,12 +49,31 @@ and open/approved AWR review rounds bound to the old contract.
 ## Independence & attribution
 
 Independence follows WS-015/018 person relations: two agents of the same person
-are not team-independent. Agents cannot call `review.decide`.
+are not team-independent. Existing human-review contracts reject Agent approvals.
 
 Completion receipts attribute **author**, **owner**, **executor**, **reviewer**,
 and **final submitter** separately (`approved_by_json` plus dedicated columns).
 Failed / rejected / invalidated history is retained; only mismatched open rounds
 are invalidated on head/contract change.
+
+## Explicit Agent review
+
+For a contract with `completion_policy: caller_managed_execution_and_agent_review`,
+use `review.decide` with an authenticated Agent identity. An administrator must
+explicitly grant `agent_review: true`; an active WS-016 `Review` delegation must
+also cover that Agent, client, session and work. Role names alone grant nothing.
+Model names remain descriptive metadata and do not establish identity or authority.
+
+The reviewer must differ from the round author in both actor and client, and
+cannot be the evidence creator or execution actor. Two Agents may have the same
+responsible person. Decisions persist `approval_basis: agent_review`, actual
+actor/client attribution, `human_approval: false`, and
+`team_independent_acceptance: false`. `review.inspect` exposes the same facts.
+
+`review.accept` and `review.return` remain human-review aliases. The legacy
+ReviewStore does not support Agent review. This capability currently records
+review decisions only: the new policy cannot finalize work or unlock dependencies.
+Existing human policies are unchanged and cannot be downgraded through planning.
 
 ## Recheck boundaries
 

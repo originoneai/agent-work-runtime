@@ -660,8 +660,13 @@ pub fn ensure_independent_review_not_downgraded(
 ) -> TeamResult<()> {
     let prior = prior_policy.trim().to_ascii_lowercase();
     let next = next_policy.trim().to_ascii_lowercase();
-    if prior == "independent_review" && next != "independent_review" && next != "independent-review"
-    {
+    if matches!(
+        prior.as_str(),
+        "independent_review" | "independent-review" | "trusted_execution_and_review"
+    ) && !matches!(
+        next.as_str(),
+        "independent_review" | "independent-review" | "trusted_execution_and_review"
+    ) {
         return Err(TeamError::PermissionDenied(
             "independent delivery-review policy must not be downgraded by planning self-approve"
                 .into(),

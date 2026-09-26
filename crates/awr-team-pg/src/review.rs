@@ -5,6 +5,17 @@ use serde::Serialize;
 use serde_json::{Value, json};
 use sha2::{Digest, Sha256};
 
+pub(crate) const AGENT_REVIEW_POLICY: &str = "caller_managed_execution_and_agent_review";
+
+pub(crate) fn approval_basis(independence_kind: &str) -> &'static str {
+    match independence_kind {
+        "team_independent" => "human_independent_review",
+        "personal_self_review" => "human_author_self_review",
+        "agent_review" => "agent_review",
+        _ => "unspecified",
+    }
+}
+
 #[derive(Clone, Debug, Serialize)]
 pub struct EvidenceRecord {
     pub id: String,
@@ -349,6 +360,11 @@ impl ReviewStore {
             .get("completion_policy")
             .and_then(Value::as_str)
             .unwrap_or("trusted_execution_and_review");
+        if policy == AGENT_REVIEW_POLICY {
+            return Err(PgError::Unsupported(
+                "Agent review requires the authenticated workstream command path".into(),
+            ));
+        }
         let independence_kind = if same_person {
             if decision == "approve" && !self_review_permitted(policy) {
                 return Err(PgError::AuthorCannotReview);
@@ -370,8 +386,9 @@ impl ReviewStore {
         tx.execute(
             "INSERT INTO awr_team.review_decisions(
                 tenant_id, project_id, id, review_round_id, work_id, bundle_hash,
-                reviewer_actor_id, decision, reason, reviewer_person_id, independence_kind)
-             VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11)",
+                reviewer_actor_id, decision, reason, reviewer_person_id, independence_kind,
+                approval_basis)
+             VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12)",
             &[
                 &tenant_id,
                 &project_id,
@@ -384,6 +401,7 @@ impl ReviewStore {
                 &reason,
                 &reviewer_person,
                 &independence_kind,
+                &approval_basis(independence_kind),
             ],
         )
         .await?;
@@ -404,6 +422,7 @@ impl ReviewStore {
                 "round_id": round_id,
                 "decision": decision,
                 "independence_kind": independence_kind,
+                "approval_basis": approval_basis(independence_kind),
                 "reviewer_person_id": reviewer_person,
                 "author_person_id": author_person,
                 "team_independent_acceptance": independence_kind == "team_independent"
@@ -545,6 +564,12 @@ impl ReviewStore {
             if requested != policy {
                 return Err(PgError::PolicyDowngrade);
             }
+        }
+        if policy == AGENT_REVIEW_POLICY {
+            return Err(PgError::Unsupported(
+                "Agent-reviewed completion requires the authenticated workstream command path"
+                    .into(),
+            ));
         }
         let evidence = load_evidence(&tx, tenant_id, project_id, evidence_id).await?;
         if evidence.work_id != work_id || evidence.contract_hash != current_contract_hash(&contract)

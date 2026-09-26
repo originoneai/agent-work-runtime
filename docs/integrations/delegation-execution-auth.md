@@ -32,8 +32,10 @@ Claim acquire/renew/release state machines stay in `workstream_command/claims.rs
    claim/session/execution/delivery). Planning publish, access manage, and audit
    read do not flow from membership alone.
 4. **Sub-agent re-delegation** — still enforced by WS-016 `apply_delegate`
-   (narrowing only). TMCP-030 prefers a child grant when it is a strict subset of
-   an already chosen parent. Changing model, client, or session cannot revive a
+   (narrowing only). TMCP-030 selects one live grant covering the requested action, so independently
+   issued work and review grants can coexist. It never unions their permissions.
+   A matching child with strictly fewer effective actions supersedes its parent
+   before selection, preventing fallback to a broader parent. Changing model, client, or session cannot revive a
    revoked/expired grant (`bind_runtime_identity`).
 5. **Claim coordination ≠ side effects** — `AuthorizedAction::ClaimCoordination`
    maps only to `claim.manage_own`. `execution.*` commands require

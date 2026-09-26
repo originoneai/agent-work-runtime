@@ -48,6 +48,8 @@ pub(crate) struct ReaderAuthority {
     pub membership_version: i64,
     /// Explicit independent review.decide grant (never implied by role template).
     pub independent_review: bool,
+    /// Explicit Agent review grant; requires live WS-016 Review delegation too.
+    pub agent_review: bool,
     pub execution_access: BTreeMap<Id, ExecutionAccess>,
     pub access: WorkstreamAccess,
     pub catalog: WorkstreamCatalog,
@@ -144,7 +146,7 @@ async fn authenticate_inner(
         .query_opt(project_query, &[&tenant, &project])
         .await?
         .ok_or(PgError::Forbidden)?;
-    let identity = tx.query_opt("SELECT c.actor_id,c.client_id,m.membership_version,m.role,a.kind,m.independent_review
+    let identity = tx.query_opt("SELECT c.actor_id,c.client_id,m.membership_version,m.role,a.kind,m.independent_review,m.agent_review
         FROM awr_team.credentials c
         JOIN awr_team.tenants t ON t.id=c.tenant_id
         JOIN awr_team.actors a ON a.tenant_id=c.tenant_id AND a.id=c.actor_id
@@ -165,6 +167,7 @@ async fn authenticate_inner(
     let role: String = identity.get(3);
     let actor_kind: String = identity.get(4);
     let independent_review: bool = identity.get(5);
+    let agent_review: bool = identity.get(6);
     let snapshot: String = p
         .get::<_, Option<String>>(0)
         .ok_or(PgError::InactiveCandidate)?;
@@ -237,6 +240,7 @@ async fn authenticate_inner(
         role_template,
         membership_version: membership,
         independent_review,
+        agent_review,
         execution_access,
         access,
         catalog,
@@ -375,6 +379,9 @@ pub(crate) fn authority_scope(
         scope.allowed_actions = actions.clone();
         // Delegation alone never confers independent review.
         scope.independent_review_grant = false;
+        scope.agent_review_grant = auth.actor_kind == "agent"
+            && auth.agent_review
+            && actions.contains(&awr_team::Action::ReviewDecide);
     } else if auth.independent_review && awr_team::independent_review_eligible(auth.role_template) {
         // Explicit membership grant on an eligible template (TMCP-031).
         scope.independent_review_grant = true;
@@ -410,7 +417,10 @@ pub(crate) fn authorize_domain_action(
     // `validate_reviewer` already treats membership role `reviewer` as the
     // approval-capable label. Do not grant this to readers, workers, or admins:
     // `review.decide` stays a separate grant for every other template.
-    if action == awr_team::Action::ReviewDecide && auth.role == "reviewer" {
+    if action == awr_team::Action::ReviewDecide
+        && auth.role == "reviewer"
+        && auth.actor_kind != "agent"
+    {
         scope.independent_review_grant = true;
         scope.allowed_actions.insert(awr_team::Action::ReviewDecide);
     }
@@ -671,6 +681,7 @@ mod tests {
             role_template,
             membership_version: 1,
             independent_review: false,
+            agent_review: false,
             execution_access,
             access: WorkstreamAccess {
                 project_id: "project".into(),
