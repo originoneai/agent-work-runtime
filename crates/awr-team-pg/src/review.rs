@@ -1562,18 +1562,9 @@ pub(crate) async fn required_dependencies_covered(
     if invalid > 0 {
         return Ok((false, vec![]));
     }
-    // The legacy loader adds a hash to its otherwise exact contract document.
-    let mut definition = contract.clone();
-    definition
-        .as_object_mut()
-        .ok_or(PgError::SourceDivergence)?
-        .remove("contract_hash");
-    let consumer: awr_team::WorkContract =
-        serde_json::from_value(definition).map_err(|_| PgError::SourceDivergence)?;
-    let required = &consumer.required_dependencies;
-    let modes = &consumer.dependency_acceptance;
+    let (required, modes) = dependency_policy(contract)?;
     let mut links = Vec::new();
-    for upstream in required {
+    for upstream in &required {
         let receipt = tx
             .query_opt(
                 "SELECT r.id,r.independence_kind,r.policy,r.approved_by_json
@@ -1614,6 +1605,42 @@ pub(crate) async fn required_dependencies_covered(
     Ok((true, links))
 }
 
+fn dependency_policy(
+    contract: &Value,
+) -> PgResult<(
+    Vec<String>,
+    std::collections::BTreeMap<String, awr_team::DependencyAcceptanceMode>,
+)> {
+    let object = contract.as_object().ok_or(PgError::SourceDivergence)?;
+    if !object.contains_key("codec") {
+        // Pre-workstream contracts are unversioned documents, not incomplete
+        // V1 wire contracts. Keep their dependency gate without introducing an
+        // implicit route to the V2 Agent-review assurance policy.
+        if object.contains_key("dependency_acceptance") {
+            return Err(PgError::SourceDivergence);
+        }
+        let required: Vec<String> = match object.get("required_dependencies") {
+            None => Vec::new(),
+            Some(value) => {
+                serde_json::from_value(value.clone()).map_err(|_| PgError::SourceDivergence)?
+            }
+        };
+        for work in &required {
+            awr_team::WorkId::new(work).map_err(|_| PgError::SourceDivergence)?;
+        }
+        return Ok((required, Default::default()));
+    }
+    // The legacy loader adds a hash to its otherwise exact contract document.
+    let mut definition = object.clone();
+    definition.remove("contract_hash");
+    let consumer: awr_team::WorkContract =
+        serde_json::from_value(Value::Object(definition)).map_err(|_| PgError::SourceDivergence)?;
+    Ok((
+        consumer.required_dependencies,
+        consumer.dependency_acceptance,
+    ))
+}
+
 fn dependency_receipt_accepted(
     mode: Option<awr_team::DependencyAcceptanceMode>,
     kind: Option<&str>,
@@ -1636,6 +1663,63 @@ fn dependency_receipt_accepted(
 #[cfg(test)]
 mod dependency_policy_tests {
     use super::*;
+    #[test]
+    fn unversioned_contracts_preserve_dependencies_without_v2_opt_in() {
+        let (required, modes) = dependency_policy(&json!({
+            "completion_policy":"independent_review", "acceptance":["verified"],
+            "required_dependencies":["upstream"], "contract_hash":"legacy-hash"
+        }))
+        .unwrap();
+        assert_eq!(required, ["upstream"]);
+        assert!(modes.is_empty());
+        assert!(
+            dependency_policy(&json!({"completion_policy":"ordinary_confirm"}))
+                .unwrap()
+                .0
+                .is_empty()
+        );
+        for required in [Value::Null, json!("upstream"), json!([1]), json!([""])] {
+            assert!(dependency_policy(&json!({"required_dependencies":required})).is_err());
+        }
+        for mode in [
+            Value::Null,
+            json!({}),
+            json!({"upstream":"agent_reviewed_caller_asserted_reconciled"}),
+        ] {
+            assert!(
+                dependency_policy(
+                    &json!({"required_dependencies":["upstream"],"dependency_acceptance":mode})
+                )
+                .is_err()
+            );
+        }
+        assert!(dependency_policy(&json!({"codec":"unknown"})).is_err());
+        assert!(dependency_policy(&json!({"codec":null})).is_err());
+        assert!(dependency_policy(&json!({"codec":awr_team::WorkContract::CODEC})).is_err());
+    }
+
+    #[test]
+    fn versioned_dependency_policy_keeps_closed_v1_and_explicit_v2() {
+        let mut contract = json!({"codec":awr_team::WorkContract::CODEC,
+            "work_id":"consumer","external_key":"consumer","goals":["ship"],
+            "hard_rules":[],"scope_paths":["src"],"acceptance":["verified"],
+            "required_dependencies":["upstream"],"completion_policy":"independent_review",
+            "verification_requirements":[],"contract_hash":"stored-hash"});
+        assert!(dependency_policy(&contract).unwrap().1.is_empty());
+        contract["dependency_acceptance"] =
+            json!({"upstream":"agent_reviewed_caller_asserted_reconciled"});
+        assert!(dependency_policy(&contract).is_err());
+        contract["codec"] = json!(awr_team::WorkContract::CODEC_V2);
+        let (required, modes) = dependency_policy(&contract).unwrap();
+        assert_eq!(required, ["upstream"]);
+        assert_eq!(
+            modes["upstream"],
+            awr_team::DependencyAcceptanceMode::AgentReviewedCallerAssertedReconciled
+        );
+        contract["unrecognized_field"] = json!(true);
+        assert!(dependency_policy(&contract).is_err());
+    }
+
     #[test]
     fn mapped_receipt_requires_the_entire_basis_tuple_and_unmapped_keeps_legacy_rule() {
         let mode = Some(awr_team::DependencyAcceptanceMode::AgentReviewedCallerAssertedReconciled);
