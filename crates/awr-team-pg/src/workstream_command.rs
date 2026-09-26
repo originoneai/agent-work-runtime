@@ -264,8 +264,10 @@ impl WorkstreamCommandStore {
             &mut auth,
             project,
             Some(command.work_id.as_str()),
-            None,
-            None,
+            // `action()` already validated this operation's argument shape.
+            // Domain execution still verifies session owner, work and version.
+            command.args.get("session_id").and_then(Value::as_str),
+            crate::workstream_auth::command_business_action(&command.op),
             now_ms,
         )
         .await?;

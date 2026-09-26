@@ -304,8 +304,8 @@ impl WorkstreamReadStore {
             &mut auth,
             project,
             request.work_id.as_deref(),
-            None,
-            None,
+            request.session_id.as_deref(),
+            crate::workstream_auth::query_business_action(&request.op),
             now_ms,
         )
         .await?;
@@ -479,6 +479,13 @@ pub(crate) async fn read(
                 "token_billing_collected": false,
                 "non_repudiation": "not_claimed_against_db_owner"
             }
+        });
+        caps["agent_review"] = json!({
+            "command":"review.decide", "policy":crate::review::AGENT_REVIEW_POLICY,
+            "requires":["agent_actor","agent_review_membership_grant","live_review_delegation","distinct_author_actor_and_client"],
+            "approval_basis":"agent_review", "human_approval":false,
+            "team_independent_acceptance":false, "completion_supported":false,
+            "legacy_human_review_aliases":["review.accept","review.return"]
         });
         caps["identity"] = navigation::identity(auth);
         caps["project_entry"] = json!("work.next");

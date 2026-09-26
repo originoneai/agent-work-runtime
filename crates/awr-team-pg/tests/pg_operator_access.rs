@@ -254,7 +254,8 @@ async fn grant_replacement_preserves_other_clients_and_reactivation_increments_v
     let mut p = plan();
     p.actor = awr_team_pg::AccessActor {
         id: "agent".into(),
-        kind: "agent".into(),
+        // Match the shared fixture identity; this test changes grants, not actor kind.
+        kind: "human".into(),
         display_name: "Worker".into(),
     };
     p.client_id = "cli-a".into();
@@ -377,12 +378,7 @@ async fn schema_fourteen_is_atomic_and_preserves_access_without_granting_operato
     let (_g, admin, db, _) = setup().await;
     admin
         .batch_execute(
-            "DROP TABLE IF EXISTS awr_team.execution_attributions;
-             DROP TABLE IF EXISTS awr_team.operator_quarantines;
-             DROP TABLE IF EXISTS awr_team.backup_operations;
-             DROP TABLE IF EXISTS awr_team.history_migrations;
-             DROP TABLE IF EXISTS awr_team.project_access_changes;
-             DROP TABLE IF EXISTS awr_team.access_changes;
+            "DROP TABLE IF EXISTS awr_team.access_changes;
              UPDATE awr_team.schema_state SET version=13",
         )
         .await
@@ -414,7 +410,24 @@ async fn schema_fourteen_is_atomic_and_preserves_access_without_granting_operato
             .get::<_, i32>(0),
         13
     );
-    awr_team_pg::migrate(&admin).await.unwrap();
+    // Exercise migration 14 in isolation. The fixture already contains all
+    // later migrations; rerunning them is not a valid upgrade test.
+    admin.batch_execute(sql).await.unwrap();
+    assert_eq!(
+        admin
+            .query_one("SELECT version FROM awr_team.schema_state", &[])
+            .await
+            .unwrap()
+            .get::<_, i32>(0),
+        14
+    );
+    admin
+        .execute(
+            "UPDATE awr_team.schema_state SET version=$1",
+            &[&awr_team_pg::EXPECTED_SCHEMA_VERSION],
+        )
+        .await
+        .unwrap();
     awr_team_pg::Bootstrap::grant_app(&admin, "awr_app")
         .await
         .unwrap();
@@ -424,4 +437,27 @@ async fn schema_fourteen_is_atomic_and_preserves_access_without_granting_operato
         OperatorAccess::preview(&mut app, &plan()).await,
         Err(PgError::Forbidden)
     ));
+}
+
+#[tokio::test]
+async fn pre_agent_review_access_request_replays_with_its_original_canonical_hash() {
+    let (_g, mut admin, _, _) = setup().await;
+    let plan = plan();
+    let mut legacy_plan = serde_json::to_value(&plan).unwrap();
+    legacy_plan.as_object_mut().unwrap().remove("agent_review");
+    let old_plan_digest = awr_team::request_hash(&legacy_plan).unwrap();
+    let old_state = "a".repeat(64);
+    let old_hash = awr_team::request_hash(&json!({"protocol":"awr-operator-access-v1",
+        "plan":legacy_plan,"expected_state":old_state,"expected_plan":old_plan_digest}))
+    .unwrap();
+    let receipt = json!({"request_id":"pre-v35","state_basis":"at_commit","historical":true});
+    admin.execute("INSERT INTO awr_team.access_changes(tenant_id,project_id,request_id,request_hash,operator_role,result_json) VALUES($1,$2,'pre-v35',$3,'owner',$4)",
+        &[&TENANT,&PROJECT,&old_hash,&receipt]).await.unwrap();
+    let before = state(&admin).await;
+    let replay = OperatorAccess::apply(&mut admin, &plan, "pre-v35", &old_state, &old_plan_digest)
+        .await
+        .unwrap();
+    assert_eq!(replay["replayed"], true);
+    assert_eq!(replay["receipt"], receipt);
+    assert_eq!(state(&admin).await, before);
 }

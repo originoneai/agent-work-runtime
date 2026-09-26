@@ -690,3 +690,63 @@ async fn empty_grants_cannot_wipe_unmanaged_private_stream_via_full_delta() {
         .get(0);
     assert_eq!(active, 1, "private-beta grant must survive refused wipe");
 }
+
+#[tokio::test]
+async fn agent_review_grant_roundtrips_without_granting_human_review_or_other_clients() {
+    let (_g, owner, db, _store) = setup().await;
+    enable_admin_manage(&owner).await;
+    let access =
+        ProjectAccessStore::from_config(common::with_app_role(&common::test_config(), &db));
+    let mut plan = admin_plan_member();
+    plan.agent_review = true;
+    assert!(access.preview(TENANT, PROJECT, A, &plan).await.is_err());
+    plan.subject.id = "agent-reviewer".into();
+    plan.subject.kind = "agent".into();
+    plan.subject.display_name = "Review assistant".into();
+    let initial = access.preview(TENANT, PROJECT, A, &plan).await.unwrap();
+    access
+        .apply(
+            TENANT,
+            PROJECT,
+            A,
+            &plan,
+            "agent-review-add",
+            initial["state_digest"].as_str().unwrap(),
+            initial["plan_digest"].as_str().unwrap(),
+        )
+        .await
+        .unwrap();
+    let members = access.members(TENANT, PROJECT, A, None, 100).await.unwrap();
+    let member = members["items"]
+        .as_array()
+        .unwrap()
+        .iter()
+        .find(|m| m["actor_id"] == "agent-reviewer")
+        .unwrap();
+    assert_eq!(member["agent_review"], true);
+    assert_eq!(member["independent_review"], false);
+    assert!(!members.to_string().contains(NEW_TOKEN));
+    assert!(!members.to_string().contains("secret_hash"));
+    let before = access.preview(TENANT, PROJECT, A, &plan).await.unwrap();
+    plan.agent_review = false;
+    let revoke = access.preview(TENANT, PROJECT, A, &plan).await.unwrap();
+    assert_ne!(before["plan_digest"], revoke["plan_digest"]);
+    access
+        .apply(
+            TENANT,
+            PROJECT,
+            A,
+            &plan,
+            "agent-review-revoke",
+            revoke["state_digest"].as_str().unwrap(),
+            revoke["plan_digest"].as_str().unwrap(),
+        )
+        .await
+        .unwrap();
+    let after = access.preview(TENANT, PROJECT, A, &plan).await.unwrap();
+    assert_ne!(before["state_digest"], after["state_digest"]);
+    let row=owner.query_one("SELECT agent_review,independent_review,membership_version FROM awr_team.project_memberships WHERE actor_id='agent-reviewer'",&[]).await.unwrap();
+    assert!(!row.get::<_, bool>(0));
+    assert!(!row.get::<_, bool>(1));
+    assert_eq!(row.get::<_, i64>(2), 2);
+}

@@ -66,14 +66,14 @@ impl ProjectAccessStore {
                 bindings.push(state);
             }
             let a = tx.query_one(
-                "SELECT a.display_name,a.kind,m.role,m.independent_review FROM awr_team.actors a
+                "SELECT a.display_name,a.kind,m.role,m.independent_review,m.agent_review FROM awr_team.actors a
                  JOIN awr_team.project_memberships m ON m.tenant_id=a.tenant_id AND m.actor_id=a.id
                  WHERE a.tenant_id=$1 AND m.project_id=$2 AND a.id=$3",
                 &[&tenant,&project,&actor],
             ).await?;
             items.push(json!({"actor_id":actor,"display_name":a.get::<_,String>(0),
                 "kind":a.get::<_,String>(1),"role":a.get::<_,String>(2),
-                "independent_review":a.get::<_,bool>(3),"clients":bindings,
+                "independent_review":a.get::<_,bool>(3),"agent_review":a.get::<_,bool>(4),"clients":bindings,
                 "clients_truncated":clients.len()>100}));
         }
         let next = if more {

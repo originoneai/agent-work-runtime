@@ -213,6 +213,9 @@ pub struct AuthorityScope {
     pub allowed_actions: BTreeSet<Action>,
     #[serde(default)]
     pub independent_review_grant: bool,
+    /// Agent approval never confers independent human review authority.
+    #[serde(default)]
+    pub agent_review_grant: bool,
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub not_after_unix_ms: Option<u64>,
     #[serde(default)]
@@ -338,7 +341,8 @@ pub fn authorize_action(
 ) -> TeamResult<()> {
     scope_covers(scope, resource, now_unix_ms)?;
     if action == Action::ReviewDecide {
-        if !scope.independent_review_grant || !scope.allowed_actions.contains(&Action::ReviewDecide)
+        if !(scope.independent_review_grant || scope.agent_review_grant)
+            || !scope.allowed_actions.contains(&Action::ReviewDecide)
         {
             return Err(TeamError::PermissionDenied(
                 "review.decide requires independent review grant".into(),
@@ -373,6 +377,7 @@ pub fn authority_from_template(
         client_id: client_id.into(),
         allowed_actions: template_actions(role),
         independent_review_grant: false,
+        agent_review_grant: false,
         not_after_unix_ms: None,
         revoked: false,
         policy_version: PERMISSION_POLICY_VERSION,

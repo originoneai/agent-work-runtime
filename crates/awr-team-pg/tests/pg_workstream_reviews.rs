@@ -761,3 +761,485 @@ async fn invalidated_prior_approval_cannot_complete() {
         .get(0);
     assert_eq!(completed, 0);
 }
+
+mod agent_review_tests {
+    use super::*;
+    use awr_core::{
+        AgentAuthorization, AuthorizationScope, AuthorizationStatus, AuthorizedAction,
+        ExecutionSubjectKind, IssueAuthorizationRequest, PersonId,
+    };
+    use awr_team_pg::AuthorizationStore;
+    use std::collections::BTreeSet;
+
+    const POLICY: &str = "caller_managed_execution_and_agent_review";
+
+    async fn seed_agent_reviewer(admin: &Client, db: &str) {
+        seed_review_actors(admin).await;
+        admin.batch_execute(
+            "UPDATE awr_team.actors SET kind='agent' WHERE id='reviewer';
+             UPDATE awr_team.project_memberships SET agent_review=true WHERE actor_id='reviewer';
+             INSERT INTO awr_team.person_agent_bindings(tenant_id,project_id,id,person_id,agent_id,status)
+             VALUES('reader-tenant','reader-project','bind-reviewer','person-author','reviewer','active');"
+        ).await.unwrap();
+        let person = PersonId::new("person-author").unwrap();
+        AuthorizationStore::from_config(common::with_app_role(&common::test_config(), db))
+            .issue(
+                TENANT,
+                PROJECT,
+                &IssueAuthorizationRequest {
+                    request_key: "issue-agent-review".into(),
+                    authorization: AgentAuthorization {
+                        id: "review-grant".into(),
+                        authorizer_person_id: person.clone(),
+                        responsible_person_id: person,
+                        subject_kind: ExecutionSubjectKind::Agent,
+                        subject_id: "reviewer".into(),
+                        client_id: "cli-reviewer".into(),
+                        session_id: None,
+                        model_id: None,
+                        scope: AuthorizationScope::Project {
+                            project_id: PROJECT.into(),
+                        },
+                        actions: BTreeSet::from([
+                            AuthorizedAction::Inspect,
+                            AuthorizedAction::StartWork,
+                            AuthorizedAction::Review,
+                        ]),
+                        expires_at_ms: None,
+                        status: AuthorizationStatus::Active,
+                        revoked_at_ms: None,
+                        revoked_by: None,
+                        verifiable_capabilities: vec![],
+                        self_reported_skill_hints: vec![],
+                        parent_authorization_id: None,
+                        maintainer_person_id: None,
+                        created_at_ms: 1000,
+                        binding_id: Some("bind-reviewer".into()),
+                    },
+                },
+            )
+            .await
+            .unwrap();
+    }
+
+    async fn open_round(
+        admin: &Client,
+        store: &WorkstreamReadStore,
+        policy: &str,
+        key: &str,
+    ) -> Value {
+        let mut contract = current_contract(admin).await;
+        contract.completion_policy = policy.into();
+        put_contract(admin, &contract).await;
+        let ev = run(
+            store,
+            A,
+            &format!("{key}-evidence"),
+            "evidence.submit",
+            json!({
+                "session_id":"session-a", "expected_session_version":"1",
+                "payload":{"passed":true}, "artifact_hex":hex_encode(b"reviewed artifact"),
+                "input_digest":INPUT, "dirty_tree":false
+            }),
+        )
+        .await;
+        run(store, A, &format!("{key}-open"), "review.open", json!({
+            "session_id":"session-a", "expected_session_version":"1", "evidence_id":ev["evidence_id"]
+        })).await
+    }
+
+    fn args(round: &Value) -> Value {
+        json!({"session_id":"session-reviewer", "expected_session_version":"1",
+            "round_id":round["round_id"], "decision":"approve", "reason":"Reviewed the exact artifact"})
+    }
+
+    async fn denied(store: &WorkstreamReadStore, key: &str, op: &str, args: Value) -> PgError {
+        // Obtain independent preconditions so a denied query cannot mask the
+        // command authorization being exercised.
+        let p = prepare(store, A, "a").await;
+        store
+            .commands()
+            .execute(TENANT, PROJECT, REVIEWER_TOKEN, command(&p, key, op, args))
+            .await
+            .unwrap_err()
+    }
+
+    #[tokio::test]
+    async fn same_person_agent_reviewer_records_approval_without_human_acceptance() {
+        let (_g, admin, db, store) = setup().await;
+        seed_agent_reviewer(&admin, &db).await;
+        let round = open_round(&admin, &store, POLICY, "agent-positive").await;
+        let result = run(
+            &store,
+            REVIEWER_TOKEN,
+            "agent-decide",
+            "review.decide",
+            args(&round),
+        )
+        .await;
+        assert_eq!(result["approval_basis"], "agent_review");
+        assert_eq!(result["independence_kind"], "agent_review");
+        assert_eq!(result["human_approval"], false);
+        assert_eq!(result["team_independent_acceptance"], false);
+        assert_eq!(result["task_complete"], false);
+        assert_eq!(result["author_person_id"], result["reviewer_person_id"]);
+        assert_eq!(result["author_client_id"], "cli-a");
+        assert_eq!(result["reviewer_client_id"], "cli-reviewer");
+        let mut q = query("review.inspect");
+        q.work_id = Some("a".into());
+        q.review_round_id = Some(round["round_id"].as_str().unwrap().into());
+        let inspected = store
+            .query(TENANT, PROJECT, REVIEWER_TOKEN, q)
+            .await
+            .unwrap();
+        assert_eq!(inspected["data"]["review"]["author_client_id"], "cli-a");
+        let decision = &inspected["data"]["review"]["decisions"][0];
+        assert_eq!(decision["approval_basis"], "agent_review");
+        assert_eq!(decision["human_approval"], false);
+        assert_eq!(decision["team_independent_acceptance"], false);
+        let stored = admin.query_one("SELECT approval_basis,reviewer_client_id FROM awr_team.review_decisions WHERE review_round_id=$1",
+            &[&round["round_id"].as_str().unwrap()]).await.unwrap();
+        assert_eq!(stored.get::<_, String>(0), "agent_review");
+        assert_eq!(stored.get::<_, String>(1), "cli-reviewer");
+        assert!(matches!(
+            run_err(
+                &store,
+                A,
+                "agent-no-completion",
+                "work.complete",
+                json!({
+                    "session_id":"session-a","expected_session_version":"1",
+                    "evidence_id":round["evidence_id"],"context_complete":true
+                })
+            )
+            .await,
+            PgError::Unsupported(_)
+        ));
+    }
+
+    #[tokio::test]
+    async fn independent_delegations_cover_each_action_without_restoring_narrowed_parent() {
+        let (_g, admin, db, store) = setup().await;
+        seed_agent_reviewer(&admin, &db).await;
+        let original: Value = admin
+            .query_one(
+                "SELECT body_json FROM awr_team.agent_authorizations WHERE id='review-grant'",
+                &[],
+            )
+            .await
+            .unwrap()
+            .get(0);
+        let mut review_only = original.clone();
+        review_only["actions"] = json!(["review"]);
+        admin
+            .execute(
+                "UPDATE awr_team.agent_authorizations SET body_json=$1 WHERE id='review-grant'",
+                &[&review_only],
+            )
+            .await
+            .unwrap();
+        let authz =
+            AuthorizationStore::from_config(common::with_app_role(&common::test_config(), &db));
+        let mut work_grant: AgentAuthorization = serde_json::from_value(original).unwrap();
+        work_grant.id = "separate-work-grant".into();
+        work_grant.actions =
+            BTreeSet::from([AuthorizedAction::Inspect, AuthorizedAction::StartWork]);
+        work_grant.created_at_ms = 500;
+        authz
+            .issue(
+                TENANT,
+                PROJECT,
+                &IssueAuthorizationRequest {
+                    request_key: "separate-work".into(),
+                    authorization: work_grant.clone(),
+                },
+            )
+            .await
+            .unwrap();
+        let round = open_round(&admin, &store, POLICY, "separate-grants").await;
+        // An older work grant must not hide a separately issued review grant.
+        let prepared = prepare(&store, REVIEWER_TOKEN, "a").await;
+        let approved = store
+            .commands()
+            .execute(
+                TENANT,
+                PROJECT,
+                REVIEWER_TOKEN,
+                command(&prepared, "separate-review", "review.decide", args(&round)),
+            )
+            .await
+            .unwrap();
+        assert_eq!(
+            approved["receipt"]["data"]["approval_basis"],
+            "agent_review"
+        );
+        // Reverse issue order: an older review-only grant must not hide reads.
+        admin.batch_execute("UPDATE awr_team.agent_authorizations SET created_at_ms=2000 WHERE id='separate-work-grant'").await.unwrap();
+        prepare(&store, REVIEWER_TOKEN, "a").await;
+        // A child removing StartWork must not fall back to its broader parent.
+        let mut child = work_grant.clone();
+        child.id = "read-only-child".into();
+        child.created_at_ms = 3000;
+        child.actions = BTreeSet::from([AuthorizedAction::Inspect]);
+        authz
+            .delegate(
+                TENANT,
+                PROJECT,
+                &awr_core::DelegateAuthorizationRequest {
+                    request_key: "narrow-work".into(),
+                    parent_authorization_id: work_grant.id,
+                    child,
+                },
+                4000,
+            )
+            .await
+            .unwrap();
+        let prepared = prepare(&store, REVIEWER_TOKEN, "a").await;
+        let denied = store
+            .commands()
+            .execute(
+                TENANT,
+                PROJECT,
+                REVIEWER_TOKEN,
+                command(
+                    &prepared,
+                    "narrowed-start",
+                    "session.start",
+                    json!({"conversation_id":"forbidden"}),
+                ),
+            )
+            .await
+            .unwrap_err();
+        assert!(matches!(denied, PgError::Forbidden), "{denied:?}");
+        // Revoking just the review grant leaves reads available, never review.
+        admin
+            .batch_execute(
+                "UPDATE awr_team.agent_authorizations SET status='revoked' WHERE id='review-grant'",
+            )
+            .await
+            .unwrap();
+        let prepared = prepare(&store, REVIEWER_TOKEN, "a").await;
+        let round = open_round(&admin, &store, POLICY, "separate-revoked").await;
+        let denied = store
+            .commands()
+            .execute(
+                TENANT,
+                PROJECT,
+                REVIEWER_TOKEN,
+                command(&prepared, "revoked-review", "review.decide", args(&round)),
+            )
+            .await
+            .unwrap_err();
+        assert!(matches!(denied, PgError::Forbidden), "{denied:?}");
+    }
+
+    #[tokio::test]
+    async fn agent_review_requires_both_live_grants_and_matching_identity() {
+        let (_g, admin, db, store) = setup().await;
+        seed_agent_reviewer(&admin, &db).await;
+        let round = open_round(&admin, &store, POLICY, "agent-grants").await;
+        let original: Value = admin
+            .query_one(
+                "SELECT body_json FROM awr_team.agent_authorizations WHERE id='review-grant'",
+                &[],
+            )
+            .await
+            .unwrap()
+            .get(0);
+        let mutations = [
+            (
+                "no-member-grant",
+                "UPDATE awr_team.project_memberships SET agent_review=false WHERE actor_id='reviewer'",
+                "UPDATE awr_team.project_memberships SET agent_review=true WHERE actor_id='reviewer'",
+            ),
+            (
+                "revoked",
+                "UPDATE awr_team.agent_authorizations SET status='revoked' WHERE id='review-grant'",
+                "UPDATE awr_team.agent_authorizations SET status='active' WHERE id='review-grant'",
+            ),
+            (
+                "disabled-binding",
+                "UPDATE awr_team.person_agent_bindings SET status='disabled' WHERE id='bind-reviewer'",
+                "UPDATE awr_team.person_agent_bindings SET status='active' WHERE id='bind-reviewer'",
+            ),
+            (
+                "no-write",
+                "UPDATE awr_team.workstream_grants SET can_write=false WHERE actor_id='reviewer'",
+                "UPDATE awr_team.workstream_grants SET can_write=true WHERE actor_id='reviewer'",
+            ),
+        ];
+        for (key, mutate, restore) in mutations {
+            admin.batch_execute(mutate).await.unwrap();
+            assert!(
+                matches!(
+                    denied(&store, key, "review.decide", args(&round)).await,
+                    PgError::Forbidden
+                ),
+                "{key}"
+            );
+            admin.batch_execute(restore).await.unwrap();
+        }
+        for (key, field, value) in [
+            ("wrong-client", "client_id", json!("other-client")),
+            ("wrong-session", "session_id", json!("other-session")),
+            ("expired", "expires_at_ms", json!(1)),
+            (
+                "no-review-delegation",
+                "actions",
+                json!(["inspect", "start_work"]),
+            ),
+            (
+                "wrong-project",
+                "scope",
+                json!({"kind":"project","project_id":"other-project"}),
+            ),
+        ] {
+            let mut body = original.clone();
+            body[field] = value;
+            admin
+                .execute(
+                    "UPDATE awr_team.agent_authorizations SET body_json=$1 WHERE id='review-grant'",
+                    &[&body],
+                )
+                .await
+                .unwrap();
+            assert!(
+                matches!(
+                    denied(&store, key, "review.decide", args(&round)).await,
+                    PgError::Forbidden
+                ),
+                "{key}"
+            );
+        }
+        admin
+            .execute(
+                "UPDATE awr_team.agent_authorizations SET body_json=$1 WHERE id='review-grant'",
+                &[&original],
+            )
+            .await
+            .unwrap();
+        // A matching session-bound grant must succeed; mismatched sessions
+        // above must fail. Model labels remain informational metadata.
+        let mut bound = original.clone();
+        bound["session_id"] = json!("session-reviewer");
+        bound["model_id"] = json!("declared-model");
+        admin
+            .execute(
+                "UPDATE awr_team.agent_authorizations SET body_json=$1 WHERE id='review-grant'",
+                &[&bound],
+            )
+            .await
+            .unwrap();
+        let mut q = query("work.prepare");
+        q.work_id = Some("a".into());
+        q.session_id = Some("session-reviewer".into());
+        let prepared = store
+            .query(TENANT, PROJECT, REVIEWER_TOKEN, q)
+            .await
+            .unwrap();
+        let ok = store
+            .commands()
+            .execute(
+                TENANT,
+                PROJECT,
+                REVIEWER_TOKEN,
+                command(&prepared, "grants-restored", "review.decide", args(&round)),
+            )
+            .await
+            .unwrap()["receipt"]["data"]
+            .clone();
+        assert_eq!(ok["state"], "approved");
+    }
+
+    #[tokio::test]
+    async fn agent_review_cannot_satisfy_human_policies_or_review_its_own_work() {
+        let (_g, admin, db, store) = setup().await;
+        seed_agent_reviewer(&admin, &db).await;
+        for (i, policy) in [
+            "independent_review",
+            "trusted_execution_and_review",
+            "trusted_execution_and_author_self_review",
+        ]
+        .iter()
+        .enumerate()
+        {
+            let round = open_round(&admin, &store, policy, &format!("human-{i}")).await;
+            assert!(matches!(
+                denied(
+                    &store,
+                    &format!("human-deny-{i}"),
+                    "review.decide",
+                    args(&round)
+                )
+                .await,
+                PgError::AuthorCannotReview
+            ));
+        }
+        let round = open_round(&admin, &store, POLICY, "agent-self").await;
+        for op in ["review.accept", "review.return"] {
+            let mut a = args(&round);
+            a.as_object_mut().unwrap().remove("decision");
+            assert!(matches!(
+                denied(&store, op, op, a).await,
+                PgError::Forbidden
+            ));
+        }
+        let rid = round["round_id"].as_str().unwrap();
+        for (key, column, value) in [
+            ("same-actor", "author_actor_id", "reviewer"),
+            ("same-client", "author_client_id", "cli-reviewer"),
+        ] {
+            let old: String = admin
+                .query_one(
+                    &format!("SELECT {column} FROM awr_team.review_rounds WHERE id=$1"),
+                    &[&rid],
+                )
+                .await
+                .unwrap()
+                .get(0);
+            admin
+                .execute(
+                    &format!("UPDATE awr_team.review_rounds SET {column}=$2 WHERE id=$1"),
+                    &[&rid, &value],
+                )
+                .await
+                .unwrap();
+            assert!(matches!(
+                denied(&store, key, "review.decide", args(&round)).await,
+                PgError::AuthorCannotReview
+            ));
+            admin
+                .execute(
+                    &format!("UPDATE awr_team.review_rounds SET {column}=$2 WHERE id=$1"),
+                    &[&rid, &old],
+                )
+                .await
+                .unwrap();
+        }
+        admin
+            .execute(
+                "UPDATE awr_team.evidence SET created_by='reviewer' WHERE id=$1",
+                &[&round["evidence_id"].as_str().unwrap()],
+            )
+            .await
+            .unwrap();
+        assert!(matches!(
+            denied(&store, "hidden-author", "review.decide", args(&round)).await,
+            PgError::AuthorCannotReview
+        ));
+        admin
+            .execute(
+                "UPDATE awr_team.evidence SET created_by='agent' WHERE id=$1",
+                &[&round["evidence_id"].as_str().unwrap()],
+            )
+            .await
+            .unwrap();
+        let mut contract = current_contract(&admin).await;
+        contract.acceptance.push("changed acceptance".into());
+        put_contract(&admin, &contract).await;
+        assert!(matches!(
+            denied(&store, "changed-contract", "review.decide", args(&round)).await,
+            PgError::ReviewRequired
+        ));
+    }
+}
