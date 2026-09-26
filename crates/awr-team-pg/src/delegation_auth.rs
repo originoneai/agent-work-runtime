@@ -228,8 +228,7 @@ pub(crate) async fn restrict_read_scope(
             .map_err(|_| PgError::Forbidden)?;
         auth.access.grants.retain(|g| g.workstream_id == stream);
     }
-    // Cursor reuse must not outlive an authorization change even if the access
-    // grant and source snapshot stay unchanged.
+    // Cursors and consumed context must not outlive the selected read grant.
     auth.binding =
         awr_team::request_hash(&serde_json::json!({"identity":auth.binding,"authorization":grant}))
             .map_err(|_| PgError::Forbidden)?;

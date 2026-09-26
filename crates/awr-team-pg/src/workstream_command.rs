@@ -12,7 +12,7 @@ pub(crate) mod reviews;
 use crate::workstream_auth::{
     CommandAuthPhase, ReaderAuthority, authenticate_writer, authorize_command,
 };
-use crate::workstream_read::{WorkstreamQuery, read, work_binding};
+use crate::workstream_read::{WorkstreamQuery, authenticated_read, work_binding};
 use crate::{PgError, PgPool, PgResult};
 use awr_core::Id;
 use serde::{Deserialize, Serialize};
@@ -366,7 +366,7 @@ impl WorkstreamCommandStore {
                 .await?
             }
             a => Applied {
-                data: apply(&tx, tenant, project, &auth, &command, ownership, a).await?,
+                data: apply(&tx, tenant, project, bearer, &auth, &command, ownership, a).await?,
                 preceding_events: Vec::new(),
             },
         };
@@ -511,6 +511,7 @@ async fn apply(
     tx: &Transaction<'_>,
     tenant: &str,
     project: &str,
+    bearer: &str,
     auth: &ReaderAuthority,
     command: &WorkstreamCommand,
     ownership: i64,
@@ -554,7 +555,7 @@ async fn apply(
                 "session_id":a.session_id,"max_context_bytes":262144}),
             )
             .map_err(|_| invalid())?;
-            let context = read(tx, tenant, project, auth, &query).await?;
+            let context = authenticated_read(tx, tenant, project, bearer, &query).await?;
             if context["data"]["context_hash"] != a.context_hash {
                 return Err(PgError::PreconditionsChanged);
             }

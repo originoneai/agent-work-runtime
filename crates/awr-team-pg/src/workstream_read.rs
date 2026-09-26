@@ -294,23 +294,7 @@ impl WorkstreamReadStore {
             .isolation_level(IsolationLevel::RepeatableRead)
             .start()
             .await?;
-        let mut auth = authenticate(&tx, tenant, project, bearer).await?;
-        let now_ms = std::time::SystemTime::now()
-            .duration_since(std::time::UNIX_EPOCH)
-            .map(|d| d.as_millis() as i64)
-            .unwrap_or(0);
-        crate::delegation_auth::resolve_agent_delegation(
-            &tx,
-            &mut auth,
-            project,
-            request.work_id.as_deref(),
-            request.session_id.as_deref(),
-            crate::workstream_auth::query_business_action(&request.op),
-            now_ms,
-        )
-        .await?;
-        crate::delegation_auth::restrict_read_scope(&tx, &mut auth, project, &request).await?;
-        let result = read(&tx, tenant, project, &auth, &request).await?;
+        let result = authenticated_read(&tx, tenant, project, bearer, &request).await?;
         if serde_json::to_vec(&result)
             .map_err(|_| PgError::SourceDivergence)?
             .len()
@@ -322,6 +306,35 @@ impl WorkstreamReadStore {
         tx.commit().await?;
         Ok(result)
     }
+}
+
+/// Native reads and checkpoint verification use the identical read authority.
+/// A command's action grant is enforced separately and must not replace the
+/// WorkRead grant or broaden the source set used to compute consumed context.
+pub(crate) async fn authenticated_read(
+    tx: &Transaction<'_>,
+    tenant: &str,
+    project: &str,
+    bearer: &str,
+    request: &WorkstreamQuery,
+) -> PgResult<Value> {
+    let mut auth = authenticate(tx, tenant, project, bearer).await?;
+    let now_ms = std::time::SystemTime::now()
+        .duration_since(std::time::UNIX_EPOCH)
+        .map(|d| d.as_millis() as i64)
+        .unwrap_or(0);
+    crate::delegation_auth::resolve_agent_delegation(
+        tx,
+        &mut auth,
+        project,
+        request.work_id.as_deref(),
+        request.session_id.as_deref(),
+        crate::workstream_auth::query_business_action(&request.op),
+        now_ms,
+    )
+    .await?;
+    crate::delegation_auth::restrict_read_scope(tx, &mut auth, project, request).await?;
+    read(tx, tenant, project, &auth, request).await
 }
 
 #[derive(Serialize, Deserialize, Default)]

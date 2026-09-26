@@ -363,3 +363,175 @@ async fn task_child_prevents_selector_free_reads_and_parent_fallback_on_sibling(
     ));
     assert_eq!(prepare(&store, A, "a").await["data"]["work_id"], "a");
 }
+
+#[tokio::test]
+async fn scoped_agent_can_save_the_context_returned_by_native_prepare() {
+    let (_g, admin, db, store) = setup().await;
+    agent_identity(&admin).await;
+    enable_writes(&admin).await;
+    grant(
+        &db,
+        AuthorizationScope::Workstream {
+            project_id: PROJECT.into(),
+            workstream_id: Id::from(1).to_string(),
+        },
+    )
+    .await;
+    let prepared = prepare(&store, A, "a").await;
+    let started = store
+        .commands()
+        .execute(
+            TENANT,
+            PROJECT,
+            A,
+            command(
+                &prepared,
+                "agent-start",
+                "session.start",
+                json!({"conversation_id":"scoped-checkpoint"}),
+            ),
+        )
+        .await
+        .unwrap();
+    let id = started["receipt"]["data"]["session_id"].as_str().unwrap();
+    let mut q = query("work.prepare");
+    q.work_id = Some("a".into());
+    q.session_id = Some(id.into());
+    let context = store.query(TENANT, PROJECT, A, q).await.unwrap();
+    let saved=store.commands().execute(TENANT,PROJECT,A,command(&context,"agent-checkpoint","session.checkpoint",json!({
+        "session_id":id,"expected_session_version":"1","context_hash":context["data"]["context_hash"],"next_action":"Continue integration","open_loops":["Review pending"]}))).await.unwrap();
+    assert_eq!(saved["receipt"]["data"]["session_version"], "2");
+}
+
+#[tokio::test]
+async fn checkpoint_uses_the_same_scoped_shared_sources_as_prepare() {
+    let (_g, admin, db, store) = setup_with_specs(vec![SourceFile {
+        path: "docs/alpha.md".into(),
+        bytes: b"Shared contract requires both streams".to_vec(),
+    }])
+    .await;
+    // Both credential-readable streams reference this document, while the
+    // explicit Agent delegation only permits the first stream.
+    admin.batch_execute("UPDATE awr_team.workstream_catalogs SET catalog_json=jsonb_set(catalog_json,'{workstreams,1,acceptance_contracts}','[\"docs/alpha.md\"]')").await.unwrap();
+    agent_identity(&admin).await;
+    enable_writes(&admin).await;
+    grant(
+        &db,
+        AuthorizationScope::Workstream {
+            project_id: PROJECT.into(),
+            workstream_id: Id::from(1).to_string(),
+        },
+    )
+    .await;
+    let mut q = query("work.prepare");
+    q.work_id = Some("a".into());
+    q.session_id = Some("session-a".into());
+    let context = store.query(TENANT, PROJECT, A, q).await.unwrap();
+    assert_eq!(context["data"]["required_specs"], json!([]));
+    assert_eq!(
+        context["data"]["completeness_reasons"],
+        json!(["required_spec_forbidden"])
+    );
+    let saved = store
+        .commands()
+        .execute(
+            TENANT,
+            PROJECT,
+            A,
+            command(
+                &context,
+                "shared-source-checkpoint",
+                "session.checkpoint",
+                json!({
+                    "session_id":"session-a", "expected_session_version":"1",
+                    "context_hash":context["data"]["context_hash"],
+                    "next_action":"Request an authorized copy of the shared contract",
+                    "open_loops":["Required shared contract is not readable"]
+                }),
+            ),
+        )
+        .await
+        .unwrap();
+    assert_eq!(saved["receipt"]["data"]["session_version"], "2");
+}
+
+#[tokio::test]
+async fn checkpoint_resolves_read_and_command_grants_independently() {
+    let (_g, admin, db, store) = setup().await;
+    agent_identity(&admin).await;
+    enable_writes(&admin).await;
+    grant(
+        &db,
+        AuthorizationScope::Workstream {
+            project_id: PROJECT.into(),
+            workstream_id: Id::from(1).to_string(),
+        },
+    )
+    .await;
+    let authorizations =
+        AuthorizationStore::from_config(common::with_app_role(&common::test_config(), &db));
+    let mut start_only = authorizations
+        .get(TENANT, PROJECT, "read-authorization")
+        .await
+        .unwrap()
+        .unwrap();
+    start_only.id = "separate-start-authorization".into();
+    start_only.created_at_ms = 2000;
+    start_only.actions = BTreeSet::from([AuthorizedAction::StartWork]);
+    authorizations
+        .issue(
+            TENANT,
+            PROJECT,
+            &IssueAuthorizationRequest {
+                request_key: "separate-start".into(),
+                authorization: start_only,
+            },
+        )
+        .await
+        .unwrap();
+    admin.execute("UPDATE awr_team.agent_authorizations SET body_json=jsonb_set(body_json,'{actions}',$1) WHERE id='read-authorization'",&[&json!(["inspect"])]).await.unwrap();
+    let mut q = query("work.prepare");
+    q.work_id = Some("a".into());
+    q.session_id = Some("session-a".into());
+    let context = store.query(TENANT, PROJECT, A, q.clone()).await.unwrap();
+    let checkpoint = command(
+        &context,
+        "separate-grant-checkpoint",
+        "session.checkpoint",
+        json!({
+            "session_id":"session-a", "expected_session_version":"1",
+            "context_hash":context["data"]["context_hash"],
+            "next_action":"Continue with separate read and work authority", "open_loops":[]
+        }),
+    );
+    let saved = store
+        .commands()
+        .execute(TENANT, PROJECT, A, checkpoint)
+        .await
+        .unwrap();
+    assert_eq!(saved["receipt"]["data"]["session_version"], "2");
+
+    // Losing WorkRead cannot be bypassed by retaining StartWork and replaying
+    // a previously consumed hash in a fresh checkpoint command.
+    let context = store.query(TENANT, PROJECT, A, q).await.unwrap();
+    admin.execute("UPDATE awr_team.agent_authorizations SET status='revoked' WHERE id='read-authorization'",&[]).await.unwrap();
+    let denied = store
+        .commands()
+        .execute(
+            TENANT,
+            PROJECT,
+            A,
+            command(
+                &context,
+                "read-revoked-checkpoint",
+                "session.checkpoint",
+                json!({
+                    "session_id":"session-a", "expected_session_version":"2",
+                    "context_hash":context["data"]["context_hash"],
+                    "next_action":"Must not save without live read authority", "open_loops":[]
+                }),
+            ),
+        )
+        .await;
+    assert!(matches!(denied, Err(PgError::Forbidden)));
+}
