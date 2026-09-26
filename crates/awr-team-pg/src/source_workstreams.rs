@@ -44,7 +44,15 @@ impl SourceProjection {
                 .iter()
                 .map(|e| e.contract.clone())
                 .collect(),
-            None => vec![parse_contract(files)?],
+            None => {
+                let contract = parse_contract(files)?;
+                if contract.codec != WorkContract::CODEC {
+                    return Err(PgError::Unsupported(
+                        "contract V2 requires a workstreams V2 bundle".into(),
+                    ));
+                }
+                vec![contract]
+            }
         };
         let hashes = contracts
             .iter()
@@ -397,6 +405,43 @@ impl SourceProjection {
                 &[&tenant,&project]).await?;
         }
         Ok(())
+    }
+
+    /// Keep receipts as history while reopening selections invalidated by the
+    /// new source contract or by an exact predecessor receipt that changed.
+    pub async fn invalidate_stale_completions(
+        &self,
+        tx: &Transaction<'_>,
+        tenant: &str,
+        project: &str,
+        snapshot: &str,
+    ) -> PgResult<Vec<Value>> {
+        let rows = tx.query("WITH RECURSIVE stale(id) AS (
+            SELECT r.id FROM awr_team.completion_receipts r
+            JOIN awr_team.work_runtime w ON w.tenant_id=r.tenant_id AND w.project_id=r.project_id
+              AND w.scope_id=r.scope_id AND w.work_id=r.work_id AND w.selected_completion_id=r.id
+            WHERE r.tenant_id=$1 AND r.project_id=$2 AND w.state='completed' AND r.scope_id='main'
+              AND (NOT EXISTS(SELECT 1 FROM awr_team.work_contracts c
+                WHERE c.tenant_id=$1 AND c.project_id=$2 AND c.snapshot_id=$3
+                  AND c.scope_id=r.scope_id AND c.work_id=r.work_id AND c.contract_hash=r.contract_hash)
+                OR EXISTS(SELECT 1 FROM awr_team.completion_dependencies d
+                  LEFT JOIN awr_team.work_runtime p ON p.tenant_id=d.tenant_id AND p.project_id=d.project_id
+                    AND p.scope_id=r.scope_id AND p.work_id=d.predecessor_work_id
+                  WHERE d.tenant_id=$1 AND d.project_id=$2 AND d.completion_id=r.id
+                    AND (p.state IS DISTINCT FROM 'completed' OR p.selected_completion_id IS DISTINCT FROM d.predecessor_completion_id)))
+            UNION
+            SELECT d.completion_id FROM awr_team.completion_dependencies d JOIN stale s ON d.predecessor_completion_id=s.id
+              WHERE d.tenant_id=$1 AND d.project_id=$2
+        ), changed AS (
+            SELECT w.scope_id,w.work_id,w.selected_completion_id FROM awr_team.work_runtime w JOIN stale s ON w.selected_completion_id=s.id
+            WHERE w.tenant_id=$1 AND w.project_id=$2 AND w.scope_id='main' AND w.state='completed'
+        ) UPDATE awr_team.work_runtime w SET state='unclaimed',selected_completion_id=NULL,work_version=work_version+1
+          FROM changed c WHERE w.tenant_id=$1 AND w.project_id=$2 AND w.scope_id=c.scope_id AND w.work_id=c.work_id
+          RETURNING w.work_id,c.selected_completion_id,w.work_version", &[&tenant,&project,&snapshot]).await?;
+        Ok(rows.into_iter().map(|row| serde_json::json!({
+            "work_id":row.get::<_,String>(0),"previous_completion_id":row.get::<_,String>(1),
+            "work_version":row.get::<_,i64>(2).to_string(),"reason":"contract_or_predecessor_changed"
+        })).collect())
     }
 }
 

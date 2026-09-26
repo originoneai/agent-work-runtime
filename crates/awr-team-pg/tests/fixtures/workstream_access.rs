@@ -146,6 +146,7 @@ async fn setup_inner(
     .map(|(id, stream, deps)| WorkstreamContract {
         workstream_id: Id::from(stream),
         contract: WorkContract {
+            dependency_acceptance: Default::default(),
             codec: WorkContract::CODEC.into(),
             work_id: WorkId::new(id).unwrap(),
             external_key: id.into(),

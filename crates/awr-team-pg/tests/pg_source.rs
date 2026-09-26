@@ -50,6 +50,7 @@ async fn setup() -> (MutexGuard<'static, ()>, Client, SourceStore) {
 
 fn contract_bytes(acceptance: &str) -> Vec<u8> {
     let contract = WorkContract {
+        dependency_acceptance: Default::default(),
         codec: WorkContract::CODEC.into(),
         work_id: WorkId::new("work-a").unwrap(),
         external_key: "W".into(),

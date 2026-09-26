@@ -29,6 +29,7 @@ pub const SOURCE_BINDING_FILE: &str = "source_binding.json";
 pub const WORKSTREAMS_FILE: &str = "workstreams.json";
 pub const SOURCE_PROVENANCE_FILE: &str = "source_provenance.json";
 pub const PARSER_VERSION: &str = "awr-team-workstreams/1";
+pub const PARSER_VERSION_V2: &str = "awr-team-workstreams/2";
 
 const SUPPORTED_SPEC_EXTENSIONS: &[&str] = &["json", "md", "markdown"];
 
@@ -119,6 +120,8 @@ pub struct PublishPreview {
     pub identity_removed: Vec<String>,
     pub identity_unchanged: Vec<String>,
     pub dependency_diffs: Vec<FieldDiff>,
+    #[serde(default, skip_serializing_if = "Vec::is_empty")]
+    pub dependency_acceptance_diffs: Vec<FieldDiff>,
     pub acceptance_diffs: Vec<FieldDiff>,
     pub source_diffs: Vec<FieldDiff>,
     pub workstream_identity_added: Vec<String>,
@@ -243,7 +246,15 @@ pub fn prepare_publish_from_ledger_bytes(
     let (catalog, key_to_id) = map_catalog(&document, project_id)?;
     let (contracts, status_notes) = map_contracts(&document, &key_to_id, options)?;
     let bundle = WorkstreamBundle {
-        codec: WorkstreamBundle::CODEC.into(),
+        codec: if contracts
+            .iter()
+            .any(|entry| entry.contract.codec == WorkContract::CODEC_V2)
+        {
+            WorkstreamBundle::CODEC_V2
+        } else {
+            WorkstreamBundle::CODEC
+        }
+        .into(),
         catalog,
         contracts,
     };
@@ -309,7 +320,12 @@ pub fn prepare_publish_from_ledger_bytes(
         source_status_notes: status_notes,
         referenced_specs: referenced,
         files,
-        parser_version: PARSER_VERSION.into(),
+        parser_version: if bundle.codec == WorkstreamBundle::CODEC_V2 {
+            PARSER_VERSION_V2
+        } else {
+            PARSER_VERSION
+        }
+        .into(),
     })
 }
 
@@ -481,6 +497,16 @@ fn map_contracts(
         let hard_rules = optional_string_list(item, &["hard_rules"], &pointer)?;
         let verification_requirements =
             optional_string_list(item, &["verification_requirements"], &pointer)?;
+        let dependency_acceptance = item
+            .get("dependency_acceptance")
+            .map(|raw| serde_json::from_value(raw.clone()))
+            .transpose()
+            .map_err(|_| {
+                Error::InvalidInput(format!(
+                    "{pointer}/dependency_acceptance: invalid policy map"
+                ))
+            })?
+            .unwrap_or_default();
         let item_policy = item
             .get("completion_policy")
             .and_then(Value::as_str)
@@ -499,7 +525,12 @@ fn map_contracts(
         let work_id = WorkId::new(&external_key)
             .map_err(|e| Error::InvalidInput(format!("{pointer}/id: {e}")))?;
         let contract = WorkContract {
-            codec: WorkContract::CODEC.into(),
+            codec: if item.get("dependency_acceptance").is_some() {
+                WorkContract::CODEC_V2
+            } else {
+                WorkContract::CODEC
+            }
+            .into(),
             work_id,
             external_key: external_key.clone(),
             goals,
@@ -509,6 +540,7 @@ fn map_contracts(
             required_dependencies,
             completion_policy: item_policy,
             verification_requirements,
+            dependency_acceptance,
         };
         contract
             .validate()
@@ -565,6 +597,26 @@ fn preview_against_baseline(
     location: &SoleSourceLocation,
 ) -> PublishPreview {
     let mut preview = PublishPreview::default();
+    for entry in &candidate.contracts {
+        let after = &entry.contract;
+        let before = baseline
+            .and_then(|bundle| {
+                bundle
+                    .contracts
+                    .iter()
+                    .find(|prior| prior.contract.external_key == after.external_key)
+            })
+            .map(|entry| &entry.contract.dependency_acceptance);
+        if before != Some(&after.dependency_acceptance)
+            && (before.is_some_and(|m| !m.is_empty()) || !after.dependency_acceptance.is_empty())
+        {
+            preview.dependency_acceptance_diffs.push(FieldDiff {
+                external_key: after.external_key.clone(),
+                before: before.map(|m| serde_json::json!(m)),
+                after: Some(serde_json::json!(after.dependency_acceptance)),
+            });
+        }
+    }
     let after_keys: BTreeSet<_> = candidate
         .contracts
         .iter()
@@ -743,6 +795,7 @@ pub fn source_status_notes_are_completion_receipts() -> bool {
 #[cfg(test)]
 mod tests {
     use super::*;
+    use serde_json::json;
     use std::path::PathBuf;
 
     fn fixture_root() -> PathBuf {
@@ -808,6 +861,86 @@ mod tests {
         );
         assert!(!package.bundle_digest.is_empty());
         assert!(!package.graph_digest.is_empty());
+    }
+
+    #[test]
+    fn explicit_source_policy_versions_only_selected_contract_and_previews_changes() {
+        let root = fixture_root();
+        let original = fs::read(root.join("ledger.yaml")).unwrap();
+        let baseline = prepare_publish_from_server_directory(
+            &root,
+            "ledger.yaml",
+            "demo-project",
+            &PublishPrepOptions::default(),
+        )
+        .unwrap();
+        assert_eq!(baseline.parser_version, PARSER_VERSION);
+        assert!(baseline.preview.dependency_acceptance_diffs.is_empty());
+        let mut doc: Value = serde_yaml_ng::from_slice(&original).unwrap();
+        doc["work_items"][1]["workstream"] = json!("api");
+        doc["work_items"][1]["dependency_acceptance"] =
+            json!({"API-1":"agent_reviewed_caller_asserted_reconciled"});
+        let prepare = |doc: &Value, before: Option<WorkstreamBundle>| {
+            prepare_publish_from_ledger_bytes(
+                &baseline.source_location,
+                &root,
+                serde_yaml_ng::to_string(doc).unwrap().as_bytes(),
+                "demo-project",
+                &PublishPrepOptions {
+                    baseline: before,
+                    completion_policy: None,
+                },
+            )
+        };
+        let candidate = prepare(&doc, Some(baseline.bundle().unwrap())).unwrap();
+        let bundle = candidate.bundle().unwrap();
+        assert_eq!(candidate.parser_version, PARSER_VERSION_V2);
+        assert_eq!(bundle.codec, WorkstreamBundle::CODEC_V2);
+        assert_eq!(
+            bundle.contracts[0].contract,
+            baseline.bundle().unwrap().contracts[0].contract
+        );
+        assert_eq!(bundle.contracts[1].contract.codec, WorkContract::CODEC_V2);
+        let diffs = &candidate.preview.dependency_acceptance_diffs;
+        assert_eq!(diffs.len(), 1);
+        assert_eq!(diffs[0].before, Some(json!({})));
+        assert_eq!(
+            diffs[0].after,
+            Some(doc["work_items"][1]["dependency_acceptance"].clone())
+        );
+        assert!(
+            prepare(&doc, Some(bundle.clone()))
+                .unwrap()
+                .preview
+                .dependency_acceptance_diffs
+                .is_empty()
+        );
+        assert_eq!(
+            prepare(&doc, None)
+                .unwrap()
+                .preview
+                .dependency_acceptance_diffs[0]
+                .before,
+            None
+        );
+        let mut removed = doc.clone();
+        removed["work_items"][1]
+            .as_object_mut()
+            .unwrap()
+            .remove("dependency_acceptance");
+        let tightened = prepare(&removed, Some(bundle)).unwrap();
+        assert_eq!(tightened.parser_version, PARSER_VERSION);
+        assert_eq!(
+            tightened.preview.dependency_acceptance_diffs[0].after,
+            Some(json!({}))
+        );
+        doc["work_items"][1]["workstream"] = json!("client");
+        assert!(
+            prepare(&doc, None)
+                .unwrap_err()
+                .to_string()
+                .contains("same workstream")
+        );
     }
 
     #[test]
