@@ -4,8 +4,9 @@
 //! owner connection.
 
 use awr_team_pg::{
-    AccessPlan, ExecutionAttributionPlan, OperatorAccess, OperatorBackup,
-    OperatorExecutionAttribution, OperatorHistory, OperatorQuarantine, OperatorRecovery, PgError,
+    AccessPlan, AgentProvisionPlan, ExecutionAttributionPlan, OperatorAccess, OperatorAgent,
+    OperatorBackup, OperatorExecutionAttribution, OperatorHistory, OperatorQuarantine,
+    OperatorRecovery, PgError,
 };
 use clap::Subcommand;
 use serde::Deserialize;
@@ -39,6 +40,36 @@ struct ClaimExplainDocument {
 
 #[derive(Subcommand)]
 pub enum AccessCommand {
+    /// Preview an initial person-Agent binding and scoped delegation (owner only).
+    AgentPreview {
+        #[arg(long)]
+        input: PathBuf,
+    },
+    /// Apply the reviewed initial delegation atomically; never rewrites actors.
+    AgentApply {
+        #[arg(long)]
+        input: PathBuf,
+        #[arg(long)]
+        request_id: String,
+        #[arg(long)]
+        expected_state: String,
+        #[arg(long)]
+        expected_plan: String,
+    },
+    /// Recover the redacted receipt for an initial Agent provisioning request.
+    AgentOutcome {
+        #[arg(long)]
+        tenant_id: String,
+        #[arg(long)]
+        project_id: String,
+        #[arg(long)]
+        request_id: String,
+    },
+    /// Compare live access, responsibility and delegation with a retained plan.
+    AgentInspect {
+        #[arg(long)]
+        input: PathBuf,
+    },
     /// Generate a bearer into a new local file; print only registration metadata.
     Token {
         #[arg(long)]
@@ -358,6 +389,18 @@ fn pg_error(e: PgError) -> Error {
     }
 }
 
+fn agent_plan(path: &PathBuf) -> Result<AgentProvisionPlan, Error> {
+    let file = std::fs::File::open(path).map_err(|_| ("InvalidInput", "cannot open Agent plan"))?;
+    let mut bytes = Vec::new();
+    file.take(65537)
+        .read_to_end(&mut bytes)
+        .map_err(|_| ("InvalidInput", "cannot read Agent plan"))?;
+    if bytes.len() > 65536 {
+        return Err(("InvalidInput", "Agent plan exceeds 64 KiB"));
+    }
+    serde_json::from_slice(&bytes).map_err(|_| ("InvalidInput", "invalid Agent plan JSON"))
+}
+
 fn attribution_plan(path: &PathBuf) -> Result<ExecutionAttributionPlan, Error> {
     let file =
         std::fs::File::open(path).map_err(|_| ("InvalidInput", "cannot open attribution plan"))?;
@@ -443,6 +486,33 @@ pub async fn run(command: AccessCommand) -> Result<Value, Error> {
     let mut client = awr_team_pg::connect(&url).await.map_err(pg_error)?;
     match command {
         AccessCommand::Token { .. } => unreachable!(),
+        AccessCommand::AgentPreview { input } => {
+            OperatorAgent::preview(&mut client, &agent_plan(&input)?).await
+        }
+        AccessCommand::AgentInspect { input } => {
+            OperatorAgent::inspect(&mut client, &agent_plan(&input)?).await
+        }
+        AccessCommand::AgentApply {
+            input,
+            request_id,
+            expected_state,
+            expected_plan,
+        } => {
+            OperatorAgent::apply(
+                &mut client,
+                &agent_plan(&input)?,
+                &request_id,
+                &expected_state,
+                &expected_plan,
+            )
+            .await
+        }
+        AccessCommand::AgentOutcome {
+            tenant_id,
+            project_id,
+            request_id,
+        } => OperatorAgent::outcome(&mut client, &tenant_id, &project_id, &request_id).await,
+
         AccessCommand::Inspect {
             tenant_id,
             project_id,
@@ -822,4 +892,83 @@ pub async fn run(command: AccessCommand) -> Result<Value, Error> {
         }
     }
     .map_err(pg_error)
+}
+
+#[cfg(test)]
+mod agent_cli_tests {
+    use super::*;
+    use clap::Parser;
+
+    #[test]
+    fn owner_agent_commands_require_reviewed_input_and_apply_digests() {
+        for op in ["agent-preview", "agent-inspect"] {
+            assert!(
+                crate::Args::try_parse_from(["awr-server", "access", op, "--input", "plan.json"])
+                    .is_ok()
+            );
+            assert!(crate::Args::try_parse_from(["awr-server", "access", op]).is_err());
+        }
+        assert!(
+            crate::Args::try_parse_from([
+                "awr-server",
+                "access",
+                "agent-apply",
+                "--input",
+                "plan.json"
+            ])
+            .is_err()
+        );
+        assert!(
+            crate::Args::try_parse_from([
+                "awr-server",
+                "access",
+                "agent-apply",
+                "--input",
+                "plan.json",
+                "--request-id",
+                "issue",
+                "--expected-state",
+                "state",
+                "--expected-plan",
+                "plan"
+            ])
+            .is_ok()
+        );
+        assert!(
+            crate::Args::try_parse_from([
+                "awr-server",
+                "access",
+                "agent-outcome",
+                "--tenant-id",
+                "tenant",
+                "--project-id",
+                "project",
+                "--request-id",
+                "issue"
+            ])
+            .is_ok()
+        );
+    }
+
+    #[test]
+    fn agent_plan_loader_bounds_input_and_does_not_echo_it() {
+        let path = std::env::temp_dir().join(format!(
+            "awr-agent-plan-{}-{}.json",
+            std::process::id(),
+            awr_core::now_millis().unwrap()
+        ));
+        let mut file = std::fs::OpenOptions::new()
+            .write(true)
+            .create_new(true)
+            .open(&path)
+            .unwrap();
+        file.write_all(&vec![b'x'; 65537]).unwrap();
+        file.sync_all().unwrap();
+        drop(file);
+        assert_eq!(
+            agent_plan(&path).unwrap_err(),
+            ("InvalidInput", "Agent plan exceeds 64 KiB")
+        );
+        std::fs::remove_file(path).unwrap();
+    }
 }

@@ -1,0 +1,534 @@
+#![cfg(feature = "pg-tests")]
+mod common;
+#[path = "fixtures/workstream_access.rs"]
+mod fixture;
+use awr_core::{AuthorizedAction, RevokeAuthorizationRequest};
+use awr_team_pg::{
+    AccessPlan, AgentProvisionPlan, AuthorizationStore, OperatorAccess, OperatorAgent, PgError,
+    workstream_credential_hash,
+};
+use fixture::*;
+use serde_json::{Value, json};
+use tokio_postgres::Client;
+
+const TOKEN: &str =
+    "awr1.native-agent.dddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd";
+fn access_plan() -> AccessPlan {
+    serde_json::from_value(json!({"protocol_version":1,"tenant_id":TENANT,"project_id":PROJECT,
+        "actor":{"id":"native-agent","kind":"agent","display_name":"Native developer"},
+        "client_id":"native-client","role":"developer","agent_review":false,
+        "grants":[{"workstream_id":awr_core::Id::from(1),"authority_version":"1","read":true,"write":true,
+            "manage":false,"attest_execution":false,"reconcile_execution":false}],
+        "credential":{"id":"native-agent","secret_hash":workstream_credential_hash(TOKEN).unwrap(),"expires_at_unix_ms":null},
+        "revoke_credentials":[]})).unwrap()
+}
+async fn plan(admin: &Client) -> AgentProvisionPlan {
+    let now: i64 = admin
+        .query_one(
+            "SELECT (extract(epoch FROM clock_timestamp())*1000)::bigint",
+            &[],
+        )
+        .await
+        .unwrap()
+        .get(0);
+    serde_json::from_value(
+        json!({"protocol_version":1,"tenant_id":TENANT,"project_id":PROJECT,"authorization":{
+        "id":"native-authorization","authorizer_person_id":"agent","responsible_person_id":"agent",
+        "subject_kind":"agent","subject_id":"native-agent","client_id":"native-client",
+        "scope":{"kind":"task","project_id":PROJECT,"work_item_id":"a"},
+        "actions":["inspect","start_work","claim_coordination"],"status":"active",
+        "verifiable_capabilities":[],"self_reported_skill_hints":[],"created_at_ms":now,
+        "expires_at_ms":now+3600000,"binding_id":"native-binding"}}),
+    )
+    .unwrap()
+}
+async fn stage(admin: &mut Client) {
+    let p = access_plan();
+    let preview = OperatorAccess::preview(admin, &p).await.unwrap();
+    OperatorAccess::apply(
+        admin,
+        &p,
+        "access-stage",
+        preview["state_digest"].as_str().unwrap(),
+        preview["plan_digest"].as_str().unwrap(),
+    )
+    .await
+    .unwrap();
+}
+async fn apply(admin: &mut Client, p: &AgentProvisionPlan, request: &str) -> Value {
+    let v = OperatorAgent::preview(admin, p).await.unwrap();
+    OperatorAgent::apply(
+        admin,
+        p,
+        request,
+        v["state_digest"].as_str().unwrap(),
+        v["plan_digest"].as_str().unwrap(),
+    )
+    .await
+    .unwrap()
+}
+async fn snapshot(admin: &Client) -> Value {
+    admin.query_one("SELECT jsonb_build_object(
+        'people',(SELECT jsonb_agg(to_jsonb(t) ORDER BY id) FROM awr_team.persons t),
+        'bindings',(SELECT jsonb_agg(to_jsonb(t) ORDER BY id) FROM awr_team.person_agent_bindings t),
+        'authorizations',(SELECT jsonb_agg(to_jsonb(t) ORDER BY id) FROM awr_team.agent_authorizations t),
+        'authorization_receipts',(SELECT jsonb_agg(to_jsonb(t) ORDER BY request_key) FROM awr_team.agent_authorization_receipts t),
+        'access_receipts',(SELECT jsonb_agg(to_jsonb(t) ORDER BY request_id) FROM awr_team.access_changes t),
+        'events',(SELECT jsonb_agg(to_jsonb(t) ORDER BY id) FROM awr_team.events t),
+        'audit',(SELECT jsonb_agg(to_jsonb(t) ORDER BY id) FROM awr_team.ops_audit_records t),
+        'projects',(SELECT jsonb_agg(to_jsonb(t) ORDER BY tenant_id,id) FROM awr_team.projects t),
+        'actors',(SELECT jsonb_agg(to_jsonb(t) ORDER BY tenant_id,id) FROM awr_team.actors t))",&[]).await.unwrap().get(0)
+}
+
+#[tokio::test]
+async fn staged_identity_cannot_work_until_atomic_provision_and_revocation_denies_next_command() {
+    let (_g, mut admin, db, store) = setup().await;
+    stage(&mut admin).await;
+    let p = plan(&admin).await;
+    let prepared = prepare(&store, A, "a").await;
+    let c = command(
+        &prepared,
+        "start-before",
+        "session.start",
+        json!({"conversation_id":"native"}),
+    );
+    assert!(matches!(
+        store.commands().execute(TENANT, PROJECT, TOKEN, c).await,
+        Err(PgError::Forbidden)
+    ));
+    let before = snapshot(&admin).await;
+    let preview = OperatorAgent::preview(&mut admin, &p).await.unwrap();
+    assert_eq!(snapshot(&admin).await, before);
+    assert_eq!(
+        preview,
+        OperatorAgent::preview(&mut admin, &p).await.unwrap()
+    );
+    assert!(!preview.to_string().contains(TOKEN));
+    assert!(!preview.to_string().contains("secret_hash"));
+    let receipt = OperatorAgent::apply(
+        &mut admin,
+        &p,
+        "agent-issue",
+        preview["state_digest"].as_str().unwrap(),
+        preview["plan_digest"].as_str().unwrap(),
+    )
+    .await
+    .unwrap();
+    assert_eq!(receipt["receipt"]["human_approval"], false);
+    assert_eq!(receipt["receipt"]["team_independent_acceptance"], false);
+    assert_eq!(
+        OperatorAgent::inspect(&mut admin, &p).await.unwrap()["configuration_matches_plan"],
+        true
+    );
+    let current_inspect = OperatorAgent::inspect(&mut admin, &p).await.unwrap();
+    assert_eq!(
+        current_inspect["state_digest"],
+        receipt["receipt"]["after_digest"]
+    );
+    let event = admin
+        .query_one(
+            "SELECT payload_json FROM awr_team.events WHERE id=$1",
+            &[&receipt["receipt"]["event_id"].as_str().unwrap()],
+        )
+        .await
+        .unwrap();
+    assert_eq!(
+        event.get::<_, Value>(0)["authorization_id"],
+        p.authorization.id
+    );
+    let current = prepare(&store, TOKEN, "a").await;
+    let c = command(
+        &current,
+        "start-after",
+        "session.start",
+        json!({"conversation_id":"native"}),
+    );
+    let started = store
+        .commands()
+        .execute(TENANT, PROJECT, TOKEN, c)
+        .await
+        .unwrap();
+    let id = started["receipt"]["data"]["session_id"].as_str().unwrap();
+    let actual = admin
+        .query_one(
+            "SELECT actor_id,client_id FROM awr_team.sessions WHERE id=$1",
+            &[&id],
+        )
+        .await
+        .unwrap();
+    assert_eq!(actual.get::<_, String>(0), "native-agent");
+    assert_eq!(actual.get::<_, String>(1), "native-client");
+    let elsewhere = command(
+        &prepare(&store, A, "c").await,
+        "out-of-task",
+        "session.start",
+        json!({"conversation_id":"denied"}),
+    );
+    assert!(matches!(
+        store
+            .commands()
+            .execute(TENANT, PROJECT, TOKEN, elsewhere)
+            .await,
+        Err(PgError::Forbidden)
+    ));
+    let auth = AuthorizationStore::from_config(common::with_app_role(&common::test_config(), &db));
+    auth.revoke(
+        TENANT,
+        PROJECT,
+        &RevokeAuthorizationRequest {
+            request_key: "revoke-native".into(),
+            authorization_id: p.authorization.id.clone(),
+            revoked_by: p.authorization.responsible_person_id.clone(),
+            revoked_at_ms: p.authorization.created_at_ms + 1,
+            reason: "finished".into(),
+        },
+    )
+    .await
+    .unwrap();
+    assert_eq!(
+        OperatorAgent::inspect(&mut admin, &p).await.unwrap()["configuration_matches_plan"],
+        false
+    );
+    let c = command(
+        &current,
+        "after-revoke",
+        "session.start",
+        json!({"conversation_id":"denied"}),
+    );
+    assert!(matches!(
+        store.commands().execute(TENANT, PROJECT, TOKEN, c).await,
+        Err(PgError::Forbidden)
+    ));
+    let after = snapshot(&admin).await;
+    let replay = OperatorAgent::apply(
+        &mut admin,
+        &p,
+        "agent-issue",
+        preview["state_digest"].as_str().unwrap(),
+        preview["plan_digest"].as_str().unwrap(),
+    )
+    .await
+    .unwrap();
+    assert_eq!(replay["receipt"], receipt["receipt"]);
+    assert_eq!(replay["replayed"], true);
+    assert_eq!(snapshot(&admin).await, after);
+    assert_eq!(
+        OperatorAgent::outcome(&mut admin, TENANT, PROJECT, "agent-issue")
+            .await
+            .unwrap()["receipt"],
+        receipt["receipt"]
+    );
+    let row=admin.query_one("SELECT person_id,actor_id,client_id,summary_json FROM awr_team.ops_audit_records WHERE request_id='agent-issue'",&[]).await.unwrap();
+    assert!(row.get::<_, Option<String>>(0).is_none());
+    assert_eq!(
+        row.get::<_, String>(1),
+        receipt["receipt"]["operator_role"].as_str().unwrap()
+    );
+    assert_eq!(row.get::<_, String>(2), "awr-server-owner-cli");
+    assert_eq!(row.get::<_, Value>(3)["subject_actor_id"], "native-agent");
+    let kind: String = admin
+        .query_one(
+            "SELECT kind FROM awr_team.actors WHERE tenant_id=$1 AND id='agent'",
+            &[&TENANT],
+        )
+        .await
+        .unwrap()
+        .get(0);
+    assert_eq!(kind, "human");
+}
+
+#[tokio::test]
+async fn owner_only_and_request_namespaces_are_checked() {
+    let (_g, mut admin, db, _) = setup().await;
+    stage(&mut admin).await;
+    let p = plan(&admin).await;
+    let v = OperatorAgent::preview(&mut admin, &p).await.unwrap();
+    let d = v["state_digest"].as_str().unwrap();
+    let h = v["plan_digest"].as_str().unwrap();
+    let mut app = common::app_client(&db).await;
+    assert!(matches!(
+        OperatorAgent::preview(&mut app, &p).await,
+        Err(PgError::Forbidden)
+    ));
+    assert!(matches!(
+        OperatorAgent::inspect(&mut app, &p).await,
+        Err(PgError::Forbidden)
+    ));
+    assert!(matches!(
+        OperatorAgent::apply(&mut app, &p, "issue", d, h).await,
+        Err(PgError::Forbidden)
+    ));
+    assert!(matches!(
+        OperatorAgent::outcome(&mut app, TENANT, PROJECT, "issue").await,
+        Err(PgError::Forbidden)
+    ));
+    assert!(matches!(
+        OperatorAgent::outcome(&mut admin, TENANT, PROJECT, "access-stage").await,
+        Err(PgError::IdempotencyConflict)
+    ));
+    assert!(matches!(
+        OperatorAgent::apply(&mut admin, &p, "access-stage", d, h).await,
+        Err(PgError::IdempotencyConflict)
+    ));
+    OperatorAgent::apply(&mut admin, &p, "issue", d, h)
+        .await
+        .unwrap();
+    let mut edited = p.clone();
+    edited
+        .authorization
+        .actions
+        .remove(&AuthorizedAction::ClaimCoordination);
+    assert!(matches!(
+        OperatorAgent::apply(&mut admin, &edited, "issue", d, h).await,
+        Err(PgError::IdempotencyConflict)
+    ));
+    assert_eq!(
+        OperatorAgent::outcome(&mut admin, TENANT, PROJECT, "missing")
+            .await
+            .unwrap()["outcome"],
+        "unknown"
+    );
+}
+
+#[tokio::test]
+async fn changed_access_and_scope_facts_invalidate_preview() {
+    let (_g, mut admin, _, _) = setup().await;
+    stage(&mut admin).await;
+    let p = plan(&admin).await;
+    for (change, undo) in [
+        (
+            "UPDATE awr_team.project_memberships SET independent_review=true WHERE actor_id='native-agent'",
+            "UPDATE awr_team.project_memberships SET independent_review=false WHERE actor_id='native-agent'",
+        ),
+        (
+            "UPDATE awr_team.actors SET kind='human' WHERE id='native-agent'",
+            "UPDATE awr_team.actors SET kind='agent' WHERE id='native-agent'",
+        ),
+        (
+            "UPDATE awr_team.actors SET status='disabled' WHERE id='native-agent'",
+            "UPDATE awr_team.actors SET status='active' WHERE id='native-agent'",
+        ),
+        (
+            "UPDATE awr_team.actors SET status='disabled' WHERE id='agent'",
+            "UPDATE awr_team.actors SET status='active' WHERE id='agent'",
+        ),
+        (
+            "UPDATE awr_team.project_memberships SET role='reader' WHERE actor_id='native-agent'",
+            "UPDATE awr_team.project_memberships SET role='developer' WHERE actor_id='native-agent'",
+        ),
+        (
+            "UPDATE awr_team.credentials SET revoked_at=clock_timestamp() WHERE id='native-agent'",
+            "UPDATE awr_team.credentials SET revoked_at=NULL WHERE id='native-agent'",
+        ),
+        (
+            "UPDATE awr_team.credentials SET expires_at=clock_timestamp()-interval '1 day' WHERE id='native-agent'",
+            "UPDATE awr_team.credentials SET expires_at=NULL WHERE id='native-agent'",
+        ),
+        (
+            "UPDATE awr_team.workstream_grants SET can_write=false WHERE actor_id='native-agent'",
+            "UPDATE awr_team.workstream_grants SET can_write=true WHERE actor_id='native-agent'",
+        ),
+        (
+            "UPDATE awr_team.workstream_grants SET authority_version=2 WHERE actor_id='native-agent'",
+            "UPDATE awr_team.workstream_grants SET authority_version=1 WHERE actor_id='native-agent'",
+        ),
+        (
+            "UPDATE awr_team.workstream_grants SET can_manage=true WHERE actor_id='native-agent'",
+            "UPDATE awr_team.workstream_grants SET can_manage=false WHERE actor_id='native-agent'",
+        ),
+        (
+            "UPDATE awr_team.workstream_ownership SET ownership_version=2 WHERE work_id='a'",
+            "UPDATE awr_team.workstream_ownership SET ownership_version=1 WHERE work_id='a'",
+        ),
+        (
+            "UPDATE awr_team.work_contracts SET definition_state='archived' WHERE work_id='a'",
+            "UPDATE awr_team.work_contracts SET definition_state='enabled' WHERE work_id='a'",
+        ),
+    ] {
+        let v = OperatorAgent::preview(&mut admin, &p).await.unwrap();
+        admin.batch_execute(change).await.unwrap();
+        assert!(
+            matches!(
+                OperatorAgent::apply(
+                    &mut admin,
+                    &p,
+                    "stale",
+                    v["state_digest"].as_str().unwrap(),
+                    v["plan_digest"].as_str().unwrap()
+                )
+                .await,
+                Err(PgError::PreconditionsChanged)
+            ),
+            "{change}"
+        );
+        assert!(
+            OperatorAgent::preview(&mut admin, &p).await.is_err(),
+            "{change}"
+        );
+        assert_eq!(
+            OperatorAgent::inspect(&mut admin, &p).await.unwrap()["configuration_matches_plan"],
+            false
+        );
+        admin.batch_execute(undo).await.unwrap();
+    }
+}
+
+#[tokio::test]
+async fn malformed_or_overbroad_initial_plans_and_existing_bindings_are_refused() {
+    let (_g, mut admin, _, _) = setup().await;
+    stage(&mut admin).await;
+    let p = plan(&admin).await;
+    for (field, value) in [
+        ("actions", json!(["accept_responsibility"])),
+        ("actions", json!(["occupy_collaboratively"])),
+        ("subject_kind", json!("person")),
+        ("client_id", json!("other-client")),
+        ("authorizer_person_id", json!("reviewer")),
+        ("scope", json!({"kind":"project","project_id":PROJECT})),
+        ("session_id", json!("one-session")),
+        ("parent_authorization_id", json!("parent")),
+        ("actions", json!(["inspect", "manage_authorization"])),
+        (
+            "created_at_ms",
+            json!(p.authorization.created_at_ms + 3600000),
+        ),
+        ("created_at_ms", json!(0)),
+        ("expires_at_ms", json!(p.authorization.created_at_ms - 1)),
+    ] {
+        let mut value_plan = json!(p);
+        value_plan["authorization"][field] = value;
+        let edited: AgentProvisionPlan = serde_json::from_value(value_plan).unwrap();
+        assert!(
+            OperatorAgent::preview(&mut admin, &edited).await.is_err(),
+            "{field}"
+        );
+    }
+    let mut unknown = json!(p);
+    unknown["secret"] = json!("not-accepted");
+    assert!(serde_json::from_value::<AgentProvisionPlan>(unknown).is_err());
+    admin.batch_execute("INSERT INTO awr_team.persons(tenant_id,project_id,id,display_name,status) VALUES('reader-tenant','reader-project','agent','Different name','active')").await.unwrap();
+    assert!(OperatorAgent::preview(&mut admin, &p).await.is_err());
+    admin.batch_execute("UPDATE awr_team.persons SET display_name='Worker'; INSERT INTO awr_team.person_agent_bindings(tenant_id,project_id,id,person_id,agent_id,status) VALUES('reader-tenant','reader-project','native-binding','agent','native-agent','active')").await.unwrap();
+    assert!(OperatorAgent::preview(&mut admin, &p).await.is_err());
+    let before = snapshot(&admin).await;
+    let inspected = OperatorAgent::inspect(&mut admin, &p).await.unwrap();
+    assert_eq!(inspected["configuration_matches_plan"], false);
+    assert_eq!(snapshot(&admin).await, before);
+}
+
+#[tokio::test]
+async fn each_late_write_failure_rolls_back_identity_delegation_receipts_and_revision() {
+    let (_g, mut admin, _, _) = setup().await;
+    stage(&mut admin).await;
+    let p = plan(&admin).await;
+    let v = OperatorAgent::preview(&mut admin, &p).await.unwrap();
+    let before = snapshot(&admin).await;
+    admin.batch_execute("CREATE FUNCTION awr_team.fail_agent_provision() RETURNS trigger LANGUAGE plpgsql AS $$ BEGIN RAISE EXCEPTION 'synthetic provisioning failure'; END $$").await.unwrap();
+    for table in [
+        "persons",
+        "person_agent_bindings",
+        "agent_authorizations",
+        "agent_authorization_receipts",
+        "access_changes",
+        "events",
+        "ops_audit_records",
+    ] {
+        admin.batch_execute(&format!("CREATE TRIGGER fail_agent_write BEFORE INSERT ON awr_team.{table} FOR EACH ROW EXECUTE FUNCTION awr_team.fail_agent_provision()" )).await.unwrap();
+        assert!(
+            OperatorAgent::apply(
+                &mut admin,
+                &p,
+                "fault",
+                v["state_digest"].as_str().unwrap(),
+                v["plan_digest"].as_str().unwrap()
+            )
+            .await
+            .is_err(),
+            "{table}"
+        );
+        assert_eq!(snapshot(&admin).await, before, "{table}");
+        admin
+            .batch_execute(&format!(
+                "DROP TRIGGER fail_agent_write ON awr_team.{table}"
+            ))
+            .await
+            .unwrap();
+    }
+    apply(&mut admin, &p, "after-fault").await;
+}
+
+#[tokio::test]
+async fn competing_provisions_have_one_winner_and_audited_identity() {
+    let (_g, mut admin, db, _) = setup().await;
+    stage(&mut admin).await;
+    let p = plan(&admin).await;
+    let v = OperatorAgent::preview(&mut admin, &p).await.unwrap();
+    let mut other = common::connect_config(&common::with_db(&common::test_config(), &db)).await;
+    let (a, b) = tokio::join!(
+        OperatorAgent::apply(
+            &mut admin,
+            &p,
+            "race-a",
+            v["state_digest"].as_str().unwrap(),
+            v["plan_digest"].as_str().unwrap()
+        ),
+        OperatorAgent::apply(
+            &mut other,
+            &p,
+            "race-b",
+            v["state_digest"].as_str().unwrap(),
+            v["plan_digest"].as_str().unwrap()
+        )
+    );
+    assert_ne!(a.is_ok(), b.is_ok());
+    assert!(matches!(
+        a.as_ref().err().or(b.as_ref().err()),
+        Some(PgError::PreconditionsChanged)
+    ));
+    assert_eq!(
+        OperatorAgent::inspect(&mut admin, &p).await.unwrap()["configuration_matches_plan"],
+        true
+    );
+    let n: i64 = admin
+        .query_one("SELECT count(*) FROM awr_team.agent_authorizations", &[])
+        .await
+        .unwrap()
+        .get(0);
+    assert_eq!(n, 1);
+}
+
+#[tokio::test]
+async fn agent_review_requires_both_explicit_grant_and_action() {
+    let (_g, mut admin, _, _) = setup().await;
+    stage(&mut admin).await;
+    let mut p = plan(&admin).await;
+    p.authorization
+        .actions
+        .remove(&AuthorizedAction::ClaimCoordination);
+    p.authorization.actions.insert(AuthorizedAction::Review);
+    assert!(OperatorAgent::preview(&mut admin, &p).await.is_err());
+    let mut access = access_plan();
+    access.credential = None;
+    access.agent_review = true;
+    let v = OperatorAccess::preview(&mut admin, &access).await.unwrap();
+    OperatorAccess::apply(
+        &mut admin,
+        &access,
+        "allow-agent-review",
+        v["state_digest"].as_str().unwrap(),
+        v["plan_digest"].as_str().unwrap(),
+    )
+    .await
+    .unwrap();
+    let result = apply(&mut admin, &p, "reviewer").await;
+    assert_eq!(result["receipt"]["human_approval"], false);
+    assert_eq!(
+        OperatorAgent::inspect(&mut admin, &p).await.unwrap()["configuration_matches_plan"],
+        true
+    );
+    admin.batch_execute("UPDATE awr_team.project_memberships SET agent_review=false WHERE actor_id='native-agent'").await.unwrap();
+    assert_eq!(
+        OperatorAgent::inspect(&mut admin, &p).await.unwrap()["mismatch_reason"],
+        "action_not_effective"
+    );
+}

@@ -370,7 +370,7 @@ pub(crate) async fn require_owner_project(
     Ok(role.get(0))
 }
 
-async fn snapshot(
+pub(crate) async fn snapshot(
     tx: &Transaction<'_>,
     tenant: &str,
     project: &str,

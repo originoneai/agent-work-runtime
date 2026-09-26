@@ -148,56 +148,10 @@ impl AuthorizationStore {
         let mut client = self.connect().await?;
         let tx = client.transaction().await?;
         bind_workstream_scope(&tx, tenant, project).await?;
-        if let Some(receipt) = load_receipt_tx(&tx, tenant, project, &req.request_key).await? {
-            if receipt.op != "issue" || receipt.authorization_id != req.authorization.id {
-                return Err(PgError::IdempotencyConflict);
-            }
-            let auth = load_auth_tx(&tx, tenant, project, &receipt.authorization_id)
-                .await?
-                .ok_or_else(|| PgError::Protocol("authorization missing for receipt".into()))?;
-            if auth != req.authorization {
-                return Err(PgError::IdempotencyConflict);
-            }
-            tx.commit().await?;
-            return Ok((
-                auth,
-                AuthorizationReceipt {
-                    replayed: true,
-                    ..receipt
-                },
-            ));
-        }
-        if load_auth_tx(&tx, tenant, project, &req.authorization.id)
-            .await?
-            .is_some()
-        {
-            return Err(PgError::Protocol(
-                "authorization id already exists; use a new id or revoke the existing grant".into(),
-            ));
-        }
-        persist_auth_tx(&tx, tenant, project, &req.authorization).await?;
-        let event_id = new_id();
-        save_receipt_tx(
-            &tx,
-            tenant,
-            project,
-            &req.request_key,
-            &req.authorization.id,
-            "issue",
-            &event_id,
-        )
-        .await?;
+        lock_project(&tx, tenant, project).await?;
+        let result = issue_in_tx(&tx, tenant, project, req).await?;
         tx.commit().await?;
-        Ok((
-            req.authorization.clone(),
-            AuthorizationReceipt {
-                request_key: req.request_key.clone(),
-                authorization_id: req.authorization.id.clone(),
-                op: "issue",
-                event_id,
-                replayed: false,
-            },
-        ))
+        Ok(result)
     }
 
     pub async fn revoke(
@@ -209,6 +163,7 @@ impl AuthorizationStore {
         let mut client = self.connect().await?;
         let tx = client.transaction().await?;
         bind_workstream_scope(&tx, tenant, project).await?;
+        lock_project(&tx, tenant, project).await?;
         if let Some(receipt) = load_receipt_tx(&tx, tenant, project, &req.request_key).await? {
             if receipt.op != "revoke" || receipt.authorization_id != req.authorization_id {
                 return Err(PgError::IdempotencyConflict);
@@ -269,6 +224,7 @@ impl AuthorizationStore {
         let mut client = self.connect().await?;
         let tx = client.transaction().await?;
         bind_workstream_scope(&tx, tenant, project).await?;
+        lock_project(&tx, tenant, project).await?;
         require_authorization_project(&req.child, project).map_err(map_core)?;
         if let Some(receipt) = load_receipt_tx(&tx, tenant, project, &req.request_key).await? {
             if receipt.op != "delegate" || receipt.authorization_id != req.child.id {
@@ -303,7 +259,7 @@ impl AuthorizationStore {
                 "child authorization id already exists".into(),
             ));
         }
-        persist_auth_tx(&tx, tenant, project, &child).await?;
+        write_auth_tx(&tx, tenant, project, &child, true).await?;
         let event_id = new_id();
         save_receipt_tx(
             &tx,
@@ -334,6 +290,79 @@ impl AuthorizationStore {
     ) -> PgResult<ClaimEligibilityExplanation> {
         explain_claim_eligibility(input).map_err(map_core)
     }
+}
+
+/// Shared initial-issue transaction; caller owns the project lock and commit.
+pub(crate) async fn issue_in_tx(
+    tx: &tokio_postgres::Transaction<'_>,
+    tenant: &str,
+    project: &str,
+    req: &IssueAuthorizationRequest,
+) -> PgResult<(AgentAuthorization, AuthorizationReceipt)> {
+    validate_issue(req).map_err(map_core)?;
+    require_authorization_project(&req.authorization, project).map_err(map_core)?;
+    if let Some(receipt) = load_receipt_tx(tx, tenant, project, &req.request_key).await? {
+        if receipt.op != "issue" || receipt.authorization_id != req.authorization.id {
+            return Err(PgError::IdempotencyConflict);
+        }
+        let auth = load_auth_tx(tx, tenant, project, &receipt.authorization_id)
+            .await?
+            .ok_or_else(|| PgError::Protocol("authorization missing for receipt".into()))?;
+        if auth != req.authorization {
+            return Err(PgError::IdempotencyConflict);
+        }
+        return Ok((
+            auth,
+            AuthorizationReceipt {
+                replayed: true,
+                ..receipt
+            },
+        ));
+    }
+    if load_auth_tx(tx, tenant, project, &req.authorization.id)
+        .await?
+        .is_some()
+    {
+        return Err(PgError::Protocol(
+            "authorization id already exists; use a new id or revoke the existing grant".into(),
+        ));
+    }
+    write_auth_tx(tx, tenant, project, &req.authorization, true).await?;
+    let event_id = new_id();
+    save_receipt_tx(
+        tx,
+        tenant,
+        project,
+        &req.request_key,
+        &req.authorization.id,
+        "issue",
+        &event_id,
+    )
+    .await?;
+    Ok((
+        req.authorization.clone(),
+        AuthorizationReceipt {
+            request_key: req.request_key.clone(),
+            authorization_id: req.authorization.id.clone(),
+            op: "issue",
+            event_id,
+            replayed: false,
+        },
+    ))
+}
+
+pub(crate) async fn lock_project(
+    tx: &tokio_postgres::Transaction<'_>,
+    tenant: &str,
+    project: &str,
+) -> PgResult<()> {
+    tx.query_opt(
+        "SELECT id FROM awr_team.projects WHERE tenant_id=$1 AND id=$2 FOR UPDATE",
+        &[&tenant, &project],
+    )
+    .await?
+    .ok_or(PgError::Forbidden)?;
+    Ok(())
 }
 
 fn decode_body(row: Row) -> PgResult<Option<AgentAuthorization>> {
@@ -368,9 +397,18 @@ async fn persist_auth_tx(
     project: &str,
     auth: &AgentAuthorization,
 ) -> PgResult<()> {
+    write_auth_tx(tx, tenant, project, auth, false).await
+}
+
+async fn write_auth_tx(
+    tx: &tokio_postgres::Transaction<'_>,
+    tenant: &str,
+    project: &str,
+    auth: &AgentAuthorization,
+    fresh: bool,
+) -> PgResult<()> {
     let body = serde_json::to_value(auth).map_err(|e| PgError::Protocol(e.to_string()))?;
-    tx.execute(
-        "INSERT INTO awr_team.agent_authorizations(
+    let sql = "INSERT INTO awr_team.agent_authorizations(
             tenant_id,project_id,id,authorizer_person_id,responsible_person_id,subject_kind,subject_id,
             client_id,session_id,model_id,status,expires_at_ms,revoked_at_ms,revoked_by,
             parent_authorization_id,maintainer_person_id,binding_id,created_at_ms,body_json)
@@ -381,7 +419,14 @@ async fn persist_auth_tx(
             revoked_at_ms=EXCLUDED.revoked_at_ms,
             revoked_by=EXCLUDED.revoked_by,
             parent_authorization_id=EXCLUDED.parent_authorization_id,
-            body_json=EXCLUDED.body_json",
+            body_json=EXCLUDED.body_json";
+    let sql = if fresh {
+        sql.split(" ON CONFLICT").next().unwrap_or(sql).trim_end()
+    } else {
+        sql
+    };
+    tx.execute(
+        sql,
         &[
             &tenant,
             &project,

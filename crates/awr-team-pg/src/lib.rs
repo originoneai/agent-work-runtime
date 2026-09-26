@@ -12,6 +12,7 @@ mod lease;
 mod lock_order;
 mod migrate;
 mod operator_access;
+mod operator_agent;
 mod operator_backup;
 mod operator_execution_attribution;
 mod operator_history;
@@ -64,6 +65,7 @@ pub use operator_access::{
     AccessActor, AccessCredential, AccessGrant, AccessPlan, AdminAccessPlan, OperatorAccess,
     ProjectAccessStore,
 };
+pub use operator_agent::{AgentProvisionPlan, OperatorAgent};
 pub use operator_backup::OperatorBackup;
 pub use operator_execution_attribution::{
     ExecutionAttributionEntry, ExecutionAttributionPlan, OperatorExecutionAttribution,

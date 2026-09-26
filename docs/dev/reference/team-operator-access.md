@@ -75,6 +75,79 @@ its separate application connection. Upgrade explicitly with
 `awr-server migrate --app-role <service-role>` as owner; schema 18 adds operator access,
 history-migration, backup-operation, claim/execution quarantine, and explicit execution-attribution receipts; schema 19 adds `project_access_changes` for project-admin MCP receipts (app role may INSERT/SELECT only). Bootstrap denies the application role all access to owner-only operator tables.
 
+## Initial person-Agent delegation
+
+An `actor.kind="agent"` credential alone cannot start work. The Agent also needs
+an active person binding and an explicit delegation. For initial provisioning,
+the schema-owner CLI supplies four commands, with no new HTTP or MCP owner route:
+
+```sh
+awr-server access agent-preview --input /secure/agent-plan.json
+awr-server access agent-apply --input /secure/agent-plan.json \
+  --request-id initial-agent-1 --expected-state <state_digest> --expected-plan <plan_digest>
+awr-server access agent-outcome --tenant-id tenant-a --project-id project-a \
+  --request-id initial-agent-1
+awr-server access agent-inspect --input /secure/agent-plan.json
+```
+
+First use ordinary access preview/apply to register a **new Agent identity**, its
+exact native client, membership, credential hash and current workstream grants.
+Do not relabel an existing human actor. Then construct a closed JSON plan with
+`protocol_version: 1`, `tenant_id`, `project_id`, and `authorization` (the WS-016
+`AgentAuthorization` document). No bearer or credential hash belongs in this
+second plan. The initial authorization must have:
+
+- A fresh authorization ID and fresh binding ID; no existing active delegation
+  for that actor/client and no existing binding for that Agent.
+- The same `authorizer_person_id` and `responsible_person_id`, explicitly chosen
+  from an active human project-member actor. This owner adapter uses that actor
+  ID as the person ID and its display name; it never renames, reactivates or
+  replaces an existing person. The audit records the actual database owner as
+  operator, **not** an observed action by that human.
+- `subject_kind: "agent"`, the existing Agent actor and exact client ID, and an
+  active, parentless authorization without session binding, maintainer, verified
+  capabilities or skill hints. `model_id` remains optional metadata.
+- Only `Task` or `Workstream` scope in the current source catalog. Task scope
+  requires an enabled current contract and matching current/snapshot ownership.
+- Only `inspect`, `claim_coordination`, `start_work` and `review`, covered by the
+  live membership and read/write grant. Other WS-016 actions lack a native
+  product adapter and are refused here, as are special manage/attest/reconcile
+  grants.
+- A nonfuture `created_at_ms` at most 24 hours old when previewed/applied, and an
+  optional `expires_at_ms` strictly later than the database's current time.
+
+Binding, person creation if needed, authorization, receipts, project revision,
+event and audit commit in one transaction. Preview digests bind live access,
+source, person, binding and authorization facts. Stale plans fail; timeouts use
+`agent-outcome` followed by an exact retry. Replays return historical receipts
+and never recreate revoked access. `agent-inspect` reports `configuration_matches_plan` and a `mismatch_reason`, comparing the live
+configuration with the retained initial plan. It does not calculate the runtime
+permission decision. Each native request still evaluates its live delegation,
+role and scope. Human actor/member/name drift or additional bindings are plan
+mismatches, **not** supported revocation operations. Use authorization,
+credential or grant revocation to stop access. Inspection is not native-client
+execution or acceptance evidence.
+
+Native read isolation follows [Delegated Agent read scope](team-access.md#delegated-agent-read-scope).
+Task-scoped Agents must provide a covered `work_id` on each read and cannot use
+selector-free capabilities, list or next-task discovery. Use Workstream scope
+for an Agent that needs to discover and choose tasks. Provisioning must be
+shipped with this read-scope enforcement; grants alone do not narrow delegation.
+
+A developer normally uses `inspect`, `claim_coordination` and `start_work` with
+a developer membership. Agent review additionally requires membership
+`agent_review=true` and delegated `review`. Review currently needs a durable
+session, so a reviewer that creates its own session also needs `start_work`;
+that action includes execution/delivery permissions and is **not** review-only
+least privilege. Use a narrow task/workstream scope. Agent review never implies
+human approval or team-independent human acceptance.
+
+Use the existing owner `authorization-revoke` command to stop delegation, or
+ordinary access management to revoke the credential/grant. Initial provisioning
+does not implement binding replacement, retirement or extension; those are
+separate lifecycle operations. Retain the reviewed plan for inspection, and use
+fresh identity/authorization IDs for an independently scoped initial setup.
+
 ## Register a client
 
 Generate a bearer before registration, into a new file in an operator-controlled
