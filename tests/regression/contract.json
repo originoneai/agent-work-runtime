@@ -1,6 +1,6 @@
 {
   "contract_id": "awr-concentrated-regression",
-  "version": "1.2.0",
+  "version": "1.2.1",
   "work_item": "AWR-QA-001",
   "evidence_level": "local_workspace_cli_mcp_and_process_fixtures",
   "workspace_members": [
@@ -141,7 +141,7 @@
       "kind": "contract",
       "requires_build": true,
       "contract": "tests/security/payloads/contract.json",
-      "version": "1.7.0",
+      "version": "1.7.1",
       "target_conditions": 32,
       "command": [
         "{python}",
@@ -177,7 +177,7 @@
       "kind": "contract",
       "requires_build": true,
       "contract": "tests/concurrency/contract.json",
-      "version": "1.1.0",
+      "version": "1.2.0",
       "target_conditions": 20,
       "command": [
         "{python}",

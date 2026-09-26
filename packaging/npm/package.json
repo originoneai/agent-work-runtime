@@ -1,11 +1,11 @@
 {
   "name": "@originoneai/agent-work-runtime",
-  "version": "0.5.0",
-  "description": "Persistent work state and minimal context for long-running AI agents",
+  "version": "0.5.1",
+  "description": "AWR — the open-source project delivery platform for people and AI. Native CLI and MCP for persistent tasks, context and verified progress.",
   "license": "Apache-2.0",
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/originoneai/agent-work-runtime.git"
+    "url": "git+https://github.com/originoneai/awr.git"
   },
   "bin": {
     "awr": "bin/awr.cjs",
@@ -25,10 +25,24 @@
     "tag": "latest"
   },
   "optionalDependencies": {
-    "@originoneai/agent-work-runtime-darwin-arm64": "0.5.0",
-    "@originoneai/agent-work-runtime-darwin-x64": "0.5.0",
-    "@originoneai/agent-work-runtime-linux-x64-gnu": "0.5.0",
-    "@originoneai/agent-work-runtime-linux-arm64-gnu": "0.5.0",
-    "@originoneai/agent-work-runtime-win32-x64": "0.5.0"
-  }
+    "@originoneai/agent-work-runtime-darwin-arm64": "0.5.1",
+    "@originoneai/agent-work-runtime-darwin-x64": "0.5.1",
+    "@originoneai/agent-work-runtime-linux-x64-gnu": "0.5.1",
+    "@originoneai/agent-work-runtime-linux-arm64-gnu": "0.5.1",
+    "@originoneai/agent-work-runtime-win32-x64": "0.5.1"
+  },
+  "homepage": "https://awr.originoneai.com/",
+  "bugs": {
+    "url": "https://github.com/originoneai/awr/issues"
+  },
+  "keywords": [
+    "awr",
+    "ai",
+    "agents",
+    "mcp",
+    "cli",
+    "project-management",
+    "context",
+    "workflow"
+  ]
 }

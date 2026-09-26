@@ -1,13 +1,13 @@
 # Native npm and PyPI distributions
 
-AWR 0.5.0 is a stable package release. npm uses the `latest` channel and PyPI uses
-`0.5.0` without a prerelease suffix. Both install the same Rust CLI and MCP server;
+AWR 0.5.1 is a stable package release. npm uses the `latest` channel and PyPI uses
+`0.5.1` without a prerelease suffix. Both install the same Rust CLI and MCP server;
 no separate JavaScript or Python SDK is included.
 
 ```sh
-npm install -g @originoneai/agent-work-runtime@0.5.0
+npm install -g @originoneai/agent-work-runtime@0.5.1
 # or, in a virtual environment
-python -m pip install agent-work-runtime==0.5.0
+python -m pip install agent-work-runtime==0.5.1
 awr --version
 awr-mcp --version
 ```
@@ -64,8 +64,8 @@ These are installation checks, not proof of every real-agent business scenario.
 
 The `distributions.yml` workflow builds and checks each native platform. Assembly
 also requires the native five-platform contract and Inspector checks on the same
-source SHA. Ordinary push and PR runs never publish. For 0.5.0, manual publication
-requires `release/0.5.0`, exact version `0.5.0`, and `expected_source_sha` containing
+source SHA. Ordinary push and PR runs never publish. For 0.5.1, manual publication
+requires `release/0.5.1`, exact version `0.5.1`, and `expected_source_sha` containing
 the full reviewed checkout SHA. The guard rejects missing or mismatched identity.
 The `package-registries` environment must allow this exact release branch; its
 existing policies remain in force. npm and PyPI have independent jobs
@@ -89,9 +89,9 @@ packages, checksums and aggregate manifest. Raw execution records stay local or 
 isolated CI artifacts and are not committed to the repository.
 
 
-## Pinned host payload (0.4.0)
+## Pinned host payload (0.5.1)
 
-AWR `0.4.0` uses database schema 4. Host applications can bundle the same native CLI and MCP server without the registry launchers. A locally built payload has its own recorded source and artifact identity. The matching macOS arm64 or Intel x64 payload can be embedded directly in an application; runtime users need no Node/Python/Rust installation and no PATH changes. The build/verification machine still needs its development tools. The host is responsible for application signing, notarization and updating its bundled binary.
+AWR `0.5.1` uses database schema 7. Host applications can bundle the same native CLI and MCP server without the registry launchers. A locally built payload has its own recorded source and artifact identity. The matching macOS arm64 or Intel x64 payload can be embedded directly in an application; runtime users need no Node/Python/Rust installation and no PATH changes. The build/verification machine still needs its development tools. The host is responsible for application signing, notarization and updating its bundled binary.
 
 From clean committed source:
 
@@ -105,12 +105,21 @@ Invoke the executable by its absolute application-resource path with `--project 
 
 ## Matched upgrade and rollback checklist
 
-AWR 0.5.0 exposes a native `runtime.matched_snapshot` capability for
+AWR 0.5.1 exposes a native `runtime.matched_snapshot` capability for
 `runtime binding`, `backup`, `check`, `restore-preview`, `restore`, `restore-status`
 and `restore-recover`. See the [snapshot contract](../reference/runtime-snapshots.md)
 for exact program/configuration/source matching and offline history restoration.
 Cross-schema downgrade and host files
 outside `.awr` still require the broader matched inventory below.
+
+Version 0.5.1 migrates 0.5.0 databases from schema 4 through the original schema
+5 and 6 migrations to schema 7. Legacy work IDs and history are retained; legacy
+projects receive a compatible default workstream. This does not enable an explicit
+multi-workstream source mapping automatically. Migration refuses conflicting
+active legacy claims rather than picking a winner. Resolve them with the old
+runtime before retrying. A 0.5.0 binary cannot read schema 7: retain a matching
+pre-upgrade snapshot, not just the old executable. The release workflow rehearses
+0.5.0 → 0.5.1 and matched rollback in isolated fixture projects.
 
 Use the same project directory and identity. Arbitrary relocation, cloud synchronization and long-lived dual writers are outside this contract.
 

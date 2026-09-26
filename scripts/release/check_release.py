@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Guard the isolated 0.5.0 source and its explicit manual publication identity."""
+"""Guard the isolated 0.5.1 source and its explicit manual publication identity."""
 import json
 import os
 from pathlib import Path
@@ -14,18 +14,18 @@ MEMBERS = {f"awr-{name}" for name in ("core", "workspace", "store", "source", "c
 def validate_scope(manifest, lock, tracked):
     members = manifest["workspace"]["members"]
     if set(members) != {f"crates/{name}" for name in MEMBERS} or len(members) != len(MEMBERS):
-        raise ValueError("0.5.0 requires exactly the eight reviewed workspace crates")
+        raise ValueError("0.5.1 requires exactly the eight reviewed workspace crates")
     packages = lock["package"]
     local = {p["name"] for p in packages if not p.get("source")}
     if local != MEMBERS:
         raise ValueError("unexpected local Cargo dependency")
     if any(p["name"].startswith("awr-team") or p["name"].startswith("sqlx") or p["name"] in
            {"tokio-postgres", "postgres", "deadpool-postgres"} for p in packages):
-        raise ValueError("Team dependency is outside the 0.5.0 release")
+        raise ValueError("Team dependency is outside the 0.5.1 release")
     if any(path.startswith(("crates/awr-team", "migrations/team/")) for path in tracked):
-        raise ValueError("Team source is outside the 0.5.0 release")
-    if manifest["workspace"]["package"]["version"] != "0.5.0":
-        raise ValueError("this release guard is specific to 0.5.0")
+        raise ValueError("Team source is outside the 0.5.1 release")
+    if manifest["workspace"]["package"]["version"] != "0.5.1":
+        raise ValueError("this release guard is specific to 0.5.1")
 
 
 def validate_identity(env, sha, version):
@@ -36,9 +36,9 @@ def validate_identity(env, sha, version):
         raise ValueError("workflow source SHA does not match checkout")
     if env.get("RELEASE_PUBLISH", "").lower() == "true":
         if (env.get("GITHUB_EVENT_NAME") != "workflow_dispatch" or
-                env.get("GITHUB_REF") != "refs/heads/release/0.5.0" or
-                env.get("EXPECTED_RELEASE_VERSION") != version or version != "0.5.0" or not expected):
-            raise ValueError("publication requires manual release/0.5.0, version 0.5.0 and the full reviewed SHA")
+                env.get("GITHUB_REF") != "refs/heads/release/0.5.1" or
+                env.get("EXPECTED_RELEASE_VERSION") != version or version != "0.5.1" or not expected):
+            raise ValueError("publication requires manual release/0.5.1, version 0.5.1 and the full reviewed SHA")
 
 
 def main():
@@ -48,7 +48,7 @@ def main():
     sha = subprocess.check_output(["git", "rev-parse", "HEAD"], cwd=ROOT, text=True).strip()
     validate_scope(manifest, lock, tracked)
     validate_identity(os.environ, sha, manifest["workspace"]["package"]["version"])
-    print(json.dumps({"version": "0.5.0", "source_sha": sha, "scope_checked": True,
+    print(json.dumps({"version": "0.5.1", "source_sha": sha, "scope_checked": True,
                       "workspace_members": sorted(MEMBERS), "publication_requested": os.environ.get("RELEASE_PUBLISH") == "true"}))
 
 

@@ -1,148 +1,289 @@
-# AWR · Agent Work Runtime
+<div align="center">
 
-[English](README.md) · [简体中文](README.zh-CN.md) · [Apache-2.0](LICENSE)
+<img src="docs/assets/awr-logo.png" alt="AWR logo" width="88" />
 
-**Persistent project state and focused context for coding agents.**
+# AWR
 
-A new chat should be able to find the current goal, unfinished work, constraints
-and next action without rereading the entire project history. AWR indexes your
-existing Markdown/YAML sources, records execution checkpoints and compiles a
-bounded context packet for the task at hand. Use it through a native Rust CLI or
-an MCP client. Context compilation runs locally and makes no model calls.
+**Let your AI team keep complex projects moving—from goal to verified delivery.**
 
-AWR is host-agnostic. Any coding agent that can run the CLI or speak MCP uses
-the same project state. Deep lifecycle automation is optional; it is not the
-product boundary. See [host integration layers](docs/integrations/README.md).
+The open-source project delivery platform for people and AI.
 
-```text
-Your project sources → AWR index + checkpoints → focused context → coding agent
-       ↑                                                      │
-       └──────── reviewed changes and recorded progress ───────┘
+[English](README.md) · [简体中文](README.zh-CN.md)
+
+[![License: Apache 2.0](https://img.shields.io/badge/license-Apache%202.0-2563eb)](LICENSE) [![GitHub release](https://img.shields.io/github/v/release/originoneai/awr?color=2563eb)](https://github.com/originoneai/awr/releases) [![npm](https://img.shields.io/npm/v/%40originoneai%2Fagent-work-runtime?label=npm&color=2563eb)](https://www.npmjs.com/package/@originoneai/agent-work-runtime) [![PyPI](https://img.shields.io/pypi/v/agent-work-runtime?color=2563eb)](https://pypi.org/project/agent-work-runtime/)
+
+[![Official website](https://img.shields.io/badge/Visit_the_website_%E2%86%92-145dff?style=for-the-badge)](https://awr.originoneai.com/) [![Quickstart](https://img.shields.io/badge/Get_started_%E2%86%92-e8f0ff?style=for-the-badge&logoColor=145dff)](#quickstart)
+
+[Documentation](docs/TAKEOVER.md) · [Releases](https://github.com/originoneai/awr/releases) · [Report an issue](https://github.com/originoneai/awr/issues) · [Contribute](CONTRIBUTING.md)
+
+</div>
+
+---
+
+AWR connects **goals, workstreams, dependencies, context and acceptance** into
+one project delivery workflow. It is built for **one person coordinating several
+agents, and teams delivering a shared project**—starting with complex software
+projects.
+
+Changing sessions, models or collaborators should preserve the project's goals,
+constraints and verified progress. Parallel work should have clear ownership
+and handoffs. At every stage, you should be able to tell **what is ready, what is
+waiting, what has been verified, and where the effort went**.
+
+People set direction and review outcomes; agents do the work. AWR connects their
+work to the same project through **CLI/MCP**, with Team collaboration developing
+on that foundation. The availability labels below distinguish the published
+release from development on `main`.
+
+## Why AWR
+
+| Core value | What changes for your project | Availability |
+| --- | --- | --- |
+| **Keep the goal through every handoff** | Goals, shared rules, decisions and unfinished work stay connected. A successor receives the current task's required context and checkpoint, so the project can continue across sessions and agents. | **0.5.1** · [Continuity](docs/integrations/context-continuity.md) |
+| **Run independent workstreams in one project** | Frontend, backend and testing keep their own tasks, context and ownership while sharing project constraints. Work ownership, session attribution and scoped context are supported; authenticated transport isolation and resource scheduling are still in development. | **0.5.1 foundation** · [Workstreams](docs/reference/workstreams.md) |
+| **Depend on a verified delivery** | Bind downstream work to an accepted artifact and contract version. When that dependency changes, recheck affected consumers according to their adoption policy. | **In development** · [Delivery dependencies](docs/reference/workstreams.md#cross-workstream-dependencies) |
+| **Know what “done” actually means** | Connect completion claims to version-bound evidence. Track implementation, verification, merge and release as separate facts; Team review adds explicit reviewer and approval records. | **0.5.1 evidence foundation**; [Team delivery review](https://github.com/originoneai/awr/blob/main/docs/integrations/pr-delivery-review.md) **in development** |
+| **See what each outcome costs** | Attribute recorded usage and time to work and its owning workstream. Keep actual costs, API-equivalent estimates, unknowns and observation coverage distinct; count shared effort once. | **In development** · [Usage and time](https://github.com/originoneai/awr/blob/main/docs/reference/usage-time-observation.md) |
+
+These capabilities belong to the same project model. A person coordinating
+several agents can need the same dependency, review and accounting discipline as
+a larger team. Workstream isolation concerns project state and supported
+operations; physical process isolation depends on the execution host.
+
+## See a project move from goal to delivery
+
+**Illustrative workflow · advanced workstreams are in development.**
+This example explains the collaboration model; it is not an executed benchmark.
+
+<p align="center">
+  <img src="docs/assets/awr-delivery-workflow.png" alt="A shared customer-portal goal connects frontend, backend and testing workstreams. Frontend builds the UI in parallel, then adopts verified backend API v1 for integration. Testing verifies the combined result before review. Dependency changes trigger checks for affected consumers; session handoffs retain the same project. Implementation, verification, merge, release, evidence, cost and time remain distinct facts." width="960" />
+</p>
+
+1. **Agree on the outcome.** Define a customer portal's requirements, shared
+   constraints and acceptance criteria before splitting the work.
+2. **Make progress in parallel.** One agent builds the UI, another implements
+   the API, and a third prepares acceptance checks. Each workstream carries its
+   relevant context and ownership.
+3. **Join through a verified version.** UI work can proceed immediately;
+   integration waits for an accepted API delivery, then adopts that exact
+   version and its evidence.
+4. **Continue through change.** A successor uses the current checkpoint and
+   dependency records. A changed contract triggers checks for affected consumers;
+   a fixed, accepted version remains bound unless revoked.
+5. **Review the delivered result.** Inspect the combined result against its
+   acceptance criteria, with separate implementation, verification, merge and
+   release records.
+6. **Account for the effort.** Associate observed usage and time with the work
+   and outcome; show gaps explicitly when a host does not expose complete data.
+
+## What you can use today
+
+The published **0.5.1** CLI/MCP packages provide source-backed goals and tasks,
+dependency navigation, focused context, session claims and checkpoints,
+version-bound evidence, a [shared HTTP MCP service](docs/reference/mcp-service.md)
+for multiple clients/projects, and Personal Workspace file exchange.
+
+This release adds **source freshness inventories, content review records and
+truthful checkpoint progress**, alongside parsing and client-integration fixes.
+Its **personal workstream foundation** supports explicit source ownership,
+session attribution and scoped context in a local SQLite project. It does not
+provide an authenticated Team service or complete multi-client isolation.
+See [what changed in 0.5.1](docs/release/0.5.1.md).
+
+The optional [Inspector](tools/inspector/README.md) runs from this source checkout;
+it is not bundled in npm/PyPI. It includes Chinese/English views, complete queue
+pagination, source-aware refresh, and session/event panels.
+
+**Development on `main`:** versioned cross-workstream delivery adoption, Team
+collaboration/review, DEC policy extensions and workstream usage/time/ETA
+accounting are outside this release. The
+[release notes](https://github.com/originoneai/awr/releases/tag/v0.5.1) define the
+published package boundary.
+
+## Quickstart
+
+### 1. Install AWR
+
+Choose one package manager. Both install the native `awr` and `awr-mcp` commands.
+
+```sh
+npm install -g @originoneai/agent-work-runtime@0.5.1
 ```
 
-## What you gain
+Or, inside a Python virtual environment:
 
-- **Less repeated reading.** Request one task's context, with required rules,
-  acceptance criteria, blockers, dependencies and source references.
-- **Continuity between sessions.** Persist checkpoints and open loops, then
-  inspect what changed before resuming work.
-- **An entry point for existing projects.** Preview discovered sources and
-  mappings. Missing goals or task structure produce concrete organization steps
-  for the coding agent to complete.
-- **Sources you control.** Keep Markdown/YAML authoritative. AWR uses SQLite for
-  projections and runtime state; revision checks reject stale writes.
+```sh
+python -m pip install agent-work-runtime==0.5.1
+```
 
-## Measured example
+```sh
+awr --version
+```
 
-![Token comparison on the public synthetic workload](docs/benchmarks/context-tokens.svg)
+Prebuilt packages support **macOS 15+ (Apple Silicon and Intel)**,
+**Linux x64/arm64 (glibc 2.39+)** and **Windows x64**. Launchers require
+Node 22.14+ or Python 3.9+. See the
+[0.5.1 installation and upgrade guide](https://github.com/originoneai/awr/blob/v0.5.1/docs/release/DISTRIBUTIONS.md).
 
-On the [reproducible public benchmark](docs/benchmarks/README.md), reading all
-sources costs **18,955 tokens**. The largest rendered work packet across **all 39
-active tasks** costs **4,998 tokens: 73.6% less input**. Exact checks preserve
-**676/676 required facts** across those tasks.
+**Upgrading from 0.5.0:** stop existing writers and keep a matching runtime/source
+backup and old binaries first. The explicit source refresh migrates SQLite
+schema 4 through 5 and 6 to 7. Older binaries cannot open schema 7; rollback needs
+the matching pre-upgrade snapshot. See the [upgrade guide](docs/release/DISTRIBUTIONS.md#matched-upgrade-and-rollback-checklist).
 
-| What reaches the reader | Maximum tokens | Reduction vs. full-source read |
+### 2. Connect your project
+
+Run these commands from your project directory. Replace the example goal with
+the outcome you want to deliver.
+
+```sh
+awr init --goal "Deliver a customer portal with verified sign-in"
+```
+
+Review the proposed sources and mappings, then accept the same goal:
+
+```sh
+awr init --goal "Deliver a customer portal with verified sign-in" --accept
+awr status
+awr intake inspect
+```
+
+Initialization preserves existing project sources and proposes missing structure.
+If intake reports `NeedsOrganization`, let your agent complete the goals, tasks
+and acceptance criteria before starting implementation. See the
+[project intake guide](docs/TAKEOVER.md) for custom fields and existing ledgers.
+
+### 3. Give your agent the working agreement
+
+With CLI access to the initialized project, give your agent this instruction:
+
+> Use AWR to carry this project from its goal to verified delivery. Start by
+> reading the goal, shared rules, dependencies and latest checkpoint. Break this
+> request into work with clear acceptance criteria, ownership and next actions.
+> Check an upstream result's version and evidence before using it. Keep
+> implementation, verification, merge and release facts separate. Record available
+> usage data and its gaps. Before stopping, save a checkpoint so the next agent
+> can check current sources and continue. Use the installed version's supported
+> capabilities and report any missing integration.
+
+You can inspect progress at any time with `awr status`. For the explicit
+claim → context → checkpoint workflow, see the
+[session guide](docs/integrations/session-workflow.md).
+
+<details>
+<summary><strong>Connect through MCP instead</strong></summary>
+
+After initialization, add an entry like this to your client's MCP configuration.
+Use the client's documented configuration format and your project's absolute path.
+
+```json
+{
+  "mcpServers": {
+    "awr": {
+      "command": "awr-mcp",
+      "args": ["--project", "/absolute/path/to/your/project"]
+    }
+  }
+}
+```
+
+Reconnect the client and confirm the project identity before making changes.
+For multiple clients and projects, use the
+[shared HTTP MCP service](docs/reference/mcp-service.md). See the
+[MCP reference](crates/awr-mcp/README.md) for configuration and tool discovery.
+
+</details>
+
+## Architecture
+
+<p align="center">
+  <img src="docs/assets/awr-architecture.png" alt="Project Markdown and YAML remain the source of truth. AWR indexes project state, compiles focused context and stores checkpoints and evidence. People and AI agents use CLI or MCP to obtain context and record progress; reviewed changes go back to the project sources." width="960" />
+</p>
+
+1. **Your files hold the intent.** Markdown/YAML describe goals, plans, work,
+   constraints and decisions; AWR indexes them without silently replacing them.
+2. **AWR maintains continuity.** Local state holds projections, sessions, claims,
+   checkpoints and evidence. Context compilation runs locally and makes no model
+   calls; revision checks protect writes from stale state.
+3. **People and agents do the work.** CLI/MCP connects the facts to the chosen
+   host. Agents bring their own models, tools and conversations; reviewed changes
+   and progress return to the project.
+
+AWR preserves **project continuity across finite context windows**. Native
+compaction and the agent's private conversation remain host responsibilities;
+recorded checkpoints do not reconstruct unrecorded history. See
+[context continuity](docs/integrations/context-continuity.md).
+
+## Agent ecosystem
+
+Use the agent you already work with. **The common entry point is CLI/MCP**;
+optional lifecycle adapters provide deeper integration where supported.
+
+| Entry point | Documentation |
+| --- | --- |
+| Any CLI/MCP-capable agent, including Claude Code | [Generic session workflow](docs/integrations/session-workflow.md) |
+| Codex | [Optional lifecycle adapter](docs/integrations/codex.md) |
+| Cursor | [Client configuration](docs/integrations/cursor.md) |
+| Kimi Code | [Host integration note](docs/integrations/kimi.md) |
+| Grok Build | [Host integration note](docs/integrations/grok.md) |
+| Application or custom harness | [Host contract](docs/reference/host-contract.md) |
+
+Hook availability and activation depend on the host. A configuration file alone
+does not prove an automatic checkpoint or handoff occurred.
+[Integration layers and boundaries](docs/integrations/README.md).
+
+## Put the context budget into the current task
+
+AWR compiles focused project context locally, without an additional model call.
+This gives the agent the relevant goals, rules, dependencies and evidence within
+a budget, reducing the need to read every project source on each handoff.
+
+On the [public, reproducible context benchmark](docs/benchmarks/README.md):
+
+| Input material | Tokens | Reduction vs. reading all sources |
 | --- | ---: | ---: |
-| Full Markdown/YAML source corpus | 18,955 | — |
-| AWR rendered work context | 4,998 | 73.6% |
-| AWR complete CLI JSON response | 12,748 | 32.7% |
+| Complete Markdown/YAML corpus | 18,955 | — |
+| Largest rendered task context | 4,998 | **73.6%** |
+| Largest complete CLI JSON response | 12,748 | **32.7%** |
 
-The sample has 150 synthetic tasks. Counts use `o200k_base`; context budget is
-5,000. This compares against reading every source file, not another product or an
-optimized search workflow. JSON metadata is larger than rendered context. These
-numbers **do not establish model quality or end-to-end billing savings**; chat
-history, model output and MCP framing are excluded.
+The sample contains **150 synthetic tasks**, with all **39 active tasks** checked
+and **676/676 required facts** retained. Counts use `o200k_base` with a 5,000-token
+context budget. The baseline is reading every source, not optimized retrieval.
+JSON metadata adds overhead. These figures measure input material, **not total
+model bills or answer quality**; chat history, model output and MCP framing are
+excluded.
 
-On this Apple M3 Max / macOS run, context compilation took **108 ms at p95**
-(30 sequential CLI calls after warmup). This is a single-host measurement.
+A separate [30-run workflow comparison](docs/benchmarks/workflow.md) reduced tool
+calls by **18–27%** and returned text by **3.4–4.7%** while retaining the same
+completion contracts. It does not measure real model-token or billing savings.
+Context compilation measured **108 ms at p95** on one Apple M3 Max/macOS host
+(30 calls after warmup), not a concurrency guarantee.
 
-The current source also has a [complete-workflow comparison](docs/benchmarks/workflow.md):
-30 synthetic runs preserve the same completion contracts while reducing tool calls
-by 18–27%; returned text falls only 3.4–4.7%. Maintenance still has a cost. This
-source comparison does not establish model-token or billing savings, or announce a release.
+## Project updates
 
-## Get started
+| Resource | What you will find |
+| --- | --- |
+| [Releases](https://github.com/originoneai/awr/releases) | Published changes, installation artifacts and upgrade notes. |
+| [Issues](https://github.com/originoneai/awr/issues) | Bug reports, feature requests and design proposals. |
+| [Pull requests](https://github.com/originoneai/awr/pulls) | Development and review; merged source may precede a package release. |
+| [Official website](https://awr.originoneai.com/) | Product overview and usage entry points. |
 
-Install **0.5.0** through either registry; both supply `awr` and `awr-mcp`:
+## Contributors
 
-```sh
-npm install -g @originoneai/agent-work-runtime@0.5.0
-# or, in a Python virtual environment
-python -m pip install agent-work-runtime==0.5.0
-```
+Thanks to everyone who improves AWR through code, documentation, bug reports and
+real project feedback. See the [contribution guide](CONTRIBUTING.md) to get started.
 
-Prebuilt targets: macOS 15+ arm64 and Intel x64, Linux arm64 and x64/glibc 2.39+, Windows x64.
-Launchers require Node 22.14+ or Python 3.9+. See [distribution details](docs/release/DISTRIBUTIONS.md).
-See the [0.5.0 release notes](docs/release/0.5.0.md) for changes, compatibility migrations and schema upgrade guidance.
+[![AWR contributors](https://contrib.rocks/image?repo=originoneai/awr)](https://github.com/originoneai/awr/graphs/contributors)
 
-For an optional source build, use [Rust](https://www.rust-lang.org/tools/install)
-(the repository pins its toolchain):
+## Community and support
 
-```sh
-git clone --branch v0.5.0 --depth 1 https://github.com/originoneai/agent-work-runtime.git
-cd agent-work-runtime
-cargo install --locked --path crates/awr-cli
-cargo install --locked --path crates/awr-mcp
-```
+- [Report a bug or suggest a feature](https://github.com/originoneai/awr/issues/new/choose).
+- [Review or contribute a change](https://github.com/originoneai/awr/pulls).
+- [Build from source and run checks](CONTRIBUTING.md).
 
-Try a disposable example:
+When reporting a problem, include the AWR version, operating system, reproducible
+steps and redacted output. Keep credentials and private project sources out of
+public reports.
 
-```sh
-mkdir -p .local
-cp -R examples/basic .local/demo
-awr --project .local/demo init --manifest project.toml --accept
-awr --project .local/demo status
-awr --project .local/demo ready
-awr --project .local/demo context compile --work EXAMPLE-001 --goal 'goal#demo'
-```
+## License
 
-The last command prints the rendered packet. Use `--json` for structured
-integration; the budget applies to `work_context.rendered_context`, not the whole
-JSON response. Check the command's exit status and completeness before acting.
-
-For your own project, preview the mapping, then initialize it:
-
-```sh
-awr --project /path/to/project init
-awr --project /path/to/project init --accept
-awr --project /path/to/project intake inspect
-```
-
-If there is no clear goal, supply `--goal "Describe your intended outcome"` at
-initialization. AWR diagnoses missing structure; your agent organizes the goal,
-plan and task sources, then runs `intake inspect` again. It does not invent your
-business intent. Nonstandard fields and statuses have explicit mappings such as
-`--status-map pending=planned` and `--field-map title=事项`.
-
-For local MCP, configure any client to launch `awr-mcp --project /absolute/project/path`
-after initialization. AWR 0.5.0 also provides a [shared MCP service](docs/reference/mcp-service.md):
-one HTTP endpoint for multiple projects and clients, with persistent sessions,
-checkpoints, user waits and request recovery. Start from the
-[host integration layers](docs/integrations/README.md) (L0 generic contract, L1
-host notes, optional L2 adapters), then the [MCP tools](crates/awr-mcp/README.md),
-[L0 session workflow](docs/integrations/session-workflow.md),
-[CLI lifecycle example](examples/codex/README.md) and
-[project intake and execution guide](docs/TAKEOVER.md).
-Codex merge paths and optional hook installation are documented in the [Codex L1/L2 note](docs/integrations/codex.md).
-Cursor merge paths are an [L1 host note](docs/integrations/cursor.md).
-
-AWR can supervise commands it launches and bind supported client lifecycle events.
-Restoring an arbitrary existing process or the private memory of a native client
-requires that client's cooperation.
-
-AWR 0.5.0 supports [native-compaction observations and precise
-action guidance](docs/integrations/context-continuity.md). Keep native compaction
-enabled, report actual post-compaction occupancy, and prepare a user-approved
-handoff when appropriate. `work prepare --response-view action` returns one
-bounded conditional instruction while preserving required context.
-
-AWR 0.5.0 provides [daily work navigation and small edits](docs/reference/daily-work.md):
-`status` separates continuation, claimable work, waits and blockers, and summarizes
-historical verification. `work edit` previews common field changes without manual
-YAML editing. Existing integrations can select `status --view full` for the earlier shape.
-
-## Contribute
-
-See [CONTRIBUTING.md](CONTRIBUTING.md) for build and test commands. Public examples
-and synthetic fixtures are included; internal development plans, ledgers and raw
-run records stay local. Licensed under [Apache-2.0](LICENSE).
+AWR is licensed under [Apache License 2.0](LICENSE).
