@@ -24,7 +24,7 @@ not a server ACL or confidentiality sandbox.
 ## Start an operator-bound service
 
 Build `awr-server` from this source branch. Migrate the intended database to
-schema 18 explicitly as its owner, and apply application-role grants using the
+schema 34 explicitly as its owner, and apply application-role grants using the
 [PostgreSQL setup](team-postgres.md). `serve` checks the schema without migrating
 it. Run the listener using the application connection, not an owner or superuser
 connection.
@@ -130,6 +130,11 @@ Unsupported operations or protocol versions fail explicitly.
 | `source.content` | Required relative `source_path` on the **active** snapshot; optional `expected_sha256`, `max_context_bytes`. Rejects `..`, absolute paths, URLs and history selectors (TMCP-023). |
 | `artifact.content` | Required `work_id` + `artifact_id` bound to that work's evidence; optional digest/budget (TMCP-023). |
 | `planning.outcome` | Required `request_id`; planning mutation receipt or unknown (TMCP-023). |
+
+Optional [session feedback](team-session-feedback.md) records declared client
+metadata and nonterminal progress in existing checkpoint calls. `work.observe`
+returns independently timed summaries and host usage snapshots, with explicit
+missing reasons; it never infers token costs or settles execution from progress.
 
 Work/session selectors derive the workstream. An explicit `workstream_id` must
 agree with them. Without work/session, a unique authorized workstream can be

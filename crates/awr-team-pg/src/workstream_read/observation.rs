@@ -53,8 +53,8 @@ pub(super) async fn read(
         &[&tenant,&project,&work,&stream,&ownership,&requested_session,&auth.epoch]).await?;
     let mut data = json!({"work_id":work,"contract_hash":contract,"observed_at_unix_ms":observed,
         "runtime":runtime,"responsibility":responsibility,"session":null,"checkpoint":null,"claim":null,
-        "execution":null,"pr_deliveries":[],"model":null,"usage":null,
-        "missing":{"model":"not_reported_by_client","usage":"not_available_in_team_observation"},
+        "execution":null,"pr_deliveries":[],"client":null,"progress":null,"model":null,"usage":null,
+        "missing":{"model":"no_session","usage":"no_session","progress":"no_session"},
         "execution_authorized":false,"automatic_resume":false});
     if let Some(s) = session {
         let session_id: String = s.get(0);
@@ -65,6 +65,16 @@ pub(super) async fn read(
                 "next_action":s.get::<_,Option<String>>(7),"open_loops":s.get::<_,Option<Value>>(8),
                 "created_at_unix_ms":s.get::<_,Option<i64>>(9)});
         }
+        crate::feedback::observe(
+            tx,
+            tenant,
+            project,
+            &session_id,
+            &contract,
+            observed,
+            &mut data,
+        )
+        .await?;
         data["claim"] = tx.query_opt("SELECT id,state,expires_at>clock_timestamp(),coordinator_epoch,
               (extract(epoch FROM expires_at)*1000)::bigint
             FROM awr_team.claims WHERE tenant_id=$1 AND project_id=$2 AND scope_id='main' AND work_id=$3
@@ -79,6 +89,9 @@ pub(super) async fn read(
             ORDER BY id DESC LIMIT 1", &[&tenant,&project,&work,&stream,&ownership,&session_id]).await? {
             data["execution"] = crate::workstream_command::executions::inspect(
                 tx,tenant,project,auth,work,stream,ownership,&e.get::<_,String>(0),Some(&session_id)).await?;
+            if data["execution"]["receipt_details_available"] == false {
+                data["missing"]["execution_receipt"] = json!("permission_restricted");
+            }
         }
     }
     let deliveries = tx.query("SELECT id,pr_url,head_sha,gh_submitted,gh_approved,gh_merged,

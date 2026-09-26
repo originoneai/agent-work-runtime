@@ -73,6 +73,7 @@ pub struct WorkstreamCommand {
 #[serde(deny_unknown_fields)]
 struct Start {
     conversation_id: String,
+    client_info: Option<crate::feedback::ClientInfo>,
 }
 #[derive(Deserialize)]
 #[serde(deny_unknown_fields)]
@@ -82,6 +83,9 @@ struct Checkpoint {
     context_hash: String,
     next_action: String,
     open_loops: Vec<String>,
+    client_info: Option<crate::feedback::ClientInfo>,
+    progress: Option<crate::feedback::Progress>,
+    usage: Option<crate::feedback::Usage>,
 }
 #[derive(Deserialize)]
 #[serde(deny_unknown_fields)]
@@ -177,6 +181,9 @@ impl WorkstreamCommand {
                 if !identity(&a.conversation_id) {
                     return Err(invalid());
                 }
+                if let Some(info) = &a.client_info {
+                    info.validate()?;
+                }
                 Ok(Action::Start(a))
             }
             "session.checkpoint" => {
@@ -194,6 +201,15 @@ impl WorkstreamCommand {
                         .any(|s| s.trim().is_empty() || s.len() > 4096 || s.contains('\0'))
                 {
                     return Err(invalid());
+                }
+                if let Some(info) = &a.client_info {
+                    info.validate()?;
+                }
+                if let Some(progress) = &a.progress {
+                    progress.validate()?;
+                }
+                if let Some(usage) = &a.usage {
+                    usage.validate()?;
                 }
                 Ok(Action::Checkpoint(a))
             }
@@ -513,6 +529,10 @@ async fn apply(
             tx.execute("INSERT INTO awr_team.sessions(tenant_id,project_id,id,scope_id,work_id,actor_id,client_id,conversation_id,state,workstream_id,ownership_version)
                 VALUES($1,$2,$3,'main',$4,$5,$6,$7,'active',$8,$9)",
                 &[&tenant,&project,&session,&command.work_id,&auth.actor_id,&auth.client_id,&a.conversation_id,&command.workstream_id.to_string(),&ownership]).await?;
+            if let Some(info) = &a.client_info {
+                tx.execute("UPDATE awr_team.sessions SET client_info_json=$4,client_info_at=clock_timestamp()
+                    WHERE tenant_id=$1 AND project_id=$2 AND id=$3", &[&tenant,&project,&session,&json!(info)]).await?;
+            }
             Ok(json!({"session_id":session,"session_version":"1","state":"active"}))
         }
         Action::Checkpoint(a) => {
@@ -536,10 +556,29 @@ async fn apply(
             if context["data"]["context_hash"] != a.context_hash {
                 return Err(PgError::PreconditionsChanged);
             }
+            crate::feedback::validate_support(
+                tx,
+                tenant,
+                project,
+                &a.session_id,
+                a.client_info.as_ref(),
+                a.progress.is_some(),
+                a.usage.is_some(),
+            )
+            .await?;
+            if let Some(usage) = &a.usage {
+                usage
+                    .check_order(tx, tenant, project, &a.session_id)
+                    .await?;
+            }
             let checkpoint = crate::tx::new_id();
-            tx.execute("INSERT INTO awr_team.checkpoints(tenant_id,project_id,id,session_id,context_hash,contract_hash,observed_revision,next_action,open_loops_json)
-                VALUES($1,$2,$3,$4,$5,$6,$7,$8,$9)",
-                &[&tenant,&project,&checkpoint,&a.session_id,&a.context_hash,&command.expected_contract_hash,&auth.revision,&a.next_action,&json!(a.open_loops)]).await?;
+            tx.execute("INSERT INTO awr_team.checkpoints(tenant_id,project_id,id,session_id,context_hash,contract_hash,observed_revision,next_action,open_loops_json,progress_json,usage_json)
+                VALUES($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11)",
+                &[&tenant,&project,&checkpoint,&a.session_id,&a.context_hash,&command.expected_contract_hash,&auth.revision,&a.next_action,&json!(a.open_loops),&a.progress.as_ref().map(|v|json!(v)),&a.usage.as_ref().map(|v|json!(v))]).await?;
+            if let Some(info) = &a.client_info {
+                tx.execute("UPDATE awr_team.sessions SET client_info_json=$4,client_info_at=clock_timestamp()
+                    WHERE tenant_id=$1 AND project_id=$2 AND id=$3", &[&tenant,&project,&a.session_id,&json!(info)]).await?;
+            }
             tx.execute("UPDATE awr_team.sessions SET latest_checkpoint_id=$4,session_version=session_version+1
                 WHERE tenant_id=$1 AND project_id=$2 AND id=$3",&[&tenant,&project,&a.session_id,&checkpoint]).await?;
             Ok(
