@@ -108,6 +108,93 @@ fn raw(server: &Server, token: &str) -> reqwest::RequestBuilder {
 }
 
 #[tokio::test]
+async fn discovered_review_and_evidence_selectors_reach_scoped_records() {
+    let (_guard, admin, _, store) = setup().await;
+    enable_writes(&admin).await;
+    let server = start(store).await;
+    let client = connect(&server, "one", A).await.unwrap();
+    let tools = client.list_all_tools().await.unwrap();
+    let schema = &tools
+        .iter()
+        .find(|tool| tool.name == "awr_team_query")
+        .unwrap()
+        .input_schema;
+    for field in [
+        "evidence_id",
+        "review_round_id",
+        "change_id",
+        "member_actor_id",
+        "category",
+    ] {
+        assert_eq!(schema["properties"][field]["type"], "string");
+        assert_eq!(schema["properties"][field]["maxLength"], 128);
+    }
+    assert_eq!(schema["properties"]["include_denies"]["type"], "boolean");
+    let submitted = call(
+        &client,
+        "awr_team_command",
+        serde_json::to_value(command(
+            &prepared(&client).await,
+            "selector-evidence",
+            "evidence.submit",
+            json!({"session_id":"session-a","expected_session_version":"1",
+                "payload":{"passed":true},"artifact_hex":"73636f706564","dirty_tree":false}),
+        ))
+        .unwrap(),
+        false,
+    )
+    .await;
+    let evidence_id = &submitted["receipt"]["data"]["evidence_id"];
+    let opened = call(
+        &client,
+        "awr_team_command",
+        serde_json::to_value(command(&prepared(&client).await, "selector-review", "review.open",
+            json!({"session_id":"session-a","expected_session_version":"1","evidence_id":evidence_id}))).unwrap(),
+        false,
+    ).await;
+    let round_id = &opened["receipt"]["data"]["round_id"];
+    for (op, field, id) in [
+        ("evidence.inspect", "evidence_id", evidence_id),
+        ("review.inspect", "review_round_id", round_id),
+    ] {
+        let mut args = json!({"protocol_version":1,"op":op,"work_id":"a"});
+        assert_eq!(
+            call(&client, "awr_team_query", args.clone(), true).await["code"],
+            "InvalidInput"
+        );
+        args[field] = id.clone();
+        let record = call(&client, "awr_team_query", args.clone(), false).await;
+        assert!(record["data"].to_string().contains(id.as_str().unwrap()));
+        args["work_id"] = json!("b-private");
+        assert_eq!(
+            call(&client, "awr_team_query", args, true).await["code"],
+            "Forbidden"
+        );
+    }
+    // Audit filters remain restricted to the operations that support them.
+    for args in [
+        json!({"protocol_version":1,"op":"audit.history","change_id":"change",
+            "member_actor_id":"agent","category":"access","include_denies":false}),
+        json!({"protocol_version":1,"op":"audit.requests","member_actor_id":"agent"}),
+        json!({"protocol_version":1,"op":"audit.development","member_actor_id":"agent"}),
+    ] {
+        let query: awr_team_pg::WorkstreamQuery = serde_json::from_value(args).unwrap();
+        query.validate().unwrap();
+    }
+    assert_eq!(
+        call(
+            &client,
+            "awr_team_query",
+            json!({"protocol_version":1,"op":"work.prepare","work_id":"a","include_denies":true}),
+            true
+        )
+        .await["code"],
+        "InvalidInput"
+    );
+    client.cancel().await.unwrap();
+}
+
+#[tokio::test]
 async fn mcp_feedback_is_discoverable_nonterminal_and_does_not_change_consumed_context() {
     let (_guard, admin, _, store) = setup().await;
     enable_writes(&admin).await;
