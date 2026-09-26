@@ -10,11 +10,11 @@ from pathlib import Path
 ROOT = Path(__file__).resolve().parents[2]
 
 REQUIRED_DOCS = [
-    "docs/reference/team-deploy-pack.md",
-    "docs/reference/team-publish-entrypoint.md",
-    "docs/reference/team-member-handoff.md",
-    "docs/integrations/team-mcp-codex-cli.md",
-    "docs/integrations/team-mcp-claude-code.md",
+    "docs/dev/reference/team-deploy-pack.md",
+    "docs/dev/reference/team-publish-entrypoint.md",
+    "docs/dev/reference/team-member-handoff.md",
+    "docs/dev/integrations/team-mcp-codex-cli.md",
+    "docs/dev/integrations/team-mcp-claude-code.md",
 ]
 
 REQUIRED_EXAMPLES = [
@@ -36,9 +36,9 @@ REQUIRED_SCRIPTS = [
 ]
 
 MEMBER_DOCS = [
-    "docs/reference/team-member-handoff.md",
-    "docs/integrations/team-mcp-codex-cli.md",
-    "docs/integrations/team-mcp-claude-code.md",
+    "docs/dev/reference/team-member-handoff.md",
+    "docs/dev/integrations/team-mcp-codex-cli.md",
+    "docs/dev/integrations/team-mcp-claude-code.md",
     "examples/team-mcp-deploy/member-handoff.example.md",
     "examples/team-mcp-deploy/clients/codex_cli.mcp.toml.example",
     "examples/team-mcp-deploy/clients/claude_code.mcp.json.example",
@@ -52,7 +52,7 @@ FORBIDDEN_IN_MEMBER_DOCS = [
 
 # Workflow guides must mention the natural Team ops (not personal CLI placeholders).
 WORKFLOW_MARKERS = {
-    "docs/integrations/team-mcp-codex-cli.md": [
+    "docs/dev/integrations/team-mcp-codex-cli.md": [
         "awr_team_query",
         "awr_team_command",
         "claim.acquire",
@@ -64,7 +64,7 @@ WORKFLOW_MARKERS = {
         "work.complete",
         "codex_cli",
     ],
-    "docs/integrations/team-mcp-claude-code.md": [
+    "docs/dev/integrations/team-mcp-claude-code.md": [
         "awr_team_query",
         "awr_team_command",
         "claim.acquire",
@@ -108,7 +108,7 @@ def main() -> int:
             if pat.search(text):
                 fail(f"{rel} must not contain DB connection credentials ({pat.pattern})")
 
-    handoff = (ROOT / "docs/reference/team-member-handoff.md").read_text()
+    handoff = (ROOT / "docs/dev/reference/team-member-handoff.md").read_text()
     for required in ("MCP address", "credential", "Repository", "must NOT"):
         if required.lower() not in handoff.lower() and required not in handoff:
             # allow case variants already covered; explicit checks below
@@ -118,7 +118,7 @@ def main() -> int:
     if "ledger-directory" not in handoff.lower() and "Ledger-directory" not in handoff:
         fail("member handoff must forbid ledger-directory write access")
 
-    deploy = (ROOT / "docs/reference/team-deploy-pack.md").read_text()
+    deploy = (ROOT / "docs/dev/reference/team-deploy-pack.md").read_text()
     for marker in (
         "sslmode=require",
         "--features tls",
@@ -132,7 +132,7 @@ def main() -> int:
         if marker not in deploy:
             fail(f"team-deploy-pack.md missing required topic marker: {marker}")
 
-    publish = (ROOT / "docs/reference/team-publish-entrypoint.md").read_text()
+    publish = (ROOT / "docs/dev/reference/team-publish-entrypoint.md").read_text()
     for marker in (
         "single team publish entrypoint",
         "Runtime vs develop",
@@ -160,7 +160,7 @@ def main() -> int:
             fail(f"{rel} must warn against personal CLI Team placeholders")
 
     # Ops scripts present and executable bit recommended (checked as files above)
-    readme = (ROOT / "docs/integrations/README.md").read_text()
+    readme = (ROOT / "docs/dev/integrations/README.md").read_text()
     if "team-mcp-codex-cli.md" not in readme or "team-mcp-claude-code.md" not in readme:
         fail("integrations README must link both Team MCP client guides")
 

@@ -13,7 +13,7 @@ import unittest
 from unittest.mock import patch
 
 import assemble_release
-from build_packages import python_version
+from build_packages import ROOT, copy_contract_docs, python_version
 from mcp_catalog import DOMAIN_TOOLS, validate_stdio_tools
 import publish_npm
 
@@ -27,6 +27,20 @@ class ReleaseChecks(unittest.TestCase):
                         names + ["awr_projects_list"]]:
             with self.subTest(invalid=invalid), self.assertRaises(AssertionError):
                 validate_stdio_tools(invalid)
+
+    def test_packaged_docs_survive_repository_relocation(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            package = Path(tmp)
+            copy_contract_docs(package)
+            installed = sorted(p.relative_to(package).as_posix() for p in package.rglob("*.md"))
+            self.assertEqual(installed, [
+                "docs/integrations/session-workflow.md",
+                "docs/reference/cli-mcp-contract.md",
+                "docs/reference/daily-work.md",
+            ])
+            for rel in installed:
+                self.assertEqual((package / rel).read_bytes(),
+                                 (ROOT / "docs/dev" / Path(rel).relative_to("docs")).read_bytes())
 
     def test_stable_and_prerelease_version_mapping(self):
         for original, expected in {

@@ -66,12 +66,12 @@ fn assert_examples(doc: &str, label: &str) {
 
 #[test]
 fn codex_cli_workflow_examples_match_production_types() {
-    let doc = include_str!("../../../docs/integrations/team-mcp-codex-cli.md");
+    let doc = include_str!("../../../docs/dev/integrations/team-mcp-codex-cli.md");
     assert_examples(doc, "team-mcp-codex-cli");
 }
 
 #[test]
 fn claude_code_workflow_examples_match_production_types() {
-    let doc = include_str!("../../../docs/integrations/team-mcp-claude-code.md");
+    let doc = include_str!("../../../docs/dev/integrations/team-mcp-claude-code.md");
     assert_examples(doc, "team-mcp-claude-code");
 }

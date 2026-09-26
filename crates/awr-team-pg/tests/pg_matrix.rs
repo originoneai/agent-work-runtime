@@ -12,13 +12,13 @@ const HISTORICAL_AGENT_INDEX_SHA256: &str =
 
 fn matrix() -> Value {
     serde_json::from_str(include_str!(
-        "../../../docs/reference/team-v1-evidence-matrix.json"
+        "../../../docs/dev/reference/team-v1-evidence-matrix.json"
     ))
     .unwrap()
 }
 
 fn historical_agent_index_source() -> &'static str {
-    include_str!("../../../docs/reference/team-v1-historical-agent-evidence-v1.json")
+    include_str!("../../../docs/dev/reference/team-v1-historical-agent-evidence-v1.json")
 }
 
 fn historical_agent_index() -> Value {
