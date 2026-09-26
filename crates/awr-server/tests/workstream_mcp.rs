@@ -108,6 +108,77 @@ fn raw(server: &Server, token: &str) -> reqwest::RequestBuilder {
 }
 
 #[tokio::test]
+async fn mcp_feedback_is_discoverable_nonterminal_and_does_not_change_consumed_context() {
+    let (_guard, admin, _, store) = setup().await;
+    enable_writes(&admin).await;
+    let server = start(store).await;
+    let client = connect(&server, "one", A).await.unwrap();
+    let tools = client.list_all_tools().await.unwrap();
+    let schema = &tools
+        .iter()
+        .find(|t| t.name == "awr_team_command")
+        .unwrap()
+        .input_schema;
+    assert_eq!(
+        schema["properties"]["args"]["properties"]["progress"]["required"],
+        json!(["phase", "summary"])
+    );
+    assert_eq!(
+        schema["properties"]["args"]["properties"]["usage"]["properties"]["scope"]["const"],
+        "host_session"
+    );
+    let before = prepared(&client).await;
+    assert_eq!(before["data"]["guidance"]["code"], "declare_client");
+    let command=serde_json::to_value(command(&before,"mcp-feedback","session.checkpoint",json!({
+        "session_id":"session-a","expected_session_version":"1","context_hash":before["data"]["context_hash"],
+        "next_action":"Await design confirmation","open_loops":["User confirmation"],
+        "client_info":{"product":"Example Agent","capabilities":{"model":"unsupported","usage":"unsupported","progress":"supported"}},
+        "progress":{"phase":"waiting_user","summary":"Implementation options are ready for confirmation."}
+    }))).unwrap();
+    let receipt = call(&client, "awr_team_command", command.clone(), false).await;
+    assert_eq!(receipt["execution_authorized"], false);
+    assert_eq!(
+        call(&client, "awr_team_command", command, false).await["replayed"],
+        true
+    );
+    let after = prepared(&client).await;
+    assert_eq!(
+        after["data"]["context_hash"],
+        before["data"]["context_hash"]
+    );
+    assert_eq!(after["data"]["guidance"]["code"], "wait_for_change");
+    assert!(after["data"]["guidance"].to_string().len() < 900);
+    let observation = call(
+        &client,
+        "awr_team_query",
+        json!({"protocol_version":1,"op":"work.observe","session_id":"session-a"}),
+        false,
+    )
+    .await;
+    assert_eq!(observation["data"]["progress"]["phase"], "waiting_user");
+    assert_eq!(
+        observation["data"]["missing"]["model"],
+        "client_collection_unsupported"
+    );
+    let mut baseline = before["data"].clone();
+    baseline.as_object_mut().unwrap().remove("guidance");
+    let budget = serde_json::to_vec(&baseline).unwrap().len();
+    let compact = call(
+        &client,
+        "awr_team_query",
+        json!({"protocol_version":1,"op":"work.prepare","work_id":"a","max_context_bytes":budget}),
+        false,
+    )
+    .await;
+    assert!(compact["data"].get("guidance").is_none());
+    assert_eq!(
+        compact["data"]["context_hash"],
+        before["data"]["context_hash"]
+    );
+    client.cancel().await.unwrap();
+}
+
+#[tokio::test]
 async fn sdk_clients_negotiate_tools_and_isolate_workstreams_on_one_service() {
     let (_guard, _, _, store) = setup().await;
     let server = start(store).await;

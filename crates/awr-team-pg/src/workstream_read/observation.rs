@@ -106,5 +106,17 @@ pub(super) async fn read(
     data["last_activity_at_unix_ms"] = tx.query_one("SELECT (extract(epoch FROM max(created_at))*1000)::bigint
         FROM awr_team.events WHERE tenant_id=$1 AND project_id=$2 AND work_id=$3 AND workstream_id=$4",
         &[&tenant,&project,&work,&stream]).await?.get::<_,Option<i64>>(0).map_or(Value::Null,|v|json!(v));
+    data["waiting_user"] = json!(
+        tx.query_one(
+            "SELECT EXISTS(SELECT 1 FROM awr_team.wait_items
+        WHERE tenant_id=$1 AND project_id=$2 AND work_id=$3 AND state='open')",
+            &[&tenant, &project, &work]
+        )
+        .await?
+        .get::<_, bool>(0)
+    );
+    let owns_session = data["session"]["actor_id"] == auth.actor_id
+        && data["session"]["client_id"] == auth.client_id;
+    data["guidance"] = super::guidance::select(&data, true, owns_session);
     Ok(data)
 }
