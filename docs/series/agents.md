@@ -131,8 +131,9 @@ Two caveats:
 ```
 
 Flat names remain callable but are not in the default catalog; set `AWR_MCP_TOOL_EXPOSURE_MODE=flat`
-only if your Cursor build cannot route through domains. Packaged 0.4.0 does not expose grouped
-`awr_query` — build from the source tree for this route.
+only if your Cursor build cannot route through domains. The packaged releases do not expose grouped
+`awr_query` — build from the source tree for this route, and check your build's tool
+catalog first.
 
 **Cloud Agents** cannot reach a laptop `awr-mcp` or `127.0.0.1`; they need a reachable HTTPS front
 door with server-side project roots. AWR's shared HTTP service uses a bearer token (not Cursor
