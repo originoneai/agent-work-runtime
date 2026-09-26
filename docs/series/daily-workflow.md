@@ -9,9 +9,9 @@ concepts (work items, sessions, claims, checkpoints) — see
 [Quickstart](quickstart.md) and [Concepts](concepts.md). The same routine works
 over MCP; see [MCP](mcp.md).
 
-A note on versions: some capabilities below (the action view, progress fields,
-checkpoint caller declarations, and `work edit`) reflect the current source
-tree; the released 0.4.0 packages do not enable them.
+A note on versions: some capabilities below (the action view and `work edit`)
+reflect the current source tree and may not be enabled in the released package.
+Run `awr --help` to see what your installation supports.
 
 ## 1. Start your day: find the next action
 
