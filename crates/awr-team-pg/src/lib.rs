@@ -57,6 +57,8 @@ pub use lock_order::{
     ResourceLockKey, lock_claim_after_work, lock_resources_sorted, lock_works_sorted,
     sort_resource_keys, sort_work_ids,
 };
+mod feedback;
+
 pub use migrate::{EXPECTED_SCHEMA_VERSION, check_schema, migrate};
 pub use operator_access::{
     AccessActor, AccessCredential, AccessGrant, AccessPlan, AdminAccessPlan, OperatorAccess,
@@ -130,6 +132,6 @@ mod tests {
     #[test]
     fn schema_contract_is_stable() {
         assert_eq!(SCHEMA, "awr_team");
-        assert_eq!(EXPECTED_SCHEMA_VERSION, 33);
+        assert_eq!(EXPECTED_SCHEMA_VERSION, 34);
     }
 }

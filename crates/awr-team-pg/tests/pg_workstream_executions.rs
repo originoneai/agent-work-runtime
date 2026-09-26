@@ -12,6 +12,38 @@ use serde_json::{Value, json};
 use tokio_postgres::Client;
 
 #[tokio::test]
+async fn nonterminal_checkpoint_feedback_does_not_settle_running_execution() {
+    let (_g, admin, _, store) = setup().await;
+    enable_writes(&admin).await;
+    let (c, e) = ready_intent(&store).await;
+    store
+        .commands()
+        .execute(
+            TENANT,
+            PROJECT,
+            A,
+            admission(&store, &c, &e, "feedback-start").await,
+        )
+        .await
+        .unwrap();
+    let before = inspect(&store, &e).await;
+    let p = prepare(&store, A, "a").await;
+    store.commands().execute(TENANT,PROJECT,A,command(&p,"feedback","session.checkpoint",
+        json!({"session_id":"session-a","expected_session_version":"1","context_hash":p["data"]["context_hash"],
+            "next_action":"Wait for test results","open_loops":[],
+            "progress":{"phase":"testing","summary":"Implementation complete; tests are running."}}))).await.unwrap();
+    assert_eq!(inspect(&store, &e).await, before);
+    assert_eq!(before["state"], "running");
+    assert_eq!(before["recovery_blocked"], false);
+    let rows: i64 = admin
+        .query_one("SELECT count(*) FROM awr_team.execution_receipts", &[])
+        .await
+        .unwrap()
+        .get(0);
+    assert_eq!(rows, 0);
+}
+
+#[tokio::test]
 async fn observation_preserves_receipt_privacy_and_exposes_expired_claims_without_mutation() {
     let (_g, admin, _, store) = setup().await;
     enable_writes(&admin).await;
@@ -57,6 +89,10 @@ async fn observation_preserves_receipt_privacy_and_exposes_expired_claims_withou
         false
     );
     assert!(peer["data"]["execution"]["latest_receipt"].is_null());
+    assert_eq!(
+        peer["data"]["missing"]["execution_receipt"],
+        "permission_restricted"
+    );
     assert!(
         !peer
             .to_string()

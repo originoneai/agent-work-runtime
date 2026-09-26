@@ -441,6 +441,14 @@ pub(crate) async fn read(
             "dependency_exports":false,"execution_admission":true,
             "execution_admission_scope":"same_client_current_lease_lexical_project_resources",
             "artifact_content":true,
+            "session_feedback":{
+                "version":1,"start_optional_fields":["client_info"],
+                "checkpoint_optional_fields":["client_info","progress","usage"],
+                "read":"work.observe","visibility":"work_read_business_summary",
+                "provenance":"caller_declared","nonterminal":true,
+                "usage_scope":"host_session","usage_aggregation":"none",
+                "billing_collected":false,"stale_after_ms":crate::feedback::STALE_AFTER_MS
+            },
             "source_content":true,
             "controlled_content_reads":true,
             "planning": crate::SourceStore::planning_capabilities(),
