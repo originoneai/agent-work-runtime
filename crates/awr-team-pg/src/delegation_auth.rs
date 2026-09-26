@@ -135,11 +135,7 @@ pub(crate) async fn resolve_agent_delegation(
         {
             continue;
         }
-        if let Some(work) = work_id.filter(|w| !w.is_empty()) {
-            if !grant.covers_task(project_id, work, task_stream.as_deref()) {
-                continue;
-            }
-        } else if grant.scope.project_id() != project_id {
+        if grant.scope.project_id() != project_id {
             continue;
         }
 
@@ -154,7 +150,9 @@ pub(crate) async fn resolve_agent_delegation(
     }
 
     // Resolve narrowing before choosing an action. Otherwise an action removed
-    // by a child could fall back to the broader parent. Independent grants may
+    // by a child could fall back to the broader parent. Compute this before
+    // task filtering: an out-of-scope task cannot resurrect a narrowed parent.
+    // Independent grants may
     // cover different actions, but are never unioned into synthetic authority.
     let narrowed: BTreeSet<&str> = candidates
         .iter()
@@ -163,13 +161,17 @@ pub(crate) async fn resolve_agent_delegation(
             candidates.iter().find_map(|(parent, parent_actions)| {
                 (parent.id == parent_id
                     && child_actions.is_subset(parent_actions)
-                    && child_actions.len() < parent_actions.len())
-                .then_some(parent_id)
+                    && child.scope.is_within(&parent.scope)
+                    && (child_actions.len() < parent_actions.len() || child.scope != parent.scope))
+                    .then_some(parent_id)
             })
         })
         .collect();
     let chosen = candidates.iter().find(|(grant, actions)| {
         !narrowed.contains(grant.id.as_str())
+            && work_id
+                .filter(|w| !w.is_empty())
+                .is_none_or(|work| grant.covers_task(project_id, work, task_stream.as_deref()))
             && requested_action.map_or(!actions.is_empty(), |action| actions.contains(&action))
     });
     match chosen {
@@ -182,6 +184,54 @@ pub(crate) async fn resolve_agent_delegation(
             auth.delegated_actions = Some(BTreeSet::new());
         }
     }
+    Ok(())
+}
+
+/// Keep selector-free discovery inside the selected delegation, not merely
+/// inside the broader access grant. Task/pool reads require an explicit work ID;
+/// the query's normal validation still rejects selectors on project-wide ops.
+pub(crate) async fn restrict_read_scope(
+    tx: &tokio_postgres::Transaction<'_>,
+    auth: &mut ReaderAuthority,
+    project: &str,
+    request: &crate::WorkstreamQuery,
+) -> PgResult<()> {
+    if !actor_requires_explicit_delegation(&auth.actor_kind) {
+        return Ok(());
+    }
+    let id = auth.delegation_id.as_deref().ok_or(PgError::Forbidden)?;
+    let row=tx.query_opt("SELECT body_json FROM awr_team.agent_authorizations WHERE tenant_id=$1 AND project_id=$2 AND id=$3 FOR SHARE",&[&auth.tenant_id,&project,&id]).await?.ok_or(PgError::Forbidden)?;
+    let grant: AgentAuthorization =
+        serde_json::from_value(row.get(0)).map_err(|_| PgError::Forbidden)?;
+    let stream = match &grant.scope {
+        awr_core::AuthorizationScope::Project { .. } => None,
+        awr_core::AuthorizationScope::Workstream { workstream_id, .. } => {
+            Some(workstream_id.clone())
+        }
+        awr_core::AuthorizationScope::Task { .. }
+        | awr_core::AuthorizationScope::TaskPool { .. } => {
+            let work = request.work_id.as_deref().ok_or(PgError::Forbidden)?;
+            let row=tx.query_opt("SELECT workstream_id FROM awr_team.workstream_snapshot_ownership WHERE tenant_id=$1 AND project_id=$2 AND snapshot_id=$3 AND scope_id='main' AND work_id=$4",&[&auth.tenant_id,&project,&auth.snapshot,&work]).await?.ok_or(PgError::Forbidden)?;
+            let stream: String = row.get(0);
+            if !grant.covers_task(project, work, Some(&stream)) {
+                return Err(PgError::Forbidden);
+            }
+            Some(stream)
+        }
+    };
+    if stream.is_some() && request.op == "planning.outcome" {
+        return Err(PgError::Forbidden);
+    }
+    if let Some(stream) = stream {
+        let stream = stream
+            .parse::<awr_core::Id>()
+            .map_err(|_| PgError::Forbidden)?;
+        auth.access.grants.retain(|g| g.workstream_id == stream);
+    }
+    // Cursors and consumed context must not outlive the selected read grant.
+    auth.binding =
+        awr_team::request_hash(&serde_json::json!({"identity":auth.binding,"authorization":grant}))
+            .map_err(|_| PgError::Forbidden)?;
     Ok(())
 }
 
