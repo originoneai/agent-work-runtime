@@ -71,8 +71,9 @@ actor/client attribution, `human_approval: false`, and
 `team_independent_acceptance: false`. `review.inspect` exposes the same facts.
 
 `review.accept` and `review.return` remain human-review aliases. The legacy
-ReviewStore does not support Agent review. This capability currently records
-review decisions only: the new policy cannot finalize work or unlock dependencies.
+ReviewStore does not support Agent review. The unified command path supports
+completion with the reconciled caller-execution chain below. Agent-reviewed
+completion cannot unlock human-independent dependencies.
 Existing human policies are unchanged and cannot be downgraded through planning.
 
 ## Recheck boundaries
@@ -80,3 +81,21 @@ Existing human policies are unchanged and cannot be downgraded through planning.
 Admission and effect phases re-run TMCP action auth. Completion still requires
 WS-018 evidence gates. An active PR delivery must match the live contract hash;
 GitHub merge is recorded but never substitutes for AWR acceptance.
+
+### Caller-managed completion with Agent review
+
+An explicit `caller_managed_execution_and_agent_review` contract may complete
+with the developer Agent's `caller_asserted` evidence after an authorized
+operator reconciles the matching successful caller receipt. The evidence must
+include retrievable artifact bytes and the execution input and output digests.
+A distinct authorized Agent must approve the exact evidence and current contract.
+Unsettled effects, modified artifacts, stale review or contradictory receipts
+refuse completion. Reconciliation does not upgrade evidence trust.
+
+The completion receipt records `execution_basis: caller_asserted_reconciled`,
+`approval_basis: agent_review`, `human_approval: false` and
+`team_independent_acceptance: false`. Such a completion does not release required
+downstream work by default, even within the same workstream. Existing same-stream
+ordinary and human completion policies retain their behavior; cross-workstream
+delivery adoption still requires human-independent acceptance. Existing contracts
+are never converted automatically.

@@ -569,10 +569,9 @@ async fn schema_thirteen_preserves_legacy_resources_and_grants_no_new_authority(
         .as_str()
         .unwrap()
         .to_string();
-    admin.batch_execute("DROP TABLE IF EXISTS awr_team.planning_activation_receipts; DROP TABLE IF EXISTS awr_team.planning_writeback_journals; DROP TABLE IF EXISTS awr_team.planning_publish_receipts; DROP TABLE IF EXISTS awr_team.planning_approvals; DROP TABLE IF EXISTS awr_team.planning_candidate_history; DROP TABLE IF EXISTS awr_team.planning_candidates; DROP TABLE IF EXISTS awr_team.planning_suggestions; DROP TABLE IF EXISTS awr_team.project_access_changes; DROP TABLE IF EXISTS awr_team.execution_attributions; DROP TABLE IF EXISTS awr_team.operator_quarantines; DROP TABLE IF EXISTS awr_team.backup_operations; DROP TABLE IF EXISTS awr_team.history_migrations; DROP TABLE IF EXISTS awr_team.access_changes;
-        UPDATE awr_team.resource_reservations SET resource_kind='prefix' WHERE resource_kind IN ('dir','workspace','external','integration');
-        ALTER TABLE awr_team.resource_reservations DROP COLUMN IF EXISTS fence; ALTER TABLE awr_team.resource_reservations DROP COLUMN IF EXISTS lease_generation; ALTER TABLE awr_team.resource_reservations DROP COLUMN IF EXISTS worktree_id; ALTER TABLE awr_team.resource_reservations DROP CONSTRAINT IF EXISTS resource_reservations_domain_consistency; ALTER TABLE awr_team.resource_reservations DROP CONSTRAINT IF EXISTS resource_reservations_resource_kind_check; ALTER TABLE awr_team.resource_reservations ADD CONSTRAINT resource_reservations_resource_kind_check CHECK (resource_kind IN ('file','prefix','named'));
-        ALTER TABLE awr_team.resource_reservations DROP COLUMN IF EXISTS execution_id;
+    // Exercise migration 13 in isolation. Retain later schema additions rather
+    // than pretending a partially downgraded current schema is a version-12 DB.
+    admin.batch_execute("ALTER TABLE awr_team.resource_reservations DROP COLUMN execution_id;
         ALTER TABLE awr_team.executions DROP CONSTRAINT executions_resource_identity;
         ALTER TABLE awr_team.executions DROP COLUMN attestation_grant_version;
         ALTER TABLE awr_team.workstream_grants DROP COLUMN can_attest_execution,DROP COLUMN can_reconcile_execution;
@@ -598,8 +597,24 @@ async fn schema_thirteen_preserves_legacy_resources_and_grants_no_new_authority(
             .get::<_, i32>(0),
         12
     );
-    awr_team_pg::migrate(&admin).await.unwrap();
-    awr_team_pg::migrate(&admin).await.unwrap();
+    admin.batch_execute(sql).await.unwrap();
+    assert_eq!(
+        admin
+            .query_one("SELECT version FROM awr_team.schema_state", &[])
+            .await
+            .unwrap()
+            .get::<_, i32>(0),
+        13
+    );
+    // All later schema objects were retained; restore the marker for the
+    // current store's recovery assertions below, without replaying migrations.
+    admin
+        .execute(
+            "UPDATE awr_team.schema_state SET version=$1 WHERE component='awr_team'",
+            &[&awr_team_pg::EXPECTED_SCHEMA_VERSION],
+        )
+        .await
+        .unwrap();
     let r=admin.query_one("SELECT (SELECT state FROM awr_team.resource_reservations WHERE id='legacy'),
         (SELECT execution_id FROM awr_team.resource_reservations WHERE id='legacy'),
         (SELECT count(*) FROM awr_team.workstream_grants WHERE can_attest_execution OR can_reconcile_execution),
