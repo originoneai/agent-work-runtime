@@ -63,7 +63,7 @@ fn empty_and_code_only_projects_get_a_real_work_entry_without_invented_history()
         ]);
         assert_eq!(installed["index"]["indexed"], 2);
         let work = p.ok(&["work", "show", "INTAKE-001"]);
-        assert!(work.to_string().contains("核实项目目标"));
+        assert!(work.to_string().contains("Verify project goals"));
         let before = fs::read(p.0.join(".awr/intake/work-ledger.yaml")).unwrap();
         p.ok(&["init", "--accept"]);
         assert_eq!(

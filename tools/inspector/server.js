@@ -1,14 +1,14 @@
 #!/usr/bin/env node
 /**
- * AWR Inspector —— 本地桥接进程
+ * AWR Inspector: local bridge process
  *
- * 做的事情只有一件：把一次 HTTP 请求翻译成一条 `awr --json` 命令，
- * 把 AWR 原样吐出的 JSON 原样转发给浏览器。它不解释、不改写、不缓存。
+ * Translate each HTTP request into one `awr --json` command and forward
+ * the returned JSON unchanged. Do not interpret, rewrite, or cache it.
  *
- * 绑定回环地址还不够：浏览器里的任意页面都能向 127.0.0.1 发请求。
- * 所以 /api/* 还有一层请求来源边界，见 guardRequest()。
+ * Loopback binding alone is insufficient: any browser page can request 127.0.0.1.
+ * The /api/* routes also enforce a request-origin boundary; see guardRequest().
  *
- * 用法：
+ * Usage:
  *   node server.js --project /abs/path/to/project [--port 7381] [--demo] [--allow-reindex]
  */
 
@@ -19,24 +19,24 @@ const fs = require('fs');
 const path = require('path');
 const { spawn, execFile } = require('child_process');
 
-// ───────────────────────── 上限 ─────────────────────────
+// Resource limits
 
-/** 只给测试用的数值覆盖；没设就用默认。 */
+/** Numeric overrides for tests; use defaults when unset. */
 function envInt(name, fallback) {
   const v = Number(process.env[name]);
   return Number.isInteger(v) && v > 0 ? v : fallback;
 }
 
 const LIMITS = {
-  stdoutBytes: 8 * 1024 * 1024,   // 单条命令的 stdout 上限
+  stdoutBytes: 8 * 1024 * 1024,   // Maximum stdout bytes per command.
   stderrBytes: 1 * 1024 * 1024,
-  requestBytes: 64 * 1024,        // 请求体上限
-  concurrent: envInt('AWR_INSPECTOR_CONCURRENT', 4),          // 同时在跑的 awr 子进程数
-  readTimeoutMs: envInt('AWR_INSPECTOR_READ_TIMEOUT_MS', 60000),   // 查询命令的超时
-  writeTimeoutMs: envInt('AWR_INSPECTOR_WRITE_TIMEOUT_MS', 120000), // 写命令（reindex）的超时
+  requestBytes: 64 * 1024,        // Maximum request body size.
+  concurrent: envInt('AWR_INSPECTOR_CONCURRENT', 4),          // Maximum concurrent awr child processes.
+  readTimeoutMs: envInt('AWR_INSPECTOR_READ_TIMEOUT_MS', 60000),   // Query command timeout.
+  writeTimeoutMs: envInt('AWR_INSPECTOR_WRITE_TIMEOUT_MS', 120000), // Explicit reindex timeout.
 };
 
-// ───────────────────────── 参数 ─────────────────────────
+// Arguments
 
 function parseArgs(argv) {
   const out = {
@@ -55,13 +55,13 @@ function parseArgs(argv) {
     else if (a === '--allow-reindex') out.allowReindex = true;
     else if (a === '--help' || a === '-h') {
       console.log([
-        '用法: node server.js [选项]',
+        'Usage: node server.js [options]',
         '',
-        '  --project <目录>   要查看的 AWR 项目，默认当前目录',
-        '  --port <端口>      默认 7381',
-        '  --demo             强制演示模式，不执行任何真实命令',
-        '  --allow-reindex    允许从界面触发 `source reindex`（默认不允许）',
-        '  --no-open          不自动打开浏览器',
+        '  --project <dir>    AWR project to inspect (default: current directory)',
+        '  --port <port>      Listening port (default: 7381)',
+        '  --demo             Use demo mode without running real commands',
+        '  --allow-reindex    Enable source reindex from the UI (disabled by default)',
+        '  --no-open          Do not open the browser automatically',
       ].join('\n'));
       process.exit(0);
     }
@@ -72,13 +72,13 @@ function parseArgs(argv) {
 const ARGS = parseArgs(process.argv.slice(2));
 const PUBLIC_DIR = path.join(__dirname, 'public');
 
-// ───────────────────────── awr 路径解析 ─────────────────────────
+// awr executable resolution
 
 /**
- * 解析 .cmd 文件，提取 Node.js 入口路径。
- * npm 的 .cmd 包装器格式：`"%_prog%" "<entry_point>" %*`
- * 测试 stub 的 .cmd 格式：`"node" "<entry_point>" %*`
- * 返回展开 %dp0% 后的绝对路径，找不到返回 null。
+ * Extract the Node.js entry point from a .cmd wrapper.
+ * npm wrapper format:`"%_prog%" "<entry_point>" %*`
+ * Test wrapper format:`"node" "<entry_point>" %*`
+ * Return the path after expanding %dp0%, or null when unavailable.
  */
 function parseCmdEntryPoint(cmdPath) {
   try {
@@ -93,13 +93,11 @@ function parseCmdEntryPoint(cmdPath) {
 }
 
 /**
- * 通过 PATH × PATHEXT 解析 awr 的完整路径，全程 shell: false。
+ * Resolve awr through PATH and PATHEXT without a shell.
  *
- * 返回 { exe, needsNode }：
- *   - exe: 可执行文件路径（.exe / .cmd / 扩展名空的 POSIX 脚本）
- *   - needsNode: true 时 exe 是 .cmd/.bat 包装器，spawn 时需用 process.execPath 作为 command，
- *     exe 作为第一个参数；false 时 exe 可直接 spawn。
- *   两者均找不到时 exe=null，调用方进 demo mode。
+ * Return { exe, needsNode, entryPoint? }. Native executables and POSIX scripts
+ * run directly; Node wrappers run entryPoint through process.execPath.
+ * If resolution fails, exe is null and the caller enters demo mode.
  */
 function resolveAwr() {
   const sep = process.platform === 'win32' ? ';' : ':';
@@ -115,11 +113,11 @@ function resolveAwr() {
         const st = fs.statSync(candidate, { throwIfNoEntry: false });
         if (st && st.isFile()) {
           const extUpper = path.extname(candidate).toUpperCase();
-          // .EXE 或无扩展名（POSIX 脚本）可直接 spawn
+          // Spawn native executables and extensionless POSIX scripts directly.
           if (extUpper === '.EXE' || extUpper === '') {
             return { exe: candidate, needsNode: false };
           }
-          // .CMD/.BAT 是 npm 包装器，需要解析出 Node 入口
+          // Resolve the Node entry point from npm command wrappers.
           if (extUpper === '.CMD' || extUpper === '.BAT') {
             const entryPoint = parseCmdEntryPoint(candidate);
             if (entryPoint) return { exe: candidate, needsNode: true, entryPoint };
@@ -133,16 +131,16 @@ function resolveAwr() {
 
 const AWR_RESOLVED = resolveAwr();
 
-// ───────────────────────── awr 探测 ─────────────────────────
+// awr detection
 
 const runtime = {
   mode: ARGS.demo ? 'demo' : 'unknown', // 'live' | 'demo'
   awrVersion: null,
   project: ARGS.project,
-  reason: ARGS.demo ? '启动时带了 --demo 参数' : null,
+  reason: ARGS.demo ? 'Started with --demo' : null,
   allowReindex: ARGS.allowReindex,
-  // `--json` 放全局位置。只有当 AWR 明确说不认识 `--json` 时才改放尾部；
-  // 别的参数报错不能动这个开关（那会让一次坏请求污染整个进程）。
+  // Place --json globally. Retry at the end only if AWR explicitly rejects that flag;
+  // other argument errors must not change process-wide behavior.
   jsonFlagPosition: 'global',
   running: 0,
 };
@@ -152,7 +150,7 @@ function detectAwr() {
     if (ARGS.demo) return resolve();
     if (!AWR_RESOLVED.exe) {
       runtime.mode = 'demo';
-      runtime.reason = '没有找到 awr 命令。装好之后重启本进程即可看到真实数据。';
+      runtime.reason = 'The awr command was not found. Install it and restart this process to view live data.';
       return resolve();
     }
     const args = AWR_RESOLVED.needsNode ? [AWR_RESOLVED.entryPoint, '--version'] : ['--version'];
@@ -160,7 +158,7 @@ function detectAwr() {
     execFile(cmd, args, { timeout: 8000 }, (err, stdout) => {
       if (err) {
         runtime.mode = 'demo';
-        runtime.reason = '没有找到 awr 命令。装好之后重启本进程即可看到真实数据。';
+        runtime.reason = 'The awr command was not found. Install it and restart this process to view live data.';
         return resolve();
       }
       runtime.awrVersion = String(stdout).trim();
@@ -170,7 +168,7 @@ function detectAwr() {
   });
 }
 
-// ───────────────────────── 请求来源边界 ─────────────────────────
+// Request-origin boundary
 
 const ALLOWED_HOSTS = new Set([
   `127.0.0.1:${ARGS.port}`,
@@ -183,48 +181,48 @@ const ALLOWED_ORIGINS = new Set([
   `http://[::1]:${ARGS.port}`,
 ]);
 
-/** 状态变更请求必须带这个头。第三方页面发不出自定义头，除非先过 CORS 预检——我们不给预检放行。 */
+/** Mutations require this custom header; third-party pages need a CORS preflight, which we reject. */
 const GUARD_HEADER = 'x-awr-inspector';
 
 /**
- * 判断一个 /api/* 请求是不是真的来自本机这个页面。
- * 返回 null 表示放行，否则返回要回给调用方的错误。
+ * Check whether an /api/* request comes from this local page.
+ * Return null to allow it, or the error to send to the caller.
  */
 function guardRequest(req) {
-  // 1) Host：挡 DNS rebinding。攻击者把域名解析到 127.0.0.1，Host 仍是他的域名。
+  // 1) Host blocks DNS rebinding: the attacker-controlled hostname remains in the header.
   const host = String(req.headers.host || '').toLowerCase();
   if (!ALLOWED_HOSTS.has(host)) {
-    return { code: 'ForbiddenHost', message: `不接受的 Host: ${host || '(空)'}` };
+    return { code: 'ForbiddenHost', message: `Rejected Host: ${host || '(empty)'}` };
   }
 
-  // 2) Origin：带了就必须是本机这个源。'null' 也不放行（沙箱 iframe、file:// 都会发它）。
+  // 2) Origin, when supplied, must match this server. Reject null origins from sandboxed/file pages.
   const origin = req.headers.origin;
   if (origin !== undefined && !ALLOWED_ORIGINS.has(String(origin))) {
-    return { code: 'ForbiddenOrigin', message: `不接受的 Origin: ${origin}` };
+    return { code: 'ForbiddenOrigin', message: `Rejected Origin: ${origin}` };
   }
 
-  // 3) Sec-Fetch-Site：浏览器自己标的，页面改不了。
-  //    同源请求是 same-origin；地址栏直接打开是 none。其余一律拒。
+  // 3) Sec-Fetch-Site is supplied by the browser and cannot be changed by page scripts.
+  //    Same-origin fetches use same-origin; address-bar navigation uses none. Reject the rest.
   const site = req.headers['sec-fetch-site'];
   if (site !== undefined && site !== 'same-origin' && site !== 'none') {
-    return { code: 'ForbiddenSite', message: `不接受的 Sec-Fetch-Site: ${site}` };
+    return { code: 'ForbiddenSite', message: `Rejected Sec-Fetch-Site: ${site}` };
   }
 
-  // 4) 状态变更请求要带自定义头。表单跨站 POST 发不出它。
+  // 4) Mutations require a custom header that cross-site form POSTs cannot send.
   if (req.method !== 'GET' && req.headers[GUARD_HEADER] !== '1') {
     return {
       code: 'MissingGuardHeader',
-      message: `状态变更请求必须带 ${GUARD_HEADER}: 1 请求头`,
+      message: `Mutation requests require the ${GUARD_HEADER}: 1 header`,
     };
   }
 
   return null;
 }
 
-// ───────────────────────── 执行 awr ─────────────────────────
+// Execute awr
 
-// 白名单。键是前端能请求的动作名，值是这个动作允许的固定子命令。
-// 前端传不了任意命令，只能在这张表里挑一个，再补上经过校验的参数。
+// Allowlist: frontend action names map to fixed subcommands.
+// The frontend can select only these commands and append validated arguments.
 const COMMANDS = {
   status: { argv: ['status'], write: false },
   ready: { argv: ['ready'], write: false },
@@ -235,13 +233,13 @@ const COMMANDS = {
   sourceReindex: { argv: ['source', 'reindex'], write: true },
 };
 
-// 每个字段一套校验，按它实际承载什么来定，不用一条粗放的 ASCII 正则一刀切。
-// 注入风险已经由「参数数组 + 不走 shell」消掉了，这里管的是「值合不合理」。
+// Validate each field according to its semantics instead of one broad ASCII expression.
+// Argument arrays without a shell prevent injection; these checks validate values.
 
-/** AWR 的 key：EXAMPLE-001、goal#demo、plan#intake 这类。 */
+/** AWR keys such as EXAMPLE-001, goal#demo, and plan#intake. */
 const KEY_RE = /^[A-Za-z0-9_.:#/-]{1,200}$/;
 
-/** 分支名。 */
+/** Branch names. */
 const BRANCH_RE = /^[A-Za-z0-9_./-]{1,200}$/;
 
 function asKey(value) {
@@ -255,15 +253,15 @@ function asBranch(value) {
 }
 
 /**
- * 自由文本（搜索词、intent）。允许 Unicode——中文搜索是正当需求。
- * 只挡控制字符和 NUL，并限长。
+ * Free text for search and intent. Unicode, including Chinese search, is supported.
+ * Reject control characters and NUL, and bound the length.
  */
 function asText(value, maxLength) {
   const s = String(value == null ? '' : value);
   if (!s || s.length > (maxLength || 500)) return null;
   for (let i = 0; i < s.length; i++) {
     const c = s.charCodeAt(i);
-    // 控制字符（含 NUL）一律不收；制表、换行、回车也不该出现在这类单行参数里。
+    // Reject control characters, including NUL, tabs, newlines, and carriage returns.
     if (c < 0x20 || c === 0x7f) return null;
   }
   return s;
@@ -271,7 +269,7 @@ function asText(value, maxLength) {
 
 function buildArgv(commandKey, extra) {
   const spec = COMMANDS[commandKey];
-  if (!spec) throw new Error(`不允许的命令: ${commandKey}`);
+  if (!spec) throw new Error(`Command not allowed: ${commandKey}`);
   const base = ['--project', runtime.project];
   if (runtime.jsonFlagPosition === 'global') base.push('--json');
   const argv = base.concat(spec.argv, extra || []);
@@ -280,13 +278,14 @@ function buildArgv(commandKey, extra) {
 }
 
 /**
- * 跑一条 awr。
+ * Run one awr command.
  *
- * stdout/stderr 按 Buffer 收集，跑完再整体解码——按块解码会把一个多字节
- * UTF-8 字符劈成两半，拼回来就是 U+FFFD。
+ * Collect stdout/stderr as Buffers and decode once; decoding each chunk can split
+ * a multibyte UTF-8 character and introduce U+FFFD.
  *
- * 查询可能刷新 SQLite 投影，并非运行态只读。查询超时会请求终止进程；
- * 显式 `source reindex` 超时保留子进程并报告结果未知。
+ * Queries may refresh SQLite projections; they are not runtime read-only.
+ * A query timeout requests process termination. Explicit source reindex keeps
+ * running after a timeout and reports an unknown outcome.
  */
 function execAwr(argv, opts) {
   const write = Boolean(opts && opts.write);
@@ -297,8 +296,8 @@ function execAwr(argv, opts) {
     const args = AWR_RESOLVED.needsNode ? [AWR_RESOLVED.entryPoint, ...argv] : argv;
     const child = spawn(cmd, args, { stdio: 'pipe', windowsHide: true });
 
-    // 槽位跟着子进程走，不跟着 HTTP 响应走。超时时我们会先回响应，
-    // 但子进程还活着——那个槽必须留到它真的退出为止，否则上限形同虚设。
+    // Concurrency slots follow child lifetimes, not HTTP responses. A timed-out child
+    // must retain its slot until it exits, or the concurrency limit is ineffective.
     runtime.running += 1;
     let released = false;
     const release = () => {
@@ -323,27 +322,27 @@ function execAwr(argv, opts) {
 
     const timer = setTimeout(() => {
       if (write) {
-        // 不杀。把子进程放掉，让它自己跑完；结果是未知的，如实说。
-        // 槽位不在这里释放——等 close 事件。
+        // Let the write finish and report its outcome as unknown.
+        // Release the slot on close, not when returning the timeout response.
         finish({ code: null, timedOut: true, outcomeUnknown: true, stdout: '', stderr: '' });
       } else {
-        // 查询命令：先礼后兵，SIGTERM 给 5 秒，再 SIGKILL。
+        // For query commands, send SIGTERM, then SIGKILL after five seconds.
         child.kill('SIGTERM');
         const hard = setTimeout(() => child.kill('SIGKILL'), 5000);
         hard.unref();
         finish({ code: null, timedOut: true, outcomeUnknown: false, stdout: '', stderr: '' });
       }
     }, timeoutMs);
-    // 超时定时器不该拖住进程退出。
+    // The timeout must not keep the process alive.
     timer.unref();
 
     child.stdout.on('data', (chunk) => {
       outBytes += chunk.length;
       if (outBytes > LIMITS.stdoutBytes) {
         truncated = true;
-        // 查询命令可以杀。写命令不行——杀掉一个正在改状态的 reindex
-        // 会留下不知道成没成的状态，而输出太大并不是终止它的理由。
-        // 继续读，只是把超出的部分丢掉。
+        // Query children may be stopped. Explicit reindex keeps running because
+        // excess output is not a reason to interrupt its durable source update.
+        // Keep draining the pipe while discarding bytes beyond the limit.
         if (!write) child.kill('SIGKILL');
         return;
       }
@@ -374,20 +373,20 @@ function execAwr(argv, opts) {
 }
 
 /**
- * 跑一条命令，返回给前端的统一信封。
- * 无论成败都带上 `command`：界面上那条「可以复制去终端跑」的命令就是它。
+ * Run a command and return the frontend response envelope.
+ * Always include command, even on failure, so users can copy it into a terminal.
  */
 async function runCommand(commandKey, extra) {
   const spec = COMMANDS[commandKey];
 
-  // 槽位由 execAwr 按子进程生命周期占用与释放，这里只做准入判断。
+  // execAwr owns slots for each child lifetime; this check only controls admission.
   if (runtime.running >= LIMITS.concurrent) {
     return {
       ok: false,
       command: null,
       error: {
         code: 'BridgeBusy',
-        message: '同时在跑的 awr 子进程已达上限，等其中一个结束再试。',
+        message: 'The awr concurrency limit has been reached. Wait for a child process to exit before retrying.',
       },
     };
   }
@@ -396,7 +395,7 @@ async function runCommand(commandKey, extra) {
     let argv = buildArgv(commandKey, extra);
     let result = await execAwr(argv, spec);
 
-    // --json 位置探测：只有当 AWR 明确说不认识 `--json` 时才换位置重试。
+    // Retry --json at another position only when AWR explicitly rejects the flag.
     if (
       result.code !== 0 &&
       runtime.jsonFlagPosition === 'global' &&
@@ -417,12 +416,12 @@ async function runCommand(commandKey, extra) {
           ? {
               code: 'OutcomeUnknown',
               message:
-                '命令超时了，但它没有被终止，可能已经生效，也可能没有。' +
-                '先用 awr 查一下当前状态再决定下一步，不要直接重试。',
+                'The command timed out but was not terminated. It may have taken effect. ' +
+                'Inspect the current state with awr before proceeding. Do not retry blindly.',
             }
           : {
               code: 'BridgeTimeout',
-              message: '查询超时，已请求终止。查询可能已刷新本地投影；请检查当前状态后再决定是否重试。',
+              message: 'The query timed out and termination was requested. Queries may have refreshed local projections; inspect current state before deciding whether to retry.',
             },
       };
     }
@@ -432,7 +431,7 @@ async function runCommand(commandKey, extra) {
     }
 
     if (result.truncated) {
-      // 写命令没被终止，只是输出没收全——它成没成是未知的，别叫人直接重跑。
+      // The write was not killed, but its output is incomplete. Do not recommend a blind retry.
       return spec.write
         ? {
             ok: false,
@@ -440,8 +439,8 @@ async function runCommand(commandKey, extra) {
             error: {
               code: 'OutcomeUnknown',
               message:
-                `输出超过了 ${LIMITS.stdoutBytes} 字节上限，没有收全。命令本身没有被终止，` +
-                '可能已经生效。先用 awr 查一下当前状态再决定下一步，不要直接重试。',
+                `Output exceeded the ${LIMITS.stdoutBytes}-byte limit and is incomplete. The command was not terminated. ` +
+                'It may have taken effect. Inspect the current state with awr before proceeding. Do not retry blindly.',
             },
           }
         : {
@@ -449,7 +448,7 @@ async function runCommand(commandKey, extra) {
             command,
             error: {
               code: 'OutputTooLarge',
-              message: `awr 的输出超过了 ${LIMITS.stdoutBytes} 字节上限。请在终端里直接跑这条命令。`,
+              message: `awr output exceeded the ${LIMITS.stdoutBytes}-byte limit. Run this command directly in a terminal.`,
             },
           };
     }
@@ -457,15 +456,13 @@ async function runCommand(commandKey, extra) {
     const parsed = tryParseJson(result.stdout);
 
     if (result.code !== 0) {
-      // AWR 的错误也是 JSON，带 code 和 message，但它可能走 stdout 也可能走 stderr。
+      // AWR errors are JSON with code/message and may arrive on stdout or stderr.
       const errJson =
         (parsed && (parsed.code || parsed.error) ? parsed : null) || tryParseJson(result.stderr);
       const domain = errJson && (errJson.error || errJson);
 
-      // 退出码非 0 不等于「没有结果」。
-      // 比如 `context compile` 在上下文不完整时会退出 1，但 stdout 上照样给出
-      // 完整的报告——完整性的各个维度、issues、证据缺口全在里面，那正是这时候
-      // 最需要看的东西。能解析出真正的载荷就一并带上，让界面自己决定怎么呈现。
+      // A nonzero exit can still include a usable report. Preserve context
+      // completeness, issues and evidence gaps for the interface to render.
       const payload = carriesPayload(parsed) ? parsed : null;
 
       return {
@@ -484,7 +481,7 @@ async function runCommand(commandKey, extra) {
       return {
         ok: false,
         command,
-        error: { code: 'NotJson', message: 'awr 返回的不是 JSON。原始输出见 raw。' },
+        error: { code: 'NotJson', message: 'awr returned non-JSON output. See raw for the original output.' },
         raw: result.stdout.slice(0, 20000),
       };
     }
@@ -494,8 +491,7 @@ async function runCommand(commandKey, extra) {
 }
 
 /**
- * 判断一个解析出来的 JSON 是不是真的载荷，而不只是一个错误壳子。
- * 只有 code / message / error / details 这类字段的，是错误本身，不是结果。
+ * Distinguish result payloads from envelopes containing only error metadata.
  */
 function carriesPayload(value) {
   if (!value || typeof value !== 'object' || Array.isArray(value)) return false;
@@ -503,7 +499,7 @@ function carriesPayload(value) {
   return Object.keys(value).some((k) => shell.indexOf(k) < 0);
 }
 
-/** 只认「不认识 --json」这一种情况，别的参数报错不算。 */
+/** Match only an unrecognized --json flag, not other argument errors. */
 function mentionsUnknownJsonFlag(stderr, stdout) {
   const s = (String(stderr) + String(stdout)).toLowerCase();
   if (!s.includes('--json')) return false;
@@ -518,7 +514,7 @@ function tryParseJson(text) {
   try {
     return JSON.parse(t);
   } catch (_) {
-    // 有些命令会先打印几行人类可读的文本再打印 JSON，取第一个 { 起的部分再试。
+    // Some commands print human-readable lines before JSON; retry from the first opening brace.
     const i = t.indexOf('{');
     if (i > 0) {
       try {
@@ -535,7 +531,7 @@ function quoteForDisplay(arg) {
   return /[^A-Za-z0-9_@.:#/=-]/.test(arg) ? `'${String(arg).replace(/'/g, `'\\''`)}'` : arg;
 }
 
-// ───────────────────────── 路由 ─────────────────────────
+// Routes
 
 const routes = {
   'GET /api/health': async () => ({
@@ -564,7 +560,7 @@ const routes = {
     if (!['all', 'current', 'ready', 'waiting', 'blocked'].includes(queue) ||
         !Number.isSafeInteger(offset) || offset < 0 ||
         !Number.isInteger(limit) || limit < 1 || limit > 100) {
-      return { ok: false, error: { code: 'BadRequest', message: '分页参数无效' } };
+      return { ok: false, error: { code: 'BadRequest', message: 'Invalid pagination parameters' } };
     }
     return runCommand('status', ['--queue', queue, '--offset', String(offset), '--page-size', String(limit)]);
   },
@@ -578,20 +574,20 @@ const routes = {
 
   'GET /api/work': async (url) => {
     const key = asKey(url.searchParams.get('key'));
-    if (!key) return { ok: false, error: { code: 'BadRequest', message: '缺少合法的 key 参数' } };
+    if (!key) return { ok: false, error: { code: 'BadRequest', message: 'A valid key parameter is required' } };
     return runCommand('workShow', [key]);
   },
 
   'GET /api/search': async (url) => {
-    // AWR 0.4.0 的签名是 `awr search [OPTIONS] [TEXT]`——文本是位置参数，不是 --text。
+    // AWR 0.4.0 uses `awr search [OPTIONS] [TEXT]`: search text is positional, not --text.
     const text = asText(url.searchParams.get('text'), 200);
     if (!text) {
-      return { ok: false, error: { code: 'BadRequest', message: '缺少合法的 text 参数' } };
+      return { ok: false, error: { code: 'BadRequest', message: 'A valid text parameter is required' } };
     }
     const extra = [];
     const limit = Number(url.searchParams.get('limit'));
     if (Number.isInteger(limit) && limit >= 1 && limit <= 100) extra.push('--limit', String(limit));
-    // `--` 之后是位置参数，这样以 `-` 开头的搜索词也不会被当成选项。
+    // Use -- before positional text so a leading hyphen is not interpreted as an option.
     extra.push('--', text);
     return runCommand('search', extra);
   },
@@ -601,21 +597,20 @@ const routes = {
   'POST /api/context/compile': async (_url, body) => {
     const extra = [];
     const work = asKey(body.work);
-    if (!work) return { ok: false, error: { code: 'BadRequest', message: '缺少合法的 work' } };
+    if (!work) return { ok: false, error: { code: 'BadRequest', message: 'A valid work key is required' } };
     extra.push('--work', work);
 
     const goal = asKey(body.goal);
     if (goal) extra.push('--goal', goal);
 
-    // 上限跟着 AWR 走：crates/awr-context/src/budget.rs 里是 1..100000。
-    // 超限就明确拒绝。之前是悄悄不传 --budget 让 AWR 用默认的 5000——
-    // 结果一个 105000 的请求会以 5000 跑一遍再失败，谁也看不懂发生了什么。
+    // Match the AWR limit and reject invalid budgets explicitly instead of
+    // silently falling back to the CLI default.
     if (body.budget !== undefined && body.budget !== null && body.budget !== '') {
       const budget = Number(body.budget);
       if (!Number.isInteger(budget) || budget < 500 || budget > 100000) {
         return {
           ok: false,
-          error: { code: 'BadRequest', message: 'budget 必须是 500 到 100000 之间的整数' },
+          error: { code: 'BadRequest', message: 'budget must be an integer from 500 to 100000' },
         };
       }
       extra.push('--budget', String(budget));
@@ -636,7 +631,7 @@ const routes = {
         ok: false,
         error: {
           code: 'ReindexNotAllowed',
-          message: '重新索引默认是关的。要开启，用 --allow-reindex 重启本进程。',
+          message: 'Reindexing is disabled by default. Restart with --allow-reindex to enable it.',
         },
       };
     }
@@ -655,7 +650,7 @@ const MIME = {
   '.ico': 'image/x-icon',
 };
 
-// 页面只许加载自己的东西。没有外部字体、没有内联脚本、没有外连。
+// Load only local assets: no external fonts, inline scripts, or external connections.
 const CSP = [
   "default-src 'self'",
   "script-src 'self'",
@@ -681,7 +676,7 @@ function sendJson(res, status, payload) {
 function serveStatic(req, res, pathname) {
   const rel = pathname === '/' ? 'index.html' : pathname.replace(/^\/+/, '');
   const file = path.join(PUBLIC_DIR, rel);
-  // 目录穿越防护：解析后的路径必须还在 public 里面。
+  // Prevent traversal: the resolved path must stay inside public.
   if (!file.startsWith(PUBLIC_DIR + path.sep) && file !== path.join(PUBLIC_DIR, 'index.html')) {
     res.writeHead(403, { 'content-type': 'text/plain; charset=utf-8' });
     res.end('forbidden');
@@ -695,7 +690,7 @@ function serveStatic(req, res, pathname) {
     }
     res.writeHead(200, {
       'content-type': MIME[path.extname(file)] || 'application/octet-stream',
-      // 不缓存：改了 public/ 里的文件，刷新页面就能看到，不用清缓存。
+      // Disable caching so edits under public appear on refresh.
       'cache-control': 'no-store',
       'content-security-policy': CSP,
       'x-content-type-options': 'nosniff',
@@ -705,7 +700,7 @@ function serveStatic(req, res, pathname) {
   });
 }
 
-/** 按 Buffer 收请求体，超限直接拒。字符串拼接会劈开多字节字符。 */
+/** Collect request bodies as Buffers and reject overflow; string concatenation can split multibyte characters. */
 function readBody(req) {
   return new Promise((resolve) => {
     const chunks = [];
@@ -716,7 +711,7 @@ function readBody(req) {
       bytes += chunk.length;
       if (bytes > LIMITS.requestBytes) {
         killed = true;
-        // 不 destroy：连接断了 413 就发不出去。丢掉剩下的数据即可。
+        // Do not destroy the connection before sending 413; discard the remaining data.
         req.resume();
         resolve({ tooLarge: true });
         return;
@@ -739,11 +734,11 @@ function readBody(req) {
 }
 
 /**
- * 每个请求都包在这里面。
+ * Wrap every request in this handler.
  *
- * `new URL()` 在请求行畸形时会抛（比如 `GET // HTTP/1.1`），而这个回调是 async——
- * 抛出去就是一个未处理的 Promise 拒绝，默认配置下整个进程会退出。
- * 一个畸形请求不该把整个工具带走。
+ * new URL() throws for malformed targets such as GET // HTTP/1.1. This callback
+ * is async, so an uncaught error would reject a Promise and terminate the process.
+ * One malformed request must not bring down the server.
  */
 const server = http.createServer((req, res) => {
   handleRequest(req, res).catch((err) => {
@@ -753,7 +748,7 @@ const server = http.createServer((req, res) => {
         error: { code: 'BridgeError', message: String((err && err.message) || err) },
       });
     } catch (_) {
-      // 响应已经发出去了，只能放弃这一条；进程要活着。
+      // The response has already started; abandon this request while keeping the server alive.
     }
   });
 });
@@ -765,7 +760,7 @@ async function handleRequest(req, res) {
   } catch (_) {
     return sendJson(res, 400, {
       ok: false,
-      error: { code: 'BadRequestTarget', message: '无法解析的请求目标。' },
+      error: { code: 'BadRequestTarget', message: 'The request target could not be parsed.' },
     });
   }
 
@@ -781,11 +776,11 @@ async function handleRequest(req, res) {
       });
     }
 
-    // 演示模式下除了 /api/health 一律不执行命令，前端自己用内置样本数据。
+    // In demo mode, only /api/health runs; the frontend supplies its built-in sample data.
     if (runtime.mode === 'demo' && url.pathname !== '/api/health') {
       return sendJson(res, 200, {
         ok: false,
-        error: { code: 'DemoMode', message: runtime.reason || '当前是演示模式，没有连接真实项目。' },
+        error: { code: 'DemoMode', message: runtime.reason || 'Demo mode is active; no live project is connected.' },
       });
     }
 
@@ -796,7 +791,7 @@ async function handleRequest(req, res) {
         if (read.tooLarge) {
           return sendJson(res, 413, {
             ok: false,
-            error: { code: 'BodyTooLarge', message: `请求体超过 ${LIMITS.requestBytes} 字节。` },
+            error: { code: 'BodyTooLarge', message: `Request body exceeds ${LIMITS.requestBytes} bytes.` },
           });
         }
         body = read.body;
@@ -813,7 +808,7 @@ async function handleRequest(req, res) {
   serveStatic(req, res, url.pathname);
 }
 
-// ───────────────────────── 启动 ─────────────────────────
+// Startup
 
 function start() {
   return detectAwr().then(
@@ -830,19 +825,19 @@ if (require.main === module) {
     () => {
       const addr = `http://127.0.0.1:${ARGS.port}`;
       console.log('');
-      console.log('  AWR Inspector 已启动');
+      console.log('  AWR Inspector started');
       console.log('  ─────────────────────────────────────────');
-      console.log(`  地址    ${addr}`);
-      console.log(`  项目    ${runtime.project}`);
+      console.log(`  URL     ${addr}`);
+      console.log(`  Project ${runtime.project}`);
       if (runtime.mode === 'live') {
-        console.log(`  模式    真实数据（${runtime.awrVersion || 'awr'}）`);
+        console.log(`  Mode    Live data (${runtime.awrVersion || 'awr'})`);
       } else {
-        console.log('  模式    演示模式');
-        console.log(`  原因    ${runtime.reason}`);
+        console.log('  Mode    Demo');
+        console.log(`  Reason  ${runtime.reason}`);
       }
-      console.log(`  重新索引 ${runtime.allowReindex ? '已开启' : '已关闭（--allow-reindex 开启）'}`);
+      console.log(`  Reindex ${runtime.allowReindex ? 'enabled' : 'disabled (enable with --allow-reindex)'}`);
       console.log('  ─────────────────────────────────────────');
-      console.log('  按 Ctrl+C 停止');
+      console.log('  Press Ctrl+C to stop');
       console.log('');
       if (ARGS.open) {
         const opener =
@@ -853,7 +848,7 @@ if (require.main === module) {
     },
     (err) => {
       if (err && err.code === 'EADDRINUSE') {
-        console.error(`端口 ${ARGS.port} 已被占用。换一个：node server.js --port ${ARGS.port + 1}`);
+        console.error(`Port ${ARGS.port} is in use. Try: node server.js --port ${ARGS.port + 1}`);
       } else {
         console.error(err && err.message);
       }

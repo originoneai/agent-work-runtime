@@ -33,15 +33,18 @@ jobs:
           node --check server.js
           node --check public/app.js
           node --check public/demo-data.js
+          node --check public/i18n.js
+          node --check public/locales/en.js
+          node --check public/locales/zh-CN.js
       - name: Bridge tests
         run: node --test test/*.test.js
       - name: No external asset loads
         run: |
-          # 这是本地工具：页面不得从外部拉任何资源。
-          # 只查会发起网络请求的写法，data: URI 里的 XML 命名空间不算。
-          # <a href> 是用户点的链接，不算加载；<link>/src/url()/@import 才算。
+          # This local tool must not load external resources.
+          # Check network-loading syntax; XML namespaces in data URIs do not count.
+          # User-followed anchors are not resource loads; check link/src/url()/@import.
           if grep -rnE '<link[^>]+href="https?://|src="https?://|url\(\s*["'"'"']?https?://|@import[^;]*https?://' \
                --include='*.html' --include='*.css' public/; then
-            echo "在 public/ 里发现了外部资源加载"
+            echo "External resource loading found under public/"
             exit 1
           fi

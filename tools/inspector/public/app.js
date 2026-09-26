@@ -1,23 +1,26 @@
 /* ══════════════════════════════════════════════════════════
-   AWR Console —— 前端逻辑
+   AWR Console: frontend logic
    ══════════════════════════════════════════════════════════ */
 
 (function () {
   'use strict';
 
+  const i18n = typeof module !== 'undefined' && module.exports
+    ? require('./i18n.js') : window.AWR_I18N;
+
   // ───────────────────────────────────────────────────────
-  // 字段映射
+  // Field mappings
   //
-  // status / work show / context compile 三条命令的路径是照着仓库源码核对过的：
+  // Paths for status, work show, and context compile were checked against:
   //   crates/awr-runtime/src/status_action.rs   （status --view action）
-  //   crates/awr-runtime/src/status_summary.rs  （队列条目的 brief 形状）
+  //   crates/awr-runtime/src/status_summary.rs (queue entry brief shape)
   //   crates/awr-cli/src/query.rs               （work show）
   //   crates/awr-context/src/{compile,budget}.rs（context compile）
-  // intake inspect 的形状没核完，Sources 视图的映射仍是推测的。
+  // The intake inspect shape has not been fully checked; Sources mappings remain provisional.
   //
-  // 每个字段给了多个候选路径，取第一个能取到的。某一格显示「—」时：
-  // 打开该视图底部的「原始 JSON」，看真实字段叫什么，加进对应数组即可。
-  // 全部映射集中在这里，别处不猜字段。
+  // Each field has candidate paths; use the first available value. If a cell shows a dash,
+  // inspect that view's raw JSON and add the actual field path to the corresponding array.
+  // Keep all field mappings here instead of guessing in rendering code.
   // ───────────────────────────────────────────────────────
 
   const FIELD_MAP = {
@@ -37,18 +40,18 @@
       freshness:    ['freshness_basis'],
       guidance:     ['guidance.next_action', 'next_action'],
     },
-    // 两种 status 形状都要认：
-    //  - 源码树（未发布）：四个顶层数组 current/ready/waiting/blocked + omissions
-    //  - 发布版 0.4.0：只有 current；ready 和 blocked 要另外跑 `awr ready` 拿
+    // Support both status shapes:
+    //   - Source tree: current/ready/waiting/blocked arrays plus omissions.
+    //   - Release 0.4.0: current only; obtain ready and blocked through awr ready.
     queueItems:     { current: ['current'], ready: ['ready'], waiting: ['waiting'], blocked: ['blocked'] },
     queueOmitted:   { current: ['omissions.current'], ready: ['omissions.ready'], waiting: ['omissions.waiting'], blocked: ['omissions.blocked'] },
-    // `awr ready` 的响应
+    // The awr ready response.
     readyCmd: {
       items:        ['ready'],
       total:        ['ready_total'],
       blockedItems: ['blocked_sample'],
-      // 注意：blocked_total 是「不可选」（含已被 claim 的），与 status 的 blocked_count 定义不同，
-      // 只用来给列表标注截断，不往状态条上放。
+      // blocked_total means unselectable, including claimed work, unlike status.blocked_count.
+      // Use it only for list truncation, not the status strip.
       blockedTotal: ['blocked_total'],
     },
     workItem: {
@@ -63,7 +66,7 @@
       blocker:    ['blocker', 'block_reason'],
       waitTotal:  ['wait_total'],
       codes:      ['codes', 'structural_codes'],
-      // work show 才有的
+      // Fields available only from work show.
       goal:       ['milestone', 'goal', 'goal_summary'],
       acceptance: ['acceptance', 'acceptance_criteria', 'criteria'],
       dependsOn:  ['required_dependencies', 'depends_on', 'dependencies'],
@@ -86,14 +89,14 @@
       statusText: ['completeness.status'],
       revision:   ['completeness.project_revision', 'project_revision'],
       omissions:  ['work_context.omitted_chunks', 'omitted_refs', 'omitted_chunks'],
-      // 完整性是分维度给的，不是一个布尔。缺哪一维直接决定 agent 会不会瞎干。
+      // Completeness has separate dimensions; missing facts affect safe execution.
       dimensions: ['completeness'],
       evidenceGaps: ['completeness.evidence_gaps'],
       unresolvedDeps: ['completeness.unresolved_required_dependencies'],
       issues:     ['completeness.issues'],
     },
-    // `awr intake inspect` 返回的是组织报告，不是文件表。
-    // 真正的源清单在 organization.sources[]：{domain, freshness, locator, revision, role}
+    // awr intake inspect returns an organization report, not a file table.
+    // The source list is organization.sources[]: {domain, freshness, locator, revision, role}.
     sources: {
       files:      ['organization.sources', 'files', 'sources', 'matched'],
       path:       ['locator', 'path', 'file'],
@@ -107,13 +110,13 @@
     },
   };
 
-  /** 按点分路径取值，`a.b.0.c` 这种也行。 */
+  /** Read a dotted path, including array indices such as a.b.0.c. */
   function at(obj, path) {
     if (obj == null) return undefined;
     return path.split('.').reduce((o, k) => (o == null ? undefined : o[k]), obj);
   }
 
-  /** 按候选路径数组取第一个非空值。 */
+  /** Return the first non-null value from the candidate paths. */
   function pick(obj, candidates, fallback) {
     for (const p of candidates || []) {
       const v = at(obj, p);
@@ -122,7 +125,7 @@
     return fallback;
   }
 
-  // ───────────────────────── 小工具 ─────────────────────────
+  // Utilities
 
   const $ = (id) => document.getElementById(id);
   const el = (tag, cls, text) => {
@@ -131,33 +134,33 @@
     if (text != null) n.textContent = text;
     return n;
   };
-  const group = (n) => (n == null || isNaN(n) ? '—' : Math.round(n).toLocaleString('en-US'));
+  const group = (n) => (n == null || isNaN(n) ? '—' : Math.round(n).toLocaleString(i18n.locale));
 
-  /** 把时间戳变成「6 分钟前」这种。拿不到就原样回显。 */
+  /** Render a relative timestamp; preserve the original value if it cannot be parsed. */
   function since(value) {
     if (!value) return '—';
     const t = typeof value === 'number' ? value : Date.parse(value);
     if (isNaN(t)) return String(value);
     const min = Math.max(0, Math.round((Date.now() - t) / 60000));
-    if (min < 1) return '刚刚';
-    if (min < 60) return `${min} 分钟前`;
+    if (min < 1) return i18n.t('ui.just_now');
+    if (min < 60) return i18n.t('ui.p0_min_ago', { p0: min });
     const h = Math.round(min / 60);
-    if (h < 24) return `${h} 小时前`;
+    if (h < 24) return i18n.t('ui.p0_hr_ago', { p0: h });
     const d = Math.round(h / 24);
-    return `${d} 天前`;
+    return i18n.t('ui.p0_days_ago', { p0: d });
   }
 
-  /** 面向未来的时间：claim 到期这种。过去了就说「已过期」。 */
+  /** Render future timestamps such as claim expiration; mark past values as expired. */
   function until(value) {
     if (!value) return '';
     const t = typeof value === 'number' ? value : Date.parse(value);
     if (isNaN(t)) return String(value);
     const min = Math.round((t - Date.now()) / 60000);
-    if (min <= 0) return '已过期';
-    if (min < 60) return `${min} 分钟后到期`;
+    if (min <= 0) return i18n.t('ui.expired');
+    if (min < 60) return i18n.t('ui.expires_in_p0_min', { p0: min });
     const h = Math.round(min / 60);
-    if (h < 24) return `${h} 小时后到期`;
-    return `${Math.round(h / 24)} 天后到期`;
+    if (h < 24) return i18n.t('ui.expires_in_p0_hr', { p0: h });
+    return i18n.t('ui.expires_in_p0_days', { p0: Math.round(h / 24) });
   }
 
   function setText(id, text) {
@@ -169,7 +172,7 @@
     while (node && node.firstChild) node.removeChild(node.firstChild);
   }
 
-  // ───────────────────────── 状态 ─────────────────────────
+  // State
 
   const state = {
     mode: 'demo',          // 'live' | 'demo'
@@ -181,40 +184,40 @@
     workPageSize: 10,
     workPageError: null,
     workPageLoading: false,
-    status: null,          // 规范化后的 status
-    works: [],             // 规范化后的工作项清单
-    workDetail: {},        // key -> 详情
+    status: null,          // Normalized status.
+    works: [],             // Normalized work-item list.
+    workDetail: {},        // Key to details.
     sources: null,
     compile: null,
-    raw: {},               // 每个视图最近一次的原始 JSON
-    queueTab: 'blocked',   // 概览里队列面板当前选的队列
+    raw: {},               // Most recent raw JSON for each view.
+    queueTab: 'blocked',   // Selected queue in the overview.
     workFilter: 'all',
     selectedWork: null,
-    overviewWork: null,    // 概览明确选择的任务，不随当前页的成员变化而替换
+    overviewWork: null,    // Explicit Overview selection; independent of the current page.
     view: 'overview',
   };
 
   const QUEUES = [
-    { key: 'current', label: '进行中', dot: 'info', why: '有人正在做' },
-    { key: 'ready',   label: '可开工', dot: 'ok',   why: '依赖都满足了' },
-    { key: 'waiting', label: '等待中', dot: 'warn', why: '在等一个回答或前置结果' },
-    { key: 'blocked', label: '被阻塞', dot: 'crit', why: '真的卡住了' },
+    { key: 'current', label: i18n.t('ui.in_progress'), dot: 'info', why: i18n.t('ui.someone_is_working_on_it') },
+    { key: 'ready',   label: i18n.t('ui.ready'), dot: 'ok',   why: i18n.t('ui.dependencies_are_satisfied') },
+    { key: 'waiting', label: i18n.t('ui.waiting'), dot: 'warn', why: i18n.t('ui.waiting_for_a_reply_or_prerequisite') },
+    { key: 'blocked', label: i18n.t('ui.blocked'), dot: 'crit', why: i18n.t('ui.cannot_proceed') },
   ];
   const queueMeta = (k) => QUEUES.find((q) => q.key === k) || { label: k || '—', dot: '', why: '' };
 
-  /** AWR 的预算上限（crates/awr-context/src/budget.rs 里是 1..100000）。桥接和这里必须一致。 */
+  /** Keep the budget limit aligned with the bridge and awr-context/src/budget.rs. */
   const BUDGET_MAX = 100000;
 
-  // ───────────────────────── 代际守卫 ─────────────────────────
+  // Generation guards
 
   /**
-   * 详情请求的代际守卫。
+   * Guard concurrent detail requests by generation.
    *
-   * 点了 A 再点 B，两个请求并发；如果 B 先回、A 后回，A 的响应会把 B 的面板覆盖掉，
-   * 于是标题显示 B、正文却是 A——更糟的是「为这一项编译上下文」会按 A 走。
+   * If A is selected before B but responds after B, A must not replace B's panel
+   * or make B's compile button target the wrong item.
    *
-   * 每次发起给一个递增的 token，回来时只认最新的那个，并且当前选中项必须还是它。
-   * 刷新时调 invalidate()，让在途的旧请求全部作废。
+   * Give each request an increasing token and accept only the latest still-selected item.
+   * Call invalidate() on refresh to reject all older in-flight requests.
    */
   function createGenerationGuard() {
     let generation = 0;
@@ -240,8 +243,8 @@
 
   // ───────────────────────── API ─────────────────────────
 
-  // 桥接要求状态变更请求带这个头。第三方页面发不出自定义头（会触发 CORS 预检，
-  // 而桥接不给预检放行），所以它同时也是 CSRF 防护。
+  // The bridge requires this header on mutations. Third-party pages trigger a CORS
+  // preflight that the bridge rejects, so it also provides CSRF protection.
   const GUARD_HEADER = 'X-AWR-Inspector';
 
   async function callApi(path, options) {
@@ -258,14 +261,14 @@
     }
   }
 
-  // ───────────────────────── 规范化 ─────────────────────────
+  // Normalization
 
   function normWorkBrief(raw) {
     const M = FIELD_MAP.workItem;
     const waitTotal = pick(raw, M.waitTotal, 0);
     return {
       key: pick(raw, M.key, '—'),
-      title: pick(raw, M.title, '（源文件里没有标题）'),
+      title: pick(raw, M.title, i18n.t('ui.no_title_in_the_source')),
       status: pick(raw, M.status, null),
       rawStatus: pick(raw, M.rawStatus, null),
       owner: pick(raw, M.owner, null),
@@ -274,7 +277,7 @@
       nextAction: pick(raw, M.nextAction, null),
       blocker: pick(raw, M.blocker, null),
       waitTotal: waitTotal,
-      // 诊断码是 AWR 说明「为什么卡住」的方式，比如 dependency_not_completed。
+      // Diagnostic codes explain blockers, for example dependency_not_completed.
       codes: pick(raw, M.codes, []) || [],
       raw,
     };
@@ -282,12 +285,12 @@
 
   function normWorkDetail(raw) {
     const M = FIELD_MAP.workItem;
-    // work show 把条目本身放在 `work` 下，验收和依赖在同级。
+    // work show nests the item under work; acceptance and dependencies are siblings.
     const item = raw && raw.work ? raw.work : raw;
     const base = normWorkBrief(item);
 
-    // acceptance 在 AWR 里是 Vec<String>：只有标准文本，没有「已达成」状态。
-    // 达成与否是在 complete 的时候逐条对证据验的，这里不假装知道。
+    // Acceptance is Vec<String>: criterion text without completion flags.
+    // Evidence is checked per criterion at completion; this view cannot infer success.
     const acceptance = (pick(raw, M.acceptance, []) || []).map((a) =>
       typeof a === 'string'
         ? { criterion: a, evidence: [] }
@@ -299,13 +302,13 @@
     );
 
     return Object.assign(base, {
-      // milestone/goal 在条目里，不在响应外层。
+      // Milestone and goal belong to the item, not the response envelope.
       goal: pick(item, M.goal, null) || pick(raw, M.goal, null),
       acceptance,
       dependsOn: deps,
       missingDeps: pick(raw, M.missingDeps, []) || [],
       cycles: pick(raw, M.cycles, []) || [],
-      // 谁正在占着这件活。claim 是 AWR 的所有权凭证，没有它 agent 不能动手。
+      // Active claims identify ownership; an agent needs a claim before starting work.
       claims: (pick(item, M.claims, []) || []).map((c) => ({
         id: c.id,
         session: c.session_id || c.session,
@@ -319,9 +322,9 @@
   }
 
   /**
-   * @param raw       `awr status` 的响应
-   * @param readyRaw  `awr ready` 的响应；发布版 0.4.0 的 status 不带 ready/blocked 列表，
-   *                  得靠它补。action 视图自带的数组是摘要；同修订的 ready 结果可以补齐可开工列表。
+   * @param raw       The awr status response.
+   * @param readyRaw  The awr ready response supplements 0.4.0 status, which lacks
+   *                  ready/blocked arrays. Matching revisions can fill action-view summaries.
    */
   function normStatus(raw, readyRaw) {
     const M = FIELD_MAP.status;
@@ -329,7 +332,7 @@
     const queues = {};
     let all = [];
 
-    // 队列条目：优先用 status 自己的数组；没有就退回 `awr ready`。
+    // Prefer queue arrays from status, falling back to awr ready.
     const fallback = {
       ready: pick(readyRaw, R.items, null),
       blocked: pick(readyRaw, R.blockedItems, null),
@@ -352,7 +355,7 @@
           omitted = Math.max(0, t - items.length);
         }
       }
-      // waiting 在发布版 0.4.0 里根本不存在，别拿 0 冒充「没有」。
+      // Release 0.4.0 has no waiting queue; do not represent missing data as zero.
       const available = items != null;
       items = items || [];
 
@@ -361,7 +364,7 @@
       all = all.concat(list);
     }
 
-    // 计数以 AWR 自己给的为准，不用列表长度推算。缺就是缺，记成 null。
+    // Use AWR counts, not inferred list lengths. Represent missing counts as null.
     const counted = {
       current: pick(raw, M.currentTotal, queues.current.available ? queues.current.total : null),
       ready: pick(raw, M.readyCount, queues.ready.available ? queues.ready.total : null),
@@ -373,7 +376,7 @@
       else queues[k].available = false;
     }
 
-    // 同一个 key 可能出现在多个队列里，去重，先到的赢。
+    // Deduplicate keys across queues; keep the first occurrence.
     const seen = new Set();
     const works = all.filter((w) => (seen.has(w.key) ? false : (seen.add(w.key), true)));
 
@@ -389,7 +392,7 @@
       works,
       gaps: pick(raw, M.gaps, []) || [],
       gapTotal: pick(raw, M.gapTotal, null),
-      // 被中断、结果未知的运行时操作。有这个就得先去查，别急着重跑。
+      // Interrupted operations with unknown outcomes must be inspected before retrying.
       pendingOps: pick(raw, M.pendingOps, []) || [],
       pendingTotal: pick(raw, M.pendingTotal, null),
       orgState: pick(raw, M.orgState, null),
@@ -403,18 +406,18 @@
     const files = (pick(raw, M.files, []) || []).map((f) => {
       const locator = pick(f, M.path, '—');
       return {
-        // locator 是 file:// URL，界面上显示成项目内的相对路径更好读。
+        // Display file:// source locators as readable project-relative paths.
         path: shortenLocator(locator),
         locator,
         kind: pick(f, M.kind, '—'),
         role: pick(f, M.role, null),
         revision: pick(f, M.revision, null),
-        // AWR 的源状态叫 freshness：fresh / stale …
+        // AWR source state is named freshness: fresh, stale, etc.
         state: String(pick(f, M.state, 'fresh')).toLowerCase(),
         rejection: pick(f, M.rejection, null),
       };
     });
-    // 按 domain 汇总，代替原来按扩展名统计
+    // Summarize by domain instead of file extension.
     const summary = {};
     for (const f of files) summary[f.kind] = (summary[f.kind] || 0) + 1;
 
@@ -426,7 +429,7 @@
     };
   }
 
-  /** file:///a/b/demo/RULES.md → demo/RULES.md；拿不到就原样。 */
+  /** Convert file:///a/b/demo/RULES.md to demo/RULES.md; preserve unrecognized values. */
   function shortenLocator(locator) {
     const s = String(locator || '');
     if (!s.startsWith('file://')) return s;
@@ -437,13 +440,13 @@
   function normContext(raw) {
     const M = FIELD_MAP.context;
 
-    // AWR 不按段给 token 数，它给的是 selected_chunks：每块带 section 和 required。
-    // 所以组成面板按 section 归并块数，并标出其中有几块是必需的——
-    // 这是它真正提供的信息，不要编造每段的 token 数。
+    // AWR supplies selected_chunks with section/required, not per-section token counts.
+    // Group the chunk counts by section and show how many are required;
+    // do not invent token counts that the API does not provide.
     const chunks = pick(raw, M.chunks, []) || [];
     const bySection = new Map();
     for (const c of chunks) {
-      const name = String(c.section != null ? c.section : '未分段');
+      const name = String(c.section != null ? c.section : i18n.t('ui.unsectioned'));
       const row = bySection.get(name) || { name, count: 0, required: 0 };
       row.count += 1;
       if (c.required) row.required += 1;
@@ -462,14 +465,14 @@
           }
     );
 
-    // 完整性的各个维度。AWR 给的是一组布尔，缺哪一维要能一眼看到。
+    // Show each completeness dimension so missing requirements are visible.
     const DIMS = [
-      ['rules_complete', '规则'],
-      ['goal_context_complete', '目标上下文'],
-      ['work_state_complete', '工作状态'],
-      ['acceptance_complete', '验收标准'],
-      ['dependencies_complete', '依赖'],
-      ['source_fresh', '源新鲜度'],
+      ['rules_complete', i18n.t('ui.rules')],
+      ['goal_context_complete', i18n.t('ui.goal_context')],
+      ['work_state_complete', i18n.t('ui.work_state')],
+      ['acceptance_complete', i18n.t('ui.acceptance_criteria')],
+      ['dependencies_complete', i18n.t('ui.dependencies')],
+      ['source_fresh', i18n.t('ui.source_freshness')],
     ];
     const c = pick(raw, M.dimensions, {}) || {};
     const dimensions = DIMS
@@ -497,7 +500,7 @@
     };
   }
 
-  // ───────────────────────── 通用渲染块 ─────────────────────────
+  // Shared rendering blocks
 
   function stateBlock(kind, title, msg, command) {
     const box = el('div', 'state' + (kind === 'err' ? ' err' : ''));
@@ -507,7 +510,7 @@
       const cmd = el('div', 'cmd');
       cmd.appendChild(el('span', 'prompt', '$'));
       cmd.appendChild(el('code', null, command));
-      const btn = el('button', 'copy', '复制');
+      const btn = el('button', 'copy', i18n.t('ui.copy'));
       btn.addEventListener('click', () => copyText(command, btn));
       cmd.appendChild(btn);
       box.appendChild(cmd);
@@ -517,22 +520,22 @@
 
   function errorBlock(error, command) {
     const code = (error && error.code) || 'Error';
-    const msg = (error && error.message) || '没有更多信息。';
+    const msg = (error && error.message) || i18n.t('ui.no_further_information');
     const advice = {
-      SourceStale: '源文件改过了，AWR 的投影已经陈旧。去「索引源」点一次重新索引，再回来。',
-      RevisionConflict: '项目状态在你操作期间变了。先刷新看一眼新状态，再决定下一步。',
-      DemoMode: '当前是演示模式，下面显示的是内置样本数据。',
-      BridgeUnreachable: '连不上本地桥接进程。确认 node server.js 还在跑。',
-      NotJson: 'awr 返回的内容不是 JSON。展开下方「原始 JSON」看它到底输出了什么。',
-      BudgetExceeded: '必需内容本身就超过了预算，AWR 拒绝给出残缺的上下文。把 budget 调大到必需量之上再编译。',
-      OutcomeUnknown: '这条命令没有被终止，可能已经生效。先在终端里查一下当前状态，确认之后再决定要不要重跑——不要直接点重试。',
-      BridgeTimeout: '只读命令超时已终止，重试是安全的。',
-      ReindexNotAllowed: '重新索引默认关闭。用 --allow-reindex 重启桥接进程才能从界面触发。',
-      OutputTooLarge: '输出太大，桥接不转发。请在终端里直接跑这条命令。',
-      BridgeBusy: '同时在跑的命令太多，稍等一下再点。',
-      ForbiddenHost: '请求的 Host 不是本机回环地址。请用 http://127.0.0.1:<端口> 打开。',
-      ForbiddenOrigin: '请求来自别的源，已拒绝。',
-      MissingGuardHeader: '状态变更请求缺少校验头，已拒绝。',
+      SourceStale: i18n.t('ui.source_files_have_changed_and_the_projection'),
+      RevisionConflict: i18n.t('ui.project_state_changed_during_this_operation_refresh'),
+      DemoMode: i18n.t('ui.demo_mode_is_active_the_data_below'),
+      BridgeUnreachable: i18n.t('ui.cannot_reach_the_local_bridge_check_that'),
+      NotJson: i18n.t('ui.awr_returned_non_json_output_expand_raw'),
+      BudgetExceeded: i18n.t('ui.required_content_exceeds_the_budget_awr_will'),
+      OutcomeUnknown: i18n.t('ui.the_command_was_not_terminated_and_may'),
+      BridgeTimeout: i18n.t('ui.the_read_only_command_timed_out_and'),
+      ReindexNotAllowed: i18n.t('ui.reindexing_is_disabled_by_default_restart_the'),
+      OutputTooLarge: i18n.t('ui.the_output_exceeds_the_bridge_limit_run'),
+      BridgeBusy: i18n.t('ui.too_many_commands_are_running_wait_for'),
+      ForbiddenHost: i18n.t('ui.the_request_host_is_not_an_accepted'),
+      ForbiddenOrigin: i18n.t('ui.the_request_came_from_another_origin_and'),
+      MissingGuardHeader: i18n.t('ui.the_mutation_request_is_missing_its_guard'),
     }[code];
 
     const box = el('div', 'state err');
@@ -542,20 +545,18 @@
     box.appendChild(el('div', 'msg', msg));
     if (advice) box.appendChild(el('div', 'msg', advice));
 
-    // AWR 会在 details 里给出实际需要多少 token，直接做成一个按钮，省得人自己算。
+    // Offer a retry using the required token count returned by AWR.
     const required = error && error.details && Number(error.details.required);
     if (code === 'BudgetExceeded' && Number.isFinite(required)) {
       if (required > BUDGET_MAX) {
-        // 必需内容本身就超过了 AWR 的上限，没有任何预算能编译成功——
-        // 给按钮就是骗人，说清楚原因。
+        // Required content exceeds the hard limit; no larger budget can succeed.
         box.appendChild(el('div', 'msg',
-          `必需内容就有 ${group(required)} tokens，已经超过 AWR 的上限 ${group(BUDGET_MAX)}。` +
-          '调预算解决不了，得减少这件活关联的规则、依赖或源引文。'));
+          i18n.t('ui.required_exceeds_limit', { required: group(required), limit: group(BUDGET_MAX) })));
       } else {
-        // 留 10% 余量，但不能超过 AWR 的上限——超了桥接会拒，等于白点一次。
+        // Leave 10% headroom without exceeding the limit enforced by the bridge.
         const target = Math.min(BUDGET_MAX, Math.ceil((required * 1.1) / 500) * 500);
         const act = el('div', 'actions');
-        const bump = el('button', 'btn', `把 budget 调到 ${group(target)} 并重编译`);
+        const bump = el('button', 'btn', i18n.t('ui.retry_budget', { budget: group(target) }));
         bump.addEventListener('click', () => {
           $('fBudget').value = String(target);
           updateCliMirror();
@@ -569,7 +570,7 @@
       const cmd = el('div', 'cmd');
       cmd.appendChild(el('span', 'prompt', '$'));
       cmd.appendChild(el('code', null, command));
-      const btn = el('button', 'copy', '复制');
+      const btn = el('button', 'copy', i18n.t('ui.copy'));
       btn.addEventListener('click', () => copyText(command, btn));
       cmd.appendChild(btn);
       box.appendChild(cmd);
@@ -586,7 +587,7 @@
     const done = () => {
       if (!btn) return;
       const old = btn.textContent;
-      btn.textContent = '已复制';
+      btn.textContent = i18n.t('ui.copied');
       setTimeout(() => { btn.textContent = old; }, 1400);
     };
     if (navigator.clipboard && navigator.clipboard.writeText) {
@@ -602,7 +603,7 @@
     }
   }
 
-  // ───────────────────────── 概览 ─────────────────────────
+  // Overview
 
   function renderOverview() {
     const s = state.status;
@@ -611,22 +612,22 @@
     if (!s) return;
 
     const cells = [
-      { label: '进行中', value: s.currentTotal, hint: '有人正在做' },
-      { label: '可开工', value: s.readyCount, hint: '依赖都满足了' },
+      { label: i18n.t('ui.in_progress'), value: s.currentTotal, hint: i18n.t('ui.someone_is_working_on_it') },
+      { label: i18n.t('ui.ready'), value: s.readyCount, hint: i18n.t('ui.dependencies_are_satisfied') },
       {
-        label: '等待中',
+        label: i18n.t('ui.waiting'),
         value: s.waitingCount != null ? s.waitingCount : '—',
         cls: s.waitingCount > 0 ? 'watch' : '',
-        hint: s.waitingCount != null ? '在等回答或前置' : '这个 awr 版本不报告该队列',
+        hint: s.waitingCount != null ? i18n.t('ui.waiting_for_a_reply_or_prerequisite_41') : i18n.t('ui.this_awr_version_does_not_report_this'),
       },
-      { label: '被阻塞', value: s.blockedCount, cls: s.blockedCount > 0 ? 'alert' : '', hint: '卡住了，先看这里' },
+      { label: i18n.t('ui.blocked'), value: s.blockedCount, cls: s.blockedCount > 0 ? 'alert' : '', hint: i18n.t('ui.work_is_blocked_inspect_this_first') },
       {
-        label: '结构缺口',
+        label: i18n.t('ui.structural_gaps'),
         value: s.gapTotal != null ? s.gapTotal : '—',
         cls: s.gapTotal > 0 ? 'watch' : '',
-        hint: s.orgState ? '组织状态 ' + s.orgState : '源结构的完整程度',
+        hint: s.orgState ? i18n.t('ui.organization_state') + s.orgState : i18n.t('ui.completeness_of_source_structure'),
       },
-      { label: 'Revision', value: s.revision != null ? s.revision : '—', dim: true, hint: '项目状态的版本号' },
+      { label: 'Revision', value: s.revision != null ? s.revision : '—', dim: true, hint: i18n.t('ui.project_state_revision') },
     ];
 
     for (const c of cells) {
@@ -646,17 +647,13 @@
 
     setText('navWorkCount', String(Object.values(s.queues).reduce((sum, q) => sum + (q.available ? q.total : 0), 0)));
     setText('mcpCmd', `awr-mcp --project ${state.project}`);
-    setText('mcpSub', state.mode === 'live' ? '本工具走 CLI，agent 走 MCP' : '演示模式');
+    setText('mcpSub', state.mode === 'live' ? i18n.t('ui.this_viewer_uses_cli_agents_use_mcp') : i18n.t('ui.demo_mode'));
   }
 
   /**
-   * 这个包有多大。
-   *
-   * 三条都是 AWR 这次编译直接给出的数，不做任何推算：必需内容 / 装进去的 / 预算上限。
-   * 它就画在编译按钮下面——度量和产生它的动作在同一页，不必跨页保存状态。
-   *
-   * 「读全量源码要多少 token」这类对比这里做不出来：AWR 不报语料体积，
-   * 浏览器里也没有 o200k 分词器。造一个数不如不做。
+   * Show required, included and budget tokens reported by this compilation.
+   * Keep measurements next to the action that produces them. Corpus comparisons
+   * are unavailable: AWR does not report corpus size and the browser has no tokenizer.
    */
   function renderPacketSize(ctx) {
     const wrap = $('sizeChart');
@@ -664,19 +661,19 @@
 
     if (!ctx || ctx.total == null) {
       setText('ctxBig', '—');
-      setText('ctxCap', '还没有编译');
+      setText('ctxCap', i18n.t('ui.not_compiled_yet'));
       setText('sizeSub', '');
       setText('sizeNote', '');
-      wrap.appendChild(stateBlock('empty', '还没有编译',
-        '在上面选好工作项和预算，点「编译」，这里会显示这个包的实测体积。'));
+      wrap.appendChild(stateBlock('empty', i18n.t('ui.not_compiled_yet'),
+        i18n.t('ui.packet_empty')));
       return;
     }
 
     const budget = ctx.budget || ctx.total || 1;
     const rows = [
-      { label: '必需内容', tokens: ctx.requiredTokens, lead: false },
-      { label: '这次装进去的', tokens: ctx.total, lead: true },
-      { label: '预算上限', tokens: ctx.budget, lead: false },
+      { label: i18n.t('ui.required_content'), tokens: ctx.requiredTokens, lead: false },
+      { label: i18n.t('ui.included_content'), tokens: ctx.total, lead: true },
+      { label: i18n.t('ui.budget_limit'), tokens: ctx.budget, lead: false },
     ].filter((r) => Number.isFinite(r.tokens));
 
     for (const r of rows) {
@@ -697,10 +694,10 @@
     const used = ctx.budget ? Math.round((ctx.total / ctx.budget) * 100) : null;
     setText('ctxBig', group(ctx.total));
     setText('ctxCap', 'tokens' + (ctx.work ? ' · ' + ctx.work : ''));
-    setText('sizeSub', used != null ? `用掉预算的 ${used}%` : '');
+    setText('sizeSub', used != null ? i18n.t('ui.budget_used', { percent: used }) : '');
     setText('sizeNote', ctx.omissions.length
-      ? `因预算省略了 ${ctx.omissions.length} 块，详见右侧完整性面板。`
-      : '没有内容被省略。');
+      ? i18n.t('ui.omitted_note', { count: ctx.omissions.length })
+      : i18n.t('ui.nothing_omitted'));
   }
 
   function renderQueueTabs() {
@@ -728,13 +725,13 @@
     const meta = queueMeta(state.queueTab);
 
     setText('queueTitle', meta.label);
-    setText('queueSub', q.total > q.items.length ? `显示 ${q.items.length} / ${q.total}` : `共 ${q.total}`);
+    setText('queueSub', q.total > q.items.length ? i18n.t('ui.showing_p0_p1', { p0: q.items.length, p1: q.total }) : i18n.t('ui.total_p0', { p0: q.total }));
 
     if (!q.available) {
       const li = el('li');
       li.style.gridTemplateColumns = '1fr';
-      li.appendChild(stateBlock('empty', `这个版本的 awr 不报告${meta.label}队列`,
-        '它是当前源码树里的能力，已发布的 0.4.0 还没有。装上带该能力的版本后这里会自动显示。'));
+      li.appendChild(stateBlock('empty', i18n.t('ui.this_awr_version_does_not_report_the', { p0: meta.label }),
+        i18n.t('ui.this_capability_exists_in_the_source_tree')));
       list.appendChild(li);
       return;
     }
@@ -742,8 +739,8 @@
     if (!q.items.length) {
       const li = el('li');
       li.style.gridTemplateColumns = '1fr';
-      li.appendChild(stateBlock('empty', `${meta.label}队列是空的`,
-        state.queueTab === 'blocked' ? '没有被卡住的工作项，挺好。' : `当前没有${meta.label}的工作项。`));
+      li.appendChild(stateBlock('empty', i18n.t('ui.the_p0_queue_is_empty', { p0: meta.label }),
+        state.queueTab === 'blocked' ? i18n.t('ui.no_work_items_are_blocked') : i18n.t('ui.there_are_currently_no_work_items_in', { p0: meta.label })));
       list.appendChild(li);
       return;
     }
@@ -757,7 +754,7 @@
       li.appendChild(what);
 
       const reason = w.blocker
-        || (w.waitTotal ? `在等 ${w.waitTotal} 个回复` : '')
+        || (w.waitTotal ? i18n.t('ui.waiting_for_p0_replies', { p0: w.waitTotal }) : '')
         || (w.codes.length ? w.codes.join(', ') : '')
         || w.nextAction
         || '';
@@ -784,22 +781,22 @@
   }
 
   /**
-   * 结构缺口。`awr status` 不返回 checkpoint 列表，但它返回 organization.gaps：
-   * 源文件里缺目标、缺计划、缺任务结构的地方。这些是 agent 开不了工的真实原因。
+   * status supplies organization.gaps rather than a checkpoint list: missing goals,
+   * plans, and work structure are actual reasons an agent cannot start.
    */
   function renderGaps(s) {
     const list = $('cpList');
     clear(list);
 
     setText('gapSub', s.gapTotal != null && s.gapTotal > s.gaps.length
-      ? `显示 ${s.gaps.length} / ${s.gapTotal}`
-      : `共 ${s.gaps.length}`);
+      ? i18n.t('ui.showing_p0_p1', { p0: s.gaps.length, p1: s.gapTotal })
+      : i18n.t('ui.total_p0', { p0: s.gaps.length }));
 
     if (!s.gaps.length) {
       const li = el('li');
       li.style.gridTemplateColumns = '1fr';
-      li.appendChild(stateBlock('empty', '没有结构缺口',
-        '源文件里的目标、计划和任务结构都是齐的。'));
+      li.appendChild(stateBlock('empty', i18n.t('ui.no_structural_gaps'),
+        i18n.t('ui.the_sources_contain_the_required_goal_plan')));
       list.appendChild(li);
       return;
     }
@@ -807,7 +804,7 @@
     for (const g of s.gaps.slice(0, 5)) {
       const li = el('li');
       li.appendChild(el('span', 'dot warn'));
-      li.appendChild(el('span', 'what', g.detail || g.code || '（无说明）'));
+      li.appendChild(el('span', 'what', g.detail || g.code || i18n.t('ui.no_description')));
       li.appendChild(el('span', 'meta', [g.code, g.target].filter(Boolean).join(' · ')));
       li.appendChild(el('span', 'age', ''));
       list.appendChild(li);
@@ -815,8 +812,8 @@
   }
 
   /**
-   * 待查的运行时操作。只有 status 真的报了才显示——发布版 0.4.0 不带这个字段，
-   * 那就整块藏起来，不摆一个永远空的面板。
+   * Show pending runtime operations only when status supplies them. Release 0.4.0
+   * omits this field, so hide the entire panel instead of showing a permanent empty state.
    */
   function renderPending(s) {
     const panel = $('pendingPanel');
@@ -826,22 +823,22 @@
     }
     panel.hidden = false;
     setText('pendingSub', s.pendingTotal != null && s.pendingTotal > s.pendingOps.length
-      ? `显示 ${s.pendingOps.length} / ${s.pendingTotal}`
-      : `共 ${s.pendingOps.length}`);
+      ? i18n.t('ui.showing_p0_p1', { p0: s.pendingOps.length, p1: s.pendingTotal })
+      : i18n.t('ui.total_p0', { p0: s.pendingOps.length }));
 
     const list = $('pendingList');
     clear(list);
     for (const op of s.pendingOps.slice(0, 5)) {
       const li = el('li');
       li.appendChild(el('span', 'dot warn'));
-      li.appendChild(el('span', 'what', op.code || '（无代码）'));
+      li.appendChild(el('span', 'what', op.code || i18n.t('ui.no_code')));
       li.appendChild(el('span', 'meta', [op.kind, op.id].filter(Boolean).join(' · ')));
       li.appendChild(el('span', 'age', ''));
       list.appendChild(li);
     }
   }
 
-  // ───────────────────────── 工作项 ─────────────────────────
+  // Work items
 
   let workPageGeneration = 0;
   async function loadWorkPage() {
@@ -856,10 +853,10 @@
     if (generation !== workPageGeneration) return;
     state.workPageLoading = false;
     if (!response.ok || !response.data || !response.data.page) {
-      state.workPageError = response.error || { code: 'MissingPage', message: '未获得分页结果，请刷新重试。' };
+      state.workPageError = response.error || { code: 'MissingPage', message: i18n.t('ui.missing_page') };
     } else {
       const page = response.data.page;
-      // 删除/完成任务后，旧的最后一页可能已不存在。
+      // Removing or completing tasks may invalidate the previous last page.
       if (state.workOffset > 0 && state.workOffset >= page.total) {
         state.workOffset = Math.max(0, Math.ceil(page.total / state.workPageSize) - 1) * state.workPageSize;
         return loadWorkPage();
@@ -878,10 +875,10 @@
     const s = state.status;
     if (!s) return;
 
-    // 筛选芯片
+    // Filter chips.
     const filters = $('workFilters');
     clear(filters);
-    const options = [{ key: 'all', label: '当前队列', count: Object.values(s.queues).reduce((sum, q) => sum + (q.available ? q.total : 0), 0) }].concat(
+    const options = [{ key: 'all', label: i18n.t('ui.current_queues'), count: Object.values(s.queues).reduce((sum, q) => sum + (q.available ? q.total : 0), 0) }].concat(
       QUEUES.map((q) => ({ key: q.key, label: q.label, count: s.queues[q.key].total }))
     );
     for (const o of options) {
@@ -908,7 +905,7 @@
       const page = state.workPage;
       const total = page ? page.total : 0;
       const pages = Math.max(1, Math.ceil(total / state.workPageSize));
-      const previous = el('button', 'chip', '上一页');
+      const previous = el('button', 'chip', i18n.t('ui.previous_page'));
       previous.disabled = state.workPageLoading || !page || state.workOffset === 0;
       previous.addEventListener('click', () => {
         state.overviewWork = null;
@@ -916,8 +913,8 @@
         return loadWorkPage();
       });
       pager.appendChild(previous);
-      pager.appendChild(el('span', 'sub', page ? `第 ${Math.floor(state.workOffset / state.workPageSize) + 1} / ${pages} 页，共 ${total} 项` : state.workPageError ? '查询失败' : '正在查询'));
-      const next = el('button', 'chip', '下一页');
+      pager.appendChild(el('span', 'sub', page ? i18n.t('ui.page_summary', { page: Math.floor(state.workOffset / state.workPageSize) + 1, pages, total }) : state.workPageError ? i18n.t('ui.query_failed') : i18n.t('ui.query_loading')));
+      const next = el('button', 'chip', i18n.t('ui.next_page'));
       next.disabled = state.workPageLoading || !page || !page.has_more;
       next.addEventListener('click', () => {
         state.overviewWork = null;
@@ -926,9 +923,9 @@
       });
       pager.appendChild(next);
       const size = el('select');
-      size.setAttribute('aria-label', '每页条数');
+      size.setAttribute('aria-label', i18n.t('ui.page_size'));
       for (const n of [10, 20, 50, 100]) {
-        const option = el('option', null, `每页 ${n} 项`); option.value = String(n); size.appendChild(option);
+        const option = el('option', null, i18n.t('ui.items_per_page', { count: n })); option.value = String(n); size.appendChild(option);
       }
       size.value = String(state.workPageSize);
       size.disabled = state.workPageLoading;
@@ -947,33 +944,33 @@
     const selectedQueues = state.workFilter === 'all'
       ? Object.values(s.queues) : [s.queues[state.workFilter]];
     const omitted = state.workPagination ? 0 : selectedQueues.reduce((sum, q) => sum + q.omitted, 0);
-    setText('workSub', omitted ? `已显示 ${rows.length} 项，另有 ${omitted} 项未加载` : `${rows.length} 项`);
+    setText('workSub', omitted ? i18n.t('ui.items_not_loaded', { shown: rows.length, omitted }) : i18n.t('ui.p0_items', { p0: rows.length }));
     if (omitted) {
-      $('workEmpty').appendChild(stateBlock('warning', '当前列表尚未完整加载',
-        '队列计数包含未加载的任务；请通过 AWR CLI 查询其余条目。'));
+      $('workEmpty').appendChild(stateBlock('warning', i18n.t('ui.list_incomplete'),
+        i18n.t('ui.list_incomplete_help')));
     }
 
     if (state.workPagination && state.workPageLoading) {
       clear($('workDetail'));
-      setText('detailId', state.overviewWork || '详情');
+      setText('detailId', state.overviewWork || i18n.t('ui.details'));
       setText('detailStatus', '—');
-      $('workEmpty').appendChild(stateBlock('loading', '正在加载任务', ''));
+      $('workEmpty').appendChild(stateBlock('loading', i18n.t('ui.tasks_loading'), ''));
       return;
     }
     if (state.workPagination && state.workPageError) {
       $('workEmpty').appendChild(errorBlock(state.workPageError));
     } else if (!rows.length) {
-      $('workEmpty').appendChild(stateBlock('empty', '这个筛选下没有工作项', '换一个筛选看看。'));
+      $('workEmpty').appendChild(stateBlock('empty', i18n.t('ui.no_work_items_match_this_filter'), i18n.t('ui.try_another_filter')));
     }
     if (state.overviewWork) {
       state.selectedWork = state.overviewWork;
       if (!rows.some((w) => w.key === state.overviewWork) && !state.workPageError) {
-        $('workEmpty').appendChild(stateBlock('warning', '概览中选择的任务不在当前页',
-          `下方仍按你选择的 ${state.overviewWork} 查询详情。`));
+        $('workEmpty').appendChild(stateBlock('warning', i18n.t('ui.selected_off_page'),
+          i18n.t('ui.selected_off_page_help', { work: state.overviewWork })));
       }
     } else if (!rows.length) {
       clear($('workDetail'));
-      setText('detailId', '详情');
+      setText('detailId', i18n.t('ui.details'));
       setText('detailStatus', '—');
       return;
     } else if (!state.selectedWork || !rows.some((w) => w.key === state.selectedWork)) {
@@ -999,7 +996,7 @@
       tr.appendChild(el('td', null, w.rawStatus || w.status || '—'));
       tr.appendChild(el('td', null, w.owner || '—'));
       const claimed = w.raw && Array.isArray(w.raw.claims) && w.raw.claims.length;
-      tr.appendChild(el('td', null, claimed ? '已认领' : (w.raw && w.raw.ownership_required ? '需认领' : '—')));
+      tr.appendChild(el('td', null, claimed ? i18n.t('ui.claimed') : (w.raw && w.raw.ownership_required ? i18n.t('ui.claim_required') : '—')));
       tr.appendChild(el('td', null, w.codes.length ? w.codes.join(', ') : '—'));
       tr.appendChild(el('td', 'num', w.revision != null ? String(w.revision) : '—'));
 
@@ -1018,12 +1015,12 @@
     const token = detailGuard.begin(key);
     const box = $('workDetail');
     clear(box);
-    setText('detailId', key || '详情');
+    setText('detailId', key || i18n.t('ui.details'));
     setText('detailStatus', '—');
 
-    // 缓存的是 { detail, raw } 一对，不是只有规范化后的详情。
-    // 只缓存详情的话，命中缓存时原始 JSON 面板还停在上一个工作项的响应上——
-    // 显示的是 A 的内容，配的却是 B 的响应。
+    // Cache {detail, raw} together, not just normalized details.
+    // Otherwise a cache hit could display A's details while the raw JSON panel
+    // still contains B's response.
     let entry = state.workDetail[key];
 
     if (!entry) {
@@ -1032,21 +1029,21 @@
       let detail = null;
 
       if (state.mode === 'demo') {
-        raw = { ok: true, data: window.AWR_DEMO.workShow(key), note: '演示数据' };
+        raw = { ok: true, data: window.AWR_DEMO.workShow(key), note: i18n.t('ui.demo_data') };
         if (!detailGuard.isCurrent(token)) return;
         detail = normWorkDetail(raw.data);
       } else {
         const res = await callApi('/api/work?key=' + encodeURIComponent(key));
-        // 回来晚了就整条丢掉：不写 state.raw.work、不画面板、不报错。
-        // 成功和失败一视同仁，否则一个迟到的失败会盖掉当前选中项的正常内容。
+        // Discard late responses completely: no raw state changes, rendering, or error display.
+        // Apply the same rule to failures so they cannot overwrite the current selection.
         if (!detailGuard.isCurrent(token)) return;
         if (!res.ok) {
-          // 失败不进缓存，但它的原始响应要显示出来——那正是排查用的东西。
+          // Do not cache failures, but show their raw response for diagnosis.
           state.raw.work = res;
           showRaw('rawWorkBody', res);
           clear(box);
           if (res.error && res.error.code === 'NotFound') {
-            box.appendChild(stateBlock('empty', '工作项不存在或已移除', `未找到 ${key}，请刷新概览确认。`));
+            box.appendChild(stateBlock('empty', i18n.t('ui.work_missing'), i18n.t('ui.work_missing_help', { work: key })));
           }
           box.appendChild(errorBlock(res.error, res.command));
           return;
@@ -1061,14 +1058,14 @@
 
     if (!detailGuard.isCurrent(token)) return;
 
-    // 命中缓存也要把原始响应一起恢复，两者始终配套。
+    // Restore the raw response on cache hits so it always matches the details.
     state.raw.work = entry.raw;
     showRaw('rawWorkBody', entry.raw);
 
     const detail = entry.detail;
     clear(box);
     if (!detail) {
-      box.appendChild(stateBlock('empty', '没有这个工作项的详情', '它可能只出现在队列里，源文件中没有完整定义。'));
+      box.appendChild(stateBlock('empty', i18n.t('ui.no_details_for_this_work_item'), i18n.t('ui.it_may_appear_in_a_queue_without')));
       return;
     }
 
@@ -1078,14 +1075,14 @@
 
     if (detail.goal) {
       const sec = el('div');
-      sec.appendChild(el('h4', null, '目标'));
+      sec.appendChild(el('h4', null, i18n.t('ui.goal')));
       sec.appendChild(el('p', 'quote', detail.goal));
       box.appendChild(sec);
     }
 
     if (detail.acceptance.length) {
       const sec = el('div');
-      sec.appendChild(el('h4', null, `验收标准（${detail.acceptance.length} 条，逐字取自源文件）`));
+      sec.appendChild(el('h4', null, i18n.t('ui.acceptance_criteria_p0_verbatim_from_the_source', { p0: detail.acceptance.length })));
       const ul = el('ul', 'crit-list');
       for (const a of detail.acceptance) {
         const li = el('li');
@@ -1095,40 +1092,40 @@
       }
       sec.appendChild(ul);
       sec.appendChild(el('p', 'figure-note',
-        'AWR 不在这里记「达成没达成」。是否达成是在 complete 的时候逐条对证据验的。'));
+        i18n.t('ui.this_view_does_not_record_whether_criteria')));
       box.appendChild(sec);
     }
 
     const blockText = detail.blocker
-      || (detail.waitTotal ? `在等 ${detail.waitTotal} 个用户回复` : null);
+      || (detail.waitTotal ? i18n.t('ui.waiting_for_p0_user_replies', { p0: detail.waitTotal }) : null);
     if (blockText) {
       const sec = el('div');
-      sec.appendChild(el('h4', null, detail.blocker ? '卡在哪' : '在等什么'));
+      sec.appendChild(el('h4', null, detail.blocker ? i18n.t('ui.blocker') : i18n.t('ui.waiting_for')));
       sec.appendChild(el('p', 'quote', blockText));
       box.appendChild(sec);
     }
 
     if (detail.dependsOn.length || detail.missingDeps.length) {
       const sec = el('div');
-      sec.appendChild(el('h4', null, '依赖'));
+      sec.appendChild(el('h4', null, i18n.t('ui.dependencies')));
       const parts = detail.dependsOn.map((d) => d.status ? `${d.key}（${d.status}）` : d.key);
       if (parts.length) sec.appendChild(el('p', 'quote', parts.join('、')));
       if (detail.missingDeps.length) {
-        sec.appendChild(el('p', 'quote', '源文件里找不到：' + detail.missingDeps.join('、')));
+        sec.appendChild(el('p', 'quote', i18n.t('ui.not_found_in_sources') + detail.missingDeps.join('、')));
       }
       box.appendChild(sec);
     }
 
     if (detail.claims.length) {
       const sec = el('div');
-      sec.appendChild(el('h4', null, '谁占着这件活'));
+      sec.appendChild(el('h4', null, i18n.t('ui.who_owns_this_work')));
       const ul = el('ul', 'crit-list');
       for (const c of detail.claims) {
         const li = el('li');
         li.appendChild(el('span', 'box done', '●'));
         const txt = el('span');
         txt.textContent = [c.agent && `agent ${c.agent}`, c.session && `session ${c.session}`]
-          .filter(Boolean).join(' · ') || '（无标识）';
+          .filter(Boolean).join(' · ') || i18n.t('ui.no_identity');
         if (c.expiresAt) {
           txt.appendChild(document.createTextNode(' '));
           txt.appendChild(el('span', 'id', until(c.expiresAt)));
@@ -1138,13 +1135,13 @@
       }
       sec.appendChild(ul);
       sec.appendChild(el('p', 'figure-note',
-        'claim 是 AWR 的所有权凭证。别的 session 要动这件活，得先等它释放或显式接手。'));
+        i18n.t('ui.a_claim_establishes_awr_ownership_another_session')));
       box.appendChild(sec);
     }
 
     if (detail.evidence.length || detail.decisions.length) {
       const sec = el('div');
-      sec.appendChild(el('h4', null, `证据与决策（${detail.evidence.length} 份证据 · ${detail.decisions.length} 条决策）`));
+      sec.appendChild(el('h4', null, i18n.t('ui.evidence_and_decisions_p0_evidence_records_p1', { p0: detail.evidence.length, p1: detail.decisions.length })));
       const ul = el('ul', 'crit-list');
       for (const e of detail.evidence.slice(0, 8)) {
         const li = el('li');
@@ -1165,22 +1162,22 @@
 
     if (detail.diagnostics.length || detail.cycles.length) {
       const sec = el('div');
-      sec.appendChild(el('h4', null, '诊断'));
+      sec.appendChild(el('h4', null, i18n.t('ui.diagnostics')));
       const codes = detail.diagnostics
         .map((d) => (typeof d === 'string' ? d : d.code))
         .filter(Boolean);
       if (codes.length) sec.appendChild(el('p', 'quote', codes.join('、')));
       if (detail.cycles.length) {
-        sec.appendChild(el('p', 'quote', '依赖成环：' + detail.cycles.join(' → ')));
+        sec.appendChild(el('p', 'quote', i18n.t('ui.dependency_cycle') + detail.cycles.join(' → ')));
       }
       box.appendChild(sec);
     }
 
     const sec = el('div');
-    sec.appendChild(el('h4', null, '下一步'));
-    sec.appendChild(el('p', 'quote', detail.nextAction || '（源文件里没写）'));
+    sec.appendChild(el('h4', null, i18n.t('ui.next_step')));
+    sec.appendChild(el('p', 'quote', detail.nextAction || i18n.t('ui.not_specified_in_the_source')));
     const act = el('div', 'actions');
-    const btn = el('button', 'btn', '为这一项编译上下文');
+    const btn = el('button', 'btn', i18n.t('ui.compile_context_for_this_item'));
     btn.addEventListener('click', () => {
       fillWorkSelect(detail);
       $('fWork').value = detail.key;
@@ -1196,7 +1193,7 @@
     box.appendChild(sec);
   }
 
-  // ───────────────────────── 上下文 ─────────────────────────
+  // Context
 
   function fillWorkSelect(selectedWork = null) {
     const sel = $('fWork');
@@ -1233,7 +1230,7 @@
     const generation = sourceGeneration;
     const btn = $('compileBtn');
     btn.disabled = true;
-    setText('compileHint', '编译中…');
+    setText('compileHint', i18n.t('ui.compiling'));
 
     const work = $('fWork').value;
     const goal = $('fGoal').value.trim();
@@ -1261,8 +1258,8 @@
       if (res.ok) {
         ctx = normContext(res.data);
       } else if (res.data) {
-        // 上下文不完整时 AWR 会退出 1，但报告是完整给出来的。
-        // 这正是要看完整性面板的时候——照常渲染，同时把诊断显示出来。
+        // An incomplete context exits with code 1 but still provides a report.
+        // Render the report alongside its diagnostic.
         ctx = normContext(res.data);
         failure = res;
       } else {
@@ -1274,21 +1271,20 @@
     if (ctx) ctx.work = ctx.work || work;
     state.compile = ctx;
 
-    // 拿不到任何报告才算真失败。
+    // Only clear the result when no report is available.
     if (failure && !ctx) {
-      // 先按「没有编译结果」把所有面板归零——体积、大数字、省略折叠区、组成、
-      // 完整性、预览——否则上一次成功的数字会留在页面上，和这次的错误摆在一起。
+      // Reset every result panel so previous measurements do not accompany this error.
       renderCompile();
       clear($('breakdown'));
       $('breakdown').appendChild(errorBlock(failure.error, failure.command));
-      setText('compileHint', '编译失败。');
+      setText('compileHint', i18n.t('ui.compilation_failed'));
       return;
     }
 
     renderCompile();
 
     if (failure) {
-      // 报告有，只是 AWR 判定它不完整——把它的原话放在完整性面板顶上。
+      // Preserve the original AWR diagnostic above the incomplete report.
       const cb = $('completeBody');
       const note = el('div', 'state err');
       note.style.padding = '12px 0 0';
@@ -1297,12 +1293,12 @@
       note.appendChild(t);
       note.appendChild(el('div', 'msg', (failure.error && failure.error.message) || ''));
       cb.appendChild(note);
-      setText('compileHint', 'AWR 判定这份上下文不完整，下面写明了缺什么。');
+      setText('compileHint', i18n.t('ui.context_incomplete'));
       return;
     }
     setText('compileHint', ctx.revision != null
-      ? `revision ${ctx.revision} · 不写权威源，可能刷新投影`
-      : '不写权威源，可能刷新投影');
+      ? i18n.t('ui.revision_p0_sources_unchanged_projection_may_refresh', { p0: ctx.revision })
+      : i18n.t('ui.sources_unchanged_projection_may_refresh'));
   }
 
   function renderCompile() {
@@ -1313,9 +1309,9 @@
     clear(bd);
     if (!ctx) {
       resetOmissions();
-      bd.appendChild(stateBlock('empty', '还没有编译', '在上面选好参数，点「编译」。'));
+      bd.appendChild(stateBlock('empty', i18n.t('ui.not_compiled_yet'), i18n.t('ui.choose_parameters_above_then_select_compile')));
       clear($('completeBody'));
-      $('completeBody').appendChild(stateBlock('empty', '—', '编译之后这里会显示有没有内容被省略。'));
+      $('completeBody').appendChild(stateBlock('empty', '—', i18n.t('ui.after_compilation_this_panel_shows_whether_any')));
       setText('packetTotal', '');
       setText('packetNote', '');
       setText('completeSub', '');
@@ -1327,7 +1323,7 @@
     for (const s of ctx.sections) {
       const row = el('div', 'bd-row');
       row.appendChild(el('div', 'bd-name', s.name));
-      row.appendChild(el('div', 'bd-val', s.required ? `${s.count} 块（${s.required} 必需）` : `${s.count} 块`));
+      row.appendChild(el('div', 'bd-val', s.required ? i18n.t('ui.p0_chunks_p1_required', { p0: s.count, p1: s.required }) : i18n.t('ui.p0_chunks', { p0: s.count })));
       const track = el('div', 'bd-track');
       const fill = el('div', 'bd-fill');
       fill.style.width = ((s.count / max) * 100).toFixed(1) + '%';
@@ -1338,27 +1334,27 @@
 
     const over = ctx.budget != null && ctx.total > ctx.budget;
     setText('packetTotal', `${group(ctx.total)} / ${group(ctx.budget)} tokens`);
-    // AWR 只给整体 token 数和每块的 section/required，不给每段的 token 数——
-    // 所以这里量的是块数，不编造每段占了多少 token。
+    // AWR provides a total token count and per-chunk section/required fields only.
+    // Count chunks here instead of inventing per-section token estimates.
     setText('packetNote', over
-      ? '总量超过了预算，AWR 会省略非必需的块来塞进去。'
-      : `共 ${ctx.chunkTotal} 块。条形量的是块数；AWR 只给整体 token 数，不给每段的。`);
+      ? i18n.t('ui.the_total_exceeds_the_budget_awr_omits')
+      : i18n.t('ui.p0_chunks_in_total_bars_measure_chunks', { p0: ctx.chunkTotal }));
 
-    // 完整性
+    // Completeness.
     const cb = $('completeBody');
     clear(cb);
     const ok = ctx.complete !== false;
-    setText('completeSub', ok ? '完整' : '有省略');
+    setText('completeSub', ok ? i18n.t('ui.complete') : i18n.t('ui.omissions_present'));
 
     const head = el('div', 'loops');
     const li = el('li');
     li.appendChild(el('span', 'dot ' + (ok ? 'ok' : 'warn')));
-    li.appendChild(el('span', 'what', ctx.statusText || (ok ? '上下文完整' : '上下文不完整')));
-    li.appendChild(el('span', 'meta', ctx.requiredTokens != null ? `必需内容 ${group(ctx.requiredTokens)} tokens` : ''));
+    li.appendChild(el('span', 'what', ctx.statusText || (ok ? i18n.t('ui.context_complete') : i18n.t('ui.context_incomplete'))));
+    li.appendChild(el('span', 'meta', ctx.requiredTokens != null ? i18n.t('ui.required_content_p0_tokens', { p0: group(ctx.requiredTokens) }) : ''));
     head.appendChild(li);
     cb.appendChild(head);
 
-    // 分维度：AWR 是逐项判定的，缺哪一维要能一眼看到。
+    // Show each independently assessed dimension so missing facts are visible.
     if (ctx.dimensions.length) {
       const chips = el('div', 'chips');
       chips.style.marginTop = '14px';
@@ -1369,11 +1365,11 @@
       cb.appendChild(chips);
     }
 
-    // 证据缺口：哪条验收标准还没有证据兜底。
+    // Evidence gaps identify acceptance criteria without supporting evidence.
     if (ctx.evidenceGaps.length) {
       const h = el('p', 'figure-note');
       h.style.marginBottom = '6px';
-      h.textContent = `证据缺口 ${ctx.evidenceGaps.length} 项——完成这件活之前每条验收标准都要对上证据：`;
+      h.textContent = i18n.t('ui.p0_evidence_gaps_each_acceptance_criterion_needs', { p0: ctx.evidenceGaps.length });
       cb.appendChild(h);
       const ul = el('ul', 'crit-list');
       for (const g of ctx.evidenceGaps.slice(0, 6)) {
@@ -1392,7 +1388,7 @@
       for (const d of ctx.unresolvedDeps.slice(0, 6)) {
         const item = el('li');
         item.appendChild(el('span', 'box', '⛔'));
-        item.appendChild(el('span', null, '未决依赖：' + (typeof d === 'string' ? d : (d.external_key || JSON.stringify(d)))));
+        item.appendChild(el('span', null, i18n.t('ui.unresolved_dependency') + (typeof d === 'string' ? d : (d.external_key || JSON.stringify(d)))));
         ul.appendChild(item);
       }
       cb.appendChild(ul);
@@ -1412,17 +1408,14 @@
 
     renderOmissions(ctx, cb);
 
-    setText('packetPreview', ctx.rendered || '（这次编译没有返回渲染文本）');
+    setText('packetPreview', ctx.rendered || i18n.t('ui.no_rendered_text_was_returned'));
   }
 
   /**
-   * 被省略的块。
-   *
-   * 这里的 key 形如 `change:01M2Z...:01M2Z...`——内部 ULID，对人没有任何信息量。
-   * 逐条列出来只会把真正要看的东西（缺哪一维、少什么证据）挤到屏幕外。
-   * 所以先按 section 归并给出数量，原始 id 收进折叠区，需要的人再展开。
+   * Group omitted chunks by section so internal IDs do not obscure missing facts.
+   * Keep the original IDs in an expandable section for inspection.
    */
-  /** 折叠区归零：隐藏之外还要清空内容。只隐藏的话旧 id 留在 DOM 里，之后一显示就是上一次的。 */
+  /** Clear collapsed content as well as hiding it to prevent stale IDs reappearing. */
   function resetOmissions() {
     const box = $('omittedBox');
     if (box) {
@@ -1443,7 +1436,7 @@
     const bySection = new Map();
     const reasons = new Set();
     for (const o of ctx.omissions) {
-      const name = o.section || '未分段';
+      const name = o.section || i18n.t('ui.unsectioned');
       bySection.set(name, (bySection.get(name) || 0) + 1);
       if (o.reason) reasons.add(o.reason);
     }
@@ -1453,21 +1446,21 @@
     const parts = [...bySection.entries()]
       .sort((a, b) => b[1] - a[1])
       .map(([name, n]) => `${name} ${n}`);
-    line.appendChild(el('b', null, `因预算省略 ${ctx.omissions.length} 块`));
-    line.appendChild(document.createTextNode('：' + parts.join(' · ')));
+    line.appendChild(el('b', null, i18n.t('ui.omitted_count', { count: ctx.omissions.length })));
+    line.appendChild(document.createTextNode(': ' + parts.join(' · ')));
     if (reasons.size) {
-      line.appendChild(document.createTextNode('。原因：' + [...reasons].join('、')));
+      line.appendChild(document.createTextNode(i18n.t('ui.omission_reasons', { reasons: [...reasons].join(', ') })));
     }
     cb.appendChild(line);
 
-    const tip = el('p', 'figure-note', '把 budget 调大再编译一次，就能把这些装回去。');
+    const tip = el('p', 'figure-note', i18n.t('ui.increase_the_budget_and_compile_again_to'));
     tip.style.marginTop = '4px';
     cb.appendChild(tip);
 
     if (box) {
       box.hidden = false;
       box.open = false;
-      setText('omittedSummary', `展开这 ${ctx.omissions.length} 块的内部 id`);
+      setText('omittedSummary', i18n.t('ui.omitted_ids', { count: ctx.omissions.length }));
       setText(
         'omittedList',
         ctx.omissions.map((o) => `${o.section || '—'}\t${o.key || o.detail}`).join('\n')
@@ -1475,7 +1468,7 @@
     }
   }
 
-  // ───────────────────────── 索引源 ─────────────────────────
+  // Indexed sources
 
   function renderSources() {
     const data = state.sources;
@@ -1489,17 +1482,17 @@
     const files = data.files;
     const stale = files.filter((f) => f.state !== 'fresh' && f.state !== 'indexed').length;
 
-    setText('srcTitle', `${files.length} 个源`);
+    setText('srcTitle', i18n.t('ui.p0_sources', { p0: files.length }));
     setText('srcSub', [
       data.summary ? Object.keys(data.summary).map((k) => `${data.summary[k]} ${k}`).join(' · ') : '',
-      stale ? `${stale} 个不新鲜` : '',
-      data.issues.length ? `${data.issues.length} 个问题` : '',
+      stale ? i18n.t('ui.p0_stale', { p0: stale }) : '',
+      data.issues.length ? i18n.t('ui.p0_issues', { p0: data.issues.length }) : '',
     ].filter(Boolean).join(' · '));
     setText('navSourceCount', String(files.length || ''));
 
     if (!files.length) {
-      $('srcEmpty').appendChild(stateBlock('empty', 'manifest 没匹配到任何文件',
-        '检查 project.toml 里的 [[sources]] 路径写对了没有。',
+      $('srcEmpty').appendChild(stateBlock('empty', i18n.t('ui.the_manifest_matched_no_files'),
+        i18n.t('ui.check_the_sources_paths_in_project_toml'),
         `awr --project ${state.project} intake inspect`));
       return;
     }
@@ -1526,18 +1519,18 @@
         td.colSpan = 5;
         const r = f.rejection;
         const loc = r.location
-          ? (r.location.line != null ? `第 ${r.location.line} 行` + (r.location.column != null ? `，第 ${r.location.column} 列` : '') : '位置不可用')
-          : '位置不可用';
-        td.appendChild(el('div', null, `规则：${r.rule || '—'}`));
-        td.appendChild(el('div', null, `位置：${loc}`));
-        td.appendChild(el('div', null, `怎么修：${r.repair || '—'}`));
-        const note = el('p', 'figure-note', 'AWR 不会回显匹配到的原值和上下文，本工具也不会自己去读源文件补出来。');
+          ? (r.location.line != null ? i18n.t('ui.line_p0', { p0: r.location.line }) + (r.location.column != null ? i18n.t('ui.column_p0', { p0: r.location.column }) : '') : i18n.t('ui.location_unavailable'))
+          : i18n.t('ui.location_unavailable');
+        td.appendChild(el('div', null, i18n.t('ui.rule_p0', { p0: r.rule || '—' })));
+        td.appendChild(el('div', null, i18n.t('ui.location_p0', { p0: loc })));
+        td.appendChild(el('div', null, i18n.t('ui.suggested_repair_p0', { p0: r.repair || '—' })));
+        const note = el('p', 'figure-note', i18n.t('ui.awr_does_not_echo_the_matched_value'));
         td.appendChild(note);
         exp.appendChild(td);
         tbody.appendChild(exp);
 
         tr.addEventListener('click', () => { exp.hidden = !exp.hidden; });
-        tr.title = '点一下看被拒的原因';
+        tr.title = i18n.t('ui.select_to_inspect_the_rejection_reason');
       }
     }
   }
@@ -1545,25 +1538,25 @@
   async function doReindex() {
     const btn = $('reindexBtn');
 
-    // 这是界面上唯一会改动 AWR 状态的操作，明确确认一次。
+    // This is the only UI action that changes AWR state; require explicit confirmation.
     const okToRun = window.confirm(
-      '重新索引会刷新 AWR 的源投影，并推进项目 revision。\n\n' +
-      '它不会改动你的 Markdown / YAML 源文件。\n\n要继续吗？'
+      i18n.t('ui.reindexing_refreshes_the_source_projection_and_advances') +
+      i18n.t('ui.it_does_not_change_your_markdown_yaml')
     );
     if (!okToRun) return;
 
     btn.disabled = true;
     const old = btn.textContent;
-    btn.textContent = '索引中…';
+    btn.textContent = i18n.t('ui.indexing');
 
     if (state.mode === 'demo') {
       await new Promise((r) => setTimeout(r, 500));
       btn.disabled = false;
       btn.textContent = old;
       clear($('srcEmpty'));
-      $('srcEmpty').appendChild(stateBlock('empty', '演示模式不会真的索引',
-        '连上真实项目后，这个按钮会跑下面这条命令。',
-        `awr --project <项目目录> source reindex`));
+      $('srcEmpty').appendChild(stateBlock('empty', i18n.t('ui.demo_mode_does_not_reindex'),
+        i18n.t('ui.when_connected_to_a_real_project_this'),
+        i18n.t('ui.awr_project_source_reindex')));
       return;
     }
 
@@ -1576,17 +1569,17 @@
       $('srcEmpty').appendChild(errorBlock(res.error, res.command));
       return;
     }
-    // 索引推进了 revision，所有缓存作废，整页重来。
+    // Reindexing advances the revision, so invalidate all caches and reload.
     detailGuard.invalidate();
     state.workDetail = {};
     state.compile = null;
     await loadAll();
   }
 
-  // ───────────────────────── 加载 ─────────────────────────
+  // Loading
 
   function resetProjectData() {
-    // 任务 key、选项和缓存只属于原项目；演示数据也是独立的数据来源。
+    // Work keys, options and caches belong to one source; demo is a separate source.
     ++sourceGeneration;
     ++workPageGeneration;
     detailGuard.invalidate();
@@ -1610,7 +1603,7 @@
     $('fGoal').value = '';
     $('fIntent').value = '';
     $('compileBtn').disabled = false;
-    setText('detailId', '详情');
+    setText('detailId', i18n.t('ui.details'));
     setText('detailStatus', '—');
     renderSources();
     renderCompile();
@@ -1630,14 +1623,14 @@
     if (generation !== loadGeneration) return;
     if (health.ok) {
       state.mode = health.data.mode;
-      // 演示模式下显示样本项目名，而不是本工具自己所在的那个目录——
-      // 那个路径会让人以为它真的在读这个目录。
+      // In demo mode, show the sample project name rather than this tool's directory;
+      // the latter would misleadingly suggest the displayed data came from that path.
       state.project = state.mode === 'demo' ? '.local/demo' : (health.data.project || '.');
       state.reason = health.data.reason;
       setText('verTag', health.data.awrVersion || 'v0.4.0');
     } else {
       state.mode = 'demo';
-      state.reason = '连不上本地桥接进程（node server.js）。现在显示的是内置样本数据。';
+      state.reason = i18n.t('ui.cannot_reach_the_local_bridge_node_server');
       state.project = '.local/demo';
     }
 
@@ -1649,10 +1642,10 @@
     if (state.mode === 'demo') {
       state.status = normStatus(window.AWR_DEMO.status, null);
       state.sources = normSources(window.AWR_DEMO.sources);
-      state.raw.overview = { ok: true, data: window.AWR_DEMO.status, note: '演示数据' };
-      state.raw.sources = { ok: true, data: window.AWR_DEMO.sources, note: '演示数据' };
+      state.raw.overview = { ok: true, data: window.AWR_DEMO.status, note: i18n.t('ui.demo_data') };
+      state.raw.sources = { ok: true, data: window.AWR_DEMO.sources, note: i18n.t('ui.demo_data') };
     } else {
-      // 概览使用摘要，工作项通过独立分页接口按需加载。
+      // Use summaries for Overview and fetch work pages on demand.
       const [st, src] = await Promise.all([
         callApi('/api/status'), callApi('/api/sources'),
       ]);
@@ -1687,7 +1680,7 @@
     if (state.sources) renderSources();
     renderCompile();
 
-    // 顶栏的新鲜度标签要读 status，所以在 status 到手之后再渲染一次。
+    // The freshness badge depends on status; render it again after status arrives.
     renderModeUi();
   }
 
@@ -1695,19 +1688,19 @@
     const demo = state.mode === 'demo';
     $('tagDemo').hidden = !demo;
     $('tagBackend').hidden = demo;
-    if (!demo) $('tagBackend').textContent = 'CLI 已连接';
+    if (!demo) $('tagBackend').textContent = i18n.t('ui.cli_connected');
 
     const fresh = $('tagFresh');
     if (state.status && state.status.lastIndexed) {
       fresh.hidden = false;
       const drift = state.status.driftCount;
       fresh.className = 'tag ' + (drift ? 'warn' : 'ok live');
-      fresh.textContent = drift ? `${drift} 个文件已漂移` : `索引 ${since(state.status.lastIndexed)}`;
+      fresh.textContent = drift ? i18n.t('ui.p0_files_have_drifted', { p0: drift }) : i18n.t('ui.indexed_p0', { p0: since(state.status.lastIndexed) });
     } else {
       fresh.hidden = true;
     }
 
-    setText('footMode', demo ? '演示模式 · 数据是编的' : `真实数据 · ${state.project}`);
+    setText('footMode', demo ? i18n.t('ui.demo_mode_synthetic_data') : i18n.t('ui.live_data_p0', { p0: state.project }));
 
     const banner = $('modeBanner');
     if (demo && !sessionStorage.getItem('awr.banner.hidden')) {
@@ -1715,17 +1708,17 @@
       banner.className = 'banner';
       const text = $('modeBannerText');
       clear(text);
-      const b = el('b', null, '现在看到的是演示数据。');
+      const b = el('b', null, i18n.t('ui.you_are_viewing_demo_data'));
       text.appendChild(b);
-      text.appendChild(document.createTextNode(' ' + (state.reason || '') + ' 要看你自己的项目：装好 awr 之后，用 '));
-      text.appendChild(el('code', null, 'node server.js --project /你的/项目路径'));
-      text.appendChild(document.createTextNode(' 重新启动。界面用法完全一样，可以先在这里随便点。'));
+      text.appendChild(document.createTextNode(' ' + (state.reason || '') + i18n.t('ui.to_view_your_project_install_awr_and')));
+      text.appendChild(el('code', null, i18n.t('ui.node_server_js_project_path_to_project')));
+      text.appendChild(document.createTextNode(i18n.t('ui.the_interface_works_the_same_way_explore')));
     } else {
       banner.hidden = true;
     }
   }
 
-  // ───────────────────────── 导航 ─────────────────────────
+  // Navigation
 
   const VIEWS = ['overview', 'work', 'context', 'sources'];
 
@@ -1740,44 +1733,44 @@
     window.scrollTo({ top: 0 });
   }
 
-  // ───────────────────────── 新手引导 ─────────────────────────
+  // Getting-started tour
 
   const TOUR = [
     {
-      title: '这个工具是干什么的',
+      title: i18n.t('ui.what_this_tool_does'),
       html: [
-        '<p>你的 coding agent 每开一个新会话，都得先搞清楚「这个项目在干嘛、我该接着做什么」。AWR 就是替它记住这些事的那一层。</p>',
-        '<p>AWR Inspector 是给<b>人</b>看的那一面：agent 看到的状态，你也能看到同一份。</p>',
-        '<div class="tour-art"><div class="row"><span>源文件</span><span class="bar on"></span></div><div class="row"><span>AWR 索引</span><span class="bar on"></span></div><div class="row"><span>上下文包</span><span class="bar on bar-short"></span></div></div>',
-        '<p>仓库公开 benchmark 里，读全量源码要 <code>18,955</code> tokens，AWR 编译出的包最大 <code>4,998</code>——少 73.6%。那是 39 个活跃任务上的测量值，不是你项目的数；你自己项目的实测在「上下文」页编译一次就能看到。</p>',
+        i18n.t('ui.each_new_coding_agent_session_needs_to'),
+        i18n.t('ui.awr_inspector_gives_people_a_view_of'),
+        i18n.t('ui.source_filesawr_indexcontext_packet'),
+        i18n.t('ui.benchmark_explanation'),
       ].join(''),
     },
     {
-      title: '第一站：概览',
+      title: i18n.t('ui.first_stop_overview'),
       html: [
-        '<p>四个队列告诉你所有工作项现在的处境：<b>进行中</b>、<b>可开工</b>、<b>等待中</b>、<b>被阻塞</b>。</p>',
-        '<p>每天打开先看后两个——进度停下来的地方都在那儿。点任何一条都能跳到详情。</p>',
+        i18n.t('ui.four_queues_describe_work_in_progress_ready'),
+        i18n.t('ui.start_with_the_last_two_to_see'),
       ].join(''),
     },
     {
-      title: '第二站：工作项',
+      title: i18n.t('ui.second_stop_work_items'),
       html: [
-        '<p>一件活的全部信息：目标、验收标准、卡在哪、下一步。</p>',
-        '<p>验收标准是<b>逐字</b>从你的 Markdown 抄过来的，不是另写的摘要——AWR 完成任务时要靠它逐条对上证据。</p>',
+        i18n.t('ui.inspect_a_work_item_s_goal_acceptance'),
+        i18n.t('ui.acceptance_criteria_are_copied_verbatim_from_your'),
       ].join(''),
     },
     {
-      title: '第三站：上下文',
+      title: i18n.t('ui.third_stop_context'),
       html: [
-        '<p>这里能亲手编译一个上下文包，看清楚 token 花在了哪几段，以及有没有东西因为预算被省略掉。</p>',
-        '<p>编译不写权威源、也不推进工作状态；但它可能刷新本地投影（<code>source_refresh_performed</code>）。</p>',
+        i18n.t('ui.compile_a_context_packet_and_inspect_its'),
+        i18n.t('ui.compilation_does_not_change_authoritative_sources_or'),
       ].join(''),
     },
     {
-      title: '最后：每条命令都能自己跑',
+      title: i18n.t('ui.finally_run_any_command_yourself'),
       html: [
-        '<p>界面上每个 <code>$</code> 开头的框，都是它后台真正执行的那条命令。复制到终端跑，结果一模一样。</p>',
-        '<p>看不懂某个词？点右上角的<b>「术语」</b>。每个面板标题旁边的 <b>?</b> 会用大白话解释这一块在说什么。</p>',
+        i18n.t('ui.each_box_shows_the_command_executed_by'),
+        i18n.t('ui.need_a_definition_open_the_glossary_at'),
       ].join(''),
     },
   ];
@@ -1794,7 +1787,7 @@
     const s = TOUR[tourStep];
     setText('tourTitle', `${tourStep + 1}/${TOUR.length} · ${s.title}`);
     $('tourBody').innerHTML = s.html;
-    setText('tourNext', tourStep === TOUR.length - 1 ? '开始使用' : '下一步');
+    setText('tourNext', tourStep === TOUR.length - 1 ? i18n.t('ui.get_started') : i18n.t('ui.next_step'));
     const dots = $('tourDots');
     clear(dots);
     TOUR.forEach((_, i) => {
@@ -1809,7 +1802,7 @@
     try { localStorage.setItem('awr.tour.seen', '1'); } catch (_) {}
   }
 
-  // ───────────────────────── 启动 ─────────────────────────
+  // Startup
 
   function wire() {
     for (const a of document.querySelectorAll('.rail a')) {
@@ -1819,7 +1812,7 @@
       });
     }
 
-    // 「这是什么」问号
+    // Contextual help buttons.
     for (const b of document.querySelectorAll('.why')) {
       b.addEventListener('click', () => {
         const note = document.querySelector(`[data-note="${b.dataset.why}"]`);
@@ -1827,7 +1820,7 @@
       });
     }
 
-    // 复制按钮
+    // Copy buttons.
     for (const b of document.querySelectorAll('.copy[data-copy-target]')) {
       b.addEventListener('click', () => {
         const target = $(b.dataset.copyTarget);
@@ -1904,7 +1897,7 @@
     document.addEventListener('DOMContentLoaded', boot);
   }
 
-  // 给测试用。浏览器里没有 module，这一段不执行。
+  // Test exports; browsers have no module object and skip this block.
   if (typeof module !== 'undefined' && module.exports) {
     module.exports = {
       createGenerationGuard, state, detailGuard, renderWorkDetail, normStatus, renderWork, loadWorkPage,

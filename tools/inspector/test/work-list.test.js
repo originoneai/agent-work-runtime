@@ -19,29 +19,29 @@ test("17 ready items replace the five-item summary and render all twenty queue i
   const status = app.normStatus(...fixture()); render(status);
   assert.equal(status.queues.ready.omitted, 0);
   assert.equal(document.getElementById("workRows").children.length, 20);
-  assert.match(document.getElementById("workFilters").textContent, /当前队列 20/);
+  assert.match(document.getElementById("workFilters").textContent, /Current queues 20/);
   render(status, "ready");
   assert.equal(document.getElementById("workRows").children.length, 17);
-  assert.equal(document.getElementById("workSub").textContent, "17 项");
+  assert.equal(document.getElementById("workSub").textContent, "17 items");
   assert.equal(status.queues.blocked.items[0].key, "B1");
 });
 test("bounded lists disclose missing rows instead of calling them complete", () => {
   const status = app.normStatus(...fixture(117,100)); render(status, "ready");
   assert.equal(status.queues.ready.total, 117);
   assert.equal(document.getElementById("workRows").children.length, 100);
-  assert.match(document.getElementById("workSub").textContent, /另有 17 项未加载/);
-  assert.match(document.getElementById("workEmpty").textContent, /尚未完整加载/);
+  assert.match(document.getElementById("workSub").textContent, /17 more not loaded/);
+  assert.match(document.getElementById("workEmpty").textContent, /not fully loaded/);
 });
 test("different revisions never merge queue membership from another snapshot", () => {
   const status = app.normStatus(...fixture(17,17,8)); render(status, "ready");
   assert.equal(status.queues.ready.items.length, 5);
-  assert.match(document.getElementById("workSub").textContent, /另有 12 项未加载/);
+  assert.match(document.getElementById("workSub").textContent, /12 more not loaded/);
 });
 test("failed ready request preserves summary and discloses omitted rows", () => {
   const status = app.normStatus(fixture()[0], null); render(status, "ready");
   assert.equal(status.queues.ready.items.length, 5);
   assert.equal(status.queues.ready.total, 17);
-  assert.match(document.getElementById("workSub").textContent, /另有 12 项未加载/);
+  assert.match(document.getElementById("workSub").textContent, /12 more not loaded/);
 });
 
 function pageResponse(offset, total = 17, queue = "ready") {
@@ -59,7 +59,7 @@ test("server pages show ten then seven rows, not a slice of the summary", async 
   global.fetch=async url=>({json:async()=>{urls.push(url);return pageResponse(Number(new URL(url,"http://local").searchParams.get("offset")));}});
   await app.loadWorkPage();
   assert.equal(document.getElementById("workRows").children.length,10);
-  assert.match(document.getElementById("workPagination").textContent,/第 1 \/ 2 页，共 17 项/);
+  assert.match(document.getElementById("workPagination").textContent,/Page 1 \/ 2, 17 items/);
   app.state.workOffset=10; await app.loadWorkPage();
   assert.equal(document.getElementById("workRows").children.length,7);
   assert.equal(app.state.workPage.items[0].key,"R10");
@@ -130,7 +130,7 @@ test('second-page detail keeps its context selection through refresh and submits
   }})});
   await app.renderWorkDetail('R10');
   const button = document.getElementById('workDetail').find(el =>
-    el.tagName === 'BUTTON' && el.textContent.includes('为这一项编译上下文'));
+    el.tagName === 'BUTTON' && el.textContent.includes('Compile context for this item'));
   await button.click();
   assert.equal(select.value, 'R10');
   assert.match(document.getElementById('cliMirror').textContent, /--work R10/);
@@ -205,11 +205,11 @@ for (const kind of ['moved', 'later-page', 'empty', 'page-error', 'removed']) {
     const box = document.getElementById('workDetail');
     if (kind === 'removed') {
       assert.match(box.textContent, /Work B1 no longer exists/);
-      assert.match(box.textContent, /工作项不存在或已移除/);
-      assert.equal(box.find(el => el.tagName === 'BUTTON' && el.textContent.includes('为这一项编译上下文')), null);
+      assert.match(box.textContent, /Work item not found or removed/);
+      assert.equal(box.find(el => el.tagName === 'BUTTON' && el.textContent.includes('Compile context for this item')), null);
     } else {
       assert.match(box.textContent, /Task B1/);
-      const compile = box.find(el => el.tagName === 'BUTTON' && el.textContent.includes('为这一项编译上下文'));
+      const compile = box.find(el => el.tagName === 'BUTTON' && el.textContent.includes('Compile context for this item'));
       await compile.click();
       assert.equal(document.getElementById('fWork').value, 'B1');
     }

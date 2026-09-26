@@ -1,10 +1,10 @@
 /**
- * 详情面板的前端回归。
+ * Frontend regression tests for the detail panel.
  *
- * 在 Node 里用一个最小 DOM 替身跑 app.js 真正的 renderWorkDetail()，
- * 而不是测一个抄过来的副本——抄的版本会跟着源码漂走。
+ * Run the actual renderWorkDetail() from app.js with a minimal Node DOM stub,
+ * rather than a copied implementation that could drift from production code.
  *
- * 跑：node --test test/detail.test.js
+ * Run: node --test test/detail.test.js
  */
 
 'use strict';
@@ -16,8 +16,9 @@ const { install } = require('./fixtures/dom-stub.js');
 install();
 
 const app = require('../public/app.js');
+const i18n = require('../public/i18n.js');
 
-/** 装一个假的 fetch，记录每次请求，按 key 返回对应的响应。 */
+/** Install a fetch stub, record requests, and return responses by work key. */
 function stubFetch() {
   const calls = [];
   global.fetch = async (url) => {
@@ -30,7 +31,7 @@ function stubFetch() {
         data: {
           ok: true,
           project_revision: 7,
-          // 打个标记，方便断言「这份原始响应属于谁」
+          // Mark the response so assertions can identify its owning work item.
           marker: `envelope-of-${key}`,
           work: {
             external_key: key,
@@ -38,7 +39,7 @@ function stubFetch() {
             status: 'ready',
             next_action: `下一步 ${key}`,
             milestone: `goal#${key}`,
-            active_claims: [],
+            active_claims: [{ agent_id: 'example-agent', expires_at: Date.now() + 10 * 60000 }],
             diagnostics: [],
           },
           acceptance: [`验收 ${key}`],
@@ -55,6 +56,7 @@ function stubFetch() {
 }
 
 beforeEach(() => {
+  i18n.setLocale('en');
   app.state.mode = 'live';
   app.state.workDetail = {};
   app.state.raw = {};
@@ -62,60 +64,60 @@ beforeEach(() => {
   app.detailGuard.invalidate();
 });
 
-test('缓存命中时原始响应跟着一起恢复', async () => {
+test('cache hits restore the paired raw response', async () => {
   const calls = stubFetch();
   const rawPanel = document.getElementById('rawWorkBody');
   const detailBox = document.getElementById('workDetail');
 
-  // 1) 选 A，等它回来
+  // 1) Select A and await its response.
   await app.renderWorkDetail('EXAMPLE-A');
   assert.equal(app.state.raw.work.data.marker, 'envelope-of-EXAMPLE-A');
 
-  // 2) 选 B，等它回来
+  // 2) Select B and await its response.
   await app.renderWorkDetail('EXAMPLE-B');
   assert.equal(app.state.raw.work.data.marker, 'envelope-of-EXAMPLE-B');
 
-  // 3) 再选 A —— 这次走缓存
+  // 3) Select A again, using the cache.
   await app.renderWorkDetail('EXAMPLE-A');
 
-  assert.equal(calls.length, 2, `第三次选择不应再发请求，实际请求: ${JSON.stringify(calls)}`);
+  assert.equal(calls.length, 2, `third selection must use the cache; actual requests: ${JSON.stringify(calls)}`);
 
-  // 标题、正文、原始响应、原始 JSON 面板必须全部指向 A
+  // The title, body, raw response, and raw JSON panel must all refer to A.
   assert.equal(document.getElementById('detailId').textContent, 'EXAMPLE-A');
-  assert.ok(detailBox.textContent.includes('标题 EXAMPLE-A'), '正文应是 A');
-  assert.ok(detailBox.textContent.includes('验收 EXAMPLE-A'), '验收标准应是 A');
-  assert.ok(!detailBox.textContent.includes('EXAMPLE-B'), '正文里不该出现 B');
+  assert.ok(detailBox.textContent.includes('标题 EXAMPLE-A'), 'details must belong to A');
+  assert.ok(detailBox.textContent.includes('验收 EXAMPLE-A'), 'acceptance criteria must belong to A');
+  assert.ok(!detailBox.textContent.includes('EXAMPLE-B'), 'details must not include B');
 
   assert.equal(
     app.state.raw.work.data.marker,
     'envelope-of-EXAMPLE-A',
-    'state.raw.work 仍停在 B 的响应上'
+    'state.raw.work still contains the response for B'
   );
   assert.ok(
     rawPanel.textContent.includes('envelope-of-EXAMPLE-A'),
-    '原始 JSON 面板仍显示 B 的响应'
+    'raw JSON panel still shows B'
   );
   assert.ok(
     !rawPanel.textContent.includes('envelope-of-EXAMPLE-B'),
-    '原始 JSON 面板里不该还有 B 的响应'
+    'raw JSON panel must not contain B'
   );
 });
 
-test('缓存命中时「为这一项编译上下文」指向的还是它自己', async () => {
+test('cached detail compile button targets its own item', async () => {
   stubFetch();
   await app.renderWorkDetail('EXAMPLE-A');
   await app.renderWorkDetail('EXAMPLE-B');
   await app.renderWorkDetail('EXAMPLE-A');
 
   const box = document.getElementById('workDetail');
-  // 按标签匹配：只看 textContent 会先命中包着按钮的那个容器。
-  const btn = box.find((el) => el.tagName === 'BUTTON' && el.textContent.includes('为这一项编译上下文'));
-  assert.ok(btn, '没找到编译按钮');
+  // Match by tag too; textContent alone would match the button container first.
+  const btn = box.find((el) => el.tagName === 'BUTTON' && el.textContent.includes('Compile context for this item'));
+  assert.ok(btn, 'compile button was not found');
   btn.click();
   assert.equal(document.getElementById('fWork').value, 'EXAMPLE-A');
 });
 
-test('迟到的响应不会覆盖当前选中项（端到端，不只是守卫）', async () => {
+test('late responses cannot replace the selection (end to end)', async () => {
   const calls = [];
   const resolvers = {};
   global.fetch = (url) => {
@@ -144,19 +146,19 @@ test('迟到的响应不会覆盖当前选中项（端到端，不只是守卫�
   const a = app.renderWorkDetail('EXAMPLE-A');
   const b = app.renderWorkDetail('EXAMPLE-B');
 
-  // B 先回，A 后回
+  // B responds before A.
   resolvers['EXAMPLE-B']();
   await b;
   resolvers['EXAMPLE-A']();
   await a;
 
   const box = document.getElementById('workDetail');
-  assert.ok(box.textContent.includes('标题 EXAMPLE-B'), '正文应停在 B');
-  assert.ok(!box.textContent.includes('标题 EXAMPLE-A'), 'A 的迟到响应不该落地');
+  assert.ok(box.textContent.includes('标题 EXAMPLE-B'), 'details must remain on B');
+  assert.ok(!box.textContent.includes('标题 EXAMPLE-A'), 'late response for A must be discarded');
   assert.equal(app.state.raw.work.data.marker, 'envelope-of-EXAMPLE-B');
 });
 
-test('迟到的失败响应也不会盖掉当前选中项', async () => {
+test('late failure responses cannot replace the selection', async () => {
   const resolvers = {};
   global.fetch = (url) => {
     const key = decodeURIComponent(String(url).split('key=')[1] || '');
@@ -191,12 +193,12 @@ test('迟到的失败响应也不会盖掉当前选中项', async () => {
   await a;
 
   const box = document.getElementById('workDetail');
-  assert.ok(box.textContent.includes('标题 EXAMPLE-B'), '正文应停在 B');
-  assert.ok(!box.textContent.includes('SourceStale'), '迟到的失败不该显示出来');
+  assert.ok(box.textContent.includes('标题 EXAMPLE-B'), 'details must remain on B');
+  assert.ok(!box.textContent.includes('SourceStale'), 'late failures must not be displayed');
   assert.equal(app.state.raw.work.data.marker, 'envelope-of-EXAMPLE-B');
 });
 
-test('刷新后，刷新前发出的同 key 请求不算数', async () => {
+test('refresh invalidates older requests for the same key', async () => {
   const resolvers = {};
   global.fetch = (url) => {
     const key = decodeURIComponent(String(url).split('key=')[1] || '');
@@ -221,13 +223,27 @@ test('刷新后，刷新前发出的同 key 请求不算数', async () => {
   };
 
   const stale = app.renderWorkDetail('EXAMPLE-A');
-  // 刷新：作废在途请求并清空缓存，和界面上的刷新按钮一样
+  // Refresh: invalidate in-flight requests and clear the cache, as the UI does.
   app.detailGuard.invalidate();
   app.state.workDetail = {};
 
   resolvers['EXAMPLE-A']('旧的-A');
   await stale;
 
-  assert.equal(app.state.raw.work, undefined, '刷新前的响应不该落地');
-  assert.equal(app.state.workDetail['EXAMPLE-A'], undefined, '刷新前的响应不该进缓存');
+  assert.equal(app.state.raw.work, undefined, 'pre-refresh responses must be discarded');
+  assert.equal(app.state.workDetail['EXAMPLE-A'], undefined, 'pre-refresh responses must not enter the cache');
 });
+
+for (const locale of ['en', 'zh-CN']) {
+  test(`detail labels use ${locale} while multilingual project content stays unchanged`, async () => {
+    stubFetch();
+    i18n.setLocale(locale);
+    await app.renderWorkDetail('EXAMPLE-A');
+    const text = document.getElementById('workDetail').textContent;
+    assert.ok(text.includes('标题 EXAMPLE-A'));
+    assert.ok(text.includes('验收 EXAMPLE-A'));
+    assert.ok(text.includes(i18n.t('ui.compile_context_for_this_item')));
+    assert.ok(text.includes(i18n.t('ui.expires_in_p0_min', { p0: 10 })));
+    i18n.setLocale('en');
+  });
+}

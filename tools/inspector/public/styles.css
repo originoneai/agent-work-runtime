@@ -1,6 +1,6 @@
 /* ══════════════════════════════════════════════════════════
-   AWR Console —— 设计令牌与组件
-   令牌原样取自 AWR Console 设计稿；组件里不写硬编码色值。
+   AWR Console: design tokens and components
+   Tokens match the AWR Console design; components do not hardcode colors.
    ══════════════════════════════════════════════════════════ */
 
 :root {
@@ -34,7 +34,7 @@
   --btn-ink:     #FFFFFF;
   --scrim:       rgba(14,20,27,.45);
 
-  /* 系统字体栈：不加载任何外部字体，页面完全离线可用。 */
+  /* System fonts only: no external fonts, so the page works fully offline. */
   --f-ui:   system-ui, -apple-system, "Segoe UI", Roboto, "PingFang SC", "Microsoft YaHei", sans-serif;
   --f-mono: ui-monospace, SFMono-Regular, "SF Mono", Menlo, Consolas, "Liberation Mono", monospace;
 
@@ -131,7 +131,7 @@ button { font: inherit; color: inherit; }
 :focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; border-radius: 4px; }
 [hidden] { display: none !important; }
 
-/* ───────── 顶栏 ───────── */
+/* Top bar */
 
 .topbar {
   position: sticky; top: 0; z-index: 30;
@@ -210,7 +210,7 @@ button { font: inherit; color: inherit; }
 .icon-btn.spin svg { animation: spin 1s linear infinite; }
 @keyframes spin { to { transform: rotate(360deg); } }
 
-/* ───────── 演示横幅 ───────── */
+/* Demo banner */
 
 .banner {
   display: flex; align-items: flex-start; gap: 12px;
@@ -229,7 +229,7 @@ button { font: inherit; color: inherit; }
   color: var(--ink-3); font-size: 16px; line-height: 1; padding: 2px 6px;
 }
 
-/* ───────── 骨架 ───────── */
+/* Page layout */
 
 .shell { display: grid; grid-template-columns: 1fr; position: relative; }
 @media (min-width: 940px) {
@@ -295,12 +295,11 @@ button { font: inherit; color: inherit; }
   }
 }
 
-/* 不设固定宽度上限，铺满可用空间。
-   正文、注脚这类按 ch 限了行长，宽屏下也不会拉成一行读不完的长句。 */
+/* Fill the available width. Text and footnotes retain readable ch-based line lengths. */
 main { position: relative; z-index: 1; padding: 30px 16px 64px; }
 @media (min-width: 940px) { main { padding: 38px 40px 80px; } }
 
-/* ───────── 标题区 ───────── */
+/* Headings */
 
 .view-head { margin-bottom: 26px; }
 .eyebrow {
@@ -333,7 +332,7 @@ h2 {
   letter-spacing: .1em; text-transform: uppercase; color: var(--ink-2);
 }
 
-/* ───────── 面板 ───────── */
+/* Panels */
 
 .panel {
   position: relative; background: var(--surface);
@@ -353,7 +352,7 @@ h2 {
 @media (min-width: 760px) { .grid.two { grid-template-columns: 1fr 1fr; align-items: start; } }
 .stack-lg { display: grid; gap: 22px; }
 
-/* 「这是什么」小问号 */
+/* Contextual help buttons */
 .why {
   border: 1px solid var(--line); background: var(--surface-2);
   color: var(--ink-3); width: 17px; height: 17px; border-radius: 50%;
@@ -372,7 +371,7 @@ h2 {
   background: var(--surface); padding: 1px 5px; border-radius: 3px;
 }
 
-/* ───────── 状态条 ───────── */
+/* Status strip */
 
 .strip {
   display: grid; grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
@@ -395,7 +394,7 @@ h2 {
 .kv b .unit { font-size: 12px; color: var(--ink-3); margin-left: 4px; letter-spacing: 0; }
 .kv .kv-hint { font-size: 11px; color: var(--ink-3); margin-top: 6px; line-height: 1.45; }
 
-/* ───────── 对比条 / 细条 ───────── */
+/* Comparison bars and compact bars */
 
 .cmp { display: grid; gap: 14px; }
 .cmp-row { display: grid; gap: 7px; padding: 8px 10px; margin: -8px -10px; border-radius: 6px; }
@@ -428,7 +427,7 @@ h2 {
 .figure-note { margin: 14px 0 0; font-size: 12.5px; color: var(--ink-3); max-width: 64ch; line-height: 1.7; }
 .figure-note b { color: var(--ink-2); font-weight: 500; }
 
-/* ───────── 表格 ───────── */
+/* Tables */
 
 .scroller { overflow-x: auto; }
 table { border-collapse: collapse; width: 100%; min-width: 600px; }
@@ -446,7 +445,7 @@ tbody tr[aria-selected="true"] { background: var(--accent-wash); box-shadow: ins
 .id { font-size: 12px; color: var(--accent); font-family: var(--f-mono); }
 tr.expando td { background: var(--surface-2); white-space: normal; }
 
-/* ───────── 列表 ───────── */
+/* Lists */
 
 .loops { list-style: none; margin: 0; padding: 0; }
 .loops li {
@@ -467,7 +466,7 @@ tr.expando td { background: var(--surface-2); white-space: normal; }
 .dot.ok   { background: var(--good); box-shadow: 0 0 0 3px var(--good-wash); }
 .dot.info { background: var(--accent); box-shadow: 0 0 0 3px var(--accent-wash); }
 
-/* ───────── 命令块 ───────── */
+/* Command blocks */
 
 .cmd {
   display: flex; align-items: flex-start; gap: 10px;
@@ -496,7 +495,7 @@ pre.packet {
 }
 pre.packet b { color: var(--ink); font-weight: 500; }
 
-/* ───────── 表单 ───────── */
+/* Forms */
 
 .form { display: grid; gap: 16px; }
 @media (min-width: 620px) { .form { grid-template-columns: 1fr 1fr; } }
@@ -551,7 +550,7 @@ pre.packet b { color: var(--ink); font-weight: 500; }
 }
 .chip b { font-weight: 500; }
 
-/* ───────── 详情 ───────── */
+/* Details */
 
 .detail { display: grid; gap: 18px; }
 .detail h3 { margin: 0; font-size: 18px; font-weight: 600; letter-spacing: -.015em; }
@@ -568,7 +567,7 @@ pre.packet b { color: var(--ink); font-weight: 500; }
   color: var(--ink-2); font-size: 13.5px; margin: 0;
 }
 
-/* ───────── 状态态（空 / 错 / 载入） ───────── */
+/* Empty, error, and loading states */
 
 .state { padding: 34px 20px; text-align: center; color: var(--ink-3); display: grid; gap: 12px; justify-items: center; }
 .state .title { font-size: 15px; color: var(--ink); font-weight: 600; }
@@ -586,7 +585,7 @@ pre.packet b { color: var(--ink); font-weight: 500; }
 }
 @keyframes shimmer { to { background-position: -200% 0; } }
 
-/* ───────── 原始 JSON ───────── */
+/* Raw JSON */
 
 .rawbox { border-top: 1px solid var(--line-soft); }
 .rawbox summary {
@@ -599,7 +598,7 @@ pre.packet b { color: var(--ink); font-weight: 500; }
 .rawbox summary:hover { color: var(--accent); }
 .rawbox .body { padding: 0 18px 18px; }
 
-/* ───────── 新手引导 ───────── */
+/* Getting-started tour */
 
 .scrim {
   position: fixed; inset: 0; z-index: 100; background: var(--scrim);
@@ -640,7 +639,7 @@ pre.packet b { color: var(--ink); font-weight: 500; }
   padding: 1px 6px; border-radius: 3px; border: 1px solid var(--line);
 }
 
-/* 术语表 */
+/* Glossary */
 .gloss { display: grid; gap: 14px; }
 .gloss dt {
   font-family: var(--f-mono); font-size: 13px; color: var(--accent);
@@ -659,9 +658,9 @@ footer.page {
   *, *::before, *::after { transition: none !important; animation: none !important; }
 }
 
-/* ───────── 布局微调 ─────────
-   这些原本是 HTML 里的 style="" 属性。严格 CSP（style-src 'self'）不允许
-   内联样式属性，所以全部搬到这里。JS 里对 element.style 的动态赋值不受影响。 */
+/* Layout adjustments
+   These declarations originally lived in HTML style attributes. The strict
+   style-src self CSP requires moving them here; dynamic element.style assignments still work. */
 
 .chips-inset   { padding: 12px 18px 0; }
 .lede-note     { margin-top: 10px; font-size: 13px; color: var(--ink-3); }
@@ -673,3 +672,8 @@ footer.page {
 .gap-above     { margin-top: 18px; }
 .figure-note.flush { margin: 0; }
 .tour-art .bar.bar-short { max-width: 28%; }
+
+/* Keep the language control compact and readable on narrow screens. */
+.language-picker { display: inline-flex; align-items: center; gap: 6px; font-size: 12px; flex-shrink: 0; }
+.language-picker select { font: inherit; color: inherit; background: var(--surface); border: 1px solid var(--line); border-radius: 6px; padding: 4px; max-width: 145px; }
+@media (max-width: 620px) { .language-picker > span { display: none; } }

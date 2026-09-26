@@ -1,16 +1,16 @@
 #!/usr/bin/env node
 /**
- * 测试用的假 awr。
+ * A fake awr executable for tests.
  *
- * 按 AWR 0.4.0 的参数签名回应，并且能按需制造几种边界情况：
- * 多字节输出、超大输出、慢命令、stderr 上的 JSON 错误。
+ * Matches the AWR 0.4.0 argument signatures and injects boundary cases:
+ * multibyte output, oversized output, slow commands, and JSON errors on stderr.
  *
- * 环境变量：
- *   STUB_MODE=multibyte   一个字节一个字节地吐出合法 UTF-8 JSON
- *   STUB_MODE=huge        吐出超过桥接上限的输出
- *   STUB_MODE=slow        睡到超时之后才退出
- *   STUB_MODE=stderrjson  把 JSON 错误写到 stderr 并非零退出
- *   STUB_ARGV_OUT=<path>  把收到的 argv 原样写到这个文件，供断言用
+ * Environment variables:
+ *   STUB_MODE=multibyte   Write valid UTF-8 JSON one byte at a time.
+ *   STUB_MODE=huge        Produce more output than the bridge limit.
+ *   STUB_MODE=slow        Sleep beyond the command timeout.
+ *   STUB_MODE=stderrjson  Write a JSON error to stderr and exit nonzero.
+ *   STUB_ARGV_OUT=<path>  Save the exact argv to this file for assertions.
  */
 
 'use strict';
@@ -42,14 +42,14 @@ if (mode === 'stderrjson') {
 }
 
 if (mode === 'slowwrite') {
-  // 活得比写超时更久。用来验证：槽位是按子进程释放的，不是按响应释放的。
+  // Outlive the write timeout to verify slots follow child lifetimes, not responses.
   setTimeout(() => process.exit(0), 30 * 1000);
   setInterval(() => {}, 1000);
   return;
 }
 
 if (mode === 'hugewrite') {
-  // 写命令的输出溢出。桥接不该杀它——先等一下再吐，好让超时分支也能覆盖到。
+  // Overflow write output after a delay to exercise the timeout path; do not kill the writer.
   const delay = Number(process.env.STUB_WRITE_DELAY_MS || 0);
   setTimeout(() => {
     const block = Buffer.alloc(1024 * 1024, 0x61);
@@ -61,7 +61,7 @@ if (mode === 'hugewrite') {
         throw e;
       }
     }
-    // 故意再多活一会儿，这样测试能观察到它没有被 SIGKILL。
+    // Stay alive longer so the test can verify that SIGKILL was not sent.
     setTimeout(() => process.exit(0), 3000);
   }, delay);
   setInterval(() => {}, 1000);
@@ -69,8 +69,8 @@ if (mode === 'hugewrite') {
 }
 
 if (mode === 'incomplete' && joined.includes('context compile')) {
-  // 复现 `context compile` 的真实行为：上下文不完整时退出 1，
-  // 但 stdout 上照样给出完整报告。
+  // Reproduce context compile: incomplete context exits with code 1
+  // while stdout still contains the report.
   fs.writeSync(1,
     JSON.stringify({
       ok: false,
@@ -100,14 +100,14 @@ if (mode === 'incomplete' && joined.includes('context compile')) {
 }
 
 if (mode === 'huge') {
-  // 远超 stdout 上限。用 writeSync：process.stdout.write 是异步的，
-  // 紧接着 process.exit() 会把还在管道缓冲里的数据丢掉。
+  // Exceed the stdout limit using writeSync; process.stdout.write is asynchronous,
+  // so an immediate process.exit() would discard bytes still buffered in the pipe.
   const block = Buffer.alloc(1024 * 1024, 0x61);
   for (let i = 0; i < 12; i++) {
     try {
       fs.writeSync(1, block);
     } catch (e) {
-      if (e.code === 'EPIPE') break; // 桥接已经因为超限把我们杀了
+      if (e.code === 'EPIPE') break; // The bridge has closed the pipe after the output limit was exceeded.
       throw e;
     }
   }
@@ -116,10 +116,10 @@ if (mode === 'huge') {
 
 if (mode === 'slow') {
   setTimeout(() => process.exit(0), 60 * 1000);
-  // 保持进程存活
+  // Keep the process alive.
   setInterval(() => {}, 1000);
 } else if (mode === 'multibyte') {
-  // 合法 UTF-8，逐字节写出。桥接如果按块解码就会得到 U+FFFD。
+  // Write valid UTF-8 byte by byte; per-chunk decoding would produce U+FFFD.
   const payload = Buffer.from(
     JSON.stringify({ ok: true, title: '任务：源文件索引 — αβγ 🧭', project_revision: 7 }),
     'utf8'
@@ -129,7 +129,7 @@ if (mode === 'slow') {
   }
   process.exit(0);
 } else if (joined.includes('search')) {
-  // AWR 0.4.0: `awr search [OPTIONS] [TEXT]` —— 文本是位置参数
+  // AWR 0.4.0: `awr search [OPTIONS] [TEXT]` uses positional search text.
   if (argv.includes('--text')) {
     process.stderr.write(
       JSON.stringify({ code: 'InvalidInput', message: "unexpected argument '--text' found" })

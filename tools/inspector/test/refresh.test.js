@@ -28,7 +28,7 @@ function liveFetch(project = "project-a", items = ["B1", "B2"]) {
   };
 }
 function compileButton() {
-  return $("workDetail").find(el => el.tagName === "BUTTON" && el.textContent.includes("为这一项编译上下文"));
+  return $("workDetail").find(el => el.tagName === "BUTTON" && el.textContent.includes("Compile context for this item"));
 }
 async function selectOverview() {
   await $("queueList").children[0].click();

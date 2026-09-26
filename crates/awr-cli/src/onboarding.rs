@@ -28,7 +28,7 @@ pub struct InitArgs {
     /// Interpret an existing ledger status without changing it: --status-map pending=planned.
     #[arg(long, conflicts_with_all=["manifest","from_draft"])]
     pub status_map: Vec<String>,
-    /// Map a canonical work field to its original source key/column: --field-map title=事项.
+    /// Map a canonical work field to its original source key/column: --field-map title=task_name.
     #[arg(long, conflicts_with_all=["manifest","from_draft"])]
     pub field_map: Vec<String>,
     /// Save a reviewable JSON draft without initializing the project.
@@ -311,14 +311,14 @@ fn draft(root: &Path, goal: Option<&str>) -> Result<IntakeDraft> {
         let (filename,adapter,body)=match domain {
             "goal"=>("GOALS.md","markdown-heading-v1",format!("# Project goal {{#intake-goal status={}}}\n\n{}\n\nProvenance: {}. Existing implementation progress remains unverified until reviewed against source and evidence.\n",if goal.is_some_and(|g| !g.trim().is_empty()) { "active" } else { "draft" },goal.filter(|g| !g.trim().is_empty()).unwrap_or("Project purpose and acceptance criteria still need to be established from existing material; uncertain business intent remains pending."),if goal.is_some() { "explicit --goal input" } else { "generated intake placeholder; not confirmed" })),
             _=>{
-                let mut tasks=vec![json!({"id":"INTAKE-001","kind":"intake","title":"核实项目目标、现状与下一步交付","status":"ready","priority":"P0","required":true,"depends_on":[],"acceptance":["逐项确认目标、已有实现、未完成工作和阻塞，保留来源引用。","将不能确定的进度标记待核实，形成下一项可执行工作的验收条件。"],"next_action":"运行 awr intake inspect，按缺项读取原始资料；补齐目标引用、验收和下一步后再次复检。","summary":"这是新建的接入工作；不代表已有项目功能尚未实现或已经通过验收。"})];
+                let mut tasks=vec![json!({"id":"INTAKE-001","kind":"intake","title":"Verify project goals, current state, and the next deliverable","status":"ready","priority":"P0","required":true,"depends_on":[],"acceptance":["Confirm goals, existing implementation, unfinished work, and blockers with source references.","Mark uncertain progress as unverified and define acceptance criteria for the next executable task."],"next_action":"Run awr intake inspect and read sources for each gap; add goal references, acceptance criteria, and next actions, then inspect again.","summary":"This is a new intake task; it does not establish whether existing functionality is implemented or accepted."})];
                 // A plan creates reviewable task proposals, never fabricated completed work.
                 for spec in mapping.sources.iter().filter(|s|s.domain=="plan"&&s.adapter=="markdown-heading-v1") {
                     if let Some(path)=&spec.path {
                         if !root.join(path).is_file(){continue;}
                         let snapshot=awr_source::Locator::from_spec(root,&mapping,spec)?.read(root,awr_source::MARKDOWN_READ_CAP)?;
                         for section in awr_source::markdown_sections(&snapshot)?.into_iter().take(100) {
-                            tasks.push(json!({"id":format!("INTAKE-{:03}",tasks.len()+1),"title":format!("核实并推进：{}",section.title),"status":"planned","priority":"P1","depends_on":["INTAKE-001"],"acceptance":["根据原方案确认本项交付物与验收条件，核实已有完成情况后执行。"],"next_action":format!("审阅 {} 中的原始方案章节；先补充具体行动和验收条件。",path.display()),"paths":[path],"summary":"从方案章节产生的待审阅任务建议，尚未判定实现状态。"}));
+                            tasks.push(json!({"id":format!("INTAKE-{:03}",tasks.len()+1),"title":format!("Verify and advance: {}",section.title),"status":"planned","priority":"P1","depends_on":["INTAKE-001"],"acceptance":["Confirm deliverables and acceptance criteria against the original plan, verify existing progress, then execute."],"next_action":format!("Review the original plan section in {}; first add concrete actions and acceptance criteria.",path.display()),"paths":[path],"summary":"Task proposal derived from a plan section, pending review; implementation status is not yet assessed."}));
                         }
                     }
                 }

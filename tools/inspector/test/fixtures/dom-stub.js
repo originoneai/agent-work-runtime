@@ -1,10 +1,10 @@
 /**
- * 够用就好的 DOM 替身。
+ * A minimal DOM stub.
  *
- * 只为在 Node 里跑 app.js 的详情渲染路径——不追求实现 DOM 规范，
- * 只实现那段代码真正用到的那几个方法。
+ * Runs the actual app.js detail-rendering path in Node, without implementing
+ * the full DOM specification; only the methods used by that path are included.
  *
- * 用法：在 require('../public/app.js') 之前调用 install()。
+ * Usage: call install() before require('../public/app.js').
  */
 
 'use strict';
@@ -20,7 +20,7 @@ class StubElement {
     this.listeners = {};
     this.hidden = false;
     this._value = '';
-    this.own = ''; // 自身文本，不含子节点
+    this.own = ''; // Own text, excluding child nodes.
   }
 
   get value() {
@@ -87,7 +87,7 @@ class StubElement {
     return null;
   }
 
-  /** 递归找第一个满足条件的后代，测试里用来定位按钮。 */
+  /** Recursively find the first matching descendant, such as a test button. */
   find(predicate) {
     for (const child of this.children) {
       if (predicate(child)) return child;
@@ -98,7 +98,7 @@ class StubElement {
   }
 }
 
-/** app.js 会 getElementById 的那些。 */
+/** Element IDs requested by app.js through getElementById. */
 const IDS = [
   'workDetail', 'detailId', 'detailStatus', 'rawWorkBody', 'rawWorkBody',
   'fWork', 'fGoal', 'fBudget', 'fIntent', 'cliMirror',
@@ -110,7 +110,7 @@ function install() {
   const byId = new Map();
   for (const id of IDS) byId.set(id, new StubElement(id === 'fWork' ? 'select' : 'div'));
 
-  // 按选择器取的元素（app.js 用 [data-note="..."] 找说明段落）。
+  // Explanatory paragraphs selected by app.js with [data-note="..."].
   const bySelector = new Map();
   for (const note of ['contextChart', 'queues', 'checkpoints', 'mcp', 'criteria', 'completeness', 'pending']) {
     bySelector.set(`[data-note="${note}"]`, new StubElement('p'));
@@ -149,7 +149,7 @@ function install() {
     removeItem: () => {},
   };
   global.sessionStorage = global.localStorage;
-  // Node 自带只读的 navigator，直接赋值会抛。用 defineProperty 覆盖。
+  // Node exposes a read-only navigator; replace it with defineProperty.
   Object.defineProperty(global, 'navigator', {
     value: { clipboard: null },
     configurable: true,

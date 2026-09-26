@@ -1,10 +1,10 @@
 /**
- * 桥接的测试。用 node:test，零依赖。
+ * Bridge tests using node:test with no dependencies.
  *
- * 每个用例起一个真实的 server.js 子进程，PATH 上放一个假 awr，
- * 然后用 fetch 打真实的 HTTP 请求——测的是真实的请求边界，不是内部函数。
+ * Each case starts the real server.js with a fake awr on PATH and uses fetch
+ * for real HTTP requests, exercising the request boundary rather than internals.
  *
- * 跑：node --test test/
+ * Run: node --test test/
  */
 
 'use strict';
@@ -20,7 +20,7 @@ const http = require('node:http');
 const ROOT = path.join(__dirname, '..');
 const GUARD = { 'x-awr-inspector': '1' };
 
-/** 造一个 bin 目录，里面的 `awr` 指向 stub。 */
+/** Create a bin directory containing an awr launcher for the stub. */
 function makeStubBin() {
   const dir = fs.mkdtempSync(path.join(os.tmpdir(), 'awr-stub-'));
   const stub = path.join(__dirname, 'fixtures', 'stub-awr.js');
@@ -38,7 +38,7 @@ function makeStubBin() {
 const STUB_BIN = makeStubBin();
 let nextPort = 7500;
 
-/** 起一个桥接进程，等它监听上，返回 { port, stop }。 */
+/** Start a bridge, wait until it listens, and return {port, stop}. */
 async function startBridge(opts = {}) {
   const port = nextPort++;
   const args = ['server.js', '--no-open', '--port', String(port)];
@@ -55,16 +55,16 @@ async function startBridge(opts = {}) {
   });
 
   await new Promise((resolve, reject) => {
-    const timer = setTimeout(() => reject(new Error('桥接启动超时')), 15000);
+    const timer = setTimeout(() => reject(new Error('Bridge startup timed out')), 15000);
     child.stdout.on('data', (d) => {
-      if (String(d).includes('已启动')) {
+      if (String(d).includes('started')) {
         clearTimeout(timer);
         resolve();
       }
     });
     child.on('exit', (code) => {
       clearTimeout(timer);
-      reject(new Error(`桥接退出了，code=${code}`));
+      reject(new Error(`Bridge exited with code=${code}`));
     });
   });
 
@@ -80,9 +80,9 @@ let bridge;
 before(async () => { bridge = await startBridge(); });
 after(async () => { if (bridge) await bridge.stop(); fs.rmSync(STUB_BIN, { recursive: true, force: true }); });
 
-// ───────────── 1. 请求来源边界 ─────────────
+// 1. Request-origin boundary
 
-/** fetch 不允许覆盖 Host 头，所以敌对 Host 只能用原始请求构造。 */
+/** fetch cannot override Host; construct hostile Host headers with a raw request. */
 function rawRequest(port, options) {
   return new Promise((resolve, reject) => {
     const req = http.request(
@@ -101,7 +101,7 @@ function rawRequest(port, options) {
   });
 }
 
-test('拒绝敌对 Host（DNS rebinding）', async () => {
+test('rejects hostile Host headers (DNS rebinding)', async () => {
   const res = await rawRequest(bridge.port, {
     path: '/api/health',
     headers: { Host: 'attacker.example' },
@@ -109,10 +109,10 @@ test('拒绝敌对 Host（DNS rebinding）', async () => {
   assert.equal(res.status, 403);
   const body = JSON.parse(res.text);
   assert.equal(body.error.code, 'ForbiddenHost');
-  assert.ok(!res.text.includes('agent-work-runtime'), '不得泄露项目路径');
+  assert.ok(!res.text.includes('agent-work-runtime'), 'must not disclose the project path');
 });
 
-test('接受 localhost 形式的 Host', async () => {
+test('accepts localhost Host headers', async () => {
   const res = await rawRequest(bridge.port, {
     path: '/api/health',
     headers: { Host: `localhost:${bridge.port}` },
@@ -120,7 +120,7 @@ test('接受 localhost 形式的 Host', async () => {
   assert.equal(res.status, 200);
 });
 
-test('拒绝敌对 Origin', async () => {
+test('rejects hostile origins', async () => {
   const res = await fetch(`${bridge.base}/api/status`, {
     headers: Object.assign({ origin: 'https://example.attacker' }, GUARD),
   });
@@ -128,13 +128,13 @@ test('拒绝敌对 Origin', async () => {
   assert.equal((await res.json()).error.code, 'ForbiddenOrigin');
 });
 
-test("拒绝 Origin: null", async () => {
+test("rejects Origin: null", async () => {
   const res = await fetch(`${bridge.base}/api/status`, { headers: { origin: 'null' } });
   assert.equal(res.status, 403);
   assert.equal((await res.json()).error.code, 'ForbiddenOrigin');
 });
 
-test('拒绝跨站 Sec-Fetch-Site', async () => {
+test('rejects cross-site Sec-Fetch-Site', async () => {
   const res = await fetch(`${bridge.base}/api/status`, {
     headers: { 'sec-fetch-site': 'cross-site' },
   });
@@ -142,7 +142,7 @@ test('拒绝跨站 Sec-Fetch-Site', async () => {
   assert.equal((await res.json()).error.code, 'ForbiddenSite');
 });
 
-test('接受同源 Sec-Fetch-Site', async () => {
+test('accepts same-origin Sec-Fetch-Site', async () => {
   const res = await fetch(`${bridge.base}/api/status`, {
     headers: { 'sec-fetch-site': 'same-origin' },
   });
@@ -150,7 +150,7 @@ test('接受同源 Sec-Fetch-Site', async () => {
   assert.equal((await res.json()).ok, true);
 });
 
-test('跨站表单 POST 触发不了 reindex', async () => {
+test('cross-site form POST cannot trigger reindex', async () => {
   const res = await fetch(`${bridge.base}/api/source/reindex`, {
     method: 'POST',
     headers: { 'content-type': 'application/x-www-form-urlencoded' },
@@ -160,21 +160,21 @@ test('跨站表单 POST 触发不了 reindex', async () => {
   assert.equal((await res.json()).error.code, 'MissingGuardHeader');
 });
 
-test('静态资源拒绝目录穿越', async () => {
+test('static resources reject path traversal', async () => {
   const res = await fetch(`${bridge.base}/../server.js`);
-  assert.ok(res.status === 403 || res.status === 404, `期望 403/404，实际 ${res.status}`);
+  assert.ok(res.status === 403 || res.status === 404, `expected 403/404, received ${res.status}`);
 });
 
-test('静态响应带 CSP', async () => {
+test('static responses include CSP', async () => {
   const res = await fetch(`${bridge.base}/`);
   const csp = res.headers.get('content-security-policy');
-  assert.ok(csp && csp.includes("default-src 'self'"), 'CSP 头缺失');
-  assert.ok(!csp.includes('unsafe-inline'), 'CSP 不应放行内联');
+  assert.ok(csp && csp.includes("default-src 'self'"), 'CSP header is missing');
+  assert.ok(!csp.includes('unsafe-inline'), 'CSP must not allow inline resources');
 });
 
-// ───────────── 2. 命令构造 ─────────────
+// 2. Command construction
 
-test('search 用位置参数，不用 --text', async () => {
+test('search uses positional text rather than --text', async () => {
   const argvLog = path.join(os.tmpdir(), `argv-${Date.now()}.log`);
   const b = await startBridge({ env: { STUB_ARGV_OUT: argvLog } });
   try {
@@ -185,15 +185,15 @@ test('search 用位置参数，不用 --text', async () => {
 
     const lines = fs.readFileSync(argvLog, 'utf8').trim().split('\n').map(JSON.parse);
     const call = lines.find((a) => a.includes('search'));
-    assert.ok(!call.includes('--text'), '不应再出现 --text');
-    assert.ok(call.includes('--'), '应该用 -- 分隔位置参数');
+    assert.ok(!call.includes('--text'), 'must not pass --text');
+    assert.ok(call.includes('--'), 'must separate positional arguments with --');
   } finally {
     await b.stop();
     fs.rmSync(argvLog, { force: true });
   }
 });
 
-test('search 接受中文', async () => {
+test('search accepts Chinese text', async () => {
   const res = await fetch(`${bridge.base}/api/search?text=${encodeURIComponent('任务')}`, {
     headers: GUARD,
   });
@@ -202,7 +202,7 @@ test('search 接受中文', async () => {
   assert.equal(body.data.query.text, '任务');
 });
 
-test('search 接受以 - 开头的词', async () => {
+test('search accepts text starting with a hyphen', async () => {
   const res = await fetch(`${bridge.base}/api/search?text=${encodeURIComponent('-flag')}`, {
     headers: GUARD,
   });
@@ -211,7 +211,7 @@ test('search 接受以 - 开头的词', async () => {
   assert.equal(body.data.query.text, '-flag');
 });
 
-test('search 拒绝控制字符', async () => {
+test('search rejects control characters', async () => {
   const withNul = 'a' + String.fromCharCode(0) + 'b';
   const res = await fetch(`${bridge.base}/api/search?text=${encodeURIComponent(withNul)}`, {
     headers: GUARD,
@@ -219,38 +219,38 @@ test('search 拒绝控制字符', async () => {
   assert.equal((await res.json()).error.code, 'BadRequest');
 });
 
-test('一次坏请求不会改变 --json 的位置', async () => {
+test('a bad request does not change the --json position', async () => {
   const argvLog = path.join(os.tmpdir(), `argv2-${Date.now()}.log`);
   const b = await startBridge({ env: { STUB_ARGV_OUT: argvLog } });
   try {
-    // 先打一个会让 stub 报 "unexpected argument" 的请求
+    // First send a request that makes the stub report an unexpected argument.
     await fetch(`${b.base}/api/work?key=NOPE%3B`, { headers: GUARD });
-    // 再打一个正常请求，--json 仍应在全局位置
+    // Then send a valid request; --json must still be in the global position.
     await fetch(`${b.base}/api/status`, { headers: GUARD });
     const lines = fs.readFileSync(argvLog, 'utf8').trim().split('\n').map(JSON.parse);
     const last = lines[lines.length - 1];
-    assert.equal(last.indexOf('--json'), 2, `--json 不应被挪到尾部: ${JSON.stringify(last)}`);
+    assert.equal(last.indexOf('--json'), 2, `--json must not move to the end: ${JSON.stringify(last)}`);
   } finally {
     await b.stop();
     fs.rmSync(argvLog, { force: true });
   }
 });
 
-// ───────────── 3. 子进程输出 ─────────────
+// 3. Child-process output
 
-test('多字节 UTF-8 逐字节输出不被破坏', async () => {
+test('multibyte UTF-8 survives byte-by-byte output', async () => {
   const b = await startBridge({ env: { STUB_MODE: 'multibyte' } });
   try {
     const body = await (await fetch(`${b.base}/api/status`, { headers: GUARD })).json();
     assert.equal(body.ok, true, JSON.stringify(body));
     assert.equal(body.data.title, '任务：源文件索引 — αβγ 🧭');
-    assert.ok(!JSON.stringify(body).includes('�'), '出现了替换字符');
+    assert.ok(!JSON.stringify(body).includes('�'), 'replacement character found');
   } finally {
     await b.stop();
   }
 });
 
-test('超大输出被挡住而不是撑爆内存', async () => {
+test('oversized output is bounded instead of exhausting memory', async () => {
   const b = await startBridge({ env: { STUB_MODE: 'huge' } });
   try {
     const body = await (await fetch(`${b.base}/api/status`, { headers: GUARD })).json();
@@ -261,7 +261,7 @@ test('超大输出被挡住而不是撑爆内存', async () => {
   }
 });
 
-test('超大请求体被拒', async () => {
+test('oversized request bodies are rejected', async () => {
   const res = await fetch(`${bridge.base}/api/context/compile`, {
     method: 'POST',
     headers: Object.assign({ 'content-type': 'application/json' }, GUARD),
@@ -271,7 +271,7 @@ test('超大请求体被拒', async () => {
   assert.equal((await res.json()).error.code, 'BodyTooLarge');
 });
 
-test('stderr 上的 JSON 错误能还原出 code', async () => {
+test('JSON errors on stderr preserve their error code', async () => {
   const b = await startBridge({ env: { STUB_MODE: 'stderrjson' } });
   try {
     const body = await (await fetch(`${b.base}/api/status`, { headers: GUARD })).json();
@@ -282,9 +282,9 @@ test('stderr 上的 JSON 错误能还原出 code', async () => {
   }
 });
 
-// ───────────── 4. reindex 的语义 ─────────────
+// 4. Reindex semantics
 
-test('默认不允许 reindex', async () => {
+test('reindex is disabled by default', async () => {
   const body = await (
     await fetch(`${bridge.base}/api/source/reindex`, { method: 'POST', headers: GUARD })
   ).json();
@@ -292,7 +292,7 @@ test('默认不允许 reindex', async () => {
   assert.equal(body.error.code, 'ReindexNotAllowed');
 });
 
-test('--allow-reindex 之后可以跑', async () => {
+test('--allow-reindex enables reindex', async () => {
   const b = await startBridge({ allowReindex: true });
   try {
     const body = await (
@@ -304,9 +304,9 @@ test('--allow-reindex 之后可以跑', async () => {
   }
 });
 
-// ───────────── 5. 演示模式 ─────────────
+// 5. Demo mode
 
-test('演示模式不执行任何 awr 命令', async () => {
+test('demo mode executes no awr commands', async () => {
   const argvLog = path.join(os.tmpdir(), `argv3-${Date.now()}.log`);
   const b = await startBridge({ demo: true, env: { STUB_ARGV_OUT: argvLog } });
   try {
@@ -316,19 +316,19 @@ test('演示模式不执行任何 awr 命令', async () => {
     const status = await (await fetch(`${b.base}/api/status`, { headers: GUARD })).json();
     assert.equal(status.error.code, 'DemoMode');
 
-    assert.ok(!fs.existsSync(argvLog), '演示模式下不应有任何 awr 调用');
+    assert.ok(!fs.existsSync(argvLog), 'demo mode must not invoke awr');
   } finally {
     await b.stop();
     fs.rmSync(argvLog, { force: true });
   }
 });
 
-// ───────────── 6. 复核提出的四个 P2 ─────────────
+// 6. Four P2 regressions from review
 
-test('畸形请求行不会带走整个进程', async () => {
+test('malformed request targets do not terminate the server', async () => {
   const b = await startBridge();
   try {
-    // `GET // HTTP/1.1` 会让 new URL('//', base) 抛出。
+    // GET // HTTP/1.1 causes new URL('//', base) to throw.
     const bad = await new Promise((resolve, reject) => {
       const sock = require('node:net').connect(b.port, '127.0.0.1', () => {
         sock.write('GET // HTTP/1.1\r\nHost: 127.0.0.1:' + b.port + '\r\n\r\n');
@@ -339,9 +339,9 @@ test('畸形请求行不会带走整个进程', async () => {
       sock.on('error', reject);
       setTimeout(() => { sock.end(); resolve(text); }, 1500);
     });
-    assert.ok(/HTTP\/1\.1 4\d\d/.test(bad), `期望 4xx，实际响应头：${bad.slice(0, 60)}`);
+    assert.ok(/HTTP\/1\.1 4\d\d/.test(bad), `expected 4xx, received headers: ${bad.slice(0, 60)}`);
 
-    // 关键断言：进程还活着，后续请求照常。
+    // The process must remain alive and serve subsequent requests.
     const health = await fetch(`${b.base}/api/health`, { headers: GUARD });
     assert.equal(health.status, 200);
     assert.equal((await health.json()).ok, true);
@@ -350,8 +350,8 @@ test('畸形请求行不会带走整个进程', async () => {
   }
 });
 
-test('槽位按子进程释放，不按响应释放', async () => {
-  // 写超时缩到 300ms，子进程活 30 秒：响应早就回了，子进程还在。
+test('slots follow child lifetimes rather than HTTP responses', async () => {
+  // Use a 300 ms write timeout with a 30-second child lifetime; the response returns first.
   const b = await startBridge({
     allowReindex: true,
     env: { STUB_MODE: 'slowwrite', AWR_INSPECTOR_WRITE_TIMEOUT_MS: '300' },
@@ -366,7 +366,7 @@ test('槽位按子进程释放，不按响应释放', async () => {
       assert.equal(r.error.code, 'OutcomeUnknown', JSON.stringify(r));
     }
 
-    // 四个子进程都还活着，第五个必须被挡下来。
+    // All four children are still alive; reject the fifth command.
     const fifth = await hit();
     assert.equal(fifth.error.code, 'BridgeBusy', JSON.stringify(fifth));
   } finally {
@@ -374,7 +374,7 @@ test('槽位按子进程释放，不按响应释放', async () => {
   }
 });
 
-test('写命令输出溢出不被 SIGKILL，结果报为未知', async () => {
+test('write output overflow keeps the child alive and reports an unknown outcome', async () => {
   const b = await startBridge({
     allowReindex: true,
     env: { STUB_MODE: 'hugewrite' },
@@ -384,16 +384,16 @@ test('写命令输出溢出不被 SIGKILL，结果报为未知', async () => {
       await fetch(`${b.base}/api/source/reindex`, { method: 'POST', headers: GUARD })
     ).json();
     assert.equal(r.ok, false);
-    // 不是 OutputTooLarge：写命令没被终止，成没成是未知的。
+    // Not OutputTooLarge: the writer was not killed and its outcome is unknown.
     assert.equal(r.error.code, 'OutcomeUnknown', JSON.stringify(r));
-    assert.ok(!/终端里直接跑|重试/.test(r.error.message) || /不要直接重试/.test(r.error.message),
-      '不该建议直接重跑一个结果未知的写操作');
+    assert.ok(!/run.*directly|retry/i.test(r.error.message) || /do not retry blindly/i.test(r.error.message),
+      'must not recommend blindly rerunning a write with an unknown outcome');
   } finally {
     await b.stop();
   }
 });
 
-test('只读命令输出溢出仍然是 OutputTooLarge', async () => {
+test('read-only output overflow reports OutputTooLarge', async () => {
   const b = await startBridge({ env: { STUB_MODE: 'huge' } });
   try {
     const r = await (await fetch(`${b.base}/api/status`, { headers: GUARD })).json();
@@ -403,39 +403,38 @@ test('只读命令输出溢出仍然是 OutputTooLarge', async () => {
   }
 });
 
-// ───────────── 7. 前端：详情响应的代际守卫 ─────────────
+// 7. Frontend detail-request generation guard
 
-test('迟到的详情响应不会覆盖当前选中项', () => {
+test('late detail responses cannot replace the current selection', () => {
   const { createGenerationGuard } = require('../public/app.js');
   const guard = createGenerationGuard();
 
   const a = guard.begin('A');
   const b = guard.begin('B');
 
-  // B 先回：它是最新的，应当落地。
+  // B arrives first and is current; accept it.
   assert.equal(guard.isCurrent(b), true);
-  // A 后回：已经过期，必须丢掉。
+  // A arrives later and is stale; discard it.
   assert.equal(guard.isCurrent(a), false);
 });
 
-test('刷新会作废在途的详情请求', () => {
+test('refresh invalidates in-flight detail requests', () => {
   const { createGenerationGuard } = require('../public/app.js');
   const guard = createGenerationGuard();
 
   const inflight = guard.begin('A');
   guard.invalidate();
-  assert.equal(guard.isCurrent(inflight), false, '刷新后旧请求不得落地');
+  assert.equal(guard.isCurrent(inflight), false, 'old requests must not apply after refresh');
 
-  // 同一个 key 的更早请求，在刷新后回来也不算数。
+  // An older request for the same key is also invalid after refresh.
   const fresh = guard.begin('A');
   const older = { generation: fresh.generation - 1, key: 'A' };
   assert.equal(guard.isCurrent(older), false);
   assert.equal(guard.isCurrent(fresh), true);
 });
 
-test('退出码非 0 但带完整报告时，报告仍然交给前端', async () => {
-  // `context compile` 判定上下文不完整时会退出 1，可 stdout 上的报告是完整的——
-  // 那份诊断正是这时候最该看的东西，不能因为退出码就丢掉。
+test('preserve reports returned with a nonzero exit code', async () => {
+  // Incomplete context exits with code 1 but its stdout report must remain available.
   const b = await startBridge({ env: { STUB_MODE: 'incomplete' } });
   try {
     const r = await (
@@ -446,9 +445,9 @@ test('退出码非 0 但带完整报告时，报告仍然交给前端', async ()
       })
     ).json();
 
-    assert.equal(r.ok, false, '退出码非 0，如实报为失败');
+    assert.equal(r.ok, false, 'Report the nonzero exit as failure');
     assert.equal(r.error.code, 'ContextIncomplete');
-    assert.ok(r.data, '报告必须一并带上，否则完整性面板什么也显示不了');
+    assert.ok(r.data, 'Preserve the report for the completeness panel');
     assert.equal(r.data.completeness.status, 'CONTEXT INCOMPLETE');
     assert.equal(r.data.completeness.rules_complete, false);
     assert.ok(r.data.work_context.rendered_context.length > 0);
@@ -457,25 +456,24 @@ test('退出码非 0 但带完整报告时，报告仍然交给前端', async ()
   }
 });
 
-test('纯错误响应不会被误当成报告', async () => {
-  // 只有 code/message 的错误壳子不算载荷。
+test('do not mistake an error envelope for a report', async () => {
+  // An envelope containing only code/message is not a report.
   const b = await startBridge({ env: { STUB_MODE: 'stderrjson' } });
   try {
     const r = await (await fetch(`${b.base}/api/status`, { headers: GUARD })).json();
     assert.equal(r.ok, false);
     assert.equal(r.error.code, 'SourceStale');
-    assert.ok(!r.data, '错误壳子不该被当成数据交给前端');
+    assert.ok(!r.data, 'Do not return error metadata as report data');
   } finally {
     await b.stop();
   }
 });
 
-// ───────────── 8. issue #63：预算上限 ─────────────
+// 8. Issue #63: budget limits
 
-test('budget 放得到 AWR 的上限，界面不该再卡在 16000', async () => {
-  // issue #63 第 1 条：下拉框封顶 16000。
-  // 真实上限是 100000（crates/awr-context/src/budget.rs），不是 issue 里说的 200000——
-  // 那个数是桥接自己的旧常量。
+test('budgets may reach the AWR limit instead of being capped at 16000', async () => {
+  // The CLI limit is 100000, not the old selector cap of 16000
+  // or the previous bridge constant of 200000.
   const r = await (
     await fetch(`${bridge.base}/api/context/compile`, {
       method: 'POST',
@@ -483,10 +481,10 @@ test('budget 放得到 AWR 的上限，界面不该再卡在 16000', async () =>
       body: JSON.stringify({ work: 'RECON-001', budget: 100000 }),
     })
   ).json();
-  assert.ok(r.command.includes('--budget 100000'), `预算没透传: ${r.command}`);
+  assert.ok(r.command.includes('--budget 100000'), `Budget was not forwarded: ${r.command}`);
 });
 
-test('超过 AWR 上限的 budget 直接拒绝，不悄悄换成默认值', async () => {
+test('reject excessive budgets instead of falling back to the default', async () => {
   const r = await (
     await fetch(`${bridge.base}/api/context/compile`, {
       method: 'POST',
@@ -494,24 +492,23 @@ test('超过 AWR 上限的 budget 直接拒绝，不悄悄换成默认值', asyn
       body: JSON.stringify({ work: 'RECON-001', budget: 100001 }),
     })
   ).json();
-  // 之前是不带 --budget 让 AWR 用默认 5000——一个 105000 的请求会以 5000 跑一遍再失败。
-  // 现在明确拒，错误里写清范围。
+  // Reject invalid budgets with an explicit range instead of omitting --budget.
   assert.equal(r.ok, false);
   assert.equal(r.error.code, 'BadRequest');
-  assert.ok(/100000/.test(r.error.message), `错误信息要给出范围: ${r.error.message}`);
-  assert.ok(!r.command, '不该起子进程');
+  assert.ok(/100000/.test(r.error.message), `The error must state the valid range: ${r.error.message}`);
+  assert.ok(!r.command, 'Do not spawn a child process');
 });
 
-// ───────────── 9. shell:false 路径安全 ─────────────
+// 9. Shell-free path handling
 
-test('--project 含空格的路径正常工作', async () => {
+test('project paths containing spaces are passed correctly', async () => {
   const tmpDir = fs.mkdtempSync(path.join(os.tmpdir(), 'proj '));
   try {
     const b = await startBridge({ project: tmpDir });
     try {
       const r = await fetch(`${b.base}/api/status`, { headers: GUARD });
       const body = await r.json();
-      assert.equal(body.ok, true, `含空格的项目路径应正常工作, got: ${JSON.stringify(body)}`);
+      assert.equal(body.ok, true, `Project paths with spaces must work, got: ${JSON.stringify(body)}`);
     } finally {
       await b.stop();
     }
@@ -548,7 +545,7 @@ test('search preserves shell metacharacters as one literal argument', async () =
   }
 });
 
-test('分页参数传给 status，非法页大小和偏移不执行命令', async () => {
+test('forward pagination to status and reject invalid sizes or offsets before execution', async () => {
   const result = await (await fetch(`${bridge.base}/api/work-page?queue=ready&offset=10&limit=20`, {headers:GUARD})).json();
   assert.match(result.command, /--queue ready --offset 10 --page-size 20/);
   for (const query of ['queue=other', 'offset=-1', 'offset=1.5', 'limit=0', 'limit=101']) {

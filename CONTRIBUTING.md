@@ -29,3 +29,14 @@ added with `git add -f`; review still needs to catch private material under new 
 Use [GitHub issues](https://github.com/originoneai/agent-work-runtime/issues) for
 bugs and proposals. Never include credentials or private project sources. By
 contributing, you agree to license your contributions under Apache-2.0.
+
+## Language conventions
+
+Write code comments, docstrings, test names, assertion diagnostics, and developer-facing
+messages in English. Keep localized documentation (such as Chinese READMEs),
+translation catalogs, and intentional multilingual parser or Unicode fixtures in
+their original language. Do not translate user-provided project content.
+
+Inspector interface text belongs in `tools/inspector/public/locales/`; provide
+matching English and Simplified Chinese keys and interpolation placeholders.
+Run `node --test test/*.test.js` from `tools/inspector` after changing its messages.
