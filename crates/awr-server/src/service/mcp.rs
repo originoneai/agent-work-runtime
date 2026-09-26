@@ -113,6 +113,18 @@ fn catalog() -> Vec<Tool> {
         "workstream_id":{"type":"string"},"work_id":{"type":"string"},
         "session_id":{"type":"string"},"request_id":{"type":"string"},"claim_id":{"type":"string"},
         "execution_id":{"type":"string"},"handoff_id":{"type":"string"},
+        "evidence_id":{"type":"string","minLength":1,"maxLength":128,
+            "description":"Required for evidence.inspect; omit for other operations."},
+        "review_round_id":{"type":"string","minLength":1,"maxLength":128,
+            "description":"Required for review.inspect; use round_id from the review receipt. Omit for other operations."},
+        "change_id":{"type":"string","minLength":1,"maxLength":128,
+            "description":"Optional filter for audit.history, audit.export or audit.count."},
+        "member_actor_id":{"type":"string","minLength":1,"maxLength":128,
+            "description":"Optional actor filter for audit operations; does not expand visibility."},
+        "category":{"type":"string","minLength":1,"maxLength":128,
+            "description":"Optional category filter for audit.history, audit.export or audit.count."},
+        "include_denies":{"type":"boolean",
+            "description":"Optional for audit.history, audit.export or audit.count; authorization still applies."},
         "search":{"type":"string","maxLength":512},"cursor":{"type":"string","maxLength":4096},
         "limit":{"type":"integer","minimum":1,"maximum":100},
         "max_context_bytes":{"type":"integer","minimum":1,"maximum":262144},
@@ -630,5 +642,55 @@ impl ServerHandler for Endpoint {
             Err(_) => CallToolResult::structured_error(unavailable_value()),
         };
         Ok(result.into())
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+    use std::collections::BTreeSet;
+
+    #[test]
+    fn discovery_covers_every_query_contract_field() {
+        // Populate every field, including optional fields omitted by serde, so
+        // additions to the backend contract also require discovery coverage.
+        let query = WorkstreamQuery {
+            protocol_version: 1,
+            op: "audit.history".into(),
+            workstream_id: None,
+            work_id: None,
+            session_id: None,
+            search: None,
+            cursor: None,
+            limit: None,
+            max_context_bytes: None,
+            request_id: None,
+            claim_id: None,
+            execution_id: None,
+            handoff_id: None,
+            evidence_id: None,
+            review_round_id: None,
+            source_path: Some("spec.md".into()),
+            artifact_id: Some("artifact".into()),
+            expected_sha256: Some("a".repeat(64)),
+            change_id: Some("change".into()),
+            member_actor_id: Some("member".into()),
+            category: Some("access".into()),
+            include_denies: Some(false),
+        };
+        let fields = serde_json::to_value(query).unwrap();
+        let tool = catalog()
+            .into_iter()
+            .find(|tool| tool.name == "awr_team_query")
+            .unwrap();
+        assert_eq!(
+            fields.as_object().unwrap().keys().collect::<BTreeSet<_>>(),
+            tool.input_schema["properties"]
+                .as_object()
+                .unwrap()
+                .keys()
+                .collect::<BTreeSet<_>>(),
+            "MCP discovery and the backend query contract must expose the same fields"
+        );
     }
 }
