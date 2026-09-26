@@ -89,3 +89,20 @@ fn actual_receiver_rejects_oversized_versions_and_bad_claims() {
     b["op"] = json!("unknown.operation");
     assert_eq!(error(run(&b, false))["code"], "Unsupported");
 }
+
+#[test]
+fn native_entry_starts_help_version_and_capabilities_without_a_database() {
+    for args in [
+        vec!["--help"],
+        vec!["--version"],
+        vec!["query", "--op", "capabilities"],
+    ] {
+        let output = std::process::Command::new(env!("CARGO_BIN_EXE_awr-server"))
+            .args(&args)
+            .env_remove("AWR_TEAM_DATABASE_URL")
+            .output()
+            .expect("start native server command");
+        assert!(output.status.success(), "{args:?}: {output:?}");
+        assert!(!output.stdout.is_empty(), "{args:?} returned no output");
+    }
+}
