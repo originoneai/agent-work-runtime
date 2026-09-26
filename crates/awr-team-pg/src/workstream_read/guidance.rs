@@ -6,6 +6,10 @@ pub(super) fn select(data: &Value, context_complete: bool, owns_session: bool) -
     let execution = &data["execution"];
     let claim = &data["claim"];
     let progress = &data["progress"];
+    let execution_resolved = matches!(
+        execution["state"].as_str(),
+        Some("succeeded" | "failed" | "cancelled")
+    );
     let (code, when, because, op, action, recheck) = if !context_complete {
         (
             "restore_context",
@@ -15,10 +19,7 @@ pub(super) fn select(data: &Value, context_complete: bool, owns_session: bool) -
             "Restore missing context before effects; use source.content or a larger context budget as needed.",
             "specification or dependency changes",
         )
-    } else if runtime["recovery_blocked"] == true
-        || execution["recovery_blocked"] == true
-        || execution["state"] == "unknown"
-    {
+    } else if execution["recovery_blocked"] == true || execution["state"] == "unknown" {
         (
             "reconcile_execution",
             "execution effects remain unresolved",
@@ -26,6 +27,15 @@ pub(super) fn select(data: &Value, context_complete: bool, owns_session: bool) -
             "execution.inspect",
             "Inspect the latest receipt and obtain authorized reconciliation before further effects.",
             "new receipt or reconciliation",
+        )
+    } else if runtime["recovery_blocked"] == true {
+        (
+            "inspect_recovery",
+            "work requires recovery",
+            "a work or operator recovery barrier remains",
+            "work.recovery",
+            "Inspect work recovery and involve the authorized operator for any remaining restore barrier before effects.",
+            "work or operator recovery changes",
         )
     } else if runtime["state"] == "completed" || !runtime["selected_completion_id"].is_null() {
         (
@@ -45,8 +55,9 @@ pub(super) fn select(data: &Value, context_complete: bool, owns_session: bool) -
             "Select eligible work; a historical checkpoint is not a resume instruction.",
             "work reopened",
         )
-    } else if execution["contract_matches_current"] == false
-        || execution["epoch_matches_current"] == false
+    } else if !execution_resolved
+        && (execution["contract_matches_current"] == false
+            || execution["epoch_matches_current"] == false)
     {
         (
             "refresh_execution",
@@ -221,5 +232,28 @@ mod tests {
                 assert!(!hint[key].is_null());
             }
         }
+    }
+
+    #[test]
+    fn restored_work_without_an_execution_uses_work_recovery() {
+        let mut data = active();
+        data["runtime"]["recovery_blocked"] = json!(true);
+        for execution in [Value::Null, json!({"state":"succeeded"})] {
+            data["execution"] = execution;
+            let hint = select(&data, true, true);
+            assert_eq!(hint["code"], "inspect_recovery");
+            assert_eq!(hint["action"]["op"], "work.recovery");
+        }
+    }
+
+    #[test]
+    fn resolved_execution_binding_changes_do_not_create_a_recovery_loop() {
+        let mut data = active();
+        for state in ["succeeded", "failed", "cancelled"] {
+            data["execution"] = json!({"state":state,"contract_matches_current":false,"epoch_matches_current":false});
+            assert_eq!(select(&data, true, true)["code"], "report_at_boundary");
+        }
+        data["execution"]["state"] = json!("running");
+        assert_eq!(select(&data, true, true)["code"], "refresh_execution");
     }
 }
