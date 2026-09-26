@@ -39,11 +39,11 @@ release from development on `main`.
 
 | Core value | What changes for your project | Availability |
 | --- | --- | --- |
-| **Keep the goal through every handoff** | Goals, shared rules, decisions and unfinished work stay connected. A successor receives the current task's required context and checkpoint, so the project can continue across sessions and agents. | **0.5.0** · [Continuity](docs/integrations/context-continuity.md) |
-| **Run independent workstreams in one project** | Frontend, backend and testing keep their own tasks, context and ownership while sharing project constraints. Claims and resource checks protect supported concurrent operations. | **In development** · [Workstreams](docs/reference/workstreams.md) |
+| **Keep the goal through every handoff** | Goals, shared rules, decisions and unfinished work stay connected. A successor receives the current task's required context and checkpoint, so the project can continue across sessions and agents. | **0.5.1** · [Continuity](docs/integrations/context-continuity.md) |
+| **Run independent workstreams in one project** | Frontend, backend and testing keep their own tasks, context and ownership while sharing project constraints. Work ownership, session attribution and scoped context are supported; authenticated transport isolation and resource scheduling are still in development. | **0.5.1 foundation** · [Workstreams](docs/reference/workstreams.md) |
 | **Depend on a verified delivery** | Bind downstream work to an accepted artifact and contract version. When that dependency changes, recheck affected consumers according to their adoption policy. | **In development** · [Delivery dependencies](docs/reference/workstreams.md#cross-workstream-dependencies) |
-| **Know what “done” actually means** | Connect completion claims to version-bound evidence. Track implementation, verification, merge and release as separate facts; Team review adds explicit reviewer and approval records. | **0.5.0 evidence foundation**; [Team delivery review](docs/integrations/pr-delivery-review.md) **in development** |
-| **See what each outcome costs** | Attribute recorded usage and time to work and its owning workstream. Keep actual costs, API-equivalent estimates, unknowns and observation coverage distinct; count shared effort once. | **In development** · [Usage and time](docs/reference/usage-time-observation.md) |
+| **Know what “done” actually means** | Connect completion claims to version-bound evidence. Track implementation, verification, merge and release as separate facts; Team review adds explicit reviewer and approval records. | **0.5.1 evidence foundation**; [Team delivery review](https://github.com/originoneai/awr/blob/main/docs/integrations/pr-delivery-review.md) **in development** |
+| **See what each outcome costs** | Attribute recorded usage and time to work and its owning workstream. Keep actual costs, API-equivalent estimates, unknowns and observation coverage distinct; count shared effort once. | **In development** · [Usage and time](https://github.com/originoneai/awr/blob/main/docs/reference/usage-time-observation.md) |
 
 These capabilities belong to the same project model. A person coordinating
 several agents can need the same dependency, review and accounting discipline as
@@ -78,19 +78,26 @@ This example explains the collaboration model; it is not an executed benchmark.
 
 ## What you can use today
 
-The published **0.5.0** CLI/MCP packages provide source-backed goals and tasks,
+The published **0.5.1** CLI/MCP packages provide source-backed goals and tasks,
 dependency navigation, focused context, session claims and checkpoints,
 version-bound evidence, a [shared HTTP MCP service](docs/reference/mcp-service.md)
 for multiple clients/projects, and Personal Workspace file exchange.
-The optional [Inspector](https://github.com/originoneai/awr/tree/v0.5.0/tools/inspector)
-is run from source and is not bundled in npm/PyPI.
 
-**Development on `main`:** isolated workstreams, versioned cross-workstream
-delivery, Team review and workstream usage/time accounting have development
-implementations and documented entry points. They are **not included in the
-0.5.0 installation below**. Availability and enforcement depend on the supported
-surface described in each linked guide. The
-[release notes](https://github.com/originoneai/awr/releases/tag/v0.5.0) define the
+This release adds **source freshness inventories, content review records and
+truthful checkpoint progress**, alongside parsing and client-integration fixes.
+Its **personal workstream foundation** supports explicit source ownership,
+session attribution and scoped context in a local SQLite project. It does not
+provide an authenticated Team service or complete multi-client isolation.
+See [what changed in 0.5.1](docs/release/0.5.1.md).
+
+The optional [Inspector](https://github.com/originoneai/awr/tree/v0.5.1/tools/inspector) runs from this source checkout;
+it is not bundled in npm/PyPI. It includes Chinese/English views, complete queue
+pagination, source-aware refresh, and session/event panels.
+
+**Development on `main`:** versioned cross-workstream delivery adoption, Team
+collaboration/review, DEC policy extensions and workstream usage/time/ETA
+accounting are outside this release. The
+[release notes](https://github.com/originoneai/awr/releases/tag/v0.5.1) define the
 published package boundary.
 
 ## Quickstart
@@ -100,13 +107,13 @@ published package boundary.
 Choose one package manager. Both install the native `awr` and `awr-mcp` commands.
 
 ```sh
-npm install -g @originoneai/agent-work-runtime@0.5.0
+npm install -g @originoneai/agent-work-runtime@0.5.1
 ```
 
 Or, inside a Python virtual environment:
 
 ```sh
-python -m pip install agent-work-runtime==0.5.0
+python -m pip install agent-work-runtime==0.5.1
 ```
 
 ```sh
@@ -116,7 +123,12 @@ awr --version
 Prebuilt packages support **macOS 15+ (Apple Silicon and Intel)**,
 **Linux x64/arm64 (glibc 2.39+)** and **Windows x64**. Launchers require
 Node 22.14+ or Python 3.9+. See the
-[0.5.0 installation and upgrade guide](https://github.com/originoneai/awr/blob/v0.5.0/docs/release/DISTRIBUTIONS.md).
+[0.5.1 installation and upgrade guide](https://github.com/originoneai/awr/blob/v0.5.1/docs/release/DISTRIBUTIONS.md).
+
+**Upgrading from 0.5.0:** stop existing writers and keep a matching runtime/source
+backup and old binaries first. The explicit source refresh migrates SQLite
+schema 4 through 5 and 6 to 7. Older binaries cannot open schema 7; rollback needs
+the matching pre-upgrade snapshot. See the [upgrade guide](https://github.com/originoneai/awr/blob/v0.5.1/docs/release/DISTRIBUTIONS.md#matched-upgrade-and-rollback-checklist).
 
 ### 2. Connect your project
 
