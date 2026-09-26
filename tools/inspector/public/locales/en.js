@@ -44,7 +44,7 @@
   "feedback.guidance_inspect_delivery": "A code change is already registered. Check its evidence and arrange review.",
   "feedback.guidance_start_session": "Connect your Agent and read the task requirements to start work.",
   "feedback.guidance_other_client_session": "Another Agent owns this session. Continue through its connection or select your own work.",
-  "feedback.guidance_inspect_recovery": "This session has ended. Read its saved progress before starting another.",
+  "feedback.guidance_inspect_recovery": "Review saved work and resolve session or service recovery before continuing.",
   "feedback.guidance_renew_claim": "The Agent needs to renew its claim before continuing.",
   "feedback.guidance_wait_for_change": "Waiting for a reply or blocker resolution. Report again when something changes.",
   "feedback.guidance_declare_client": "At the next progress update, the Agent should declare its product and collection capabilities.",

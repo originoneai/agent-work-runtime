@@ -44,7 +44,7 @@
   "feedback.guidance_inspect_delivery": "代码提交已登记，接下来核对证据并安排审查。",
   "feedback.guidance_start_session": "连接你的 Agent，让它读取任务要求并开始工作。",
   "feedback.guidance_other_client_session": "此会话属于另一个 Agent，请通过对应连接接续，或选择你自己的任务。",
-  "feedback.guidance_inspect_recovery": "此会话已结束，开始新会话前先读取已保存的进度。",
+  "feedback.guidance_inspect_recovery": "先查看已保存的工作，完成会话或服务恢复核查后再继续。",
   "feedback.guidance_renew_claim": "Agent 需要先续期认领，再继续执行。",
   "feedback.guidance_wait_for_change": "等待回复或问题解决，有实质变化时再汇报。",
   "feedback.guidance_declare_client": "Agent 应在下次进度汇报时说明所用产品和支持采集的信息。",
